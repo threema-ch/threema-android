@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <string name="voip_title">Chamada do Threema</string>
     <string name="voip_hangup">Desligar</string>
     <string name="voip_toggle_mic">Ativar/desativar microfone</string>
@@ -99,7 +99,7 @@
         <item quantity="other">%d participantes</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Obs: um membro não pode participar de chamadas de grupo.</item>
+        <item quantity="one">Obs: um membro não pode participar de chamadas de grupo.</item>
         <item quantity="other">Obs: %d membros não podem participar de chamadas de grupo.</item>
     </plurals>
 </resources>

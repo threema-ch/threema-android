@@ -38,15 +38,19 @@ import java.util.Collections;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
+
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 
 public class VoiceActionService extends SearchActionVerificationClientService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceActionService");
@@ -60,6 +64,11 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 
 	private static final String CHANNEL_ID_GOOGLE_ASSISTANT = "Voice_Actions";
 	private static final int NOTIFICATION_ID = 10000;
+
+	private static final int FG_SERVICE_TYPE =
+		Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+			? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+			: 0;
 
 	@Override
 	public void performAction(Intent intent, boolean isVerified, Bundle options) {
@@ -87,7 +96,11 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 						.setPriority(NotificationCompat.PRIORITY_MIN)
 						.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 						.setLocalOnly(true);
-		this.startForeground(NOTIFICATION_ID, notificationBuilder.build());
+		ServiceCompat.startForeground(
+			this,
+			NOTIFICATION_ID,
+			notificationBuilder.build(),
+			FG_SERVICE_TYPE);
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
@@ -151,7 +164,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 				String identity = bundle.getString("com.google.android.voicesearch.extra.RECIPIENT_CONTACT_CHAT_ID");
 				String message = bundle.getString("android.intent.extra.TEXT");
 
-				if (!TestUtil.empty(identity, message)) {
+				if (!TestUtil.isEmptyOrNull(identity, message)) {
 					ContactModel contactModel = contactService.getByIdentity(identity);
 
 					if (contactModel != null) {

@@ -43,84 +43,86 @@ import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class GlobalSearchRepository {
-	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-	private MutableLiveData<List<AbstractMessageModel>> messageModels;
-	private MessageService messageService;
-	private String queryString = "";
-	private int filterFlags = 0;
-	private boolean sortAscending = false; /* whether to sort the results in ascending or descending order by message creation date */
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private MutableLiveData<List<AbstractMessageModel>> messageModels;
+    private MessageService messageService;
+    private String queryString = "";
+    private int filterFlags = 0;
+    private boolean sortAscending = false; /* whether to sort the results in ascending or descending order by message creation date */
 
-	GlobalSearchRepository() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			messageService = null;
-			try {
-				messageService = serviceManager.getMessageService();
-			} catch (ThreemaException e) {
-				return;
-			}
-			if (messageService != null) {
-				messageModels = new MutableLiveData<List<AbstractMessageModel>>() {
-					@Nullable
-					@Override
-					public List<AbstractMessageModel> getValue() {
-						return getMessagesForText(queryString, FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED, sortAscending);
-					}
-				};
-			}
-		}
-	}
+    GlobalSearchRepository() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            messageService = null;
+            try {
+                messageService = serviceManager.getMessageService();
+            } catch (ThreemaException e) {
+                return;
+            }
+            messageModels = new MutableLiveData<>() {
+                @Nullable
+                @Override
+                public List<AbstractMessageModel> getValue() {
+                    return getMessagesForText(
+                        queryString,
+                        FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED,
+                        sortAscending
+                    );
+                }
+            };
+        }
+    }
 
-	LiveData<List<AbstractMessageModel>> getMessageModels() {
-		return messageModels;
-	}
+    LiveData<List<AbstractMessageModel>> getMessageModels() {
+        return messageModels;
+    }
 
-	private List<AbstractMessageModel> getMessagesForText(String queryString, @MessageService.MessageFilterFlags int filterFlags, boolean sortAscending) {
-		return messageService.getMessagesForText(queryString, filterFlags, sortAscending);
-	}
+    private List<AbstractMessageModel> getMessagesForText(String queryString, @MessageService.MessageFilterFlags int filterFlags, boolean sortAscending) {
+        return messageService.getMessagesForText(queryString, filterFlags, sortAscending);
+    }
 
-	/**
-	 * @param query Query string to look for in message body and captions
-	 * @param filterFlags MessageFilterFlags describing how to filter messages
-	 * @param allowEmpty If set to true, an empty query string means "match everything" otherwise "match nothing"
-	 * @param sortAscending Whether to sort the results in ascending or descending order by message creation date
-	 */
-	@SuppressLint("StaticFieldLeak")
-	void onQueryChanged(String query, @MessageService.MessageFilterFlags int filterFlags, boolean allowEmpty, boolean sortAscending) {
-		this.queryString = query;
-		this.filterFlags = filterFlags;
-		this.sortAscending = sortAscending;
+    /**
+     * @param query         Query string to look for in message body and captions
+     * @param filterFlags   MessageFilterFlags describing how to filter messages
+     * @param allowEmpty    If set to true, an empty query string means "match everything" otherwise "match nothing"
+     * @param sortAscending Whether to sort the results in ascending or descending order by message creation date
+     */
+    @SuppressLint("StaticFieldLeak")
+    void onQueryChanged(String query, @MessageService.MessageFilterFlags int filterFlags, boolean allowEmpty, boolean sortAscending) {
+        this.queryString = query;
+        this.filterFlags = filterFlags;
+        this.sortAscending = sortAscending;
 
-		new AsyncTask<String, Void, Void>() {
-			@Override
-			protected Void doInBackground(String... strings) {
-				if (messageService != null) {
-					if (!allowEmpty && TestUtil.empty(query)) {
-						messageModels.postValue(new ArrayList<>());
-						isLoading.postValue(false);
-					} else {
-						isLoading.postValue(true);
-						messageModels.postValue(getMessagesForText(query, filterFlags, sortAscending));
-						isLoading.postValue(false);
-					}
-				}
-				return null;
-			}
-		}.execute();
-	}
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... strings) {
+                if (messageService != null) {
+                    if (!allowEmpty && TestUtil.isEmptyOrNull(query)) {
+                        messageModels.postValue(new ArrayList<>());
+                        isLoading.postValue(false);
+                    } else {
+                        isLoading.postValue(true);
+                        messageModels.postValue(getMessagesForText(query, filterFlags, sortAscending));
+                        isLoading.postValue(false);
+                    }
+                }
+                return null;
+            }
+        }.execute();
+    }
 
-	LiveData<Boolean> getIsLoading() {
-		return isLoading;
-	}
+    LiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	public void onDataChanged() {
-		new AsyncTask<String, Void, Void>() {
-			@Override
-			protected Void doInBackground(String... strings) {
-				messageModels.postValue(getMessagesForText(queryString, filterFlags, sortAscending));
-				return null;
-			}
-		}.execute();
-	}
+    @SuppressLint("StaticFieldLeak")
+    public void onDataChanged() {
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... strings) {
+                messageModels.postValue(getMessagesForText(queryString, filterFlags, sortAscending));
+                return null;
+            }
+        }.execute();
+    }
 }

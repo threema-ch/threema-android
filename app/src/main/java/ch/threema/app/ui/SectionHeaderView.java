@@ -68,7 +68,7 @@ public class SectionHeaderView extends LinearLayout {
 
 	public void setText(String text) {
 		if(this.textView != null) {
-			if (!TestUtil.empty(text)) {
+			if (!TestUtil.isEmptyOrNull(text)) {
 				this.textView.setText(text);
 			} else {
 				this.textView.setText("");

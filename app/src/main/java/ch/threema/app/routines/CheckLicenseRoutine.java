@@ -43,93 +43,94 @@ import ch.threema.domain.stores.IdentityStoreInterface;
  * Checking the License of current Threema and send a not allowed broadcast
  */
 public class CheckLicenseRoutine implements Runnable {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CheckLicenseRoutine");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CheckLicenseRoutine");
 
-	private final Context context;
-	private final APIConnector apiConnector;
-	private final UserService userService;
-	private final DeviceService deviceService;
-	private final LicenseService licenseService;
-	private final IdentityStoreInterface identityStore;
+    private final Context context;
+    private final APIConnector apiConnector;
+    private final UserService userService;
+    private final DeviceService deviceService;
+    private final LicenseService licenseService;
+    private final IdentityStoreInterface identityStore;
 
-	public CheckLicenseRoutine(Context context,
-	                           APIConnector apiConnector,
-	                           UserService userService,
-	                           DeviceService deviceService,
-	                           LicenseService licenseService,
-	                           IdentityStoreInterface identityStore) {
-		this.context = context;
-		this.apiConnector = apiConnector;
-		this.userService = userService;
-		this.deviceService = deviceService;
-		this.licenseService = licenseService;
-		this.identityStore = identityStore;
-	}
+    public CheckLicenseRoutine(Context context,
+                               APIConnector apiConnector,
+                               UserService userService,
+                               DeviceService deviceService,
+                               LicenseService licenseService,
+                               IdentityStoreInterface identityStore) {
+        this.context = context;
+        this.apiConnector = apiConnector;
+        this.userService = userService;
+        this.deviceService = deviceService;
+        this.licenseService = licenseService;
+        this.identityStore = identityStore;
+    }
 
-	private void invalidLicense(String message) {
-		try {
-			LocalBroadcastManager.getInstance(this.context).sendBroadcast(IntentDataUtil.createActionIntentLicenseNotAllowed(message));
-		}
-		catch (ReceiverCallNotAllowedException x) {
-			logger.error("Exception", x);
-		}
-	}
-	@Override
-	public void run() {
-		switch(BuildFlavor.getLicenseType()) {
-			case GOOGLE:
-			case HMS:
-				StoreLicenseCheck.checkLicense(context, userService);
-				break;
-			case SERIAL:
-			case GOOGLE_WORK:
-			case HMS_WORK:
-			case ONPREM:
-				this.checkSerial();
-				break;
-		}
-	}
+    private void invalidLicense(String message) {
+        try {
+            LocalBroadcastManager.getInstance(this.context).sendBroadcast(IntentDataUtil.createActionIntentLicenseNotAllowed(message));
+        } catch (ReceiverCallNotAllowedException x) {
+            logger.error("Exception", x);
+        }
+    }
 
-	private void checkSerial() {
-		logger.debug("check serial");
+    @Override
+    public void run() {
+        switch (BuildFlavor.getCurrent().getLicenseType()) {
+            case GOOGLE:
+            case HMS:
+                StoreLicenseCheck.checkLicense(context, userService);
+                break;
+            case SERIAL:
+            case GOOGLE_WORK:
+            case HMS_WORK:
+            case ONPREM:
+                this.checkSerial();
+                break;
+        }
+    }
 
-		String error = licenseService.validate(true);
-		if(error != null) {
-			invalidLicense(error);
-		} else {
-			userService.setCredentials(licenseService.loadCredentials());
+    private void checkSerial() {
+        logger.info("Checking serial license");
 
-			if (licenseService instanceof LicenseServiceThreema && BuildFlavor.maySelfUpdate()) {
-				LicenseServiceThreema licenseServiceThreema = (LicenseServiceThreema)licenseService;
-				if (licenseServiceThreema.getUpdateMessage() != null && !licenseServiceThreema.isUpdateMessageShown()) {
-					try {
-						LocalBroadcastManager.getInstance(this.context).sendBroadcast(
-								IntentDataUtil.createActionIntentUpdateAvailable(
-										licenseServiceThreema.getUpdateMessage(),
-										licenseServiceThreema.getUpdateUrl()
-								)
-						);
-						licenseServiceThreema.setUpdateMessageShown(true);
-					} catch (ReceiverCallNotAllowedException x) {
-						logger.error("Exception", x);
-					}
-				}
-			}
+        String error = licenseService.validate(true);
+        if (error != null) {
+            invalidLicense(error);
+        } else {
+            userService.setCredentials(licenseService.loadCredentials());
 
-			//run update work info route on the work build
-			if(ConfigUtils.isWorkBuild()) {
-				(new UpdateWorkInfoRoutine(
-						this.context,
-						this.apiConnector,
-						this.identityStore,
-						this.deviceService,
-						this.licenseService
-				)).run();
-			}
-		}
-	}
+            if (licenseService instanceof LicenseServiceThreema && BuildFlavor.getCurrent().getMaySelfUpdate()) {
+                LicenseServiceThreema licenseServiceThreema = (LicenseServiceThreema) licenseService;
+                if (licenseServiceThreema.getUpdateMessage() != null && !licenseServiceThreema.isUpdateMessageShown()) {
+                    try {
+                        LocalBroadcastManager.getInstance(this.context).sendBroadcast(
+                            IntentDataUtil.createActionIntentUpdateAvailable(
+                                licenseServiceThreema.getUpdateMessage(),
+                                licenseServiceThreema.getUpdateUrl()
+                            )
+                        );
+                        licenseServiceThreema.setUpdateMessageShown(true);
+                    } catch (ReceiverCallNotAllowedException x) {
+                        logger.error("Exception", x);
+                    }
+                }
+            }
 
-	public interface StoreLicenseChecker {
-		static void checkLicense() {}
-	}
+            //run update work info route on the work build
+            if (ConfigUtils.isWorkBuild()) {
+                (new UpdateWorkInfoRoutine(
+                    this.context,
+                    this.apiConnector,
+                    this.identityStore,
+                    this.deviceService,
+                    this.licenseService
+                )).run();
+            }
+        }
+    }
+
+    public interface StoreLicenseChecker {
+        static void checkLicense() {
+        }
+    }
 }

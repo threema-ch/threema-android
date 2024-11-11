@@ -32,7 +32,6 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.ApplicationExitInfo;
 import android.app.ForegroundServiceStartNotAllowedException;
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +53,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -126,7 +126,7 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.ThreemaPushService;
@@ -143,6 +143,7 @@ import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LinuxSecureRandom;
 import ch.threema.app.utils.LoggingUEH;
+import ch.threema.app.utils.ApplicationExitInfoUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
@@ -239,17 +240,13 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 	public static final int NEW_MESSAGE_PIN_LOCKED_NOTIFICATION_ID = 726;
 	public static final int SAFE_FAILED_NOTIFICATION_ID = 727;
 	public static final int SERVER_MESSAGE_NOTIFICATION_ID = 730;
-	public static final int NOT_ENOUGH_DISK_SPACE_NOTIFICATION_ID = 731;
 	public static final int UNSENT_MESSAGE_NOTIFICATION_ID = 732;
 	public static final int WORK_SYNC_NOTIFICATION_ID = 735;
 	public static final int NEW_SYNCED_CONTACTS_NOTIFICATION_ID = 736;
 	public static final int WEB_RESUME_FAILED_NOTIFICATION_ID = 737;
 	public static final int VOICE_MSG_PLAYER_NOTIFICATION_ID = 749;
 	public static final int INCOMING_CALL_NOTIFICATION_ID = 800;
-	public static final int GROUP_RESPONSE_NOTIFICATION_ID = 801;
-	public static final int GROUP_REQUEST_NOTIFICATION_ID = 802;
 	public static final int INCOMING_GROUP_CALL_NOTIFICATION_ID = 803;
-	public static final int FORWARD_SECURITY_MESSAGE_REJECTED_ID = 804;
 
 	private static final String THREEMA_APPLICATION_LISTENER_TAG = "al";
 	public static final String AES_KEY_FILE = "key.dat";
@@ -583,7 +580,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 				}
 
 				// register a receiver for shortcuts that have been added to the launcher
-				registerReceiver(new ShortcutAddedReceiver(), new IntentFilter(INTENT_ACTION_SHORTCUT_ADDED));
+				ContextCompat.registerReceiver(this, new ShortcutAddedReceiver(), new IntentFilter(INTENT_ACTION_SHORTCUT_ADDED), ContextCompat.RECEIVER_NOT_EXPORTED);
 
 				// Start the Threema Push Service (if enabled in config)
 				ThreemaPushService.tryStart(logger, getAppContext());
@@ -891,8 +888,13 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
 							if (exitInfo.getTimestamp() > timestampOfLastLog) {
 								SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US);
-								logger.info(String.format(Locale.US, "*** App last exited at %s with reason: %d, description: %s", simpleDateFormat.format(exitInfo.getTimestamp()),
-									exitInfo.getReason(), exitInfo.getDescription()));
+                                logger.info(
+                                    "*** App last exited at {} with reason: {}, description: {}, status: {}",
+                                    simpleDateFormat.format(exitInfo.getTimestamp()),
+                                    ApplicationExitInfoUtil.getReasonText(exitInfo),
+                                    exitInfo.getDescription(),
+                                    ApplicationExitInfoUtil.getStatusText(exitInfo)
+                                );
 								if (exitInfo.getReason() == ApplicationExitInfo.REASON_ANR) {
 									try {
 										InputStream traceInputStream = exitInfo.getTraceInputStream();
@@ -984,10 +986,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 			});
 
 			/* cancel any "new message" notification */
-			NotificationManager notificationManager = (NotificationManager) getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-			if (notificationManager != null) {
-				notificationManager.cancel(NEW_MESSAGE_LOCKED_NOTIFICATION_ID);
-			}
+			NotificationManagerCompat.from(getAppContext()).cancel(NEW_MESSAGE_LOCKED_NOTIFICATION_ID);
 
 			/* trigger a connection now, just to be sure we're up-to-date and any broken connection
 			   (e.g. from before a reboot) is preempted.
@@ -1171,13 +1170,9 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
 	private static void showConversationNotification(AbstractMessageModel newMessage, boolean updateExisting) {
 		try {
-			ConversationService conversationService = serviceManager.getConversationService();
-			ConversationModel conversationModel = conversationService.refresh(newMessage);
-
-			if (conversationModel != null
-				&& !newMessage.isOutbox()
-				&& !newMessage.isStatusMessage()
-				&& !newMessage.isRead()) {
+            if (!newMessage.isOutbox()
+                && !newMessage.isStatusMessage()
+                && !newMessage.isRead()) {
 
 				NotificationService notificationService = serviceManager.getNotificationService();
 				ContactService contactService = serviceManager.getContactService();
@@ -1286,7 +1281,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 					final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
 					final String myIdentity = serviceManager.getUserService().getIdentity();
 
-					if (!TestUtil.empty(myIdentity)) {
+					if (!TestUtil.isEmptyOrNull(myIdentity)) {
 						serviceManager.getMessageService().createGroupStatus(
 							receiver,
 							GroupStatusDataModel.GroupStatusType.MEMBER_ADDED,
@@ -1427,28 +1422,45 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 			@Override
 			public void onNew(AbstractMessageModel newMessage) {
 				logger.debug("MessageListener.onNewMessage");
+                ConversationService conversationService;
+                try {
+                     conversationService = serviceManager.getConversationService();
+                } catch (ThreemaException e) {
+                    logger.error("Could not get conversation service", e);
+                    return;
+                }
 				if (!newMessage.isStatusMessage()) {
-						showConversationNotification(newMessage, false);
-				}
+                    ConversationModel conversationModel = conversationService.refresh(newMessage);
+                    if (conversationModel != null) {
+                        // Show notification only if there is a conversation
+                        showConversationNotification(newMessage, false);
+                    }
+				} else if (newMessage.getType() == MessageType.GROUP_CALL_STATUS) {
+                    conversationService.refresh(newMessage);
+                }
 			}
 
 			@Override
 			public void onModified(List<AbstractMessageModel> modifiedMessageModels) {
 				logger.debug("MessageListener.onModified");
 				for (final AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
-
-					if (!modifiedMessageModel.isStatusMessage()) {
-						try {
-							serviceManager.getConversationService().refresh(modifiedMessageModel);
-							if (!modifiedMessageModel.isStatusMessage() &&
-								modifiedMessageModel.getType() == MessageType.IMAGE) {
-								showConversationNotification(modifiedMessageModel, true);
-							}
-						} catch (ThreemaException e) {
-							logger.error("Exception", e);
-						}
-					}
-				}
+                    if (modifiedMessageModel.isStatusMessage()) {
+                        continue;
+                    }
+                    try {
+                        ConversationService conversationService =
+                            serviceManager.getConversationService();
+                        ConversationModel conversationModel =
+                            conversationService.refresh(modifiedMessageModel);
+                        if (conversationModel != null &&
+                            modifiedMessageModel.getType() == MessageType.IMAGE) {
+                            // Only show a notification if there is a conversation
+                            showConversationNotification(modifiedMessageModel, true);
+                        }
+                    } catch (ThreemaException e) {
+                        logger.error("Exception", e);
+                    }
+                }
 			}
 
 			@Override
@@ -1491,22 +1503,19 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 		ListenerManager.editMessageListener.add(message -> showConversationNotification(message, true));
 		ListenerManager.messageDeletedForAllListener.add(message -> showConversationNotification(message, true));
 
-		ListenerManager.groupJoinResponseListener.add((outgoingGroupJoinRequestModel, status) -> {
-			NotificationService n = serviceManager.getNotificationService();
-			if (n != null) {
-				n.showGroupJoinResponseNotification(outgoingGroupJoinRequestModel, status, serviceManager.getDatabaseServiceNew());
-			}
-		});
+        ListenerManager.groupJoinResponseListener.add((outgoingGroupJoinRequestModel, status) ->
+            serviceManager.getNotificationService()
+                .showGroupJoinResponseNotification(
+                    outgoingGroupJoinRequestModel, status, serviceManager.getDatabaseServiceNew()
+                ));
 
 
 		ListenerManager.incomingGroupJoinRequestListener.add(new IncomingGroupJoinRequestListener() {
 			@Override
 			public void onReceived(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel) {
-				NotificationService n = serviceManager.getNotificationService();
-				if (n != null) {
-					n.showGroupJoinRequestNotification(incomingGroupJoinRequestModel, groupModel);
-				}
-			}
+				NotificationService notificationService = serviceManager.getNotificationService();
+                notificationService.showGroupJoinRequestNotification(incomingGroupJoinRequestModel, groupModel);
+            }
 
 			@Override
 			public void onRespond() {
@@ -1517,19 +1526,15 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 		ListenerManager.serverMessageListeners.add(new ServerMessageListener() {
 			@Override
 			public void onAlert(ServerMessageModel serverMessage) {
-				NotificationService n = serviceManager.getNotificationService();
-				if (n != null) {
-					n.showServerMessage(serverMessage);
-				}
-			}
+				NotificationService notificationService = serviceManager.getNotificationService();
+                notificationService.showServerMessage(serverMessage);
+            }
 
 			@Override
 			public void onError(ServerMessageModel serverMessage) {
-				NotificationService n = serviceManager.getNotificationService();
-				if (n != null) {
-					n.showServerMessage(serverMessage);
-				}
-			}
+				NotificationService notificationService = serviceManager.getNotificationService();
+                notificationService.showServerMessage(serverMessage);
+            }
 		}, THREEMA_APPLICATION_LISTENER_TAG);
 
 		ListenerManager.contactListeners.add(new ContactListener() {
@@ -1613,12 +1618,10 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 				//reset the avatar cache!
 				if (serviceManager != null) {
 					try {
-						AvatarCacheService s = null;
-						s = serviceManager.getAvatarCacheService();
-						if (s != null) {
-							s.clear();
-						}
-					} catch (FileSystemNotPresentException e) {
+						AvatarCacheService avatarCacheService = null;
+						avatarCacheService = serviceManager.getAvatarCacheService();
+                        avatarCacheService.clear();
+                    } catch (FileSystemNotPresentException e) {
 						logger.error("Exception", e);
 					}
 				}
@@ -1646,10 +1649,8 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 			public void onRemoved(ConversationModel conversationModel) {
 				//remove notification!
 				NotificationService notificationService = serviceManager.getNotificationService();
-				if (notificationService != null) {
-					notificationService.cancel(conversationModel);
-				}
-			}
+                notificationService.cancel(conversationModel);
+            }
 
 			@Override
 			public void onModifiedAll() {}
@@ -1774,7 +1775,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 					//check if a sync is in progress.. wait!
 					try {
 						SynchronizeContactsService synchronizeContactService = serviceManager.getSynchronizeContactsService();
-						cont = synchronizeContactService != null && !synchronizeContactService.isSynchronizationInProgress();
+						cont = !synchronizeContactService.isSynchronizationInProgress();
 					} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 						logger.error("Exception", e);
 						//do nothing
@@ -1783,14 +1784,12 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
 					if (cont) {
 						PreferenceService preferencesService = serviceManager.getPreferenceService();
-						if (preferencesService != null && preferencesService.isSyncContacts()) {
+						if (preferencesService.isSyncContacts()) {
 							try {
 								ContactService c = serviceManager.getContactService();
-								if (c != null) {
-									//update contact names if changed!
-									c.updateAllContactNamesFromAndroidContacts();
-								}
-							} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                                //update contact names if changed!
+                                c.updateAllContactNamesFromAndroidContacts();
+                            } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 								logger.error("Exception", e);
 							}
 						}

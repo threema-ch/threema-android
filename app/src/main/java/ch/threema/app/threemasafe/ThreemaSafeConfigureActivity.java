@@ -181,7 +181,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
 	@SuppressLint("StaticFieldLeak")
 	private void saveChangesAndExit(final String safePassword) {
-		if (!TestUtil.empty(safePassword)) {
+		if (!TestUtil.isEmptyOrNull(safePassword)) {
 			new AsyncTask<Void, Void, Boolean>() {
 				byte[] masterkey;
 
@@ -297,7 +297,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 			this.password2layout.setError(null);
 		} else {
 			this.password1layout.setError(null);
-			if (!TestUtil.empty(this.password2.getText())) {
+			if (!TestUtil.isBlankOrNull(this.password2.getText())) {
 				this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
 			} else {
 				this.password2layout.setError(null);

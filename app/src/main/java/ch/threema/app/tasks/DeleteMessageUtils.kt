@@ -57,13 +57,13 @@ private fun runCommonDeleteMessageReceiveSteps(
     receiver: MessageReceiver<*>,
     messageService: MessageService
 ) : AbstractMessageModel? {
-    // 1. Lookup the message with `message_id` originally sent by the sender within
-    //    the associated conversation and let `message` be the result.
+    // Lookup the message with `message_id` originally sent by the sender within
+    //  the associated conversation and let `message` be the result.
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
 
-    // 2. If `message` is not defined or the sender is not the original sender of
-    //    `message`, discard the message and abort these steps.
+    // If `message` is not defined or the sender is not the original sender of
+    //  `message`, discard the message and abort these steps.
     if (message == null) {
         logger.warn("Incoming Delete Message: No message found for id: {}", apiMessageId)
         return null
@@ -80,8 +80,8 @@ private fun runCommonDeleteMessageReceiveSteps(
         return null
     }
 
-    // 4. Replace `message` with a message informing the user that the message of
-    //    the sender has been removed at `created-at`.
+    // Replace `message` with a message informing the user that the message of
+    //  the sender has been removed at `created-at`.
     message.deletedAt = deleteMessage.date
 
     return message

@@ -22,31 +22,33 @@
 package ch.threema.app.voip.groupcall.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Notification
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
 import android.graphics.Bitmap
 import android.os.Build
 import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.notifications.NotificationBuilderWrapper
+import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.notifications.NotificationGroups
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.NotificationService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.stores.IdentityStore
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.voip.CallAudioManager
@@ -54,13 +56,20 @@ import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.LocalGroupId
-import ch.threema.app.voip.groupcall.sfu.*
+import ch.threema.app.voip.groupcall.sfu.CallId
+import ch.threema.app.voip.groupcall.sfu.GroupCallController
+import ch.threema.app.voip.groupcall.sfu.GroupCallDependencies
+import ch.threema.app.voip.groupcall.sfu.GroupCallParameters
+import ch.threema.app.voip.groupcall.sfu.SfuConnection
 import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallService")
@@ -90,6 +99,12 @@ class GroupCallService : Service() {
         private const val REQUEST_CODE_JOIN_CALL = 1000
         private const val REQUEST_CODE_LEAVE_CALL = 1001
 
+        private val FG_SERVICE_TYPE = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            FOREGROUND_SERVICE_TYPE_MICROPHONE
+        } else {
+            0
+        }
+
         fun getStartIntent(context: Context, sfuBaseUrl: String, callId: CallId, groupId: LocalGroupId): Intent {
             return getServiceIntent(context)
                 .putExtra(EXTRA_SFU_BASE_URL, sfuBaseUrl)
@@ -113,7 +128,7 @@ class GroupCallService : Service() {
 
     private val serviceRunning = AtomicBoolean(false)
 
-    private var binder : GroupCallServiceBinder? = null
+    private var binder: GroupCallServiceBinder? = null
 
     private var groupCallController: GroupCallControllerImpl? = null
     private val controllerDeferred = CompletableDeferred<GroupCallController>()
@@ -161,9 +176,9 @@ class GroupCallService : Service() {
         try {
             handleIntent(intent)
             if (isLeaveCallIntent) {
-                groupCallController.let {
-                    if (it != null) {
-                        it.leave()
+                groupCallController.let { controller ->
+                    if (controller != null) {
+                        controller.leave()
                     } else {
                         logger.warn("Leave call intent, but call has not been joined")
                         stopService()
@@ -215,20 +230,19 @@ class GroupCallService : Service() {
     }
 
     private fun startForeground() {
-        startForeground(NOTIFICATION_ID, with(getForegroundNotification()) {
+        ServiceCompat.startForeground(this, NOTIFICATION_ID, with(getForegroundNotification()) {
             this.flags = this.flags or
                 NotificationCompat.FLAG_NO_CLEAR or
                 NotificationCompat.FLAG_ONGOING_EVENT
             this
-        })
+        }, FG_SERVICE_TYPE)
     }
 
+    @SuppressLint("MissingPermission")
     private fun updateNotification(startedAt: Long) {
         val notification = getForegroundNotification(startedAt)
-        getSystemService(NOTIFICATION_SERVICE).let {
-            if (it is NotificationManager && serviceRunning.get()) {
-                it.notify(NOTIFICATION_ID, notification)
-            }
+        if (serviceRunning.get()) {
+            NotificationManagerCompat.from(this).notify(NOTIFICATION_ID, notification)
         }
     }
 
@@ -238,8 +252,9 @@ class GroupCallService : Service() {
             .setName(getNotificationTitle(group))
             .setImportant(true)
             .build()
-        val builder = NotificationBuilderWrapper(
-            this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
+        val builder = NotificationCompat.Builder(
+            this, NotificationChannels.NOTIFICATION_CHANNEL_IN_CALL
+        )
             .setContentTitle(getNotificationTitle(group))
             .setContentText(getString(R.string.group_call))
             .setSmallIcon(R.drawable.ic_phone_locked_outline)
@@ -250,9 +265,17 @@ class GroupCallService : Service() {
             .setUsesChronometer(true)
             .setShowWhen(true)
             .setWhen(startedAt)
+            .setGroup(NotificationGroups.CALLS)
+            .setGroupSummary(false)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(getJoinCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT))
-            .setStyle(NotificationCompat.CallStyle.forOngoingCall(callerPerson, getLeaveCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)))
+            .apply {
+                getLeaveCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)?.let { leaveCallPendingIntent ->
+                    setStyle(
+                        NotificationCompat.CallStyle.forOngoingCall(callerPerson, leaveCallPendingIntent)
+                    )
+                }
+            }
 
         return builder.build()
     }
@@ -267,7 +290,7 @@ class GroupCallService : Service() {
 
     }
 
-    private fun getLeaveCallPendingIntent(flags: Int): PendingIntent {
+    private fun getLeaveCallPendingIntent(flags: Int): PendingIntent? {
         return PendingIntent.getService(
             applicationContext,
             REQUEST_CODE_LEAVE_CALL,
@@ -297,29 +320,23 @@ class GroupCallService : Service() {
                 callId,
                 this@GroupCallService::leaveCall,
                 contactService.me
-            ).also {
-                // TODO(ANDR-2089): If test is successful always use sw codecs
-                val videoCodec = if (ConfigUtils.isDevBuild()) {
-                    PreferenceService.VIDEO_CODEC_SW
-                } else {
-                    preferenceService.videoCodec
-                }
-                it.parameters = GroupCallParameters(
+            ).also { controller ->
+                controller.parameters = GroupCallParameters(
                     preferenceService.allowWebrtcIpv6(),
                     preferenceService.aecMode,
-                    videoCodec
+                    PreferenceService.VIDEO_CODEC_SW
                 )
-                it.dependencies = GroupCallDependencies(
+                controller.dependencies = GroupCallDependencies(
                     identityStore,
                     contactService,
                     groupService
                 )
                 CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-                    launch { it.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() } }
-                    val startedAt = it.descriptionSignal.await().startedAt.toLong()
+                    launch { controller.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() } }
+                    val startedAt = controller.descriptionSignal.await().startedAt.toLong()
                     updateNotification(startedAt)
                 }
-                controllerDeferred.complete(it)
+                controllerDeferred.complete(controller)
                 initAudioManager()
             }
         }
@@ -333,7 +350,8 @@ class GroupCallService : Service() {
     private fun setPSTNCallStateListener() {
         val telephonyManager = getSystemService(TELEPHONY_SERVICE)
         if (telephonyManager is TelephonyManager && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                        || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)
+        ) {
             telephonyManager.listen(onCallStateListener, PhoneStateListener.LISTEN_CALL_STATE)
         }
     }

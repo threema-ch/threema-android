@@ -100,28 +100,32 @@ class ContactModelTest {
 
     private fun createTestContact(isRestored: Boolean = false): ContactModel {
         val identity = "TESTTEST"
-        return ContactModel(identity, ContactModelData(
-            identity,
-            Random.nextBytes(32),
-            Date(),
-            "Test",
-            "Contact",
-            null,
-            13u,
-            VerificationLevel.FULLY_VERIFIED,
-            WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-            IdentityType.NORMAL,
-            AcquaintanceLevel.DIRECT,
-            State.ACTIVE,
-            ContactSyncState.INITIAL,
-            7uL,
-            ReadReceiptPolicy.DONT_SEND,
-            TypingIndicatorPolicy.SEND,
-            null,
-            null,
-            isRestored,
-            null,
-        ), databaseBackendMock)
+        return ContactModel(
+            identity, ContactModelData(
+                identity,
+                Random.nextBytes(32),
+                Date(),
+                "Test",
+                "Contact",
+                null,
+                13u,
+                VerificationLevel.FULLY_VERIFIED,
+                WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+                IdentityType.NORMAL,
+                AcquaintanceLevel.DIRECT,
+                State.ACTIVE,
+                ContactSyncState.INITIAL,
+                7uL,
+                ReadReceiptPolicy.DONT_SEND,
+                TypingIndicatorPolicy.SEND,
+                null,
+                null,
+                isRestored,
+                null,
+                null,
+                null,
+            ), databaseBackendMock
+        )
     }
 
     @Before
@@ -146,28 +150,32 @@ class ContactModelTest {
         val createdAt = Date()
         val localAvatarExpires = Date()
         val identity = "TESTTEST"
-        val contact = ContactModel(identity, ContactModelData(
-            identity,
-            publicKey,
-            createdAt,
-            "Test",
-            "Contact",
-            null,
-            13u,
-            VerificationLevel.FULLY_VERIFIED,
-            WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-            IdentityType.NORMAL,
-            AcquaintanceLevel.DIRECT,
-            State.ACTIVE,
-            ContactSyncState.INITIAL,
-            7uL,
-            ReadReceiptPolicy.SEND,
-            TypingIndicatorPolicy.DONT_SEND,
-            null,
-            localAvatarExpires,
-            true,
-            byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-        ), databaseBackendMock)
+        val contact = ContactModel(
+            identity, ContactModelData(
+                identity,
+                publicKey,
+                createdAt,
+                "Test",
+                "Contact",
+                null,
+                13u,
+                VerificationLevel.FULLY_VERIFIED,
+                WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+                IdentityType.NORMAL,
+                AcquaintanceLevel.DIRECT,
+                State.ACTIVE,
+                ContactSyncState.INITIAL,
+                7uL,
+                ReadReceiptPolicy.SEND,
+                TypingIndicatorPolicy.DONT_SEND,
+                null,
+                localAvatarExpires,
+                true,
+                byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
+                null,
+                null,
+            ), databaseBackendMock
+        )
 
         val value = contact.data.value!!
         assertEquals("TESTTEST", value.identity)
@@ -345,12 +353,18 @@ class ContactModelTest {
 
         // Setting blob ID should update data and notify modification listeners
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
-        assertArrayEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), contact.data.value!!.profilePictureBlobId)
+        assertArrayEquals(
+            byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
+            contact.data.value!!.profilePictureBlobId
+        )
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Setting blob ID again to the same value should not notify listeners
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
-        assertArrayEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), contact.data.value!!.profilePictureBlobId)
+        assertArrayEquals(
+            byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
+            contact.data.value!!.profilePictureBlobId
+        )
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Blob ID can be set to an empty array or to null

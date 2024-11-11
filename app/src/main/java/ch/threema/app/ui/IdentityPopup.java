@@ -67,233 +67,252 @@ import ch.threema.base.ThreemaException;
 
 public class IdentityPopup extends DimmingPopupWindow {
 
-	private final Context context;
-	private WeakReference<Activity> activityRef = new WeakReference<>(null);
-	private ImageView qrCodeView;
-	private QRCodeService qrCodeService;
-	private MaterialSwitch webEnableView;
-	private SessionService sessionService;
-	private int animationCenterX, animationCenterY;
-	private ProfileButtonListener profileButtonListener;
+    private WeakReference<Activity> activityRef = new WeakReference<>(null);
+    private ImageView qrCodeView;
+    private QRCodeService qrCodeService;
+    private MaterialSwitch webEnableView;
+    private SessionService sessionService;
+    private int animationCenterX, animationCenterY;
+    private ProfileButtonListener profileButtonListener;
 
-	public IdentityPopup(Context context) {
-		super(context);
+    public IdentityPopup(Context context) {
+        super(context);
 
-		this.context = context;
+        final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            dismiss();
+            return;
+        }
 
-		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			dismiss();
-			return;
-		}
+        final UserService userService = serviceManager.getUserService();
 
-		final UserService userService = serviceManager.getUserService();
-		if (userService == null) {
-			dismiss();
-			return;
-		}
+        qrCodeService = serviceManager.getQRCodeService();
 
-		qrCodeService = serviceManager.getQRCodeService();
-		if (qrCodeService == null) {
-			dismiss();
-			return;
-		}
+        try {
+            sessionService = serviceManager.getWebClientServiceManager().getSessionService();
+        } catch (ThreemaException e) {
+            dismiss();
+            return;
+        }
 
-		try {
-			sessionService = serviceManager.getWebClientServiceManager().getSessionService();
-		} catch (ThreemaException e) {
-			dismiss();
-			return;
-		}
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        FrameLayout popupLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_identity, null, false);
 
-		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		FrameLayout popupLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_identity, null, false);
+        TextView identityLabelTextView = popupLayout.findViewById(R.id.identity_label);
+        this.qrCodeView = popupLayout.findViewById(R.id.qr_image);
+        Group webControls = popupLayout.findViewById(R.id.web_controls);
+        this.webEnableView = popupLayout.findViewById(R.id.web_enable);
+        popupLayout.findViewById(R.id.web_label).setOnClickListener(v -> {
+            Intent intent = new Intent(context, SessionsActivity.class);
+            activityRef.get().startActivity(intent);
+            dismiss();
+        });
 
-		TextView textView = popupLayout.findViewById(R.id.identity_label);
-		this.qrCodeView = popupLayout.findViewById(R.id.qr_image);
-		Group webControls = popupLayout.findViewById(R.id.web_controls);
-		this.webEnableView = popupLayout.findViewById(R.id.web_enable);
-		popupLayout.findViewById(R.id.web_label).setOnClickListener(v -> {
-			Intent intent = new Intent(context, SessionsActivity.class);
-			activityRef.get().startActivity(intent);
-			dismiss();
-		});
+        if (ConfigUtils.isOnPremBuild()) {
+            popupLayout.findViewById(R.id.share_button).setVisibility(View.GONE);
+        } else {
+            popupLayout.findViewById(R.id.share_button).setOnClickListener(v -> ShareUtil.shareContact(activityRef.get(), null));
+        }
 
-		if (ConfigUtils.isOnPremBuild()) {
-			popupLayout.findViewById(R.id.share_button).setVisibility(View.GONE);
-		} else {
-			popupLayout.findViewById(R.id.share_button).setOnClickListener(v -> ShareUtil.shareContact(activityRef.get(), null));
-		}
+        identityLabelTextView.setText(userService.getIdentity());
+        identityLabelTextView.setContentDescription(context.getString(R.string.my_id) + " " + userService.getIdentity());
+        identityLabelTextView.setOnLongClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(null, userService.getIdentity());
+            clipboard.setPrimaryClip(clip);
 
-		textView.setText(userService.getIdentity());
-		textView.setContentDescription(context.getString(R.string.my_id) + " " + userService.getIdentity());
-		textView.setOnLongClickListener(v -> {
-			ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-			ClipData clip = ClipData.newPlainText(null, userService.getIdentity());
-			clipboard.setPrimaryClip(clip);
+            Toast.makeText(context, R.string.contact_details_id_copied, Toast.LENGTH_SHORT).show();
 
-			Toast.makeText(context, R.string.contact_details_id_copied, Toast.LENGTH_SHORT).show();
+            return true;
+        });
 
-			return true;
-		});
+        setContentView(popupLayout);
+        setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+        setWidth(FrameLayout.LayoutParams.WRAP_CONTENT);
+        setHeight(FrameLayout.LayoutParams.WRAP_CONTENT);
+        setAnimationStyle(0);
+        setFocusable(false);
+        setTouchable(true);
+        setOutsideTouchable(true);
+        setBackgroundDrawable(new BitmapDrawable());
 
-		setContentView(popupLayout);
-		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-		setWidth(FrameLayout.LayoutParams.WRAP_CONTENT);
-		setHeight(FrameLayout.LayoutParams.WRAP_CONTENT);
-		setAnimationStyle(0);
-		setFocusable(false);
-		setTouchable(true);
-		setOutsideTouchable(true);
-		setBackgroundDrawable(new BitmapDrawable());
+        popupLayout.setOnClickListener(v -> dismiss());
 
-		popupLayout.setOnClickListener(v -> dismiss());
+        MaterialButton scanButton = popupLayout.findViewById(R.id.scan_button);
+        scanButton.setOnClickListener(v -> scanQR());
 
-		MaterialButton scanButton = popupLayout.findViewById(R.id.scan_button);
-		scanButton.setOnClickListener(v -> scanQR());
+        MaterialButton profileButton = popupLayout.findViewById(R.id.profile_button);
+        profileButton.setOnClickListener(v -> {
+            dismiss();
+            this.profileButtonListener.onClicked();
+        });
 
-		MaterialButton profileButton = popupLayout.findViewById(R.id.profile_button);
-		profileButton.setOnClickListener(v -> {
-			dismiss();
-			this.profileButtonListener.onClicked();
-		});
+        if (qrCodeView != null) {
+            qrCodeView.setOnClickListener(this::zoomQR);
+        }
 
-		if (qrCodeView != null) {
-			qrCodeView.setOnClickListener(v -> zoomQR(v));
-		}
+        if (webControls != null && webEnableView != null) {
+            if (AppRestrictionUtil.isWebDisabled(context)) {
+                // Webclient is disabled, hide UI elements
+                webEnableView.setEnabled(false);
+                webControls.setVisibility(View.GONE);
+            } else {
+                webEnableView.setChecked(this.isWebClientEnabled());
+                webEnableView.setOnCheckedChangeListener((buttonView, isChecked) -> startWebClient(isChecked));
+            }
+        }
+    }
 
-		if (webControls != null && webEnableView != null) {
-			if (AppRestrictionUtil.isWebDisabled(context)) {
-				// Webclient is disabled, hide UI elements
-				webEnableView.setEnabled(false);
-				webControls.setVisibility(View.GONE);
-			} else {
-				webEnableView.setChecked(this.isWebClientEnabled());
-				webEnableView.setOnCheckedChangeListener((buttonView, isChecked) -> startWebClient(isChecked));
-			}
-		}
-	}
+    private void scanQR() {
+        if (getContext() == null) {
+            return;
+        }
+        if (ConfigUtils.supportsGroupLinks()) {
+            QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), getContext().getString(R.string.qr_scanner_id_hint));
+        } else {
+            Intent intent = new Intent(getContext(), AddContactActivity.class);
+            intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
+            if (activityRef.get() != null) {
+                activityRef.get().startActivity(intent);
+            }
+        }
+    }
 
-	private void scanQR() {
-		if (ConfigUtils.supportsGroupLinks()) {
-			QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), context.getString(R.string.qr_scanner_id_hint));
-		} else {
-			Intent intent = new Intent(context, AddContactActivity.class);
-			intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
-			if (activityRef.get() != null) {
-				activityRef.get().startActivity(intent);
-			}
-		}
-	}
+    private void zoomQR(View view) {
+        if (getContext() == null) {
+            return;
+        }
+        new QRCodePopup(
+            getContext(),
+            activityRef.get().getWindow().getDecorView(),
+            null
+        ).show(
+            view,
+            null,
+            QRCodeServiceImpl.QR_TYPE_ID
+        );
+    }
 
-	private void zoomQR(View v) {
-		new QRCodePopup(context, activityRef.get().getWindow().getDecorView(), null).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
-	}
+    /**
+     * @param activity              The calling activity
+     * @param toolbarView           Toolbar this popup will be aligned to
+     * @param location              center location of navigation icon in toolbar
+     * @param profileButtonListener Get Callback when profile button was clicked
+     * @param onDismissListener     Called when the popup was dismissed
+     */
+    public void show(
+        Activity activity,
+        final View toolbarView,
+        int[] location,
+        ProfileButtonListener profileButtonListener,
+        OnDismissListener onDismissListener
+    ) {
 
-	/**
-	 *
-	 * @param activity
-	 * @param toolbarView Toolbar this popup will be aligned to
-	 * @param location center location of navigation icon in toolbar
-	 */
-	public void show(Activity activity, final View toolbarView, int[] location, ProfileButtonListener profileButtonListener) {
-		this.activityRef = new WeakReference<>(activity);
-		this.profileButtonListener = profileButtonListener;
+        if (getContext() == null) {
+            return;
+        }
 
-		int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2;
-		int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_inset_left) + (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
+        this.activityRef = new WeakReference<>(activity);
+        this.profileButtonListener = profileButtonListener;
 
-		animationCenterX = offsetX;
-		animationCenterY = 0;
+        int offsetY = activity.getResources().getDimensionPixelSize(R.dimen.navigation_icon_size) / 2;
+        int offsetX = activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_inset_left) + (activity.getResources().getDimensionPixelSize(R.dimen.identity_popup_arrow_width) / 2);
 
-		Bitmap bitmap = qrCodeService.getUserQRCode();
-		if (bitmap == null) {
-			dismiss();
-			return;
-		}
+        animationCenterX = offsetX;
+        animationCenterY = 0;
 
-		final BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(), bitmap);
-		bitmapDrawable.setFilterBitmap(false);
+        Bitmap bitmap = qrCodeService.getUserQRCode();
+        if (bitmap == null) {
+            dismiss();
+            return;
+        }
 
-		this.qrCodeView.setImageDrawable(bitmapDrawable);
-		if (ConfigUtils.isTheDarkSide(context)) {
-			ConfigUtils.invertColors(this.qrCodeView);
-		}
+        final BitmapDrawable bitmapDrawable = new BitmapDrawable(getContext().getResources(), bitmap);
+        bitmapDrawable.setFilterBitmap(false);
 
-		if (toolbarView != null) {
-			int[] toolbarLocation = {0, 0};
-			toolbarView.getLocationInWindow(toolbarLocation);
+        this.qrCodeView.setImageDrawable(bitmapDrawable);
+        if (ConfigUtils.isTheDarkSide(getContext())) {
+            ConfigUtils.invertColors(this.qrCodeView);
+        }
 
-			if (activity.isFinishing() || activity.isDestroyed()) {
-				return;
-			}
-			try {
-				showAtLocation(toolbarView, Gravity.LEFT | Gravity.TOP, location[0] - offsetX, location[1] + offsetY);
-			} catch (WindowManager.BadTokenException e) {
-				//
-			}
+        if (toolbarView != null) {
+            int[] toolbarLocation = {0, 0};
+            toolbarView.getLocationInWindow(toolbarLocation);
 
-			dimBackground();
+            if (activity.isFinishing() || activity.isDestroyed()) {
+                return;
+            }
+            try {
+                showAtLocation(toolbarView, Gravity.LEFT | Gravity.TOP, location[0] - offsetX, location[1] + offsetY);
+            } catch (WindowManager.BadTokenException e) {
+                //
+            }
 
-			getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-				@Override
-				public void onGlobalLayout() {
-					getContentView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-					AnimationUtil.circularReveal(getContentView(), animationCenterX, animationCenterY, false);
-				}
-			});
-		}
-		WebClientListenerManager.serviceListener.add(this.webClientServiceListener);
-	}
+            dimBackground();
 
-	@Override
-	public void dismiss() {
-		if (isShowing()) {
-			AnimationUtil.circularObscure(getContentView(), animationCenterX, animationCenterY, false, new Runnable() {
-				@Override
-				public void run() {
-					IdentityPopup.super.dismiss();
-				}
-			});
-		}
-		WebClientListenerManager.serviceListener.remove(this.webClientServiceListener);
-	}
+            getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    AnimationUtil.circularReveal(getContentView(), animationCenterX, animationCenterY, false);
+                }
+            });
+        }
+        WebClientListenerManager.serviceListener.add(this.webClientServiceListener);
+        setOnDismissListener(onDismissListener);
+    }
 
-	private final WebClientServiceListener webClientServiceListener = new WebClientServiceListener() {
-		@Override
-		public void onEnabled() {
-			this.setEnabled(true);
-		}
+    @Override
+    public void dismiss() {
+        if (isShowing()) {
+            AnimationUtil.circularObscure(
+                getContentView(),
+                animationCenterX,
+                animationCenterY,
+                false,
+                IdentityPopup.super::dismiss
+            );
+        }
+        WebClientListenerManager.serviceListener.remove(this.webClientServiceListener);
+    }
 
-		@Override
-		public void onDisabled() {
-			this.setEnabled(false);
-		}
+    private final WebClientServiceListener webClientServiceListener = new WebClientServiceListener() {
+        @Override
+        public void onEnabled() {
+            this.setEnabled(true);
+        }
 
-		private void setEnabled(final boolean enabled) {
-			RuntimeUtil.runOnUiThread(() -> {
-				if (webEnableView != null) {
-					webEnableView.setChecked(enabled);
-				}
-			});
-		}
-	};
+        @Override
+        public void onDisabled() {
+            this.setEnabled(false);
+        }
 
-	private boolean isWebClientEnabled() {
-		return sessionService.isEnabled();
-	}
+        private void setEnabled(final boolean enabled) {
+            RuntimeUtil.runOnUiThread(() -> {
+                if (webEnableView != null) {
+                    webEnableView.setChecked(enabled);
+                }
+            });
+        }
+    };
 
-	private void startWebClient(boolean start) {
-		if(start && sessionService.getAllSessionModels().size() == 0) {
-			context.startActivity(new Intent(context, SessionsActivity.class));
-			dismiss();
-		}
-		else {
-			sessionService.setEnabled(start);
-		}
-	}
+    private boolean isWebClientEnabled() {
+        return sessionService.isEnabled();
+    }
 
-	public interface ProfileButtonListener {
-		void onClicked();
-	}
+    private void startWebClient(boolean shouldStart) {
+        if (getContext() == null) {
+            return;
+        }
+        if (shouldStart && sessionService.getAllSessionModels().isEmpty()) {
+            getContext().startActivity(new Intent(getContext(), SessionsActivity.class));
+            dismiss();
+        } else {
+            sessionService.setEnabled(shouldStart);
+        }
+    }
+
+    public interface ProfileButtonListener {
+        void onClicked();
+    }
 }

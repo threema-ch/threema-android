@@ -412,19 +412,25 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 		}
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
-			keyguard?.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
-				override fun onDismissError() {
-					logger.warn("Keyguard dismissing is currently not feasible")
-				}
+            keyguard?.let {
+                if (it.isKeyguardLocked) {
+                    // this call can lead to a memory leak: https://issuetracker.google.com/issues/111158463
+                    it.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
+                        override fun onDismissError() {
+                            logger.warn("Keyguard dismissing is currently not feasible")
+                        }
 
-				override fun onDismissSucceeded() {
-					logger.debug("Keyguard dismissed")
-				}
+                        override fun onDismissSucceeded() {
+                            logger.debug("Keyguard dismissed")
+                        }
 
-				override fun onDismissCancelled() {
-					logger.debug("Keyguard dismissing cancelled")
-				}
-			})
+                        override fun onDismissCancelled() {
+                            logger.debug("Keyguard dismissing cancelled")
+                        }
+                    })
+                }
+            }
+
 		}
 	}
 

@@ -7,10 +7,8 @@
     <string name="preferences__typing_indicator" translatable="false">pref_typing_indicator</string>
     <string name="preferences__notification_sound" translatable="false">pref_notification_sound</string>
     <string name="preferences__vibrate" translatable="false">pref_key_vibrate</string>
-    <string name="preferences__notification_light" translatable="false">pref_notification_light</string>
 	<string name="preferences__group_notification_sound" translatable="false">pref_group_notification_sound</string>
 	<string name="preferences__group_vibrate" translatable="false">pref_group_vibrate</string>
-	<string name="preferences__group_notification_light" translatable="false">pref_group_notification_light</string>
     <string name="preferences__wallpaper" translatable="false">pref_key_wallpaper</string>
     <string name="preferences__wallpaper_switch" translatable="false">pref_key_wallpaper_switch</string>
     <string name="preferences__enter_to_send" translatable="false">pref_key_enter_to_send</string>
@@ -215,5 +213,11 @@
     <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
 	<string name="preferences__md_unlocked" translatable="false">pref_md_unlocked</string>
 	<string name="preferences__show_last_update_prefix" translatable="false">pref_show_last_update_prefix</string>
+    <string name="preferences__chat_notification_settings" translatable="false">pref_chat_notification_settings</string>
+    <string name="preferences__group_notification_settings" translatable="false">pref_group_notification_settings</string>
+    <string name="preferences__voip_notification_settings" translatable="false">pref_voip_notification_settings</string>
+    <string name="preferences__group_call_notification_settings" translatable="false">pref_group_call_notification_settings</string>
+    <string name="preferences__notification_channels_version" translatable="false">pref_notification_channels_version</string>
+    <string name="preferences__last_shortcut_update_date" translatable="false">pref_last_shortcut_update_date</string>
     <string name="preferences__last_notification_request_timestamp" translatable="false">pref_last_notification_request_timestamp</string>
 </resources>

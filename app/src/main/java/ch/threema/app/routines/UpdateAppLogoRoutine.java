@@ -105,7 +105,7 @@ public class UpdateAppLogoRoutine implements Runnable {
 		Date now = new Date();
 		//get expires date
 
-		if(TestUtil.empty(urlString)) {
+		if(TestUtil.isEmptyOrNull(urlString)) {
 			this.clearLogo(theme);
 			return;
 		}

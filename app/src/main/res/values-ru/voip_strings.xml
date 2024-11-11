@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<resources  xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <string name="voip_title">Звонок Threema</string>
     <string name="voip_hangup">Завершить</string>
     <string name="voip_toggle_mic">Переключить микрофон</string>
@@ -23,10 +23,10 @@
     <string name="voip_status_ringing">Звонок...</string>
     <string name="voip_mic_enable">Включить микрофон</string>
     <string name="voip_mic_disable">Отключить микрофон</string>
-    <string name="voip_checking_compatibility">Проверка возможности приема звонков Threema контактом…</string>
+    <string name="voip_checking_compatibility">Проверка возможности приёма звонков Threema контактом…</string>
     <string name="voip_incompatible">Этот контакт пока не может принимать звонки Threema.</string>
     <string name="voip_call_status_unavailable">Адресат звонка недоступен</string>
-    <string name="voip_call_status_rejected">Звонок отклонен</string>
+    <string name="voip_call_status_rejected">Звонок отклонён</string>
     <string name="voip_call_status_busy">Адресат звонка занят</string>
     <string name="voip_call_status_busy_short">Занято</string>
     <string name="voip_call_status_disabled">Звонки Threema отключены адресатом</string>
@@ -42,7 +42,7 @@
     <string name="voip_earpiece">Телефон</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">Недоступно</string>
-    <string name="voip_call_finished">Звонок Threema завершен</string>
+    <string name="voip_call_finished">Звонок Threema завершён</string>
     <string name="voip_another_call">Невозможно соединиться. Совершается другой звонок Threema.</string>
     <string name="voip_prefs_title_aec">Эхокомпенсация</string>
     <string name="voip_prefs_aec_sw">Программная эхокомпенсация</string>
@@ -86,24 +86,24 @@
     <string name="voip_gc_notification_new_call_public">Начат новый групповой звонок</string>
     <string name="voip_gc_open_call">Открыть</string>
     <string name="voip_gc_call_started">Начат групповой звонок</string>
-    <string name="voip_gc_call_ended">Групповой звонок завершен</string>
+    <string name="voip_gc_call_ended">Групповой звонок завершён</string>
     <string name="voip_gc_in_call">Сейчас в групповом звонке</string>
     <string name="voip_gc_sfu_not_available">Сервер недоступен, повторите попытку позже</string>
     <string name="voip_gc_call_error">Звонок прерван по причине ошибки</string>
     <string name="voip_gc_call_start_error">Невозможно начать групповой звонок</string>
-    <string name="voip_gc_call_already_ended">Групповой звонок уже завершен</string>
+    <string name="voip_gc_call_already_ended">Групповой звонок уже завершён</string>
     <string name="voip_gc_call_full_generic">Достигнут максимум: новые участники больше не могут присоединиться к групповому звонку.</string>
     <string name="voip_gc_call_full_n">Достигнут максимум (не более %1$d участников), вы не можете присоединиться к этому групповому звонку.</string>
     <plurals name="n_participants_in_call">
+        <item quantity="one">%d участник</item>
         <item quantity="few">%d участника</item>
         <item quantity="many">%d участников</item>
-        <item quantity="one">%d участник</item>
         <item quantity="other">%d участников</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
-        <item quantity="many">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
+        <item quantity="one">Уведомление: один участник не может участвовать в групповых звонках.</item>
         <item quantity="few">Уведомление: %d участника не могут участвовать в групповых звонках.</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">Уведомление: один участник не может участвовать в групповых звонках.</item>
+        <item quantity="many">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
         <item quantity="other">Уведомление: %d участников не могут участвовать в групповых звонках.</item>
     </plurals>
 </resources>

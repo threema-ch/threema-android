@@ -36,6 +36,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -194,10 +195,9 @@ public class UnlockMasterKeyActivity extends ThreemaActivity {
 						RuntimeUtil.runOnUiThread(() -> {
 							ThreemaApplication.reset();
 
-
 							// Cancel all notifications...if any
-							NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-							notificationManager.cancelAll();
+							NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(UnlockMasterKeyActivity.this);
+							notificationManagerCompat.cancelAll();
 
 							// Show persistent notification
 							PassphraseService.start(UnlockMasterKeyActivity.this.getApplicationContext());

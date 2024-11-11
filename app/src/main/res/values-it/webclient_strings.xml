@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Avvia</string>
     <string name="webclient_diagnostics_intro">Premi il pulsante Avvia per iniziare il test.</string>
     <string name="webclient_diagnostics_done">Fatto. Se riscontri problemi di connessione a Threema Web, invia questo log al servizio di assistenza di Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Al momento, questa applicazione beta per desktop può essere collegata solo a un dispositivo iOS. Per i dispositivi Android, scaricare la normale app desktop.</string>
 </resources>

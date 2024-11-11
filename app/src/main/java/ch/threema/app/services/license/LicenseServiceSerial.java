@@ -33,7 +33,7 @@ public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredential
 
 	@Override
 	public boolean hasCredentials() {
-		return !TestUtil.empty(this.preferenceService.getSerialNumber());
+		return !TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber());
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredential
 	public SerialCredentials loadCredentials() {
 		String licenseKey = this.preferenceService.getSerialNumber();
 
-		if(!TestUtil.empty(licenseKey)) {
+		if(!TestUtil.isEmptyOrNull(licenseKey)) {
 			return new SerialCredentials(licenseKey);
 		}
 		return null;

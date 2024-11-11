@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.*
+import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.tasks.OutgoingGroupCallStartTask
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.CallAudioManager
@@ -65,15 +66,15 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallManagerImpl")
 
 @WorkerThread
 class GroupCallManagerImpl(
-	private val context: Context,
-	private val serviceManager: ServiceManager,
-	private val databaseService: DatabaseServiceNew,
-	private val groupService: GroupService,
-	private val contactService: ContactService,
-	private val preferenceService: PreferenceService,
-	private val messageService: MessageService,
-	private val notificationService: NotificationService,
-	private val sfuConnection: SfuConnection
+    private val context: Context,
+    private val serviceManager: ServiceManager,
+    private val databaseService: DatabaseServiceNew,
+    private val groupService: GroupService,
+    private val contactService: ContactService,
+    private val preferenceService: PreferenceService,
+    private val messageService: MessageService,
+    private val notificationService: NotificationService,
+    private val sfuConnection: SfuConnection
 ) : GroupCallManager {
 	private companion object {
 		private const val ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS: Long = 2000L

@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Почати</string>
     <string name="webclient_diagnostics_intro">Натисніть \"Почати\", щоб запустити перевірку.</string>
     <string name="webclient_diagnostics_done">Перевірку завершено. Якщо вам не вдається підключитися до веб-клієнта або додатка для ПК, надішліть цей журнал службі підтримки Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Наразі цю бета-версію додатка для ПК можна зв\'язати лише з пристроєм iOS. Якщо ви користуєтеся пристроєм Android, завантажте звичайну версію додатка для ПК.</string>
 </resources>

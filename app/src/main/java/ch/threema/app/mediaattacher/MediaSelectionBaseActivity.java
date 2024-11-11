@@ -21,15 +21,6 @@
 
 package ch.threema.app.mediaattacher;
 
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
-import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
@@ -57,6 +48,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.shape.MaterialShapeDrawable;
+
+import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -73,22 +78,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
-
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.shape.MaterialShapeDrawable;
-
-import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
@@ -110,6 +99,15 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
+
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
+import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 abstract public class MediaSelectionBaseActivity extends ThreemaActivity implements View.OnClickListener,
 														MediaAttachAdapter.ItemClickListener {
@@ -146,8 +144,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 	protected PopupMenu bucketFilterMenu;
 	protected ViewPager2 previewPager;
 	private CheckableView checkBox;
-	protected MaterialButton permissionButton;
-	protected TextView enablePermissionText;
+	private ViewGroup selectMediaPermissionNoticeContainer;
 
 	protected MediaAttachViewModel mediaAttachViewModel;
 
@@ -279,9 +276,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.checkBox = findViewById(R.id.check_box);
 		this.previewFilenameTextView = findViewById(R.id.filename_view);
 		this.previewDateTextView = findViewById(R.id.date_view);
-
-		this.permissionButton = findViewById(R.id.permission_button);
-		this.enablePermissionText = findViewById(R.id.permission_text);
+		this.selectMediaPermissionNoticeContainer = findViewById(R.id.select_media_permission_notice_container);
 
 		this.bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
 		this.previewBottomSheetBehavior = BottomSheetBehavior.from(previewBottomSheetLayout);
@@ -289,11 +284,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		MaterialToolbar previewToolbar = findViewById(R.id.preview_toolbar);
 		previewToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-		if (!ConfigUtils.isVideoImagePermissionGranted(this)) {
-			findViewById(R.id.permission_container).setVisibility(View.VISIBLE);
-			this.permissionButton.setOnClickListener(v -> ConfigUtils.requestStoragePermissions(MediaSelectionBaseActivity.this, null, PERMISSION_REQUEST_ATTACH_STORAGE));
-		} else {
+		if (ConfigUtils.isFullVideoImagePermissionGranted(this)) {
+			// full access
 			findViewById(R.id.permission_container).setVisibility(View.GONE);
+			findViewById(R.id.select_media_permission_notice_container).setVisibility(View.GONE);
+		} else if (ConfigUtils.isPartialVideoImagePermissionGranted(this)) {
+			// partial access
+			findViewById(R.id.permission_container).setVisibility(View.GONE);
+			selectMediaPermissionNoticeContainer.setVisibility(View.VISIBLE);
+			findViewById(R.id.button_select_media_permission).setOnClickListener(v -> ConfigUtils.requestStoragePermissions(MediaSelectionBaseActivity.this, null, PERMISSION_REQUEST_ATTACH_STORAGE));
+		} else {
+			// no access
+			findViewById(R.id.permission_container).setVisibility(View.VISIBLE);
+			findViewById(R.id.permission_button).setOnClickListener(v -> ConfigUtils.requestStoragePermissions(MediaSelectionBaseActivity.this, null, PERMISSION_REQUEST_ATTACH_STORAGE));
 		}
 
 		this.checkBox.setOnClickListener(v -> {
@@ -602,7 +605,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			@Override
 			public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
 				super.onScrolled(recyclerView, dx, dy);
-				setFirstVisibleItemDate();
+				setFirstVisibleItemData();
 
 				// make sure only bottom sheet or recyclerview is scrolling at a same time
 				if (bottomSheetScroll && bottomSheetBehavior.getState() == STATE_EXPANDED) {
@@ -796,7 +799,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 				break;
 			case STATE_EXPANDED:
 				dragHandle.setVisibility(View.INVISIBLE);
-				setFirstVisibleItemDate();
+				setFirstVisibleItemData();
 
 				bucketFilterMenu.getMenu().setGroupVisible(Menu.NONE, true);
 				menuTitleFrame.setClickable(true);
@@ -893,6 +896,12 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			final int controlPanelShadowHeight = resources.getDimensionPixelSize(R.dimen.media_attach_control_panel_shadow_size);
 			final int dragHandleHeight = resources.getDimensionPixelSize(R.dimen.drag_handle_height);
 
+			int selectMediaPermissionNoticeHeight = selectMediaPermissionNoticeContainer.getHeight();
+			// additional bottom padding under notice container
+			if (selectMediaPermissionNoticeHeight > 0) {
+				selectMediaPermissionNoticeHeight += dragHandleHeight;
+			}
+
 			// We have a bit of a chicken-and-egg problem: Before the peek height is not set,
 			// the grid items are not loaded. But without the grid items being loaded, we cannot
 			// calculate the proper height.
@@ -901,7 +910,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			// are loaded, we can update the peek height.
 			int peekHeight = controlPanelHeight
 				- controlPanelShadowHeight
-				+ dragHandleHeight;
+				+ dragHandleHeight
+				+ selectMediaPermissionNoticeHeight;
 			boolean peekHeightKnown;
 			if (numItems > 0 && mediaAttachRecyclerView.getChildAt(0) != null) {
 				// Child views are already here, we can calculate the total height
@@ -943,7 +953,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		}
 	}
 
-	protected void setFirstVisibleItemDate(){
+	protected void setFirstVisibleItemData(){
 		int firstVisible = gridLayoutManager.findFirstVisibleItemPosition();
 		if (firstVisible < 0){
 			mediaAttachRecyclerView.clearEmptyView();

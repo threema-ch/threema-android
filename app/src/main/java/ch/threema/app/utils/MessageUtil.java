@@ -88,13 +88,7 @@ public class MessageUtil {
 			return "";
 		}
 
-		Date d = messageModel.getPostedAt();
-
-		if(messageModel.isOutbox()) {
-			if(messageModel.getModifiedAt() != null) {
-				d = messageModel.getModifiedAt();
-			}
-		}
+		Date d = getDisplayDate(messageModel);
 
 		if(d != null) {
 			return LocaleUtil.formatTimeStampString(context, d.getTime(), full);
@@ -102,6 +96,16 @@ public class MessageUtil {
 		else {
 			return "";
 		}
+	}
+
+	@Nullable public static Date getDisplayDate(@NonNull AbstractMessageModel messageModel) {
+		Date d = messageModel.getPostedAt();
+		if(messageModel.isOutbox()) {
+			if(messageModel.getModifiedAt() != null) {
+				d = messageModel.getModifiedAt();
+			}
+		}
+		return d;
 	}
 
 	public static boolean hasDataFile(AbstractMessageModel messageModel) {
@@ -439,7 +443,7 @@ public class MessageUtil {
 	public static ArrayList<String> getCaptionList(String captionText) {
 		ArrayList<String> captions = null;
 
-		if (!TestUtil.empty(captionText)) {
+		if (!TestUtil.isEmptyOrNull(captionText)) {
 			captions = new ArrayList<>();
 			captions.add(captionText);
 		}
@@ -497,7 +501,7 @@ public class MessageUtil {
 				case IMAGE:
 					return new MessageViewElement(R.drawable.ic_photo_filled,
 							context.getString(R.string.image_placeholder),
-							TestUtil.empty(messageModel.getCaption()) ? null : messageModel.getCaption(),
+							TestUtil.isEmptyOrNull(messageModel.getCaption()) ? null : messageModel.getCaption(),
 							null,
 							null);
 				case VIDEO:
@@ -508,9 +512,9 @@ public class MessageUtil {
 							null);
 				case LOCATION:
 					String locationText = null;
-					if (!TestUtil.empty(messageModel.getLocationData().getPoi())) {
+					if (!TestUtil.isEmptyOrNull(messageModel.getLocationData().getPoi())) {
 						locationText = messageModel.getLocationData().getPoi();
-					} else if (!TestUtil.empty(messageModel.getLocationData().getAddress())) {
+					} else if (!TestUtil.isEmptyOrNull(messageModel.getLocationData().getAddress())) {
 						locationText = messageModel.getLocationData().getAddress();
 					}
 
@@ -529,7 +533,7 @@ public class MessageUtil {
 					if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
 						return new MessageViewElement(R.drawable.ic_photo_filled,
 								context.getString(R.string.image_placeholder),
-								TestUtil.empty(messageModel.getFileData().getCaption()) ?
+								TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
 										null :
 										messageModel.getFileData().getCaption(),
 								null,
@@ -541,7 +545,7 @@ public class MessageUtil {
 
 						return new MessageViewElement(R.drawable.ic_movie_filled,
 								context.getString(R.string.video_placeholder),
-								TestUtil.empty(messageModel.getFileData().getCaption()) ?
+								TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
 										durationString :
 										messageModel.getFileData().getCaption(),
 								null,
@@ -560,7 +564,7 @@ public class MessageUtil {
 						} else {
 							return new MessageViewElement(R.drawable.ic_doc_audio,
 								context.getString(R.string.audio_placeholder),
-								TestUtil.empty(messageModel.getFileData().getCaption()) ?
+								TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
 									("00:00".equals(durationString) ? null : durationString) :
 									messageModel.getFileData().getCaption(),
 								null,
@@ -570,7 +574,7 @@ public class MessageUtil {
 
 					return new MessageViewElement(IconUtil.getMimeIcon(messageModel.getFileData().getMimeType()),
 							context.getString(R.string.file_placeholder),
-							TestUtil.empty(messageModel.getFileData().getCaption()) ?
+							TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
 									messageModel.getFileData().getFileName() :
 									messageModel.getFileData().getCaption(),
 							null,
@@ -580,7 +584,7 @@ public class MessageUtil {
 					String messageString = BallotUtil.getNotificationString(context, messageModel);
 					return new MessageViewElement(R.drawable.ic_baseline_rule,
 							context.getString(R.string.ballot_placeholder),
-							TestUtil.empty(messageString) ? null: messageString,
+							TestUtil.isEmptyOrNull(messageString) ? null: messageString,
 							null,
 							null);
 				case GROUP_STATUS:

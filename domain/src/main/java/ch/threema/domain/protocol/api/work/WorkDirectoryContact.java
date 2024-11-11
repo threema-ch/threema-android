@@ -24,30 +24,40 @@ package ch.threema.domain.protocol.api.work;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+
 public class WorkDirectoryContact extends WorkContact {
-	public final String csi;
-	public final List<String> categoryIds = new ArrayList<>();
-	public final WorkOrganization organization = new WorkOrganization();
+    public final String csi;
+    public final List<String> categoryIds = new ArrayList<>();
+    public final WorkOrganization organization = new WorkOrganization();
 
-	public WorkDirectoryContact(String threemaId, byte[] publicKey, String firstName, String lastName, String csi) {
-		super(threemaId, publicKey, firstName, lastName);
-		this.csi = csi;
-	}
+    public WorkDirectoryContact(
+        String threemaId,
+        byte[] publicKey,
+        String firstName,
+        String lastName,
+        String csi,
+        @Nullable String jobTitle,
+        @Nullable String department
+    ) {
+        super(threemaId, publicKey, firstName, lastName, jobTitle, department);
+        this.csi = csi;
+    }
 
-	public String getInitial(boolean sortByFirstName) {
-		String name;
-		if (sortByFirstName) {
-			name = (firstName != null ? firstName + " " : "") +
-				(lastName != null ? lastName : "");
+    public String getInitial(boolean sortByFirstName) {
+        String name;
+        if (sortByFirstName) {
+            name = (firstName != null ? firstName + " " : "") +
+                (lastName != null ? lastName : "");
 
-		} else {
-			name = (lastName != null ? lastName + " " : "") +
-				(firstName != null ? firstName : "");
-		}
+        } else {
+            name = (lastName != null ? lastName + " " : "") +
+                (firstName != null ? firstName : "");
+        }
 
-		if (name.length() > 0) {
-			return name.substring(0, 1);
-		}
-		return " ";
-	}
+        if (name.length() > 0) {
+            return name.substring(0, 1);
+        }
+        return " ";
+    }
 }

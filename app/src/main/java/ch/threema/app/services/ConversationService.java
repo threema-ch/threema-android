@@ -48,6 +48,9 @@ public interface ConversationService {
 		default boolean noInvalid() {
 			return false;
 		}
+		default boolean onlyPersonal() {
+			return false;
+		}
 		default String filterQuery() {
 			return null;
 		}

@@ -53,7 +53,7 @@ class GroupStatusAdapterDecorator(
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         val statusDataModel = messageModel.groupStatusDataModel ?: return
         val statusText = getStatusText(statusDataModel, userService, contactService, context)
-        if (showHide(holder.bodyTextView, !TestUtil.empty(statusText))) {
+        if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(statusText))) {
             holder.bodyTextView.text = statusText
         }
         setOnClickListener({

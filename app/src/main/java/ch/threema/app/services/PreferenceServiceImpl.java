@@ -186,16 +186,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public String getNotificationLight() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__notification_light));
-	}
-
-	@Override
-	public String getGroupNotificationLight() {
-		return this.preferenceStore.getString(this.getKeyName(R.string.preferences__group_notification_light));
-	}
-
-	@Override
 	public HashMap<String, String> getRingtones() {
 		return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__individual_ringtones), false);
 	}
@@ -413,7 +403,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	private boolean isPinCodeValid(String code) {
-		if (TestUtil.empty(code))
+		if (TestUtil.isEmptyOrNull(code))
 			return false;
 		else
 			return (code.length() >= ThreemaApplication.MIN_PIN_LENGTH &&
@@ -511,7 +501,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public int getFontStyle() {
 		String fontStyle = this.preferenceStore.getString(this.getKeyName(R.string.preferences__fontstyle));
-		if (TestUtil.empty(fontStyle)) {
+		if (TestUtil.isEmptyOrNull(fontStyle)) {
 			// return a default value
 			return R.style.FontStyle_Normal;
 		}
@@ -1413,7 +1403,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 		JSONArray array = new JSONArray();
 		for (WorkDirectoryCategory category : categories) {
 			String categoryObjectString = category.toJSON();
-			if (!TestUtil.empty(categoryObjectString)) {
+			if (!TestUtil.isEmptyOrNull(categoryObjectString)) {
 				try {
 					array.put(new JSONObject(categoryObjectString));
 				} catch (JSONException e) {
@@ -1775,6 +1765,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean showConversationLastUpdate() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__show_last_update_prefix), false);
+	}
+
+	@Override
+	public Date getLastShortcutUpdateDate() {
+		return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__last_shortcut_update_date));
+	}
+
+	@Override
+	public void setLastShortcutUpdateDate(Date date) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__last_shortcut_update_date), date);
 	}
 
 	@Override

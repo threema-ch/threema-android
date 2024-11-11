@@ -25,8 +25,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.LocationMessage
 import ch.threema.domain.protocol.csp.messages.GroupLocationMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -39,29 +37,27 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingLocationMessageTask")
 class OutgoingLocationMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
-    private val messageReceiverType: Int,
+    private val receiverType: Int,
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val messageService = serviceManager.messageService
-    private val groupService = serviceManager.groupService
 
     override val type: String = "OutgoingLocationMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        when (messageReceiverType) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        when (receiverType) {
             MessageReceiver.Type_CONTACT -> sendContactMessage(handle)
             MessageReceiver.Type_GROUP -> sendGroupMessage(handle)
-            else -> throw IllegalStateException("Invalid message receiver type $messageReceiverType")
+            else -> throw IllegalStateException("Invalid message receiver type $receiverType")
         }
     }
 
+    override fun onSendingStepsFailed(e: Exception) {
+        getMessageModel(receiverType, messageModelId)?.saveWithStateFailed()
+    }
+
     private suspend fun sendContactMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getContactMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getContactMessageModel(messageModelId) ?: return
 
         val locationDataModel = messageModel.locationData
 
@@ -74,18 +70,14 @@ class OutgoingLocationMessageTask(
             poiAddress = locationDataModel.address
 
             toIdentity = messageModel.identity
-            messageId = MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!))
+            messageId = ensureMessageId(messageModel)
         }
 
         sendContactMessage(message, messageModel, handle)
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getGroupMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getGroupMessageModel(messageModelId) ?: return
 
         val group = groupService.getById(messageModel.groupId)
             ?: throw IllegalStateException("Could not get group for message model ${messageModel.apiMessageId}")
@@ -96,7 +88,7 @@ class OutgoingLocationMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!)),
+            ensureMessageId(messageModel),
             {
                 GroupLocationMessage().apply {
                     latitude = locationDataModel.latitude
@@ -111,7 +103,7 @@ class OutgoingLocationMessageTask(
     }
 
     override fun serialize(): SerializableTaskData =
-        OutgoingLocationMessageTaskData(messageModelId, messageReceiverType, recipientIdentities)
+        OutgoingLocationMessageTaskData(messageModelId, receiverType, recipientIdentities)
 
     @Serializable
     class OutgoingLocationMessageTaskData(

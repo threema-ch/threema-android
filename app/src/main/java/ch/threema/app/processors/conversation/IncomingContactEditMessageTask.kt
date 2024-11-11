@@ -54,6 +54,7 @@ class IncomingContactEditMessageTask(
             ?: return ReceiveStepsResult.DISCARD
 
         messageService.saveEditedMessageText(message, editMessage.data.text, editMessage.date)
+
         return ReceiveStepsResult.SUCCESS
     }
 }

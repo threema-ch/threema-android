@@ -93,9 +93,7 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
 
     /**
      * This is called, when the settings must jump to a specific category. This is the case for the security settings when
-     * marking a private chat when no locking mechanism is set. From the android data usage settings there is a link directly
-     * to the media settings and from the android notification settings we can get directly to the sound and notification
-     * settings. This is done with an intent filter via [SettingsMediaDummyActivity] and [SettingsNotificationsDummyActivity].
+     * marking a private chat when no locking mechanism is set.
      *
      * @param fragment the fragment that should be shown (directly)
      */

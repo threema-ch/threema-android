@@ -118,7 +118,7 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 								holder.controller.setHidden();
 							} else {
 								holder.controller.setReadyToDownload();
-								if (!TestUtil.empty(message) && getContext() != null) {
+								if (!TestUtil.isEmptyOrNull(message) && getContext() != null) {
 									Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 								}
 							}

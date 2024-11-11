@@ -28,6 +28,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
@@ -123,10 +125,6 @@ public interface PreferenceService {
 	boolean isVibrate();
 
 	boolean isGroupVibrate();
-
-	String getNotificationLight();
-
-	String getGroupNotificationLight();
 
 	HashMap<String, String> getRingtones();
 
@@ -611,6 +609,9 @@ public interface PreferenceService {
 	boolean isMdUnlocked();
 
 	boolean showConversationLastUpdate();
+
+	Date getLastShortcutUpdateDate();
+	void setLastShortcutUpdateDate(Date date);
 
 	/**
 	 * Set the last timestamp when the notification permission has been requested.

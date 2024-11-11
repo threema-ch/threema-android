@@ -33,6 +33,13 @@
 		<item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
 		<item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
+        <!-- tonal values -->
+        <item name="colorSurfaceContainerLowest">@color/md_theme_dark_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_dark_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_dark_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_dark_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_dark_surfaceContainerHighest</item>
+
 		<!-- deprecated color mappings -->
 		<item name="colorPrimaryDark">@color/md_theme_dark_secondary</item> <!--   darker variant for the status bar and contextual app bars -->
 		<item name="colorAccent">@color/md_theme_dark_primary</item> <!--   theme UI controls like checkboxes and text fields -->
@@ -86,6 +93,7 @@
 		<item name="snackbarStyle">@style/Threema.Snackbar.Style</item>
 		<item name="snackbarButtonStyle">@style/Threema.Snackbar.ButtonStyle</item>
 		<item name="snackbarTextViewStyle">@style/Threema.Snackbar.TextViewStyle</item>
+        <item name="actionOverflowMenuStyle">@style/Threema.ActionOverflowMenuStyle.Dark</item>
 
 		<!-- preferences -->
 		<item name="preferenceFragmentCompatStyle">@style/Threema.MaterialPreferencesFragment</item>

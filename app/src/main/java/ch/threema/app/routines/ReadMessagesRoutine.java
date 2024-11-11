@@ -29,7 +29,7 @@ import java.util.List;
 
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;

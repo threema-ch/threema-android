@@ -5,5 +5,5 @@
     <!-- Content description for a color square. -->
     <string name="color_swatch_description">Couleur <xliff:g id="color_index" example="14">%1$d</xliff:g></string>
     <!-- Content description for a selected color square. -->
-    <string name="color_swatch_description_selected" tools:ignore="PluralsCandidate">Couleur <xliff:g id="COLOR_INDEX">%1$d</xliff:g> sélectionnée</string>
+    <string name="color_swatch_description_selected" tools:ignore="PluralsCandidate">Couleur <xliff:g id="color_index" example="14">%1$d</xliff:g> sélectionnée</string>
 </resources>

@@ -185,7 +185,7 @@ public class UserListAdapter extends FilterableListAdapter {
 
 		ViewUtil.show(
 				holder.lastMessageView,
-				!TestUtil.empty(lastMessageDateString));
+				!TestUtil.isEmptyOrNull(lastMessageDateString));
 
 		// load avatars asynchronously
 		AvatarListItemUtil.loadAvatar(
@@ -246,7 +246,7 @@ public class UserListAdapter extends FilterableListAdapter {
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<ContactModel>) results.values;
 			if (filterResultsListener != null) {
-				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+				filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
 			}
 			notifyDataSetChanged();
 		}

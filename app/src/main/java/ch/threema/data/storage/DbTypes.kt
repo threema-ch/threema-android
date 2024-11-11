@@ -75,4 +75,60 @@ data class DbContact(
     val isRestored: Boolean,
     /** BlobId of the latest profile picture that was sent to this contact. */
     val profilePictureBlobId: ByteArray?,
+    val jobTitle: String?,
+    val department: String?
 )
+
+data class DbGroup(
+    /** The group creator identity string. Must be 8 characters long. */
+    val creatorIdentity: String,
+    /**
+     * The group id of the group. It is the hex string representation of the group id as little
+     * endian byte array.
+     */
+    val groupId: String,
+    /** The group name. */
+    val name: String?,
+    /** The creation date. */
+    val createdAt: Date,
+    /** Currently not used. Might be used for periodic group sync. TODO(SE-146) */
+    val synchronizedAt: Date?,
+    /** Last update flag. */
+    val lastUpdate: Date?,
+    /** Deleted flag. */
+    val deleted: Boolean,
+    /** Is archived flag. */
+    val isArchived: Boolean,
+    /** The color index. */
+    val colorIndex: UByte,
+    /** The group description. */
+    val groupDescription: String?,
+    /** The group description changed timestamp. */
+    val groupDescriptionChangedAt: Date?,
+    /** The group members' identities. */
+    val members: Set<String>,
+)
+
+data class DbEditHistoryEntry(
+    /** The unique id used as primary key. */
+    val uid: Int = 0,
+    /** The uid of the edited message referencing the [ch.threema.storage.models.AbstractMessageModel.COLUMN_UID] */
+    val messageUid: String,
+    /** The id of the edited message referencing the [ch.threema.storage.models.AbstractMessageModel.COLUMN_ID]
+     *  Can be identical for different classes of messages that are stored in different tables
+     *  This is only used as foreign key because uid is not actually constrained as unique
+     */
+    val messageId: Int,
+    /** The former text of the edited message. */
+    val text: String?,
+    /** Timestamp when the message was edited and hence the entry created. */
+    val editedAt: Date
+) {
+    companion object {
+        const val COLUMN_UID = "uid"
+        const val COLUMN_MESSAGE_UID = "messageUid"
+        const val COLUMN_MESSAGE_ID = "messageId"
+        const val COLUMN_TEXT = "text"
+        const val COLUMN_EDITED_AT = "editedAt"
+    }
+}

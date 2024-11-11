@@ -327,7 +327,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 		if (resultCode == RESULT_OK) {
 			String payload = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
 
-			if (!TestUtil.empty(payload)) {
+			if (!TestUtil.isEmptyOrNull(payload)) {
 
 				// first: try to parse as content result (contact scan)
 				QRCodeService.QRCodeContentResult contactQRCode = this.qrCodeService.getResult(payload);

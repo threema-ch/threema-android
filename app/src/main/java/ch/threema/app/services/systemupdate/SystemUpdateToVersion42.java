@@ -67,7 +67,7 @@ public class SystemUpdateToVersion42 implements UpdateSystemService.SystemUpdate
 			while (contacts.moveToNext()) {
 				final String identity = contacts.getString(0);
 
-				if (!TestUtil.empty(identity)) {
+				if (!TestUtil.isEmptyOrNull(identity)) {
 					migratePictureFile(avatarPath, ".c-", null, "c-" + identity, identity);
 					migratePictureFile(avatarPath, ".p-", null, "c-" + identity, identity);
 					migratePictureFile(wallpaperPath, ".w-", ".w", "c-" + identity, null);

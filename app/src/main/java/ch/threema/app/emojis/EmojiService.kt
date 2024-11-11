@@ -33,101 +33,99 @@ import java.util.Locale
 private val logger = LoggingUtil.getThreemaLogger("EmojiService")
 
 class EmojiService(
-	private val preferenceService: PreferenceService,
-	private val searchIndex: EmojiSearchIndex,
-	private val recentEmojis: EmojiRecent) {
-	private val preferredDiversities = preferenceService.diverseEmojiPrefs
+    private val preferenceService: PreferenceService,
+    private val searchIndex: EmojiSearchIndex,
+    private val recentEmojis: EmojiRecent) {
+    private val preferredDiversities = preferenceService.diverseEmojiPrefs
 
-	fun addToRecentEmojis(emojiSequence: String) {
-		recentEmojis.add(emojiSequence)
-	}
+    fun addToRecentEmojis(emojiSequence: String) {
+        recentEmojis.add(emojiSequence)
+    }
 
-	fun removeRecentEmoji(emojiSequence: String) {
-		recentEmojis.remove(emojiSequence)
-	}
+    fun removeRecentEmoji(emojiSequence: String) {
+        recentEmojis.remove(emojiSequence)
+    }
 
-	fun saveRecentEmojis() {
-		recentEmojis.saveToPrefs()
-	}
+    fun saveRecentEmojis() {
+        recentEmojis.saveToPrefs()
+    }
 
-	fun hasNoRecentEmojis(): Boolean {
-		return getRecentEmojiSequences().isEmpty()
-	}
+    fun hasNoRecentEmojis(): Boolean {
+        return getRecentEmojiSequences().isEmpty()
+    }
 
-	fun getRecentEmojis(): List<EmojiInfo> {
-		return getRecentEmojiSequences().map { EmojiInfo(it, EmojiSpritemap.DIVERSITY_NONE, null, EmojiSpritemap.GENDER_NONE, null, EmojiSpritemap.DISPLAY_NO)  }
-	}
+    fun getRecentEmojis(): List<EmojiInfo> {
+        return getRecentEmojiSequences().map { EmojiInfo(it, EmojiSpritemap.DIVERSITY_NONE, null, EmojiSpritemap.DISPLAY_NO)  }
+    }
 
-	fun syncRecentEmojis(): Boolean {
-		return recentEmojis.syncRecents()
-	}
+    fun syncRecentEmojis(): Boolean {
+        return recentEmojis.syncRecents()
+    }
 
-	fun getPreferredDiversity(emojiSequence: String): String {
-		return preferredDiversities[emojiSequence] ?: emojiSequence
-	}
+    fun getPreferredDiversity(emojiSequence: String): String {
+        return preferredDiversities[emojiSequence] ?: emojiSequence
+    }
 
-	fun setDiverseEmojiPreference(emojiParent: String, emojiSequence: String) {
-		preferredDiversities[emojiParent] = emojiSequence
-		preferenceService.diverseEmojiPrefs = preferredDiversities
-	}
+    fun setDiverseEmojiPreference(emojiParent: String, emojiSequence: String) {
+        preferredDiversities[emojiParent] = emojiSequence
+        preferenceService.diverseEmojiPrefs = preferredDiversities
+    }
 
-	fun isEmojiSearchAvailable(): Boolean {
-		return searchIndex.supportsLanguage(getLanguageCode())
-	}
+    fun isEmojiSearchAvailable(): Boolean {
+        return searchIndex.supportsLanguage(getLanguageCode())
+    }
 
-	@AnyThread
-	fun prepareEmojiSearch() {
-		CoroutineScope(Dispatchers.IO).launch {
-			logger.debug("Prepare emoji search")
-			searchIndex.prepareSearchIndex(getLanguageCode())
-			logger.debug("Emoji search prepared")
-		}
-	}
+    @AnyThread
+    fun prepareEmojiSearch() {
+        CoroutineScope(Dispatchers.IO).launch {
+            logger.debug("Prepare emoji search")
+            searchIndex.prepareSearchIndex(getLanguageCode())
+            logger.debug("Emoji search prepared")
+        }
+    }
 
-	/**
-	 * If the search term is not empty, a list of emojis that have indexed keywords starting with
-	 * the (trimmed) term are returned.
-	 *
-	 * Otherwise a list of recent emojis is returned.
-	 */
-	suspend fun search(term: String): List<EmojiInfo> {
-		return withContext(Dispatchers.IO) {
-			val searchTerm = term.trim()
-			if (searchTerm.isEmpty()) {
-				getRecentEmojis()
-			} else {
-				try {
-					searchEmojis(searchTerm)
-				} catch (e: Exception) {
-					logger.warn("Error while searching emojis", e)
-					listOf()
-				}
-			}
-		}
-	}
+    /**
+     * If the search term is not empty, a list of emojis that have indexed keywords starting with
+     * the (trimmed) term are returned.
+     *
+     * Otherwise a list of recent emojis is returned.
+     */
+    suspend fun search(term: String): List<EmojiInfo> {
+        return withContext(Dispatchers.IO) {
+            val searchTerm = term.trim()
+            if (searchTerm.isEmpty()) {
+                getRecentEmojis()
+            } else {
+                try {
+                    searchEmojis(searchTerm)
+                } catch (e: Exception) {
+                    logger.warn("Error while searching emojis", e)
+                    listOf()
+                }
+            }
+        }
+    }
 
-	@WorkerThread
-	private fun searchEmojis(term: String): List<EmojiInfo> {
-		return searchIndex.search(getLanguageCode(), term).map {
-			val (diversities, diversityFlag) = if (it.diversities?.isEmpty() != false)
-				Pair(null, EmojiSpritemap.DIVERSITY_NONE)
-				else Pair(it.diversities.toTypedArray(), EmojiSpritemap.DIVERSITY_PARENT)
-			EmojiInfo(
-				it.sequence,
-				diversityFlag,
-				diversities,
-				EmojiSpritemap.GENDER_NONE,
-				null,
-				EmojiSpritemap.DISPLAY_YES
-			)
-		}
-	}
+    @WorkerThread
+    private fun searchEmojis(term: String): List<EmojiInfo> {
+        return searchIndex.search(getLanguageCode(), term).map {
+            val (diversities, diversityFlag) = if (it.diversities?.isEmpty() != false)
+                Pair(null, EmojiSpritemap.DIVERSITY_NONE)
+            else Pair(it.diversities.toTypedArray(), EmojiSpritemap.DIVERSITY_PARENT)
+            EmojiInfo(
+                it.sequence,
+                diversityFlag,
+                diversities,
+                EmojiSpritemap.DISPLAY_YES
+            )
+        }
+    }
 
-	private fun getRecentEmojiSequences(): List<String> {
-		return recentEmojis.recentList.toList()
-	}
+    private fun getRecentEmojiSequences(): List<String> {
+        return recentEmojis.recentList.toList()
+    }
 
-	private fun getLanguageCode(): String {
-		return Locale.getDefault().language
-	}
+    private fun getLanguageCode(): String {
+        return Locale.getDefault().language
+    }
 }

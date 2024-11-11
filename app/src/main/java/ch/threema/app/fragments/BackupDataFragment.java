@@ -201,7 +201,7 @@ public class BackupDataFragment extends Fragment implements
 				DocumentFile documentFile = DocumentFile.fromTreeUri(getContext(), directoryTreeUri);
 				if (documentFile != null && documentFile.isDirectory()) {
 					String name = documentFile.getName();
-					if (!TestUtil.empty(name)) {
+					if (!TestUtil.isEmptyOrNull(name)) {
 						return name;
 					}
 				}

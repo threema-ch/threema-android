@@ -548,8 +548,9 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 		return true;
 	}
 
+    @NonNull
 	@Override
-	public boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied) {
+	public SendingPermissionValidationResult validateSendingPermission() {
 		int cannotSendResId = 0;
 		if (blackListIdentityService.has(contactModel.getIdentity())) {
 			cannotSendResId = R.string.blocked_cannot_send;
@@ -568,13 +569,9 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			}
 		}
 
-		if (cannotSendResId > 0) {
-			if (onSendingPermissionDenied != null) {
-				onSendingPermissionDenied.denied(cannotSendResId);
-			}
-			return false;
-		}
-		return true;
+		return cannotSendResId > 0
+            ? new SendingPermissionValidationResult.Denied(cannotSendResId)
+            : SendingPermissionValidationResult.Valid.INSTANCE;
 	}
 
 	@Override

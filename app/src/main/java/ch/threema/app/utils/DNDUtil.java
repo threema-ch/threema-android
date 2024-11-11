@@ -260,11 +260,10 @@ public class DNDUtil {
 	 *
 	 * @param messageReceiver A MessageReceiver representing a ContactModel
 	 * @param notification The notification
-	 * @param notificationManager
 	 * @param notificationManagerCompat
 	 * @return true if no ringtone should ne played, false otherwise
 	 */
-	public boolean isSystemMuted(MessageReceiver messageReceiver, @Nullable Notification notification, NotificationManager notificationManager, NotificationManagerCompat notificationManagerCompat) {
+	public boolean isSystemMuted(MessageReceiver messageReceiver, @Nullable Notification notification, NotificationManagerCompat notificationManagerCompat) {
 		boolean isSystemMuted = !notificationManagerCompat.areNotificationsEnabled();
 		boolean canBypassDND = false;
 
@@ -289,12 +288,12 @@ public class DNDUtil {
 		if (messageReceiver instanceof ContactMessageReceiver) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 				/* we do not play a ringtone sound if system-wide DND is enabled - except for starred contacts */
-				switch (notificationManager.getCurrentInterruptionFilter()) {
-					case NotificationManager.INTERRUPTION_FILTER_NONE:
+				switch (notificationManagerCompat.getCurrentInterruptionFilter()) {
+					case NotificationManagerCompat.INTERRUPTION_FILTER_NONE:
 						logger.info("Interruption filter set to NONE");
 						isSystemMuted = true;
 						break;
-					case NotificationManager.INTERRUPTION_FILTER_PRIORITY:
+					case NotificationManagerCompat.INTERRUPTION_FILTER_PRIORITY:
 						logger.info("Interruption filter set to PRIORITY");
 						isSystemMuted = !isStarredContact(messageReceiver);
 						logger.info("Contact is starred = {}", !isSystemMuted);

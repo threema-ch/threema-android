@@ -5,7 +5,7 @@
     <string name="webclient_sessions_really_delete">¿Seguro que quiere eliminar esta sesión de escritorio/web?</string>
     <string name="webclient_last_usage">Usado la última vez: %s</string>
     <string name="webclient_created_at">Creado el: %1$s (%2$s)</string>
-    <string name="webclient_active_since">"Activa desde: %s "</string>
+    <string name="webclient_active_since">Activa desde: %s</string>
     <string name="webclient_enable">Habilitar aplicación de escritorio/cliente web</string>
     <string name="webclient_no_sessions_found">Para conectarse, descargue la aplicación de escritorio (<b>https://threema.ch/download</b>) o abra el cliente web (<b>%s</b>) en su equipo y toque el botón bajo este texto para escanear el código QR que aparece en la pantalla del equipo.</string>
     <string name="webclient_session_rename">Renombrar sesión</string>
@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Empezar</string>
     <string name="webclient_diagnostics_intro">Pulsa el botón Empezar para iniciar la prueba.</string>
     <string name="webclient_diagnostics_done">Listo. Si tiene problemas al establecer la conexión a la aplicación de escritorio o cliente web, envíe este registro al servicio de asistencia de Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Por el momento, esta aplicación beta para escritorio solo se puede vincular a un dispositivo iOS. Para dispositivos Android, descarga la aplicación de escritorio normal.</string>
 </resources>

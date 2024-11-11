@@ -148,7 +148,7 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             Pair(getPref("pref_key_privacy"), intArrayOf(R.string.prefs_header_contacts, R.string.prefs_header_chat, R.string.prefs_header_lists).reduce()),
             Pair(getPref("pref_key_security"), intArrayOf(R.string.prefs_title_access_protection, R.string.prefs_masterkey).reduce()),
             Pair(getPref("pref_key_appearance"), intArrayOf(R.string.prefs_theme, R.string.prefs_emoji_style, R.string.prefs_language_override, R.string.prefs_title_fontsize, R.string.prefs_contact_list_title).reduce()),
-            Pair(getPref("pref_key_notifications"), intArrayOf(R.string.prefs_voice_call_sound, R.string.prefs_vibrate, R.string.prefs_light).reduce()),
+            Pair(getPref("pref_key_notifications"), intArrayOf(R.string.prefs_voice_call_sound, R.string.prefs_vibrate).reduce()),
             Pair(getPref("pref_key_chatdisplay"), intArrayOf(R.string.prefs_header_keyboard, R.string.media).reduce()),
             Pair(getPref("pref_key_particular_settings"), intArrayOf(R.string.prefs_image_size, R.string.prefs_auto_download_title, R.string.prefs_storage_mgmt_title).reduce()),
             getPrefOrNull<Preference>("pref_key_calls")?.let { Pair(it, intArrayOf(R.string.prefs_title_voip, R.string.video_calls, R.string.group_calls).reduce()) },
@@ -157,6 +157,6 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             Pair(getPref("pref_key_developers"), "")
     )
 
-    private fun IntArray.reduce(): String = joinToString(", ") { getString(it) }
+    private fun IntArray.reduce(): String = joinToString(", ", transform = ::getString)
 
 }

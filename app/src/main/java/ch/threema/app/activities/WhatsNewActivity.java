@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -43,16 +44,17 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
 
 		setContentView(R.layout.activity_whatsnew);
 
-		String appName = getString(R.string.app_name);
+        String title = getString(
+            R.string.whatsnew_title,
+            getString(R.string.app_name),
+            BuildConfig.VERSION_NAME
+        );
+        CharSequence body = Html.fromHtml(getString(R.string.whatsnew_headline));
 
-		((TextView) findViewById(R.id.whatsnew_title)).setText(getString(R.string.whatsnew_title, appName));
-		((TextView) findViewById(R.id.whatsnew_body)).setText(Html.fromHtml(getString(R.string.whatsnew_headline, appName)));
+		((TextView) findViewById(R.id.whatsnew_title)).setText(title);
+		((TextView) findViewById(R.id.whatsnew_body)).setText(body);
 
-		findViewById(R.id.next_text).setOnClickListener(v -> {
-/*			startActivity(new Intent(WhatsNewActivity.this, WhatsNew2Activity.class));
-			overridePendingTransition(R.anim.slide_in_right_short, R.anim.slide_out_left_short);
-*/			finish();
-		});
+		findViewById(R.id.next_text).setOnClickListener(v -> finish());
 
 		if (!getIntent().getBooleanExtra(EXTRA_NO_ANIMATION, false)) {
 			LinearLayout buttonLayout = findViewById(R.id.button_layout);

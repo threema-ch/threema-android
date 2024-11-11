@@ -78,7 +78,7 @@ public class GroupDescEditDialog extends ThreemaDialogFragment {
 		final EditText groupDescEditText = dialogView.findViewById(R.id.group_desc_edit_text);
 
 
-		if (!TestUtil.empty(groupDesc)) {
+		if (!TestUtil.isEmptyOrNull(groupDesc)) {
 			groupDescEditText.setText(groupDesc);
 		}
 

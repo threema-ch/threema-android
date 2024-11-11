@@ -22,20 +22,26 @@
 package ch.threema.app.services
 
 import android.annotation.TargetApi
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.DummyActivity
 import ch.threema.app.activities.ThreemaPushNotificationInfoActivity
-import ch.threema.app.notifications.NotificationBuilderWrapper
+import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.webclient.services.SessionAndroidService
@@ -66,17 +72,19 @@ class ThreemaPushService : Service() {
         createNotificationChannel()
 
         // Create notification
-        val builder: NotificationCompat.Builder = NotificationBuilderWrapper(
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(
             this,
-            NotificationService.NOTIFICATION_CHANNEL_THREEMA_PUSH,
-            null
-        )
-        builder.setContentTitle(getString(R.string.threema_push))
+            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH)
+            .setContentTitle(getString(R.string.threema_push))
             .setContentText(getString(R.string.threema_push_notification_text))
             .setSmallIcon(R.drawable.ic_notification_push)
             .setLocalOnly(true)
             .setContentIntent(contentIntent)
-        startForeground(THREEMA_PUSH_ACTIVE_NOTIFICATION_ID, builder.build())
+        ServiceCompat.startForeground(
+            this,
+            THREEMA_PUSH_ACTIVE_NOTIFICATION_ID,
+            builder.build(),
+            FG_SERVICE_TYPE)
         logger.info("startForeground called")
 
         // Get lifetime service
@@ -162,8 +170,8 @@ class ThreemaPushService : Service() {
      * Remove the persistent notification.
      */
     private fun removeNotification() {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
-        notificationManager?.cancel(THREEMA_PUSH_ACTIVE_NOTIFICATION_ID)
+        val notificationManagerCompat = NotificationManagerCompat.from(this)
+        notificationManagerCompat.cancel(THREEMA_PUSH_ACTIVE_NOTIFICATION_ID)
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -174,7 +182,7 @@ class ThreemaPushService : Service() {
 
         val notificationManager = NotificationManagerCompat.from(this)
         val notificationChannel = NotificationChannel(
-                NotificationService.NOTIFICATION_CHANNEL_THREEMA_PUSH,
+                NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH,
                 getString(R.string.threema_push),
                 NotificationManager.IMPORTANCE_LOW
         )
@@ -191,6 +199,7 @@ class ThreemaPushService : Service() {
     companion object {
         private const val THREEMA_PUSH_ACTIVE_NOTIFICATION_ID = 27392
         private const val LIFETIME_SERVICE_TAG = "threemaPushService"
+        private val FG_SERVICE_TYPE = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
 
         // Intent actions
         const val ACTION_START = "start"

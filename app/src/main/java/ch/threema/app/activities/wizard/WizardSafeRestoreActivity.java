@@ -223,12 +223,12 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 			}
 		}
 
-		if (TestUtil.empty(identity)) {
+		if (TestUtil.isEmptyOrNull(identity)) {
 			Toast.makeText(this, R.string.invalid_threema_id, Toast.LENGTH_LONG).show();
 			return;
 		}
 
-		if (TestUtil.empty(password)) {
+		if (TestUtil.isEmptyOrNull(password)) {
 			LongToast.makeText(this, R.string.wrong_backupid_or_password_or_no_internet_connection, Toast.LENGTH_LONG).show();
 			return;
 		}
@@ -374,7 +374,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 	@Override
 	public void onYes(String tag, String text, boolean isChecked, Object data) {
 		// safe backup restore
-		if (!TestUtil.empty(text)) {
+		if (!TestUtil.isEmptyOrNull(text)) {
 			reallySafeRestore(text);
 		}
 	}

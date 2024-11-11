@@ -25,28 +25,22 @@ import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.ConversationTagServiceImpl;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.MessageType;
 
 @WorkerThread
 public class ActiveConversationHandler extends MessageReceiver {
@@ -55,23 +49,17 @@ public class ActiveConversationHandler extends MessageReceiver {
 	private final ConversationTagService conversationTagService;
 	private final ContactService contactService;
 	private final GroupService groupService;
-	private final MessageService messageService;
-	private final NotificationService notificationService;
 
 	@AnyThread
 	public ActiveConversationHandler(ContactService contactService,
 	                                 GroupService groupService,
 	                                 ConversationService conversationService,
-	                                 ConversationTagService conversationTagService,
-		                             MessageService messageService,
-	                                 NotificationService notificationService) {
+	                                 ConversationTagService conversationTagService) {
 		super(Protocol.SUB_TYPE_ACTIVE_CONVERSATION);
 		this.contactService = contactService;
 		this.groupService = groupService;
 		this.conversationService = conversationService;
 		this.conversationTagService = conversationTagService;
-		this.messageService = messageService;
-		this.notificationService = notificationService;
 	}
 
 	@Override
@@ -108,59 +96,6 @@ public class ActiveConversationHandler extends MessageReceiver {
 			final ConversationModel conversationModel = this.conversationService.refresh(messageReceiver);
 			if (conversationModel != null) {
 				conversationTagService.removeTagAndNotify(conversationModel, conversationTagService.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD));
-			}
-
-			// TODO(ANDR-3141): Remove workaround
-			// workaround: mark all unread messages as read if last message is a group call status message as the web client does not support this
-			List<AbstractMessageModel> unreadGroupCallStatusMessages = messageReceiver.loadMessages(new MessageService.MessageFilter() {
-				@Override
-				public long getPageSize() {
-					return 0;
-				}
-
-				@Override
-				public Integer getPageReferenceId() {
-					return null;
-				}
-
-				@Override
-				public boolean withStatusMessages() {
-					return false;
-				}
-
-				@Override
-				public boolean withUnsaved() {
-					return false;
-				}
-
-				@Override
-				public boolean onlyUnread() {
-					return true;
-				}
-
-				@Override
-				public boolean onlyDownloaded() {
-					return false;
-				}
-
-				@Override
-				public MessageType[] types() {
-					return new MessageType[]{MessageType.GROUP_CALL_STATUS};
-				}
-
-				@Override
-				public int[] contentTypes() {
-					return new int[0];
-				}
-
-				@Override
-				public int[] displayTags() {
-					return new int[0];
-				}
-			});
-
-			if (!unreadGroupCallStatusMessages.isEmpty()) {
-				new ReadMessagesRoutine(unreadGroupCallStatusMessages, messageService, notificationService).run();
 			}
 		}
 	}

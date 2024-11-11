@@ -42,15 +42,14 @@ class OutgoingContactEditMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
 
     override val type: String = "OutgoingContactEditMessageTask"
-    private val messageService by lazy { serviceManager.messageService }
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getContactMessageModel(messageModelId, true)
-                ?: throw ThreemaException("No contact message model found for messageId=$messageModelId")
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        val messageModel = getContactMessageModel(messageModelId)
+                ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
 
         val editMessage = EditMessage(
             EditMessageData(
-                messageId = MessageId.fromString(message.apiMessageId).messageIdLong,
+                messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
                 text = editedText
             )
         )

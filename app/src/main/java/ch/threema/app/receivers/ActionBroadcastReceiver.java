@@ -32,7 +32,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 

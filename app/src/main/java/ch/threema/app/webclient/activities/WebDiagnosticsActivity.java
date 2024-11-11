@@ -197,7 +197,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 		// Wire up copy button
 		assert this.copyButton != null;
 		this.copyButton.setOnClickListener(view -> {
-			if (!TestUtil.empty(this.clipboardString)) {
+			if (!TestUtil.isEmptyOrNull(this.clipboardString)) {
 				WebDiagnosticsActivity.this.copyToClipboard(this.clipboardString);
 			}
 		});
@@ -205,7 +205,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 		// Wire up send button
 		assert this.sendButton != null;
 		this.sendButton.setOnClickListener(view -> {
-			if (!TestUtil.empty(this.clipboardString)) {
+			if (!TestUtil.isEmptyOrNull(this.clipboardString)) {
 				WebDiagnosticsActivity.this.prepareSendToSupport();
 			}
 		});

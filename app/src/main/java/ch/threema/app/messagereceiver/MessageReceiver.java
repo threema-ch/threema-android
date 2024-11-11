@@ -204,7 +204,8 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
 	/**
 	 * validate sending permission
 	 */
-	boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied);
+    @NonNull
+    SendingPermissionValidationResult validateSendingPermission();
 
 	/**
 	 * type of the receiver

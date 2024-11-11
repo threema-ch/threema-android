@@ -141,12 +141,12 @@ public class LocationAutocompleteAdapter extends EmptyRecyclerView.Adapter<Empty
 	}
 
 	private @NonNull String getLocalizedDescription(Context context, String id) {
-		if (!TestUtil.empty(id)) {
+		if (!TestUtil.isEmptyOrNull(id)) {
 			@StringRes int resId = context.getResources().getIdentifier(id, "string", context.getPackageName());
 
 			if (resId != 0) {
 				String value = context.getString(resId);
-				if (!TestUtil.empty(value)) {
+				if (!TestUtil.isEmptyOrNull(value)) {
 					return value;
 				}
 			}

@@ -148,7 +148,7 @@ public class WizardFragment2 extends WizardFragment {
 				nicknameText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(nickname.length())});
 			}
 			nicknameText.setText(nickname);
-			if (!TestUtil.empty(nickname)) {
+			if (!TestUtil.isEmptyOrNull(nickname)) {
 				nicknameText.setSelection(nickname.length());
 			}
 		}

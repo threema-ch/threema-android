@@ -21,6 +21,7 @@
 
 package ch.threema.app.voip.services;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE;
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.ThreemaApplication.getServiceManager;
 import static ch.threema.app.voip.services.VideoContext.CAMERA_BACK;
@@ -58,7 +59,9 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
+import androidx.core.app.ServiceCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LifecycleService;
@@ -92,9 +95,9 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
-import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.notifications.NotificationChannels;
+import ch.threema.app.notifications.NotificationGroups;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.utils.AudioDevice;
@@ -174,6 +177,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	// Notification IDs
 	private static final int INCALL_NOTIFICATION_ID = 41991;
 
+	private static final int FOREGROUND_SERVICE_TYPE =
+		Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? FOREGROUND_SERVICE_TYPE_MICROPHONE : 0;
+
 	// Peer connection
 	@Nullable private PeerConnectionClient peerConnectionClient = null;
 
@@ -247,7 +253,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 	private volatile boolean isCapturing = false; // Always synchronize on capturingLock!
 
 	// Managers
-	private NotificationManager notificationManager;
+	private NotificationManagerCompat notificationManagerCompat;
 	private TelephonyManager telephonyManager;
 	private SharedPreferences sharedPreferences;
 
@@ -676,7 +682,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 			return;
 		}
 
-		this.notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		this.notificationManagerCompat = NotificationManagerCompat.from(this);
 
 		// Create video context
 		logger.debug("Creating video context");
@@ -2185,12 +2191,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 				PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
 		// Prepare notification
-		final NotificationCompat.Builder notificationBuilder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_IN_CALL, null)
+		final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_IN_CALL)
 				.setContentTitle(NameUtil.getDisplayNameOrNickname(contact, true))
 				.setContentText(getString(R.string.voip_title))
-				.setColor(getResources().getColor(R.color.md_theme_light_primary))
 				.setLocalOnly(true)
 				.setOngoing(true)
+                .setGroup(NotificationGroups.CALLS)
+                .setGroupSummary(false)
 				.setUsesChronometer(true)
 				.setWhen(callStartedTimeMs)
 				.setSmallIcon(R.drawable.ic_phone_locked_white_24dp)
@@ -2205,15 +2212,19 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
 		// Launch notification
 		this.foregroundStarted = true;
-		startForeground(INCALL_NOTIFICATION_ID, notification);
+		ServiceCompat.startForeground(
+			this,
+			INCALL_NOTIFICATION_ID,
+			notification,
+			FOREGROUND_SERVICE_TYPE);
 
 		//call listener
 		ListenerManager.voipCallListeners.handle(listener -> listener.onStart(contact.getIdentity(), elapsedTimeMs));
 	}
 
 	private void cancelInCallNotification() {
-		if (notificationManager != null) {
-			notificationManager.cancel(INCALL_NOTIFICATION_ID);
+		if (notificationManagerCompat != null) {
+			notificationManagerCompat.cancel(INCALL_NOTIFICATION_ID);
 			//call listener
 			ListenerManager.voipCallListeners.handle(listener -> listener.onEnd());
 		}

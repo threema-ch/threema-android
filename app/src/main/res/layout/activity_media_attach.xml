@@ -87,19 +87,34 @@
 				android:importantForAccessibility="no"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
+				app:layout_constraintTop_toTopOf="parent" />
+
+			<include
+				layout="@layout/notice_select_media_permission"
+				android:id="@+id/select_media_permission_notice_container"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_marginLeft="8dp"
+				android:layout_marginRight="8dp"
+				android:layout_marginTop="@dimen/notice_views_vertical_margin"
+				android:layout_marginBottom="@dimen/notice_views_vertical_margin"
+				android:visibility="gone"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toBottomOf="@id/drag_handle"
 				app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
 
 			<ch.threema.app.ui.EmptyRecyclerView
 				android:id="@+id/media_grid_recycler"
 				android:layout_height="0dp"
 				android:layout_width="0dp"
-				android:paddingLeft="@dimen/grid_spacing"
-				android:paddingRight="@dimen/grid_spacing"
+				android:layout_marginTop="8dp"
+				android:layout_marginLeft="8dp"
+				android:layout_marginRight="8dp"
 				app:layout_constraintBottom_toBottomOf="parent"
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/drag_handle" />
+				app:layout_constraintTop_toBottomOf="@id/select_media_permission_notice_container" />
 
 		</androidx.constraintlayout.widget.ConstraintLayout>
 

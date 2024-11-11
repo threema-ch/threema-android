@@ -34,7 +34,7 @@ import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;

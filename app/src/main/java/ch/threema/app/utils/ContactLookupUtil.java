@@ -58,7 +58,7 @@ public class ContactLookupUtil {
 			}
 		}
 
-		if (!TestUtil.empty(lookupKey)) {
+		if (!TestUtil.isEmptyOrNull(lookupKey)) {
 			return contactService.getByLookupKey(lookupKey);
 		}
 

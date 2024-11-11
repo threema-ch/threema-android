@@ -342,6 +342,8 @@ public interface FileService {
 
 	/**
 	 * Decrypt messages specified by the 'models' parameter and return a list of URIs of the temporary files
+     * When receiving the URIs in OnDecryptedFilesComplete.onComplete, they will have the same order as passed in by `models` list.
+     * It is possible, that this URI list contains null entries.
 	 * Note that you have to ensure that only image, video or file messages are provided
 	 * @param models List of AbstractMessageModels to be decrypted
 	 * @param onDecryptedFilesComplete Callback

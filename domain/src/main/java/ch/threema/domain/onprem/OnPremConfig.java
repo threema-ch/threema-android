@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 
 public class OnPremConfig {
 
-	private final int refresh;
+	private final long validUntil;
 	private final OnPremLicense license;
 	private final OnPremConfigChat chatConfig;
 	private final OnPremConfigDirectory directoryConfig;
@@ -36,7 +36,7 @@ public class OnPremConfig {
 	private final OnPremConfigWeb webConfig;
 	private final OnPremConfigMediator mediatorConfig;
 
-	public OnPremConfig(int refresh,
+	public OnPremConfig(long validUntil,
 	                    OnPremLicense license,
 	                    OnPremConfigChat chatConfig,
 	                    OnPremConfigDirectory directoryConfig,
@@ -46,7 +46,7 @@ public class OnPremConfig {
 	                    OnPremConfigSafe safeConfig,
 	                    @Nullable OnPremConfigWeb webConfig,
 	                    @Nullable OnPremConfigMediator mediatorConfig) {
-		this.refresh = refresh;
+		this.validUntil = validUntil;
 		this.chatConfig = chatConfig;
 		this.license = license;
 		this.directoryConfig = directoryConfig;
@@ -58,8 +58,8 @@ public class OnPremConfig {
 		this.mediatorConfig = mediatorConfig;
 	}
 
-	public int getRefresh() {
-		return refresh;
+	public long getValidUntil() {
+		return validUntil;
 	}
 
 	public OnPremLicense getLicense() {

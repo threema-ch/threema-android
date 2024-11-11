@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakty</string>
     <string name="title_section1">Czaty</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">Nowy kontakt</string>
     <string name="menu_done">Zrobione</string>
     <string name="compose_message_and_enter">Kliknij tu, aby wpisać</string>
+    <string name="title_job_title">Nazwa stanowiska</string>
+    <string name="title_department">Dział</string>
     <string name="send">Wyślij</string>
     <string name="prefs_privacy">Prywatność</string>
     <string name="prefs_notifications">Powiadomienia</string>
@@ -49,7 +51,6 @@
     <string name="prefs_sum_notification_sound">Domyślne dla systemu</string>
     <string name="prefs_vibrate">Wibruj</string>
     <string name="prefs_sum_vibrate">Wibruj podczas przyjścia nowej wiadomości</string>
-    <string name="prefs_light">Światło powiadomień</string>
     <string name="prefs_sum_light">Biały</string>
     <string name="prefs_title_wallpaper">Ustaw tapetę</string>
     <string name="prefs_sum_wallpaper">Ustaw obraz na tło</string>
@@ -235,14 +236,15 @@
     <string name="search_contact">Wyszukaj kotankt</string>
     <string name="push_reset_title">Zresetuj token</string>
     <string name="push_reset_text">Token został zresetowany</string>
-    <string name="emoji_things">Obiekty</string>
-    <string name="emoji_traffic">Ruch</string>
-    <string name="emoji_symbols">Symbole</string>
-    <string name="emoji_nature">Natura</string>
-    <string name="emoji_food">Jedzenie i picie</string>
     <string name="emoji_recent">Niedawne</string>
-    <string name="emoji_emotions">Buźki i osoby</string>
-    <string name="emoji_activities">Aktywności</string>
+    <string name="emoji_smileys">Buźki &amp; emocje</string>
+    <string name="emoji_people">Ludzie &amp; ciało</string>
+    <string name="emoji_nature">Zwierzęta &amp; przyroda</string>
+    <string name="emoji_food">Jedzenie i picie</string>
+    <string name="emoji_travel">Podróże &amp; miejsca</string>
+    <string name="emoji_activity">Aktywność</string>
+    <string name="emoji_objects">Obiekt</string>
+    <string name="emoji_symbols">Symbole</string>
     <string name="emoji_flags">Flagi</string>
     <string name="emoji_search">Wyszukuj emoji</string>
     <string name="emoji_search_no_result">Brak wyników wyszukiwania</string>
@@ -418,7 +420,7 @@
     <string name="add_group_description">Dodaj opis grupy</string>
     <string name="read_more">czytaj więcej</string>
     <string name="read_less">czysto mniej</string>
-    <string name="changed_group_desc_date">"Ostatnio zmieniony: "</string>
+    <string name="changed_group_desc_date">Ostatnio zmieniony: </string>
     <string name="num_items_sected">%s wybranych</string>
     <string name="really_delete_media">Czy na pewno chcesz usunąć %d wiadomości multimedialnych?</string>
     <string name="check_updates">Sprawdź, czy są dostępne aktualizacje</string>
@@ -430,8 +432,6 @@
     <string name="contact_not_found">Nie znaleziono takiego kontaktu</string>
     <string name="contact_now_blocked">Kontakt zablokowany</string>
     <string name="contact_now_unblocked">Kontakt odblokowany</string>
-    <string name="not_enough_disk_space_title">Za mało miejsca</string>
-    <string name="not_enough_disk_space_text">Zwolnij co najmniej %1$s, aby odebrać wiadomość</string>
     <string name="sending_images">Wysyłanie zdjęć</string>
     <string name="share_conversation_body">Aby rozpakować plik, potrzebujesz nowoczesnego narzędzia ZIP obsługującego szyfrowanie AES, na przykład http://www.7-zip.org lub https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Chat zostanie wysłany w formie zaszyfrowanego pliku zip. Wybierz hasło:</string>
@@ -464,6 +464,8 @@
 Wprowadź pytanie do swojej ankiety.</string>
     <string name="ballot_add_choices">Dodaj odpowiedzi</string>
     <string name="blocked_cannot_send">Nie możesz wysyłać wiadomości do zablokowanego kontaktu</string>
+    <string name="invalid_some_cannot_send">Nie można wybrać niektórych odbiorców.</string>
+    <string name="invalid_all_cannot_send">Nie można wybrać tych odbiorców.</string>
     <string name="really_block_contact">Kolejne wiadomości od tego kontaktu będą usuwane. Kontynuować?</string>
     <string name="ballot_result_final">Ostateczny wynik</string>
     <string name="invalid_cannot_send">Nie możesz wysyłać wiadomości do nieprawidłowego kontaktu</string>
@@ -628,6 +630,7 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="new_wizard_linked_to">Połączony z</string>
     <string name="new_wizard_need_internet">Do utworzenia niepowtarzalnego ID w Threema potrzebne jest stabilne połączenie z Internetem. Spróbuj ponownie.</string>
     <string name="new_wizard_more_information">Więcej informacji</string>
+    <string name="message_details_message_id_copied">Identyfikator wiadomości został skopiowany do schowka</string>
     <string name="contact_details_id_copied">ID skopiowany do schowka</string>
     <string name="contact_details_nickname_copied">Pseudonim skopiowany do schowka</string>
     <string name="new_wizard_use_id_as_nickname">Chcesz używać swojego ID w Threema jako publicznie dostępnego pseudonimu?</string>
@@ -681,7 +684,6 @@ anonimowo?</string>
     <string name="error_out_of_memory">Za mało pamięci, aby ukończyć to polecenie</string>
     <string name="configure">Konfiguruj</string>
     <string name="file_is_not_audio">To nie jest plik dźwiękowy</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Niektóre ustawienia zostały wyłączone przez administratora</string>
     <string name="select_all">Wybierz wszystkie</string>
     <string name="deleting_messages">Usuwanie wiadomości</string>
@@ -764,14 +766,15 @@ anonimowo?</string>
     <string name="edit_message">Edytuj wiadomość</string>
     <string name="edited">Edytowano</string>
     <string name="confirm_edit_desc">Potwierdź edycję</string>
+    <string name="edit_history">Historia zmian</string>
     <string name="discard_changes">Czy chcesz odrzucić zmiany?</string>
     <string name="prefs_title_network">Sieć</string>
     <string name="prefs_title_ipv6_preferred">IPv6 do wiadomości</string>
     <string name="prefs_ipv6_preferred_off">Korzystaj tylko z połączeń IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferuj połączenia IPv6 ponad IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 do kom. tel. i int.</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Zezwól na IPv6 przy komunikacji telefonicznej i internetowej</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Nie zezwalaj na IPv6 przy komunikacji telefonicznej i internetowej</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Zezwól na używanie protokołu IPv6 do połączeń w aplikacji Threema i do aplikacji na komputer / klienta webowego.</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Nie zezwalaj na używanie protokołu IPv6 do połączeń w aplikacji Threema i do aplikacji na komputer / klienta webowego</string>
     <string name="ipv6_requires_restart">Aby zastosować tę konfigurację, aplikacja musi zostać uruchomiona ponownie.</string>
     <string name="ipv6_restart_now">Uruchom ponownie teraz</string>
     <string name="on_cap">Wł.</string>
@@ -1038,12 +1041,9 @@ anonimowo?</string>
     <string name="delete_for_all">Usuń dla wszystkich</string>
     <string name="message_was_deleted">Ta wiadomość została usunięta</string>
     <string name="continue_recording">Kontynuuj nagrywanie</string>
-    <string name="whatsnew_title">Co nowego w %1$s 5.2?</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p>Wiadomości z gwiazdką: Aby łatwiej potem je znaleźć, oznacz ważne wiadomości gwiazdką, przytrzymując je.</p>
-		<p>Automatyczne usuwanie: Czyść automatycznie swoje czaty po upływie wybranego czasu. Funkcję automatycznego usuwania wiadomości można włączyć w opcji zarządzania przechowywaniem.</p>
-		<p>Wiele innych ulepszeń i optymalizacji.</p>
-		]]></string>
+    <string name="whatsnew_title">Co nowego w wersji %1$s %2$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Aby poprawić wyświetlanie powiadomień, naprawiono obsługiwanie ich w tle. Jeśli w przypadku niektórych czatów włączone były oddzielne ustawienia dotyczące powiadomień, należy ponownie ustawić preferowane opcje.</p>
+        ]]></string>
     <string name="tap_to_start">Dotknij tutaj, aby włączyć %s teraz.</string>
     <string name="two_years">2 lata</string>
     <string name="invalid_backup_path">Nieprawidłowa ścieżka kopii zapasowej</string>
@@ -1166,14 +1166,12 @@ anonimowo?</string>
     <string name="only_images_or_videos">Można wybrać tylko obrazy lub filmy</string>
     <string name="media_gallery_gifs">GIF-y</string>
     <string name="no_media_found_global">Nie znaleziono multimediów na tym urządzeniu</string>
-    <string name="enable_formatting">Włącz formatowanie</string>
     <string name="original_file_no_longer_avilable">Oryginalny plik nie jest już dostępny. Wyślij  wiadomość ponownie.</string>
     <string name="state_transcoding">Transkodowanie</string>
     <string name="importing_files">Importowanie plików</string>
     <string name="tooltip_image_resolution_hint">Kliknij, aby ustawić rozdzielczość obrazu.</string>
     <string name="ballot_created_successfully">Utworzono ankietę.</string>
     <string name="file_size">Rozmiar pliku</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Pokaż w czacie</string>
     <string name="group_create_no_members">Czy na pewno chcesz utworzyć pustą grupę?</string>
@@ -1315,7 +1313,9 @@ anonimowo?</string>
     <string name="group_request_already_sent_title">Prośba już wysłana</string>
     <string name="qr_scanner_id_hint">Zeskanuj kod, aby zweryfikować jego tożsamość. Aby wyświetlić kod, poproś osobę kontaktową, aby kliknęła obraz profilu w lewym górrnym rogu ekranu głównego Threema.</string>
     <string name="enable_storage_access_for_media">Włącz dostęp do pamięci masowej, aby zobaczyć zdjęcia i filmy w urządzeniu</string>
+    <string name="select_storage_access_for_media_is_granted">Udało Ci się przyznać dostęp do wybranej liczby zdjęć i filmów.</string>
     <string name="take_me_there">Zabierz mnie tam...</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Zarządzaj</string>
     <string name="notification_channel_group_join_request">Kanał powiadamiania o otrzymanych prośbach o dołączenie</string>
     <string name="reset_default_group_link_title">Przywróć domyślne informacje łącza</string>
     <string name="reset_default_group_link_desc">Poprzednio udostępnione łącze będzie nieważne, a prośby przez nie wysłane będą automatycznie odrzucane z odpowiedzią o wygaśnięciu.</string>
@@ -1380,7 +1380,6 @@ anonimowo?</string>
     <string name="prefs_title_use_system_ringtone">Użyj dzwonka systemowego</string>
     <string name="organization_type">Organizacja</string>
     <string name="permission_bluetooth_connect_required">Włącz uprawnienie „Urządzenia w pobliżu”, aby zlokalizować połączone zestawy słuchawkowe Bluetooth</string>
-    <string name="threema_push_start_webclient_sessions_manually">Usługa Threema Push jest aktywna. Sesje Threema Web oraz Desktop należy uruchomić ręcznie.</string>
     <string name="tooltip_multiple_recipients_title">Wielu odbiorców</string>
     <string name="tooltip_multiple_recipients_text">Przytrzymaj dłużej, aby wybrać wielu odbiorców tej samej wiadomości.</string>
     <string name="synchronizing">Synchronizacja…</string>
@@ -1556,8 +1555,6 @@ anonimowo?</string>
     <string name="problemsolver_to_settings">Do ustawień</string>
     <string name="prefs_advanced_options">Opcje zaawansowane</string>
     <string name="push_service">Usługa push</string>
-    <string name="zoom_out">Pomniejsz</string>
-    <string name="zoom_in">Powiększ</string>
     <string name="edit_and_send">Edytuj i wyślij</string>
     <string name="media_gallery_animated_webps">Animowane obrazy WebP</string>
     <string name="unsupported_image_type">Nieobsługiwany typ obrazu: %s</string>
@@ -1566,7 +1563,12 @@ anonimowo?</string>
     <string name="edit_message_not_supported_for_contact">Nie można edytować wiadomości, ponieważ wersja aplikacji odbiorcy nie obsługuje tej funkcji.</string>
     <string name="edit_message_not_supported_for_all_group_members">Następujący członkowie grupy nie będą mogli zobaczyć Twoich edycji: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Nie można edytować wiadomości, ponieważ żaden członek grupy nie posiada wersji aplikacji, która obsługuje tę funkcję.</string>
-    <string name="delete_message_not_supported_for_all_group_members">Ta wiadomość nie zostanie usunięta dla następujących członków grupy: %1$s</string>
+    <string name="prefs_notification_settings">Ustawienia dotyczące powiadomień</string>
+    <string name="prefs_notification_settings_summary">Zmień dźwięk i wibracje w oknie dialogowym ustawień systemowych</string>
+    <string name="new_messages">Nowe wiadomości</string>
+    <string name="new_group_messages">Nowe wiadomości grupowe</string>
+    <string name="individual_notification_settings">Oddzielne ustawienia dotyczące powiadomień</string>
+    <string name="delete_message_not_supported_for_all_group_members">Wiadomość nie zostanie usunięta w przypadku członków tej grupy: %1$s</string>
     <string name="work_intro_more_link_text">Dowiedz się więcej o Threema Work</string>
     <string name="work_intro_subtitle">Bezpieczny komunikator biznesowy\ndla firm.</string>
     <string name="work_intro_login">Zaloguj się %1$s</string>
@@ -1574,124 +1576,201 @@ anonimowo?</string>
     <string name="consumer_notice_playstore_link_description">Threema w Sklepie Play</string>
     <string name="consumer_notice_appgallery_link_description">Threema w AppGallery</string>
     <string name="consumer_notice_subtitle">Do użytku prywatnego</string>
+    <string name="individual_notification_settings_warn">Do każdego czatu z oddzielnymi ustawieniami dotyczącymi powiadomień tworzony jest kanał powiadomień. To oznacza, że nazwa czatu jest widoczna w ustawieniach urządzenia nawet wtedy, gdy aplikacja jest zablokowana. Czy mimo tego chcesz kontynuować?</string>
+    <string name="incoming_calls">Połączenia przychodzące</string>
+    <string name="group_chats">Czaty grupowe</string>
+    <string name="edit_history_file_no_caption">Brak napisu</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">zgoda została wysłana</string>
+    <string name="cd_dec_icon">informacja o braku zgody została wysłana</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">przez %d członków grupy</string>
+    <string name="cd_edited">wiadomość została edytowana</string>
+    <string name="cd_created_at">utworzono o %s</string>
+    <string name="cd_edited_at">edytowano o %s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. zmiana w historii</string>
+    <string name="cd_message_details_container">szczegóły wiadomości</string>
+    <string name="cd_enable_formatting">Włącz formatowanie</string>
+    <string name="cd_message">wiadomość</string>
     <plurals name="contacts_counter_label">
+        <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktów</item>
-        <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontaktów</item>
     </plurals>
     <plurals name="really_delete_thread_message">
+        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
         <item quantity="few">Czy na pewno chcesz usunąć %d chaty?</item>
         <item quantity="many">Czy na pewno chcesz usunąć %d chaty?</item>
-        <item quantity="one">Czy na pewno chcesz usunąć %d chat?</item>
         <item quantity="other">Czy na pewno chcesz usunąć %d chaty?</item>
     </plurals>
     <plurals name="sending_message_failed">
+        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="few">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="many">Wysyłanie wiadomości nie powiodło %1$d</item>
-        <item quantity="one">Wysyłanie wiadomości nie powiodło %1$d</item>
         <item quantity="other">Wysyłanie wiadomości nie powiodło %1$d</item>
     </plurals>
     <plurals name="selection_counter_label">
+        <item quantity="one">Wybrano %d obrazy</item>
         <item quantity="few">Wybrano %d obrazyów</item>
         <item quantity="many">Wybrano %d obrazyów</item>
-        <item quantity="one">Wybrano %d obrazy</item>
         <item quantity="other">Wybrano %d obrazyów</item>
     </plurals>
     <plurals name="message_copied">
         <item quantity="one">Wiadomość skopiowana</item>
-        <item quantity="other">Wiadomości skopiowane</item>
         <item quantity="few">Wiadomości skopiowane</item>
         <item quantity="many">Wiadomości skopiowane</item>
+        <item quantity="other">Wiadomości skopiowane</item>
     </plurals>
     <plurals name="new_messages">
+        <item quantity="one">%d nowa wiadomość</item>
         <item quantity="few">%d nowe wiadomości</item>
         <item quantity="many">%d nowych wiadomości</item>
-        <item quantity="one">%d nowa wiadomość</item>
         <item quantity="other">%d nowych wiadomości</item>
     </plurals>
     <plurals name="unread_messages">
+        <item quantity="one">%d nieprzeczytana wiadomość</item>
         <item quantity="few">%d nieprzeczytane wiadomości</item>
         <item quantity="many">%d nieprzeczytanych wiadomości</item>
-        <item quantity="one">%d nieprzeczytana wiadomość</item>
         <item quantity="other">%d nieprzeczytanych wiadomości</item>
     </plurals>
     <plurals name="file_saved">
+        <item quantity="one">Zapisano %d plik.</item>
         <item quantity="few">Zapisano %d pliki.</item>
         <item quantity="many">Zapisano %d plików.</item>
-        <item quantity="one">Zapisano %d plik.</item>
         <item quantity="other">Zapisano %d plików.</item>
     </plurals>
     <plurals name="saving_media">
+        <item quantity="one">Zapisywanie pliku mediów</item>
         <item quantity="few">Zapisywanie %d plików mediów</item>
         <item quantity="many">Zapisywanie %d plików mediów</item>
-        <item quantity="one">Zapisywanie pliku mediów</item>
         <item quantity="other">Zapisywanie %d plików mediów</item>
     </plurals>
     <plurals name="ballot_really_delete">
+        <item quantity="one">Usuń ankietę</item>
         <item quantity="few">Usuń ankiety</item>
         <item quantity="many">Usuń ankiety</item>
-        <item quantity="one">Usuń ankietę</item>
         <item quantity="other">Usuń ankiety</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
+        <item quantity="one">Czy na pewno chcesz usunąć %1$d ankietę? Nie będzie możliwości odzyskania głosów.</item>
         <item quantity="few">Czy na pewno chcesz usunąć %1$d ankiety? Nie będzie możliwości odzyskania głosów.</item>
         <item quantity="many">Czy na pewno chcesz usunąć %1$d ankiet? Nie będzie możliwości odzyskania głosów.</item>
-        <item quantity="one">Czy na pewno chcesz usunąć %1$d ankietę? Nie będzie możliwości odzyskania głosów.</item>
         <item quantity="other">Czy na pewno chcesz usunąć %1$d ankiet? Nie będzie możliwości odzyskania głosów.</item>
     </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">Usunięto %d plik multimedialny</item>
+        <item quantity="few">Usunięto %d pliki multimedialne</item>
+        <item quantity="many">Usunięto %d plików multimedialnych</item>
+        <item quantity="other">Usunięto %d plików multimedialnych</item>
+    </plurals>
     <plurals name="message_deleted">
+        <item quantity="one">Usunięto %d wiadomość</item>
         <item quantity="few">Usunięto %d wiadomości</item>
         <item quantity="many">Usunięto %d wiadomości</item>
-        <item quantity="one">Usunięto %d wiadomość</item>
         <item quantity="other">Usunięto %d wiadomości</item>
     </plurals>
     <plurals name="notifications_for_x_hours">
+        <item quantity="one">Przez %d godzinę</item>
         <item quantity="few">Przez %d godziny</item>
         <item quantity="many">Przez %d godzin</item>
-        <item quantity="one">Przez %d godzinę</item>
         <item quantity="other">Przez %d godzin</item>
     </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="one">Czy naprawdę chcesz usunąć %1$d kontakt i wszystkie powiązane z nim czaty?</item>
+        <item quantity="few">Czy naprawdę chcesz usunąć %1$d kontakty i wszystkie powiązane z nimi czaty?</item>
+        <item quantity="many">Czy naprawdę chcesz usunąć %1$d kontaktów i wszystkie powiązane z nimi czaty?</item>
+        <item quantity="other">Czy naprawdę chcesz usunąć %1$d kontaktów i wszystkie powiązane z nimi czaty?</item>
+    </plurals>
     <plurals name="some_contacts_not_deleted">
+        <item quantity="one">Nie można usunąć %d kontaktu, ponieważ jest ciągle częścią grupy.</item>
         <item quantity="few">Nie można usunąć %d kontaktów, ponieważ są ciągle częścią grupy.</item>
         <item quantity="many">Nie można usunąć %d kontaktów, ponieważ są ciągle częścią grupy.</item>
-        <item quantity="one">Nie można usunąć %d kontaktu, ponieważ jest ciągle częścią grupy.</item>
         <item quantity="other">Nie można usunąć %d kontaktów, ponieważ są ciągle częścią grupy.</item>
     </plurals>
     <plurals name="message_archived">
+        <item quantity="one">Zarchiwizowano %d czat</item>
         <item quantity="few">Zarchiwizowano %d czaty</item>
         <item quantity="many">Zarchiwizowano %d czatów</item>
-        <item quantity="one">Zarchiwizowano %d czat</item>
         <item quantity="other">Zarchiwizowano %d czatów</item>
     </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d nowa wiadomość na czatach (%2$d)</item>
+        <item quantity="few">%1$d nowe wiadomości na czatach (%2$d)</item>
+        <item quantity="many">%1$d nowych wiadomości na czatach (%2$d)</item>
+        <item quantity="other">%1$d nowych wiadomości na czatach (%2$d)</item>
+    </plurals>
     <plurals name="webclient_running_sessions">
+        <item quantity="one">Trwa %d sesja</item>
         <item quantity="few">Trwają %d sesje</item>
         <item quantity="many">Trwa %d sesji</item>
-        <item quantity="one">Trwa %d sesja</item>
         <item quantity="other">Trwa %d sesji</item>
     </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Czy naprawdę chcesz usunąć %d prośbę o przyjęcie do grupy?
+            Pamiętaj, że prośba nie zostanie unieważniona i nadal może być zatwierdzona lub wymagana,
+            jeśli jeszcze na nią nie odpowiedziano.</item>
+        <item quantity="few">Czy naprawdę chcesz usunąć %d prośby o przyjęcie do grupy?
+        Pamiętaj, że prośby nie zostaną unieważnione i nadal mogą być zatwierdzone lub wymagane,
+            jeśli jeszcze na nie nie odpowiedziano.</item>
+        <item quantity="many">Czy naprawdę chcesz usunąć %d próśb o przyjęcie do grupy?
+        Pamiętaj, że prośby nie zostaną unieważnione i nadal mogą być zatwierdzone lub wymagane,
+            jeśli jeszcze na nie nie odpowiedziano.</item>
+        <item quantity="other">Czy naprawdę chcesz usunąć %d próśb o przyjęcie do grupy?
+        Pamiętaj, że prośby nie zostaną unieważnione i nadal mogą być zatwierdzone lub wymagane,
+            jeśli jeszcze na nie nie odpowiedziano.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Czy naprawdę chcesz usunąć %d prośbę o przyjęcie do grupy?
+            Po skasowaniu próśb nie można na nie odpowiedzieć.</item>
+        <item quantity="few">Czy naprawdę chcesz usunąć %d prośby o przyjęcie do grupy?
+            Po skasowaniu próśb nie można na nie odpowiedzieć.</item>
+        <item quantity="many">Czy naprawdę chcesz usunąć %d próśb o przyjęcie do grupy?
+            Po skasowaniu próśb nie można na nie odpowiedzieć.</item>
+        <item quantity="other">Czy naprawdę chcesz usunąć %d próśb o przyjęcie do grupy?
+            Po skasowaniu próśb nie można na nie odpowiedzieć.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Czy naprawdę chcesz usunąć %d link do grupy?
+            Inne osoby nie będą już mogły wysyłać próśb przy jego użyciu.
+            Natomiast otrzymane wcześniej prośby nadal mogą być zatwierdzone lub odrzucone.</item>
+        <item quantity="few">Czy naprawdę chcesz usunąć %d linki do grupy?
+            Inne osoby nie będą już mogły wysyłać próśb przy użyciu tych odnośników.
+            Natomiast otrzymane wcześniej prośby nadal mogą być zatwierdzone lub odrzucone.</item>
+        <item quantity="many">Czy naprawdę chcesz usunąć %d linków do grupy?
+            Inne osoby nie będą już mogły wysyłać próśb przy użyciu tych odnośników.
+            Natomiast otrzymane wcześniej prośby nadal mogą być zatwierdzone lub odrzucone.</item>
+        <item quantity="other">Czy naprawdę chcesz usunąć %d linków do grupy?
+            Inne osoby nie będą już mogły wysyłać próśb przy użyciu tych odnośników.
+            Natomiast otrzymane wcześniej prośby nadal mogą być zatwierdzone lub odrzucone.</item>
+    </plurals>
     <plurals name="chat_deleted">
+        <item quantity="one">Usunięto %d czat.</item>
         <item quantity="few">Usunięto %d czaty.</item>
         <item quantity="many">Usunięto %d czatów.</item>
-        <item quantity="one">Usunięto %d czat.</item>
         <item quantity="other">Usunięto %d czatów.</item>
     </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="one">%d zarchiwizowany czat</item>
+        <item quantity="few">%d zarchiwizowane czaty</item>
+        <item quantity="many">%d zarchiwizowanych czatów</item>
+        <item quantity="other">%d zarchiwizowanych czatów</item>
+    </plurals>
     <plurals name="forward_security_messages_skipped">
+        <item quantity="one">Utracono jedną wiadomość od ostatniej wiadomości.</item>
         <item quantity="few">Utracono %d wiadomości od ostatniej wiadomości.</item>
         <item quantity="many">Utracono %d wiadomości od ostatniej wiadomości.</item>
-        <item quantity="one">Utracono jedną wiadomość od ostatniej wiadomości.</item>
         <item quantity="other">Utracono %d wiadomości od ostatniej wiadomości.</item>
     </plurals>
     <plurals name="delete_messages">
+        <item quantity="one">Usunąć tę wiadomość?</item>
         <item quantity="few">Usunąć %d wiadomości?</item>
         <item quantity="many">Usunąć %d wiadomości?</item>
-        <item quantity="one">Usunąć %d wiadomość?</item>
         <item quantity="other">Usunąć %d wiadomości?</item>
     </plurals>
     <plurals name="number_of_group_members">
+        <item quantity="one">%d członek grupy</item>
         <item quantity="few">%d członków grupy</item>
         <item quantity="many">%d członków grupy</item>
-        <item quantity="one">%d członek grupy</item>
         <item quantity="other">%d członków grupy</item>
     </plurals>
 </resources>

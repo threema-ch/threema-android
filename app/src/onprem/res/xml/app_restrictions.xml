@@ -306,4 +306,18 @@
 		android:restrictionType="integer"
 		android:title="@string/restriction_keep_messages_days"/>
 
+    <restriction
+        android:defaultValue=""
+        android:description="@string/restriction_job_title_desc"
+        android:key="th_job_title"
+        android:restrictionType="string"
+        android:title="@string/restriction_job_title" />
+
+    <restriction
+        android:defaultValue=""
+        android:description="@string/restriction_department_desc"
+        android:key="th_department"
+        android:restrictionType="string"
+        android:title="@string/restriction_department" />
+
 </restrictions>

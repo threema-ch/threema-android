@@ -501,7 +501,7 @@ public class MessageSectionFragment extends MainFragment
 			LogUtil.exception(e, getActivity());
 		}
 
-		if (savedInstanceState != null && TestUtil.empty(filterQuery)) {
+		if (savedInstanceState != null && TestUtil.isEmptyOrNull(filterQuery)) {
 			filterQuery = savedInstanceState.getString(BUNDLE_FILTER_QUERY);
 		}
 
@@ -554,7 +554,7 @@ public class MessageSectionFragment extends MainFragment
 						this.searchView = (SearchView) searchMenuItem.getActionView();
 
 						if (this.searchView != null) {
-							if (!TestUtil.empty(filterQuery)) {
+							if (!TestUtil.isEmptyOrNull(filterQuery)) {
 								// restore filter
 								MenuItemCompat.expandActionView(searchMenuItem);
 								searchView.setQuery(filterQuery, false);
@@ -1220,6 +1220,8 @@ public class MessageSectionFragment extends MainFragment
 		}
 		updateHiddenMenuVisibility();
 
+		messageListAdapter.updateDateView();
+
 		super.onResume();
 	}
 
@@ -1227,7 +1229,7 @@ public class MessageSectionFragment extends MainFragment
 	public void onSaveInstanceState(Bundle outState) {
 		logger.info("saveInstance");
 
-		if (!TestUtil.empty(filterQuery)) {
+		if (!TestUtil.isEmptyOrNull(filterQuery)) {
 			outState.putString(BUNDLE_FILTER_QUERY, filterQuery);
 		}
 

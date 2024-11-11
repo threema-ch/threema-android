@@ -23,7 +23,6 @@ package ch.threema.app.backuprestore.csv;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -59,6 +58,8 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -70,7 +71,7 @@ import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.exceptions.RestoreCanceledException;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
@@ -117,8 +118,7 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class RestoreService extends Service {
@@ -134,6 +134,8 @@ public class RestoreService extends Service {
 	public static final String EXTRA_RESTORE_BACKUP_PASSWORD = "pwd";
 	private static final int MAX_THUMBNAIL_SIZE_BYTES = 5 * 1024 * 1024; // do not restore thumbnails that are bigger than 5 MB
 
+	private static final int FG_SERVICE_TYPE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ? FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0;
+
 	private ServiceManager serviceManager;
 	private ContactService contactService;
 	private ConversationService conversationService;
@@ -142,7 +144,7 @@ public class RestoreService extends Service {
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
-	private NotificationManager notificationManager;
+	private NotificationManagerCompat notificationManagerCompat;
 	private DatabaseNonceStore databaseNonceStore;
 
 	private NotificationCompat.Builder notificationBuilder;
@@ -192,8 +194,11 @@ public class RestoreService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		logger.debug("onStartCommand flags = " + flags + " startId " + startId);
-
-		startForeground(RESTORE_NOTIFICATION_ID, getPersistentNotification());
+		ServiceCompat.startForeground(
+			this,
+			RESTORE_NOTIFICATION_ID,
+			getPersistentNotification(),
+			FG_SERVICE_TYPE);
 
 		if (intent != null) {
 			logger.debug("onStartCommand intent != null");
@@ -297,7 +302,7 @@ public class RestoreService extends Service {
 			return;
 		}
 
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManagerCompat = NotificationManagerCompat.from(this);
 	}
 
 	@Override
@@ -448,7 +453,8 @@ public class RestoreService extends Service {
 					databaseServiceNew.getBallotModelFactory().deleteAll();
 					databaseServiceNew.getBallotVoteModelFactory().deleteAll();
 					databaseServiceNew.getBallotChoiceModelFactory().deleteAll();
-					databaseServiceNew.getGroupRequestSyncLogModelFactory().deleteAll();
+					databaseServiceNew.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
+					databaseServiceNew.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
 
 					// Remove all media files (don't remove recursively, tmp folder contain the restoring files
 					logger.info("Deleting current media files");
@@ -779,7 +785,7 @@ public class RestoreService extends Service {
 			}
 
 			final String groupUid = fileName.substring(Tags.GROUP_AVATAR_PREFIX.length());
-			if (!TestUtil.empty(groupUid)) {
+			if (!TestUtil.isEmptyOrNull(groupUid)) {
 				Integer groupId = groupUidMap.get(groupUid);
 				if (groupId != null) {
 					GroupModel m = databaseServiceNew.getGroupModelFactory().getById(groupId);
@@ -846,7 +852,7 @@ public class RestoreService extends Service {
 
 		for (FileHeader fileHeader : fileHeaders) {
 			String fileName = fileHeader.getFileName();
-			if(!TestUtil.empty(fileName)
+			if(!TestUtil.isEmptyOrNull(fileName)
 					&& fileName.startsWith(thumbnailPrefix)) {
 				thumbnailFileHeaders.put(fileName, fileHeader);
 			}
@@ -943,13 +949,13 @@ public class RestoreService extends Service {
 	private boolean restoreContactAvatarFile(@NonNull FileHeader fileHeader){
 		// Look up avatar filename
 		String filename = fileHeader.getFileName();
-		if (TestUtil.empty(filename)) {
+		if (TestUtil.isEmptyOrNull(filename)) {
 			return false;
 		}
 
 		// Look up contact model for this avatar
 		String identityId = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
-		if (TestUtil.empty(identityId)) {
+		if (TestUtil.isEmptyOrNull(identityId)) {
 			return false;
 		}
 
@@ -979,13 +985,13 @@ public class RestoreService extends Service {
 	private boolean restoreContactPhotoFile(@NonNull FileHeader fileHeader){
 		// Look up profile picture filename
 		String filename = fileHeader.getFileName();
-		if(TestUtil.empty(filename)) {
+		if(TestUtil.isEmptyOrNull(filename)) {
 			return false;
 		}
 
 		// Look up contact model for this avatar
 		String identityId = filename.substring(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX.length());
-		if (TestUtil.empty(identityId)) {
+		if (TestUtil.isEmptyOrNull(identityId)) {
 			return false;
 		}
 		ContactModel contactModel = contactService.getByIdentity(identityIdMap.get(identityId));
@@ -1319,7 +1325,7 @@ public class RestoreService extends Service {
 		}
 
 		final String identityId = fileName.substring(Tags.MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX));
-		if (TestUtil.empty(identityId)) {
+		if (TestUtil.isEmptyOrNull(identityId)) {
 			throw new ThreemaException(null);
 		}
 
@@ -1362,7 +1368,7 @@ public class RestoreService extends Service {
 		}
 
 		final String groupUid = fileName.substring(Tags.GROUP_MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX));
-		if (TestUtil.empty(groupUid)) {
+		if (TestUtil.isEmptyOrNull(groupUid)) {
 			throw new ThreemaException(null);
 		}
 
@@ -1411,7 +1417,7 @@ public class RestoreService extends Service {
 
 		final String distributionListBackupUid = pieces[0];
 
-		if (TestUtil.empty(distributionListBackupUid)) {
+		if (TestUtil.isEmptyOrNull(distributionListBackupUid)) {
 			throw new ThreemaException(null);
 		}
 
@@ -1462,7 +1468,7 @@ public class RestoreService extends Service {
 	private List<GroupMemberModel> createGroupMembers(CSVRow row, int groupId) throws ThreemaException {
 		List<GroupMemberModel> res = new ArrayList<>();
 		for(String identity: row.getStrings(Tags.TAG_GROUP_MEMBERS)) {
-			if(!TestUtil.empty(identity)) {
+			if(!TestUtil.isEmptyOrNull(identity)) {
 				GroupMemberModel m = new GroupMemberModel();
 				m.setGroupId(groupId);
 				m.setIdentity(identity);
@@ -1475,7 +1481,7 @@ public class RestoreService extends Service {
 	private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, long distributionListId) throws ThreemaException {
 		List<DistributionListMemberModel> res = new ArrayList<>();
 		for(String identity: row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
-			if(!TestUtil.empty(identity)) {
+			if(!TestUtil.isEmptyOrNull(identity)) {
 				DistributionListMemberModel m = new DistributionListMemberModel();
 				m.setDistributionListId(distributionListId);
 				m.setIdentity(identity);
@@ -1585,7 +1591,7 @@ public class RestoreService extends Service {
 			messageType = MessageType.FILE;
 			// get mime type from body
 			String body = row.getString(Tags.TAG_MESSAGE_BODY);
-			if (!TestUtil.empty(body)) {
+			if (!TestUtil.isEmptyOrNull(body)) {
 				FileDataModel fileDataModel = FileDataModel.create(body);
 				messageContentsType = MimeUtil.getContentTypeFromFileData(fileDataModel);
 			} else {
@@ -1623,7 +1629,7 @@ public class RestoreService extends Service {
 
 		if(restoreSettings.getVersion() >= 15) {
 			String quotedMessageId = row.getString(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID);
-			if (!TestUtil.empty(quotedMessageId)) {
+			if (!TestUtil.isEmptyOrNull(quotedMessageId)) {
 				messageModel.setQuotedMessageId(quotedMessageId);
 			}
 		}
@@ -1681,7 +1687,7 @@ public class RestoreService extends Service {
 		}
 		if (restoreSettings.getVersion() >= 17) {
 			String messageStatesJson = row.getString(Tags.TAG_GROUP_MESSAGE_STATES);
-			if (!TestUtil.empty(messageStatesJson)) {
+			if (!TestUtil.isEmptyOrNull(messageStatesJson)) {
 				try {
 					Map<String, Object> messageStatesMap = JsonUtil.convertObject(messageStatesJson);
 					messageModel.setGroupMessageStates(messageStatesMap);
@@ -1838,7 +1844,7 @@ public class RestoreService extends Service {
 			cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 		}
 
-		notificationBuilder = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
+		notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS)
 			.setContentTitle(getString(R.string.restoring_backup))
 			.setContentText(getString(R.string.please_wait))
 			.setOngoing(true)
@@ -1849,6 +1855,7 @@ public class RestoreService extends Service {
 		return notificationBuilder.build();
 	}
 
+	@SuppressLint("MissingPermission")
 	private void updatePersistentNotification(int currentStep, int steps, boolean indeterminate, @Nullable final String remainingTimeText) {
 		logger.debug("updatePersistentNotification {} of {}", currentStep, steps);
 
@@ -1857,7 +1864,7 @@ public class RestoreService extends Service {
 		}
 
 		notificationBuilder.setProgress(steps, currentStep, indeterminate);
-		notificationManager.notify(RESTORE_NOTIFICATION_ID, notificationBuilder.build());
+		notificationManagerCompat.notify(RESTORE_NOTIFICATION_ID, notificationBuilder.build());
 	}
 
 	private String getRemainingTimeText(int currentStep, int steps) {
@@ -1869,44 +1876,44 @@ public class RestoreService extends Service {
 
 
 	private void cancelPersistentNotification() {
-		notificationManager.cancel(RESTORE_NOTIFICATION_ID);
+		notificationManagerCompat.cancel(RESTORE_NOTIFICATION_ID);
 	}
 
+	@SuppressLint("MissingPermission")
 	private void showRestoreErrorNotification(String message) {
 		String contentText;
 
-		if (!TestUtil.empty(message)) {
+		if (!TestUtil.isEmptyOrNull(message)) {
 			contentText = message;
 		} else {
 			contentText = getString(R.string.restore_error_body);
 		}
 
 		NotificationCompat.Builder builder =
-			new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_ALERT, null)
+			new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
 				.setSmallIcon(R.drawable.ic_notification_small)
 				.setTicker(getString(R.string.restore_error_body))
 				.setContentTitle(getString(R.string.restoring_backup))
 				.setContentText(contentText)
 				.setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
-				.setColor(getResources().getColor(R.color.material_red))
 				.setPriority(NotificationCompat.PRIORITY_MAX)
 				.setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
 				.setAutoCancel(false);
 
-		notificationManager.notify(RESTORE_COMPLETION_NOTIFICATION_ID, builder.build());
+		notificationManagerCompat.notify(RESTORE_COMPLETION_NOTIFICATION_ID, builder.build());
 	}
 
 
+	@SuppressLint("MissingPermission")
 	private void showRestoreSuccessNotification() {
 		String text;
 
 		NotificationCompat.Builder builder =
-			new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_ALERT, null)
+			new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
 				.setSmallIcon(R.drawable.ic_notification_small)
 				.setTicker(getString(R.string.restore_success_body))
 				.setContentTitle(getString(R.string.restoring_backup))
 				.setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
-				.setColor(getResources().getColor(R.color.material_green))
 				.setPriority(NotificationCompat.PRIORITY_MAX)
 				.setAutoCancel(true);
 
@@ -1925,6 +1932,6 @@ public class RestoreService extends Service {
 		builder.setContentText(text);
 		builder.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
 
-		notificationManager.notify(RESTORE_COMPLETION_NOTIFICATION_ID, builder.build());
+		notificationManagerCompat.notify(RESTORE_COMPLETION_NOTIFICATION_ID, builder.build());
 	}
 }

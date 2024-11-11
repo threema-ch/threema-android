@@ -28,13 +28,32 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.notifications.NotificationBuilderWrapper
+import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.managers.ServiceManager
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
-import ch.threema.app.services.*
+import ch.threema.app.services.AppRestrictionService
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.FileService
+import ch.threema.app.services.notification.NotificationService
+import ch.threema.app.services.PreferenceService
+import ch.threema.app.services.UserService
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.stores.IdentityStore
@@ -55,14 +74,15 @@ import java.util.concurrent.TimeUnit
 private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
 
 class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
-    private val contactService: ContactService?
-    private val preferenceService: PreferenceService?
-    private val fileService: FileService?
-    private val licenseService: LicenseService<*>?
-    private val apiConnector: APIConnector?
-    private val notificationService: NotificationService?
-    private val userService: UserService?
-    private val identityStore: IdentityStore?
+    private val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
+    private val contactService: ContactService? = serviceManager?.contactService
+    private val preferenceService: PreferenceService? = serviceManager?.preferenceService
+    private val fileService: FileService? = serviceManager?.fileService
+    private val licenseService: LicenseService<*>? = serviceManager?.licenseService
+    private val apiConnector: APIConnector? = serviceManager?.apiConnector
+    private val notificationService: NotificationService? = serviceManager?.notificationService
+    private val userService: UserService? = serviceManager?.userService
+    private val identityStore: IdentityStore? = serviceManager?.identityStore
 
     companion object {
         private const val EXTRA_REFRESH_RESTRICTIONS_ONLY = "RESTRICTIONS_ONLY"
@@ -139,21 +159,10 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         }
     }
 
-    init {
-        val serviceManager = ThreemaApplication.getServiceManager()
-        contactService = serviceManager?.contactService
-        preferenceService = serviceManager?.preferenceService
-        licenseService = serviceManager?.licenseService
-        fileService = serviceManager?.fileService
-        notificationService = serviceManager?.notificationService
-        userService = serviceManager?.userService
-        apiConnector = serviceManager?.apiConnector
-        identityStore = serviceManager?.identityStore
-    }
-
     override fun doWork(): Result {
         val updateRestrictionsOnly: Boolean = inputData.getBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
         val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
+        val newWorkContacts: MutableList<ContactModel> = mutableListOf()
 
         logger.info("Refreshing work data. Restrictions only = {}, force = {}", updateRestrictionsOnly, forceUpdate)
 
@@ -200,8 +209,12 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             }
 
             val existingWorkContacts: List<ContactModel> = contactService.allWork
+            val immutableExistingWorkContacts = existingWorkContacts.toList()
             for (workContact in workData.workContacts) {
-                contactService.addWorkContact(workContact, existingWorkContacts)
+                val newContact = contactService.addWorkContact(workContact, existingWorkContacts)
+                if (immutableExistingWorkContacts.none { it == newContact }) {
+                    newContact?.let { newWorkContacts.add(it) }
+                }
             }
 
             //downgrade work contacts
@@ -256,7 +269,19 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
         logger.info("Refreshing work data successfully finished")
 
-        return Result.success()
+        return serviceManager?.let {
+            if (newWorkContacts.isEmpty() || ContactUpdateWorker.fetchAndUpdateContactModels(
+                contactModels = newWorkContacts,
+                apiConnector = apiConnector,
+                contactService = contactService,
+                preferenceService = preferenceService,
+                context = context
+            )) {
+                return Result.success()
+            } else {
+                return Result.failure()
+            }
+        } ?: Result.success()
     }
 
     private fun resetRestrictions() {
@@ -288,7 +313,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     }
 
     override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
-        val notification = NotificationBuilderWrapper(context, NotificationService.NOTIFICATION_CHANNEL_WORK_SYNC, null)
+        val notification = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
                 .setSound(null)
                 .setSmallIcon(R.drawable.ic_sync_notification)
                 .setContentTitle(context.getString(R.string.wizard1_sync_work))

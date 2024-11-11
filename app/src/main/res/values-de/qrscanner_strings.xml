@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Erfassen Sie den QR-Code mit dem Sucherfenster, um ihn einzuscannen.</string>
-	<string name="msg_camera_framework_bug">Android-Kamera blockiert. Stellen Sie sicher, dass der Zugriff gewährleistet ist oder starten Sie das Handy neu.</string>
+    <string name="msg_default_status">Erfassen Sie den QR-Code mit dem Sucherfenster, um ihn einzuscannen.</string>
+    <string name="msg_camera_framework_bug">Android-Kamera blockiert. Stellen Sie sicher, dass der Zugriff gewährleistet ist oder starten Sie das Handy neu.</string>
 </resources>

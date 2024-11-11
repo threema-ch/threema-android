@@ -873,12 +873,12 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 						} else if (messageModel.getType() == MessageType.FILE) {
 							String searchString = "";
 
-							if (messageModel.getFileData().getRenderingType() == RENDERING_DEFAULT && !TestUtil.empty(messageModel.getFileData().getFileName())) {
+							if (messageModel.getFileData().getRenderingType() == RENDERING_DEFAULT && !TestUtil.isEmptyOrNull(messageModel.getFileData().getFileName())) {
 								// do not index filename for RENDERING_MEDIA or RENDERING_STICKER as it's not visible in the UI
 								searchString += messageModel.getFileData().getFileName();
 							}
 
-							if (!TestUtil.empty(messageModel.getFileData().getCaption())) {
+							if (!TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
 								searchString += messageModel.getFileData().getCaption();
 							}
 
@@ -886,7 +886,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 								resultMap.put(index, position);
 								index++;
 							}
-						} else if (!TestUtil.empty(messageModel.getCaption())) {
+						} else if (!TestUtil.isEmptyOrNull(messageModel.getCaption())) {
 							if (messageModel.getCaption().toLowerCase().contains(filterString.toLowerCase())) {
 								resultMap.put(index, position);
 								index++;

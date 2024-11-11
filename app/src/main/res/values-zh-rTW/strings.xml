@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">聯絡人</string>
     <string name="title_section1">對話</string>
@@ -21,8 +21,10 @@
     <string name="menu_add_contact">新增聯絡人</string>
     <string name="menu_done">完成</string>
     <string name="compose_message_and_enter">點擊這裡輸入訊息</string>
+    <string name="title_job_title">職位名稱</string>
+    <string name="title_department">部門</string>
     <string name="send">傳送</string>
-    <string name="prefs_privacy">隱私</string>
+    <string name="prefs_privacy">隱私權</string>
     <string name="prefs_notifications">聲音和通知</string>
     <string name="prefs_chatdisplay">對話</string>
     <string name="prefs_security">安全</string>
@@ -49,7 +51,6 @@
     <string name="prefs_sum_notification_sound">系統預設</string>
     <string name="prefs_vibrate">震動</string>
     <string name="prefs_sum_vibrate">收到訊息時震動</string>
-    <string name="prefs_light">通知燈</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">選擇背景圖片</string>
     <string name="prefs_sum_wallpaper">選擇背景圖片</string>
@@ -165,7 +166,7 @@
     <string name="support">説明</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">以下文字字串可以與所選密碼一起使用
-，以還原您的 Threema ID。</string>
+        ，以還原您的 Threema ID。</string>
     <string name="backup_share_subject">Threema ID 匯出為</string>
     <string name="add_attachment">新增附件</string>
     <string name="invalid_passphrase">密碼無效</string>
@@ -241,15 +242,16 @@
     <string name="search_contact">搜尋聯絡人</string>
     <string name="push_reset_title">推播服務重設</string>
     <string name="push_reset_text">推播服務已重設</string>
-    <string name="emoji_things">物件</string>
-    <string name="emoji_traffic">旅行與地點</string>
-    <string name="emoji_symbols">符號</string>
-    <string name="emoji_nature">動物與自然</string>
-    <string name="emoji_food">飲食</string>
     <string name="emoji_recent">常用項目</string>
-    <string name="emoji_emotions">表情符號與人物</string>
-    <string name="emoji_activities">活動</string>
-    <string name="emoji_flags">旗幟</string>
+    <string name="emoji_smileys">表情符號</string>
+    <string name="emoji_people">人物</string>
+    <string name="emoji_nature">野生动物</string>
+    <string name="emoji_food">食物飲料</string>
+    <string name="emoji_travel">旅行與地點</string>
+    <string name="emoji_activity">活動</string>
+    <string name="emoji_objects">物件</string>
+    <string name="emoji_symbols">人的符号</string>
+    <string name="emoji_flags">旗帜</string>
     <string name="emoji_search">搜尋表情符號</string>
     <string name="emoji_search_no_result">無搜尋結果</string>
     <string name="title_lock">鎖</string>
@@ -431,7 +433,7 @@
     <string name="add_group_description">新增群組描述</string>
     <string name="read_more">閱讀更多</string>
     <string name="read_less">閱讀更少</string>
-    <string name="changed_group_desc_date">"\u6700\u5f8c\u8b8a\u66f4\u6642\u9593: "</string>
+    <string name="changed_group_desc_date">最後變更：\u0020</string>
     <string name="num_items_sected">已選定 %s</string>
     <string name="really_delete_media">您確定要刪除%d則媒體訊息嗎？</string>
     <string name="check_updates">檢查更新</string>
@@ -444,8 +446,6 @@
     <string name="contact_not_found">沒有這樣的聯絡人</string>
     <string name="contact_now_blocked">聯絡人已封鎖</string>
     <string name="contact_now_unblocked">聯絡人已解除封鎖</string>
-    <string name="not_enough_disk_space_title">儲存空間不足</string>
-    <string name="not_enough_disk_space_text">至少釋放%1$s以接收訊息</string>
     <string name="sending_images">正在傳送圖片</string>
     <string name="share_conversation_body">您需要配備 AES 支援的現代 ZIP 工具才能解壓縮檔案，例如
 http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -476,6 +476,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_wizard0_explain">您可以直接用 Threema 快速建立線上投票，例如安排活動、建立問卷調查或向好友問任何問題。</string>
     <string name="ballot_add_choices">新增答案</string>
     <string name="blocked_cannot_send">您無法將訊息傳送給被封鎖的聯絡人</string>
+    <string name="invalid_some_cannot_send">無法選擇傳送至某些收件者。</string>
+    <string name="invalid_all_cannot_send">無法選擇傳送至這些收件者。</string>
     <string name="really_block_contact">來自此聯絡人今後的訊息將被捨棄。是否繼續？</string>
     <string name="ballot_result_final">最終結果</string>
     <string name="invalid_cannot_send">您不能向無效的聯絡人傳送訊息</string>
@@ -548,12 +550,12 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="no_filename"><![CDATA[<沒有檔案名稱>]]></string>
     <string name="send_as_files">作為檔案傳送</string>
     <string name="send_as_files_warning">傳輸未壓縮的檔案和圖片可能會使用大量數據，
-而您的行動電話營運商可能會收取額外費用。我們建議僅在 WiFi
-網路中上傳和下載檔案。</string>
+        而您的行動電話營運商可能會收取額外費用。我們建議僅在 WiFi
+        網路中上傳和下載檔案。</string>
     <string name="prefs_theme">設計主題</string>
     <string name="list_theme_light">淺色</string>
     <string name="list_theme_dark">深色</string>
-    <string name="prefs_header_appearance">外貌</string>
+    <string name="prefs_header_appearance">外觀</string>
     <string name="prefs_sum_passphrase">需要密碼才能解鎖本地加密</string>
     <string name="prefs_title_masterkey_change_passphrase">變更密碼</string>
     <string name="storage_total">內部儲存空間</string>
@@ -644,6 +646,7 @@ Threema 支援的所有表情符號。</string>
     <string name="new_wizard_linked_to">連結至</string>
     <string name="new_wizard_need_internet">建立唯一的 Threema ID 需要穩定的網路連線。請再試一次。</string>
     <string name="new_wizard_more_information">更多資訊</string>
+    <string name="message_details_message_id_copied">訊息ID已複製至剪貼簿</string>
     <string name="contact_details_id_copied">ID已複製至剪貼簿</string>
     <string name="contact_details_nickname_copied">暱稱已複製至剪貼簿</string>
     <string name="new_wizard_use_id_as_nickname">您想用 Threema ID 作為您的暱稱嗎？</string>
@@ -691,7 +694,6 @@ Threema 支援的所有表情符號。</string>
     <string name="error_out_of_memory">沒有足夠的記憶體來完成此操作</string>
     <string name="configure">配置</string>
     <string name="file_is_not_audio">不是音訊檔案</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">某些設定已被管理員停用</string>
     <string name="select_all">選擇所有</string>
     <string name="deleting_messages">正在刪除訊息</string>
@@ -774,14 +776,15 @@ Threema 支援的所有表情符號。</string>
     <string name="edit_message">編輯訊息</string>
     <string name="edited">已編輯</string>
     <string name="confirm_edit_desc">確認編輯</string>
+    <string name="edit_history">編輯記錄</string>
     <string name="discard_changes">您要放棄變更嗎？</string>
     <string name="prefs_title_network">網路</string>
     <string name="prefs_title_ipv6_preferred">以 IPv6 傳送訊息</string>
     <string name="prefs_ipv6_preferred_off">僅限使用 IPv4 連線</string>
     <string name="prefs_ipv6_preferred_on">在 IPv4 上優先使用 IPv6 連線</string>
     <string name="prefs_title_ipv6_webrtc_allowed">以 IPv6 通話和上網</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">允許以 IPv6 進行 Threema 通話和 Threema 網頁版</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">禁止以 IPv6 進行 Threema 通話和 Threema 網頁版</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">允許 Threema 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">禁止 Threema 通話和桌面應用程式/網頁用戶端使用 IPv6。</string>
     <string name="ipv6_requires_restart">如要應用此設定，需要重新啟動應用程式。</string>
     <string name="ipv6_restart_now">立即重新啟動</string>
     <string name="on_cap">開啟</string>
@@ -1044,16 +1047,13 @@ Threema 支援的所有表情符號。</string>
     <string name="system_default">系統預設</string>
     <string name="open_in_maps_app">在地圖應用程式中開啟</string>
     <string name="delete">刪除</string>
-    <string name="delete_from_this_device">從此裝置中刪除</string>
+    <string name="delete_from_this_device">在此裝置中刪除</string>
     <string name="delete_for_all">為所有人刪除</string>
     <string name="message_was_deleted">此訊息已刪除</string>
     <string name="continue_recording">繼續錄音</string>
-    <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>為訊息加上星號：為方便日後找出訊息，長按即可為重要訊息加星號。</p>
-<p>自動刪除對話：在選定的時間段後自動清理對話。對話自動刪除功能可在「儲存管理」中啟用。</p>
-<p>這次更新還有大量其他改進和最佳化。</p>]]></string>
-    <string name="whatsnew2_title">" "</string>
-    <string name="whatsnew2_body">" "</string>
+    <string name="whatsnew_title">%1$s %2$s 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>為了改善通知的顯示效果，在背景執行時的通知已進行了全面改進。如果某些對話已啟用個別通知設定，就需要重新設定。</p> 
+        ]]></string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">無效的備份路徑</string>
@@ -1176,14 +1176,12 @@ Threema 支援的所有表情符號。</string>
     <string name="only_images_or_videos">只能選定圖片或影片</string>
     <string name="media_gallery_gifs">GIF</string>
     <string name="no_media_found_global">在此裝置上找不到媒體</string>
-    <string name="enable_formatting">開啟格式化</string>
     <string name="original_file_no_longer_avilable">原檔案已無法取用，請重新傳送訊息。</string>
     <string name="state_transcoding">轉碼中</string>
     <string name="importing_files">正在匯入檔案</string>
     <string name="tooltip_image_resolution_hint">點擊這裡調整圖片解析度。</string>
     <string name="ballot_created_successfully">投票已成功建立。</string>
     <string name="file_size">檔案大小</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30天</string>
     <string name="show_in_chat">在對話中顯示</string>
     <string name="group_create_no_members">您確定要建立一個空白群組嗎？</string>
@@ -1325,7 +1323,9 @@ Threema 支援的所有表情符號。</string>
     <string name="group_request_already_sent_title">要求已傳送</string>
     <string name="qr_scanner_id_hint">您可以掃描聯絡人的QR碼以驗證其身份。如要顯示QR碼，請讓您的聯絡人按下 Threema 主畫面左上角的大頭貼。</string>
     <string name="enable_storage_access_for_media">啟用儲存取用權限以檢視裝置上的圖片和影片</string>
+    <string name="select_storage_access_for_media_is_granted">您已授予部份的照片和影片的存取權。</string>
     <string name="take_me_there">帶我去…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">管理</string>
     <string name="notification_channel_group_join_request">收到群組加入要求的通知頻道</string>
     <string name="reset_default_group_link_title">重設預設連結資訊</string>
     <string name="reset_default_group_link_desc">之前分享的連結將失效，透過舊鏈接提出的要求將自動被拒絕，並給出過期的回應。</string>
@@ -1390,7 +1390,6 @@ Threema 支援的所有表情符號。</string>
     <string name="prefs_title_use_system_ringtone">使用系統鈴聲</string>
     <string name="organization_type">機構</string>
     <string name="permission_bluetooth_connect_required">請啟用「附近裝置」權限以定位已連線的藍牙耳機</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push 現在已啟用，您需要手動重新啟動 Threema 網頁版和桌面版對話。</string>
     <string name="tooltip_multiple_recipients_title">一則訊息同時傳送至多個收件者</string>
     <string name="tooltip_multiple_recipients_text">長按可將一則訊息同時傳送到多個收件者。</string>
     <string name="synchronizing">同步中…</string>
@@ -1566,8 +1565,6 @@ Threema 支援的所有表情符號。</string>
     <string name="problemsolver_to_settings">前往設定</string>
     <string name="prefs_advanced_options">進階選項</string>
     <string name="push_service">推播服務</string>
-    <string name="zoom_out">縮小</string>
-    <string name="zoom_in">放大</string>
     <string name="edit_and_send">編輯並傳送</string>
     <string name="media_gallery_animated_webps">動畫 WebP 檔案</string>
     <string name="unsupported_image_type">不支援的圖像類型：%s</string>
@@ -1576,6 +1573,11 @@ Threema 支援的所有表情符號。</string>
     <string name="edit_message_not_supported_for_contact">由於對方使用的應用程式版本不支援編輯訊息功能，因此無法編輯訊息。</string>
     <string name="edit_message_not_supported_for_all_group_members">以下群組成員將無法看到您對訊息的編輯：%1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">由於有部分群組成員使用的應用程式版本不支援編輯訊息功能，因此無法編輯訊息。</string>
+    <string name="prefs_notification_settings">通知設定</string>
+    <string name="prefs_notification_settings_summary">在系統設定對話框中變更音效和震動</string>
+    <string name="new_messages">新訊息</string>
+    <string name="new_group_messages">新的群組訊息</string>
+    <string name="individual_notification_settings">個別通知設定</string>
     <string name="delete_message_not_supported_for_all_group_members">此訊息不會為以下群組成員刪除：%1$s</string>
     <string name="work_intro_more_link_text">進一步了解 Threema Work</string>
     <string name="work_intro_subtitle">為公司而設的安全商業版即時通訊工具。</string>
@@ -1584,6 +1586,21 @@ Threema 支援的所有表情符號。</string>
     <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
     <string name="consumer_notice_appgallery_link_description">華為 AppGallery 商店上的 Threema</string>
     <string name="consumer_notice_subtitle">僅限個人使用者使用</string>
+    <string name="individual_notification_settings_warn">對每個已啟用個別通知設定的對話，都會建立一個通知頻道。即使此應用程式鎖定，對話名稱在裝置設定中顯示。是否繼續？</string>
+    <string name="incoming_calls">來電</string>
+    <string name="group_chats">群組對話</string>
+    <string name="edit_history_file_no_caption">無編輯記錄</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">您對這則訊息表示「同意」。</string>
+    <string name="cd_dec_icon">您對這則訊息表示「不同意」。</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">由%d個群組成員</string>
+    <string name="cd_edited">訊息已編輯</string>
+    <string name="cd_created_at">建立於%s</string>
+    <string name="cd_edited_at">編輯於%s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d的編輯記錄</string>
+    <string name="cd_message_details_container">訊息詳情</string>
+    <string name="cd_enable_formatting">開啟格式化</string>
+    <string name="cd_message">訊息</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1616,6 +1633,9 @@ Threema 支援的所有表情符號。</string>
     </plurals>
     <plurals name="ballot_really_delete_text">
         <item quantity="other">您確定要刪除%1$d個投票嗎？你將無法恢復原來的票數。</item>
+    </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="other">%d個媒體檔案已刪除</item>
     </plurals>
     <plurals name="message_deleted">
         <item quantity="other">已刪除%d則訊息</item>
@@ -1653,11 +1673,15 @@ Threema 支援的所有表情符號。</string>
     <plurals name="chat_deleted">
         <item quantity="other">%d個已封存對話</item>
     </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="other">%d個已封存對話</item>
+    </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="other">自上一條訊息以來，已丟失%d則訊息。</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="other">刪除%d則訊息？</item>
+        <item quantity="other">刪除此訊息？
+刪除%d則訊息？</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d個群組成員</item>

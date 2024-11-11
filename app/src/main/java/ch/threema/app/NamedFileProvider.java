@@ -106,7 +106,7 @@ public class NamedFileProvider extends FileProvider {
 			if (OpenableColumns.DISPLAY_NAME.equals(col)) {
 				cols[i] = OpenableColumns.DISPLAY_NAME;
 				synchronized (sUriToDisplayNameMap) {
-					if (TestUtil.empty(sUriToDisplayNameMap.get(uri))) {
+					if (TestUtil.isEmptyOrNull(sUriToDisplayNameMap.get(uri))) {
 						values[i++] = file.getName();
 					} else {
 						values[i++] = sUriToDisplayNameMap.get(uri);
@@ -150,7 +150,7 @@ public class NamedFileProvider extends FileProvider {
 	public static Uri getUriForFile(@NonNull Context context, @NonNull String authority,
 	                                @NonNull File file, @Nullable String filename) {
 		final Uri uri = FileProvider.getUriForFile(context, authority, file);
-		if (!TestUtil.empty(filename)) {
+		if (!TestUtil.isEmptyOrNull(filename)) {
 			synchronized (sUriToDisplayNameMap) {
 				sUriToDisplayNameMap.put(uri, filename);
 			}

@@ -26,6 +26,7 @@ import ch.threema.app.adapters.SendMediaAdapter
 import ch.threema.app.adapters.SendMediaPreviewAdapter
 import ch.threema.app.ui.MediaItem
 import java.util.Collections
+import java.util.function.Consumer
 
 const val NOTIFY_LISTENER: Int = 1
 const val NOTIFY_ADAPTER: Int = 2
@@ -39,7 +40,7 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
     private val items: MutableList<MediaItem> = mutableListOf()
     private var currentPosition = 0
     private var futurePosition = -1
-    private val onNextItemRunnable = mutableListOf<Runnable>()
+    private val onNextItemRunnable = mutableListOf<Consumer<MediaItem>>()
 
     fun setMediaAdapter(adapter: SendMediaAdapter) {
         mediaAdapter = adapter
@@ -68,8 +69,10 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
             futurePosition = -1
         }
         mediaAdapterListener.onItemCountChanged(size())
-        while (size() > 0 && onNextItemRunnable.size > 0) {
-            onNextItemRunnable.removeFirst().run()
+        getCurrentItem()?.let {
+            while (onNextItemRunnable.size > 0) {
+                onNextItemRunnable.removeAt(0).accept(it)
+            }
         }
     }
 
@@ -154,15 +157,17 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
 
     fun getCurrentPosition() = currentPosition
 
-    fun getCurrentItem() = items[currentPosition]
+    fun getCurrentItem() = items.getOrNull(currentPosition)
 
     fun get(position: Int) = items[position]
 
-    fun runWhenCurrentItemAvailable(runnable: Runnable) {
-        if (size() > 0) {
-            runnable.run()
-        } else {
-            onNextItemRunnable.add(runnable)
+    fun runWhenCurrentItemAvailable(runnable: Consumer<MediaItem>) {
+        getCurrentItem().let {
+            if (it != null) {
+                runnable.accept(it)
+            } else {
+                onNextItemRunnable.add(runnable)
+            }
         }
     }
 

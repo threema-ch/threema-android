@@ -142,7 +142,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 
 	@Override
 	public boolean isSilent(String uniqueId, boolean isGroup) {
-		if (!TestUtil.empty(uniqueId)) {
+		if (!TestUtil.isEmptyOrNull(uniqueId)) {
 			Uri defaultRingtone, selectedRingtone;
 
 			if (isGroup) {

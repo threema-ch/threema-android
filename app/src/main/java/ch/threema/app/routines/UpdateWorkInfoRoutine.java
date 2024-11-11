@@ -93,7 +93,15 @@ public class UpdateWorkInfoRoutine implements Runnable {
 					R.string.restriction__lastname
 				));
 
-				String mdmCSI = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                String mdmJobTitle = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                    R.string.restriction__job_title
+                ));
+
+                String mdmDepartment = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                    R.string.restriction__department
+                ));
+
+                String mdmCSI = AppRestrictionUtil.getStringRestriction(this.context.getString(
 					R.string.restriction__csi
 				));
 
@@ -107,6 +115,8 @@ public class UpdateWorkInfoRoutine implements Runnable {
 						this.identityStore,
 						mdmFirstName,
 						mdmLastName,
+                        mdmJobTitle,
+                        mdmDepartment,
 						mdmCSI,
 						mdmCategory,
 						AppRestrictionService.getInstance().getMdmSource()

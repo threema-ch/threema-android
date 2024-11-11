@@ -371,13 +371,13 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 			switch (requestCode) {
 				case REQUEST_CODE_STICKER_SELECTOR:
 					final String stickerPath = data.getStringExtra(StickerSelectorActivity.EXTRA_STICKER_PATH);
-					if (!TestUtil.empty(stickerPath)) {
+					if (!TestUtil.isEmptyOrNull(stickerPath)) {
 						addSticker(stickerPath);
 					}
 					break;
 				case REQUEST_CODE_ENTER_TEXT:
 					final String text = data.getStringExtra(ImagePaintKeyboardActivity.INTENT_EXTRA_TEXT);
-					if (!TestUtil.empty(text)) {
+					if (!TestUtil.isEmptyOrNull(text)) {
 						addText(text);
 					}
 			}

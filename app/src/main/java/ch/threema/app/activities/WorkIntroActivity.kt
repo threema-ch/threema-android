@@ -85,7 +85,7 @@ class WorkIntroActivity : ThreemaActivity() {
         val appStoreText: String
         val onButtonClick: () -> Unit
 
-        if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK) {
+        if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.HMS_WORK) {
             appStoreText = getString(R.string.consumer_notice_appgallery_link_description)
             onButtonClick = { openConsumerAppInHuaweiAppGallery() }
         } else {

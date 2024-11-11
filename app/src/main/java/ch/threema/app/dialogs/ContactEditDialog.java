@@ -242,7 +242,7 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 			avatarEditView.setListener(this);
 		}
 
-		if (!TestUtil.empty(identity)) {
+		if (!TestUtil.isEmptyOrNull(identity)) {
 			avatarEditView.setVisibility(View.GONE);
 			if (contactService != null) {
 				// Hide second name on business contact
@@ -268,11 +268,11 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
 			editText2Layout.setVisibility(View.GONE);
 		}
 
-		if (!TestUtil.empty(text1)) {
+		if (!TestUtil.isEmptyOrNull(text1)) {
 			editText1.setText(text1);
 		}
 
-		if (!TestUtil.empty(text2)) {
+		if (!TestUtil.isEmptyOrNull(text2)) {
 			editText2.setText(text2);
 		}
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="recording">Sprachmitteilung wird aufgenommen</string>
-	<string name="recording_stopped_title">Aufnahme angehalten</string>
-	<string name="recording_stopped_message">Möchten Sie die aufgenommene Sprachnachricht jetzt senden?</string>
-	<string name="recording_canceled">Aufnahme aufgrund eines unbekannten Fehlers abgebrochen.</string>
-	<string name="cancel_recording">Aufnahme löschen</string>
-	<string name="cancel_recording_message">Möchten Sie die Aufnahme wirklich abbrechen und löschen?</string>
-	<string name="stop">Stopp</string>
+    <string name="recording">Sprachmitteilung wird aufgenommen</string>
+    <string name="recording_stopped_title">Aufnahme angehalten</string>
+    <string name="recording_stopped_message">Möchten Sie die aufgenommene Sprachnachricht jetzt senden?</string>
+    <string name="recording_canceled">Aufnahme aufgrund eines unbekannten Fehlers abgebrochen.</string>
+    <string name="cancel_recording">Aufnahme löschen</string>
+    <string name="cancel_recording_message">Möchten Sie die Aufnahme wirklich abbrechen und löschen?</string>
+    <string name="stop">Stopp</string>
 </resources>

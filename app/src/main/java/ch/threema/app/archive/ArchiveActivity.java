@@ -133,7 +133,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 
 		if (searchView != null) {
 			searchView.setQueryHint(getString(R.string.hint_filter_list));
-			if (!TestUtil.empty(filterQuery)) {
+			if (!TestUtil.isEmptyOrNull(filterQuery)) {
 				filterMenu.expandActionView();
 				searchView.setQuery(filterQuery, false);
 			}
@@ -201,7 +201,7 @@ public class ArchiveActivity extends ThreemaToolbarActivity implements GenericAl
 
 		// Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
 		viewModel.getConversationModels().observe(this, conversationsObserver);
-		if (!TestUtil.empty(filterQuery)) {
+		if (!TestUtil.isEmptyOrNull(filterQuery)) {
 			viewModel.filter(filterQuery);
 		} else {
 			viewModel.onDataChanged();

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Névjegyek</string>
     <string name="title_section1">Csevegések</string>
@@ -49,7 +49,6 @@
     <string name="prefs_sum_notification_sound">Rendszer alapértelmezett</string>
     <string name="prefs_vibrate">Rezgés</string>
     <string name="prefs_sum_vibrate">Rezgés bejövő üzenetre</string>
-    <string name="prefs_light">Értesítési lámpa</string>
     <string name="prefs_sum_light">Fehér</string>
     <string name="prefs_title_wallpaper">Háttérkép kiválasztása</string>
     <string name="prefs_sum_wallpaper">Kép kiválasztása a háttérhez</string>
@@ -240,14 +239,15 @@
     <string name="search_contact">Névjegy keresés</string>
     <string name="push_reset_title">Új push token készítése</string>
     <string name="push_reset_text">Új push tokent készítettünk</string>
-    <string name="emoji_things">Tárgyak</string>
-    <string name="emoji_traffic">Forgalom</string>
-    <string name="emoji_symbols">Szimbólumok</string>
-    <string name="emoji_nature">Természet</string>
-    <string name="emoji_food">Étel és ital</string>
     <string name="emoji_recent">Legutóbbi</string>
-    <string name="emoji_emotions">Érzelmek</string>
-    <string name="emoji_activities">Tevékenységek</string>
+    <string name="emoji_smileys">Smiley &amp; érzelem</string>
+    <string name="emoji_people">Emberek &amp; test</string>
+    <string name="emoji_nature">Állatok és természet</string>
+    <string name="emoji_food">Étel és ital</string>
+    <string name="emoji_travel">Utazás és helyek</string>
+    <string name="emoji_activity">Tevékenységek</string>
+    <string name="emoji_objects">Objektumok</string>
+    <string name="emoji_symbols">Szimbólumok</string>
     <string name="emoji_flags">Zászlók</string>
     <string name="title_lock">Zárolás</string>
     <string name="new_messages_locked">Új üzenetek elérhetők</string>
@@ -428,8 +428,6 @@
     <string name="contact_not_found">Névjegy nem található</string>
     <string name="contact_now_blocked">Névjegy blokkolva</string>
     <string name="contact_now_unblocked">Névjegy feloldva</string>
-    <string name="not_enough_disk_space_title">Túl kevés tárolóhely</string>
-    <string name="not_enough_disk_space_text">Legalább %1$s szükséges az üzenet fogadásához</string>
     <string name="sending_images">Képek küldése</string>
     <string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra
 		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
@@ -666,7 +664,6 @@
     <string name="error_out_of_memory">Túl kevés a szabad memória a művelet végrehajtásához</string>
     <string name="configure">Beállítás</string>
     <string name="file_is_not_audio">Nincs hangfájl</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Egyes beállításokat a rendszergazda letiltott</string>
     <string name="select_all">Minden kiválasztása</string>
     <string name="deleting_messages">Az üzenetek törlődnek</string>
@@ -753,8 +750,6 @@
     <string name="prefs_ipv6_preferred_off">Csak IPv4 kapcsolatokat használjon</string>
     <string name="prefs_ipv6_preferred_on">IPv6 előnyben részesítése</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 hívásokhoz és webhez</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 engedélyezése a Threema-hívásokhoz és a Threema Webhez</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Ne használja az IPv6-ot a Threema-hívásokhoz és a Threema Webhez.</string>
     <string name="ipv6_requires_restart">Ez a módosítás az alkalmazás újraindítását igényli.</string>
     <string name="ipv6_restart_now">Újraindítás most</string>
     <string name="on_cap">Be</string>
@@ -1132,14 +1127,12 @@
     <string name="only_images_or_videos">Csak képek és videók választhatók ki</string>
     <string name="media_gallery_gifs">GIF-ek</string>
     <string name="no_media_found_global">Nem találtunk médiát ezen az eszközön</string>
-    <string name="enable_formatting">Formázás engedélyezése</string>
     <string name="original_file_no_longer_avilable">Nincs többé hozzáférés az eredeti fájlhoz. Kérjük, küldje el újra ezt az üzenetet.</string>
     <string name="state_transcoding">átkódolás alatt</string>
     <string name="importing_files">Fájlok importálása folyamatban</string>
     <string name="tooltip_image_resolution_hint">A képfelbontás testreszabásához kattintson ide.</string>
     <string name="ballot_created_successfully">A szavazás sikeresen elkészült.</string>
     <string name="file_size">Fájlméret</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30n</string>
     <string name="show_in_chat">Megjelenítés a csevegésben</string>
     <string name="group_create_no_members">Biztos, hogy üres csoportot szeretne létrehozni?</string>
@@ -1328,6 +1321,7 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="header_nickname_entry">"Becenév"</string>
     <string name="organization_type">Szervezet</string>
     <string name="messages_cannot_be_recovered">Az üzeneteket nem lehet visszaállítani.</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d névjegyek</item>
         <item quantity="other">%d névjegyek</item>
@@ -1343,9 +1337,5 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <plurals name="selection_counter_label">
         <item quantity="one">%d kép kiválasztva</item>
         <item quantity="other">%d kép kiválasztva</item>
-    </plurals>
-    <plurals name="saving_media">
-        <item quantity="one">A média mentése folyamatban van</item>
-        <item quantity="other"></item>
     </plurals>
 </resources>

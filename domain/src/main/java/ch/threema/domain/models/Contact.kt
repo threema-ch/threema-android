@@ -43,6 +43,9 @@ open class Contact(
             field = Utils.truncateUTF8String(value, CONTACT_NAME_MAX_LENGTH_BYTES)
         }
 
+    val hasFirstOrLastName: Boolean
+        get() = !firstName.isNullOrBlank() || !lastName.isNullOrBlank()
+
     override fun toString(): String {
         val sb = StringBuilder(identity)
         sb.append(" (")

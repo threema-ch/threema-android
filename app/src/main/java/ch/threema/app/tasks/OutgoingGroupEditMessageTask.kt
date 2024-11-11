@@ -43,12 +43,9 @@ class OutgoingGroupEditMessageTask(
 
     override val type: String = "OutgoingGroupEditMessageTask"
 
-    private val groupService by lazy { serviceManager.groupService }
-    private val messageService by lazy { serviceManager.messageService }
-
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getGroupMessageModel(messageModelId, true)
-                ?: throw ThreemaException("No group message model found for messageId=$messageModelId")
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        val message = getGroupMessageModel(messageModelId)
+                ?: throw ThreemaException("No group message model found for messageModelId=$messageModelId")
 
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")

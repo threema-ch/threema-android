@@ -91,7 +91,7 @@ public class LoggerManager {
 
 		// Initialize backends
 		final List<LogBackend> backends = new ArrayList<>();
-		if (BuildConfig.DEBUG || BuildFlavor.isSandbox()) {
+		if (BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) {
 			// Enable logging to logcat only for debug and sandbox builds
 			backends.add(new LogcatBackend(Log.VERBOSE));
 		}

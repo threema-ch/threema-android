@@ -24,39 +24,6 @@
 		<item>1</item>
 		<item>2</item>
 	</string-array>
-    <string-array name="list_light_color">
-        <item>@string/color_none</item>
-        <item>@string/color_orange</item>
-        <item>@string/color_red</item>
-        <item>@string/color_green</item>
-        <item>@string/color_blue</item>
-        <item>@string/color_yellow</item>
-        <item>@string/color_cyan</item>
-        <item>@string/color_magenta</item>
-        <item>@string/color_white</item>
-    </string-array>
-    <string-array name="list_light_color_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-    </string-array>
-    <array name="list_light_color_hex">
-        <item>0x00000000</item>
-        <item>0xFFFF7F00</item>
-        <item>0xFFFF0000</item>
-        <item>0xFF00FF00</item>
-        <item>0xFF0000FF</item>
-        <item>0xFFFFFF00</item>
-        <item>0xFF00FFFF</item>
-        <item>0xFFFF00FF</item>
-        <item>0xFFFFFFFF</item>
-    </array>
 
 	<string-array name="list_pin_grace_time">
 		<item>@string/grace_thirty_seconds</item>

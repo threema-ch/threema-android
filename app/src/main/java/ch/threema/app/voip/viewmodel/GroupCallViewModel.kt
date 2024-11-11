@@ -31,7 +31,7 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.ThreemaApplication.requireServiceManager
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.NotificationService
+import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils

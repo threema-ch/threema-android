@@ -24,7 +24,6 @@ package ch.threema.app.messagereceiver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +50,6 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
@@ -414,23 +411,23 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 		return false;
 	}
 
-	@Override
-	public boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied) {
+	@NonNull
+    @Override
+	public SendingPermissionValidationResult validateSendingPermission() {
 		//TODO: cache access? performance
 		GroupAccessModel access = groupService.getAccess(getGroup(), true);
 
 		if (access == null) {
 			//what?
-			return false;
+            return new SendingPermissionValidationResult.Denied();
 		}
 
 		if (!access.getCanSendMessageAccess().isAllowed()) {
-			if (onSendingPermissionDenied != null) {
-				onSendingPermissionDenied.denied(access.getCanSendMessageAccess().getNotAllowedTestResourceId());
-			}
-			return false;
+            return new SendingPermissionValidationResult.Denied(
+                access.getCanSendMessageAccess().getNotAllowedTestResourceId()
+            );
 		}
-		return true;
+		return SendingPermissionValidationResult.Valid.INSTANCE;
 	}
 
 	@Override

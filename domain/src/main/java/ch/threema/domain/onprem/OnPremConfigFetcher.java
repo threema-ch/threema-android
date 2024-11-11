@@ -53,7 +53,7 @@ public class OnPremConfigFetcher {
 	}
 
 	public synchronized OnPremConfig fetch() throws ThreemaException {
-		if (this.cachedConfig != null) {
+		if (this.cachedConfig != null && cachedConfig.getValidUntil() > System.currentTimeMillis()) {
 			return this.cachedConfig;
 		}
 

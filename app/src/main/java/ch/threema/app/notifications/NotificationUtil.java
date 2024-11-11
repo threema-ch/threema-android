@@ -27,6 +27,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
 
 import ch.threema.app.R;
@@ -43,13 +44,13 @@ public class NotificationUtil {
 	public static int getNotificationImportance(Context context) {
 		switch(getNotificationPriority(context)) {
 			case NotificationCompat.PRIORITY_MAX:
-				return NotificationManager.IMPORTANCE_MAX;
+				return NotificationManagerCompat.IMPORTANCE_MAX;
 			case NotificationCompat.PRIORITY_HIGH:
-				return NotificationManager.IMPORTANCE_HIGH;
+				return NotificationManagerCompat.IMPORTANCE_HIGH;
 			case NotificationCompat.PRIORITY_LOW:
-				return NotificationManager.IMPORTANCE_LOW;
+				return NotificationManagerCompat.IMPORTANCE_LOW;
 			default:
-				return NotificationManager.IMPORTANCE_DEFAULT;
+				return NotificationManagerCompat.IMPORTANCE_DEFAULT;
 		}
 	}
 

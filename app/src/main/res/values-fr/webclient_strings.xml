@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Commencer</string>
     <string name="webclient_diagnostics_intro">Appuyez sur le bouton « Commencer » pour lancer le test.</string>
     <string name="webclient_diagnostics_done">Terminé. Si vous rencontrez des problèmes lors de l\'établissement d\'une connexion à l\'application Desktop ou au client Web, veuillez envoyer ce journal à l\'assistance de Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Pour l’instant, cette application bêta pour ordinateur de bureau ne peut être liée qu’à un appareil iOS. Pour les appareils Android, veuillez télécharger l’application de bureau classique.</string>
 </resources>

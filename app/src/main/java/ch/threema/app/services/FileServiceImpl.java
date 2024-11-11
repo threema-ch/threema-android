@@ -182,7 +182,7 @@ public class FileServiceImpl implements FileService {
 		String uriString = sharedPreferences.getString(this.context.getString(R.string.preferences__voip_ringtone), null);
 
 		// check if we need to update preferences to point to new file
-		if (TestUtil.empty(uriString)) {
+		if (TestUtil.isEmptyOrNull(uriString)) {
 			// silent ringtone -> OK
 			return false;
 		} else if (!"null".equals(uriString)) {
@@ -659,7 +659,7 @@ public class FileServiceImpl implements FileService {
 				return title + VOICEMESSAGE_EXTENSION;
 			case FILE:
 				String filename = messageModel.getFileData().getFileName();
-				if (TestUtil.empty(filename)) {
+				if (TestUtil.isEmptyOrNull(filename)) {
 					filename = title + getMediaFileExtension(messageModel);
 				}
 				return filename;
@@ -695,16 +695,16 @@ public class FileServiceImpl implements FileService {
 				} catch (Exception e) {
 					logger.error("Exception", e);
 				}
-				if (!TestUtil.empty(extension) && !"bin".equals(extension)) {
+				if (!TestUtil.isEmptyOrNull(extension) && !"bin".equals(extension)) {
 					return "." + extension;
 				} else {
 					if (messageModel.getFileData().getFileName() != null) {
 						String guessedExtension = MimeTypeMap.getFileExtensionFromUrl(messageModel.getFileData().getFileName());
-						if (!TestUtil.empty(guessedExtension)) {
+						if (!TestUtil.isEmptyOrNull(guessedExtension)) {
 							return "." + guessedExtension;
 						}
 					}
-					if (!TestUtil.empty(extension)) {
+					if (!TestUtil.isEmptyOrNull(extension)) {
 						return "." + extension;
 					}
 					return null;
@@ -824,7 +824,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	private String convert(String uid) {
-		if (TestUtil.empty(uid)) {
+		if (TestUtil.isEmptyOrNull(uid)) {
 			return uid;
 		}
 		return uid.replaceAll("[^a-zA-Z0-9\\\\s]", "");
@@ -846,7 +846,7 @@ public class FileServiceImpl implements FileService {
 	@Override
 	public File getMessageFile(AbstractMessageModel messageModel) {
 		String uid = this.convert(messageModel.getUid());
-		if (TestUtil.empty(uid)) {
+		if (TestUtil.isEmptyOrNull(uid)) {
 			return null;
 		}
 		return new File(getAppDataPathAbsolute(), "." + uid);
@@ -860,7 +860,7 @@ public class FileServiceImpl implements FileService {
 		}
 
 		String uid = this.convert(messageModel.getUid());
-		if (TestUtil.empty(uid)) {
+		if (TestUtil.isEmptyOrNull(uid)) {
 			return null;
 		}
 

@@ -243,7 +243,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 				if (itemHolder.snippetView.getText() == null || itemHolder.snippetView.getText().length() == 0) {
 					if (current.getType() == MessageType.FILE) {
 						String mimeString = current.getFileData().getMimeType();
-						if (!TestUtil.empty(mimeString)) {
+						if (!TestUtil.isEmptyOrNull(mimeString)) {
 							itemHolder.snippetView.setText(MimeUtil.getMimeDescription(context, current.getFileData().getMimeType()));
 						} else {
 							itemHolder.snippetView.setText("");
@@ -349,7 +349,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 	 * @return Snippet containing the match with a trailing ellipsis if the match is located beyond the first snippetThreshold characters
 	 */
 	private CharSequence getSnippet(@NonNull String fullText, @Nullable String needle, ItemHolder holder) {
-		if (!TestUtil.empty(needle)) {
+		if (!TestUtil.isEmptyOrNull(needle)) {
 			int firstMatch = fullText.toLowerCase().indexOf(needle);
 			if (firstMatch > snippetThreshold) {
 				int snippetStart = firstMatch > (snippetThreshold + 3) ? firstMatch - (snippetThreshold + 3) : 0;
@@ -386,18 +386,18 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			case FILE:
 				// fallthrough
 			case IMAGE:
-				if (!TestUtil.empty(current.getCaption())) {
+				if (!TestUtil.isEmptyOrNull(current.getCaption())) {
 					snippetText = getSnippet(current.getCaption(), this.queryString, itemHolder);
 				}
 				break;
 			case TEXT:
-				if (!TestUtil.empty(current.getBody())) {
+				if (!TestUtil.isEmptyOrNull(current.getBody())) {
 					snippetText = getSnippet(current.getBody(), this.queryString, itemHolder);
 				}
 				break;
 			case BALLOT:
 				snippetText = context.getString(R.string.attach_ballot);
-				if (!TestUtil.empty(current.getBody())) {
+				if (!TestUtil.isEmptyOrNull(current.getBody())) {
 					BallotDataModel ballotData = current.getBallotData();
 					final BallotModel ballotModel = ballotService.get(ballotData.getBallotId());
 					if (ballotModel != null) {
@@ -408,10 +408,10 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 			case LOCATION:
 				final LocationDataModel location = current.getLocationData();
 				StringBuilder locationStringBuilder = new StringBuilder();
-				if (!TestUtil.empty(location.getPoi())) {
+				if (!TestUtil.isEmptyOrNull(location.getPoi())) {
 					locationStringBuilder.append(location.getPoi());
 				}
-				if (!TestUtil.empty(location.getAddress())) {
+				if (!TestUtil.isEmptyOrNull(location.getAddress())) {
 					if (locationStringBuilder.length() > 0) {
 						locationStringBuilder.append(" - ");
 					}

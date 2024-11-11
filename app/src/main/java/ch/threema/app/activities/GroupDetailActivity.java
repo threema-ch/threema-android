@@ -45,12 +45,14 @@ import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -94,7 +96,6 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.group.GroupInviteService;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -114,6 +115,7 @@ import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.GroupModelData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -169,7 +171,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		@Override
 		public void runOnUiThread() {
 			groupDetailViewModel.setGroupName(groupModel.getName());
-			setTitle();
 
 			groupDetailViewModel.setGroupIdentities(groupService.getGroupIdentities(groupModel));
 			sortGroupMembers();
@@ -321,11 +322,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		this.groupNameEditText = findViewById(R.id.group_title);
 
 		// services
-		LicenseService<?> licenseService;
 		try {
 			this.deviceService = serviceManager.getDeviceService();
 			this.blackListIdentityService = serviceManager.getBlackListService();
-			licenseService = serviceManager.getLicenseService();
 			this.groupInviteService = serviceManager.getGroupInviteService();
 			this.groupCallManager = serviceManager.getGroupCallManager();
 		} catch (ThreemaException e) {
@@ -334,7 +333,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			return;
 		}
 
-		if (this.deviceService == null || this.blackListIdentityService == null || licenseService == null) {
+		if (this.deviceService == null || this.blackListIdentityService == null) {
 			finish();
 			return;
 		}
@@ -344,6 +343,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			finish();
 		}
 		this.groupModel = groupService.getById(this.groupId);
+
+		observeNewGroupModel();
 
 		if (savedInstanceState == null) {
 			// new instance
@@ -1233,4 +1234,48 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		groupDetailViewModel.setGroupDescState(NONE);
 		groupDetailAdapter.updateGroupDescriptionLayout();
 	}
+
+	private void observeNewGroupModel() {
+		LiveData<GroupModelData> groupModelDataLiveData = groupDetailViewModel.group;
+		if (groupModelDataLiveData == null) {
+			ch.threema.data.models.GroupModel newGroupModel =
+				groupModelRepository.getByLocalGroupDbId(this.groupId);
+
+			if (newGroupModel == null) {
+				logger.error("Group model is null");
+				finish();
+				return;
+			}
+
+			groupDetailViewModel.setGroup(newGroupModel);
+			groupModelDataLiveData = groupDetailViewModel.group;
+			if (groupModelDataLiveData == null) {
+				logger.error("Live data is null");
+				finish();
+				return;
+			}
+		}
+
+		groupModelDataLiveData.observe(
+			this,
+			this::onGroupModelDataUpdate
+		);
+	}
+
+	/**
+	 * Updates the view with the new provided data. If the data is null, the activity is finished.
+	 * Note that currently only the group name is updated.
+	 */
+	private void onGroupModelDataUpdate(@Nullable GroupModelData data) {
+		logger.debug("New group model data observed: {}", data);
+		if (data == null) {
+			finish();
+			return;
+		}
+
+		// Set new group name
+		groupDetailViewModel.setGroupName(data.name);
+		setTitle();
+	}
+
 }

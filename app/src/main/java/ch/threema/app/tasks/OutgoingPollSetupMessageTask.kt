@@ -24,9 +24,6 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
@@ -35,8 +32,6 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.serialization.Serializable
-
-private val logger = LoggingUtil.getThreemaLogger("OutgoingBallotMessageTask")
 
 class OutgoingPollSetupMessageTask(
     private val messageModelId: Int,
@@ -49,7 +44,7 @@ class OutgoingPollSetupMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingPollSetupMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         when (receiverType) {
             MessageReceiver.Type_CONTACT -> sendContactMessage(handle)
             MessageReceiver.Type_GROUP -> sendGroupMessage(handle)
@@ -57,13 +52,12 @@ class OutgoingPollSetupMessageTask(
         }
     }
 
+    override fun onSendingStepsFailed(e: Exception) {
+        getMessageModel(receiverType, messageModelId)?.saveWithStateFailed()
+    }
+
     private suspend fun sendContactMessage(handle: ActiveTaskCodec) {
-        val messageModel =
-            serviceManager.messageService.getContactMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getContactMessageModel(messageModelId) ?: return
 
         // Create the message
         val message = PollSetupMessage()
@@ -72,18 +66,14 @@ class OutgoingPollSetupMessageTask(
                 it.ballotId = ballotId
                 it.data = ballotData
                 it.toIdentity = messageModel.identity
-                it.messageId = MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!))
+                it.messageId = ensureMessageId(messageModel)
             }
 
         sendContactMessage(message, messageModel, handle)
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
-        val messageModel = serviceManager.messageService.getGroupMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getGroupMessageModel(messageModelId) ?: return
 
         val group = serviceManager.groupService.getById(messageModel.groupId)
             ?: throw IllegalStateException("Could not get group for message model ${messageModel.apiMessageId}")
@@ -92,7 +82,7 @@ class OutgoingPollSetupMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!)),
+            ensureMessageId(messageModel),
             {
                 GroupPollSetupMessage()
                     .also {

@@ -33,7 +33,7 @@ class OutgoingTypingIndicatorMessageTask(
 ): OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingTypingIndicatorMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = TypingIndicatorMessage().also {
             it.messageId = MessageId()
             it.toIdentity = toIdentity

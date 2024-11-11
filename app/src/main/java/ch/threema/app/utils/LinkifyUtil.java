@@ -233,17 +233,45 @@ public class LinkifyUtil {
 	                    boolean includePhoneNumbers,
 	                    boolean actionModeEnabled,
 	                    @Nullable ChatAdapterDecorator.OnClickElement onClickElement) {
-		Context context = fragment != null ? fragment.getContext() : activity;
+		if (fragment != null) {
+			// handle click on linkify here - otherwise it confuses the listview
+			bodyTextView.setMovementMethod(null);
+		}
+		linkify(
+			fragment != null ? fragment.getContext() : null,
+			fragment,
+			activity,
+			bodyTextView,
+			messageModel,
+			includePhoneNumbers,
+			actionModeEnabled,
+			onClickElement
+		);
+	}
 
+	/**
+	 * Linkify (Add links to) TextView hosted in a chat bubble
+	 *
+	 * @param context The context
+	 * @param bodyTextView TextView where linkify will be applied to
+	 * @param messageModel MessageModel of the message
+	 * @param includePhoneNumbers Whether to linkify number sequences that may represent phone number
+	 * @param actionModeEnabled Whether action mode (item selection) is currently enabled
+	 * @param onClickElement Callback to which unhandled clicks are forwarded
+	 */
+	@SuppressLint("ClickableViewAccessibility")
+	public void linkify(@Nullable Context context,
+	                    @Nullable Fragment fragment,
+						@Nullable AppCompatActivity activity,
+	                    @NonNull TextView bodyTextView,
+	                    @Nullable AbstractMessageModel messageModel,
+	                    boolean includePhoneNumbers,
+	                    boolean actionModeEnabled,
+	                    @Nullable ChatAdapterDecorator.OnClickElement onClickElement) {
 		linkifyText(bodyTextView, includePhoneNumbers);
 
 		if (context == null) {
 			return;
-		}
-
-		if (fragment != null) {
-			// handle click on linkify here - otherwise it confuses the listview
-			bodyTextView.setMovementMethod(null);
 		}
 
 		isLongClick = false;
@@ -298,10 +326,10 @@ public class LinkifyUtil {
 								}
 
 								if (UrlUtil.isSafeUri(uri)) {
-									LinkifyUtil.this.openLink(uri, fragment, activity);
+									LinkifyUtil.this.openLink(uri, context, fragment, activity);
 								} else {
 									String host = uri.getHost();
-									if (!TestUtil.empty(host)) {
+									if (!TestUtil.isEmptyOrNull(host)) {
 										String idnUrl = null;
 										try {
 											idnUrl = IDN.toASCII(host);
@@ -325,7 +353,7 @@ public class LinkifyUtil {
 											dialog.show(activity.getSupportFragmentManager(), DIALOG_TAG_CONFIRM_LINK);
 										}
 									} else {
-										LinkifyUtil.this.openLink(uri, fragment, activity);
+										LinkifyUtil.this.openLink(uri, context, fragment, activity);
 									}
 								}
 							} else if (link[0] instanceof MentionClickableSpan) {
@@ -339,7 +367,7 @@ public class LinkifyUtil {
 								}
 							}
 						} else {
-							if (onClickElement != null) {
+							if (onClickElement != null && messageModel != null) {
 								onClickElement.onClick(messageModel);
 							}
 						}
@@ -364,14 +392,20 @@ public class LinkifyUtil {
 		return null;
 	}
 
-	public void openLink(Uri uri, Fragment fragment, AppCompatActivity activity) {
-		final Context context = fragment != null ? fragment.getContext() : activity;
-		if (context == null) return;
+	public void openLink(Uri uri, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
+		openLink(uri, null, fragment, activity);
+	}
+
+	private void openLink(Uri uri, @Nullable Context context, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
+		final Context derivedContext = fragment != null ? fragment.getContext() : activity != null ? activity : context;
+		if (derivedContext == null) {
+			return;
+		}
 
 		// Open geo uris with internal map activity
 		if (uri.toString().startsWith("geo:")) {
-			if (!GeoLocationUtil.viewLocation(context, uri)) {
-				Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show();
+			if (!GeoLocationUtil.viewLocation(derivedContext, uri)) {
+				Toast.makeText(derivedContext, R.string.error, Toast.LENGTH_LONG).show();
 			}
 			return;
 		}
@@ -379,8 +413,8 @@ public class LinkifyUtil {
 		// handle contact Urls internally but ignore contact Urls with a query such as "text=hello"
 		if (BuildConfig.contactActionUrl.equals(uri.getAuthority())) {
 			List<String> pathSegments = uri.getPathSegments();
-			if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8 && TestUtil.empty(uri.getEncodedQuery())) {
-				if (openContactLinkTargetAppSelector(fragment, activity)) {
+			if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8 && TestUtil.isEmptyOrNull(uri.getEncodedQuery())) {
+				if (openContactLinkTargetAppSelector(context, fragment, activity)) {
 					// intent has been handled
 					return;
 				}
@@ -393,9 +427,9 @@ public class LinkifyUtil {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtras(bundle);
 		try {
-			context.startActivity(intent);
+			derivedContext.startActivity(intent);
 		} catch (ActivityNotFoundException e) {
-			Toast.makeText(context, R.string.no_activity_for_intent, Toast.LENGTH_SHORT).show();
+			Toast.makeText(derivedContext, R.string.no_activity_for_intent, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -415,12 +449,19 @@ public class LinkifyUtil {
 	 *
 	 * Return true if the link target app selector could be shown, false otherwise.
 	 */
-	public boolean openContactLinkTargetAppSelector(@Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
-		final Context context = fragment != null ? fragment.getContext() : activity;
-		if (context == null) return false;
+	public boolean openContactLinkTargetAppSelector(@Nullable Context context, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
+		final Context derivedContext;
+		if (context == null) {
+			derivedContext = fragment != null ? fragment.getContext() : activity;
+		} else {
+			derivedContext = context;
+		}
+		if (derivedContext == null) {
+			return false;
+		}
 
-		final FragmentManager fragmentManager = fragment != null ? fragment.getParentFragmentManager() : activity.getSupportFragmentManager();
-		final PackageManager packageManager = context.getPackageManager();
+		final FragmentManager fragmentManager = fragment != null ? fragment.getParentFragmentManager() : activity != null ? activity.getSupportFragmentManager() : null;
+		final PackageManager packageManager = derivedContext.getPackageManager();
 		if (packageManager == null) return false;
 
 		Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -453,10 +494,10 @@ public class LinkifyUtil {
 
 		if (!items.isEmpty()) {
 			if (items.size() == 1) {
-				launchAddContactActivity(context, items.get(0).getTag(), items.get(0).getData());
-			} else {
+				launchAddContactActivity(derivedContext, items.get(0).getTag(), items.get(0).getData());
+			} else if (fragmentManager != null) {
 				BottomSheetGridDialog dialog = BottomSheetGridDialog.newInstance(R.string.add_contact_in, items);
-				dialog.setCallback((tag, data) -> launchAddContactActivity(context, tag, data));
+				dialog.setCallback((tag, data) -> launchAddContactActivity(derivedContext, tag, data));
 				dialog.show(fragmentManager, "bsh");
 			}
 			return true;

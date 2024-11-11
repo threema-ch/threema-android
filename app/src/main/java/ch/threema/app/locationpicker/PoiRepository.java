@@ -77,7 +77,7 @@ class PoiRepository {
 			protected Void doInBackground(Void... voids) {
 				places.clear();
 
-				if (TestUtil.empty(poiQuery.getQuery()) || poiQuery.getCenter() == null ) {
+				if (TestUtil.isEmptyOrNull(poiQuery.getQuery()) || poiQuery.getCenter() == null ) {
 					return null;
 				}
 				if (poiQuery.getCenter().getLatitude() == 0.0d &&  poiQuery.getCenter().getLongitude() == 0.0d) {
@@ -194,7 +194,7 @@ class PoiRepository {
 						place.setDistance(-1);
 					}
 
-					if (!TestUtil.empty(highway)) {
+					if (!TestUtil.isEmptyOrNull(highway)) {
 						place.setDescription("street");
 					} else {
 						place.setDescription(placeS);

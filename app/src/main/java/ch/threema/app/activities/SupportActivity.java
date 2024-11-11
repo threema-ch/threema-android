@@ -59,7 +59,7 @@ public class SupportActivity extends SimpleWebViewActivity {
 			baseURL = preferenceService.getCustomSupportUrl();
 		}
 
-		if(TestUtil.empty(baseURL)) {
+		if(TestUtil.isEmptyOrNull(baseURL)) {
 			baseURL = getString(R.string.support_url);
 		}
 

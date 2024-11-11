@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">联系人</string>
     <string name="title_section1">会话</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">添加联系人</string>
     <string name="menu_done">完成</string>
     <string name="compose_message_and_enter">点击这里输入信息</string>
+    <string name="title_job_title">职位名称</string>
+    <string name="title_department">部门</string>
     <string name="send">发送</string>
     <string name="prefs_privacy">隐私</string>
     <string name="prefs_notifications">声音和通知</string>
@@ -49,7 +51,6 @@
     <string name="prefs_sum_notification_sound">系统默认</string>
     <string name="prefs_vibrate">振动</string>
     <string name="prefs_sum_vibrate">收到消息时振动</string>
-    <string name="prefs_light">通知灯</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">选择壁纸</string>
     <string name="prefs_sum_wallpaper">选择图片作为背景</string>
@@ -164,7 +165,7 @@
     <string name="support">帮助</string>
     <string name="support_url">https://threema.ch/android/support/</string>
     <string name="backup_share_content">以下文本字符串可以与所选密码一起使用，以
-恢复您的 Threema ID。</string>
+        恢复您的 Threema ID。</string>
     <string name="backup_share_subject">Threema ID 导出为</string>
     <string name="add_attachment">新附件</string>
     <string name="invalid_passphrase">密码无效</string>
@@ -241,14 +242,15 @@
     <string name="search_contact">搜索联系人</string>
     <string name="push_reset_title">推送令牌重置</string>
     <string name="push_reset_text">推送令牌已重置</string>
-    <string name="emoji_things">对象</string>
-    <string name="emoji_traffic">旅行与地点</string>
-    <string name="emoji_symbols">符号</string>
-    <string name="emoji_nature">动物与自然</string>
-    <string name="emoji_food">食物与饮料</string>
     <string name="emoji_recent">常用</string>
-    <string name="emoji_emotions">表情符号与人物</string>
-    <string name="emoji_activities">活动</string>
+    <string name="emoji_smileys">表情符号</string>
+    <string name="emoji_people">人物</string>
+    <string name="emoji_nature">野生动物</string>
+    <string name="emoji_food">食物与饮料</string>
+    <string name="emoji_travel">旅行与地点</string>
+    <string name="emoji_activity">活动</string>
+    <string name="emoji_objects">物件</string>
+    <string name="emoji_symbols">符号</string>
     <string name="emoji_flags">旗帜</string>
     <string name="emoji_search">搜索表情符号</string>
     <string name="emoji_search_no_result">没有搜索结果</string>
@@ -411,8 +413,8 @@
     <string name="edit_name_only">编辑名称</string>
     <string name="group_was_synchronized">群组已同步。</string>
     <string name="verification_level2_work_explain">内部联系人，由贵组织预先填写。</string>
-    <string name="verification_level3_work_explain">通过扫描QR码，您能亲自验证内部联系人的身份和公钥。</string>
-    <string name="verification_level3_explain">通过扫描QR码，您能亲自验证联系人的身份和公钥。</string>
+    <string name="verification_level3_work_explain">通过扫描二维码，您能亲自验证内部联系人的身份和公钥。</string>
+    <string name="verification_level3_explain">通过扫描二维码，您能亲自验证联系人的身份和公钥。</string>
     <string name="verification_level2_explain">联系人的电话号码和/或电子邮件地址包含在您的通讯录中。</string>
     <string name="verification_level1_explain">未知联系人；该联系人没有将电话号码或电子邮件地址链接到其ID，或者您的通讯录中没有这些联系人的详细消息。</string>
     <string name="state_dialog_received">已收到</string>
@@ -431,7 +433,7 @@
     <string name="add_group_description">添加群组描述</string>
     <string name="read_more">阅读更多</string>
     <string name="read_less">阅读更少</string>
-    <string name="changed_group_desc_date">"\u6700\u540e\u66f4\u6539\u65f6\u95f4: "</string>
+    <string name="changed_group_desc_date">最后修改：\u0020</string>
     <string name="num_items_sected">已选择 %s</string>
     <string name="really_delete_media">您确定要删除%d条媒体消息吗？</string>
     <string name="check_updates">检查更新</string>
@@ -444,8 +446,6 @@
     <string name="contact_not_found">没有这样的联系人</string>
     <string name="contact_now_blocked">联系人已屏蔽</string>
     <string name="contact_now_unblocked">联系人已解除屏蔽</string>
-    <string name="not_enough_disk_space_title">存储空间不足</string>
-    <string name="not_enough_disk_space_text">至少释放%1$s来接收消息</string>
     <string name="sending_images">正在传送图片</string>
     <string name="share_conversation_body">您需要具有 AES 支持的现代 ZIP 工具才能解压缩文件，例如
 http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -476,6 +476,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_wizard0_explain">您可以直接用 Threema 快速创建在线投票，例如安排活动、创建调查问卷或向您的朋友问任何问题。</string>
     <string name="ballot_add_choices">添加答案</string>
     <string name="blocked_cannot_send">您无法向被屏蔽的联系人发送信息</string>
+    <string name="invalid_some_cannot_send">无法选择发送到某些收件人。</string>
+    <string name="invalid_all_cannot_send">无法选择发送到这些收件人。</string>
     <string name="really_block_contact">来自此联系人今后的消息将被丢弃。是否继续？</string>
     <string name="ballot_result_final">最后结果</string>
     <string name="invalid_cannot_send">您无法向无效的联系人发送信息</string>
@@ -547,9 +549,9 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="mime_word">文字文件</string>
     <string name="no_filename"><![CDATA[<没有文件名>]]></string>
     <string name="send_as_files">作为文件发送</string>
-    <string name="send_as_files_warning">传输未压缩的文件和图片可能会使用大量数据
-，而您的移动运营商也可能会收取额外费用。我们建议
-仅在WiFi网络中上传和下载文件。</string>
+    <string name="send_as_files_warning">传输未压缩的文件和图片可能会使用大量数据，
+        而您的移动运营商也可能会收取额外费用。我们建议仅在WiFi
+        网络中上传和下载文件。</string>
     <string name="prefs_theme">设计主题</string>
     <string name="list_theme_light">浅色</string>
     <string name="list_theme_dark">深色</string>
@@ -644,6 +646,7 @@ Threema 支持的所有表情符号。</string>
     <string name="new_wizard_linked_to">链接到</string>
     <string name="new_wizard_need_internet">创建唯一的 Threema ID 需要稳定的网络连接。请再试一次。</string>
     <string name="new_wizard_more_information">更多信息</string>
+    <string name="message_details_message_id_copied">消息编号已复制到剪贴板</string>
     <string name="contact_details_id_copied">ID已复制到剪贴板</string>
     <string name="contact_details_nickname_copied">昵称已复制到剪贴板</string>
     <string name="new_wizard_use_id_as_nickname">你想用 Threema ID 作为您的昵称吗？</string>
@@ -663,9 +666,9 @@ Threema 支持的所有表情符号。</string>
 自动在您的电话通讯录中找到您。该号码将以
 单向加密（散列）形式存储在我们的服务器上。如果您想
 完全匿名使用 Threema，则可以跳过此步骤。</string>
-    <string name="new_wizard_info_nickname">"昵称用於设备上的推送通知，向尚未将您存储在通讯录的用户识别您的身份。
+    <string name="new_wizard_info_nickname">昵称用於设备上的推送通知，向尚未将您存储在通讯录的用户识别您的身份。
 我们建议仅提供您的名字或化名作为昵称。
-如果您未设置昵称，在默认情况下，我们将使用您的 Threema ID。 "</string>
+如果您未设置昵称，在默认情况下，我们将使用您的 Threema ID。</string>
     <string name="not_linked">未链接</string>
     <string name="linked">已链接</string>
     <string name="pending_sms_verification_notice">您的手机号码尚未验证。</string>
@@ -697,7 +700,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="error_out_of_memory">没有足够的内存来完成此操作</string>
     <string name="configure">配置</string>
     <string name="file_is_not_audio">不是音频文件</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">某些设置已被管理员禁用</string>
     <string name="select_all">全选</string>
     <string name="deleting_messages">正在删除消息</string>
@@ -780,14 +782,15 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="edit_message">编辑消息</string>
     <string name="edited">已编辑</string>
     <string name="confirm_edit_desc">确认编辑</string>
+    <string name="edit_history">编辑记录</string>
     <string name="discard_changes">您要放弃更改吗？</string>
     <string name="prefs_title_network">网络</string>
     <string name="prefs_title_ipv6_preferred">以 IPv6 发送消息</string>
     <string name="prefs_ipv6_preferred_off">仅使用 IPv4 连接</string>
     <string name="prefs_ipv6_preferred_on">在 IPv4 上优先使用 IPv6 连接</string>
     <string name="prefs_title_ipv6_webrtc_allowed">以 IPv6 通话和上网</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">允许将 IPv6 进行 Threema 通话和 Threema 网页版</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">禁止将 IPv6 进行 Threema 通话和 Threema 网页版</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">允许 Threema 通话和桌面应用程序/网络客户端使用 IPv6。</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">禁止 Threema 通话和桌面应用程序/网络客户端使用 IPv6。</string>
     <string name="ipv6_requires_restart">如要应用此设置，需要重新启动应用程序。</string>
     <string name="ipv6_restart_now">立即重启</string>
     <string name="on_cap">开启</string>
@@ -1050,16 +1053,13 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="system_default">系统默认</string>
     <string name="open_in_maps_app">在地图应用中打开</string>
     <string name="delete">删除</string>
-    <string name="delete_from_this_device">从此设备中删除</string>
+    <string name="delete_from_this_device">在此裝置中刪除</string>
     <string name="delete_for_all">为所有人删除</string>
     <string name="message_was_deleted">此消息已删除</string>
     <string name="continue_recording">继续录音</string>
-    <string name="whatsnew_title">%1$s 5.2 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>为消息加星标：为方便日后查找消息，长按即可为重要消息加星标。</p> 
-<p>自动删除聊天记录： 在选定的时间段后自动清理聊天记录。信息自动删除功能可在 \"存储管理\" 中启用。</p> 
-<p>这次更新还有大量其他改进和优化。</p> ]]></string>
-    <string name="whatsnew2_title">" "</string>
-    <string name="whatsnew2_body">" "</string>
+    <string name="whatsnew_title">%1$s %2$s 有哪些新功能？</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>为了改善通知的显示效果，在后台运行时的通知已进行了全面改进。如果某些聊天已启用单独通知设置，就需要重新设置。</p>
+        ]]></string>
     <string name="tap_to_start">点击这里立即启动 %s。</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">无效的备份路径</string>
@@ -1182,14 +1182,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="only_images_or_videos">只能选择图片或视频</string>
     <string name="media_gallery_gifs">GIF</string>
     <string name="no_media_found_global">在此设备上找不到媒体</string>
-    <string name="enable_formatting">启用格式化</string>
     <string name="original_file_no_longer_avilable">原文件已无法访问，请重新发送消息。</string>
     <string name="state_transcoding">正在转码中</string>
     <string name="importing_files">正在导入文件</string>
     <string name="tooltip_image_resolution_hint">点击这里调整图片分辨率。</string>
     <string name="ballot_created_successfully">投票已成功创建。</string>
     <string name="file_size">文件大小</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30天</string>
     <string name="show_in_chat">在会话中显示</string>
     <string name="group_create_no_members">您确定要创建一个空白群组吗？</string>
@@ -1331,7 +1329,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="group_request_already_sent_title">请求已发送</string>
     <string name="qr_scanner_id_hint">您可以扫描联系人的二维码以验证其身份。如要显示二维码，请让您的联系人点击 Threema 主屏幕左上角的头像。</string>
     <string name="enable_storage_access_for_media">启用存储访问权限以查看设备上的图片和视频</string>
+    <string name="select_storage_access_for_media_is_granted">您已授予部分的照片和视频的访问权限。</string>
     <string name="take_me_there">带我到…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">管理</string>
     <string name="notification_channel_group_join_request">收到群组加入请求的通知频道</string>
     <string name="reset_default_group_link_title">重置默认链接信息</string>
     <string name="reset_default_group_link_desc">之前分享的链接将失效，通过旧链接提出的请求将自动被拒绝，并给出过期的回应。</string>
@@ -1396,7 +1396,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="prefs_title_use_system_ringtone">使用系统铃声</string>
     <string name="organization_type">单位</string>
     <string name="permission_bluetooth_connect_required">请启用 “附近设备” 权限以定位已连接的蓝牙耳机</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push 现在已启用。您需要手动重启 Threema 网页版和桌面版会话。</string>
     <string name="tooltip_multiple_recipients_title">一条消息同时发送到多个收件人</string>
     <string name="tooltip_multiple_recipients_text">长按可将一条消息同时发送到多个收件人。</string>
     <string name="synchronizing">同步中…</string>
@@ -1572,8 +1571,6 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="problemsolver_to_settings">前往设置</string>
     <string name="prefs_advanced_options">高级选项</string>
     <string name="push_service">推送服务</string>
-    <string name="zoom_out">缩小</string>
-    <string name="zoom_in">放大</string>
     <string name="edit_and_send">编辑并发送</string>
     <string name="media_gallery_animated_webps">动画 WebP 文件</string>
     <string name="unsupported_image_type">不支持的图像类型：%s</string>
@@ -1582,6 +1579,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="edit_message_not_supported_for_contact">由于对方使用的应用版本不支持编辑消息功能，因此无法编辑消息。</string>
     <string name="edit_message_not_supported_for_all_group_members">以下群组成员将无法看到您对消息的编辑：%1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">由于有部分群组成员使用的应用版本不支持编辑消息功能，因此无法编辑消息。</string>
+    <string name="prefs_notification_settings">通知设置</string>
+    <string name="prefs_notification_settings_summary">在系统设置对话框中更改声音和振动</string>
+    <string name="new_messages">新消息</string>
+    <string name="new_group_messages">新的群组消息</string>
+    <string name="individual_notification_settings">单独通知设置</string>
     <string name="delete_message_not_supported_for_all_group_members">此消息不会为以下群组成员删除：%1$s</string>
     <string name="work_intro_more_link_text">进一步了解 Threema Work</string>
     <string name="work_intro_subtitle">为公司而设的安全商业版通讯工具。</string>
@@ -1590,6 +1592,21 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
     <string name="consumer_notice_appgallery_link_description">华为 AppGallery 商店上的 Threema</string>
     <string name="consumer_notice_subtitle">仅限个人用户使用</string>
+    <string name="individual_notification_settings_warn">对每个已启用单独通知设置的聊天会话，都会创建一个通知频道。即使此应用程序锁定，会话名称也会在设备设置中显示。是否继续？</string>
+    <string name="incoming_calls">来电</string>
+    <string name="group_chats">群组会话</string>
+    <string name="edit_history_file_no_caption">无编辑记录</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">您对这条消息表示 “同意”。</string>
+    <string name="cd_dec_icon">您对这条消息表示 “不同意”。</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">由%d个群组成员</string>
+    <string name="cd_edited">消息已编辑</string>
+    <string name="cd_created_at">创建于%s</string>
+    <string name="cd_edited_at">编辑于%s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d的编辑记录</string>
+    <string name="cd_message_details_container">消息详情</string>
+    <string name="cd_enable_formatting">启用格式化</string>
+    <string name="cd_message">消息</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>
@@ -1622,6 +1639,9 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     </plurals>
     <plurals name="ballot_really_delete_text">
         <item quantity="other">您确定要删除%1$d个投票吗？你将无法恢复原来的票数。</item>
+    </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="other">%d个媒体文件已删除</item>
     </plurals>
     <plurals name="message_deleted">
         <item quantity="other">已删除%d条消息</item>
@@ -1666,7 +1686,8 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
         <item quantity="other">自上一条消息以来，已丢失%d条消息。</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="other">删除%d条消息？</item>
+        <item quantity="other">删除这条消息？
+删除%d条消息？</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d个群组成员</item>

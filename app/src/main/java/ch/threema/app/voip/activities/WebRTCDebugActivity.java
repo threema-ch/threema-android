@@ -151,7 +151,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		// Wire up copy button
 		assert this.copyButton != null;
 		this.copyButton.setOnClickListener(view -> {
-			if (!TestUtil.empty(this.clipboardString)) {
+			if (!TestUtil.isEmptyOrNull(this.clipboardString)) {
 				this.copyToClipboard(this.clipboardString);
 			}
 		});
@@ -159,7 +159,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 		// Wire up send button
 		assert this.sendButton != null;
 		this.sendButton.setOnClickListener(view -> {
-			if (!TestUtil.empty(this.clipboardString)) {
+			if (!TestUtil.isEmptyOrNull(this.clipboardString)) {
 				this.prepareSendToSupport();
 			}
 		});

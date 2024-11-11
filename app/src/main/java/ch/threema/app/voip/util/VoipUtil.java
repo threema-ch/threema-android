@@ -22,11 +22,8 @@
 package ch.threema.app.voip.util;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -34,17 +31,13 @@ import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.PreferenceManager;
 
 import org.slf4j.Logger;
 
@@ -52,7 +45,6 @@ import java.util.Collections;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
@@ -95,7 +87,7 @@ public class VoipUtil {
 	) {
 		Intent intent = new Intent();
 		intent.setAction(action);
-		if (!TestUtil.empty(extraName)) {
+		if (!TestUtil.isEmptyOrNull(extraName)) {
 			intent.putExtra(extraName, extra);
 		}
 		LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

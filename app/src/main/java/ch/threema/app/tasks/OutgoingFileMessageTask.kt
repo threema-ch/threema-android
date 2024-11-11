@@ -25,8 +25,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
@@ -35,10 +33,8 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.data.media.FileDataModel
 import kotlinx.serialization.Serializable
-import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingFileMessageTask")
 
@@ -50,12 +46,10 @@ class OutgoingFileMessageTask(
     private val thumbnailBlobId: ByteArray?,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val messageService = serviceManager.messageService
-    private val groupService = serviceManager.groupService
 
     override val type: String = "OutgoingFileMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         when (receiverType) {
             MessageReceiver.Type_CONTACT -> sendContactMessage(handle)
             MessageReceiver.Type_GROUP -> sendGroupMessage(handle)
@@ -63,19 +57,12 @@ class OutgoingFileMessageTask(
         }
     }
 
+    override fun onSendingStepsFailed(e: Exception) {
+        getMessageModel(receiverType, messageModelId)?.saveWithStateFailed()
+    }
+
     private suspend fun sendContactMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getContactMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
-        val messageIdString = messageModel.apiMessageId
-        if (messageIdString == null) {
-            logger.warn("Cannot send message model where message id is null")
-            messageService.updateMessageState(messageModel, MessageState.SENDFAILED, Date())
-            return
-        }
-        val apiMessageId = MessageId(Utils.hexStringToByteArray(messageIdString))
+        val messageModel = getContactMessageModel(messageModelId) ?: return
 
         val fileDataModel = messageModel.fileData
 
@@ -83,36 +70,25 @@ class OutgoingFileMessageTask(
         val message = FileMessage().apply {
             data = fileDataModel.toFileData(thumbnailBlobId, messageModel)
             toIdentity = messageModel.identity
-            messageId = apiMessageId
+            messageId = ensureMessageId(messageModel)
         }
 
         sendContactMessage(message, messageModel, handle)
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getGroupMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getGroupMessageModel(messageModelId) ?: return
 
         val group = groupService.getById(messageModel.groupId)
             ?: throw IllegalStateException("Could not get group for message model ${messageModel.apiMessageId}")
 
         val fileDataModel = messageModel.fileData
 
-        val messageIdString = messageModel.apiMessageId
-        if (messageIdString == null) {
-            logger.warn("Cannot send message model where message id is null")
-            messageService.updateMessageState(messageModel, MessageState.SENDFAILED, Date())
-            return
-        }
-
         sendGroupMessage(
             group,
             recipientIdentities,
             messageModel,
-            MessageId(Utils.hexStringToByteArray(messageIdString)),
+            ensureMessageId(messageModel),
             {
                 GroupFileMessage().apply {
                     data = fileDataModel.toFileData(thumbnailBlobId, messageModel)

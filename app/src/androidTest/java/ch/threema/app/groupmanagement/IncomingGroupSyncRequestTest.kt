@@ -52,8 +52,16 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
     override fun createMessageForGroup() = GroupSyncRequestMessage()
 
     @Test
-    fun testValidSyncRequest() {
+    fun testValidSyncRequest() = runTest {
         assertValidGroupSyncRequest(myGroup, contactA)
+
+        // Assert that the same group sync request will be ignored if a group sync request from the
+        // same sender for the same group has already been handled in the last hour.
+        assertIgnoredGroupSyncRequest(myGroup, contactA)
+
+        // Assert that a group sync request in the same group but from a different member is still
+        // answered.
+        assertValidGroupSyncRequest(myGroup, contactB)
     }
 
     @Test
@@ -63,7 +71,7 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
 
     @Test
     fun testSyncRequestFromNonMember() = runTest {
-        assertLeftGroupSyncRequest(myGroup, contactB)
+        assertLeftGroupSyncRequest(myGroup, contactC)
     }
 
     @Test
@@ -95,7 +103,7 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         // Common group receive steps are not executed for group sync request messages
     }
 
-    private fun assertValidGroupSyncRequest(group: TestGroup, contact: TestContact) = runTest {
+    private suspend fun assertValidGroupSyncRequest(group: TestGroup, contact: TestContact) {
         launchActivity<HomeActivity>()
 
         // Create group sync request message

@@ -39,11 +39,10 @@ class OutgoingContactRequestProfilePictureTask(
     private val toIdentity: String,
     serviceManager: ServiceManager,
 ) : OutgoingProfilePictureTask(serviceManager) {
-    private val contactService by lazy { serviceManager.contactService }
 
     override val type = "OutgoingContactRequestProfilePictureTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Get contact and check that sending a profile picture request is necessary
         val contact = contactService.getByIdentity(toIdentity)
         if (contact == null) {

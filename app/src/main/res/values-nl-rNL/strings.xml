@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Contactpersonen</string>
     <string name="title_section1">Berichten</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">Contactpersoon toevoegen</string>
     <string name="menu_done">Gereed</string>
     <string name="compose_message_and_enter">Tik hier om in te voeren</string>
+    <string name="title_job_title">Functieomschrijving</string>
+    <string name="title_department">Afdeling</string>
     <string name="send">Verzenden</string>
     <string name="prefs_privacy">Privacy</string>
     <string name="prefs_notifications">Meldingen</string>
@@ -49,20 +51,19 @@
     <string name="prefs_sum_notification_sound">Systeemstandaard</string>
     <string name="prefs_vibrate">Trillen</string>
     <string name="prefs_sum_vibrate">Trillen bij ontvangst bericht</string>
-    <string name="prefs_light">Licht melding</string>
     <string name="prefs_sum_light">Wit</string>
     <string name="prefs_title_wallpaper">Achtergrond selecteren</string>
     <string name="prefs_sum_wallpaper">Achtergrondafbeelding selecteren</string>
     <string name="prefs_title_wallpaper_switch">Achtergrond</string>
     <string name="prefs_title_enter">Enter om te versturen</string>
     <string name="prefs_sum_enter_on">Berichten onmiddellijk versturen met Enter</string>
-    <string name="prefs_sum_enter_off">"Enter voor een nieuwe regel "</string>
+    <string name="prefs_sum_enter_off">Enter voor een nieuwe regel </string>
     <string name="prefs_system_notifications">Enkele chat</string>
     <string name="prefs_inapp">In-app</string>
     <string name="prefs_inapp_sounds">Geluiden in-app</string>
     <string name="prefs_inapp_sounds_on">Geluid afspelen bij versturen/ontvangen van berichten</string>
     <string name="prefs_inapp_sounds_off">Geen in-appgeluiden afspelen</string>
-    <string name="prefs_inapp_vibrate">"Trilling in-app "</string>
+    <string name="prefs_inapp_vibrate">Trilling in-app</string>
     <string name="prefs_inapp_vibrate_on">Trillen bij ontvangen van berichten</string>
     <string name="prefs_inapp_vibrate_off">Niet trillen bij ontvangen van berichten</string>
     <string name="workarounds">Workarounds</string>
@@ -236,14 +237,15 @@
     <string name="search_contact">Contactpersoon zoeken</string>
     <string name="push_reset_title">Pushtoken herstellen</string>
     <string name="push_reset_text">De pushtoken is hersteld.</string>
-    <string name="emoji_things">Objecten</string>
-    <string name="emoji_traffic">Verkeer</string>
-    <string name="emoji_symbols">Symbolen</string>
-    <string name="emoji_nature">Natuur</string>
-    <string name="emoji_food">Eten &amp; Drinken</string>
     <string name="emoji_recent">Recent</string>
-    <string name="emoji_emotions">Smileys &amp; Mensen</string>
-    <string name="emoji_activities">Activiteiten</string>
+    <string name="emoji_smileys">Smileys &amp; emotie</string>
+    <string name="emoji_people">People &amp; body</string>
+    <string name="emoji_nature">Dieren &amp; natuur</string>
+    <string name="emoji_food">Eten &amp; Drinken</string>
+    <string name="emoji_travel">Reizen &amp; plaatsen</string>
+    <string name="emoji_activity">Activiteiten</string>
+    <string name="emoji_objects">Objecten</string>
+    <string name="emoji_symbols">Symbolen</string>
     <string name="emoji_flags">Vlaggen</string>
     <string name="emoji_search">Emoji\'s zoeken</string>
     <string name="emoji_search_no_result">Geen zoekresultaten</string>
@@ -292,8 +294,7 @@
     <string name="really_leave_group_message">Weet u zeker dat u deze groep wil verlaten?</string>
     <string name="search_no_matches">Geen resultaten gevonden</string>
     <string name="search_no_more_matches">Geen resultaten meer</string>
-    <string name="backup_share">"Back-up delen
-"</string>
+    <string name="backup_share">Back-up delen</string>
     <string name="my_backups_title">Mijn back-ups</string>
     <string name="backup_delete_confirm">Back-upbestand verwijderd</string>
     <string name="message_log_title">Berichtenlog</string>
@@ -419,7 +420,7 @@
     <string name="add_group_description">Voeg een groepsbeschrijving toe</string>
     <string name="read_more">meer info</string>
     <string name="read_less">minder info</string>
-    <string name="changed_group_desc_date">"Laatst gewijzigd: "</string>
+    <string name="changed_group_desc_date">Laatst gewijzigd: </string>
     <string name="num_items_sected">%s geselecteerd</string>
     <string name="really_delete_media">Weet u zeker dat u %d mediaberichten wilt verwijderen?</string>
     <string name="check_updates">Controleren op updates</string>
@@ -431,8 +432,6 @@
     <string name="contact_not_found">Die contactpersoon bestaat niet</string>
     <string name="contact_now_blocked">Contactpersoon geblokkeerd</string>
     <string name="contact_now_unblocked">Blokkering contactpersoon opgeheven</string>
-    <string name="not_enough_disk_space_title">Niet genoeg opslag</string>
-    <string name="not_enough_disk_space_text">Maak tenminste %1$s vrij om het bericht te ontvangen</string>
     <string name="sending_images">Afbeeldingen versturen</string>
     <string name="share_conversation_body">Een modern zipprogramma met AES-ondersteuning is vereist om het bestand uit te pakken, bijvoorbeeld
 		http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -465,6 +464,8 @@
 Voer een vraag in voor uw poll.</string>
     <string name="ballot_add_choices">Antwoorden toevoegen</string>
     <string name="blocked_cannot_send">U kunt geen berichten versturen aan geblokkeerde contactpersonen</string>
+    <string name="invalid_some_cannot_send">Sommige ontvangers kunnen niet worden geselecteerd.</string>
+    <string name="invalid_all_cannot_send">Deze ontvangers kunnen niet worden geselecteerd.</string>
     <string name="really_block_contact">Nieuwe berichten aan deze contactpersoon worden verwijderd. Doorgaan?</string>
     <string name="ballot_result_final">Eindresultaat</string>
     <string name="invalid_cannot_send">U kunt geen berichten versturen aan ongeldige contactpersonen</string>
@@ -628,6 +629,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="new_wizard_linked_to">Gekoppeld aan</string>
     <string name="new_wizard_need_internet">Een stabiele internetverbinding is vereist om uw unieke Threema ID aan te maken. probeer het opnieuw.</string>
     <string name="new_wizard_more_information">Meer informatie</string>
+    <string name="message_details_message_id_copied">Bericht-ID gekopieerd naar klembord</string>
     <string name="contact_details_id_copied">ID gekopieerd naar klembord</string>
     <string name="contact_details_nickname_copied">Bijnaam gekopieerd naar klembord</string>
     <string name="new_wizard_use_id_as_nickname">Wilt u uw Threema ID als nickname gebruiken?</string>
@@ -667,7 +669,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="error_out_of_memory">Niet genoeg geheugen om deze handeling te voltooien</string>
     <string name="configure">Configureren</string>
     <string name="file_is_not_audio">Geen audiobestand</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Sommige instellingen zijn uitgeschakeld door de beheerder</string>
     <string name="select_all">Alles selecteren</string>
     <string name="deleting_messages">Berichten verwijderen</string>
@@ -750,14 +751,15 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_message">Bericht bewerken</string>
     <string name="edited">Bewerkt</string>
     <string name="confirm_edit_desc">Bewerking bevestigen</string>
+    <string name="edit_history">Geschiedenis bewerken</string>
     <string name="discard_changes">Wilt u de wijzigingen ongedaan maken?</string>
     <string name="prefs_title_network">Netwerk</string>
     <string name="prefs_title_ipv6_preferred">IPv6 voor berichten</string>
     <string name="prefs_ipv6_preferred_off">Alleen IPv4-verbindingen gebruiken</string>
     <string name="prefs_ipv6_preferred_on">IPv6-verbindingen verkiezen over IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 voor oproepen en web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 toestaan voor Threema oproepen en Threema web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">IPv6 niet toestaan voor Threema oproepen en Threema web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 toestaan voor Threema-oproepen en de desktop app/webcliënt.</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">IPv6 niet toestaan voor Threema-oproepen en de desktop app/webcliënt</string>
     <string name="ipv6_requires_restart">De app moet worden herstart om deze instelling toe te passen.</string>
     <string name="ipv6_restart_now">Herstarten</string>
     <string name="on_cap">Aan</string>
@@ -1024,12 +1026,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="delete_for_all">Voor iedereen verwijderen</string>
     <string name="message_was_deleted">Dit bericht is verwijderd</string>
     <string name="continue_recording">Doorgaan met opnemen</string>
-    <string name="whatsnew_title">Wat is er nieuw in %1$s 5.2?</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p>Berichten met ster: houd belangrijke berichten lang ingedrukt om deze met een ster te markeren en vind ze later gemakkelijk terug.</p>
-<p>Automatisch verwijderen: zorg dat je chats automatisch worden opgeschoond na een bepaalde tijdsperiode. De functie voor het automatisch verwijderen van berichten kan worden geactiveerd in het opslagbeheer</p>
-<p>Talrijke andere verbeteringen en optimalisaties.</p>
-		]]></string>
+    <string name="whatsnew_title">Wat is er nieuw in %1$s %2$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Om de weergave van meldingen te verbeteren, is de afhandeling ervan op de achtergrond herzien. Als voor sommige chats individuele meldingsinstellingen waren geactiveerd, moeten deze opnieuw worden ingesteld.</p>
+        ]]></string>
     <string name="tap_to_start">Tik hier om %s te starten.</string>
     <string name="two_years">2 jaar</string>
     <string name="invalid_backup_path">Ongeldige back-uplocatie</string>
@@ -1152,14 +1151,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="only_images_or_videos">Alleen foto\'s of video\'s kunnen worden geselecteerd</string>
     <string name="media_gallery_gifs">GIFS</string>
     <string name="no_media_found_global">Geen media gevonden op dit apparaat</string>
-    <string name="enable_formatting">Opmaak inschakelen</string>
     <string name="original_file_no_longer_avilable">Het oorspronkelijke bestand is niet langer beschikbaar. Verzend het bericht opnieuw.</string>
     <string name="state_transcoding">transcoderen…</string>
     <string name="importing_files">Bestanden importeren…</string>
     <string name="tooltip_image_resolution_hint">Tik hier om de afbeeldingsresoluties aan te passen.</string>
     <string name="ballot_created_successfully">De poll is aangemaakt.</string>
     <string name="file_size">Grootte</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Weergeven in chat</string>
     <string name="group_create_no_members">Weet u zeker dat u een lege groep wilt aanmaken?</string>
@@ -1301,7 +1298,9 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="group_request_already_sent_title">Verzoek is al verzonden</string>
     <string name="qr_scanner_id_hint">Scan de contact-QR-code om de identiteit te verifiëren. Vraag de contactpersoon om op de profielafbeelding linksboven in het startscherm van Threema te klikken om de code weer te geven.</string>
     <string name="enable_storage_access_for_media">Geef toegang tot de opslag om foto\'s en video\'s op je apparaat te bekijken</string>
+    <string name="select_storage_access_for_media_is_granted">U hebt toegang gekregen tot een select aantal foto\'s en video\'s.</string>
     <string name="take_me_there">Breng me ernaartoe…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Beheren</string>
     <string name="notification_channel_group_join_request">Meldingskanaal voor ontvangen aansluitverzoeken</string>
     <string name="reset_default_group_link_title">Standaard linkinformatie herstellen</string>
     <string name="reset_default_group_link_desc">De eerder gedeelde link is ongeldig en alle verzoeken via de oude link worden automatisch afgewezen met de reactie Verlopen.</string>
@@ -1366,7 +1365,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="prefs_title_use_system_ringtone">Gebruik systeem-beltoon</string>
     <string name="organization_type">Organisatie</string>
     <string name="permission_bluetooth_connect_required">Toestemming voor \"Apparaten in de buurt\" inschakelen om verbonden Bluetooth-headsets te vinden</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push is actief. Threema Web en Desktop sessies moeten handmatig worden gestart.</string>
     <string name="tooltip_multiple_recipients_title">Meerdere ontvangers</string>
     <string name="tooltip_multiple_recipients_text">Tik en houd vast om meerdere ontvangers voor hetzelfde bericht te selecteren.</string>
     <string name="synchronizing">Synchroniseren…</string>
@@ -1542,8 +1540,6 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="problemsolver_to_settings">Naar de instellingen</string>
     <string name="prefs_advanced_options">Geavanceerde opties</string>
     <string name="push_service">Pushdienst</string>
-    <string name="zoom_out">Uitzoomen</string>
-    <string name="zoom_in">Inzoomen</string>
     <string name="edit_and_send">Bewerken en verzenden</string>
     <string name="media_gallery_animated_webps">Geanimeerde WebP\'s</string>
     <string name="unsupported_image_type">Niet-ondersteund afbeeldingstype: %s</string>
@@ -1552,7 +1548,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="edit_message_not_supported_for_contact">Het bericht is niet bewerkt omdat de app-versie van de ontvanger deze functie niet ondersteunt.</string>
     <string name="edit_message_not_supported_for_all_group_members">De volgende groepsleden kunnen uw bewerkingen niet zien: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Het bericht is niet bewerkt omdat geen van de groepsleden een app-versie heeft die deze functie ondersteunt.</string>
-    <string name="delete_message_not_supported_for_all_group_members">Dit bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
+    <string name="prefs_notification_settings">Meldingsinstellingen</string>
+    <string name="prefs_notification_settings_summary">Geluid en trilling in het dialoogvenster systeeminstellingen wijzigen</string>
+    <string name="new_messages">Nieuwe berichten</string>
+    <string name="new_group_messages">Nieuwe groepsberichten</string>
+    <string name="individual_notification_settings">Individuele meldingsinstellingen</string>
+    <string name="delete_message_not_supported_for_all_group_members">Het bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
     <string name="work_intro_more_link_text">Kom meer te weten over Threema Work</string>
     <string name="work_intro_subtitle">De veilige zakelijke messenger \nvoor bedrijven.</string>
     <string name="work_intro_login">Inloggen bij %1$s</string>
@@ -1560,6 +1561,21 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="consumer_notice_playstore_link_description">Threema in de Play Store</string>
     <string name="consumer_notice_appgallery_link_description">Threema in de AppGallery</string>
     <string name="consumer_notice_subtitle">Voor privégebruik</string>
+    <string name="individual_notification_settings_warn">Voor elke chat met individuele meldingsinstellingen wordt een meldingskanaal aangemaakt. Dit betekent dat de naam van de chat zichtbaar is in de apparaatinstellingen, zelfs als de app is vergrendeld. Toch doorgaan?</string>
+    <string name="incoming_calls">Inkomende oproepen</string>
+    <string name="group_chats">Groepschats</string>
+    <string name="edit_history_file_no_caption">Geen bijschrift</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">akkoord verzonden</string>
+    <string name="cd_dec_icon">niet akkoord verzonden</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">door %d groepsleden</string>
+    <string name="cd_edited">bericht is bewerkt</string>
+    <string name="cd_created_at">aangemaakt op %s</string>
+    <string name="cd_edited_at">bewerkt op %s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. bewerking in geschiedenis</string>
+    <string name="cd_message_details_container">berichtgegevens</string>
+    <string name="cd_enable_formatting">Opmaak inschakelen</string>
+    <string name="cd_message">bericht</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1604,6 +1620,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="one">Weet u zeker dat u de %1$d-poll wilt verwijderen? De stemmen zullen verloren gaan.</item>
         <item quantity="other">Weet u zeker dat u de %1$d-polls wilt verwijderen? De stemmen zullen verloren gaan.</item>
     </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">%d mediabestand verwijderd</item>
+        <item quantity="other">%d mediabestanden verwijderd</item>
+    </plurals>
     <plurals name="message_deleted">
         <item quantity="one">%d bericht verwijderd</item>
         <item quantity="other">%d berichten verwijderd</item>
@@ -1611,6 +1631,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <plurals name="notifications_for_x_hours">
         <item quantity="one">Voor %d uur</item>
         <item quantity="other">Voor %d uur</item>
+    </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="one">Weet u zeker dat u %1$d contactpersoon en alle bijbehorende chats wilt verwijderen?</item>
+        <item quantity="other">Weet u zeker dat u %1$d contactpersonen en alle bijbehorende chats wilt verwijderen?</item>
     </plurals>
     <plurals name="some_contacts_not_deleted">
         <item quantity="one">%d contact kon niet worden verwijderd omdat het nog steeds deel uitmaakt van een groep.</item>
@@ -1620,20 +1644,50 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
         <item quantity="one">%d chat gearchiveerd</item>
         <item quantity="other">%d chats gearchiveerd</item>
     </plurals>
+    <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d nieuw bericht in %2$d chats</item>
+        <item quantity="other">%1$d nieuwe berichten in %2$d chats</item>
+    </plurals>
     <plurals name="webclient_running_sessions">
         <item quantity="one">%d lopende sessie</item>
         <item quantity="other">%d lopende sessies</item>
     </plurals>
+    <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Weet u zeker dat u %d groepsverzoek wilt verwijderen?
+            Houd er rekening mee dat het verzoek niet wordt ingetrokken en dat u nog steeds kunt worden geaccepteerd of gevraagd
+            als het verzoek nog niet beantwoord is.</item>
+        <item quantity="other">Weet u zeker dat u %d groepsverzoeken wilt verwijderen?
+        Houd er rekening mee dat de verzoeken niet worden ingetrokken en dat u nog steeds kunt worden geaccepteerd of gevraagd
+            als de verzoeken nog niet beantwoord zijn.</item>
+    </plurals>
+    <plurals name="really_delete_incoming_request">
+        <item quantity="one">Weet u zeker dat u %d groepsverzoek wilt verwijderen?
+            U kunt niet reageren op de verzoeken als ze zijn verwijderd.</item>
+        <item quantity="other">Weet u zeker dat u %d groepsverzoeken wilt verwijderen?
+            U kunt niet reageren op de verzoeken als ze zijn verwijderd.</item>
+    </plurals>
+    <plurals name="really_delete_group_link">
+        <item quantity="one">Weet u zeker dat u %d groepskoppeling wilt verwijderen?
+            Mensen kunnen dan geen verzoeken meer sturen.
+            Eerder ontvangen verzoeken kunnen echter nog steeds worden geaccepteerd of afgewezen.</item>
+        <item quantity="other">Weet u zeker dat u %d groepskoppelingen wilt verwijderen?
+            Mensen kunnen dan geen verzoeken meer sturen.
+            Eerder ontvangen verzoeken kunnen echter nog steeds worden geaccepteerd of afgewezen.</item>
+    </plurals>
     <plurals name="chat_deleted">
         <item quantity="one">%d chat verwijderd</item>
         <item quantity="other">%d chats verwijderd</item>
+    </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="one">%d gearchiveerde chat</item>
+        <item quantity="other">%d gearchiveerde chats</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">Eén bericht is verloren gegaan sinds het laatste bericht.</item>
         <item quantity="other">%d berichten zijn verloren gegaan sinds het laatste bericht.</item>
     </plurals>
     <plurals name="delete_messages">
-        <item quantity="one">%d bericht verwijderen?</item>
+        <item quantity="one">Dit bericht verwijderen?</item>
         <item quantity="other">%d berichten verwijderen?</item>
     </plurals>
     <plurals name="number_of_group_members">

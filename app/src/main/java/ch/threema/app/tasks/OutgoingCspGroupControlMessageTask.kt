@@ -34,11 +34,6 @@ import java.util.Date
 
 abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
     OutgoingCspMessageTask(serviceManager) {
-    private val contactService by lazy { serviceManager.contactService }
-    private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    private val identityStore by lazy { serviceManager.identityStore }
-    private val contactStore by lazy { serviceManager.contactStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val taskCreator by lazy { serviceManager.taskCreator }
     private val blackListService by lazy { serviceManager.blackListService }
 
@@ -48,7 +43,7 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
     protected abstract val recipientIdentities: Set<String>
     protected open val date: Date = Date()
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val recipients = recipientIdentities
             .toSet()
             .toKnownContactModels(contactService)

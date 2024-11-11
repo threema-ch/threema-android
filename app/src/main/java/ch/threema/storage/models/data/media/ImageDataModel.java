@@ -91,7 +91,7 @@ public class ImageDataModel implements MediaMessageDataInterface {
 	}
 
 	public void fromString(String s) {
-		if (TestUtil.empty(s)) {
+		if (TestUtil.isEmptyOrNull(s)) {
 			// "old" image model, set defaults
 			this.isDownloaded = true;
 			this.encryptionKey = new byte[0];

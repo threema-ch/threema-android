@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema 通话</string>
     <string name="voip_hangup">挂断</string>
@@ -93,7 +93,7 @@
     <string name="voip_gc_call_start_error">无法发起群组通话</string>
     <string name="voip_gc_call_already_ended">群组通话已经结束</string>
     <string name="voip_gc_call_full_generic">已达到人数上限：其他参与者无法加入此群组通话。</string>
-    <string name="voip_gc_call_full_n">已达到 %1$d 个参与者的上限，您无法加入此群组通话。</string>
+    <string name="voip_gc_call_full_n">已达到%1$d位参与者的上限，您无法加入此群组通话。</string>
     <plurals name="n_participants_in_call">
         <item quantity="other">%d位参与者</item>
     </plurals>

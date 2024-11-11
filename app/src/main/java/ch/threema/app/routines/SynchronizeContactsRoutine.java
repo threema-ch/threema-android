@@ -126,7 +126,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 	}
 
 	public SynchronizeContactsRoutine addProcessIdentity(String identity) {
-		if(!TestUtil.empty(identity) && !this.processingIdentities.contains(identity)) {
+		if(!TestUtil.isEmptyOrNull(identity) && !this.processingIdentities.contains(identity)) {
 			this.processingIdentities.add(identity);
 		}
 		return this;
@@ -432,7 +432,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					String lookupKey = phonesCursor.getString(lookupKeyColumnIndex);
 					String phoneNumber = phonesCursor.getString(phoneNumberIndex);
 
-					if (rawContactId > 0L && contactId > 0L && lookupKey != null && !TestUtil.empty(phoneNumber)) {
+					if (rawContactId > 0L && contactId > 0L && lookupKey != null && !TestUtil.isEmptyOrNull(phoneNumber)) {
 						ContactMatchKeyPhone matchKey = new ContactMatchKeyPhone();
 						matchKey.contactId = contactId;
 						matchKey.lookupKey = lookupKey;
@@ -477,7 +477,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					String lookupKey = emailsCursor.getString(lookupKeyColumnIndex);
 					String email = emailsCursor.getString(emailIndex);
 
-					if (rawContactId > 0L && contactId > 0L && lookupKey != null && !TestUtil.empty(email)) {
+					if (rawContactId > 0L && contactId > 0L && lookupKey != null && !TestUtil.isEmptyOrNull(email)) {
 						ContactMatchKeyEmail matchKey = new ContactMatchKeyEmail();
 						matchKey.contactId = contactId;
 						matchKey.lookupKey = lookupKey;

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/enable_formatting"
+        android:checkable="true"
+        android:checked="true"
+        android:icon="@drawable/ic_outline_format_strikethrough"
+        android:title="@string/cd_enable_formatting"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="never" />
+</menu>

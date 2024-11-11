@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Spustit</string>
     <string name="webclient_diagnostics_intro">Stiskem tlačítka „Spustit“ zahájíte test.</string>
     <string name="webclient_diagnostics_done">Hotovo. Pokud zaznamenáváte problémy s navázáním spojení s aplikací pro desktop nebo s webovým klientem, odešlete prosím tento záznam podpoře společnosti Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">V tuto chvíli lze tuto beta aplikaci pro desktop propojit pouze se zařízením se systémem iOS. Pro použití se zařízeními Android si prosím stáhněte běžnou desktopovou aplikaci.</string>
 </resources>

@@ -481,9 +481,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 			services.contact,
 			services.group,
 			services.conversation,
-			services.conversationTag,
-			services.message,
-			services.notification
+			services.conversationTag
 		));
 
 		deleteDispatcher.addReceiver(new DeleteMessageHandler(

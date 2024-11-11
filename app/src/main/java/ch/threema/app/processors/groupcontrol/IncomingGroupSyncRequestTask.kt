@@ -21,6 +21,7 @@
 
 package ch.threema.app.processors.groupcontrol
 
+import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.IncomingCspMessageSubTask
 import ch.threema.app.processors.ReceiveStepsResult
@@ -37,18 +38,18 @@ class IncomingGroupSyncRequestTask(
     private val groupSyncRequestMessage: GroupSyncRequestMessage,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask(serviceManager) {
-    private val groupService = serviceManager.groupService
+    private val groupService by lazy { serviceManager.groupService }
 
     override suspend fun run(handle: ActiveTaskCodec): ReceiveStepsResult {
         // 1. Look up the group. If the group could not be found, abort these steps
         val group = groupService.getByGroupMessage(groupSyncRequestMessage)
         if (group == null) {
-            logger.warn("Discarding group sync request message because group could")
+            logger.warn("Discarding group sync request message because group could not be found")
             return ReceiveStepsResult.DISCARD
         }
 
         if (!groupService.isGroupCreator(group)) {
-            logger.warn("Discarding group sync request message to non-owner")
+            logger.warn("Discarding group sync request message to non-creator")
             return ReceiveStepsResult.DISCARD
         }
 
@@ -68,16 +69,33 @@ suspend fun handleIncomingGroupSyncRequest(
     serviceManager: ServiceManager,
 ): ReceiveStepsResult {
     val groupService = serviceManager.groupService
+    val incomingGroupSyncRequestLogModelFactory =
+        serviceManager.databaseServiceNew.incomingGroupSyncRequestLogModelFactory
 
-    // 2. If the group is marked as left or the sender is not a member of the group, send a
-    // group-setup with an empty members list back to the sender and abort these steps.
+    // 2. If a group-sync-request from this sender and group has already been handled within the
+    //    last hour, log a notice and abort these steps
+    val groupSyncLog = incomingGroupSyncRequestLogModelFactory.getByGroupIdAndSenderIdentity(
+        group.id, sender
+    )
+    val now = System.currentTimeMillis()
+    val oneHourAgo = now - DateUtils.HOUR_IN_MILLIS
+    if (groupSyncLog.lastHandledRequest > oneHourAgo) {
+        logger.info("Group sync request already handled {}ms ago", now - groupSyncLog.lastHandledRequest)
+        return ReceiveStepsResult.DISCARD
+    }
+    incomingGroupSyncRequestLogModelFactory.createOrUpdate(
+        groupSyncLog.apply { lastHandledRequest = now }
+    )
+
+    // 3. If the group is marked as left or the sender is not a member of the group, send a
+    //    group-setup with an empty members list back to the sender and abort these steps.
     if (groupService.isLeftGroup(group) || !groupService.isSenderGroupMember(group, sender)) {
         sendEmptyGroupSetup(group, sender, handle, serviceManager)
         return ReceiveStepsResult.DISCARD
     }
 
-    // 3. Send a group-setup message followed by a group-name message, 4. send a
-    // set-profile-picture (if set), and 5. send a delete-profile-picture (if not set)
+    // 4. Send a group-setup message followed by a group-name message, 5. send a
+    //    set-profile-picture (if set), and 6. send a delete-profile-picture (if not set)
     OutgoingGroupSyncTask(
         group.apiGroupId,
         group.creatorIdentity,
@@ -85,8 +103,8 @@ suspend fun handleIncomingGroupSyncRequest(
         serviceManager
     ).invoke(handle)
 
-    // 6. If a group call is currently considered running within this group, send a group call
-    // start message
+    // 7. If a group call is currently considered running within this group, send a group call
+    //    start message
     serviceManager.groupCallManager.sendGroupCallStartToNewMembers(group, setOf(sender), handle)
 
     return ReceiveStepsResult.SUCCESS

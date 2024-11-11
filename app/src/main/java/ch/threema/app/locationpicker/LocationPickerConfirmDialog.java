@@ -105,7 +105,7 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 			new LocationNameAsyncTask(getContext(), addressText, latLng.getLatitude(), latLng.getLongitude()).execute();
 		}
 
-		if (!TestUtil.empty(name)) {
+		if (!TestUtil.isEmptyOrNull(name)) {
 			nameText.setText(name);
 		} else {
 			nameText.setVisibility(View.GONE);
@@ -120,7 +120,7 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), getTheme());
 		builder.setView(dialogView);
 
-		if (!TestUtil.empty(title)) {
+		if (!TestUtil.isEmptyOrNull(title)) {
 			builder.setTitle(title);
 		}
 
@@ -164,7 +164,7 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
 
 		@Override
 		protected void onPostExecute(String s) {
-			if (!TestUtil.empty(s)) {
+			if (!TestUtil.isEmptyOrNull(s)) {
 				if (textViewWeakReference != null && textViewWeakReference.get() != null) {
 					textViewWeakReference.get().setText(s);
 					textViewWeakReference.get().setVisibility(View.VISIBLE);

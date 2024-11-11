@@ -48,7 +48,7 @@ public class LogUtil {
 	public static void exception(Throwable e, AppCompatActivity showInActivity) {
 		String message;
 		if(showInActivity != null) {
-			if (e != null && !TestUtil.empty(e.getMessage())) {
+			if (e != null && !TestUtil.isEmptyOrNull(e.getMessage())) {
 				message = showInActivity.getString(R.string.an_error_occurred_more, e.getMessage());
 			} else {
 				message = showInActivity.getString(R.string.an_error_occurred);

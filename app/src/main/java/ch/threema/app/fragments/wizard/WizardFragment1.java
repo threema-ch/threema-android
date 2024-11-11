@@ -76,7 +76,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 		this.password1layout = rootView.findViewById(R.id.password1layout);
 		this.password2layout = rootView.findViewById(R.id.password2layout);
 
-		if (!TestUtil.empty(callback.getSafePassword())) {
+		if (!TestUtil.isEmptyOrNull(callback.getSafePassword())) {
 			this.password1.setText(callback.getSafePassword());
 			this.password2.setText(callback.getSafePassword());
 		}
@@ -183,7 +183,7 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 			this.password2layout.setError(null);
 		} else {
 			this.password1layout.setError(null);
-			if (!TestUtil.empty(this.password2.getText())) {
+			if (!TestUtil.isBlankOrNull(this.password2.getText())) {
 				this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
 			} else {
 				this.password2layout.setError(null);

@@ -25,9 +25,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT
 import ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -35,38 +32,34 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingTextMessageTask")
-
 class OutgoingTextMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
-    private val messageReceiverType: Int,
+    private val receiverType: Int,
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val messageService = serviceManager.messageService
-    private val groupService = serviceManager.groupService
 
     override val type: String = "OutgoingTextMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        when (messageReceiverType) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        when (receiverType) {
             Type_CONTACT -> sendContactMessage(handle)
             Type_GROUP -> sendGroupMessage(handle)
-            else -> throw IllegalStateException("Invalid message receiver type $messageReceiverType")
+            else -> throw IllegalStateException("Invalid message receiver type $receiverType")
         }
     }
 
+    override fun onSendingStepsFailed(e: Exception) {
+        getMessageModel(receiverType, messageModelId)?.saveWithStateFailed()
+    }
+
     private suspend fun sendContactMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getContactMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getContactMessageModel(messageModelId) ?: return
 
         // Create the message
         val message = TextMessage()
-        message.messageId = MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!))
+        message.messageId = ensureMessageId(messageModel)
         message.text = messageModel.bodyAndQuotedMessageId
         message.toIdentity = messageModel.identity
 
@@ -74,11 +67,7 @@ class OutgoingTextMessageTask(
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getGroupMessageModel(messageModelId, true)
-        if (messageModel == null) {
-            logger.warn("Could not find message model with id {}", messageModelId)
-            return
-        }
+        val messageModel = getGroupMessageModel(messageModelId) ?: return
 
         val group = groupService.getById(messageModel.groupId)
             ?: throw IllegalStateException("Could not get group for message model ${messageModel.apiMessageId}")
@@ -89,7 +78,7 @@ class OutgoingTextMessageTask(
             group,
             recipientIdentities,
             messageModel,
-            MessageId(Utils.hexStringToByteArray(messageModel.apiMessageId!!)),
+            ensureMessageId(messageModel),
             {
                 GroupTextMessage().apply {
                     text = textIncludingQuote
@@ -102,7 +91,7 @@ class OutgoingTextMessageTask(
     override fun serialize(): SerializableTaskData =
         OutgoingTextMessageData(
             messageModelId,
-            messageReceiverType,
+            receiverType,
             recipientIdentities,
         )
 

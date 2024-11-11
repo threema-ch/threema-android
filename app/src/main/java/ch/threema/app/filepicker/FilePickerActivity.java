@@ -250,7 +250,7 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 			logger.error("Exception", e);
 		}
 
-		if (!TestUtil.empty(canonicalFilePath) && !isTop(canonicalFilePath)) {
+		if (!TestUtil.isEmptyOrNull(canonicalFilePath) && !isTop(canonicalFilePath)) {
 			if (f.getParentFile() != null)
 				dirs.add(0, new FileInfo("..",
 						Constants.PARENT_FOLDER, f.getParent(), 0,

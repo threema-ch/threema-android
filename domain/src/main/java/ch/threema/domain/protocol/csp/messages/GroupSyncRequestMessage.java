@@ -35,7 +35,7 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  */
 public class GroupSyncRequestMessage extends AbstractGroupMessage {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupRequestSyncMessage");
+	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupSyncRequestMessage");
 
 	public GroupSyncRequestMessage() {
 		super();

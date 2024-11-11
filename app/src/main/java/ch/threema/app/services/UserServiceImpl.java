@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
@@ -117,7 +116,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 		// no need to send a request if we have no licence
 		// note that CheckLicenseRoutine may not have received an upstream response yet.
 		if (policySignature == null && policyResponseData == null && credentials == null
-			&& !(BuildFlavor.getLicenseType().equals(BuildFlavor.LicenseType.NONE))
+			&& !(BuildFlavor.getCurrent().getLicenseType().equals(BuildFlavor.LicenseType.NONE))
 		) {
 			throw new ThreemaException(context.getString(R.string.missing_app_licence) + "\n" + context.getString(R.string.app_store_error_code, policyErrorCode));    /* Create identity phase 1 unsuccessful:*/
 		}
@@ -314,8 +313,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 				normalizedMobileNo,
 				this.getLanguage(),
 				this.identityStore,
-				(BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
-					BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.HMS_WORK)
+				(BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
+                    BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.HMS_WORK)
 					? "threemawork" : null
 		);
 
@@ -398,7 +397,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			return linkedMobile;
 		}
 
-		if (TestUtil.empty(linkedMobile)) {
+		if (TestUtil.isEmptyOrNull(linkedMobile)) {
 			return null;
 		}
 		return "+" + linkedMobile;
@@ -636,7 +635,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	public JSONObject createIdentityRequestDataJSON() throws JSONException {
 		JSONObject baseObject = new JSONObject();
 
-		BuildFlavor.LicenseType licenseType = BuildFlavor.getLicenseType();
+		BuildFlavor.LicenseType licenseType = BuildFlavor.getCurrent().getLicenseType();
 		String deviceId = DeviceIdUtil.getDeviceId(this.context);
 
 		baseObject.put("deviceId", deviceId);

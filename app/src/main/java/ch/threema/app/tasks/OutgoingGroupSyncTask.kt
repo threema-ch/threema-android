@@ -43,12 +43,11 @@ class OutgoingGroupSyncTask(
     private val receiverIdentities: Set<String>,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val userService = serviceManager.userService
-    private val groupService = serviceManager.groupService
+    private val userService by lazy { serviceManager.userService }
 
     override val type: String = "OutgoingGroupSyncTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val myIdentity = userService.identity
         if (creatorIdentity != myIdentity) {
             logger.warn("Only the group creator should send a group sync")

@@ -47,7 +47,7 @@ class ForwardSecurityStatusChatAdapterDecorator(context: Context, messageModel: 
             // TODO(ANDR-2519): Can this be removed when md supports fs? Maybe not, because theses statuses won't be rendered correctly if they have already been created
             ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED -> body = context.getString(R.string.forward_security_disabled)
         }
-        if (showHide(holder.bodyTextView, !TestUtil.empty(body))) {
+        if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(body))) {
             holder.bodyTextView.text = body
         }
         setOnClickListener({

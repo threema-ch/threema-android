@@ -176,7 +176,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 	private void restoreIDExport(String backupString, String backupPassword) {
 		Intent intent = new Intent(this, WizardIDRestoreActivity.class);
 
-		if (!TestUtil.empty(backupString) && !TestUtil.empty(backupPassword)) {
+		if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
 			intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
 			intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
 		}

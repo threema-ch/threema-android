@@ -27,6 +27,7 @@ import android.text.InputType;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ContactEditDialog;
@@ -36,6 +37,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
 
 public abstract class GroupEditActivity extends ThreemaToolbarActivity {
@@ -43,6 +45,7 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
 
 	protected ContactService contactService;
 	protected GroupService groupService;
+	protected @NonNull GroupModelRepository groupModelRepository;
 	protected UserService userService;
 	protected FileService fileService;
 	protected DeadlineListService hiddenChatsListService;
@@ -56,6 +59,7 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
 		try {
 			this.contactService = this.serviceManager.getContactService();
 			this.groupService = this.serviceManager.getGroupService();
+			this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
 			this.userService = this.serviceManager.getUserService();
 			this.fileService = this.serviceManager.getFileService();
 			this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();

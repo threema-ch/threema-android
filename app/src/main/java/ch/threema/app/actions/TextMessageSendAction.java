@@ -73,7 +73,7 @@ public class TextMessageSendAction extends SendAction {
 			return false;
 		}
 
-		if (messageService == null || TestUtil.empty(text)) {
+		if (messageService == null || TestUtil.isEmptyOrNull(text)) {
 			actionHandler.onError("Nothing to send");
 			return false;
 		}

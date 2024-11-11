@@ -61,70 +61,70 @@ import static ch.threema.architecture.ArchitectureDefinitions.getLayeredArchitec
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameMatching;
 
 @RunWith(ArchUnitRunner.class)
-@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
+@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
 public class LayerDependenciesTest {
-	@ArchTest
-	public static final ArchRule appLayerAccess = getLayeredArchitecture()
-		.whereLayer(APP).mayNotBeAccessedByAnyLayer()
-		// Storage layer may access services and utils
-		.ignoreDependency(
-			nameMatching("ch\\.threema\\.storage\\..*"),
-			nameMatching("ch\\.threema\\.app\\.services\\..*")
-		)
-		.ignoreDependency(
-			nameMatching("ch\\.threema\\.storage\\..*"),
-			nameMatching("ch\\.threema\\.app\\.utils\\..*")
-		)
-		// Data layer may access listeners and utils
-		.ignoreDependency(
-			nameMatching("ch\\.threema\\.data\\..*"),
-			nameMatching("ch\\.threema\\.app\\.managers\\..*")
-		)
-		.ignoreDependency(
-			nameMatching("ch\\.threema\\.data\\..*"),
-			nameMatching("ch\\.threema\\.app\\.listeners\\..*")
-		)
-		.ignoreDependency(
-			nameMatching("ch\\.threema\\.data\\..*"),
-			nameMatching("ch\\.threema\\.app\\.utils\\..*")
-		)
-		.ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
-		.ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
-		.ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)
-		.ignoreDependency(ConversationModel.class, MessageReceiver.class)
-		.ignoreDependency(ConversationModel.class, GroupMessageReceiver.class)
-		.ignoreDependency(ConversationModel.class, DistributionListMessageReceiver.class)
-		.ignoreDependency(ConversationModel.class, ContactMessageReceiver.class)
-		.ignoreDependency(BallotModelFactory.class, ContactMessageReceiver.class)
-		.ignoreDependency(BallotModelFactory.class, GroupMessageReceiver.class)
-		.ignoreDependency(BallotModelFactory.class, MessageReceiver.class)
-		.ignoreDependency(FileDataModel.class, ListReader.class)
-		.ignoreDependency(LoggerManager.class, BuildConfig.class)
-		.ignoreDependency(LoggerManager.class, BuildFlavor.class)
-		.ignoreDependency(DebugLogFileBackend.class, FileService.class)
-		.ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
-		.ignoreDependency(DebugLogFileBackend.class, ZipUtil.class)
-		.ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
+    @ArchTest
+    public static final ArchRule appLayerAccess = getLayeredArchitecture()
+        .whereLayer(APP).mayNotBeAccessedByAnyLayer()
+        // Storage layer may access services and utils
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.storage\\..*"),
+            nameMatching("ch\\.threema\\.app\\.services\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.storage\\..*"),
+            nameMatching("ch\\.threema\\.app\\.utils\\..*")
+        )
+        // Data layer may access listeners and utils
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.managers\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.listeners\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.utils\\..*")
+        )
+        .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
+        .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
+        .ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)
+        .ignoreDependency(ConversationModel.class, MessageReceiver.class)
+        .ignoreDependency(ConversationModel.class, GroupMessageReceiver.class)
+        .ignoreDependency(ConversationModel.class, DistributionListMessageReceiver.class)
+        .ignoreDependency(ConversationModel.class, ContactMessageReceiver.class)
+        .ignoreDependency(BallotModelFactory.class, ContactMessageReceiver.class)
+        .ignoreDependency(BallotModelFactory.class, GroupMessageReceiver.class)
+        .ignoreDependency(BallotModelFactory.class, MessageReceiver.class)
+        .ignoreDependency(FileDataModel.class, ListReader.class)
+        .ignoreDependency(LoggerManager.class, BuildConfig.class)
+        .ignoreDependency(LoggerManager.class, BuildFlavor.class)
+        .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
+        .ignoreDependency(DebugLogFileBackend.class, FileService.class)
+        .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
+        .ignoreDependency(DebugLogFileBackend.class, ZipUtil.class)
+        .ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
 
-	@ArchTest
-	public static final ArchRule dataLayerAccess = getLayeredArchitecture()
-		.whereLayer(DATA).mayOnlyBeAccessedByLayers(APP);
+    @ArchTest
+    public static final ArchRule dataLayerAccess = getLayeredArchitecture()
+        .whereLayer(DATA).mayOnlyBeAccessedByLayers(APP);
 
-	@ArchTest
-	public static final ArchRule storageLayerAccess = getLayeredArchitecture()
-		.whereLayer(STORAGE).mayOnlyBeAccessedByLayers(APP, DATA);
+    @ArchTest
+    public static final ArchRule storageLayerAccess = getLayeredArchitecture()
+        .whereLayer(STORAGE).mayOnlyBeAccessedByLayers(APP, DATA);
 
-	@ArchTest
-	public static final ArchRule localcryptoLayerAccess = getLayeredArchitecture()
-		.whereLayer(LOCALCRYPTO).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
+    @ArchTest
+    public static final ArchRule localcryptoLayerAccess = getLayeredArchitecture()
+        .whereLayer(LOCALCRYPTO).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
 
-	@ArchTest
-	public static final ArchRule domainLayerAccess = getLayeredArchitecture()
-		.whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
+    @ArchTest
+    public static final ArchRule domainLayerAccess = getLayeredArchitecture()
+        .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE);
 
-
-	@ArchTest
-	public static final ArchRule baseLayerAccess = getLayeredArchitecture()
-		.whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
+    @ArchTest
+    public static final ArchRule baseLayerAccess = getLayeredArchitecture()
+        .whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
 
 }

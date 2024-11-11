@@ -41,7 +41,7 @@ class OutgoingPollVoteContactMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingPollVoteContactMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Create the message
         val message = PollVoteMessage()
             .also {

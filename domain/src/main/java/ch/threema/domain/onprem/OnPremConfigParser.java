@@ -24,6 +24,7 @@ package ch.threema.domain.onprem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -31,12 +32,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ch.threema.base.utils.Base64;
+import ch.threema.base.utils.LoggingUtil;
 
 public class OnPremConfigParser {
 
+	private static final Logger logger = LoggingUtil.getThreemaLogger("OnPremConfigParser");
+
+	private static final int MIN_REFRESH_VALUE_S = 1800;
+
 	public OnPremConfig parse(JSONObject obj) throws IOException, JSONException, ParseException, LicenseExpiredException {
+		int refreshValue = obj.getInt("refresh");
+		if (refreshValue < MIN_REFRESH_VALUE_S) {
+			logger.warn("Invalid refresh value provided: {}; using {} as fallback", refreshValue, MIN_REFRESH_VALUE_S);
+			refreshValue = MIN_REFRESH_VALUE_S;
+		}
+
 		return new OnPremConfig(
-			obj.getInt("refresh"),
+			System.currentTimeMillis() + refreshValue * 1000L,
 			this.parseLicense(obj.getJSONObject("license")),
 			this.parseChatConfig(obj.getJSONObject("chat")),
 			this.parseDirectoryConfig(obj.getJSONObject("directory")),

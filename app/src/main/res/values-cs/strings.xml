@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakty</string>
     <string name="title_section1">Konverzace</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">Přidat kontakt</string>
     <string name="menu_done">Hotovo</string>
     <string name="compose_message_and_enter">Klepnutím sem začnete psát</string>
+    <string name="title_job_title">Pracovní název</string>
+    <string name="title_department">Oddělení</string>
     <string name="send">Odeslat</string>
     <string name="prefs_privacy">Soukromí</string>
     <string name="prefs_notifications">Zvuky a oznámení</string>
@@ -49,7 +51,6 @@
     <string name="prefs_sum_notification_sound">Výchozí systémový</string>
     <string name="prefs_vibrate">Vibrace</string>
     <string name="prefs_sum_vibrate">Vibrovat po přijetí zprávy</string>
-    <string name="prefs_light">Barva oznamovací LED</string>
     <string name="prefs_sum_light">Bílá</string>
     <string name="prefs_title_wallpaper">Změna tapety pozadí</string>
     <string name="prefs_sum_wallpaper">Zvolte obrázek pro pozadí</string>
@@ -149,7 +150,7 @@
     <string name="backup_sum">Záloha vašeho Threema ID</string>
     <string name="backup_and_delete">Záloha a odstranění</string>
     <string name="delete_id_title">Odstranit ID</string>
-    <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nechcete toto ID nadále používat, doporučujeme nastavit heslo pro jeho zrušení/odvolání a zrušit/odvolat ID na myid.threema.ch/revoke dříve, než ho odstraníte.</string>
+    <string name="delete_id_message">Pokud jste nevytvořili zálohu tohoto ID, nebo jste ho neexportovali a neuložili, nebudete moci již nikdy v budoucnu odesílat ani přijímat zprávy s touto identitou.\n\nJestliže nechcete toto ID nadále používat, doporučujeme nastavit heslo pro jeho zrušení a zrušit ID na myid.threema.ch/revoke dříve, než ho odstraníte.</string>
     <string name="delete_id_message2">Poslední varování: Skutečně si z tohoto zařízení přejete odstranit vaše ID?</string>
     <string name="delete_id_sum">Trvale z tohoto zařízení odstraní vaše ID a všechna data aplikace Threema</string>
     <string name="backup_password_summary">Záloha vašeho ID bude zašifrována a chráněna heslem. Použijte kombinaci písmen, čísel a symbolů. Toto heslo nesmíte zapomenout!</string>
@@ -235,14 +236,15 @@
     <string name="search_contact">Vyhledat kontakt</string>
     <string name="push_reset_title">Obnovení push tokenu</string>
     <string name="push_reset_text">Push token byl obnoven</string>
-    <string name="emoji_things">Předměty</string>
-    <string name="emoji_traffic">Cestování a místa</string>
-    <string name="emoji_symbols">Symboly</string>
+    <string name="emoji_recent">Nedávné</string>
+    <string name="emoji_smileys">Smajlíky a emoce</string>
+    <string name="emoji_people">Lidé a tělo</string>
     <string name="emoji_nature">Zvířata a příroda</string>
     <string name="emoji_food">Jídlo a nápoje</string>
-    <string name="emoji_recent">Nedávné</string>
-    <string name="emoji_emotions">Smajlíci a lidé</string>
-    <string name="emoji_activities">Aktivity</string>
+    <string name="emoji_travel">Cestování a místa</string>
+    <string name="emoji_activity">Aktivity</string>
+    <string name="emoji_objects">Předměty</string>
+    <string name="emoji_symbols">Symboly</string>
     <string name="emoji_flags">Vlajky</string>
     <string name="emoji_search">Vyhledat emoji</string>
     <string name="emoji_search_no_result">Žádné výsledky vyhledávání</string>
@@ -349,7 +351,7 @@
     <string name="prefs_sum_default_contact_picture_colored_on">Pokud ke kontaktu není přiřazen obrázek, budou zobrazeny vícebarevné zástupné symboly</string>
     <string name="prefs_sum_default_contact_picture_colored_off">Pokud ke kontaktu není přiřazen obrázek, budou použity šedé zástupné symboly</string>
     <string name="prefs_sum_show_inactive_contacts_on">Zobrazí ve vašem seznamu kontaktů všechna Threema ID</string>
-    <string name="prefs_sum_show_inactive_contacts_off">Skryje neaktivní nebo zrušená/odvolaná Threema ID</string>
+    <string name="prefs_sum_show_inactive_contacts_off">Skryje neaktivní nebo zrušená Threema ID</string>
     <string name="contact_sorting_first_name">Podle jména</string>
     <string name="contact_sorting_last_name">Podle příjmení</string>
     <string name="contact_format_first_name_last_name">Jméno Příjmení</string>
@@ -397,8 +399,7 @@
     <string name="edit_name">Úprava názvu a obrázku</string>
     <string name="edit_name_only">Úprava jména</string>
     <string name="group_was_synchronized">Skupina synchronizována.</string>
-    <string name="verification_level2_work_explain">"Interní kontakt, předem obsazený vaší organizací.
-"</string>
+    <string name="verification_level2_work_explain">Interní kontakt, předem obsazený vaší organizací.</string>
     <string name="verification_level3_work_explain">Interní kontakt, jehož identitu a veřejný klíč jste osobně ověřili naskenováním jeho QR kódu.</string>
     <string name="verification_level3_explain">Kontakt, jehož identitu a veřejný klíč jste osobně ověřili naskenováním jeho QR kódu.</string>
     <string name="verification_level2_explain">Kontakt, jehož telefonní číslo a/nebo e‑mailová adresa je ve vašem adresáři.</string>
@@ -430,8 +431,6 @@
     <string name="contact_not_found">Kontakt nebyl nalezen</string>
     <string name="contact_now_blocked">Kontakt zablokován</string>
     <string name="contact_now_unblocked">Kontakt odblokován</string>
-    <string name="not_enough_disk_space_title">Nedostatek místa na úložišti</string>
-    <string name="not_enough_disk_space_text">Uvolněte alespoň %1$s, abyste mohli obdržet zprávu</string>
     <string name="sending_images">Odesílání obrázků</string>
     <string name="share_conversation_body">Pro rozbalení je potřeba dekompresní program ZIP s podporou šifrování typu AES, např.
 http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -462,6 +461,8 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="ballot_wizard0_explain">Vytvořte snadno a rychle anketu přímo v aplikaci Threema. Naplánujte událost, udělejte průzkum nebo se na něco zeptejte svých přátel.</string>
     <string name="ballot_add_choices">Přidejte možnosti</string>
     <string name="blocked_cannot_send">Blokovanému kontaktu nelze odesílat zprávy</string>
+    <string name="invalid_some_cannot_send">Některé z příjemců nelze vybrat.</string>
+    <string name="invalid_all_cannot_send">Tyto příjemce nelze vybrat.</string>
     <string name="really_block_contact">Budoucí zprávy od tohoto kontaktu budou zahazovány. Přejete si přesto pokračovat?</string>
     <string name="ballot_result_final">Výsledek ankety</string>
     <string name="invalid_cannot_send">Nemůžete odesílat zprávy neplatnému kontaktu</string>
@@ -490,8 +491,8 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="show_as_qrcode">Zobrazit jako QR kód</string>
     <string name="qr_code">QR kód</string>
     <string name="really_leave_id_export">Pokud jste tak ještě neučinili, uložte textový záložní řetězec vašeho ID nebo jemu odpovídající QR kód na bezpečné místo, nebo jej vytiskněte. Threema ID je vaše identita, která nemůže být bez zálohy nijak obnovena.</string>
-    <string name="revocation_key_title">Zrušení/odvolání ID</string>
-    <string name="revocation_key_not_set">Není nastaveno žádné heslo pro zrušení/odvolání ID</string>
+    <string name="revocation_key_title">Zrušení ID</string>
+    <string name="revocation_key_not_set">Není nastaveno žádné heslo pro zrušení ID</string>
     <string name="revocation_key_set_at">Heslo nastaveno %1$s</string>
     <string name="prefs_sum_remove_wallpapers">Odstraní všechny individuální tapety</string>
     <string name="prefs_title_remove_wallpapers">Odstranit všechny tapety</string>
@@ -499,7 +500,7 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="wallpapers_removed">Tapety byly odstraněny</string>
     <string name="invalid_backup">Neplatná data zálohy. Nelze je obnovit.</string>
     <string name="invalid_zip_restore_failed">Obnova selhala. Neplatný soubor se zálohou: %1$s</string>
-    <string name="revocation_explain">V případě nutnosti zrušit/odvolat vaše Threema ID (například v případě ztráty nebo odcizení) použijte tento odkaz, kde zadáte ID a zde vytvořené heslo.
+    <string name="revocation_explain">V případě nutnosti zrušit vaše Threema ID (například v případě ztráty nebo odcizení) použijte tento odkaz, kde zadáte ID a zde vytvořené heslo.
 https://myid.threema.ch/revoke</string>
     <string name="no_unread_messages">Žádné nepřečtené zprávy nebo je aktivován zámek PIN</string>
     <string name="send_media">Odeslat média</string>
@@ -626,6 +627,7 @@ možné je obnovit.</string>
     <string name="new_wizard_linked_to">Propojeno s</string>
     <string name="new_wizard_need_internet">K vytvoření vašeho unikátního Threema ID je vyžadováno stabilní připojení k internetu. Zkuste to prosím znovu.</string>
     <string name="new_wizard_more_information">Více informací</string>
+    <string name="message_details_message_id_copied">ID zprávy bylo zkopírováno do schránky</string>
     <string name="contact_details_id_copied">ID bylo zkopírováno do schránky</string>
     <string name="contact_details_nickname_copied">Přezdívka byla zkopírována do schránky</string>
     <string name="new_wizard_use_id_as_nickname">Chcete své Threema ID použít i jako přezdívku?</string>
@@ -666,7 +668,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="error_out_of_memory">Pro dokončení této akce nezbývá dostatečné množství paměti</string>
     <string name="configure">Konfigurovat</string>
     <string name="file_is_not_audio">Nejde o zvukový soubor</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Některá nastavení byla zakázána administrátorem</string>
     <string name="select_all">Vybrat vše</string>
     <string name="deleting_messages">Odstraňování zpráv</string>
@@ -749,14 +750,15 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="edit_message">Upravit zprávu</string>
     <string name="edited">Upraveno</string>
     <string name="confirm_edit_desc">Potvrdit úpravu</string>
+    <string name="edit_history">Upravit historii</string>
     <string name="discard_changes">Přejete si zahodit provedené změny?</string>
     <string name="prefs_title_network">Síť</string>
     <string name="prefs_title_ipv6_preferred">IPv6 pro zprávy</string>
     <string name="prefs_ipv6_preferred_off">Použít pouze adresaci IPv4</string>
     <string name="prefs_ipv6_preferred_on">Upřednostnit adresaci IPv6 nad IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 pro hovory a web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Povolit adresaci IPv6 pro hovory Threema a Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Zakázat adresaci IPv6 pro hovory Threema a Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Povolit IPv6 pro hovory Threema a desktopovou aplikaci / webového klienta</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Zakázat IPv6 pro hovory Threema a desktopovou aplikaci / webového klienta</string>
     <string name="ipv6_requires_restart">Chcete‑li toto nastavení použít, bude nutné restartovat aplikaci.</string>
     <string name="ipv6_restart_now">Restartovat nyní</string>
     <string name="on_cap">Zap.</string>
@@ -882,7 +884,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="safe_use_default_server">Použít výchozí server</string>
     <string name="safe_test_server">Otestovat server</string>
     <string name="safe_advanced_options">Expertní nastavení</string>
-    <string name="safe_enter_password">Zadejte prosím vaše heslo pro Threema Safe</string>
+    <string name="safe_enter_password">Zadejte prosím své heslo pro Threema Safe</string>
     <string name="safe_threema_id">Vaše Threema ID</string>
     <string name="safe_restore_enter_id">Zadejte prosím Threema ID, které si přejete obnovit</string>
     <string name="safe_search_id_title">Zadejte prosím číslo mobilního telefonu nebo e‑mailovou adresu propojenou s vaším ID</string>
@@ -1023,12 +1025,9 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="delete_for_all">Odstranit u všech</string>
     <string name="message_was_deleted">Tato zpráva byla odstraněna</string>
     <string name="continue_recording">Pokračovat v nahrávání</string>
-    <string name="whatsnew_title">Co je nového v aplikaci %1$s 5.2?</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p>Zprávy s hvězdičkou: Abyste je později snadno našli, označte důležité zprávy hvězdou dlouhým klepnutím.</p>
-		<p>Automatické odstranění: Nechte své konverzace po uplynutí volitelné doby automaticky vyčistit. Funkce automatického odstranění zpráv můžete aktivovat ve správě úložiště.</p>
-		<p>Další četná vylepšení a optimalizace.</p>
-		]]></string>
+    <string name="whatsnew_title">Co je nového v aplikaci %1$s %2$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Pro zlepšení zobrazování oznámení bylo přepracováno jejich zpracování na pozadí. Pokud byla u některých konverzací aktivována individuální nastavení oznámení, je třeba je znovu nastavit.</p>
+        ]]></string>
     <string name="tap_to_start">Klepnutím sem spustíte aplikaci %s.</string>
     <string name="two_years">2 roky</string>
     <string name="invalid_backup_path">Neplatná cesta pro zálohu dat</string>
@@ -1151,14 +1150,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="only_images_or_videos">Je možné vybrat pouze obrázky nebo videa</string>
     <string name="media_gallery_gifs">GIFy</string>
     <string name="no_media_found_global">V tomto zařízení nebyla nalezena žádná média</string>
-    <string name="enable_formatting">Povolit formátování</string>
     <string name="original_file_no_longer_avilable">Původní soubor již není dostupný. Odešlete prosím zprávu znovu.</string>
     <string name="state_transcoding">překódování</string>
     <string name="importing_files">Importují se soubory</string>
     <string name="tooltip_image_resolution_hint">Klepnutím sem upravíte rozlišení obrázku.</string>
     <string name="ballot_created_successfully">Anketa byla úspěšně vytvořena.</string>
     <string name="file_size">Velikost souboru</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 d.</string>
     <string name="show_in_chat">Zobrazit v konverzaci</string>
     <string name="group_create_no_members">Opravdu si přejete vytvořit prázdnou skupinu?</string>
@@ -1300,7 +1297,9 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="group_request_already_sent_title">Požadavek již byl odeslán</string>
     <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu pro ověření jeho identity. Chcete‑li QR kód zobrazit, požádejte váš kontakt, aby klepl na profilový obrázek v levém horním rohu domácí obrazovky aplikace Threema.</string>
     <string name="enable_storage_access_for_media">Povolte přístup k úložišti, abyste na vašem zařízení mohli prohlížet obrázky a videa</string>
+    <string name="select_storage_access_for_media_is_granted">Udělili jste přístup k vybranému počtu fotografií a videí.</string>
     <string name="take_me_there">Doveďte mě tam…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Spravovat</string>
     <string name="notification_channel_group_join_request">Kanál oznámení pro přijaté požadavky o připojení do skupiny</string>
     <string name="reset_default_group_link_title">Obnovit informace o výchozím odkazu</string>
     <string name="reset_default_group_link_desc">Dříve sdílený odkaz bude neplatný a požadavky provedené pomocí starého odkazu budou automaticky zamítnuty s expirovanou odpovědí.</string>
@@ -1365,7 +1364,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_title_use_system_ringtone">Použít systémové vyzvánění</string>
     <string name="organization_type">Organizace</string>
     <string name="permission_bluetooth_connect_required">Povolte oprávnění „Zařízení v okolí“ k vyhledání připojených Bluetooth náhlavních souprav</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push je aktivní. Relace Threema Web a Desktop proto musí být spuštěny manuálně.</string>
     <string name="tooltip_multiple_recipients_title">Více příjemců</string>
     <string name="tooltip_multiple_recipients_text">Dlouhým klepnutím vyberete více příjemců, kterým poté můžete odeslat stejnou zprávu.</string>
     <string name="synchronizing">Synchronizace…</string>
@@ -1379,8 +1377,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="forward_security_disabled">V této konverzaci je protokol Perfect Forward Secrecy zakázán.</string>
     <string name="forward_security_established">Zprávy s touto protistranou jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
     <string name="forward_security_established_rx">Zprávy přijaté v této konverzaci jsou nyní chráněny protokolem Perfect Forward Secrecy.</string>
-    <string name="forward_security_reset">Funkce Perfect Forward Secrecy byla resetována. K tomu může dojít, pokud partner v konverzaci změní své zařízení nebo přeinstaluje aplikaci.</string>
-    <string name="forward_security_reset_simple">Perfect Forward Secrecy relace s tímto kontaktem byla resetována.</string>
+    <string name="forward_security_reset">Relace Perfect Forward Secrecy byla resetována. K tomu může dojít, pokud partner v konverzaci změní své zařízení nebo přeinstaluje aplikaci.</string>
+    <string name="forward_security_reset_simple">Relace Perfect Forward Secrecy s tímto kontaktem byla resetována.</string>
     <string name="forward_security_message_out_of_order">Zpráva byla přijata mimo provoz a nemohla být dešifrována.</string>
     <string name="forward_security_notification_channel_name">Perfect Forward Secrecy varování</string>
     <string name="forward_security_notification_rejected_title">Odesílání zpráv selhalo</string>
@@ -1541,8 +1539,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="problemsolver_to_settings">Do nastavení</string>
     <string name="prefs_advanced_options">Pokročilé možnosti</string>
     <string name="push_service">Služba push</string>
-    <string name="zoom_out">Oddálit</string>
-    <string name="zoom_in">Přiblížit</string>
     <string name="edit_and_send">Upravit a odeslat</string>
     <string name="media_gallery_animated_webps">Animované WebP</string>
     <string name="unsupported_image_type">Nepodporovaný typ obrázku: %s</string>
@@ -1551,7 +1547,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="edit_message_not_supported_for_contact">Zprávu nelze upravit, protože verze aplikace příjemce tuto funkci nepodporuje.</string>
     <string name="edit_message_not_supported_for_all_group_members">Následující členové skupiny nebudou moci vidět vaše úpravy: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Zprávu nelze upravit, protože žádný z členů skupiny nemá verzi aplikace, která podporuje tuto funkci.</string>
-    <string name="delete_message_not_supported_for_all_group_members">Tato zpráva nebude smazána pro následující členy skupiny: %1$s</string>
+    <string name="prefs_notification_settings">Nastavení oznámení</string>
+    <string name="prefs_notification_settings_summary">Změňte nastavení zvuku a vibrací v dialogovém okně nastavení systému</string>
+    <string name="new_messages">Nové zprávy</string>
+    <string name="new_group_messages">Nové skupinové zprávy</string>
+    <string name="individual_notification_settings">Individuální nastavení oznámení</string>
+    <string name="delete_message_not_supported_for_all_group_members">Zpráva nebude odstraněna pro následující členy skupiny: %1$s</string>
     <string name="work_intro_more_link_text">Zjistěte více o Threema Work</string>
     <string name="work_intro_subtitle">Bezpečný messenger pro firmy.</string>
     <string name="work_intro_login">Přihlášení %1$s</string>
@@ -1559,160 +1560,181 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="consumer_notice_playstore_link_description">Threema v Obchodu Google Play</string>
     <string name="consumer_notice_appgallery_link_description">Threema v AppGallery</string>
     <string name="consumer_notice_subtitle">Pro soukromé účely</string>
+    <string name="individual_notification_settings_warn">Pro každou konverzaci s individuálním nastavením oznámení je vytvořen kanál oznámení, což znamená, že název konverzace je viditelný v nastavení zařízení, i když je aplikace uzamčena. Přejete si i přesto pokračovat?</string>
+    <string name="incoming_calls">Příchozí hovory</string>
+    <string name="group_chats">Skupinové konverzace</string>
+    <string name="edit_history_file_no_caption">Bez titulku</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">souhlas odeslán</string>
+    <string name="cd_dec_icon">nesouhlas odeslán</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">od %d členů skupiny</string>
+    <string name="cd_edited">zpráva byla upravena</string>
+    <string name="cd_created_at">vytvořeno %s</string>
+    <string name="cd_edited_at">upraveno %s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. upravit v historii</string>
+    <string name="cd_message_details_container">podrobnosti zprávy</string>
+    <string name="cd_enable_formatting">Povolit formátování</string>
+    <string name="cd_message">zpráva</string>
     <plurals name="contacts_counter_label">
+        <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>
         <item quantity="many">%d kontaktů</item>
-        <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontaktů</item>
     </plurals>
     <plurals name="really_delete_thread_message">
+        <item quantity="one">Skutečně si přejete odstranit %d konverzaci?</item>
         <item quantity="few">Skutečně si přejete odstranit %d konverzace?</item>
         <item quantity="many">Skutečně si přejete odstranit %d konverzací?</item>
-        <item quantity="one">Skutečně si přejete odstranit %d konverzaci?</item>
         <item quantity="other">Skutečně si přejete odstranit %d konverzací?</item>
     </plurals>
     <plurals name="sending_message_failed">
+        <item quantity="one">Jednu zprávu se nezdařilo odeslat</item>
         <item quantity="few">%1$d zprávy se nezdařilo odeslat</item>
         <item quantity="many">%1$d zpráv se nezdařilo odeslat</item>
-        <item quantity="one">Jednu zprávu se nezdařilo odeslat</item>
         <item quantity="other">%1$d zpráv se nezdařilo odeslat</item>
     </plurals>
     <plurals name="selection_counter_label">
+        <item quantity="one">Počet vybraných obrázků: %d</item>
         <item quantity="few">Počet vybraných obrázků: %d</item>
         <item quantity="many">Počet vybraných obrázků: %d</item>
-        <item quantity="one">Počet vybraných obrázků: %d</item>
         <item quantity="other">Počet vybraných obrázků: %d</item>
     </plurals>
     <plurals name="message_copied">
         <item quantity="one">Zpráva zkopírována</item>
-        <item quantity="other">Zpráv zkopírováno</item>
         <item quantity="few">Zprávy zkopírovány</item>
         <item quantity="many">Zpráv zkopírováno</item>
+        <item quantity="other">Zpráv zkopírováno</item>
     </plurals>
     <plurals name="new_messages">
+        <item quantity="one">%d nová zpráva</item>
         <item quantity="few">%d nové zprávy</item>
         <item quantity="many">%d nových zpráv</item>
-        <item quantity="one">%d nová zpráva</item>
         <item quantity="other">%d nových zpráv</item>
     </plurals>
     <plurals name="unread_messages">
+        <item quantity="one">%d nepřečtená zpráva</item>
         <item quantity="few">%d nepřečtené zprávy</item>
         <item quantity="many">%d nepřečtených zpráv</item>
-        <item quantity="one">%d nepřečtená zpráva</item>
         <item quantity="other">%d nepřečtených zpráv</item>
     </plurals>
     <plurals name="file_saved">
+        <item quantity="one">%d soubor byl úspěšně uložen.</item>
         <item quantity="few">%d soubory byly úspěšně uloženy.</item>
         <item quantity="many">%d souborů bylo úspěšně uloženo.</item>
-        <item quantity="one">%d soubor byl úspěšně uložen.</item>
         <item quantity="other">%d souborů bylo úspěšně uloženo.</item>
     </plurals>
     <plurals name="saving_media">
+        <item quantity="one">Ukládají se média</item>
         <item quantity="few">Ukládají se %d mediální soubory</item>
         <item quantity="many">Ukládá se %d mediálních souborů</item>
-        <item quantity="one">Ukládají se média</item>
         <item quantity="other">Ukládá se %d mediálních souborů</item>
     </plurals>
     <plurals name="ballot_really_delete">
+        <item quantity="one">Odstranit anketu</item>
         <item quantity="few">Odstranit ankety</item>
         <item quantity="many">Odstranit ankety</item>
-        <item quantity="one">Odstranit anketu</item>
         <item quantity="other">Odstranit ankety</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
+        <item quantity="one">Skutečně si přejete odstranit %1$d anketu? Nebudete moci získat zpět její výsledky.</item>
         <item quantity="few">Skutečně si přejete odstranit %1$d ankety? Nebudete moci získat zpět jejich výsledky.</item>
         <item quantity="many">Skutečně si přejete odstranit %1$d anket? Nebudete moci získat zpět jejich výsledky.</item>
-        <item quantity="one">Skutečně si přejete odstranit %1$d anketu? Nebudete moci získat zpět její výsledky.</item>
         <item quantity="other">Skutečně si přejete odstranit %1$d anket? Nebudete moci získat zpět jejich výsledky.</item>
     </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">%d mediální soubor odstraněn</item>
+        <item quantity="few">%d mediální soubory odstraněny</item>
+        <item quantity="many">%d mediálních souborů odstraněno</item>
+        <item quantity="other">%d mediálních souborů odstraněno</item>
+    </plurals>
     <plurals name="message_deleted">
+        <item quantity="one">%d zpráva odstraněna</item>
         <item quantity="few">%d zprávy odstraněny</item>
         <item quantity="many">%d zpráv odstraněno</item>
-        <item quantity="one">%d zpráva odstraněna</item>
         <item quantity="other">%d zpráv odstraněno</item>
     </plurals>
     <plurals name="notifications_for_x_hours">
+        <item quantity="one">Po dobu %d hodiny</item>
         <item quantity="few">Po dobu %d hodin</item>
         <item quantity="many">Po dobu %d hodin</item>
-        <item quantity="one">Po dobu %d hodiny</item>
         <item quantity="other">Po dobu %d hodin</item>
     </plurals>
     <plurals name="really_delete_contacts_message">
+        <item quantity="one">Skutečně si přejete odstranit %1$d kontakt a všechny s ním související konverzace?</item>
         <item quantity="few">Skutečně si přejete odstranit %1$d kontakty a všechny s nimi související konverzace?</item>
         <item quantity="many">Skutečně si přejete odstranit %1$d kontaktů a všechny s nimi související konverzace?</item>
-        <item quantity="one">Skutečně si přejete odstranit %1$d kontakt a všechny s ním související konverzace?</item>
         <item quantity="other">Skutečně si přejete odstranit %1$d kontaktů a všechny s nimi související konverzace?</item>
     </plurals>
     <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d kontakt nemohl být odstraněn, protože je stále součástí skupiny.</item>
         <item quantity="few">%d kontakty nemohly být odstraněny, protože jsou stále součástí skupiny.</item>
         <item quantity="many">%d kontaktů nemohlo být odstraněno, protože jsou stále součástí skupiny.</item>
-        <item quantity="one">%d kontakt nemohl být odstraněn, protože je stále součástí skupiny.</item>
         <item quantity="other">%d kontaktů nemohlo být odstraněno, protože jsou stále součástí skupiny.</item>
     </plurals>
     <plurals name="message_archived">
+        <item quantity="one">%d konverzace archivována</item>
         <item quantity="few">%d konverzace archivovány</item>
         <item quantity="many">%d konverzací archivováno</item>
-        <item quantity="one">%d konverzace archivována</item>
         <item quantity="other">%d konverzací archivováno</item>
     </plurals>
     <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d nová zpráva ve %2$d konverzacích</item>
         <item quantity="few">%1$d nové zprávy ve %2$d konverzacích</item>
         <item quantity="many">%1$d nových zpráv ve %2$d konverzacích</item>
-        <item quantity="one">%1$d nová zpráva ve %2$d konverzacích</item>
         <item quantity="other">%1$d nových zpráv ve %2$d konverzacích</item>
     </plurals>
     <plurals name="webclient_running_sessions">
+        <item quantity="one">Běží %d relace</item>
         <item quantity="few">Běží %d relace</item>
         <item quantity="many">Běží %d relací</item>
-        <item quantity="one">Běží %d relace</item>
         <item quantity="other">Běží %d relací</item>
     </plurals>
     <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Skutečně si přejete odstranit %d požadavek o připojení do skupiny? Mějte na paměti, že požadavek nebude odvolán a přesto můžete být přijat(a) nebo zamítnut(a), jestliže požadavek dosud nebyl vyřízen.</item>
         <item quantity="few">Skutečně si přejete odstranit %d požadavky o připojení do skupiny? Mějte na paměti, že požadavky nebudou odvolány a přesto můžete být přijat(a) nebo zamítnut(a), jestliže požadavky dosud nebyly vyřízeny.</item>
         <item quantity="many">Skutečně si přejete odstranit %d požadavků o připojení do skupiny? Mějte na paměti, že požadavky nebudou odvolány a přesto můžete být přijat(a) nebo zamítnut(a), jestliže požadavky dosud nebyly vyřízeny.</item>
-        <item quantity="one">Skutečně si přejete odstranit %d požadavek o připojení do skupiny? Mějte na paměti, že požadavek nebude odvolán a přesto můžete být přijat(a) nebo zamítnut(a), jestliže požadavek dosud nebyl vyřízen.</item>
         <item quantity="other">Skutečně si přejete odstranit %d požadavků o připojení do skupiny? Mějte na paměti, že požadavky nebudou odvolány a přesto můžete být přijat(a) nebo zamítnut(a), jestliže požadavky dosud nebyly vyřízeny.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
+        <item quantity="one">Skutečně si přejete odstranit %d požadavek o připojení do skupiny? Na požadavky po jejich smazání nebude možné odpovědět.</item>
         <item quantity="few">Skutečně si přejete odstranit %d požadavky o připojení do skupiny? Na požadavky po jejich smazání nebude možné odpovědět.</item>
         <item quantity="many">Skutečně si přejete odstranit %d požadavků o připojení do skupiny? Na požadavky po jejich smazání nebude možné odpovědět.</item>
-        <item quantity="one">Skutečně si přejete odstranit %d požadavek o připojení do skupiny? Na požadavky po jejich smazání nebude možné odpovědět.</item>
         <item quantity="other">Skutečně si přejete odstranit %d požadavků o připojení do skupiny? Na požadavky po jejich smazání nebude možné odpovědět.</item>
     </plurals>
     <plurals name="really_delete_group_link">
+        <item quantity="one">Skutečně si přejete odstranit %d odkaz na skupinu? Lidé pomocí něj nebudou moci nadále odesílat žádosti. Dříve přijaté žádosti stále mohou být přijaty nebo zamítnuty.</item>
         <item quantity="few">Skutečně si přejete odstranit %d odkazy na skupinu? Lidé pomocí nich nebudou moci nadále odesílat žádosti. Dříve přijaté žádosti stále mohou být přijaty nebo zamítnuty.</item>
         <item quantity="many">Skutečně si přejete odstranit %d odkazů na skupinu? Lidé pomocí nich nebudou moci nadále odesílat žádosti. Dříve přijaté žádosti stále mohou být přijaty nebo zamítnuty.</item>
-        <item quantity="one">Skutečně si přejete odstranit %d odkaz na skupinu? Lidé pomocí něj nebudou moci nadále odesílat žádosti. Dříve přijaté žádosti stále mohou být přijaty nebo zamítnuty.</item>
         <item quantity="other">Skutečně si přejete odstranit %d odkazů na skupinu? Lidé pomocí nich nebudou moci nadále odesílat žádosti. Dříve přijaté žádosti stále mohou být přijaty nebo zamítnuty.</item>
     </plurals>
     <plurals name="chat_deleted">
+        <item quantity="one">%d konverzace odstraněna.</item>
         <item quantity="few">%d konverzace odstraněny.</item>
         <item quantity="many">%d konverzací odstraněno.</item>
-        <item quantity="one">%d konverzace odstraněna.</item>
         <item quantity="other">%d konverzací odstraněno.</item>
     </plurals>
     <plurals name="num_archived_chats">
+        <item quantity="one">%d archivovaná konverzace</item>
         <item quantity="few">%d archivované konverzace</item>
         <item quantity="many">%d archivovaných konverzací</item>
-        <item quantity="one">%d archivovaná konverzace</item>
         <item quantity="other">%d archivovaných konverzací</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
+        <item quantity="one">Jedna zpráva byla ztracena od poslední zprávy.</item>
         <item quantity="few">%d zprávy byly ztraceny od poslední zprávy.</item>
         <item quantity="many">%d zpráv bylo ztraceno od poslední zprávy.</item>
-        <item quantity="one">Jedna zpráva byla ztracena od poslední zprávy.</item>
         <item quantity="other">%d zpráv bylo ztraceno od poslední zprávy.</item>
     </plurals>
     <plurals name="delete_messages">
+        <item quantity="one">Odstranit tuto zprávu?</item>
         <item quantity="few">Odstranit %d zprávy?</item>
         <item quantity="many">Odstranit %d zpráv?</item>
-        <item quantity="one">Odstranit %d zprávu?</item>
         <item quantity="other">Odstranit %d zpráv?</item>
     </plurals>
     <plurals name="number_of_group_members">
+        <item quantity="one">%d člen skupiny</item>
         <item quantity="few">%d členové skupiny</item>
         <item quantity="many">%d členů skupiny</item>
-        <item quantity="one">%d člen skupiny</item>
         <item quantity="other">%d členů skupiny</item>
     </plurals>
 </resources>

@@ -39,7 +39,6 @@ class OutgoingGroupCallStartTask(
     createdAt: Date,
     serviceManager: ServiceManager,
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
-    private val groupService by lazy { serviceManager.groupService }
 
     override val type: String = "OutgoingGroupCallStartTask"
 
@@ -47,8 +46,8 @@ class OutgoingGroupCallStartTask(
 
     override val date = createdAt
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        super.invoke(handle)
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        super.runSendingSteps(handle)
 
         groupService.getByApiGroupIdAndCreator(groupId, creatorIdentity)?.let {
             groupService.bumpLastUpdate(it)

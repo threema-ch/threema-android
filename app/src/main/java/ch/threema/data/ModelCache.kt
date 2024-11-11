@@ -23,6 +23,9 @@ package ch.threema.data
 
 import ch.threema.data.models.BaseModel
 import ch.threema.data.models.ContactModel
+import ch.threema.data.models.EditHistoryListModel
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
 
 /**
  * The model cache holds a [ModelTypeCache] for every model type.
@@ -33,6 +36,12 @@ import ch.threema.data.models.ContactModel
 class ModelCache {
     // Contacts are identified by their identity
     val contacts = ModelTypeCache<String, ContactModel>()
+
+    // Groups are identified by their group identity (creator identity and group id)
+    val groups = ModelTypeCache<GroupIdentity, GroupModel>()
+
+    // Edit history entries are identified by their reference to a message's uid
+    val editHistory = ModelTypeCache<String, EditHistoryListModel>()
 }
 
 /**

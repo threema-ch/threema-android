@@ -22,9 +22,9 @@
 package ch.threema.app.notifications;
 
 import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -61,6 +62,7 @@ public class BackgroundErrorNotification {
 	 * @param sendToSupport Whether a "send to support" action should be shown or not.
 	 * @param exception An optional throwable. If set, a stack trace will be included in the support text.
 	 */
+	@SuppressLint("MissingPermission")
 	public static void showNotification(
 		@NonNull Context appContext,
 		@NonNull String title,
@@ -69,21 +71,15 @@ public class BackgroundErrorNotification {
 		boolean sendToSupport,
 		@Nullable Throwable exception
 	) {
-		final NotificationManager notificationManager =
-			(NotificationManager) appContext.getSystemService(Context.NOTIFICATION_SERVICE);
-		if (notificationManager == null) {
-			throw new RuntimeException("Could not show notification: Notification manager is null");
-		}
-
+		final NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(appContext);
 		final NotificationCompat.Builder builder =
-			new NotificationBuilderWrapper(appContext, NOTIFICATION_CHANNEL_ALERT, null)
+			new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
 				.setSmallIcon(R.drawable.ic_notification_small)
 				.setTicker(text)
 				.setContentTitle(appContext.getString(R.string.error) + ": " + title)
 				.setContentText(text)
 				.setTimeoutAfter(30 * DateUtils.MINUTE_IN_MILLIS)
 				.setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-				.setColor(appContext.getResources().getColor(R.color.material_red))
 				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.setStyle(new NotificationCompat.BigTextStyle().bigText(text))
 				.setAutoCancel(true);
@@ -129,7 +125,7 @@ public class BackgroundErrorNotification {
 			builder.addAction(action);
 		}
 
-		notificationManager.notify(NotificationIDs.BACKGROUND_ERROR, builder.build());
+		notificationManagerCompat.notify(NotificationIDs.BACKGROUND_ERROR, builder.build());
 	}
 
 	/**

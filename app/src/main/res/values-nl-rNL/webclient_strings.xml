@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Druk op de knop Start om de test uit te voeren.</string>
     <string name="webclient_diagnostics_done">Klaar. Als u problemen ondervindt met het opzetten van de verbinding met de desktop-app of webclient, stuur dit logbestand dan naar de Threema-klantenservice.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Op dit moment kan deze bèta-app voor de desktop alleen worden gekoppeld aan een iOS-apparaat. Download voor Android-apparaten de gewone desktop-app.</string>
 </resources>

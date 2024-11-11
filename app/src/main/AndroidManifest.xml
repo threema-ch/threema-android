@@ -29,6 +29,7 @@
 	<!-- android.permission-group.STORAGE -->
 	<uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
 	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+	<uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
 		android:maxSdkVersion="29"/>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -58,7 +59,6 @@
 	<uses-permission android:name="android.permission.VIBRATE"/>
 	<uses-permission android:name="android.permission.WAKE_LOCK"/>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-	<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 	<uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
 	<!-- Access to address book -->
@@ -89,6 +89,13 @@
 
 	<!-- Sony launcher badges -->
 	<uses-permission android:name="com.sonymobile.home.permission.PROVIDER_INSERT_BADGE"/>
+
+    <!-- foreground service permissions -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
 
 	<!-- only for fastlane test -->
 	<!-- TODO -->
@@ -293,17 +300,14 @@
 		</activity>
 		<activity
 			android:name=".preference.SettingsActivity"
-			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:theme="@style/Theme.Threema.Settings">
-		</activity>
-		<activity
-			android:name=".preference.SettingsNotificationsDummyActivity"
-			android:label="@string/app_name"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN"/>
-				<category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
-			</intent-filter>
+            android:label="@string/app_name"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+			android:theme="@style/Theme.Threema.Settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 		</activity>
 		<activity
 			android:name=".preference.SettingsMediaDummyActivity"
@@ -652,11 +656,6 @@
 			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
 			android:noHistory="true"
 			android:theme="@style/Theme.Threema.WhatsNew"/>
-		<activity
-			android:name=".activities.WhatsNew2Activity"
-			android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-			android:noHistory="true"
-			android:theme="@style/Theme.Threema.WhatsNew"/>
 
 		<!-- Wizard activities -->
 		<activity
@@ -817,7 +816,8 @@
 		</activity>
 		<activity
 			android:name="ch.threema.app.globalsearch.GlobalSearchActivity"
-			android:theme="@style/Theme.Threema.Translucent"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+            android:theme="@style/Theme.Threema.StarredMessages"
 			android:windowSoftInputMode="adjustResize"/>
 		<activity
 			android:name="ch.threema.app.activities.StarredMessagesActivity"
@@ -853,7 +853,7 @@
 			android:name=".activities.VerificationLevelActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"/>
 		<activity
-			android:name=".activities.TextChatBubbleActivity"
+			android:name=".activities.MessageDetailsActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:launchMode="singleTop"/>
 		<activity
@@ -889,7 +889,8 @@
 		<!-- services -->
 		<service
 			android:name=".services.AccountAuthenticatorService"
-			android:exported="true">
+			android:exported="true"
+            tools:ignore="ExportedService">
 			<intent-filter>
 				<action android:name="android.accounts.AccountAuthenticator"/>
 			</intent-filter>
@@ -900,7 +901,8 @@
 		</service>
 		<service
 			android:name=".services.ContactsSyncAdapterService"
-			android:exported="true">
+			android:exported="true"
+            tools:ignore="ExportedService">
 			<intent-filter>
 				<action android:name="android.content.SyncAdapter"/>
 			</intent-filter>
@@ -914,10 +916,13 @@
 		</service>
 		<service
 			android:name=".services.PassphraseService"
+            android:foregroundServiceType="remoteMessaging"
 			android:enabled="true"
 			android:exported="false"
 			android:label="PassphraseService">
-		</service>
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="@string/special_use_fgs_passphrase_service_explanation"/>
+        </service>
 		<service
 			android:name=".services.WidgetService"
 			android:permission="android.permission.BIND_REMOTEVIEWS"
@@ -925,22 +930,27 @@
 		<service
 			android:name=".jobs.ReConnectJobService"
 			android:permission="android.permission.BIND_JOB_SERVICE"/>
-		<service android:name=".services.VoiceActionService"/>
+		<service
+            android:name=".services.VoiceActionService"
+            android:foregroundServiceType="remoteMessaging"/>
 		<service
 			android:name=".backuprestore.csv.BackupService"
+            android:foregroundServiceType="dataSync"
 			android:exported="false"/>
 		<service
 			android:name=".backuprestore.csv.RestoreService"
+            android:foregroundServiceType="dataSync"
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.VoipCallService"
-			android:foregroundServiceType="phoneCall|camera|microphone"
+			android:foregroundServiceType="microphone"
 			android:exported="false"/>
 		<service
 			android:name=".voip.services.CallRejectService"
 			android:exported="false"/>
 		<service
 			android:name=".webclient.services.SessionAndroidService"
+            android:foregroundServiceType="remoteMessaging"
 			android:exported="false"
 			android:label="WebClientService"/>
 		<service
@@ -948,18 +958,19 @@
 			android:enabled="true"
 			android:exported="false"/>
 		<service
-			android:name=".services.NotificationActionService"
+			android:name=".services.notification.NotificationActionService"
 			android:enabled="true"
 			android:exported="false"/>
 		<service
 			android:name=".services.ThreemaPushService"
+            android:foregroundServiceType="dataSync"
 			android:exported="false"
 			android:label="ThreemaPushService"/>
 
 		<service
 			android:name=".voip.groupcall.service.GroupCallService"
 			android:exported="false"
-			android:foregroundServiceType="phoneCall" />
+			android:foregroundServiceType="microphone" />
 
 		<!-- Set the exported attribute for the sharetarget (needed for target api 31) -->
 		<service

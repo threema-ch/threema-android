@@ -27,17 +27,17 @@ import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -55,11 +55,10 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.RingtoneSelectorDialog;
-import ch.threema.app.dialogs.ShowOnceDialog;
+import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
@@ -72,7 +71,6 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	private static final String DIALOG_TAG_GROUP_NOTIFICATION = "gn";
 	private static final String DIALOG_TAG_VOIP_NOTIFICATION = "vn";
 	private static final String DIALOG_TAG_GROUP_CALLS_NOTIFICATION = "gc";
-	private static final String DIALOG_TAG_MIUI_NOTICE = "miui10_channel_notice";
 
 	private SharedPreferences sharedPreferences;
 
@@ -130,6 +128,38 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		}
 		return true;
 	};
+
+	@RequiresApi(26)
+	private void launchSystemNotificationSettings(String channelId) {
+		Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+		intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().getPackageName());
+		intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
+		startActivity(intent);
+	}
+
+	/**
+	 *  Remove preference categories that do not apply to the current API level
+	 */
+	private void initVersionDependentPrefs() {
+		PreferenceScreen preferenceScreen = getPref("pref_key_notifications");
+		if (ConfigUtils.supportsNotificationChannels()) {
+			PreferenceCategory preferenceCategory = getPref("pref_key_system_notif");
+			preferenceScreen.removePreference(preferenceCategory);
+			preferenceCategory = getPref("pref_key_group_notif");
+			preferenceScreen.removePreference(preferenceCategory);
+			preferenceCategory = getPref("pref_key_groupcall_notif");
+			preferenceScreen.removePreference(preferenceCategory);
+			preferenceCategory = getPref("pref_key_other");
+
+			Preference preference = preferenceCategory.findPreference("pref_notification_priority");
+			if (preference != null) {
+				preferenceCategory.removePreference(preference);
+			}
+		} else {
+			PreferenceCategory preferenceCategory = getPref("pref_key_notif_new");
+			preferenceScreen.removePreference(preferenceCategory);
+		}
+	}
 
 	private void initWorkingTimePrefs() {
 		if (!ConfigUtils.isWorkBuild()) {
@@ -257,63 +287,81 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 	public void initializePreferences() {
 		sharedPreferences = getPreferenceManager().getSharedPreferences();
 
-
-		int miuiVersion = ConfigUtils.getMIUIVersion();
-		if (miuiVersion < 10) {
-			PreferenceScreen preferenceScreen = getPref("pref_key_notifications");
-			preferenceScreen.removePreference(getPref("pref_key_miui"));
-		}
-
 		initWorkingTimePrefs();
+		initVersionDependentPrefs();
 
 		// setup defaults and callbacks
-		ringtonePreference = findPreference(getResources().getString(R.string.preferences__notification_sound));
-		updateRingtoneSummary(ringtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__notification_sound), ""));
-		groupRingtonePreference = findPreference(getResources().getString(R.string.preferences__group_notification_sound));
-		updateRingtoneSummary(groupRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_notification_sound), ""));
 		voiceRingtonePreference = findPreference(getResources().getString(R.string.preferences__voip_ringtone));
 		updateRingtoneSummary(voiceRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__voip_ringtone), ""));
 		groupCallsRingtonePreference = findPreference(getResources().getString(R.string.preferences__group_calls_ringtone));
 		updateRingtoneSummary(groupCallsRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_calls_ringtone), ""));
 
-		ringtonePreference.setOnPreferenceClickListener(preference -> {
-			chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
-				getRingtoneFromRingtonePref(R.string.preferences__notification_sound),
-				null,
-				getString(R.string.prefs_notification_sound),
-				DIALOG_TAG_CONTACT_NOTIFICATION);
-			return true;
-		});
-		groupRingtonePreference.setOnPreferenceClickListener(preference -> {
-			chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
-				getRingtoneFromRingtonePref(R.string.preferences__group_notification_sound),
-				null,
-				getString(R.string.prefs_notification_sound),
-				DIALOG_TAG_GROUP_NOTIFICATION);
-			return true;
-		});
-		voiceRingtonePreference.setOnPreferenceClickListener(preference -> {
-			chooseRingtone(RingtoneManager.TYPE_RINGTONE,
-				getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
-				RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
-				getString(R.string.prefs_voice_call_sound),
-				DIALOG_TAG_VOIP_NOTIFICATION);
-			return true;
-		});
-		groupCallsRingtonePreference.setOnPreferenceClickListener(preference -> {
-			chooseRingtone(RingtoneManager.TYPE_RINGTONE,
-				getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
-				RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
-				getString(R.string.prefs_voice_call_sound),
-				DIALOG_TAG_GROUP_CALLS_NOTIFICATION);
-			return true;
-		});
+		if (ConfigUtils.supportsNotificationChannels()) {
+			findPreference(getResources().getString(R.string.preferences__chat_notification_settings)).setOnPreferenceClickListener(preference -> {
+				launchSystemNotificationSettings(NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT);
+				return true;
+			});
+			findPreference(getResources().getString(R.string.preferences__group_notification_settings)).setOnPreferenceClickListener(preference -> {
+				launchSystemNotificationSettings(NotificationChannels.NOTIFICATION_CHANNEL_GROUP_CHATS_DEFAULT);
+				return true;
+			});
+			findPreference(getResources().getString(R.string.preferences__group_call_notification_settings)).setOnPreferenceClickListener(preference -> {
+				launchSystemNotificationSettings(NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS);
+				return true;
+			});
+		} else {
+			ringtonePreference = findPreference(getResources().getString(R.string.preferences__notification_sound));
+			updateRingtoneSummary(ringtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__notification_sound), ""));
 
-		TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
-		systemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
+			ringtonePreference.setOnPreferenceClickListener(preference -> {
+				chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
+					getRingtoneFromRingtonePref(R.string.preferences__notification_sound),
+					null,
+					getString(R.string.prefs_notification_sound),
+					DIALOG_TAG_CONTACT_NOTIFICATION);
+				return true;
+			});
 
-		TwoStatePreference groupCallsSystemRingtonePreference = getPref(getString(R.string.preferences__group_calls_use_system_ringtone));
-		groupCallsSystemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
+			groupRingtonePreference = findPreference(getResources().getString(R.string.preferences__group_notification_sound));
+			updateRingtoneSummary(groupRingtonePreference, sharedPreferences.getString(getResources().getString(R.string.preferences__group_notification_sound), ""));
+
+			groupRingtonePreference.setOnPreferenceClickListener(preference -> {
+				chooseRingtone(RingtoneManager.TYPE_NOTIFICATION,
+					getRingtoneFromRingtonePref(R.string.preferences__group_notification_sound),
+					null,
+					getString(R.string.prefs_notification_sound),
+					DIALOG_TAG_GROUP_NOTIFICATION);
+				return true;
+			});
+		}
+
+		if (voiceRingtonePreference != null) {
+			voiceRingtonePreference.setOnPreferenceClickListener(preference -> {
+				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
+					getRingtoneFromRingtonePref(R.string.preferences__voip_ringtone),
+					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
+					getString(R.string.prefs_voice_call_sound),
+					DIALOG_TAG_VOIP_NOTIFICATION);
+				return true;
+			});
+
+			TwoStatePreference systemRingtonePreference = getPref(getString(R.string.preferences__use_system_ringtone));
+			systemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
+		}
+
+		if (groupCallsRingtonePreference != null) {
+			groupCallsRingtonePreference.setOnPreferenceClickListener(preference -> {
+				chooseRingtone(RingtoneManager.TYPE_RINGTONE,
+					getRingtoneFromRingtonePref(R.string.preferences__group_calls_ringtone),
+					RingtoneUtil.THREEMA_CALL_RINGTONE_URI,
+					getString(R.string.prefs_voice_call_sound),
+					DIALOG_TAG_GROUP_CALLS_NOTIFICATION);
+				return true;
+			});
+
+			TwoStatePreference groupCallsSystemRingtonePreference = getPref(getString(R.string.preferences__group_calls_use_system_ringtone));
+			groupCallsSystemRingtonePreference.setOnPreferenceChangeListener(systemRingtoneChangedListener);
+		}
 
 		if (ConfigUtils.isWorkRestricted()) {
 			CheckBoxPreference notificationPreview = getPref(getString(R.string.preferences__notification_preview));
@@ -323,20 +371,6 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 				notificationPreview.setEnabled(false);
 				notificationPreview.setSelectable(false);
 			}
-		}
-
-		if (miuiVersion >= 10) {
-			ShowOnceDialog.newInstance(
-				R.string.miui_notification_title,
-				miuiVersion >= 12 ?
-					R.string.miui12_notification_body :
-					R.string.miui_notification_body).show(getParentFragmentManager(), DIALOG_TAG_MIUI_NOTICE);
-
-			Preference miuiPreference = getPref("pref_key_miui");
-			miuiPreference.setOnPreferenceClickListener(preference -> {
-				openMIUINotificationSettings();
-				return true;
-			});
 		}
 	}
 
@@ -381,7 +415,11 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		return Uri.parse(uriString);
 	}
 
-	private void updateRingtoneSummary(Preference preference, String value) {
+	private void updateRingtoneSummary(@Nullable Preference preference, String value) {
+		if (preference == null) {
+			return;
+		}
+
 		String summary;
 		if (value == null || value.length() == 0) {
 			summary = getString(R.string.ringtone_none);
@@ -391,26 +429,12 @@ public class SettingsNotificationsFragment extends ThreemaPreferenceFragment imp
 		preference.setSummary(summary);
 	}
 
-	private void updateTimeSummary(Preference preference, @StringRes int defaultSummary) {
-		preference.setSummary(sharedPreferences.getString(preference.getKey(), getString(defaultSummary)));
-	}
-
-	private void openMIUINotificationSettings() {
-		ComponentName cn = new ComponentName("com.android.settings", "com.android.settings.Settings$NotificationFilterActivity");
-		Bundle bundle = new Bundle();
-		bundle.putString("appName", requireContext().getResources().getString(requireContext().getApplicationInfo().labelRes));
-		bundle.putString("packageName", BuildConfig.APPLICATION_ID);
-		bundle.putString(":android:show_fragment", "NotificationAccessSettings");
-
-		Intent intent = new Intent();
-		intent.putExtras(bundle);
-		intent.setComponent(cn);
-
-		try {
-			startActivity(intent);
-		} catch (Exception e) {
-			logger.error("Exception", e);
+	private void updateTimeSummary(@Nullable Preference preference, @StringRes int defaultSummary) {
+		if (preference == null) {
+			return;
 		}
+
+		preference.setSummary(sharedPreferences.getString(preference.getKey(), getString(defaultSummary)));
 	}
 
 	@Override

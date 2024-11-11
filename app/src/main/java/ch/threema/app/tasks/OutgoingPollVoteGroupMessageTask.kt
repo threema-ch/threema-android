@@ -47,11 +47,10 @@ class OutgoingPollVoteGroupMessageTask(
     private val groupCreator: String,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val groupService by lazy { serviceManager.groupService }
 
     override val type: String = "OutgoingPollVoteGroupMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         if (ballotType == BallotModel.Type.RESULT_ON_CLOSE) {
             sendBallotVote(handle, setOf(ballotCreator))
         } else {

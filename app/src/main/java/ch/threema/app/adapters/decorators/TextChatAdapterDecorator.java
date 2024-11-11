@@ -33,7 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import ch.threema.app.R;
-import ch.threema.app.activities.TextChatBubbleActivity;
+import ch.threema.app.activities.MessageDetailsActivity;
 import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
@@ -90,7 +90,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 								R.drawable.bubble_fade_recv_selector);
 					}
 					holder.readOnButton.setOnClickListener(view -> {
-						Intent intent = new Intent(helper.getFragment().getContext(), TextChatBubbleActivity.class);
+						Intent intent = new Intent(helper.getFragment().getContext(), MessageDetailsActivity.class);
 						IntentDataUtil.append(this.getMessageModel(), intent);
 						helper.getFragment().startActivity(intent);
 					});
@@ -142,7 +142,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 		if (content != null) {
 			if (holder.secondaryTextView instanceof EmojiConversationTextView) {
 				((EmojiConversationTextView) holder.secondaryTextView).setFade(
-						TestUtil.empty(filterString) &&
+						TestUtil.isEmptyOrNull(filterString) &&
 						content.quotedText != null &&
 						content.quotedText.length() > helper.getMaxQuoteTextLength());
 				holder.secondaryTextView.setText(

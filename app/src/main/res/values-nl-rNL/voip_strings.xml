@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema-Oproep</string>
     <string name="voip_hangup">Ophangen</string>

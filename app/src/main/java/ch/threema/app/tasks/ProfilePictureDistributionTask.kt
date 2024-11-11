@@ -41,11 +41,10 @@ class ProfilePictureDistributionTask(
     private val toIdentity: String,
     serviceManager: ServiceManager,
 ) : OutgoingProfilePictureTask(serviceManager) {
-    private val contactService = serviceManager.contactService
 
     override val type: String = "ProfilePictureDistributionTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Step 1 is already done as this task is only scheduled for messages that allow user
         // profile distribution.
 

@@ -38,13 +38,11 @@ class OutgoingGroupDeliveryReceiptMessageTask(
     private val recipientIdentities: Set<String>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val groupService = serviceManager.groupService
-    private val messageService = serviceManager.messageService
 
     override val type: String = "OutgoingGroupDeliveryReceiptMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        val messageModel = messageService.getGroupMessageModel(messageModelId, true)
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        val messageModel = getGroupMessageModel(messageModelId)
         if (messageModel == null) {
             logger.warn("Message model ($messageModelId) is null while trying to send group delivery receipt")
             return

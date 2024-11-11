@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <string name="voip_title">Званок Threema</string>
     <string name="voip_hangup">Завяршыць</string>
     <string name="voip_toggle_mic">Пераключыць мікрафон</string>
@@ -20,7 +20,7 @@
     <!-- Shown when a call is being disconnected -->
     <string name="voip_status_disconnecting">Раз\'яднанне</string>
     <!-- Shown when the device of the callee is ringing -->
-    <string name="voip_status_ringing">Я званю</string>
+    <string name="voip_status_ringing">Званок...</string>
     <string name="voip_mic_enable">Уключыць мікрафон</string>
     <string name="voip_mic_disable">Адключыць мікрафон</string>
     <string name="voip_checking_compatibility">Праверка магчымасці прыёму званкоў Threema кантактам…</string>
@@ -95,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Дасягнуты максімум: больш удзельнікаў не можа далучыцца да гэтага супольнага выкліку.</string>
     <string name="voip_gc_call_full_n">Дасягнута максімальная колькасць удзельнікаў: %1$d, вы не можаце далучыцца да гэтага супольнага выкліку.</string>
     <plurals name="n_participants_in_call">
+        <item quantity="one">%d удзельнік</item>
         <item quantity="few">удзельнікаў</item>
         <item quantity="many">удзельнікаў</item>
-        <item quantity="one">%d удзельнік</item>
         <item quantity="other">%d удзельнікі</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
-        <item quantity="many">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
+        <item quantity="one">Заўвага: адзін удзельнік не можа ўдзельнічаць у супольных выкліках.</item>
         <item quantity="few">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">Заўвага: адзін удзельнік не можа ўдзельнічаць у супольных выкліках.</item>
+        <item quantity="many">Заўвага: некалькі удзельнікаў не можа ўдзельнічаць у супольных выкліках.</item>
         <item quantity="other">Заўвага: %d удзельнікі не могуць удзельнічаць у супольных выкліках.</item>
     </plurals>
 </resources>

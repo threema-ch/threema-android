@@ -125,7 +125,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		if (holder.secondaryTextView != null) {
 			String mimeString = fileData.getMimeType();
 			if (holder.secondaryTextView != null) {
-				if (!TestUtil.empty(mimeString)) {
+				if (!TestUtil.isEmptyOrNull(mimeString)) {
 					holder.secondaryTextView.setText(MimeUtil.getMimeDescription(context, fileData.getMimeType()));
 				} else {
 					holder.secondaryTextView.setText("");
@@ -138,7 +138,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 		showHide(holder.tertiaryTextView, true);
 		if (holder.tertiaryTextView != null) {
 			String fileName = fileData.getFileName();
-			if (!TestUtil.empty(fileName)) {
+			if (!TestUtil.isEmptyOrNull(fileName)) {
 				holder.tertiaryTextView.setText(highlightMatches(fileName, filterString));
 			} else {
 				holder.tertiaryTextView.setText(R.string.no_filename);
@@ -174,7 +174,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 					RuntimeUtil.runOnUiThread(() -> {
 						if (!success) {
 							holder.controller.setReadyToDownload();
-							if (!TestUtil.empty(message)) {
+							if (!TestUtil.isEmptyOrNull(message)) {
 								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 							}
 						} else {
@@ -206,7 +206,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 							}
 						} else {
 							holder.controller.setReadyToDownload();
-							if (!TestUtil.empty(message)) {
+							if (!TestUtil.isEmptyOrNull(message)) {
 								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 							}
 						}

@@ -173,7 +173,7 @@ public class ContactUtil {
 		String firstName = contactModel.getFirstName();
 		String lastName = contactModel.getLastName();
 
-		if (TestUtil.empty(firstName) && TestUtil.empty(lastName) && !TestUtil.empty(contactModel.getPublicNickName())) {
+		if (TestUtil.isEmptyOrNull(firstName) && TestUtil.isEmptyOrNull(lastName) && !TestUtil.isEmptyOrNull(contactModel.getPublicNickName())) {
 			Pair<String, String> namePair = NameUtil.getFirstLastNameFromDisplayName(contactModel.getPublicNickName().trim());
 			firstName = namePair.first;
 			lastName = namePair.second;

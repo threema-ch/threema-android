@@ -87,7 +87,7 @@ public class FileMessagePlayer extends MessagePlayer {
 			RuntimeUtil.runOnUiThread(() -> {
 				final String mimeType = getMessageModel().getFileData().getMimeType();
 
-				if (!TestUtil.empty(mimeType) && decryptedFile.exists()) {
+				if (!TestUtil.isEmptyOrNull(mimeType) && decryptedFile.exists()) {
 					if (!FileUtil.isImageFile(getMessageModel().getFileData()) && !FileUtil.isVideoFile(getMessageModel().getFileData())) {
 						messageService.viewMediaMessage(getContext(), getMessageModel(), fileService.getShareFileUri(decryptedFile, null));
 					}

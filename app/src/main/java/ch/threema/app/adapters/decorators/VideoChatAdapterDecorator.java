@@ -180,7 +180,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 					RuntimeUtil.runOnUiThread(() -> {
 						setControllerState(holder);
 						if (!success) {
-							if (!TestUtil.empty(message)) {
+							if (!TestUtil.isEmptyOrNull(message)) {
 								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 							}
 						}
@@ -207,7 +207,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 							holder.controller.setPlay();
 						} else {
 							holder.controller.setReadyToDownload();
-							if (!TestUtil.empty(message)) {
+							if (!TestUtil.isEmptyOrNull(message)) {
 								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 							}
 						}

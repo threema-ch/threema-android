@@ -217,13 +217,13 @@ public class WizardFragment3 extends WizardFragment {
 		TextView presetEmailText = rootView.findViewById(R.id.preset_email_text);
 		TextView presetPhoneText = rootView.findViewById(R.id.preset_phone_text);
 
-		if (!TestUtil.empty(callback.getPresetEmail())) {
+		if (!TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
 			emailEditText.setVisibility(View.GONE);
 			presetEmailText.setText(R.string.linked);
 			presetEmailText.setVisibility(View.VISIBLE);
 		}
 
-		if (!TestUtil.empty(callback.getPresetPhone())) {
+		if (!TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
 			phoneText.setVisibility(View.GONE);
 			prefixText.setVisibility(View.GONE);
 			countrySpinner.setVisibility(View.GONE);
@@ -267,7 +267,7 @@ public class WizardFragment3 extends WizardFragment {
 								String prefixString = result.get(position).get("prefix");
 								prefixText.setText(prefixString);
 
-								if (!TestUtil.empty(prefixString) && prefixString.length() > 1) {
+								if (!TestUtil.isEmptyOrNull(prefixString) && prefixString.length() > 1) {
 									setPhoneNumberFormatter(Integer.parseInt(prefixString.substring(1)));
 								}
 								phoneText.requestFocus();
@@ -282,7 +282,7 @@ public class WizardFragment3 extends WizardFragment {
 
 					if (prefixText.getText().length() <= 1) {
 						String countryCode = localeService.getCountryCodePhonePrefix();
-						if (!TestUtil.empty(countryCode)) {
+						if (!TestUtil.isEmptyOrNull(countryCode)) {
 							prefixText.setText(countryCode);
 							((OnSettingsChangedListener) getActivity()).onPrefixSet(prefixText.getText().toString());
 							phoneText.requestFocus();
@@ -306,7 +306,7 @@ public class WizardFragment3 extends WizardFragment {
 	}
 
 	private String getCountryName(String region) {
-		if (!TestUtil.empty(region)) {
+		if (!TestUtil.isEmptyOrNull(region)) {
 			return new Locale("", region).getDisplayCountry(Locale.getDefault());
 		} else {
 			return "";
@@ -317,7 +317,7 @@ public class WizardFragment3 extends WizardFragment {
 		PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 		String regionCode = phoneNumberUtil.getRegionCodeForCountryCode(countryCode);
 
-		if (!TestUtil.empty(regionCode)) {
+		if (!TestUtil.isEmptyOrNull(regionCode)) {
 			this.phoneNumberFormatter = phoneNumberUtil.getAsYouTypeFormatter(regionCode);
 		} else {
 			this.phoneNumberFormatter = null;
@@ -438,14 +438,14 @@ public class WizardFragment3 extends WizardFragment {
 			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 			emailEditText.setText(callback.getEmail());
 
-			if (TestUtil.empty(callback.getPresetEmail())) {
-				showEditTextError(emailEditText, !TestUtil.empty(callback.getEmail()) && !Patterns.EMAIL_ADDRESS.matcher(callback.getEmail()).matches());
+			if (TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
+				showEditTextError(emailEditText, !TestUtil.isEmptyOrNull(callback.getEmail()) && !Patterns.EMAIL_ADDRESS.matcher(callback.getEmail()).matches());
 			}
 
 			prefixText.setText(callback.getPrefix());
 			phoneText.setText(callback.getNumber());
-			if (TestUtil.empty(callback.getPresetPhone())) {
-				showEditTextError(phoneText, !TestUtil.empty(callback.getNumber()) && TestUtil.empty(callback.getPhone()));
+			if (TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
+				showEditTextError(phoneText, !TestUtil.isEmptyOrNull(callback.getNumber()) && TestUtil.isEmptyOrNull(callback.getPhone()));
 			}
 		}
 	}

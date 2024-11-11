@@ -107,7 +107,7 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 			setCancelable(false);
 		}
 
-		if (TestUtil.empty(message)) {
+		if (TestUtil.isBlankOrNull(message)) {
 			builder.setMessage(messageInt);
 		} else {
 			builder.setMessage(message);

@@ -130,7 +130,7 @@ public class BallotChoiceModelFactory extends ModelFactory {
 							.setModifiedAt(cursorFactory.getDate(BallotChoiceModel.COLUMN_MODIFIED_AT));
 
 					String type = cursorFactory.getString(BallotChoiceModel.COLUMN_TYPE);
-					if(!TestUtil.empty(type)) {
+					if(!TestUtil.isEmptyOrNull(type)) {
 						c.setType(BallotChoiceModel.Type.valueOf(type));
 					}
 					return false;

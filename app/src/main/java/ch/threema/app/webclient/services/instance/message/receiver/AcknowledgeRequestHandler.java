@@ -30,7 +30,7 @@ import java.util.Map;
 import androidx.annotation.AnyThread;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
@@ -85,13 +85,13 @@ public class AcknowledgeRequestHandler extends MessageReceiver {
 		AbstractMessageModel messageModel = null;
 		switch (receiver.getType()) {
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId, true);
+				messageModel = this.messageService.getContactMessageModel(messageId);
 				break;
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId, true);
+				messageModel = this.messageService.getGroupMessageModel(messageId);
 				break;
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId, true);
+				messageModel = this.messageService.getDistributionListMessageModel(messageId);
 				break;
 		}
 

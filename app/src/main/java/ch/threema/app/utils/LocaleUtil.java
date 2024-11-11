@@ -56,7 +56,7 @@ public class LocaleUtil {
 		if (!locales.isEmpty()) {
 			Locale appLocale = locales.get(0);
 
-			if (appLocale != null && !TestUtil.empty(appLocale.getLanguage())) {
+			if (appLocale != null && !TestUtil.isEmptyOrNull(appLocale.getLanguage())) {
 				return appLocale.getLanguage();
 			}
 		}
@@ -119,9 +119,9 @@ public class LocaleUtil {
 	 */
 	public static @NonNull String normalize(@NonNull String input) {
 		String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-		if (!TestUtil.empty(normalized)) {
+		if (!TestUtil.isEmptyOrNull(normalized)) {
 			String replaced = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-			if (!TestUtil.empty(replaced)) {
+			if (!TestUtil.isEmptyOrNull(replaced)) {
 				return replaced.toUpperCase();
 			}
 		}

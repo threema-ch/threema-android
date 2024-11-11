@@ -244,7 +244,7 @@ public class AppRestrictionServiceTest {
 	@Test
 	public void testConvert_Json() throws JSONException {
 		AppRestrictionService service = PowerMockito.mock(AppRestrictionService.class);
-		doCallRealMethod().when(service).convert(any(JSONObject.class));
+		doCallRealMethod().when(service).convertJSONToWorkMDM(any(JSONObject.class));
 
 		JSONObject json = PowerMockito.mock(JSONObject.class);
 		when(json.has("override")).thenReturn(true);
@@ -261,7 +261,7 @@ public class AppRestrictionServiceTest {
 		when(parameters.get(eq("param1"))).thenReturn("param1-value");
 		when(parameters.get(eq("param2"))).thenReturn("param2-value");
 
-		WorkMDMSettings result = service.convert(json);
+		WorkMDMSettings result = service.convertJSONToWorkMDM(json);
 		Assert.assertNotNull(result);
 		Assert.assertTrue(result.override);
 		Assert.assertNotNull(result.parameters);
@@ -275,14 +275,14 @@ public class AppRestrictionServiceTest {
 	@Test
 	public void testConvert_WorkMDMSettings() throws JSONException {
 		AppRestrictionService service = PowerMockito.mock(AppRestrictionService.class);
-		doCallRealMethod().when(service).convert(any(WorkMDMSettings.class));
+		doCallRealMethod().when(service).convertWorkMDMToJSON(any(WorkMDMSettings.class));
 
 		WorkMDMSettings s = new WorkMDMSettings();
 		s.override = true;
 		s.parameters.put("param1", "param1-value");
 		s.parameters.put("param2", "param2-value");
 
-		JSONObject r = service.convert(s);
+		JSONObject r = service.convertWorkMDMToJSON(s);
 
 		Assert.assertNotNull(r);
 		Assert.assertTrue(r.getBoolean("override"));
@@ -313,7 +313,7 @@ public class AppRestrictionServiceTest {
 		s.parameters.put("param1", "param1-value");
 		s.parameters.put("param2", "param2-value");
 
-		when(service.convert(eq(s))).thenReturn(jsonObject);
+		when(service.convertWorkMDMToJSON(eq(s))).thenReturn(jsonObject);
 		service.storeWorkMDMSettings(s);
 
 		// Check if the store method is called
@@ -340,7 +340,7 @@ public class AppRestrictionServiceTest {
 
 		WorkMDMSettings s = new WorkMDMSettings();
 
-		when(service.convert(eq(workRestrictionsJson))).thenReturn(s);
+		when(service.convertJSONToWorkMDM(eq(workRestrictionsJson))).thenReturn(s);
 		Assert.assertEquals(s, service.getWorkMDMSettings());
 		Assert.assertEquals(s, service.getWorkMDMSettings());
 		Assert.assertEquals(s, service.getWorkMDMSettings());
@@ -491,8 +491,10 @@ public class AppRestrictionServiceTest {
 		mdmWorkParameters.put("th_safe_enable", true);  // #13
 		mdmWorkParameters.put("th_firstname", "work_mdm_firstname"); // #14
 		mdmWorkParameters.put("th_lastname", "work_mdm_lastname"); // #15
+        mdmWorkParameters.put("th_job_title", "work_mdm_job_title"); // #16
+        mdmWorkParameters.put("th_department", "work_mdm_department"); // #17
 
-		RestrictionsManager restrictionManagerMock = PowerMockito.mock(RestrictionsManager.class);
+        RestrictionsManager restrictionManagerMock = PowerMockito.mock(RestrictionsManager.class);
 		when(restrictionManagerMock.getApplicationRestrictions()).thenReturn(applicationRestrictions);
 
 		JSONObject workRestrictionsJson = new JSONObject();
@@ -525,7 +527,7 @@ public class AppRestrictionServiceTest {
 		verify(preferenceStoreMock, times(1)).getJSONObject(eq("wrk_app_restriction"), eq(true));
 		verify(mockContext, times(7)).getString(anyInt());
 
-		Assert.assertEquals(15, appRestrictions.size());
+		Assert.assertEquals(17, appRestrictions.size());
 		// Application restrictions that must not be overridden by work mdm parameters:
 		Assert.assertEquals("restriction_id_backup", appRestrictions.getString("th_id_backup"));
 		Assert.assertEquals("restriction_id_backup_password", appRestrictions.getString("th_id_backup_password"));
@@ -548,6 +550,8 @@ public class AppRestrictionServiceTest {
 		Assert.assertTrue(appRestrictions.getBoolean("th_safe_enable"));
 		Assert.assertEquals("work_mdm_firstname", appRestrictions.getString("th_firstname"));
 		Assert.assertEquals("work_mdm_lastname", appRestrictions.getString("th_lastname"));
+		Assert.assertEquals("work_mdm_job_title", appRestrictions.getString("th_job_title"));
+		Assert.assertEquals("work_mdm_department", appRestrictions.getString("th_department"));
 	}
 
 	private PreferenceStoreInterface mockPreferenceStore(@Nullable JSONObject workRestrictionsJson) {

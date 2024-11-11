@@ -21,12 +21,11 @@
 
 package ch.threema.app.backuprestore.csv;
 
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_ALERT;
-import static ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS;
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -45,6 +44,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import net.lingala.zip4j.io.outputstream.ZipOutputStream;
@@ -79,7 +80,7 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
@@ -142,6 +143,8 @@ public class BackupService extends Service {
 
 	private static final String INCOMPLETE_BACKUP_FILENAME_PREFIX = "INCOMPLETE-";
 
+	private static final int FG_SERVICE_TYPE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0;
+
 	private int currentProgressStep = 0;
 	private long processSteps = 0;
 
@@ -159,7 +162,7 @@ public class BackupService extends Service {
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
-	private NotificationManager notificationManager;
+	private NotificationManagerCompat notificationManagerCompat;
 	private DatabaseNonceStore databaseNonceStore;
 
 	private NotificationCompat.Builder notificationBuilder;
@@ -313,7 +316,7 @@ public class BackupService extends Service {
 			return;
 		}
 
-		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManagerCompat = NotificationManagerCompat.from(this);
 		databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
 	}
 
@@ -1398,6 +1401,7 @@ public class BackupService extends Service {
 		stopSelf();
 	}
 
+	@SuppressLint("ForegroundServiceType")
 	private void showPersistentNotification() {
 		logger.debug("showPersistentNotification");
 
@@ -1410,7 +1414,7 @@ public class BackupService extends Service {
 			cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 		}
 
-		notificationBuilder = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
+		notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS)
 					.setContentTitle(getString(R.string.backup_in_progress))
 					.setContentText(getString(R.string.please_wait))
 					.setOngoing(true)
@@ -1420,9 +1424,18 @@ public class BackupService extends Service {
 
 		Notification notification = notificationBuilder.build();
 
-		startForeground(BACKUP_NOTIFICATION_ID, notification);
+		startForeground(notification);
 	}
 
+	private void startForeground(Notification notification) {
+		ServiceCompat.startForeground(
+			this,
+			BACKUP_NOTIFICATION_ID,
+			notification,
+			FG_SERVICE_TYPE);
+	}
+
+	@SuppressLint("MissingPermission")
 	private void updatePersistentNotification(int currentStep, int steps, String timeRemaining) {
 		logger.debug("updatePersistentNotification {} of {}", currentStep, steps);
 
@@ -1432,8 +1445,8 @@ public class BackupService extends Service {
 
 		notificationBuilder.setProgress(steps, currentStep, false);
 
-		if (notificationManager != null) {
-			notificationManager.notify(BACKUP_NOTIFICATION_ID, notificationBuilder.build());
+		if (notificationManagerCompat != null) {
+			notificationManagerCompat.notify(BACKUP_NOTIFICATION_ID, notificationBuilder.build());
 		}
 	}
 
@@ -1445,15 +1458,16 @@ public class BackupService extends Service {
 	}
 
 	private void cancelPersistentNotification() {
-		if (notificationManager != null) {
-			notificationManager.cancel(BACKUP_NOTIFICATION_ID);
+		if (notificationManagerCompat != null) {
+			notificationManagerCompat.cancel(BACKUP_NOTIFICATION_ID);
 		}
 	}
 
+	@SuppressLint("MissingPermission")
 	private void showBackupErrorNotification(String message) {
 		String contentText;
 
-		if (!TestUtil.empty(message)) {
+		if (!TestUtil.isEmptyOrNull(message)) {
 			contentText = message;
 		} else {
 			contentText = getString(R.string.backup_or_restore_error_body);
@@ -1463,20 +1477,19 @@ public class BackupService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder =
-				new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_ALERT, null)
+				new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
 						.setSmallIcon(R.drawable.ic_notification_small)
 						.setTicker(getString(R.string.backup_or_restore_error_body))
 						.setContentTitle(getString(R.string.backup_or_restore_error))
 						.setContentText(contentText)
 						.setContentIntent(pendingIntent)
 						.setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
-						.setColor(getResources().getColor(R.color.material_red))
 						.setPriority(NotificationCompat.PRIORITY_MAX)
 						.setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
 						.setAutoCancel(false);
 
-		if (notificationManager != null) {
-			notificationManager.notify(BACKUP_COMPLETION_NOTIFICATION_ID, builder.build());
+		if (notificationManagerCompat != null) {
+			notificationManagerCompat.notify(BACKUP_COMPLETION_NOTIFICATION_ID, builder.build());
 		} else {
 			RuntimeUtil.runOnUiThread(
 				() -> Toast.makeText(getApplicationContext(), R.string.backup_or_restore_error_body, Toast.LENGTH_LONG).show()
@@ -1484,6 +1497,7 @@ public class BackupService extends Service {
 		}
 	}
 
+	@SuppressLint({"ServiceCast", "MissingPermission"})
 	private void showBackupSuccessNotification() {
 		logger.debug("showBackupSuccess");
 
@@ -1493,13 +1507,12 @@ public class BackupService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder =
-				new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_ALERT, null)
+				new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
 						.setSmallIcon(R.drawable.ic_notification_small)
 						.setTicker(getString(R.string.backup_or_restore_success_body))
 						.setContentTitle(getString(R.string.app_name))
 						.setContentIntent(pendingIntent)
 						.setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
-						.setColor(getResources().getColor(R.color.material_green))
 						.setPriority(NotificationCompat.PRIORITY_MAX)
 						.setAutoCancel(true);
 
@@ -1513,32 +1526,23 @@ public class BackupService extends Service {
 		builder.setContentText(text);
 		builder.setStyle(new NotificationCompat.BigTextStyle().bigText(text));
 
-		if (notificationManager == null) {
-			notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (notificationManagerCompat == null) {
+			notificationManagerCompat = NotificationManagerCompat.from(this);
 		}
 
-		if (notificationManager != null) {
-			notificationManager.notify(BACKUP_COMPLETION_NOTIFICATION_ID, builder.build());
-		} else {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getApplicationContext(), R.string.backup_or_restore_success_body, Toast.LENGTH_LONG).show();
-				}
-			});
-		}
+		notificationManagerCompat.notify(BACKUP_COMPLETION_NOTIFICATION_ID, builder.build());
 	}
 
 	/**
 	 * Show a fake notification before stopping service in order to prevent Context.startForegroundService() did not then call Service.startForeground() crash
 	 */
 	private void safeStopSelf() {
-		Notification notification = new NotificationBuilderWrapper(this, NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS, null)
+		Notification notification = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS)
 			.setContentTitle("")
 			.setContentText("")
 			.build();
 
-		startForeground(BACKUP_NOTIFICATION_ID, notification);
+		startForeground(notification);
 		stopForeground(true);
 		isRunning = false;
 

@@ -106,14 +106,14 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
 	void initValues() {
 		if (isResumed()) {
-			String email = TestUtil.empty(callback.getEmail()) ? callback.getPresetEmail() : callback.getEmail();
-			String phone = TestUtil.empty(callback.getPhone()) ? callback.getPresetPhone() : callback.getPhone();
+			String email = TestUtil.isEmptyOrNull(callback.getEmail()) ? callback.getPresetEmail() : callback.getEmail();
+			String phone = TestUtil.isEmptyOrNull(callback.getPhone()) ? callback.getPresetPhone() : callback.getPhone();
 
 			nicknameText.setText(callback.getNickname());
-			emailText.setText(TestUtil.empty(email) ?
+			emailText.setText(TestUtil.isEmptyOrNull(email) ?
 				getString(R.string.not_linked) :
 				(EMAIL_LINKED_PLACEHOLDER.equals(email) ? getString(R.string.unchanged) : email));
-			phoneText.setText(TestUtil.empty(phone) ?
+			phoneText.setText(TestUtil.isEmptyOrNull(phone) ?
 				getString(R.string.not_linked) :
 				(PHONE_LINKED_PLACEHOLDER.equals(phone) ? getString(R.string.unchanged) : phone));
 			syncContactsText.setText(callback.getSyncContacts() ? R.string.on : R.string.off);
@@ -177,7 +177,7 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
 	public void setContactsSyncInProgress(boolean inProgress, String text) {
 		syncContactsProgress.setVisibility(inProgress ? View.VISIBLE : View.GONE);
-		if (TestUtil.empty(text)) {
+		if (TestUtil.isEmptyOrNull(text)) {
 			syncContactsText.setText(callback.getSyncContacts() ? R.string.on : R.string.off);
 		} else {
 			syncContactsText.setText(text);
@@ -186,8 +186,8 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
 	public void setThreemaSafeInProgress(boolean inProgress, String text) {
 		safeProgress.setVisibility(inProgress ? View.VISIBLE : View.GONE);
-		if (TestUtil.empty(text)) {
-			if (TestUtil.empty(callback.getSafePassword())) {
+		if (TestUtil.isEmptyOrNull(text)) {
+			if (TestUtil.isEmptyOrNull(callback.getSafePassword())) {
 				safeText.setText(R.string.off);
 			} else {
 				if (callback.getSafeServerInfo().isDefaultServer()) {

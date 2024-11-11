@@ -91,7 +91,7 @@ public class QuoteUtil {
 			);
 		} else {
 			String text = messageModel.getBody();
-			if (!TestUtil.empty(text)) {
+			if (!TestUtil.isEmptyOrNull(text)) {
 				return parseQuoteV1(text);
 			}
 			return null;
@@ -171,7 +171,7 @@ public class QuoteUtil {
 			if (receiverMatch) {
 				final MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(context, quotedMessageModel);
 				final String identity = quotedMessageModel.isOutbox() ? userService.getIdentity() : quotedMessageModel.getIdentity();
-				final @NonNull String quotedText = TestUtil.empty(viewElement.text) ? (viewElement.placeholder != null ? viewElement.placeholder : "") : viewElement.text;
+				final @NonNull String quotedText = TestUtil.isEmptyOrNull(viewElement.text) ? (viewElement.placeholder != null ? viewElement.placeholder : "") : viewElement.text;
 				final @DrawableRes Integer icon = viewElement.icon;
 				Bitmap thumbnail = null;
 				if (quotedMessageModel.getMessageContentsType() != MessageContentsType.VOICE_MESSAGE) {
@@ -207,13 +207,13 @@ public class QuoteUtil {
 	 * @param text source text containing a quote v2 signature
 	 */
 	public static void addBodyAndQuotedMessageId(@NonNull AbstractMessageModel messageModel, @Nullable String text) {
-		if (!TestUtil.empty(text)) {
+		if (!TestUtil.isEmptyOrNull(text)) {
 			Matcher match = quoteV2MatchPattern.matcher(text);
 			try {
 				if (match.find()) {
 					if (match.groupCount() == 2) {
 						messageModel.setQuotedMessageId(match.group(1));
-						if (!TestUtil.empty(match.group(2))) {
+						if (!TestUtil.isEmptyOrNull(match.group(2))) {
 							messageModel.setBody(match.group(2).trim());
 						} else {
 							messageModel.setBody("");
@@ -235,10 +235,10 @@ public class QuoteUtil {
 	 */
 	public static int getQuoteType(AbstractMessageModel messageModel) {
 		if (messageModel != null) {
-			if (!TestUtil.empty(messageModel.getQuotedMessageId())) {
+			if (!TestUtil.isEmptyOrNull(messageModel.getQuotedMessageId())) {
 				return QUOTE_TYPE_V2;
 			}
-			if (!TestUtil.empty(messageModel.getBody())) {
+			if (!TestUtil.isEmptyOrNull(messageModel.getBody())) {
 				if (isQuoteV1(messageModel.getBody())) {
 					return QUOTE_TYPE_V1;
 				}
@@ -271,9 +271,9 @@ public class QuoteUtil {
 			text = messageModel.getCaption();
 		}
 
-		if (substituteAndTruncate && TestUtil.empty(text)) {
+		if (substituteAndTruncate && TestUtil.isEmptyOrNull(text)) {
 			text = messageModel.getCaption();
-			if (TestUtil.empty(text)) {
+			if (TestUtil.isEmptyOrNull(text)) {
 				MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(ThreemaApplication.getAppContext(), messageModel);
 				text = viewElement.text;
 				if (text == null) {
@@ -353,7 +353,7 @@ public class QuoteUtil {
 	 */
 	public static String quote(String text, @Nullable String quoteIdentity, @Nullable String quoteText, @NonNull AbstractMessageModel messageModel) {
 		//do not quote if identity or quoting text is empty or null
-		if(TestUtil.empty(quoteIdentity, quoteText)) {
+		if(TestUtil.isEmptyOrNull(quoteIdentity, quoteText)) {
 			return text;
 		}
 

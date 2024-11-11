@@ -128,7 +128,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 			protected void onPostExecute(String errorString) {
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID, true);
 
-				if (TestUtil.empty(errorString)) {
+				if (TestUtil.isEmptyOrNull(errorString)) {
 					Intent intent = new Intent(WizardFingerPrintActivity.this, WizardBaseActivity.class);
 					intent.putExtra(WizardBaseActivity.EXTRA_NEW_IDENTITY_CREATED, true);
 					startActivity(intent);

@@ -125,7 +125,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 					case FILE:
 						FileDataModel fileDataModel = m.getFileData();
 						saveMedia = fileDataModel.isDownloaded();
-						filename = TestUtil.empty(fileDataModel.getFileName()) ?
+						filename = TestUtil.isEmptyOrNull(fileDataModel.getFileName()) ?
 							FileUtil.getDefaultFilename(fileDataModel.getMimeType()) :
 							(m.getApiMessageId() != null ? m.getApiMessageId() : m.getId()) +
 							"-" + fileDataModel.getFileName();
@@ -145,7 +145,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 				}
 
 				if (saveMedia) {
-					if (TestUtil.empty(filename)) {
+					if (TestUtil.isEmptyOrNull(filename)) {
 						filename = m.getUid() + extension;
 					}
 
@@ -169,7 +169,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 				logger.error("Exception", e);
 			}
 
-			if (!TestUtil.empty(filename)) {
+			if (!TestUtil.isEmptyOrNull(filename)) {
 				messageLine += " <" + filename + ">";
 			}
 
@@ -179,7 +179,7 @@ public class BackupChatServiceImpl implements BackupChatService {
 							DateUtils.FORMAT_SHOW_DATE |
 							DateUtils.FORMAT_NUMERIC_DATE |
 							DateUtils.FORMAT_SHOW_TIME);
-			if (!TestUtil.empty(messageLine)) {
+			if (!TestUtil.isEmptyOrNull(messageLine)) {
 				messageBody.append("[");
 				messageBody.append(messageDate);
 				messageBody.append("] ");

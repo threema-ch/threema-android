@@ -21,7 +21,6 @@
 
 package ch.threema.app.voip.services;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.SystemClock;
@@ -40,6 +39,7 @@ import java.util.function.BiFunction;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
@@ -84,7 +84,6 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class VoipStateServiceTest {
 	// Mocks
 	private Context mockContext;
-	private NotificationManager mockNotificationManager;
 	private AudioManager mockAudioManager;
 	private ContactService mockContactService;
 	private ContactMessageReceiver contactMessageReceiver;
@@ -99,10 +98,7 @@ public class VoipStateServiceTest {
 	public void setUp() {
 		// Mock context
 		this.mockContext = PowerMockito.mock(Context.class);
-		this.mockNotificationManager = PowerMockito.mock(NotificationManager.class);
 		this.mockAudioManager = PowerMockito.mock(AudioManager.class);
-		when(this.mockContext.getSystemService(Context.NOTIFICATION_SERVICE))
-				.thenReturn(mockNotificationManager);
 		when(this.mockContext.getSystemService(Context.AUDIO_SERVICE))
 				.thenReturn(mockAudioManager);
 

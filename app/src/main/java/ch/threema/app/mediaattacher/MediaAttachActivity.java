@@ -21,11 +21,6 @@
 
 package ch.threema.app.mediaattacher;
 
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
-import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
-import static ch.threema.app.ThreemaApplication.getMessageDraft;
-import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
-
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -50,13 +45,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import org.slf4j.Logger;
@@ -65,6 +53,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
@@ -96,6 +91,12 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
+
+import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
+import static ch.threema.app.ThreemaApplication.getMessageDraft;
+import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 public class MediaAttachActivity extends MediaSelectionBaseActivity implements View.OnClickListener,
 	MediaAttachAdapter.ItemClickListener,
@@ -335,7 +336,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				}
 			}
 
-			if (count > SendMediaActivity.MAX_EDITABLE_IMAGES) {
+			if (count > SendMediaActivity.MAX_EDITABLE_FILES) {
 				editButton.setAlpha(0.2f);
 				editButton.setClickable(false);
 			} else {
@@ -443,7 +444,16 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+		boolean isPermissionGranted = false;
+		for (int i = 0; i < permissions.length; i++) {
+			if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+				isPermissionGranted = true;
+				break;
+			}
+		}
+
+		if (isPermissionGranted) {
 			switch (requestCode) {
 				case PERMISSION_REQUEST_ATTACH_CONTACT:
 					attachContact();
@@ -515,7 +525,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (resultCode == Activity.RESULT_OK) {
 			final String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
-			if (scanResult != null && scanResult.length() > 0) {
+			if (scanResult != null && !scanResult.isEmpty()) {
 				ListenerManager.qrCodeScanListener.handle(listener -> listener.onScanCompleted(scanResult));
 				finish();
 			}
@@ -571,7 +581,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	@UiThread
 	public void onEdit(final List<Uri> uriList, boolean asFiles) {
 		ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uriList, this, asFiles);
-		if (mediaItems.size() > 0) {
+		if (!mediaItems.isEmpty()) {
 			if (getMessageDraft(messageReceiver.getUniqueIdString()) != null) {
 				mediaItems.get(0).setCaption(getMessageDraft(messageReceiver.getUniqueIdString()));
 			}
@@ -598,7 +608,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 		}
 
 		List<MediaItem> mediaItems = MediaItem.getFromUris(list, this, false);
-		if (mediaItems.size() > 0) {
+		if (!mediaItems.isEmpty()) {
 			messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
 			finish();
 		}
@@ -688,15 +698,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 				poiName,
 				new SendAction.ActionHandler() {
 					@Override
-					public void onError(String errorMessage) { }
-
-					@Override
-					public void onWarning(String warning, boolean continueAction) { }
-
-					@Override
-					public void onProgress(int progress, int total) { }
-
-					@Override
 					public void onCompleted() {
 						finish();
 					}
@@ -753,8 +754,18 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 	}
 
 	private boolean validateSendingPermission() {
-		return this.messageReceiver != null
-			&& this.messageReceiver.validateSendingPermission(errorResId -> RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(errorResId))));
+        if (messageReceiver == null) {
+            return false;
+        }
+        @NonNull SendingPermissionValidationResult validationResult = this.messageReceiver.validateSendingPermission();
+        if (validationResult.isDenied()) {
+            @Nullable Integer errorStringRes = ((SendingPermissionValidationResult.Denied) validationResult).getErrorResId();
+            if (errorStringRes != null) {
+                RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showLongText(getString(errorStringRes)));
+            }
+            return false;
+        }
+        return true;
 	}
 	/* end section sending/attachment methods */
 

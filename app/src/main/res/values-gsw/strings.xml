@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontäkt</string>
     <string name="title_section1">Chats</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">Neue Kontakt</string>
     <string name="menu_done">Fertig</string>
     <string name="compose_message_and_enter">Nachricht iigeh</string>
+    <string name="title_job_title">Bruefsbezeichnig</string>
+    <string name="title_department">Abteilig</string>
     <string name="send">Abschicke</string>
     <string name="prefs_privacy">Privatsphäre</string>
     <string name="prefs_notifications">Tön und Benachrichtigunge</string>
@@ -49,7 +51,6 @@
     <string name="prefs_sum_notification_sound">System-Standard</string>
     <string name="prefs_vibrate">Vibriere</string>
     <string name="prefs_sum_vibrate">Bi iigehender Nachricht vibriere</string>
-    <string name="prefs_light">Benachrichtigungsliecht</string>
     <string name="prefs_sum_light">Wiiss</string>
     <string name="prefs_title_wallpaper">Hindergrundbild uswähle</string>
     <string name="prefs_sum_wallpaper">Bild fürde Hindergrund usläse</string>
@@ -235,14 +236,15 @@
     <string name="search_contact">Kontakt sueche</string>
     <string name="push_reset_title">Push-Token zruggsetze</string>
     <string name="push_reset_text">S’Push-Token isch zrugggsetzt worde</string>
-    <string name="emoji_things">Objekt</string>
-    <string name="emoji_traffic">Verchehr</string>
-    <string name="emoji_symbols">Symbol</string>
+    <string name="emoji_recent">Zletscht</string>
+    <string name="emoji_smileys">Smileys &amp; Emotione</string>
+    <string name="emoji_people">Mänsche &amp; Körper</string>
     <string name="emoji_nature">Natur</string>
     <string name="emoji_food">Ässe und Trinke</string>
-    <string name="emoji_recent">Zletscht</string>
-    <string name="emoji_emotions">Emotione</string>
-    <string name="emoji_activities">Aktivitäte</string>
+    <string name="emoji_travel">Reise &amp; Ort</string>
+    <string name="emoji_activity">Aktivitäte</string>
+    <string name="emoji_objects">Gägeständ</string>
+    <string name="emoji_symbols">Symbol</string>
     <string name="emoji_flags">Flagge</string>
     <string name="emoji_search">Emoji sueche</string>
     <string name="emoji_search_no_result">Kei Suechergäbnis</string>
@@ -298,7 +300,7 @@
     <string name="state_read">gläse</string>
     <string name="state_ack">bestätigt</string>
     <string name="state_dec">abglehnt</string>
-    <string name="state_delivered">übercho</string>
+    <string name="state_delivered">zuegstellt</string>
     <string name="state_sending">wird gschickt</string>
     <string name="state_pending">usstehend</string>
     <string name="state_failed">fehlgschlage</string>
@@ -429,8 +431,6 @@
     <string name="contact_not_found">Kontakt nöd gfunde</string>
     <string name="contact_now_blocked">Kontakt blockiert</string>
     <string name="contact_now_unblocked">Kontakt deblockiert</string>
-    <string name="not_enough_disk_space_title">Zwenig Speicherplatz</string>
-    <string name="not_enough_disk_space_text">Es werded mindestens %1$s benötigt, zum die Nachricht z’empfange</string>
     <string name="sending_images">Bilder schicke</string>
     <string name="share_conversation_body">Sie bruuched es moderns ZIP-Tool mit AES-Unterstützig, zum die Datei ufzmache, z.B. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">De Chat wird als verschlüssleti ZIP-Datei verschickt. Bitte wähled Sie es Passwort:</string>
@@ -460,6 +460,8 @@
     <string name="ballot_wizard0_explain">Erstelled Sie schnell und eifach e Umfrag direkt in Threema. Veriibared Sie en Termin oder mached Sie e Umfrag under Ihrne Fründe.</string>
     <string name="ballot_add_choices">Antwortmöglichkeite iigeh</string>
     <string name="blocked_cannot_send">Sie chönd kei Nachrichte a blockierti Kontäkt schicke</string>
+    <string name="invalid_some_cannot_send">Es paar vode Empfänger chönd nöd usgwählt werde.</string>
+    <string name="invalid_all_cannot_send">Die Empfänger chönd nöd usgwählt werde.</string>
     <string name="really_block_contact">Sie werded kei Nachrichte vo dem Kontakt meh übercho. Wiitermache?</string>
     <string name="ballot_result_final">Endresultat</string>
     <string name="invalid_cannot_send">Sie chönd kei Nachrichte anen ungültige Kontakt schicke</string>
@@ -622,6 +624,7 @@
     <string name="new_wizard_linked_to">Verchnüpft mit</string>
     <string name="new_wizard_need_internet">E stabili Internet-Verbindig wird benötigt, zum Ihri Threema-ID erzüüge z’chöne. Bitte versueched Sie’s nomal.</string>
     <string name="new_wizard_more_information">Meh Informatione</string>
+    <string name="message_details_message_id_copied">Nachrichte-ID id Zwüscheablag kopiert</string>
     <string name="contact_details_id_copied">ID isch id Zwüscheablag kopiert worde.</string>
     <string name="contact_details_nickname_copied">Nickname isch id Zwüscheablag kopiert worde.</string>
     <string name="new_wizard_use_id_as_nickname">Wänd Sie Ihri Threema-ID als Nickname bruuche?</string>
@@ -660,7 +663,6 @@
     <string name="error_out_of_memory">Zwenig freie Speicher, zum die Aktion durezfüehre</string>
     <string name="configure">Konfiguriere</string>
     <string name="file_is_not_audio">Kei Audio-Datei</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Es paar Iistellige sind dur de Administator deaktiviert worde</string>
     <string name="select_all">All uswähle</string>
     <string name="deleting_messages">Nachrichte werded glöscht</string>
@@ -743,14 +745,15 @@
     <string name="edit_message">Nachricht bearbeite</string>
     <string name="edited">Bearbeitet</string>
     <string name="confirm_edit_desc">Bearbeitig bestätige</string>
+    <string name="edit_history">Bearbeitigsverlauf</string>
     <string name="discard_changes">Wänd Sie d’Änderige verwerfe?</string>
     <string name="prefs_title_network">Netzwerch</string>
     <string name="prefs_title_ipv6_preferred">IPv6 für Nachrichte</string>
     <string name="prefs_ipv6_preferred_off">Nur IPv4-Verbindige bruuche</string>
     <string name="prefs_ipv6_preferred_on">IPv6 bevorzuge</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 für Arüef und Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 für Threema-Arüef und Threema Web zuelaa</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Kei IPv6 für Threema-Arüef und Threema Web bruuche</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">IPv6 für Threema-Aarüef und d’Desktop-App bzw. de Web-Client zuelaa.</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Kei IPv6 für Threema-Aarüef und d’Desktop-App bzw. de Web-Client zuelaa</string>
     <string name="ipv6_requires_restart">Die Änderig erforderet en Neustart vode App.</string>
     <string name="ipv6_restart_now">Jetzt neustarte</string>
     <string name="on_cap">Iigschalte</string>
@@ -1017,10 +1020,9 @@
     <string name="delete_for_all">Für all lösche</string>
     <string name="message_was_deleted">Die Nachricht isch glöscht worde</string>
     <string name="continue_recording">Wiiter ufneh</string>
-    <string name="whatsnew_title">Neui Funktione in %1$s 5.2</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Sterndli-Nachrichte: Markiered Sie wichtigi Nachrichte dur langs Tippe miteme Sterndli, demit Sie sie spöter eifach wiederfinded.</p>
-<p>Automatischs Lösche: Lönd Sie Ihri Chats nacheme wählbare Ziitruum automatisch ufruume. Die automatisch Löschfunktion für Nachrichte laht sich im Speichermanagement aktiviere.</p>
-<p>Zahlriichi wiiteri Verbesserige und Optimierige.</p>]]></string>
+    <string name="whatsnew_title">Was gits Neus in %1$s %2$s?</string>
+    <string name="whatsnew_headline"><![CDATA[<p>Zum d’Benachrichtigunge besser aazeige z’chöne, isch ihri Handhabig im Hindergrund überarbeitet worde. Wenn bi Chats individuelli Benachrichtigungsiistellige aktiviert gsi sind, müend die nomal neu vorgnoh werde.</p>
+        ]]></string>
     <string name="tap_to_start">Tipped Sie da, zum %s jetzt z’starte.</string>
     <string name="two_years">2 Jahr</string>
     <string name="invalid_backup_path">Ungültige Backup-Pfad</string>
@@ -1143,14 +1145,12 @@
     <string name="only_images_or_videos">Nur Bilder und Videos chönd usgwählt werde</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">Uf dem Grät sind kei Medie gfunde worde</string>
-    <string name="enable_formatting">Formatierig aktiviere</string>
     <string name="original_file_no_longer_avilable">Kei Zuegriff meh uf d’Original-Datei. Bitte schicked Sie die Nachricht nomal.</string>
     <string name="state_transcoding">wird transcodiert</string>
     <string name="importing_files">Dateie werded importiert</string>
     <string name="tooltip_image_resolution_hint">Da tippe, zum d’Bilduflösig indivduell aazpasse.</string>
     <string name="ballot_created_successfully">D’Umfrag isch erfolgriich erstellt worde.</string>
     <string name="file_size">Dateigrössi</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Im Chat aazeige</string>
     <string name="group_create_no_members">Sind Sie sicher, dass Sie e leeri Gruppe erstelle wänd?</string>
@@ -1292,7 +1292,9 @@
     <string name="group_request_already_sent_title">Gruppeaafrag scho gschickt</string>
     <string name="qr_scanner_id_hint">Scanned Sie de QR-Code vomene andere Kontakt, zum ihn z’verifiziere. De QR-Code cha dur Tippe ufs Profilbild obe links im Threema-Hauptbildschirm aazeigt werde.</string>
     <string name="enable_storage_access_for_media">Aktiviered Sie de Speicherzuegriff, zum Bilder und Videos uf Ihrem Grät z’gseh</string>
+    <string name="select_storage_access_for_media_is_granted">Sie händ Zuegriff uf e Uuswahl a Fotis und Videos geh.</string>
     <string name="take_me_there">Jetzt aktiviere…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Verwalte</string>
     <string name="notification_channel_group_join_request">Benachrichtigunge für Gruppeaafrage</string>
     <string name="reset_default_group_link_title">Zruggsetze Info</string>
     <string name="reset_default_group_link_desc">De vorher teilti Link isch somit ungültig, und Aafrage über de alt Link werded automatisch abglehnt.</string>
@@ -1357,7 +1359,6 @@
     <string name="prefs_title_use_system_ringtone">Systemton bruuche</string>
     <string name="organization_type">Organisation</string>
     <string name="permission_bluetooth_connect_required">Erteiled Sie d’Berächtigung «Geräte in der Nähe», zum verbundeni Bluetooth-Grät z’finde</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push isch aktiviert. Web- und Desktop-Sitzige müend drum manuell gstartet werde.</string>
     <string name="tooltip_multiple_recipients_title">Mehreri Empfänger</string>
     <string name="tooltip_multiple_recipients_text">Lang tippe, zum mehreri Empfänger z’wähle und allne die gliich Nachricht z’schicke.</string>
     <string name="synchronizing">Synchronisation lauft…</string>
@@ -1531,8 +1532,6 @@
     <string name="problemsolver_to_settings">Zude Iistellige</string>
     <string name="prefs_advanced_options">Erwiitereti Optione</string>
     <string name="push_service">Push-Dienst</string>
-    <string name="zoom_out">Usezoome</string>
-    <string name="zoom_in">Inezoome</string>
     <string name="edit_and_send">Bearb. &amp; schicke</string>
     <string name="media_gallery_animated_webps">Animierti WebPs</string>
     <string name="unsupported_image_type">Nöd understützte Bildtyp: %s</string>
@@ -1541,7 +1540,12 @@
     <string name="edit_message_not_supported_for_contact">D’Nachricht cha nöd bearbeitet werde, wil d’App-Version vom Empfänger die Funktion nöd understützt.</string>
     <string name="edit_message_not_supported_for_all_group_members">Di folgende Gruppemitglieder werded Ihri Änderige nöd gseh: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">D’Nachricht cha nöd bearbeitet werde, wil keis Gruppemitglied en App-Version hät, wo die Funktion understützt.</string>
-    <string name="delete_message_not_supported_for_all_group_members">Die Nachricht wird bi folgende Gruppemitglieder nöd glöscht: %1$s</string>
+    <string name="prefs_notification_settings">Benachrichtigungsiistellige</string>
+    <string name="prefs_notification_settings_summary">Ton und Vibration im Systemdialog aapasse</string>
+    <string name="new_messages">Neui Nachrichte</string>
+    <string name="new_group_messages">Neui Gruppe-Nachrichte</string>
+    <string name="individual_notification_settings">Individuelli Benachrichtigungsiistellige</string>
+    <string name="delete_message_not_supported_for_all_group_members">Bi folgende Gruppemitglieder wird d’Nachricht nöd glöscht: %1$s</string>
     <string name="work_intro_more_link_text">Meh über Threema Work erfahre</string>
     <string name="work_intro_subtitle">De sicheri Business-Messenger\nfür Undernehme.</string>
     <string name="work_intro_login">Aamäldig %1$s</string>
@@ -1549,86 +1553,125 @@
     <string name="consumer_notice_playstore_link_description">Threema im Play Store</string>
     <string name="consumer_notice_appgallery_link_description">Threema ide AppGallery</string>
     <string name="consumer_notice_subtitle">Für di privat Nutzig</string>
+    <string name="individual_notification_settings_warn">Für jede Chat mit individuelle Benachrichtigungsiistellige wird en eigene Benachrichtigungskanal erstellt, wo uslöst, dass de Name vom Chat ide Gräteiistellige sichtbar isch, au wenn d’App gsperrt isch. Trotzdem wiitermache?</string>
+    <string name="incoming_calls">Iigehendi Aarüef</string>
+    <string name="group_chats">Gruppechats</string>
+    <string name="edit_history_file_no_caption">Kei Bildunderschrift</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">Nachricht bestätigt</string>
+    <string name="cd_dec_icon">Nachricht abglehnt</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">vo %d Gruppemitglieder</string>
+    <string name="cd_edited">d’Nachricht isch bearbeitet worde</string>
+    <string name="cd_created_at">erstellt am %s</string>
+    <string name="cd_edited_at">bearbeitet am %s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. Bearbeitig im Verlauf</string>
+    <string name="cd_message_details_container">Nachrichtedetails</string>
+    <string name="cd_enable_formatting">Formatierig aktiviere</string>
+    <string name="cd_message">Nachricht</string>
     <plurals name="contacts_counter_label">
+        <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>
     </plurals>
     <plurals name="really_delete_thread_message">
+        <item quantity="one">Wänd Sie würklich %d Chat lösche?</item>
         <item quantity="other">Wänd Sie würklich %d Chats lösche?</item>
     </plurals>
     <plurals name="sending_message_failed">
+        <item quantity="one">%1$d Nachricht hät nöd chöne gschickt werde</item>
         <item quantity="other">%1$d Nachrichte händ nöd chöne gschickt werde</item>
     </plurals>
     <plurals name="selection_counter_label">
+        <item quantity="one">%d Bild usgwählt</item>
         <item quantity="other">%d Bilder usgwählt</item>
     </plurals>
     <plurals name="message_copied">
+        <item quantity="one">Nachricht kopiert</item>
         <item quantity="other">Nachrichte kopiert</item>
     </plurals>
     <plurals name="new_messages">
+        <item quantity="one">%d neui Nachricht</item>
         <item quantity="other">%d neui Nachrichte</item>
     </plurals>
     <plurals name="unread_messages">
+        <item quantity="one">%d ungläseni Nachricht</item>
         <item quantity="other">%d ungläseni Nachrichte</item>
     </plurals>
     <plurals name="file_saved">
+        <item quantity="one">%d Datei erfolgriich gspeicheret.</item>
         <item quantity="other">%d Dateie erfolgriich gspeicheret.</item>
     </plurals>
     <plurals name="saving_media">
+        <item quantity="one">%d Medium wird gspeicheret</item>
         <item quantity="other">%d Medie werded gspeicheret</item>
     </plurals>
     <plurals name="ballot_really_delete">
+        <item quantity="one">Umfrag lösche</item>
         <item quantity="other">Umfrage lösche</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
+        <item quantity="one">Wänd Sie würklich %1$d Umfrag lösche? D’Stimme chönd nüme wiederhergstellt werde.</item>
         <item quantity="other">Wänd Sie würklich %1$d Umfrage lösche? D’Stimme chönd nüme wiederhergstellt werde.</item>
     </plurals>
     <plurals name="media_files_deleted">
+        <item quantity="one">%d Mediedatei glöscht</item>
         <item quantity="other">%d Mediedateie glöscht</item>
     </plurals>
     <plurals name="message_deleted">
+        <item quantity="one">%d Nachricht glöscht</item>
         <item quantity="other">%d Nachrichte glöscht</item>
     </plurals>
     <plurals name="notifications_for_x_hours">
+        <item quantity="one">Für %d Stund</item>
         <item quantity="other">Für %d Stunde</item>
     </plurals>
     <plurals name="really_delete_contacts_message">
+        <item quantity="one">Wänd Sie würklich %1$d Kontakt und all dezueghörige Chats lösche?</item>
         <item quantity="other">Wänd Sie würklich %1$d Kontäkt und all dezueghörige Chats lösche?</item>
     </plurals>
     <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d Kontakt hät nöd chöne glöscht werde, wil er no Mitglied vonere Gruppe isch.</item>
         <item quantity="other">%d Kontäkt händ nöd chöne glöscht werde, wil sie no Mitglied vonere Gruppe sind.</item>
     </plurals>
     <plurals name="message_archived">
+        <item quantity="one">%d Chat archiviert</item>
         <item quantity="other">%d Chats archiviert</item>
     </plurals>
     <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d neui Nachricht i %2$d Chats</item>
         <item quantity="other">%1$d neui Nachrichte i %2$d Chats</item>
     </plurals>
     <plurals name="webclient_running_sessions">
+        <item quantity="one">%d Sitzig lauft</item>
         <item quantity="other">%d Sitzige laufed</item>
     </plurals>
     <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Wänd Sie würklich %d Gruppeafrag lösche?
+Beachted Sie, dass d’Afrag nöd widerruefe wird und Sie möglicherwiis no akzeptiert oder aagforderet werded, wenn d’Afrag nonig beantwortet worde isch.</item>
         <item quantity="other">Wänd Sie würklich %d Gruppeafrage lösche?
 Beachted Sie, dass d’Afrage nöd widerruefe werded und Sie möglicherwiis no akzeptiert oder aagforderet werded, wenn d’Afrage nonig beantwortet worde sind.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
-        <item quantity="other">Wänd Sie würklich %d Gruppeafrage lösche? Sie chönd nöd uf Afrage antworte, sobald sie glöscht worde sind.</item>
+        <item quantity="one">Wänd Sie würklich %d Gruppeafrag lösche? Sie chönd nüme uf d’Afrag antworte, wenn sie glöscht worde isch.</item>
+        <item quantity="other">Wänd Sie würklich %d Gruppeafrage lösche? Sie chönd nüme uf Afrage antworte, wenn sie glöscht worde sind.</item>
     </plurals>
     <plurals name="really_delete_group_link">
+        <item quantity="one">Wänd Sie würklich %d Gruppe-Link lösche? Persone werded nüme ide Laag sii, Afrage z’schicke. Afrage, wo Sie chürzlich übercho händ, chönd immerno akzeptiert oder zrugggwise werde.</item>
         <item quantity="other">Wänd Sie würklich %d Gruppe-Links lösche? Persone werded nüme ide Laag sii, Afrage z’schicke. Afrage, wo Sie chürzlich übercho händ, chönd immerno akzeptiert oder zrugggwise werde.</item>
     </plurals>
     <plurals name="chat_deleted">
+        <item quantity="one">%d Chat glöscht.</item>
         <item quantity="other">%d Chats glöscht.</item>
     </plurals>
     <plurals name="num_archived_chats">
+        <item quantity="one">%d archivierte Chat</item>
         <item quantity="other">%d archivierti Chats</item>
     </plurals>
     <plurals name="forward_security_messages_skipped">
+        <item quantity="one">%d Nachricht isch sit de letschte Nachricht verlore gange.</item>
         <item quantity="other">%d Nachrichte sind sit de letschte Nachricht verlore gange.</item>
     </plurals>
-    <plurals name="delete_messages">
-        <item quantity="other">%d Nachrichte lösche?</item>
-    </plurals>
     <plurals name="number_of_group_members">
+        <item quantity="one">%d Gruppemitglied</item>
         <item quantity="other">%d Gruppemitglieder</item>
     </plurals>
 </resources>

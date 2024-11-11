@@ -11,8 +11,8 @@ buildscript {
         flatDir { dirs 'app/libs' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.0'
-        classpath 'org.owasp:dependency-check-gradle:9.0.2'
+        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath 'org.owasp:dependency-check-gradle:10.0.4'
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
@@ -64,7 +64,7 @@ allprojects {
 
         // NVD API config. The key is not very secret, but please don't mis-use it.
         nvd {
-            apiKey = "b3be22b7-f7e3-47ca-9b9f-3725c75a1aa4"
+            apiKey = "fc7aab31-d936-4807-b43b-e061c84a12dd"
             validForHours = 6
         }
     }

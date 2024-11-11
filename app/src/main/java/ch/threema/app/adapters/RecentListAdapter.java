@@ -231,7 +231,7 @@ public class RecentListAdapter extends FilterableListAdapter {
 		protected void publishResults(CharSequence constraint, FilterResults results) {
 			values = (List<ConversationModel>) results.values;
 			if (filterResultsListener != null) {
-				filterResultsListener.onResultsAvailable(TestUtil.empty(constraint) ? 0 : results.count);
+				filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
 			}
 			notifyDataSetChanged();
 		}

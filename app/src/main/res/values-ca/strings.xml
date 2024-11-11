@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Contactes</string>
     <string name="title_section1">Xats</string>
@@ -50,7 +50,6 @@ quan arribi el primer missatge.</string>
     <string name="prefs_sum_notification_sound">Predeterminat del sistema</string>
     <string name="prefs_vibrate">Vibrar</string>
     <string name="prefs_sum_vibrate">Vibrar quan es rebi un missatge</string>
-    <string name="prefs_light">Llum de notificació</string>
     <string name="prefs_sum_light">Blanca</string>
     <string name="prefs_title_wallpaper">Seleccionar fons de pantalla</string>
     <string name="prefs_sum_wallpaper">Seleccionar imatge per al fons</string>
@@ -236,14 +235,10 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="search_contact">Cercar contacte</string>
     <string name="push_reset_title">Restablir testimoni push</string>
     <string name="push_reset_text">El testimoni push s\'ha restablert</string>
-    <string name="emoji_things">Objectes</string>
-    <string name="emoji_traffic">Viatges i Llocs</string>
-    <string name="emoji_symbols">Símbols</string>
+    <string name="emoji_recent">Recents</string>
     <string name="emoji_nature">Animals i Natura</string>
     <string name="emoji_food">Menjar i Beure</string>
-    <string name="emoji_recent">Recents</string>
-    <string name="emoji_emotions">Somriures i Persones</string>
-    <string name="emoji_activities">Activitats</string>
+    <string name="emoji_symbols">Símbols</string>
     <string name="emoji_flags">Banderes</string>
     <string name="title_lock">Bloquejar</string>
     <string name="new_messages_locked">Nous missatges disponibles</string>
@@ -426,8 +421,6 @@ de contacte</string>
     <string name="contact_not_found">No hi ha aquest contacte</string>
     <string name="contact_now_blocked">Contacte bloquejat</string>
     <string name="contact_now_unblocked">Contacte desbloquejat</string>
-    <string name="not_enough_disk_space_title">No hi ha prou emmagatzematge</string>
-    <string name="not_enough_disk_space_text">Allibereu almenys %1$s per rebre el missatge</string>
     <string name="sending_images">Enviant imatges</string>
     <string name="share_conversation_body">Es necessita una eina ZIP moderna amb suport AES per descomprimir el fitxer, p. ex. http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">El xat s\'enviarà com a fitxer zip xifrat. Escolliu una contrasenya:</string>
@@ -656,7 +649,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="error_out_of_memory">No hi ha prou memòria per completar aquesta acció</string>
     <string name="configure">Configurar</string>
     <string name="file_is_not_audio">No és un fitxer d\'àudio</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Algunes configuracions s\'han desactivat per la política del dispositiu</string>
     <string name="select_all">Seleccionar tots</string>
     <string name="deleting_messages">Eliminant missatges</string>
@@ -742,8 +734,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_ipv6_preferred_off">Usar només connexions IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferència per a connexions IPv6 sobre IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 per trucades i web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Permetre IPv6 per Threema Calls i Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">No permetre IPv6 per Threema Calls i Threema Web</string>
     <string name="ipv6_requires_restart">Per aplicar aquesta configuració, l\'aplicació necessita reiniciar-se.</string>
     <string name="ipv6_restart_now">Reiniciar ara</string>
     <string name="on_cap">Activat</string>
@@ -1122,14 +1112,12 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="only_images_or_videos">Només es poden seleccionar imatges o vídeos</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">No s\'ha trobat multimèdia en aquest dispositiu</string>
-    <string name="enable_formatting">Activar el formateig</string>
     <string name="original_file_no_longer_avilable">El fitxer original ja no és accessible. Torneu a enviar el missatge.</string>
     <string name="state_transcoding">transcodificant</string>
     <string name="importing_files">Important fitxers</string>
     <string name="tooltip_image_resolution_hint">Toqueu aquí per ajustar la resolució de la imatge.</string>
     <string name="ballot_created_successfully">L\'enquesta s\'ha creat correctament.</string>
     <string name="file_size">Mida del fitxer</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Mostrar al xat</string>
     <string name="group_create_no_members">Segur que voleu crear un grup buit?</string>
@@ -1324,6 +1312,7 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="header_nickname_entry">"Àlies"</string>
     <string name="organization_type">Organització</string>
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
         <item quantity="other">%d contactes</item>
@@ -1339,9 +1328,5 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <plurals name="selection_counter_label">
         <item quantity="one">%d imatge seleccionada</item>
         <item quantity="other">%d imatges seleccionades</item>
-    </plurals>
-    <plurals name="saving_media">
-        <item quantity="one">Desant multimèdia</item>
-        <item quantity="other"></item>
     </plurals>
 </resources>

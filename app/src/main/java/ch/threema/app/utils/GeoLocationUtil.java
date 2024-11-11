@@ -195,11 +195,11 @@ public class GeoLocationUtil {
 	public static Uri getLocationUri(double latitude, double longitude, String locationName, String address) {
 		String geoString = "geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude;
 
-		if (TestUtil.empty(locationName)) {
+		if (TestUtil.isEmptyOrNull(locationName)) {
 			locationName = address;
 		}
 
-		if (!TestUtil.empty(locationName)) {
+		if (!TestUtil.isEmptyOrNull(locationName)) {
 			try {
 				locationName = URLEncoder.encode(locationName, "utf-8");
 				return Uri.parse(geoString + "(" + locationName + ")");

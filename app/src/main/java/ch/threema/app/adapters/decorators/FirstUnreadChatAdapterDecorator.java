@@ -42,7 +42,7 @@ public class FirstUnreadChatAdapterDecorator extends ChatAdapterDecorator {
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		String s = ConfigUtils.getSafeQuantityString(getContext(), R.plurals.unread_messages, unreadMessagesCount, unreadMessagesCount);
 
-		if(this.showHide(holder.bodyTextView, !TestUtil.empty(s))) {
+		if(this.showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(s))) {
 			holder.bodyTextView.setText(s);
 		}
 	}

@@ -21,11 +21,9 @@
 
 package ch.threema.app.adapters.decorators;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -202,7 +200,7 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 								}
 							} else {
 								holder.controller.setVisibility(View.GONE);
-								if (!TestUtil.empty(message)) {
+								if (!TestUtil.isEmptyOrNull(message)) {
 									Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 								}
 							}
@@ -230,7 +228,7 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 								holder.controller.setPlay();
 							} else {
 								holder.controller.setReadyToDownload();
-								if (!TestUtil.empty(message)) {
+								if (!TestUtil.isEmptyOrNull(message)) {
 									Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
 								}
 							}

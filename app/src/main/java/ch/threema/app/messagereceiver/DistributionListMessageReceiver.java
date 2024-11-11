@@ -260,9 +260,12 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		return false;
 	}
 
+    @NonNull
 	@Override
-	public boolean validateSendingPermission(OnSendingPermissionDenied onSendingPermissionDenied) {
-		return this.distributionListModel != null;
+	public SendingPermissionValidationResult validateSendingPermission() {
+		return this.distributionListModel != null
+            ? SendingPermissionValidationResult.Valid.INSTANCE
+            : new SendingPermissionValidationResult.Denied();
 	}
 
 	@Override

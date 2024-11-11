@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema hívás</string>
     <string name="voip_hangup">Letevés</string>
@@ -69,4 +69,5 @@
     <string name="voip_webrtc_debug_done">Kész. Ha hívással problémái vannak, kérjük, küldje el ezt az üzenetet a Threema ügyfélszolgálatának.</string>
     <string name="voip_webrtc_debug_copied">A szöveg a vágólapra lett másolva.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Másolás a vágólapra</string>
+    <!-- Group Calls -->
 </resources>

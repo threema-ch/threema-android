@@ -66,7 +66,7 @@ public class SettingsRateFragment extends ThreemaPreferenceFragment implements R
 
 	@Override
 	public void onYes(String tag, final int rating, final String text) {
-		if (rating >= 4 && shouldRedirectToGooglePlay(BuildFlavor.getLicenseType())) {
+		if (rating >= 4 && shouldRedirectToGooglePlay(BuildFlavor.getCurrent().getLicenseType())) {
 			GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.rate_title,
 					getString(R.string.rate_thank_you) + " " +
 							getString(R.string.rate_forward_to_play_store) ,

@@ -108,6 +108,7 @@ import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotUpdateResult;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.tasks.OutgoingGroupDeliveryReceiptMessageTask;
 import ch.threema.app.ui.MediaItem;
@@ -137,6 +138,7 @@ import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.crypto.SymmetricEncryptionService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.repositories.EditHistoryRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobUploader;
@@ -221,6 +223,9 @@ public class MessageServiceImpl implements MessageService {
 	private final IdListService blackListService;
 	private final SymmetricEncryptionService symmetricEncryptionService;
 
+    // Repositories
+    private final EditHistoryRepository editHistoryRepository;
+
 	// Caches
 	private final Collection<MessageModel> contactMessageCache;
 	private final Collection<GroupMessageModel> groupMessageCache;
@@ -243,7 +248,8 @@ public class MessageServiceImpl implements MessageService {
 	    ApiService apiService,
 	    DownloadService downloadService,
 	    DeadlineListService hiddenChatsListService,
-	    IdListService blackListService
+	    IdListService blackListService,
+        EditHistoryRepository editHistoryRepository
 	) {
 		this.context = context;
 		this.databaseServiceNew = databaseServiceNew;
@@ -264,7 +270,9 @@ public class MessageServiceImpl implements MessageService {
 		groupMessageCache = cacheService.getGroupMessageModelCache();
 		distributionListMessageCache = cacheService.getDistributionListMessageCache();
 
-		//init queue
+        this.editHistoryRepository = editHistoryRepository;
+
+		// init queue
 		messageSendingService = new MessageSendingServiceExponentialBackOff(new MessageSendingService.MessageSendingServiceState() {
 			@Override
 			public void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver) {
@@ -348,7 +356,7 @@ public class MessageServiceImpl implements MessageService {
 		model.setOutbox(isOutbox);
 		model.setGroupCallStatusData(data);
 		model.setSaved(true);
-		model.setIsStatusMessage(data.getStatus() != GroupCallStatusDataModel.STATUS_STARTED);
+		model.setIsStatusMessage(true);
 		model.setRead(data.getStatus() != GroupCallStatusDataModel.STATUS_STARTED);
 		receiver.saveLocalModel(model);
 		fireOnCreatedMessage(model);
@@ -475,8 +483,9 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void sendEditedMessageText(
-		@NonNull AbstractMessageModel message, // 1. Let `message` be the referred message.
+		@NonNull AbstractMessageModel message, // Let `message` be the referred message.
 		@NonNull String newText,
+		@NonNull Date editedAt,
 		@NonNull MessageReceiver receiver
 	) throws ThreemaException {
 		logger.debug("editText message = {}", message.getApiMessageId());
@@ -496,43 +505,46 @@ public class MessageServiceImpl implements MessageService {
 			return;
 		}
 
-		// 3. Let `created-at` be the current timestamp to be applied to the edit
-		//    message.
-		Date createdAt = new Date();
-		long deltaTime = createdAt.getTime() - message.getPostedAt().getTime();
-		// 2. If the referred message has been sent (`sent-at`) more than 6 hours ago,
-		//    prevent creation and abort these steps.
+		// Let `created-at` be the current timestamp to be applied to the edit
+		//  message.
+		long deltaTime = editedAt.getTime() - message.getPostedAt().getTime();
+		// If the referred message has been sent (`sent-at`) more than 6 hours ago,
+		//  prevent creation and abort these steps.
 		if (deltaTime > EditMessage.EDIT_MESSAGES_MAX_AGE) {
 			logger.error("Cannot edit message older than {}}ms", EditMessage.EDIT_MESSAGES_MAX_AGE);
 			return;
 		}
 
-		// 4. Edit `message` as defined by the associated _Edit applies to_ property and
-		//    add an indicator to `message`, informing the user that the message has
-		//    been edited by the user at `created-at`.
-		saveEditedMessageText(message, newText, createdAt);
-
 		if (receiver instanceof ContactMessageReceiver) {
 			((ContactMessageReceiver) receiver).sendEditMessage(
 				message.getId(),
 				trimmedNewText,
-				createdAt
+				editedAt
 			);
 		} else if (receiver instanceof GroupMessageReceiver) {
 			((GroupMessageReceiver) receiver).sendEditMessage(
 				message.getId(),
 				trimmedNewText,
-				createdAt
+				editedAt
 			);
 		} else {
 			throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
 		}
+
+        saveEditedMessageText(message, newText, editedAt);
 	}
 
 	@Override
 	public void saveEditedMessageText(@NonNull AbstractMessageModel message, String text, @Nullable Date editedAt) {
 		logger.info("Save edited message = {}", message.getApiMessageId());
 
+        if (editedAt != null) {
+            editHistoryRepository.createEntry(message);
+        }
+
+        // Edit `message` as defined by the associated _Edit applies to_ property and
+        //  add an indicator to `message`, informing the user that the message has
+        //  been edited by the user at `created-at`.
 		switch (message.getType()) {
 			case TEXT:
 				message.setBody(text);
@@ -556,7 +568,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void sendDeleteMessage(
-		@NonNull AbstractMessageModel message, // 1. Let `message` be the referred message.
+		@NonNull AbstractMessageModel message, // Let `message` be the referred message.
 		@NonNull MessageReceiver receiver
 	) throws Exception {
 		logger.debug("sendDeleteMessage message = {}", message.getApiMessageId());
@@ -582,7 +594,7 @@ public class MessageServiceImpl implements MessageService {
 
 		// 4. Replace `message` with a message informing the user that the message of
 		//    the user has been removed at `created-at`.
-		deleteMessageContents(message, createdAt);
+		deleteMessageContentsAndEditHistory(message, createdAt);
 
 		if (receiver instanceof ContactMessageReceiver) {
 			((ContactMessageReceiver) receiver).sendDeleteMessage(
@@ -600,7 +612,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void deleteMessageContents(@NonNull AbstractMessageModel message, Date deletedAt) {
+	public void deleteMessageContentsAndEditHistory(@NonNull AbstractMessageModel message, Date deletedAt) {
 		logger.info("deleteMessageContents = {}", message.getApiMessageId());
 
 		fileService.removeMessageFiles(message, true);
@@ -616,6 +628,11 @@ public class MessageServiceImpl implements MessageService {
 		message.setDeletedAt(deletedAt);
 
 		save(message);
+
+        // Delete the edit history. Note that the foreign key does not work in this case, as the
+        // original message entry is not removed from the database.
+        editHistoryRepository.deleteByMessageUid(message.getUid());
+
 		fireOnModifiedMessage(message);
 		fireOnMessageDeletedForAll(message);
 	}
@@ -1845,7 +1862,7 @@ public class MessageServiceImpl implements MessageService {
 			return null;
 		}
 
-		if (TestUtil.empty(fileData.getMimeType())) {
+		if (TestUtil.isEmptyOrNull(fileData.getMimeType())) {
 			fileData.setMimeType(MimeUtil.MIME_TYPE_DEFAULT);
 		}
 
@@ -2213,7 +2230,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		String address = message.getPoiAddress();
-		if (TestUtil.empty(address)) {
+		if (TestUtil.isEmptyOrNull(address)) {
 			try {
 				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
 			} catch (IOException e) {
@@ -2378,11 +2395,11 @@ public class MessageServiceImpl implements MessageService {
 				if (messageModel.getType() == MessageType.IMAGE) {
 					String caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_ARTIST);
 
-					if (TestUtil.empty(caption)) {
+					if (TestUtil.isEmptyOrNull(caption)) {
 						caption = originalImageExif.getUTF8StringAttribute(ExifInterface.TAG_USER_COMMENT);
 					}
 
-					if (!TestUtil.empty(caption)) {
+					if (!TestUtil.isEmptyOrNull(caption)) {
 						// strip trailing zero character from EXIF, if any
 						if (caption.charAt(caption.length() - 1) == '\u0000') {
 							caption = caption.substring(0, caption.length() - 1);
@@ -2455,7 +2472,7 @@ public class MessageServiceImpl implements MessageService {
 		databaseServiceNew.getMessageModelFactory().create(messageModel);
 
 		String address = message.getPoiAddress();
-		if (TestUtil.empty(address)) {
+		if (TestUtil.isEmptyOrNull(address)) {
 			try {
 				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
 			} catch (IOException e) {
@@ -2630,7 +2647,7 @@ public class MessageServiceImpl implements MessageService {
 				sortAscending));
 		}
 
-		if (messageModels.size() > 0) {
+		if (!messageModels.isEmpty()) {
 			if (sortAscending) {
 				Collections.sort(messageModels, (o1, o2) -> o1.getCreatedAt().compareTo(o2.getCreatedAt()));
 			} else {
@@ -2658,12 +2675,12 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	@Nullable
-	public MessageModel getContactMessageModel(final Integer id, boolean lazy) {
+	public MessageModel getContactMessageModel(final Integer id) {
 		MessageModel model;
 		synchronized (contactMessageCache) {
 			model = Functional.select(contactMessageCache, type -> type.getId() == id);
 		}
-		if (lazy && model == null) {
+		if (model == null) {
 			model = databaseServiceNew.getMessageModelFactory().getById(id);
 			if (model != null) {
 				synchronized (contactMessageCache) {
@@ -2705,11 +2722,11 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	@Nullable
-	public GroupMessageModel getGroupMessageModel(final Integer id, boolean lazy) {
+	public GroupMessageModel getGroupMessageModel(final Integer id) {
 		synchronized (groupMessageCache) {
 			GroupMessageModel model = Functional.select(groupMessageCache, type -> type.getId() == id);
 
-			if (lazy && model == null) {
+			if (model == null) {
 				model = databaseServiceNew.getGroupMessageModelFactory().getById(id);
 				if (model != null) {
 					groupMessageCache.add(model);
@@ -2746,7 +2763,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	@Nullable
-	public DistributionListMessageModel getDistributionListMessageModel(long id, boolean lazy) {
+	public DistributionListMessageModel getDistributionListMessageModel(long id) {
 		return databaseServiceNew.getDistributionListMessageModelFactory().getById(id);
 	}
 
@@ -2802,7 +2819,7 @@ public class MessageServiceImpl implements MessageService {
 				return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder));
 			case LOCATION:
 				String locationString = prefix + context.getResources().getString(R.string.location_placeholder);
-				if (!TestUtil.empty(messageModel.getLocationData().getPoi())) {
+				if (!TestUtil.isEmptyOrNull(messageModel.getLocationData().getPoi())) {
 					locationString += ": " + messageModel.getLocationData().getPoi();
 				}
 				return new MessageString(locationString);
@@ -2812,20 +2829,20 @@ public class MessageServiceImpl implements MessageService {
 				return new MessageString(messageString);
 			case FILE:
 				if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
-					if (TestUtil.empty(messageModel.getCaption())) {
+					if (TestUtil.isEmptyOrNull(messageModel.getCaption())) {
 						return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder));
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
 				} else if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType())) {
-					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
+					if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
 						String durationString = messageModel.getFileData().getDurationString();
 						return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + " (" + durationString + ")");
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
 				} else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
-					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
+					if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
 						String durationString = messageModel.getFileData().getDurationString();
 						if ("00:00".equals(durationString)) {
 							return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder));
@@ -2836,14 +2853,14 @@ public class MessageServiceImpl implements MessageService {
 						return new MessageString(prefix + context.getResources().getString(R.string.audio_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
 				} else {
-					if (TestUtil.empty(messageModel.getFileData().getCaption())) {
+					if (TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption())) {
 						return new MessageString(prefix + context.getResources().getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getFileName());
 					} else {
 						return new MessageString(prefix + context.getResources().getString(R.string.file_placeholder) + ": " + messageModel.getFileData().getCaption());
 					}
 				}
 			case IMAGE:
-				if (TestUtil.empty(messageModel.getCaption())) {
+				if (TestUtil.isEmptyOrNull(messageModel.getCaption())) {
 					return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder));
 				} else {
 					return new MessageString(prefix + context.getResources().getString(R.string.image_placeholder) + ": " + messageModel.getCaption());
@@ -3249,7 +3266,7 @@ public class MessageServiceImpl implements MessageService {
 					if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(shareFileUri.getScheme())) {
 						intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 					}
-					if (!TestUtil.empty(caption)) {
+					if (!TestUtil.isEmptyOrNull(caption)) {
 						intent.putExtra(Intent.EXTRA_TEXT, caption);
 					}
 				} else {
@@ -3322,7 +3339,7 @@ public class MessageServiceImpl implements MessageService {
 			if (model.getType() == MessageType.LOCATION) {
 				Uri locationUri = GeoLocationUtil.getLocationUri(model);
 
-				if (!TestUtil.empty(model.getLocationData().getAddress())) {
+				if (!TestUtil.isEmptyOrNull(model.getLocationData().getAddress())) {
 					text = model.getLocationData().getAddress() + " - ";
 				}
 				text += locationUri.toString();
@@ -3403,13 +3420,13 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public AbstractMessageModel getMessageModelFromId(int id, String type) {
-		if (id != 0 && !TestUtil.empty(type)) {
+		if (id != 0 && !TestUtil.isEmptyOrNull(type)) {
 			if (type.equals(MessageModel.class.toString())) {
-				return getContactMessageModel(id, true);
+				return getContactMessageModel(id);
 			} else if (type.equals(GroupMessageModel.class.toString())) {
-				return getGroupMessageModel(id, true);
+				return getGroupMessageModel(id);
 			} else if (type.equals(DistributionListMessageModel.class.toString())) {
-				return getDistributionListMessageModel(id, true);
+				return getDistributionListMessageModel(id);
 			}
 		}
 		return null;
@@ -3728,7 +3745,7 @@ public class MessageServiceImpl implements MessageService {
 			logger.info("sendMedia: Now sending item of type {}", mediaItem.getType());
 			if (TYPE_TEXT == mediaItem.getType()) {
 				String text = mediaItem.getCaption();
-				if (!TestUtil.empty(text)) {
+				if (!TestUtil.isEmptyOrNull(text)) {
 					for (MessageReceiver messageReceiver : resolvedReceivers) {
 						try {
 							successfulMessageModel = sendText(text, messageReceiver);
@@ -4328,13 +4345,13 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
-			if (TestUtil.empty(filename)) {
+			if (TestUtil.isEmptyOrNull(filename)) {
 				File file = new File(mediaItem.getUri().getPath());
 
 				filename = file.getName();
 			}
 		} else {
-			if (TestUtil.empty(filename) || TestUtil.empty(mimeType)) {
+			if (TestUtil.isEmptyOrNull(filename) || TestUtil.isEmptyOrNull(mimeType)) {
 				String[] proj = {
 					DocumentsContract.Document.COLUMN_DISPLAY_NAME,
 					DocumentsContract.Document.COLUMN_MIME_TYPE
@@ -4342,11 +4359,11 @@ public class MessageServiceImpl implements MessageService {
 
 				try (Cursor cursor = contentResolver.query(mediaItem.getUri(), proj, null, null, null)) {
 					if (cursor != null && cursor.moveToFirst()) {
-						if (TestUtil.empty(filename)) {
+						if (TestUtil.isEmptyOrNull(filename)) {
 							filename = cursor.getString(
 								cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
 						}
-						if (TestUtil.empty(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
+						if (TestUtil.isEmptyOrNull(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
 							mimeType = cursor.getString(
 								cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE));
 						}
@@ -4357,7 +4374,7 @@ public class MessageServiceImpl implements MessageService {
 			}
 		}
 
-		if (TestUtil.empty(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
+		if (TestUtil.isEmptyOrNull(mimeType) || MimeUtil.MIME_TYPE_DEFAULT.equals(mimeType)) {
 			mimeType = FileUtil.getMimeTypeFromUri(context, mediaItem.getUri());
 		}
 
@@ -4409,7 +4426,7 @@ public class MessageServiceImpl implements MessageService {
 				break;
 		}
 
-		if (TestUtil.empty(filename)) {
+		if (TestUtil.isEmptyOrNull(filename)) {
 			filename = FileUtil.getDefaultFilename(mimeType);
 		}
 

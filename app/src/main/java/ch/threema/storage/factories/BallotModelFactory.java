@@ -116,26 +116,26 @@ public class BallotModelFactory extends ModelFactory {
 							.setLastViewedAt(cursorHelper.getDate(BallotModel.COLUMN_LAST_VIEWED_AT));
 
 					String stateString = cursorHelper.getString(BallotModel.COLUMN_STATE);
-					if (!TestUtil.empty(stateString)) {
+					if (!TestUtil.isEmptyOrNull(stateString)) {
 						c.setState(BallotModel.State.valueOf(stateString));
 					}
 					String assessment = cursorHelper.getString(BallotModel.COLUMN_ASSESSMENT);
-					if (!TestUtil.empty(assessment)) {
+					if (!TestUtil.isEmptyOrNull(assessment)) {
 						c.setAssessment(BallotModel.Assessment.valueOf(assessment));
 					}
 
 					String type = cursorHelper.getString(BallotModel.COLUMN_TYPE);
-					if (!TestUtil.empty(type)) {
+					if (!TestUtil.isEmptyOrNull(type)) {
 						c.setType(BallotModel.Type.valueOf(type));
 					}
 
 					String choiceType = cursorHelper.getString(BallotModel.COLUMN_CHOICE_TYPE);
-					if (!TestUtil.empty(choiceType)) {
+					if (!TestUtil.isEmptyOrNull(choiceType)) {
 						c.setChoiceType(BallotModel.ChoiceType.valueOf(choiceType));
 					}
 
 					String displayType = cursorHelper.getString(BallotModel.COLUMN_DISPLAY_TYPE);
-					if (!TestUtil.empty(displayType)) {
+					if (!TestUtil.isEmptyOrNull(displayType)) {
 						c.setDisplayType(BallotModel.DisplayType.valueOf(displayType));
 					}
 

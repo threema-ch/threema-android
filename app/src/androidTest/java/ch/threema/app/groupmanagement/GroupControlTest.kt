@@ -198,7 +198,13 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
         val (message, identityStore) = getSenderNotMemberMessage()
         setupAndProcessMessage(message, identityStore)
 
-        // Check that no message is sent
+        // Check that a group sync request has been sent to the creator of the group
+        val firstMessage = sentMessagesInsideTask.poll() as GroupSyncRequestMessage
+        assertEquals(message.groupCreator, firstMessage.toIdentity)
+        assertEquals(myContact.identity, firstMessage.fromIdentity)
+        assertEquals(message.apiGroupId, firstMessage.apiGroupId)
+        assertEquals(message.groupCreator, firstMessage.groupCreator)
+
         assertTrue(sentMessagesInsideTask.isEmpty())
         assertTrue(sentMessagesNewTask.isEmpty())
     }
@@ -266,8 +272,8 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
      */
     private fun getSenderNotMemberOfMyGroupMessage() = createMessageForGroup().apply {
         enrich(myGroup)
-        fromIdentity = contactB.identity
-    } to contactB.identityStore
+        fromIdentity = contactC.identity
+    } to contactC.identityStore
 
     /**
      * Get a group message from a sender that is no member of the group.

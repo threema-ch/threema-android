@@ -150,7 +150,7 @@ public abstract class ThreemaActivity extends ThreemaAppCompatActivity {
 	protected String getMyIdentity() {
 		if(this.myIdentity == null) {
 			UserService userService = ThreemaApplication.getServiceManager().getUserService();
-			if(userService != null && !TestUtil.empty(userService.getIdentity())) {
+			if(userService != null && !TestUtil.isEmptyOrNull(userService.getIdentity())) {
 				this.myIdentity = userService.getIdentity();
 			}
 		}

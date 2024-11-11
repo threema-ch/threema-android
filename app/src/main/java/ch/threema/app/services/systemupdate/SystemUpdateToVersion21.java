@@ -42,7 +42,7 @@ public class SystemUpdateToVersion21 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		for(String s: this.databaseService.getGroupRequestSyncLogModelFactory().getStatements()) {
+		for(String s: this.databaseService.getOutgoingGroupSyncRequestLogModelFactory().getStatements()) {
 			this.sqLiteDatabase.execSQL(s);
 		}
 

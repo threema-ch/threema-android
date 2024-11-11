@@ -100,9 +100,9 @@ public class MentionSpan extends ReplacementSpan {
 
 	@Override
 	public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-		if (!TestUtil.empty(text) && end - start == 11) {
+		if (!TestUtil.isBlankOrNull(text) && end - start == 11) {
 			String labelText = getMentionLabelText(text, start, end);
-			if (!TestUtil.empty(labelText)) {
+			if (!TestUtil.isEmptyOrNull(labelText)) {
 				width = (int) paint.measureText(MENTION_INDICATOR + labelText) + (PADDING * 2);
 				return width;
 			}
@@ -112,7 +112,7 @@ public class MentionSpan extends ReplacementSpan {
 
 	@Override
 	public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-		if (width != 0 && !TestUtil.empty(text) && end - start == 11) {
+		if (width != 0 && !TestUtil.isBlankOrNull(text) && end - start == 11) {
 			int alpha = paint.getAlpha();
 			String identity = text.subSequence(start + 2, end - 1).toString();
 

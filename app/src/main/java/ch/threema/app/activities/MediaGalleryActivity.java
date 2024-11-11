@@ -578,7 +578,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
 			@Override
 			public void error(String message) {
 				hideProgressBar(progressBar);
-				if (!TestUtil.empty(message)) {
+				if (!TestUtil.isEmptyOrNull(message)) {
 					logger.error(message, MediaGalleryActivity.this);
 				}
 			}

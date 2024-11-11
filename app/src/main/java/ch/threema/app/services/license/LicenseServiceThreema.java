@@ -52,8 +52,8 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 	@Override
 	public boolean hasCredentials() {
 		return
-				!TestUtil.empty(this.preferenceService.getSerialNumber())
-						|| !TestUtil.empty(this.preferenceService.getLicenseUsername(), this.preferenceService.getLicensePassword());
+				!TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber())
+						|| !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(), this.preferenceService.getLicensePassword());
 	}
 
 	@Override
@@ -88,10 +88,12 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 	@Nullable
 	@WorkerThread
 	private String validate(T credentials, boolean allowException) {
+		logger.info("Validating credentials");
 		APIConnector.CheckLicenseResult result;
 		try {
 			result = this.checkLicense(credentials, deviceId);
-			if(result.success) {
+			if (result.success) {
+				logger.info("Validating credentials successful");
 				this.updateMessage = result.updateMessage;
 				this.updateUrl = result.updateUrl;
 
@@ -100,19 +102,25 @@ abstract public class  LicenseServiceThreema<T extends LicenseService.Credential
 				this.preferenceService.setLicensedStatus(true);
 				this.isLicensed = true;
 			} else {
+				logger.info("Validating credentials failed: {}", result.error);
 				this.preferenceService.setLicensedStatus(false);
 				this.isLicensed = false;
+				if (result.error == null) {
+					return "No success but no error message provided";
+				}
 				return result.error;
 			}
 		} catch (UnauthorizedFetchException e) {
 			// Treat unauthorized OPPF fetch like (temporarily) bad license
 			this.isLicensed = false;
+			logger.warn("Could not validate credentials", e);
 			return getExceptionMessageOrDefault(
 				e,
 				"Unauthorized"
 			);
 		} catch (Exception e) {
 			if(!allowException) {
+				logger.warn("Could not validate credentials", e);
 				return getExceptionMessageOrDefault(
 					e,
 					"Error during validation"

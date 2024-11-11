@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Hovor Threema</string>
     <string name="voip_hangup">Zavěsit</string>
@@ -95,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Bylo dosaženo maxima: Do tohoto skupinového hovoru se nemůže připojit více účastníků.</string>
     <string name="voip_gc_call_full_n">Bylo dosaženo maximálního počtu účastníků (%1$d). Do tohoto skupinového hovoru se už nemůžete připojit.</string>
     <plurals name="n_participants_in_call">
+        <item quantity="one">%d účastník</item>
         <item quantity="few">%d účastníci</item>
         <item quantity="many">%d účastníků</item>
-        <item quantity="one">%d účastník</item>
         <item quantity="other">%d účastníků</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
-        <item quantity="many">Upozornění: %d členů se nemůže účastnit skupinových hovorů.</item>
-        <item quantity="few">Upozornění: %d členové se nemohou účastnit skupinových hovorů.</item>
         <item quantity="one">Upozornění: Jeden člen se nemůže účastnit skupinových hovorů.</item>
+        <item quantity="few">Upozornění: %d členové se nemohou účastnit skupinových hovorů.</item>
+        <item quantity="many">Upozornění: %d členů se nemůže účastnit skupinových hovorů.</item>
         <item quantity="other">Upozornění: %d členů se nemůže účastnit skupinových hovorů.</item>
     </plurals>
 </resources>

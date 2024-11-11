@@ -192,11 +192,11 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity,  getTheme());
 		builder.setView(dialogView);
 
-		if (!TestUtil.empty(title)) {
+		if (!TestUtil.isEmptyOrNull(title)) {
 			builder.setTitle(title);
 		}
 
-		if (!TestUtil.empty(subtitle)) {
+		if (!TestUtil.isEmptyOrNull(subtitle)) {
 			subtitleText.setText(subtitle);
 		} else {
 			subtitleText.setVisibility(View.GONE);
@@ -206,7 +206,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 			addCaptionText.setText(message);
 		}
 
-		if (!TestUtil.empty(preset)) {
+		if (!TestUtil.isEmptyOrNull(preset)) {
 			editText.setText(preset);
 			if (expandable) {
 				toggleLayout(expandButton, editTextContainer);

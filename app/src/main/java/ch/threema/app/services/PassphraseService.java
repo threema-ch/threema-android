@@ -22,16 +22,18 @@
 package ch.threema.app.services;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import org.slf4j.Logger;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
@@ -39,15 +41,21 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.StopPassphraseServiceActivity;
-import ch.threema.app.notifications.NotificationBuilderWrapper;
+import ch.threema.app.notifications.NotificationChannels;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 public class PassphraseService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PassphraseService");
 	private static Intent service;
+	private static final int FG_SERVICE_TYPE =
+		Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+			? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+			: 0;
 
 	@Override
 	public IBinder onBind(Intent intent) { return null; }
@@ -110,7 +118,7 @@ public class PassphraseService extends Service {
 		// Gets a PendingIntent containing the entire back stack
 		PendingIntent pendingIntent = stackBuilder.getPendingIntent((int)System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
-		NotificationCompat.Builder builder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_PASSPHRASE, null)
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_PASSPHRASE)
 				.setSmallIcon(R.drawable.ic_noti_passguard)
 				.setContentTitle(getString(R.string.app_name))
 				.setContentText(getString(R.string.masterkey_is_unlocked))
@@ -121,15 +129,19 @@ public class PassphraseService extends Service {
 			builder.setContentIntent(pendingIntent);
 		}
 
-		startForeground(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID, builder.build());
+		ServiceCompat.startForeground(
+			this,
+			ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID,
+			builder.build(),
+			FG_SERVICE_TYPE);
 	}
 
 	private static void removePersistentNotification(Context context) {
 		logger.debug("removePersistentNotification");
 
 		// ServiceManager may not yet be available at this point!
-		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.cancel(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID);
+		NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+		notificationManagerCompat.cancel(ThreemaApplication.PASSPHRASE_SERVICE_NOTIFICATION_ID);
 
 		if (ThreemaApplication.getServiceManager() != null) {
 			NotificationService notificationService = ThreemaApplication.getServiceManager().getNotificationService();

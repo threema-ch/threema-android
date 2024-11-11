@@ -68,7 +68,8 @@
 
 		</com.google.android.material.card.MaterialCardView>
 
-		<com.google.android.material.card.MaterialCardView
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/notification_sound_container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
@@ -271,6 +272,57 @@
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
 		</com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/individual_settings_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clickable="false"
+            android:focusable="false"
+            app:contentPadding="8dp"
+            app:contentPaddingLeft="8dp"
+            app:contentPaddingRight="4dp"
+            app:contentPaddingTop="8dp"
+            app:contentPaddingBottom="8dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="@dimen/cardview_border_radius"
+            app:cardElevation="8dp"
+            app:strokeWidth="0dp"
+            android:outlineProvider="none">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/individual_settings_text"
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="@string/individual_notification_settings"
+                    android:layout_toLeftOf="@+id/individual_settings_switch"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:drawableTint="?attr/colorOnSurface"
+                    app:drawableLeftCompat="@drawable/ic_settings_outline_24dp"
+                    android:drawablePadding="4dp"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/individual_settings_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"/>
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/done_button"

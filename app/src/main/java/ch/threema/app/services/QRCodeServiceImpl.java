@@ -75,7 +75,7 @@ public class QRCodeServiceImpl implements QRCodeService {
 
 	@Override
 	public QRCodeContentResult getResult(String content) {
-		if (!TestUtil.empty(content)) {
+		if (!TestUtil.isEmptyOrNull(content)) {
 			final String[] pieces = content.substring(CONTENT_PREFIX.length()).split(",");
 			if (pieces.length >= 2 && pieces[0].length() == ProtocolDefines.IDENTITY_LEN && pieces[1].length() == NaCl.PUBLICKEYBYTES * 2) {
 				return new QRCodeContentResult() {

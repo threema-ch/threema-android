@@ -130,7 +130,7 @@ public class WebClientSessionModelFactory extends ModelFactory {
 							.setPushToken(cursorFactory.getString(WebClientSessionModel.COLUMN_PUSH_TOKEN));
 
 				String stateString = cursorFactory.getString(WebClientSessionModel.COLUMN_STATE);
-				if (!TestUtil.empty(stateString)) {
+				if (!TestUtil.isEmptyOrNull(stateString)) {
 					model.setState(WebClientSessionModel.State.valueOf(stateString));
 				}
 				return false;

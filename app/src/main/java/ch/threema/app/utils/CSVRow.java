@@ -180,7 +180,7 @@ public class CSVRow {
 
 	public String[] getStrings(int pos) throws ThreemaException {
 		String r = this.getString(pos);
-		return TestUtil.empty(r) ? new String[]{} : r.split(";");
+		return TestUtil.isEmptyOrNull(r) ? new String[]{} : r.split(";");
 	}
 
 	public String getString(String fieldName) throws ThreemaException {

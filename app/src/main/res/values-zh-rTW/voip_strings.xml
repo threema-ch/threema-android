@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema 通話</string>
     <string name="voip_hangup">掛斷</string>
@@ -93,7 +93,7 @@
     <string name="voip_gc_call_start_error">無法發起群組通話</string>
     <string name="voip_gc_call_already_ended">群組通話已經結束</string>
     <string name="voip_gc_call_full_generic">已達到人數上限：其他參與者無法加入此群組通話。</string>
-    <string name="voip_gc_call_full_n">已達到 %1$d 個參與者的上限，您無法加入此群組通話。</string>
+    <string name="voip_gc_call_full_n">已達到%1$d位參與者的上限，您無法加入此群組通話。</string>
     <plurals name="n_participants_in_call">
         <item quantity="other">%d位參與者</item>
     </plurals>

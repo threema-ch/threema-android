@@ -32,12 +32,11 @@ class OutgoingVoipCallOfferMessageTask(
     private val toIdentity: String,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val contactService by lazy { serviceManager.contactService }
     private val voipStateService by lazy { serviceManager.voipStateService }
 
     override val type: String = "OutgoingVoipCallOfferMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipCallOfferMessage()
         message.data = voipCallOfferData
         message.toIdentity = toIdentity

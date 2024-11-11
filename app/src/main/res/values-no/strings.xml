@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kontakter</string>
     <string name="title_section1">Samtaler</string>
@@ -50,7 +50,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_notification_sound">Standardinnstilling</string>
     <string name="prefs_vibrate">Vibrer</string>
     <string name="prefs_sum_vibrate">Vibrer ved innkommende melding</string>
-    <string name="prefs_light">Notifikasjonslys</string>
     <string name="prefs_sum_light">Hvit</string>
     <string name="prefs_title_wallpaper">Velg bakgrunn</string>
     <string name="prefs_sum_wallpaper">Velg bilde for bakgrunn</string>
@@ -236,14 +235,10 @@ når den første meldingen mottas.</string>
     <string name="search_contact">Søk kontakter</string>
     <string name="push_reset_title">Push token resett</string>
     <string name="push_reset_text">Din push token har blitt resatt</string>
-    <string name="emoji_things">Objekter</string>
-    <string name="emoji_traffic">Reise og plasser</string>
-    <string name="emoji_symbols">Symboler</string>
+    <string name="emoji_recent">Nylig</string>
     <string name="emoji_nature">Dyr &amp; natur</string>
     <string name="emoji_food">Mat &amp; drikke</string>
-    <string name="emoji_recent">Nylig</string>
-    <string name="emoji_emotions">Smileys &amp; personer</string>
-    <string name="emoji_activities">Aktiviteter</string>
+    <string name="emoji_symbols">Symboler</string>
     <string name="emoji_flags">Flagg</string>
     <string name="emoji_search">Søk etter emojier</string>
     <string name="emoji_search_no_result">Ingen resultat for søk</string>
@@ -416,7 +411,7 @@ når den første meldingen mottas.</string>
     <string name="add_group_description">Legg til beskrivelse av gruppen</string>
     <string name="read_more">les mer</string>
     <string name="read_less">les mindre</string>
-    <string name="changed_group_desc_date">"Sist endret: "</string>
+    <string name="changed_group_desc_date">Sist endret: </string>
     <string name="num_items_sected">%s valgt</string>
     <string name="really_delete_media">Vil du virkelig slette %d media-meldinger?</string>
     <string name="check_updates">Sjekk for oppdateringer</string>
@@ -428,8 +423,6 @@ når den første meldingen mottas.</string>
     <string name="contact_not_found">Ingen kontakt funnet</string>
     <string name="contact_now_blocked">Kontakten er blokkert</string>
     <string name="contact_now_unblocked">Kontakten er ikke blokkert</string>
-    <string name="not_enough_disk_space_title">Ikke nok lagringsplass</string>
-    <string name="not_enough_disk_space_text">Frigjør minst %1$s for å motta meldingen</string>
     <string name="sending_images">Sender bilder</string>
     <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -659,7 +652,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="error_out_of_memory">Ikke nok minne til å fullføre denne handlingen</string>
     <string name="configure">Konfigurer</string>
     <string name="file_is_not_audio">Ikke en lydfil</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Noen innstillinger har blitt deaktivert av enhetspolicy</string>
     <string name="select_all">Velg alle</string>
     <string name="deleting_messages">Sletter meldinger</string>
@@ -745,8 +737,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="prefs_ipv6_preferred_off">Bruk bare IPv4 tilkoblinger</string>
     <string name="prefs_ipv6_preferred_on">Foretrekk IPv6 tilkoblinger fremfor IPv4</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 for anrop og web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Tillat IPv6 for Threema anrop og Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Ikke tillat IPv6 for Threema anrop og Threema Web</string>
     <string name="ipv6_requires_restart">For å ta i bruk denne innstillingen, så må appen startes på nytt.</string>
     <string name="ipv6_restart_now">Start på nytt nå</string>
     <string name="on_cap">På</string>
@@ -1010,16 +1000,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="open_in_maps_app">Åpne i kart-app</string>
     <string name="delete">Slett</string>
     <string name="continue_recording">Fortsett opptak</string>
-    <string name="whatsnew_title">Hva er nytt i %1$s 5.2?</string>
-    <string name="whatsnew_headline"><![CDATA[
-  <p>Stjernemerking av meldinger: For å enkelt finne frem meldinger på et senere tidspunkt, merk de med en stjerne ved å langtrykke på meldingen.</p>
-
-  <p>Automatisk sletting: Du kan nå rydde samtalene dine automatisk etter en gitt tid. Denne funksjonen kan du aktivere i lagringsinnstillingene.</p>
-
-  <p>Flere forbedringer og optimaliseringer.</p>
-
-
-  ]]></string>
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
     <string name="invalid_backup_path">Ugyldig kopiplassering</string>
@@ -1142,14 +1122,12 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="only_images_or_videos">Bare biler eller video kan bli valgt</string>
     <string name="media_gallery_gifs">GIF-er</string>
     <string name="no_media_found_global">Ingen medier er funnet på enheten</string>
-    <string name="enable_formatting">Skru på formatering</string>
     <string name="original_file_no_longer_avilable">Den originale filen er ikke tilgjengelig lenger. Send meldingen på nytt.</string>
     <string name="state_transcoding">Transkoding</string>
     <string name="importing_files">Importerer filer</string>
     <string name="tooltip_image_resolution_hint">Trykk her for å endre bildeoppløsning</string>
     <string name="ballot_created_successfully">Avstemningen ble opprettet</string>
     <string name="file_size">Filstørrelse</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30d</string>
     <string name="show_in_chat">Vis i samtale</string>
     <string name="group_create_no_members">Er du sikker på at du vil du lage en tom gruppe?</string>
@@ -1360,7 +1338,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_title_use_system_ringtone">Bruk systemringetone</string>
     <string name="organization_type">Organisasjon</string>
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push er aktiv. Threema Web- og Skrivebordsøkter må derfor bli startet manuelt.</string>
     <string name="tooltip_multiple_recipients_title">Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
     <string name="synchronizing">Synkroniserer...</string>
@@ -1540,12 +1517,11 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="problemsolver_to_settings">Til innstillinger</string>
     <string name="prefs_advanced_options">Avanserte innstillinger</string>
     <string name="push_service">Push-tjeneste</string>
-    <string name="zoom_out">Zoom ut</string>
-    <string name="zoom_in">Zoom inn</string>
     <string name="edit_and_send">Rediger og send</string>
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1577,10 +1553,6 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <plurals name="file_saved">
         <item quantity="one">%d fil lagret vellykket</item>
         <item quantity="other">%d filer lagret vellykket</item>
-    </plurals>
-    <plurals name="saving_media">
-        <item quantity="one">Lagre media</item>
-        <item quantity="other"></item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Fjern avstemning</item>
@@ -1643,10 +1615,6 @@ Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">En melding har blitt tapt siden den forrige meldingen.</item>
         <item quantity="other">%d meldinger har blitt tapt siden den forrige meldingen.</item>
-    </plurals>
-    <plurals name="delete_messages">
-        <item quantity="one">Slett %d melding på denne enheten?</item>
-        <item quantity="other">Slett %d meldinger på denne enheten?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d gruppemedlem</item>

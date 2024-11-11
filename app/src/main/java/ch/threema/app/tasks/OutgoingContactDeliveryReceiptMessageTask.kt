@@ -39,7 +39,7 @@ class OutgoingContactDeliveryReceiptMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingContactDeliveryReceiptMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = DeliveryReceiptMessage().also {
             it.receiptType = receiptType
             it.receiptMessageIds = messageIds

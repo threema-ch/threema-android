@@ -329,7 +329,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 
 	@Override
 	protected boolean checkInstances() {
-		return !TestUtil.empty(this.myIdentity) && TestUtil.required(
+		return !TestUtil.isEmptyOrNull(this.myIdentity) && TestUtil.required(
 				this.ballotService,
 				this.contactService,
 				this.groupService);

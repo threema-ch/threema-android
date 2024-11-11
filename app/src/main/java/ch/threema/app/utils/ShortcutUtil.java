@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.BaseBundle;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
+import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -115,6 +117,7 @@ public final class ShortcutUtil {
 					return;
 				} else {
 					Intent pinnedShortcutCallbackIntent = new Intent(ThreemaApplication.INTENT_ACTION_SHORTCUT_ADDED);
+					pinnedShortcutCallbackIntent.setPackage(getContext().getPackageName());
 					PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
 						pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
 
@@ -135,7 +138,7 @@ public final class ShortcutUtil {
 	public static void updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver) {
 		String uniqueId = messageReceiver.getUniqueIdString();
 
-		if (!TestUtil.empty(uniqueId)) {
+		if (!TestUtil.isEmptyOrNull(uniqueId)) {
 			List<ShortcutInfoCompat> matchingShortcuts = new ArrayList<>();
 
 			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED)) {
@@ -163,7 +166,7 @@ public final class ShortcutUtil {
 	public static boolean updatePinnedShortcut(MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
 		String uniqueId = messageReceiver.getUniqueIdString();
 
-		if (!TestUtil.empty(uniqueId)) {
+		if (!TestUtil.isEmptyOrNull(uniqueId)) {
 			List<ShortcutInfoCompat> matchingShortcuts = new ArrayList<>();
 
 			for (ShortcutInfoCompat shortcutInfo : ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED)) {
@@ -182,13 +185,13 @@ public final class ShortcutUtil {
 
 	@WorkerThread
 	public static void deletePinnedShortcut(String uniqueIdString) {
-		if (!TestUtil.empty(uniqueIdString)) {
+		if (!TestUtil.isEmptyOrNull(uniqueIdString)) {
 			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getShortcuts(getContext(), FLAG_MATCH_PINNED);
 
 			if (shortcutInfos.size() > 0) {
 				for (ShortcutInfoCompat shortcutInfo : shortcutInfos) {
 					String shortcutId = shortcutInfo.getId();
-					if (!TestUtil.empty(shortcutId)) {
+					if (!TestUtil.isEmptyOrNull(shortcutId)) {
 						// ignore first character which represents the type indicator
 						if (shortcutId.substring(1).equals(uniqueIdString)) {
 							ShortcutManagerCompat.removeLongLivedShortcuts(getContext(), Collections.singletonList(shortcutInfo.getId()));
@@ -369,6 +372,11 @@ public final class ShortcutUtil {
 			public boolean noInvalid() {
 					return true;
 				}
+
+			@Override
+			public boolean onlyPersonal() {
+				return true;
+			}
 		};
 
 		final List<ConversationModel> conversations = conversationService.getAll(false, filter);
@@ -391,12 +399,19 @@ public final class ShortcutUtil {
 				return;
 			}
 
-			if (Arrays.equals(preferenceService.getList(KEY_RECENT_UIDS), publishedRecentChatsUids.toArray(new String[0]))) {
+			// update shortcuts at least once a day
+			Date lastShortcutUpdateDate = preferenceService.getLastShortcutUpdateDate();
+			Date cutoffDate = new Date((lastShortcutUpdateDate != null ? lastShortcutUpdateDate.getTime() : 0) + DateUtils.DAY_IN_MILLIS);
+			Date now = new Date();
+
+			if (Arrays.equals(preferenceService.getList(KEY_RECENT_UIDS), publishedRecentChatsUids.toArray(new String[0])) &&
+				!now.after(cutoffDate)) {
 				logger.info("Recent chats unchanged. Not updating sharing targets");
 				return;
 			}
 
 			preferenceService.setListQuietly(KEY_RECENT_UIDS, publishedRecentChatsUids.toArray(new String[0]));
+			preferenceService.setLastShortcutUpdateDate(now);
 
 			try {
 				logger.info("Set {} dynamic sharing target shortcuts", numPublishableConversations);
@@ -442,6 +457,24 @@ public final class ShortcutUtil {
 	}
 
 	/**
+	 * Update specified Share Target Shortcut (if any)
+	 * @param messageReceiver MessageReceiver represented by shortcut
+	 */
+	@WorkerThread
+	public static void updateShareTargetShortcut(MessageReceiver messageReceiver) {
+		synchronized (dynamicShortcutLock) {
+			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
+			for (ShortcutInfoCompat shortcutInfo: shortcutInfos) {
+				if (shortcutInfo.getId().equals(messageReceiver.getUniqueIdString())) {
+					ShortcutInfoCompat updatedShortcutInfo = getShareTargetShortcutInfo(messageReceiver, shortcutInfo.getRank());
+					ShortcutManagerCompat.updateShortcuts(getContext(), Collections.singletonList(updatedShortcutInfo));
+					return;
+				}
+			}
+		}
+	}
+
+	/**
 	 * Retrieve a bundle with the extras supplied with a shortcut specified by its shortcutId
 	 * @param shortcutId ID of the shortcut to retrieve extras from. The ID equals the MessageReceiver's uniqueId string
 	 * @return A BaseBundle containing the extras identifying the MessageReceiver
@@ -466,11 +499,16 @@ public final class ShortcutUtil {
 	@WorkerThread
 	private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull ConversationModel conversationModel, int rank) {
 		MessageReceiver messageReceiver = conversationModel.getReceiver();
-
 		if (messageReceiver == null) {
 			return null;
 		}
 
+		return getShareTargetShortcutInfo(messageReceiver, rank);
+	}
+
+	@Nullable
+	@WorkerThread
+	private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull MessageReceiver messageReceiver, int rank) {
 		Person person = null;
 		if (messageReceiver instanceof ContactMessageReceiver) {
 			person = ConversationNotificationUtil.getPerson(getContactService(), ((ContactMessageReceiver) messageReceiver).getContact(), messageReceiver.getDisplayName());
@@ -479,14 +517,14 @@ public final class ShortcutUtil {
 		List<Person> persons = new ArrayList<>();
 		if (messageReceiver instanceof GroupMessageReceiver) {
 			try {
-				Collection<ContactModel> contactModels = ThreemaApplication.getServiceManager().getGroupService().getMembers(conversationModel.getGroup());
+				Collection<ContactModel> contactModels = ThreemaApplication.getServiceManager().getGroupService().getMembers(((GroupMessageReceiver) messageReceiver).getGroup());
 				for(ContactModel contactModel: contactModels) {
 					persons.add(ConversationNotificationUtil.getPerson(getContactService(), contactModel, NameUtil.getDisplayNameOrNickname(contactModel, true)));
 				}
 			} catch (Exception ignore) {}
 		}
 
-		if (messageReceiver.getNotificationAvatar() != null && !TestUtil.empty(messageReceiver.getDisplayName())) {
+		if (messageReceiver.getNotificationAvatar() != null && !TestUtil.isEmptyOrNull(messageReceiver.getDisplayName())) {
 			try {
 				ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(getContext(), messageReceiver.getUniqueIdString())
 					.setIcon(IconCompat.createWithBitmap(messageReceiver.getNotificationAvatar()))

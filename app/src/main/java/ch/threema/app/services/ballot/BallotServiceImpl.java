@@ -530,7 +530,7 @@ public class BallotServiceImpl implements BallotService {
 
 	@Override
 	public BallotModel get(String id, String creator) {
-		if(TestUtil.empty(id, creator)) {
+		if(TestUtil.isEmptyOrNull(id, creator)) {
 			return null;
 		}
 

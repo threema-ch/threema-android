@@ -189,7 +189,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 
 				if (bitmap == null && preferenceService.isCustomWallpaperEnabled()) {
 					path = fileService.getGlobalWallpaperFilePath();
-					if (!TestUtil.empty(path)) {
+					if (!TestUtil.isEmptyOrNull(path)) {
 						File wallpaperFile = new File(path);
 						if (wallpaperFile.exists()) {
 							try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {

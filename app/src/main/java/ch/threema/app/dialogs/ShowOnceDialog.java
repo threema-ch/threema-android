@@ -39,6 +39,8 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 
@@ -56,6 +58,8 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 	public static final String ARG_MESSAGE_STRING = "messageString";
 	public static final String ARG_MESSAGE_INT = "messageInt";
 	public static final String ARG_ICON = "icon";
+
+	private ShowOnceDialog.ShowOnceDialogClickListener callback;
 
 	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
 		final Bundle args = new Bundle();
@@ -86,6 +90,28 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 	}
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		if (callback == null) {
+			try {
+				callback = (ShowOnceDialogClickListener) getTargetFragment();
+			} catch (ClassCastException e) {
+				//
+			}
+
+			// called from an activity rather than a fragment
+			if (callback == null) {
+				if ((activity instanceof ShowOnceDialogClickListener)) {
+					callback = (ShowOnceDialogClickListener) activity;
+				} else {
+					// no callback no problem
+				}
+			}
+		}
+	}
+
+	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 
@@ -110,10 +136,19 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 		return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
 	}
 
+	private void saveDontShowAgain(boolean dontShow) {
+		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+		sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), dontShow).apply();
+	}
+
+	public interface ShowOnceDialogClickListener {
+		void onYes(String tag);
+		default void onCancel(String tag) {};
+	}
+
 	@NonNull
 	@Override
 	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
 
 		final Bundle arguments = getArguments();
 		@StringRes int title = arguments.getInt(ARG_TITLE);
@@ -123,11 +158,18 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 			messageString = arguments.getString(ARG_MESSAGE_STRING);
 		}
 		@DrawableRes int icon = arguments.getInt(ARG_ICON, 0);
+		AtomicBoolean dontShowAgain = new AtomicBoolean(false);
+
+		final String tag = this.getTag();
 
 		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_show_once, null);
 		final TextView textView = dialogView.findViewById(R.id.message);
 		final MaterialCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
-		checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), isChecked).apply());
+		if (callback != null) {
+			checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> dontShowAgain.set(isChecked));
+		} else {
+			checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> saveDontShowAgain(isChecked));
+		}
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 		builder.setView(dialogView);
@@ -141,7 +183,16 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 			builder.setIcon(icon);
 		}
 
-		builder.setPositiveButton(getString(R.string.ok), null);
+		if (callback != null) {
+			builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
+				saveDontShowAgain(dontShowAgain.get());
+				callback.onYes(tag);
+			});
+			builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> callback.onCancel(tag));
+		} else {
+			builder.setPositiveButton(getString(R.string.ok), null);
+		}
+
 		if (messageString != null) {
 			textView.setText(messageString);
 		} else {

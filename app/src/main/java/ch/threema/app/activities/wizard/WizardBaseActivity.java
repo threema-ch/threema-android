@@ -164,7 +164,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	private Runnable showDialogDelayedTask(final int current, final int previous) {
 		return () -> {
 			RuntimeUtil.runOnUiThread(() -> {
-				if (current == WizardFragment2.PAGE_ID && previous == WizardFragment1.PAGE_ID && TestUtil.empty(getSafePassword())) {
+				if (current == WizardFragment2.PAGE_ID && previous == WizardFragment1.PAGE_ID && TestUtil.isEmptyOrNull(getSafePassword())) {
 					if (safeConfig.isBackupForced()) {
 						setPage(WizardFragment1.PAGE_ID);
 					} else if (!isReadOnlyProfile()) {
@@ -175,8 +175,8 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 				if (current == WizardFragment4.PAGE_ID && previous == WizardFragment3.PAGE_ID) {
 					if (!isReadOnlyProfile()) {
-						if ((!TestUtil.empty(number) && TestUtil.empty(presetMobile) && !localeService.validatePhoneNumber(getPhone())) ||
-								((!TestUtil.empty(email) && TestUtil.empty(presetEmail) && !Patterns.EMAIL_ADDRESS.matcher(email).matches()))) {
+						if ((!TestUtil.isEmptyOrNull(number) && TestUtil.isEmptyOrNull(presetMobile) && !localeService.validatePhoneNumber(getPhone())) ||
+								((!TestUtil.isEmptyOrNull(email) && TestUtil.isEmptyOrNull(presetEmail) && !Patterns.EMAIL_ADDRESS.matcher(email).matches()))) {
 							WizardDialog wizardDialog = WizardDialog.newInstance(ConfigUtils.isWorkBuild() ?
 									R.string.new_wizard_phone_email_invalid :
 									R.string.new_wizard_phone_invalid,
@@ -190,12 +190,12 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 					if (!isReadOnlyProfile()) {
 						boolean needConfirm;
 						if (ConfigUtils.isWorkBuild()) {
-							needConfirm = TestUtil.empty(number) && TestUtil.empty(email) && TestUtil.empty(getPresetEmail()) && TestUtil.empty(getPresetPhone());
+							needConfirm = TestUtil.isEmptyOrNull(number) && TestUtil.isEmptyOrNull(email) && TestUtil.isEmptyOrNull(getPresetEmail()) && TestUtil.isEmptyOrNull(getPresetPhone());
 						} else {
 							if (ConfigUtils.isOnPremBuild()) {
 								needConfirm = false;
 							} else {
-								needConfirm = TestUtil.empty(number) && TestUtil.empty(getPresetPhone());
+								needConfirm = TestUtil.isEmptyOrNull(number) && TestUtil.isEmptyOrNull(getPresetPhone());
 							}
 						}
 						if (needConfirm) {
@@ -323,10 +323,10 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 			}
 		} else {
 			// ignore backup presets in restricted mode
-			if (!TestUtil.empty(presetMobile)) {
+			if (!TestUtil.isEmptyOrNull(presetMobile)) {
 				splitMobile(presetMobile);
 			}
-			if (!TestUtil.empty(presetEmail)) {
+			if (!TestUtil.isEmptyOrNull(presetEmail)) {
 				email = presetEmail;
 			}
 
@@ -799,7 +799,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	@SuppressLint("StaticFieldLeak")
 	private void linkEmail(final WizardFragment4 fragment) {
 		final String newEmail = getEmail();
-		if (TestUtil.empty(newEmail)) {
+		if (TestUtil.isEmptyOrNull(newEmail)) {
 			initSyncAndFinish();
 			return;
 		}
@@ -846,7 +846,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 	@SuppressLint("StaticFieldLeak")
 	private void linkPhone() {
 		final String phone = getPhone();
-		if (TestUtil.empty(phone)) {
+		if (TestUtil.isEmptyOrNull(phone)) {
 			linkEmail(fragment4);
 			return;
 		}
@@ -1031,7 +1031,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
 
 	@SuppressLint("StaticFieldLeak")
 	private void prepareThreemaSafe() {
-		if (!TestUtil.empty(getSafePassword())) {
+		if (!TestUtil.isEmptyOrNull(getSafePassword())) {
 			new AsyncTask<Void, Void, byte[]>() {
 				@Override
 				protected void onPreExecute() {

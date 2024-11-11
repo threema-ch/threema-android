@@ -79,7 +79,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import androidx.work.WorkRequest;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
@@ -213,7 +212,7 @@ public class ContactsSectionFragment
 
 					if (contactModels != null && contactListAdapter != null) {
 						contactListAdapter.updateData(contactModels);
-						if (!TestUtil.empty(filterQuery)) {
+						if (!TestUtil.isEmptyOrNull(filterQuery)) {
 							contactListAdapter.getFilter().filter(filterQuery);
 						}
 					}
@@ -586,7 +585,7 @@ public class ContactsSectionFragment
 				this.searchView = (SearchView) searchMenuItem.getActionView();
 
 				if (this.searchView != null) {
-					if (!TestUtil.empty(filterQuery)) {
+					if (!TestUtil.isEmptyOrNull(filterQuery)) {
 						// restore filter
 						MenuItemCompat.expandActionView(searchMenuItem);
 						this.searchView.post(new Runnable() {
@@ -945,8 +944,10 @@ public class ContactsSectionFragment
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 					if (swipeRefreshLayout != null) {
-						if (view != null && view.getChildCount() >= 0) {
-							swipeRefreshLayout.setEnabled(firstVisibleItem == 0);
+						if (view != null && view.getChildCount() == 0) {
+							swipeRefreshLayout.setEnabled(true);
+						} else if (view != null && view.getChildCount() > 0) {
+							swipeRefreshLayout.setEnabled(firstVisibleItem == 0 && view.getChildAt(0).getTop() == 0);
 						} else {
 							swipeRefreshLayout.setEnabled(false);
 						}
@@ -1012,7 +1013,7 @@ public class ContactsSectionFragment
 		}
 
 		if (savedInstanceState != null) {
-			if (TestUtil.empty(this.filterQuery)) {
+			if (TestUtil.isEmptyOrNull(this.filterQuery)) {
 				this.filterQuery = savedInstanceState.getString(BUNDLE_FILTER_QUERY_C);
 			}
 		}
@@ -1063,11 +1064,6 @@ public class ContactsSectionFragment
 
 		new Handler(Looper.getMainLooper()).postDelayed(this::stopSwipeRefresh, 2000);
 
-		try {
-			WorkRequest request = new OneTimeWorkRequest.Builder(ContactUpdateWorker.class).build();
-			WorkManager.getInstance(requireContext()).enqueue(request);
-		} catch (IllegalStateException ignored) {}
-
 		if (this.preferenceService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
 			if (this.synchronizeContactsService != null) {
 				// we force a contact sync even if the grace time has not yet been reached
@@ -1084,6 +1080,10 @@ public class ContactsSectionFragment
 				logger.error("Unable to schedule work sync one time work", e);
 			}
 		}
+		try {
+			OneTimeWorkRequest contactUpdateRequest = new OneTimeWorkRequest.Builder(ContactUpdateWorker.class).build();
+			WorkManager.getInstance(requireContext()).enqueue(contactUpdateRequest);
+		} catch (IllegalStateException ignored) {}
 	}
 
 	private void openConversationForIdentity(@Nullable View v, String identity) {
@@ -1110,7 +1110,7 @@ public class ContactsSectionFragment
 	public void onSaveInstanceState(Bundle outState) {
 		logger.info("saveInstance");
 
-		if (!TestUtil.empty(filterQuery)) {
+		if (!TestUtil.isEmptyOrNull(filterQuery)) {
 			outState.putString(BUNDLE_FILTER_QUERY_C, filterQuery);
 		}
 		if (ConfigUtils.isWorkBuild() && workTabLayout != null) {
@@ -1184,8 +1184,8 @@ public class ContactsSectionFragment
 			if (!ConfigUtils.isOnPremBuild()) {
 				if (
 					!contactModel.isLinkedToAndroidContact() &&
-					TestUtil.empty(contactModel.getFirstName()) &&
-					TestUtil.empty(contactModel.getLastName()) &&
+					TestUtil.isEmptyOrNull(contactModel.getFirstName()) &&
+					TestUtil.isEmptyOrNull(contactModel.getLastName()) &&
 					contactModel.verificationLevel == VerificationLevel.UNVERIFIED
 				) {
 					MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
@@ -1326,7 +1326,7 @@ public class ContactsSectionFragment
 
 	@Override
 	public void onSelected(String tag, String data) {
-		if (!TestUtil.empty(tag)) {
+		if (!TestUtil.isEmptyOrNull(tag)) {
 			sendInvite(tag);
 		}
 	}

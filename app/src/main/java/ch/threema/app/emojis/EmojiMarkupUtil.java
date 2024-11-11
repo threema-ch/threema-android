@@ -258,7 +258,7 @@ public class EmojiMarkupUtil {
 			identity = match.substring(2, match.length() - 1);
 			String quoteName = NameUtil.getQuoteName(identity, getContactService(), getUserService());
 
-			if (TestUtil.empty(quoteName)) {
+			if (TestUtil.isEmptyOrNull(quoteName)) {
 				// Note that the quote name is only empty if there went something wrong while
 				// accessing the contact. If the contact is unknown, the quote name consists of its
 				// threema id.

@@ -73,6 +73,7 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -133,6 +134,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.video.VideoTimelineCache;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
@@ -152,7 +154,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	public static final String EXTRA_MEDIA_ITEMS = "mediaitems";
 	public static final String EXTRA_USE_EXTERNAL_CAMERA = "extcam";
 
-	public static final int MAX_EDITABLE_IMAGES = 256; // Max number of images/videos that can be edited here at once
+	public static final int MAX_EDITABLE_FILES = 256; // Max number of files that can be edited here at once
 
 	private static final String DIALOG_TAG_QUIT_CONFIRM = "qc";
 	private static final long IMAGE_ANIMATION_DURATION_MS = 180;
@@ -287,10 +289,16 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		boolean allReceiverChatsAreHidden = true;
 		for (MessageReceiver messageReceiver : messageReceivers) {
-			messageReceiver.validateSendingPermission(errorResId -> {
-				messageReceivers.remove(messageReceiver);
-				Toast.makeText(getApplicationContext(), errorResId, Toast.LENGTH_LONG).show();
-			});
+
+            @NonNull SendingPermissionValidationResult validationResult = messageReceiver.validateSendingPermission();
+
+            if (validationResult.isDenied()) {
+                messageReceivers.remove(messageReceiver);
+                @Nullable Integer errorStringRes = ((SendingPermissionValidationResult.Denied) validationResult).getErrorResId();
+                if (errorStringRes != null) {
+                    Toast.makeText(getApplicationContext(), errorStringRes, Toast.LENGTH_LONG).show();
+                }
+            }
 			if (allReceiverChatsAreHidden && !hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
 				allReceiverChatsAreHidden = false;
 			}
@@ -343,11 +351,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			@Override
 			public void afterTextChanged(Editable s) {
 				if (s != null) {
-					try {
-						mediaAdapterManager.getCurrentItem().setCaption(s.toString());
-					} catch (IndexOutOfBoundsException ignored) {
-						// ignore this exception
-					}
+                    MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+                    if (currentItem != null) {
+                        currentItem.setCaption(s.toString());
+                    }
 				}
 			}
 		});
@@ -454,7 +461,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		}
 
 		String recipients = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
-		if (!TestUtil.empty(recipients)) {
+		if (!TestUtil.isEmptyOrNull(recipients)) {
 			this.captionEditText.setHint(R.string.add_caption_hint);
 			this.captionEditText.addTextChangedListener(new TextWatcher() {
 				@Override
@@ -763,8 +770,9 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 		settingsItem.setOnMenuItemClickListener(item -> {
 			new Handler().post(() -> {
 				final View v = findViewById(R.id.settings);
-				if (v != null) {
-					showSettingsDropDown(v, mediaAdapterManager.getCurrentItem());
+                final MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+				if (v != null && currentItem != null) {
+					showSettingsDropDown(v, currentItem);
 				}
 			});
 			return true;
@@ -810,15 +818,25 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void prepareRotate() {
-		MediaItem mediaItem = mediaAdapterManager.getCurrentItem();
-		int oldRotation = mediaItem.getRotation();
+		MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot prepare rotate as current media item is null");
+            return;
+        }
+		int oldRotation = currentItem.getRotation();
 		int newRotation = ((oldRotation == 0 ? 360 : oldRotation) - 90) % 360;
-		mediaItem.setRotation(newRotation);
+		currentItem.setRotation(newRotation);
 		mediaAdapterManager.updateCurrent(NOTIFY_BOTH_ADAPTERS);
 	}
 
 	private void prepareFlip() {
-		mediaAdapterManager.getCurrentItem().flip();
+        MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot prepare flip as current media item is null");
+            return;
+        }
+
+        currentItem.flip();
 		mediaAdapterManager.updateCurrent(NOTIFY_BOTH_ADAPTERS);
 	}
 
@@ -872,8 +890,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 				@Override
 				protected void onPostExecute(List<MediaItem> itemList) {
-					if (mediaAdapterManager.size() + itemList.size() > MAX_EDITABLE_IMAGES) {
-						Snackbar.make((View) recyclerView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), BaseTransientBottomBar.LENGTH_LONG).show();
+					if (mediaAdapterManager.size() + itemList.size() > MAX_EDITABLE_FILES) {
+						Snackbar.make((View) recyclerView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_FILES), BaseTransientBottomBar.LENGTH_LONG).show();
 					} else {
 						if (prepend) {
 							mediaAdapterManager.add(itemList, 0, NOTIFY_BOTH_ADAPTERS);
@@ -899,8 +917,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			switch (requestCode) {
 				case CropImageActivity.REQUEST_CROP:
 				case ThreemaActivity.ACTIVITY_ID_PAINT:
-					mediaAdapterManager.runWhenCurrentItemAvailable(() -> {
-						MediaItem mediaItem = mediaAdapterManager.getCurrentItem();
+					mediaAdapterManager.runWhenCurrentItemAvailable((mediaItem) -> {
 						mediaItem.setUri(Uri.fromFile(tempFile));
 						mediaItem.setRotation(0);
 						mediaItem.setExifRotation(0);
@@ -914,7 +931,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 				case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_INTERNAL:
 					if (ConfigUtils.supportsVideoCapture() && intent != null && intent.getBooleanExtra(CameraActivity.EXTRA_VIDEO_RESULT, false)) {
 						// it's a video file
-						if (!TestUtil.empty(this.videoFilePath)) {
+						if (!TestUtil.isEmptyOrNull(this.videoFilePath)) {
 							File videoFile = new File(this.videoFilePath);
 							if (videoFile.exists() && videoFile.length() > 0) {
 								final Uri videoUri = Uri.fromFile(videoFile);
@@ -926,7 +943,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 							}
 						}
 					} else {
-						if (!TestUtil.empty(this.cameraFilePath)) {
+						if (!TestUtil.isEmptyOrNull(this.cameraFilePath)) {
 							final Uri cameraUri = Uri.fromFile(new File(this.cameraFilePath));
 							if (cameraUri != null) {
 								BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(this, cameraUri);
@@ -952,6 +969,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 					break;
 			}
 		} else {
+            logger.warn("Received result with resultCode={} for requestCode={}", resultCode, requestCode);
+
+            if (requestCode == ACTIVITY_ID_PICK_CAMERA_INTERNAL || requestCode == ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+
 			if (mediaAdapterManager.size() <= 0) {
 				finish();
 			}
@@ -970,7 +993,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
 		if (messageReceivers.size() == 1) {
 			String messageDraft = getMessageDraft(messageReceivers.get(0).getUniqueIdString());
-			if (!TestUtil.empty(messageDraft)) {
+			if (!TestUtil.isEmptyOrNull(messageDraft)) {
 				for (MediaItem mediaItem : mediaAdapterManager.getItems()) {
 					try {
 						double similarity = new JaroWinklerSimilarity().apply(mediaItem.getCaption(), messageDraft);
@@ -1001,8 +1024,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return 0;
 		}
 
-		if (mediaAdapterManager.size() >= MAX_EDITABLE_IMAGES) {
-			Snackbar.make((View) recyclerView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_IMAGES), BaseTransientBottomBar.LENGTH_LONG).show();
+		if (mediaAdapterManager.size() >= MAX_EDITABLE_FILES) {
+			Snackbar.make((View) recyclerView.getParent(), String.format(getString(R.string.max_images_reached), MAX_EDITABLE_FILES), BaseTransientBottomBar.LENGTH_LONG).show();
 		}
 
 		MediaItem item = new MediaItem(imageUri, type);
@@ -1028,7 +1051,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void cropImage() {
-		Uri imageUri = mediaAdapterManager.getCurrentItem().getUri();
+        MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot crop image as current media item is null");
+            return;
+        }
+		Uri imageUri = currentItem.getUri();
 
 		try {
 			tempFile = fileService.createTempFile(".crop", ".png");
@@ -1036,8 +1064,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			Intent intent = new Intent(this, CropImageActivity.class);
 			intent.setData(imageUri);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile));
-			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, mediaAdapterManager.getCurrentItem().getRotation());
-			intent.putExtra(ThreemaApplication.EXTRA_FLIP, mediaAdapterManager.getCurrentItem().getFlip());
+			intent.putExtra(ThreemaApplication.EXTRA_ORIENTATION, currentItem.getRotation());
+			intent.putExtra(ThreemaApplication.EXTRA_FLIP, currentItem.getFlip());
 			intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
 
 			startActivityForResult(intent, CropImageActivity.REQUEST_CROP);
@@ -1048,26 +1076,37 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void editImage() {
+        MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot edit image as current media item is null");
+            return;
+        }
+
 		try {
 			tempFile = fileService.createTempFile(".edit", ".png");
 
-			Intent intent = ImagePaintActivity.getImageEditIntent(this, mediaAdapterManager.getCurrentItem(), tempFile);
+			Intent intent = ImagePaintActivity.getImageEditIntent(this, currentItem, tempFile);
 			startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_PAINT);
 			overridePendingTransition(0, R.anim.slow_fade_out);
 		} catch (IOException e) {
-			logger.debug("Unable to create temp file for crop");
+			logger.debug("Unable to create temp file for edit");
 		}
 	}
 
 	private void editFilename() {
-		final MediaItem current = mediaAdapterManager.getCurrentItem();
+		final MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot edit filename as current media item is null");
+            return;
+        }
+
 		CallbackTextEntryDialog.Companion.getInstance(
 			getString(R.string.edit_filename),
-			current.getFilename(),
+			currentItem.getFilename(),
 			new CallbackTextEntryDialog.OnButtonClickedCallback() {
 				@Override
 				public void onPositiveClicked(@NonNull String text) {
-					current.setFilename(text);
+					currentItem.setFilename(text);
 					mediaAdapterManager.updateFilename(NOTIFY_ADAPTER);
 				}
 
@@ -1079,20 +1118,30 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 	}
 
 	private void toggleMuteVideo() {
-		MediaItem item = mediaAdapterManager.getCurrentItem();
-		item.setMuted(!item.isMuted());
+		MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+        if (currentItem == null) {
+            logger.error("Cannot toggle mute as current media item is null");
+            return;
+        }
+
+		currentItem.setMuted(!currentItem.isMuted());
 		mediaAdapterManager.updateMuteState(NOTIFY_BOTH_ADAPTERS);
 	}
 
 	private void updateMenu() {
 		if (this.cameraButton != null) {
-			this.cameraButton.setVisibility(mediaAdapterManager.size() < MAX_EDITABLE_IMAGES ? View.VISIBLE : View.GONE);
+			this.cameraButton.setVisibility(mediaAdapterManager.size() < MAX_EDITABLE_FILES ? View.VISIBLE : View.GONE);
 		}
 
 		Menu menu = getToolbar().getMenu();
 
 		if (mediaAdapterManager.size() > 0) {
 			MediaItem current = mediaAdapterManager.getCurrentItem();
+            if (current == null) {
+                logger.error("Cannot update menu as current media item is null");
+                return;
+            }
+
 			@MediaItem.MediaType int type = current.getType();
 			boolean showImageEdit = (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) && current.getImageScale() != ImageScale_SEND_AS_FILE;
 			boolean showFilenameEdit = current.sendAsFile();
@@ -1117,11 +1166,12 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 			return;
 		}
 
-		String caption = mediaAdapterManager.getCurrentItem().getCaption();
+        MediaItem currentItem = mediaAdapterManager.getCurrentItem();
+		String caption = currentItem != null ? currentItem.getCaption() : null;
 
 		captionEditText.setText(null);
 
-		if (!TestUtil.empty(caption)) {
+		if (!TestUtil.isEmptyOrNull(caption)) {
 			captionEditText.append(caption);
 		}
 	}

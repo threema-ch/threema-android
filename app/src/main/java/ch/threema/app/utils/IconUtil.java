@@ -132,12 +132,12 @@ public class IconUtil {
 				docId = uri.getLastPathSegment();
 			}
 
-			if (!TestUtil.empty(docId)) {
+			if (!TestUtil.isEmptyOrNull(docId)) {
 				final String[] split = docId.split(":");
 				if (split.length >= 2) {
 					final String idString = split[1];
 
-					if (!TestUtil.empty(idString)) {
+					if (!TestUtil.isEmptyOrNull(idString)) {
 						try {
 							imageId = Long.parseLong(idString);
 						} catch (NumberFormatException x) {

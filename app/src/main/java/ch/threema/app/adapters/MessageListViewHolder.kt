@@ -234,6 +234,13 @@ class MessageListViewHolder(
         }
     }
 
+    fun initializeMessageListItemDateView(item: MessageListAdapterItem) {
+        dateView.text = item.latestMessageDate
+        dateView.contentDescription = item.latestMessageDateContentDescription
+        dateView.visibility = VISIBLE
+        TextViewCompat.setTextAppearance(dateView, R.style.Threema_TextAppearance_List_ThirdLine)
+    }
+
     @SuppressLint("SimpleDateFormat")
     private fun initializeMessageListView(messageListAdapterItem: MessageListAdapterItem) {
         // Show or hide pin tag
@@ -339,10 +346,7 @@ class MessageListViewHolder(
 
     private fun initializeLatestMessage(messageListAdapterItem: MessageListAdapterItem) {
         // Set the date of the latest message
-        dateView.text = messageListAdapterItem.latestMessageDate
-        dateView.contentDescription = messageListAdapterItem.latestMessageDateContentDescription
-        dateView.visibility = VISIBLE
-        TextViewCompat.setTextAppearance(dateView, R.style.Threema_TextAppearance_List_ThirdLine)
+        initializeMessageListItemDateView(messageListAdapterItem)
 
         val viewElement = messageListAdapterItem.latestMessageViewElement
         // Configure subject

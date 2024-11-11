@@ -73,12 +73,7 @@ suspend fun runCommonGroupReceiveSteps(
             return null
         }
         // 2.2 Send a group-sync-request to the group creator
-        OutgoingGroupSyncRequestTask(
-            groupId,
-            creatorIdentity,
-            null,
-            serviceManager
-        ).invoke(handle)
+        sendGroupSyncRequest(groupId, creatorIdentity, serviceManager, handle)
         return null
     }
 
@@ -109,8 +104,14 @@ suspend fun runCommonGroupReceiveSteps(
     if (!groupService.getGroupIdentities(groupModel).contains(fromIdentity)) {
         logger.info("Got a message in a group from a sender that is not a member")
         if (groupService.isGroupCreator(groupModel)) {
+            // 4.1 If the user is the creator of the group, send a group-setup with an empty member
+            // list back
             sendEmptyGroupSetup(groupModel, fromIdentity, handle, serviceManager)
+        } else {
+            // 4.2 Send a group-sync-request to the group creator
+            sendGroupSyncRequest(groupId, creatorIdentity, serviceManager, handle)
         }
+        // Abort these steps
         return null
     }
     return groupModel
@@ -127,6 +128,20 @@ suspend fun sendEmptyGroupSetup(
         groupModel.creatorIdentity,
         emptySet(),
         setOf(receiverIdentity),
+        null,
+        serviceManager
+    ).invoke(handle)
+}
+
+private suspend fun sendGroupSyncRequest(
+    groupId: GroupId,
+    creatorIdentity: String,
+    serviceManager: ServiceManager,
+    handle: ActiveTaskCodec,
+) {
+    OutgoingGroupSyncRequestTask(
+        groupId,
+        creatorIdentity,
         null,
         serviceManager
     ).invoke(handle)

@@ -250,7 +250,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 				if (searchView != null) {
 					if (searchMenuItem != null) {
 						CharSequence query = searchView.getQuery();
-						if (TestUtil.empty(query)) {
+						if (TestUtil.isBlankOrNull(query)) {
 							invalidateOptionsMenu();
 							if (searchMenuItem.isActionViewExpanded()) {
 								searchMenuItem.collapseActionView();
@@ -315,7 +315,7 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
 				}
 				return false;
 			});
-			if (!TestUtil.empty(queryText)) {
+			if (!TestUtil.isEmptyOrNull(queryText)) {
 				this.searchMenuItem.expandActionView();
 				this.searchView.setIconified(false);
 				this.searchView.setQuery(queryText, true);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Kişiler</string>
     <string name="title_section1">Sohbetler</string>
@@ -6,15 +6,15 @@
     <string name="title_choose_recipient">Alıcı Seçin</string>
     <string name="title_keyfingerprint">Anahtar Parmak İzi</string>
     <string name="title_mythreemaid">Threema Kimliğim</string>
-    <string name="title_threemaid">Threema kimliği</string>
+    <string name="title_threemaid">Threema Kimliği</string>
     <string name="title_adduser">Yeni kişi ekle</string>
     <string name="title_enter_id">Kimlik gir</string>
     <string name="title_invite_friend">Arkadaşını davet et</string>
-    <string name="invite_via">Davet bağlantısı paylaş</string>
+    <string name="invite_via">... üzerinden bir arkadaşınızı davet edin</string>
     <string name="invite_email_body">Merhaba,\n\nI kullanıcıların gizliliğini koruyan güvenli anlık mesajlaşma programı olan %1$s kullanın.\n\nThreema kimliğim: https://threema.id/%2$s\n\n%1$s üzerinden haberleşelim!\n\nGörüşmek üzere,\n</string>
-    <string name="invite_sms_body">Merhaba! Güvenli ve gizliliğe uygun bir şekilde iletişim kurmak için %1$s kullanalım! Threema ID kimliğim: https:// threema.id/%2$s</string>
-    <string name="invite_email_subject">Threema. Gizliliğinizi koruyan güvenli mesajlaşma programı.</string>
-    <string name="enter_id_hint">Threema kimliğini girin</string>
+    <string name="invite_sms_body">Merhaba! Güvenli ve gizlilikle uyumlu bir şekilde iletişim kurmak için %1$s kullanalım! Threema Kimliğim: https://threema.id/%2$s</string>
+    <string name="invite_email_subject">Threema. Gizliliğimizi koruyan güvenli mesajlaşma aracı</string>
+    <string name="enter_id_hint">Threema Kimliğinizi girin</string>
     <string name="account_links">Bağlı hesaplar</string>
     <string name="menu_settings">Ayarlar</string>
     <string name="menu_about">Threema Hakkında</string>
@@ -26,7 +26,7 @@
     <string name="prefs_notifications">Ses &amp; Bildirimler</string>
     <string name="prefs_chatdisplay">Sohbet</string>
     <string name="prefs_security">Güvenlik</string>
-    <string name="prefs_sum_privacy">Gizlilik ayarları</string>
+    <string name="prefs_sum_privacy">Gizlilikle ilgili ayarlar</string>
     <string name="prefs_sum_notifications">Ses ve titreşim ayarlarını uygula</string>
     <string name="prefs_sum_chatdisplay">Sohbet ayarları</string>
     <string name="prefs_masterkey">Yerel olarak depolanan verilerin şifrelenmesi</string>
@@ -49,7 +49,6 @@
     <string name="prefs_sum_notification_sound">Sistem varsayılanı</string>
     <string name="prefs_vibrate">Titreşim</string>
     <string name="prefs_sum_vibrate">Mesaj geldiğinde titret</string>
-    <string name="prefs_light">Bildirim ışığı</string>
     <string name="prefs_sum_light">Beyaz</string>
     <string name="prefs_title_wallpaper">Duvar kağıdı seç</string>
     <string name="prefs_sum_wallpaper">Arka plan için resim seç</string>
@@ -236,17 +235,13 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="search_contact">Kişi ara</string>
     <string name="push_reset_title">Push token sıfırlanıyor</string>
     <string name="push_reset_text">Push token sıfırlandı</string>
-    <string name="emoji_things">Nesneler</string>
-    <string name="emoji_traffic">Seyahat &amp; Yerler</string>
-    <string name="emoji_symbols">Semboller</string>
+    <string name="emoji_recent">Güncel</string>
     <string name="emoji_nature">Hayvanlar &amp; Doğa</string>
     <string name="emoji_food">Yiyecek &amp; İçecek</string>
-    <string name="emoji_recent">Güncel</string>
-    <string name="emoji_emotions">İfadeler &amp; İnsanlar</string>
-    <string name="emoji_activities">Aktiviteler</string>
+    <string name="emoji_symbols">Semboller</string>
     <string name="emoji_flags">Bayraklar</string>
     <string name="emoji_search">Emoji ara</string>
-    <string name="emoji_search_no_result">"Arama sonucu bulunamadı "</string>
+    <string name="emoji_search_no_result">Arama sonucu bulunamadı</string>
     <string name="title_lock">Kilitle</string>
     <string name="new_messages_locked">Yeni mesajlar mevcut</string>
     <string name="new_messages_locked_description">Yeni mesajları görüntülemek için dokunun.</string>
@@ -418,7 +413,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="add_group_description">Grup açıklaması ekle</string>
     <string name="read_more">devamını oku</string>
     <string name="read_less">azını oku</string>
-    <string name="changed_group_desc_date">Son de\u011fi\u015fiklik:</string>
+    <string name="changed_group_desc_date">Son değişiklik:\u0020</string>
     <string name="num_items_sected">%s seçildi</string>
     <string name="really_delete_media">%d medya iletisini gerçekten silmek istiyor musunuz?</string>
     <string name="check_updates">Güncellemeleri kontrol et</string>
@@ -430,8 +425,6 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="contact_not_found">Böyle bir kişi yok</string>
     <string name="contact_now_blocked">Kişi engellendi</string>
     <string name="contact_now_unblocked">Kişinin engeli kaldırıldı</string>
-    <string name="not_enough_disk_space_title">Yeteri kadar depolama alanı yok</string>
-    <string name="not_enough_disk_space_text">Mesajı almak için en az %1$s yer açın</string>
     <string name="sending_images">Resimler gönderiliyor</string>
     <string name="share_conversation_body">Dosyayı açmak için AES destekli modern bir ZIP aracı gereklidir. Örnek olarak, http://www.7-zip.org veya https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Sohbet şifreli bir zip dosyası olarak gönderilecektir. Lütfen bir şifre seçin:</string>
@@ -662,7 +655,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="error_out_of_memory">Bu işlemi tamamlamak için yeterli bellek yok</string>
     <string name="configure">Yapılandır</string>
     <string name="file_is_not_audio">Ses dosyası değil</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Bazı ayarlar yönetici tarafından devre dışı bırakıldı</string>
     <string name="select_all">Hepsini seç</string>
     <string name="deleting_messages">Mesajlar siliniyor</string>
@@ -751,8 +743,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_ipv6_preferred_off">Yalnızca IPv4 bağlantılarını kullan</string>
     <string name="prefs_ipv6_preferred_on">IPv4 yerine IPv6 bağlantılarını tercih et</string>
     <string name="prefs_title_ipv6_webrtc_allowed">Aramalar ve web için IPv6</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Threema Aramaları ve Web için IPv6\'ya izin ver</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Threema Aramaları ve Web için IPv6\'ya izin verme</string>
     <string name="ipv6_requires_restart">Bu ayarı uygulamak için uygulamanın yeniden başlatılması gerekir.</string>
     <string name="ipv6_restart_now">Şimdi yeniden başlat</string>
     <string name="on_cap">Açık</string>
@@ -1019,12 +1009,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="delete_for_all">Herkesten sil</string>
     <string name="message_was_deleted">Bu mesaj silindi</string>
     <string name="continue_recording">Kayda devam et</string>
-    <string name="whatsnew_title">%1$s 5.2\'deki yenilikler nelerdir?</string>
-    <string name="whatsnew_headline"><![CDATA[<p>Yıldızlı mesajlar: Daha sonra kolayca bulmak için, önemli mesajlara uzun süre dokunarak bir yıldızla işaretleyin.</p>
-<p>Otomatik Silme: Sohbetlerinizin seçilebilir bir süre sonra otomatik olarak temizlenmesini sağlayın. Mesajlar için otomatik silme işlevi depolama yönetiminde etkinleştirilebilir.</p>
-<p>Diğer sayısız iyileştirme ve optimizasyon.</p>]]></string>
-    <string name="whatsnew2_title">(boş bir ifade)</string>
-    <string name="whatsnew2_body">(boş bir ifade)</string>
     <string name="tap_to_start">%s şimdi başlatmak için buraya dokunun.</string>
     <string name="two_years">2 yıl</string>
     <string name="invalid_backup_path">Geçersiz yedekleme dizini</string>
@@ -1147,14 +1131,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="only_images_or_videos">Yalnızca resimler veya videolar seçilebilir</string>
     <string name="media_gallery_gifs">GIF\'ler</string>
     <string name="no_media_found_global">Bu cihazda medya bulunamadı</string>
-    <string name="enable_formatting">Biçimlendirmeyi etkinleştir</string>
     <string name="original_file_no_longer_avilable">Orijinal dosya artık erişilebilir değil. Lütfen mesajı tekrar gönderin.</string>
     <string name="state_transcoding">dönüştürülüyor</string>
     <string name="importing_files">Dosyalar içe aktarılıyor</string>
     <string name="tooltip_image_resolution_hint">Görüntü çözünürlüğünü ayarlamak için buraya dokunun.</string>
     <string name="ballot_created_successfully">Anket başarıyla oluşturuldu.</string>
     <string name="file_size">Dosya boyutu</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 gün</string>
     <string name="show_in_chat">Sohbette göster</string>
     <string name="group_create_no_members">Boş bir grup oluşturmak istediğinizden emin misiniz?</string>
@@ -1361,7 +1343,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="prefs_title_use_system_ringtone">Sistem zil sesini kullan</string>
     <string name="organization_type">Kuruluş</string>
     <string name="permission_bluetooth_connect_required">Bağlı Bluetooth kulaklıkları bulmak için \"Yakındaki cihazlar\" iznini etkinleştir</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threema Push aktif. Threema web ve masaüstü oturumları bu nedenle manuel olarak başlatılmalıdır.</string>
     <string name="tooltip_multiple_recipients_title">Birden çok alıcı</string>
     <string name="tooltip_multiple_recipients_text">Aynı mesajı göndermek üzere birden fazla alıcı seçmek için uzun dokunun.</string>
     <string name="synchronizing">Eşitleniyor...</string>
@@ -1387,12 +1368,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="spam_first_contact">Bu sohbet bilinmeyen bir kişiden</string>
     <string name="spam_report">Şikayet et</string>
     <string name="spam_report_dialog_explain">Devam ederseniz, bu kişinin kimliği ve takma ismi, kimliğiniz ile birlikte Threema\'ya iletilecektir. Hiçbir içerik veya kişisel veri gönderilmeyecek ve karşı taraf bu konuda bilgilendirilmeyecektir.</string>
-    <string name="spam_report_dialog_block_checkbox">"Ayrıca bu kişiyi engelle ve sohbeti sil "</string>
+    <string name="spam_report_dialog_block_checkbox">Ayrıca bu kişiyi engelle ve sohbeti sil</string>
     <string name="spam_report_dialog_title">%s bildir</string>
     <string name="spam_successfully_reported">Kimliğin istenmeyen mesaj gönderdiği bildirildi.</string>
     <string name="spam_error_reporting">Şikayet edilirken hata oluştu: %s</string>
     <string name="spam_report_short">Bildir</string>
-    <string name="wizard_incompatible_contact_sync_params">"Uyumsuz MDM parametreleri seti var. Kullanıcı kısıtlaması DISALLOW_MODIFY_ACCOUNTS ayarlanmışsa, Threema MDM parametresi th_contact_sync true olarak ayarlanamaz. Lütfen cihaz yöneticinize başvurun. "</string>
+    <string name="wizard_incompatible_contact_sync_params">Uyumsuz MDM parametreleri seti var. Kullanıcı kısıtlaması DISALLOW_MODIFY_ACCOUNTS ayarlanmışsa, Threema MDM parametresi th_contact_sync true olarak ayarlanamaz. Lütfen cihaz yöneticinize başvurun.</string>
     <string name="messages_cannot_be_recovered">Mesajları kurtaramazsınız.</string>
     <string name="groups_left_or_dissolved">Gruplar bırakılacak veya feshedilecek ve ardından silinecektir.</string>
     <string name="contact_deleted">Kişi silindi</string>
@@ -1537,8 +1518,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="problemsolver_to_settings">Ayarlara</string>
     <string name="prefs_advanced_options">Gelişmiş seçenekler</string>
     <string name="push_service">Push hizmeti</string>
-    <string name="zoom_out">Uzaklaştır</string>
-    <string name="zoom_in">Yakınlaştır</string>
     <string name="edit_and_send">Düzenle ve gönder</string>
     <string name="media_gallery_animated_webps">Animasyonlu WebP\'ler</string>
     <string name="unsupported_image_type">Desteklenmeyen görüntü türü: %s</string>
@@ -1547,7 +1526,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="edit_message_not_supported_for_contact">Alıcının uygulama sürümü bu özelliği desteklemediği için mesaj düzenlenemiyor.</string>
     <string name="edit_message_not_supported_for_all_group_members">Aşağıdaki grup üyeleri düzenlemelerinizi göremeyecek: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Hiçbir grup üyesi bu özelliği destekleyen bir uygulama sürümüne sahip olmadığı için mesaj düzenlenemiyor.</string>
-    <string name="delete_message_not_supported_for_all_group_members">Bu mesaj aşağıdaki grup üyeleri için silinmeyecektir: %1$s</string>
     <string name="work_intro_more_link_text">Threema Work hakkında daha fazla bilgi edinin</string>
     <string name="work_intro_subtitle">Şirketler için güvenli mesajlaşma aracı.</string>
     <string name="work_intro_login">Giriş %1$s</string>
@@ -1555,6 +1533,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="consumer_notice_playstore_link_description">Play Store\'da Threema</string>
     <string name="consumer_notice_appgallery_link_description">AppGallery\'de Threema</string>
     <string name="consumer_notice_subtitle">Özel kullanım için</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>
@@ -1588,8 +1567,8 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
         <item quantity="other">%d dosya başarıyla kaydedildi.</item>
     </plurals>
     <plurals name="saving_media">
-        <item quantity="one">Medya kaydediliyor</item>
-        <item quantity="other"></item>
+        <item quantity="one">Medyayı kaydetme</item>
+        <item quantity="other">%d medya dosyası kaydediliyor</item>
     </plurals>
     <plurals name="ballot_really_delete">
         <item quantity="one">Anketi sil</item>
@@ -1599,6 +1578,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
         <item quantity="one">%1$d anketi gerçekten silmek istiyor musunuz? Oyları geri alamazsınız.</item>
         <item quantity="other">%1$d anketi gerçekten silmek istiyor musunuz? Oyları geri alamazsınız.</item>
     </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">%d medya dosyası silindi</item>
+        <item quantity="other">%d medya dosyaları silindi</item>
+    </plurals>
     <plurals name="message_deleted">
         <item quantity="one">%d mesaj silindi</item>
         <item quantity="other">%d mesaj silindi</item>
@@ -1606,6 +1589,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <plurals name="notifications_for_x_hours">
         <item quantity="one">%d saat</item>
         <item quantity="other">%d saat</item>
+    </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="one">Gerçekten %1$d kişiyi ve ilişkili tüm sohbetleri silmek istiyor musunuz?</item>
+        <item quantity="other">Gerçekten %1$d kişileri ve ilişkili tüm sohbetleri silmek istiyor musunuz?</item>
     </plurals>
     <plurals name="some_contacts_not_deleted">
         <item quantity="one">%d Kişi hala bir grubun parçası olduğu için silinemedi.</item>
@@ -1649,13 +1636,13 @@ Daha önce alınan istekler yine de kabul edilebilir veya reddedilebilir.</item>
         <item quantity="one">%d sohbet silindi.</item>
         <item quantity="other">%d sohbet silindi.</item>
     </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="one">%d arşivlenmiş sohbet</item>
+        <item quantity="other">%d arşivlenmiş sohbetler</item>
+    </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">Son mesajdan bu yana bir mesaj kayboldu.</item>
         <item quantity="other">Son mesajdan bu yana %d mesaj kayboldu.</item>
-    </plurals>
-    <plurals name="delete_messages">
-        <item quantity="one">%d mesaj silinsin mi?</item>
-        <item quantity="other">%d mesaj silinsin mi?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d grup üyesi</item>

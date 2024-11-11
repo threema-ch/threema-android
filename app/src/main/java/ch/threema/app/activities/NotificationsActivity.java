@@ -33,22 +33,29 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.UiThread;
-import androidx.appcompat.widget.AppCompatRadioButton;
+import androidx.core.app.NotificationChannelCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.OutOfQuotaPolicy;
+import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.RingtoneSelectorDialog;
-import ch.threema.app.listeners.ContactSettingsListener;
+import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -61,14 +68,16 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.workers.ShareTargetUpdateWorker;
 
-public abstract class NotificationsActivity extends ThreemaActivity implements View.OnClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
+public abstract class NotificationsActivity extends ThreemaActivity implements View.OnClickListener, ShowOnceDialog.ShowOnceDialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
 
 	private static final String BUNDLE_ANIMATION_CENTER = "animC";
 	private static final String DIALOG_TAG_RINGTONE_SELECTOR = "drs";
+	private static final String DIALOG_TAG_INDIVIDUAL_CONFIRM = "individual_confirm";
 	protected final int MUTE_INDEX_INDEFINITE = -1;
 	protected TextView textSoundCustom, textSoundDefault;
-	protected AppCompatRadioButton
+	protected RadioButton
 		radioSoundDefault,
 			radioSilentOff,
 			radioSilentUnlimited,
@@ -84,12 +93,14 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	protected ConversationService conversationService;
 	protected DeadlineListService mutedChatsListService, mentionOnlyChatListService;
 	protected PreferenceService preferenceService;
+	protected MaterialSwitch notificationSettingsSwitch;
+	protected TextView individualSettingsText;
 	protected Uri defaultRingtone, selectedRingtone, backupSoundCustom;
 	protected boolean isMuted;
 	protected int mutedIndex;
 	protected int[] muteValues = {1, 2, 4, 8, 24, 144};
 	private int[] animCenterLocation = {0, 0};
-	protected String uid;
+	protected String uid, chatName;
 
 	private final ActivityResultLauncher<Intent> ringtonePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 		result -> {
@@ -102,7 +113,16 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	private final ActivityResultLauncher<Intent> ringtoneSettingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
 		result -> {
 			refreshSettings();
+		});
+
+	private final ActivityResultLauncher<Intent> channelSettingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+		result -> {
+			refreshSettings();
 			updateUI();
+
+			WorkManager.getInstance(NotificationsActivity.this).enqueue(new OneTimeWorkRequest.Builder(ShareTargetUpdateWorker.class)
+				.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+				.build());
 		});
 
 	@Override
@@ -112,6 +132,8 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		}
 
 		super.onCreate(savedInstanceState);
+
+		chatName = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_TEXT);
 
 		supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_notifications);
@@ -126,6 +148,22 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
 		if (ConfigUtils.isWorkBuild()) {
 			findViewById(R.id.work_life_warning).setVisibility(preferenceService.isAfterWorkDNDEnabled() ? View.VISIBLE : View.GONE);
+		}
+
+		if (ConfigUtils.supportsNotificationChannels()) {
+			findViewById(R.id.individual_settings_container).setVisibility(View.VISIBLE);
+			findViewById(R.id.notification_sound_container).setVisibility(View.GONE);
+			notificationSettingsSwitch = findViewById(R.id.individual_settings_switch);
+			individualSettingsText = findViewById(R.id.individual_settings_text);
+			individualSettingsText.setOnClickListener(v -> {
+				if (notificationSettingsSwitch.isChecked()) {
+					showIndividualSettings(chatName);
+				}
+			});
+
+		} else {
+			findViewById(R.id.individual_settings_container).setVisibility(View.GONE);
+			findViewById(R.id.notification_sound_container).setVisibility(View.VISIBLE);
 		}
 
 		if (savedInstanceState == null) {
@@ -160,14 +198,17 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		setupButtons();
 	}
 
+	private void showIndividualSettings(String chatName) {
+		NotificationChannels.INSTANCE.launchChannelSettings(this, chatName, uid, this instanceof GroupNotificationsActivity, channelSettingsLauncher);
+	}
+
+	private void deleteIndividualSettings() {
+		NotificationChannels.INSTANCE.deleteChannel(NotificationManagerCompat.from(this), uid);
+	}
+
 	@Override
 	public void onDestroy() {
-		ListenerManager.contactSettingsListeners.handle(new ListenerManager.HandleListener<ContactSettingsListener>() {
-			@Override
-			public void handle(ContactSettingsListener listener) {
-				listener.onNotificationSettingChanged(uid);
-			}
-		});
+		ListenerManager.contactSettingsListeners.handle(listener -> listener.onNotificationSettingChanged(uid));
 		super.onDestroy();
 	}
 
@@ -177,7 +218,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 			if (v instanceof ViewGroup) {
 				loopViewGroup((ViewGroup) v);
 			} else {
-				if (v instanceof AppCompatRadioButton ||
+				if (v instanceof RadioButton ||
 						v instanceof ImageView ||
 						v instanceof TextView) {
 					v.setOnClickListener(this);
@@ -222,7 +263,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	protected void updateUI() {
 		boolean isMentionsOnly = mentionOnlyChatListService.has(this.uid);
 
-		if (backupSoundCustom != null && !TestUtil.empty(RingtoneUtil.getRingtoneNameFromUri(this, backupSoundCustom))) {
+		if (backupSoundCustom != null && !TestUtil.isEmptyOrNull(RingtoneUtil.getRingtoneNameFromUri(this, backupSoundCustom))) {
 			textSoundCustom.setText(RingtoneUtil.getRingtoneNameFromUri(this, backupSoundCustom));
 		} else {
 			textSoundCustom.setText("");
@@ -282,6 +323,29 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 		} else {
 			// default settings
 			radioSoundDefault.setChecked(true);
+		}
+
+		if (ConfigUtils.supportsNotificationChannels()) {
+			NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+			NotificationChannelCompat notificationChannelCompat = notificationManagerCompat.getNotificationChannelCompat(uid);
+
+			notificationSettingsSwitch.setOnCheckedChangeListener(null);
+			notificationSettingsSwitch.setChecked(notificationChannelCompat != null);
+			individualSettingsText.setEnabled(notificationSettingsSwitch.isChecked());
+			notificationSettingsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+				if (isChecked) {
+					individualSettingsText.setEnabled(true);
+					if (ShowOnceDialog.shouldNotShowAnymore(DIALOG_TAG_INDIVIDUAL_CONFIRM)) {
+						onYes(DIALOG_TAG_INDIVIDUAL_CONFIRM);
+					} else {
+						ShowOnceDialog showOnceDialog = ShowOnceDialog.newInstance(R.string.individual_notification_settings, R.string.individual_notification_settings_warn);
+						showOnceDialog.show(getSupportFragmentManager(), DIALOG_TAG_INDIVIDUAL_CONFIRM);
+					}
+				} else {
+					individualSettingsText.setEnabled(false);
+					deleteIndividualSettings();
+				}
+			});
 		}
 	}
 
@@ -429,14 +493,25 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 	}
 
 	@Override
-	public void onCancel(String tag) {
-
-	}
-
-	@Override
 	public void finish() {
 		// used to avoid flickering of status and navigation bar when activity is closed
 		super.finish();
 		overridePendingTransition(R.anim.fast_fade_in, R.anim.fast_fade_out);
+	}
+
+	@Override
+	public void onYes(String tag) {
+		if (DIALOG_TAG_INDIVIDUAL_CONFIRM.equals(tag)) {
+			individualSettingsText.setEnabled(true);
+			showIndividualSettings(chatName);
+		}
+	}
+
+	@Override
+	public void onCancel(String tag) {
+		if (DIALOG_TAG_INDIVIDUAL_CONFIRM.equals(tag)) {
+			notificationSettingsSwitch.setChecked(false);
+			individualSettingsText.setEnabled(false);
+		}
 	}
 }

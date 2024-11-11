@@ -203,10 +203,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ch.threema.app.ui.MessageBubbleView
-                    android:id="@+id/edit_message_bubble"
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/edit_message_bubble_compose_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/chat_bubble_container_padding_left_right"
+                    android:layout_marginRight="@dimen/chat_bubble_container_padding_left_right"
+                    android:layout_marginTop="@dimen/chat_bubble_container_padding_bottom"
+                    android:layout_marginBottom="@dimen/chat_bubble_container_padding_bottom"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"

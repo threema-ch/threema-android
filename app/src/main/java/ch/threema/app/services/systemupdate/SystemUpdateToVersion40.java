@@ -59,7 +59,7 @@ public class SystemUpdateToVersion40 implements UpdateSystemService.SystemUpdate
 		if (preferenceService != null) {
 			String currentPushToken = preferenceService.getPushToken();
 
-			if (!TestUtil.empty(currentPushToken)) {
+			if (!TestUtil.isEmptyOrNull(currentPushToken)) {
 				// update all
 				this.sqLiteDatabase.execSQL("UPDATE " + WebClientSessionModel.TABLE + " "
 						+ "SET " + WebClientSessionModel.COLUMN_PUSH_TOKEN + "=?",

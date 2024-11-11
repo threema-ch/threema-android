@@ -53,4 +53,17 @@ public class FileUtilTest {
 		FileUtil.deleteFileOrWarn(tempFile, "testfile", logger);
 		Mockito.verify(logger, times(1)).warn("Could not delete {}", "testfile");
 	}
+
+	@Test
+	public void testSanitizeFileName() {
+		String emptyFileName = "";
+		String badFileName = "test:file@/*123-\"asd?|<>.png";
+		String badZipName = "/zip..file.zip";
+		String validName = "testfile.zip";
+
+		Assert.assertNull(FileUtil.sanitizeFileName(emptyFileName));
+		Assert.assertEquals("test_file@__123-_asd____.png", FileUtil.sanitizeFileName(badFileName));
+		Assert.assertEquals("_zip_file.zip", FileUtil.sanitizeFileName(badZipName));
+		Assert.assertEquals("testfile.zip", FileUtil.sanitizeFileName(validName));
+	}
 }

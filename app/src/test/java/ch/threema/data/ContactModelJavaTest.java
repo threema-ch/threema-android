@@ -21,11 +21,13 @@
 
 package ch.threema.data;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.Date;
 
+import ch.threema.app.services.PreferenceService;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.storage.DatabaseBackend;
@@ -44,67 +46,663 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 public class ContactModelJavaTest {
-	private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
+    private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
 
-	/**
+    private final PreferenceService preferenceServiceMock = mock(PreferenceService.class);
+
+    /**
      * Test the construction using the primary constructor from Java.
      */
     @Test
     public void testConstruction() {
-		final Date createdAt = new Date();
-		final byte[] publicKey = new byte[32];
-		final BigInteger largeBigInteger = new BigInteger("18446744073709551600");
-		final String identity = "TESTTEST";
+        final Date createdAt = new Date();
+        final byte[] publicKey = new byte[32];
+        final BigInteger largeBigInteger = new BigInteger("18446744073709551600");
+        final String identity = "TESTTEST";
         final ContactModel contact = new ContactModel(identity, ContactModelData.javaCreate(
-	        identity,
-	        publicKey,
-	        createdAt,
-	        "Test",
-	        "Contact",
-	        null,
-	        42,
-	        VerificationLevel.SERVER_VERIFIED,
-	        WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-	        IdentityType.NORMAL,
-	        AcquaintanceLevel.DIRECT,
-	        State.ACTIVE,
-	        largeBigInteger,
-	        ContactSyncState.CUSTOM,
-			ReadReceiptPolicy.DONT_SEND,
-	        TypingIndicatorPolicy.SEND,
-	        "asdf",
-	        null,
-	        false,
-	        new byte[] { 1, 2, 3 }
+            identity,
+            publicKey,
+            createdAt,
+            "Test",
+            "Contact",
+            null,
+            42,
+            VerificationLevel.SERVER_VERIFIED,
+            WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+            IdentityType.NORMAL,
+            AcquaintanceLevel.DIRECT,
+            State.ACTIVE,
+            largeBigInteger,
+            ContactSyncState.CUSTOM,
+            ReadReceiptPolicy.DONT_SEND,
+            TypingIndicatorPolicy.SEND,
+            "asdf",
+            null,
+            false,
+            new byte[]{1, 2, 3},
+            null,
+            null
         ), databaseBackendMock);
 
-		final ContactModelData data = contact.getData().getValue();
+        final ContactModelData data = contact.getData().getValue();
         assertEquals("TESTTEST", data.identity);
-		assertEquals(publicKey, data.publicKey);
+        assertEquals(publicKey, data.publicKey);
         assertEquals("Test", data.firstName);
         assertEquals("Contact", data.lastName);
-	    assertNull(data.nickname);
-	    assertEquals(42, data.colorIndexInt());
-	    assertEquals(VerificationLevel.SERVER_VERIFIED, data.verificationLevel);
-	    assertEquals(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED, data.workVerificationLevel);
-	    assertEquals(IdentityType.NORMAL, data.identityType);
-	    assertEquals(AcquaintanceLevel.DIRECT, data.acquaintanceLevel);
-	    assertEquals(State.ACTIVE, data.activityState);
-	    assertEquals(largeBigInteger, data.featureMaskBigInteger());
-	    try {
-		    data.featureMaskLong();
-			fail("featureMaskLong did not throw");
-	    } catch (IllegalArgumentException exception) {
-			assertEquals("Feature mask does not fit in a signed long", exception.getMessage());
-	    }
-	    assertEquals(ContactSyncState.CUSTOM, data.syncState);
-		assertEquals(ReadReceiptPolicy.DONT_SEND, data.readReceiptPolicy);
-		assertEquals(TypingIndicatorPolicy.SEND, data.typingIndicatorPolicy);
-		assertEquals("asdf", data.androidContactLookupKey);
-		assertNull(data.localAvatarExpires);
-		assertFalse(data.isRestored);
-	    assertArrayEquals(new byte[] { 1, 2, 3 }, data.profilePictureBlobId);
+        assertNull(data.nickname);
+        assertEquals(42, data.colorIndexInt());
+        assertEquals(VerificationLevel.SERVER_VERIFIED, data.verificationLevel);
+        assertEquals(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED, data.workVerificationLevel);
+        assertEquals(IdentityType.NORMAL, data.identityType);
+        assertEquals(AcquaintanceLevel.DIRECT, data.acquaintanceLevel);
+        assertEquals(State.ACTIVE, data.activityState);
+        assertEquals(largeBigInteger, data.featureMaskBigInteger());
+        try {
+            data.featureMaskLong();
+            fail("featureMaskLong did not throw");
+        } catch (IllegalArgumentException exception) {
+            assertEquals("Feature mask does not fit in a signed long", exception.getMessage());
+        }
+        assertEquals(ContactSyncState.CUSTOM, data.syncState);
+        assertEquals(ReadReceiptPolicy.DONT_SEND, data.readReceiptPolicy);
+        assertEquals(TypingIndicatorPolicy.SEND, data.typingIndicatorPolicy);
+        assertEquals("asdf", data.androidContactLookupKey);
+        assertNull(data.localAvatarExpires);
+        assertFalse(data.isRestored);
+        assertArrayEquals(new byte[]{1, 2, 3}, data.profilePictureBlobId);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_firstname_trimmed_1() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  Firstname  ");
+        javaContactModel.setLastName("");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Firstname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_firstname_trimmed_2() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  Firstname  ");
+        javaContactModel.setLastName("  ");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Firstname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_lastname_trimmed_1() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  ");
+        javaContactModel.setLastName("  Lastname  ");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Lastname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_lastname_trimmed_2() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  ");
+        javaContactModel.setLastName("  Lastname  ");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Lastname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_firstname_lastname() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("Firstname");
+        javaContactModel.setLastName("Lastname");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_lastname_firstname() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("Firstname");
+        javaContactModel.setLastName("Lastname");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Lastname Firstname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_firstname_lastname_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  Firstname  ");
+        javaContactModel.setLastName("  Lastname  ");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_lastname_firstname_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  Firstname  ");
+        javaContactModel.setLastName("  Lastname  ");
+        javaContactModel.setPublicNickName("");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(false);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Lastname Firstname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_value_first_lastname_over_nickname() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("Firstname");
+        javaContactModel.setLastName("Lastname");
+        javaContactModel.setPublicNickName("Nickname");
+
+        when(preferenceServiceMock.isContactFormatFirstNameLastName()).thenReturn(true);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("Firstname Lastname", contactListItemTextTopLeft);
+        Assert.assertFalse(contactListItemTextTopLeft.contains("Nickname"));
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_nickname() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("");
+        javaContactModel.setLastName("");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
+        verifyZeroInteractions(preferenceServiceMock);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_nickname_when_first_lastname_blank() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("   ");
+        javaContactModel.setLastName("   ");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
+        verifyZeroInteractions(preferenceServiceMock);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_nickname_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("");
+        javaContactModel.setLastName("");
+        javaContactModel.setPublicNickName("   Nickname   ");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals("~Nickname", contactListItemTextTopLeft);
+        verifyZeroInteractions(preferenceServiceMock);
+    }
+
+    @Test
+    public void getContactListItemTextTopLeft_should_return_identity() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setFirstName("  ");
+        javaContactModel.setLastName("  ");
+        javaContactModel.setPublicNickName("  ");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(
+            preferenceServiceMock
+        );
+
+        // assert
+        Assert.assertEquals(identity, contactListItemTextTopLeft);
+        verifyZeroInteractions(preferenceServiceMock);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_job_title() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle("Android Dev");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Android Dev", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_not_return_job_title() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(false);
+        javaContactModel.setJobTitle("Android Dev");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_job_title_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle("   Android Dev   ");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Android Dev", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_nickname_1() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle("");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_nickname_2() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle("  ");
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_nickname_3() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle(null);
+        javaContactModel.setPublicNickName("Nickname");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_nickname_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle(null);
+        javaContactModel.setPublicNickName("  Nickname  ");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomLeft_should_return_empty() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setJobTitle(null);
+        javaContactModel.setPublicNickName(null);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+
+        // assert
+        Assert.assertEquals("", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomRight_should_return_department_trimmed() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setDepartment("  Android  ");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+
+        // assert
+        Assert.assertEquals("Android", contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomRight_should_not_return_department() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(false);
+        javaContactModel.setDepartment("Android");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+
+        // assert
+        Assert.assertEquals(identity, contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomRight_should_return_identity_1() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setDepartment(null);
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+
+        // assert
+        Assert.assertEquals(identity, contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomRight_should_return_identity_2() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setDepartment("");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+
+        // assert
+        Assert.assertEquals(identity, contactListItemTextTopLeft);
+    }
+
+    @Test
+    public void getContactListItemTextBottomRight_should_return_identity_3() {
+
+        // arrange
+        final String identity = "IDENTITY";
+        final byte[] publicKey = new byte[32];
+        final ch.threema.storage.models.ContactModel javaContactModel = new ch.threema.storage.models.ContactModel(
+            identity,
+            publicKey
+        );
+        javaContactModel.setIsWork(true);
+        javaContactModel.setDepartment("  ");
+
+        // act
+        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+
+        // assert
+        Assert.assertEquals(identity, contactListItemTextTopLeft);
     }
 }

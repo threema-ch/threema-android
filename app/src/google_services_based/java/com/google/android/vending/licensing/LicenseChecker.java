@@ -37,13 +37,11 @@
 
 package com.google.android.vending.licensing;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -214,24 +212,6 @@ public class LicenseChecker implements ServiceConnection {
                 runChecks();
             }
         }
-    }
-
-    /**
-     * Triggers the last deep link licensing URL returned from the server, which redirects users to a
-     * page which enables them to gain access to the app. If no such URL is returned by the server, it
-     * will go to the details page of the app in the Play Store.
-     */
-    public void followLastLicensingUrl(Context context) {
-        String licensingUrl = mPolicy.getLicensingUrl();
-        if (licensingUrl == null) {
-            licensingUrl = "https://play.google.com/store/apps/details?id=" + context.getPackageName();
-        }
-        Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(licensingUrl));
-        marketIntent.setPackage("com.android.vending");
-        if (!(context instanceof Activity)) {
-            marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        context.startActivity(marketIntent);
     }
 
     private void runChecks() {

@@ -46,7 +46,6 @@ public class NotificationChannelSettings {
 	private final String channelGroupId;
 	private final String groupName;
 	private final String description;
-	private final String seqPrefKey;
 	private final int visibility;
 
 	public NotificationChannelSettings(String channelGroupId, @NonNull String prefix, SharedPreferences sharedPreferences, int importance, boolean showBadge, int visibility, String groupName, String description, String seqPrefKey) {
@@ -58,15 +57,9 @@ public class NotificationChannelSettings {
 		this.channelGroupId = channelGroupId;
 		this.groupName = groupName;
 		this.description = description;
-		this.seqPrefKey = seqPrefKey;
-
-		this.seqNum = sharedPreferences.getLong(seqPrefKey, System.currentTimeMillis());
 	}
 
 	public String getDescription() {
-		if (ConfigUtils.getMIUIVersion() >= 10) {
-			return toString();
-		}
 		return description;
 	}
 
@@ -76,10 +69,6 @@ public class NotificationChannelSettings {
 
 	public String getChannelGroupId() {
 		return channelGroupId;
-	}
-
-	public String getSeqPrefKey() {
-		return seqPrefKey;
 	}
 
 	public long getSeqNum() {
@@ -140,50 +129,5 @@ public class NotificationChannelSettings {
 
 	public int getVisibility() {
 		return visibility;
-	}
-
-	/**
-	 * Get a unique hash of all the settings to be used as the notification channel id
-	 * @return hash
-	 */
-	public String hash() {
-		String result = prefix +
-			seqNum +
-			importance +
-			showBadge +
-		Arrays.toString(vibrationPattern) +
-		(lightColor != null ? Integer.toString(lightColor) : "0") +
-		(sound != null ? sound.toString() : "null");
-
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-			messageDigest.update(result.getBytes());
-			return Base32.encode(messageDigest.digest());
-		} catch (NoSuchAlgorithmException e) {
-			//
-		}
-		return prefix + String.valueOf(System.currentTimeMillis());
-	}
-
-	@NonNull
-	@Override
-	public String toString() {
-		String lightColorString = "No light";
-		if (lightColor != null) {
-			int[] colorHexValues = ThreemaApplication.getAppContext().getResources().getIntArray(R.array.list_light_color_hex);
-			for (int i = 0; i < colorHexValues.length; i++) {
-				if (lightColor.equals(colorHexValues[i])) {
-					lightColorString = ThreemaApplication.getAppContext().getResources().getStringArray(R.array.list_light_color)[i];
-				}
-			}
-		}
-
-		return sound == null ? "Silent" : RingtoneUtil.getRingtoneNameFromUri(ThreemaApplication.getAppContext(), sound) +
-				": " +
-				(vibrationPattern != null ? "Vibrate" : "No vibrate") +
-				": " +
-				lightColorString +
-				": Importance " +
-				importance;
 	}
 }

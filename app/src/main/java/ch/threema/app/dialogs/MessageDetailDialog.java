@@ -21,22 +21,21 @@
 
 package ch.threema.app.dialogs;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.format.Formatter;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialog;
+import androidx.compose.ui.platform.ComposeView;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.button.MaterialButton;
@@ -47,506 +46,312 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDivider;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ContactDetailActivity;
+import ch.threema.app.activities.MessageDetailsUiModel;
+import ch.threema.app.activities.MessageDetailsViewModelKt;
+import ch.threema.app.activities.MessageTimestampsUiModel;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.compose.common.interop.ComposeJavaBridge;
 import ch.threema.app.listeners.MessageListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextUtil;
-import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class MessageDetailDialog extends ThreemaDialogFragment implements View.OnClickListener {
-	private Activity activity;
-	private View dialogView;
-	private ContactService contactService = null;
-	private IdentityStore identityStore = null;
-	private AbstractMessageModel messageModel = null;
-	private final MessageListener messageListener = new MessageListener() {
-		@Override
-		public void onNew(AbstractMessageModel newMessage) {}
 
-		@Override
-		public void onModified(List<AbstractMessageModel> modifiedMessageModels) {
-			if (messageModel != null) {
-				for (AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
-					if (modifiedMessageModel.getId() == messageModel.getId()) {
-						RuntimeUtil.runOnUiThread(() -> updateAckDisplay(modifiedMessageModel));
-						break;
-					}
-				}
-			}
-		}
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageDetailDialog");
 
-		@Override
-		public void onRemoved(AbstractMessageModel removedMessageModel) {}
+    private static final String BUNDLE_KEY_TITLE_RES_ID = "title";
+    private static final String BUNDLE_KEY_MESSAGE_ID = "messageId";
+    private static final String BUNDLE_KEY_MESSAGE_TYPE = "messageType";
 
-		@Override
-		public void onRemoved(List<AbstractMessageModel> removedMessageModels) {}
+    private View dialogView;
 
-		@Override
-		public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}
+    private @Nullable ContactService contactService = null;
+    private @Nullable IdentityStore identityStore = null;
+    private @Nullable AbstractMessageModel messageModel = null;
 
-		@Override
-		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
-			// Ignore
-		}
-	};
+    private final MessageListener messageListener = new MessageListener() {
+        @Override
+        public void onNew(AbstractMessageModel newMessage) {
+        }
 
-	public static MessageDetailDialog newInstance(@StringRes int title, int messageId, String type, @Nullable ForwardSecurityMode forwardSecurityMode) {
-		MessageDetailDialog dialog = new MessageDetailDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("messageId", messageId);
-		args.putString("messageType", type);
-		if (forwardSecurityMode != null) {
-			args.putInt("forwardSecurityMode", forwardSecurityMode.getValue());
-		}
+        @Override
+        public void onModified(List<AbstractMessageModel> modifiedMessageModels) {
+            if (messageModel != null) {
+                for (AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
+                    if (modifiedMessageModel.getId() == messageModel.getId()) {
+                        RuntimeUtil.runOnUiThread(() -> updateAckDisplay(modifiedMessageModel));
+                        break;
+                    }
+                }
+            }
+        }
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        @Override
+        public void onRemoved(AbstractMessageModel removedMessageModel) {
+        }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        @Override
+        public void onRemoved(List<AbstractMessageModel> removedMessageModels) {
+        }
 
-		this.activity = activity;
-	}
+        @Override
+        public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
+        }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        @Override
+        public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
+            // Ignore
+        }
+    };
 
-		ListenerManager.messageListeners.add(this.messageListener);
-	}
+    @NonNull
+    public static MessageDetailDialog newInstance(
+        @StringRes int titleResId,
+        int messageId,
+        @Nullable String messageType
+    ) {
+        MessageDetailDialog dialog = new MessageDetailDialog();
+        Bundle args = new Bundle();
+        args.putInt(BUNDLE_KEY_TITLE_RES_ID, titleResId);
+        args.putInt(BUNDLE_KEY_MESSAGE_ID, messageId);
+        args.putString(BUNDLE_KEY_MESSAGE_TYPE, messageType);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@Override
-	public void onDestroy() {
-		ListenerManager.messageListeners.remove(this.messageListener);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		super.onDestroy();
-	}
+        ListenerManager.messageListeners.add(this.messageListener);
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		MessageService messageService = null;
-		try {
-			messageService = ThreemaApplication.getServiceManager().getMessageService();
-			identityStore = ThreemaApplication.getServiceManager().getIdentityStore();
-			contactService = ThreemaApplication.getServiceManager().getContactService();
-		} catch (Exception e) {
-			//
-		}
+    @Override
+    public void onDestroy() {
+        ListenerManager.messageListeners.remove(this.messageListener);
 
-		if (messageService != null && contactService != null) {
-			@StringRes int title = getArguments().getInt("title");
-			int messageId = getArguments().getInt("messageId");
-			String messageType = getArguments().getString("messageType");
-			ForwardSecurityMode forwardSecurityMode = ForwardSecurityMode.getByValue(getArguments().getInt("forwardSecurityMode"));
-			String forwardSecurityModeStr = getString(R.string.forward_security_mode_none);
-			if (forwardSecurityMode != null) {
-				switch (forwardSecurityMode) {
-					case TWODH:
-						forwardSecurityModeStr = getString(R.string.forward_security_mode_2dh);
-						break;
-					case FOURDH:
-						forwardSecurityModeStr = getString(R.string.forward_security_mode_4dh);
-						break;
-					case ALL:
-						forwardSecurityModeStr = getString(R.string.forward_security_mode_all);
-						break;
-					case PARTIAL:
-						forwardSecurityModeStr = getString(R.string.forward_security_mode_partial);
-						break;
-					default:
-						break;
-				}
-			}
+        super.onDestroy();
+    }
 
-			messageModel = messageService.getMessageModelFromId(messageId, messageType);
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 
-			dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_message_detail, null);
-			final TextView createdText = dialogView.findViewById(R.id.created_text);
-			final TextView createdDate = dialogView.findViewById(R.id.created_date);
-			final TextView postedText = dialogView.findViewById(R.id.posted_text);
-			final TextView postedDate = dialogView.findViewById(R.id.posted_date);
-			final TextView deliveredText = dialogView.findViewById(R.id.delivered_text);
-			final TextView deliveredDate = dialogView.findViewById(R.id.delivered_date);
-			final TextView readText = dialogView.findViewById(R.id.read_text);
-			final TextView readDate = dialogView.findViewById(R.id.read_date);
-			final TextView modifiedText = dialogView.findViewById(R.id.modified_text);
-			final TextView modifiedDate = dialogView.findViewById(R.id.modified_date);
-			final TextView editedText = dialogView.findViewById(R.id.edited_text);
-			final TextView editedDate = dialogView.findViewById(R.id.edited_date);
-			final TextView deletedText = dialogView.findViewById(R.id.deleted_text);
-			final TextView deletedDate = dialogView.findViewById(R.id.deleted_date);
-			final TextView messageIdText = dialogView.findViewById(R.id.messageid_text);
-			final TextView messageIdDate = dialogView.findViewById(R.id.messageid_date);
-			final TextView mimeTypeText = dialogView.findViewById(R.id.filetype_text);
-			final TextView mimeTypeMime = dialogView.findViewById(R.id.filetype_mime);
-			final TextView fileSizeText = dialogView.findViewById(R.id.filesize_text);
-			final TextView fileSizeData = dialogView.findViewById(R.id.filesize_data);
-			final TextView forwardSecurityModeText = dialogView.findViewById(R.id.forward_security_mode_text);
-			final TextView forwardSecurityModeData = dialogView.findViewById(R.id.forward_security_mode_data);
+        final @Nullable ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        @Nullable MessageService messageService = null;
+        if (serviceManager != null) {
+            try {
+                messageService = serviceManager.getMessageService();
+                identityStore = serviceManager.getIdentityStore();
+                contactService = serviceManager.getContactService();
+            } catch (ThreemaException threemaException) {
+                logger.error("Required services are not available", threemaException);
+            }
+        }
 
-			MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-			builder.setView(dialogView);
+        final @StringRes int titleResId = requireArguments().getInt(BUNDLE_KEY_TITLE_RES_ID);
+        final int messageId = requireArguments().getInt(BUNDLE_KEY_MESSAGE_ID);
+        final @Nullable String messageType = requireArguments().getString(BUNDLE_KEY_MESSAGE_TYPE);
 
-			if (title != -1) {
-				builder.setTitle(title);
-			}
+        if (messageService != null) {
+            messageModel = messageService.getMessageModelFromId(messageId, messageType);
+        } else {
+            messageModel = null;
+        }
 
-			builder.setPositiveButton(getString(R.string.ok), null);
+        dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_message_detail, null);
 
-			@StringRes int stateResource = getStateTextRes(messageModel);
-			MessageState messageState = messageModel.getState();
+        if (messageModel != null) {
+            MessageTimestampsUiModel timestampsUiModel = MessageDetailsViewModelKt.toMessageTimestampsUiModel(messageModel);
+            MessageDetailsUiModel detailsUiModel = MessageDetailsViewModelKt.toMessageDetailsUiModel(messageModel);
+            final ComposeView messageDetailComposeView = dialogView.findViewById(R.id.message_detail_compose_view);
+            ComposeJavaBridge.INSTANCE.setContentMessageDetails(messageDetailComposeView, timestampsUiModel, detailsUiModel);
+        }
 
-			if (messageModel.isStatusMessage()) {
-				createdDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getCreatedAt().getTime()));
-			} else if (messageModel.getType() == MessageType.GROUP_CALL_STATUS) {
-				Date deliveredAt = messageModel.getCreatedAt();
-				Date postedAt = messageModel.getPostedAt();
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(), getTheme());
+        builder.setView(dialogView);
 
-				if (messageModel.isOutbox()) {
-					if (postedAt != null) {
-						postedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), postedAt.getTime()));
-						postedText.setVisibility(View.VISIBLE);
-						postedDate.setVisibility(View.VISIBLE);
-					}
-				} else {
-					if (postedAt != null) {
-						postedText.setText(R.string.state_dialog_posted);
-						postedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), postedAt.getTime()));
-						postedText.setVisibility(View.VISIBLE);
-						postedDate.setVisibility(View.VISIBLE);
-					}
+        if (titleResId != -1) {
+            builder.setTitle(titleResId);
+        }
 
-					if (deliveredAt != null) {
-						deliveredText.setText(R.string.state_dialog_received);
-						deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), deliveredAt.getTime()));
-						deliveredText.setVisibility(View.VISIBLE);
-						deliveredDate.setVisibility(View.VISIBLE);
-					}
-				}
-				createdText.setVisibility(View.GONE);
-				createdDate.setVisibility(View.GONE);
-			} else {
-				if (messageModel.isOutbox()) {
-					// outgoing msgs
-					if (messageModel.getCreatedAt() != null) {
-						createdDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getCreatedAt().getTime()));
-					} else {
-						createdText.setVisibility(View.GONE);
-						createdDate.setVisibility(View.GONE);
-					}
+        builder.setPositiveButton(getString(R.string.ok), null);
 
-					boolean showPostedAt = (messageState != null &&
-						messageState != MessageState.SENDING &&
-						messageState != MessageState.SENDFAILED &&
-						messageState != MessageState.FS_KEY_MISMATCH &&
-						messageState != MessageState.PENDING) ||
-						messageModel.getType() == MessageType.BALLOT;
+        if (messageModel != null && !messageModel.isStatusMessage() && messageModel.getType() != MessageType.GROUP_CALL_STATUS) {
+            updateAckDisplay(messageModel);
+        }
 
-					if (showPostedAt && messageModel.getPostedAt() != null) {
-						postedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt().getTime()));
-						postedText.setVisibility(View.VISIBLE);
-						postedDate.setVisibility(View.VISIBLE);
-					}
+        return builder.create();
+    }
 
-					if (messageState != MessageState.SENT && !(messageModel.getType() == MessageType.BALLOT && messageModel instanceof GroupMessageModel)) {
-						Date deliveredAt = messageModel.getDeliveredAt();
-						Date readAt = messageModel.getReadAt();
-						Date modifiedAt = messageModel.getModifiedAt();
+    private synchronized void updateAckDisplay(AbstractMessageModel messageModel) {
 
-						if (deliveredAt != null) {
-							deliveredText.setText(TextUtil.capitalize(getString(R.string.state_delivered)));
-							deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), deliveredAt.getTime()));
-							deliveredText.setVisibility(View.VISIBLE);
-							deliveredDate.setVisibility(View.VISIBLE);
-						}
+        if (!ConfigUtils.isGroupAckEnabled()) {
+            return;
+        }
 
-						if (readAt != null) {
-							readText.setText(TextUtil.capitalize(getString(R.string.state_read)));
-							readDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), readAt.getTime()));
-							readText.setVisibility(View.VISIBLE);
-							readDate.setVisibility(View.VISIBLE);
-						}
+        if (dialogView == null) {
+            return;
+        }
 
-						if (modifiedAt != null &&
-							!(messageState == MessageState.READ && modifiedAt.equals(readAt)) &&
-							!(messageState == MessageState.DELIVERED && modifiedAt.equals(deliveredAt))) {
-							modifiedText.setText(TextUtil.capitalize(getString(stateResource)));
-							modifiedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), modifiedAt.getTime()));
-							modifiedText.setVisibility(View.VISIBLE);
-							modifiedDate.setVisibility(View.VISIBLE);
-						}
-					}
-				} else {
-					// incoming msgs
-					if (messageModel.getPostedAt() != null) {
-						createdText.setText(R.string.state_dialog_posted);
-						createdDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getPostedAt().getTime()));
-					} else {
-						createdText.setVisibility(View.GONE);
-						createdDate.setVisibility(View.GONE);
-					}
-					if (messageModel.getCreatedAt() != null) {
-						postedText.setText(R.string.state_dialog_received);
-						postedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getCreatedAt().getTime()));
-						postedText.setVisibility(View.VISIBLE);
-						postedDate.setVisibility(View.VISIBLE);
-					}
-					if (messageModel.getModifiedAt() != null && messageState != MessageState.READ) {
-						deliveredText.setText(TextUtil.capitalize(getString(R.string.state_read)));
-						deliveredDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getModifiedAt().getTime()));
-						deliveredText.setVisibility(View.VISIBLE);
-						deliveredDate.setVisibility(View.VISIBLE);
-					}
-				}
+        if (!isAdded()) {
+            return;
+        }
 
-				if (messageModel.getEditedAt() != null) {
-					editedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getEditedAt().getTime()));
-					editedText.setVisibility(View.VISIBLE);
-					editedDate.setVisibility(View.VISIBLE);
-				}
+        if (messageModel == null) {
+            return;
+        }
 
-				if (messageModel.getDeletedAt() != null) {
-					deletedDate.setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), messageModel.getDeletedAt().getTime()));
-					deletedText.setVisibility(View.VISIBLE);
-					deletedDate.setVisibility(View.VISIBLE);
-				}
+        if (contactService == null) {
+            return;
+        }
 
-				if (messageModel.getType() == MessageType.FILE && messageModel.getFileData() != null) {
-					if (!TestUtil.empty(messageModel.getFileData().getMimeType())) {
-						mimeTypeMime.setText(messageModel.getFileData().getMimeType());
-						mimeTypeMime.setVisibility(View.VISIBLE);
-						mimeTypeText.setVisibility(View.VISIBLE);
-					}
+        final MaterialDivider groupAckDivider = dialogView.findViewById(R.id.groupack_divider);
+        final MaterialCardView ackCard = dialogView.findViewById(R.id.ack_card);
+        final ImageView ackIcon = dialogView.findViewById(R.id.ack_icon);
+        final ChipGroup ackData = dialogView.findViewById(R.id.ack_data);
+        final MaterialButton ackCountView = dialogView.findViewById(R.id.ack_count);
+        final MaterialCardView decCard = dialogView.findViewById(R.id.dec_card);
+        final ImageView decIcon = dialogView.findViewById(R.id.dec_icon);
+        final ChipGroup decData = dialogView.findViewById(R.id.dec_data);
+        final MaterialButton decCountView = dialogView.findViewById(R.id.dec_count);
 
-					if (messageModel.getFileData().getFileSize() > 0) {
-						fileSizeData.setText(Formatter.formatShortFileSize(getContext(), messageModel.getFileData().getFileSize()));
-						fileSizeData.setVisibility(View.VISIBLE);
-						fileSizeText.setVisibility(View.VISIBLE);
-					}
-				}
+        if (messageModel instanceof GroupMessageModel) {
+            Map<String, Object> messageStates = ((GroupMessageModel) messageModel).getGroupMessageStates();
+            if (messageStates != null && !messageStates.isEmpty()) {
+                int ackCount = 0, decCount = 0;
+                ackData.removeAllViews();
+                decData.removeAllViews();
 
-				if (!TestUtil.empty(messageModel.getApiMessageId())) {
-					messageIdDate.setText(messageModel.getApiMessageId());
-					messageIdDate.setVisibility(View.VISIBLE);
-					messageIdText.setVisibility(View.VISIBLE);
-				}
+                for (Map.Entry<String, Object> entry : messageStates.entrySet()) {
+                    ContactModel contactModel = contactService.getByIdentity(entry.getKey());
+                    if (contactModel == null) {
+                        continue;
+                    }
 
-				if (messageModel instanceof DistributionListMessageModel) {
-					forwardSecurityModeData.setVisibility(View.GONE);
-					forwardSecurityModeText.setVisibility(View.GONE);
-				} else {
-					forwardSecurityModeData.setText(forwardSecurityModeStr);
-					forwardSecurityModeData.setVisibility(View.VISIBLE);
-					forwardSecurityModeText.setVisibility(View.VISIBLE);
-				}
+                    // an ack or dec state implies "read"
+                    if (MessageState.USERACK.toString().equals(entry.getValue())) {
+                        appendChip(ackData, contactModel);
+                        ackCount++;
+                    } else if (MessageState.USERDEC.toString().equals(entry.getValue())) {
+                        appendChip(decData, contactModel);
+                        decCount++;
+                    }
 
-				updateAckDisplay(messageModel);
-			}
+                    if (ackCount > 0) {
+                        ackCard.setVisibility(View.VISIBLE);
+                        ackCountView.setText(String.valueOf(ackCount));
+                        if (messageModel.getState() == MessageState.USERACK) {
+                            ackIcon.setImageResource(R.drawable.ic_thumb_up_filled);
+                        }
+                    } else {
+                        ackCard.setVisibility(View.GONE);
+                    }
 
-			return builder.create();
-		}
-		return null;
-	}
+                    if (decCount > 0) {
+                        decCard.setVisibility(View.VISIBLE);
+                        decCountView.setText(String.valueOf(decCount));
+                        if (messageModel.getState() == MessageState.USERDEC) {
+                            decIcon.setImageResource(R.drawable.ic_thumb_down_filled);
+                        }
+                    } else {
+                        decCard.setVisibility(View.GONE);
+                    }
 
-	private synchronized void updateAckDisplay(AbstractMessageModel messageModel) {
-		if (!ConfigUtils.isGroupAckEnabled()) {
-			return;
-		}
+                    if (decCount > 0 || ackCount > 0) {
+                        groupAckDivider.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        }
+    }
 
-		if (dialogView == null) {
-			return;
-		}
+    @SuppressLint("StaticFieldLeak")
+    private void appendChip(ChipGroup chipGroup, @NonNull ContactModel contactModel) {
+        Chip chip = new Chip(requireContext());
+        ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(
+            requireContext(),
+            null,
+            0,
+            R.style.Threema_Chip_MessageDetails
+        );
+        chip.setChipDrawable(chipDrawable);
+        chip.setEnsureMinTouchTargetSize(false);
+        chip.setTag(contactModel.getIdentity());
+        chip.setOnClickListener(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            chip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
+        } else {
+            chip.setTextSize(14);
+        }
 
-		if (!isAdded()) {
-			return;
-		}
+        //noinspection deprecation
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                if (contactService == null) {
+                    return null;
+                }
+                Bitmap bitmap = contactService.getAvatar(contactModel, false);
+                if (bitmap != null) {
+                    return BitmapUtil.replaceTransparency(bitmap, Color.WHITE);
+                }
+                return null;
+            }
 
-		if (messageModel == null) {
-			return;
-		}
+            @Override
+            protected void onPostExecute(Bitmap avatar) {
+                if (avatar != null) {
+                    chip.setChipIcon(AvatarConverterUtil.convertToRound(getResources(), avatar));
+                } else {
+                    chip.setChipIconResource(R.drawable.ic_contact);
+                }
+            }
+        }.execute();
 
-		final MaterialDivider groupAckDivider = dialogView.findViewById(R.id.groupack_divider);
-		final MaterialCardView ackCard = dialogView.findViewById(R.id.ack_card);
-		final ImageView ackIcon = dialogView.findViewById(R.id.ack_icon);
-		final ChipGroup ackData = dialogView.findViewById(R.id.ack_data);
-		final MaterialButton ackCountView = dialogView.findViewById(R.id.ack_count);
-		final MaterialCardView decCard = dialogView.findViewById(R.id.dec_card);
-		final ImageView decIcon = dialogView.findViewById(R.id.dec_icon);
-		final ChipGroup decData = dialogView.findViewById(R.id.dec_data);
-		final MaterialButton decCountView = dialogView.findViewById(R.id.dec_count);
+        chip.setText(NameUtil.getShortName(contactModel));
+        chipGroup.addView(chip);
+    }
 
-		if (messageModel instanceof GroupMessageModel) {
-			Map<String, Object> messageStates = ((GroupMessageModel) messageModel).getGroupMessageStates();
-			if (messageStates != null && messageStates.size() > 0) {
-				int ackCount = 0, decCount = 0;
-				ackData.removeAllViews();
-				decData.removeAllViews();
-
-				for (Map.Entry<String, Object> entry : messageStates.entrySet()) {
-					ContactModel contactModel = contactService.getByIdentity(entry.getKey());
-					if (contactModel == null) {
-						continue;
-					}
-
-					// an ack or dec state implies "read"
-					if (MessageState.USERACK.toString().equals(entry.getValue())) {
-						appendChip(ackData, contactModel);
-						ackCount++;
-					} else if (MessageState.USERDEC.toString().equals(entry.getValue())) {
-						appendChip(decData, contactModel);
-						decCount++;
-					}
-
-					if (ackCount > 0) {
-						ackCard.setVisibility(View.VISIBLE);
-						ackCountView.setText(String.valueOf(ackCount));
-						if (messageModel.getState() == MessageState.USERACK) {
-							ackIcon.setImageResource(R.drawable.ic_thumb_up_filled);
-						}
-					} else {
-						ackCard.setVisibility(View.GONE);
-					}
-
-					if (decCount > 0) {
-						decCard.setVisibility(View.VISIBLE);
-						decCountView.setText(String.valueOf(decCount));
-						if (messageModel.getState() == MessageState.USERDEC) {
-							decIcon.setImageResource(R.drawable.ic_thumb_down_filled);
-						}
-					} else {
-						decCard.setVisibility(View.GONE);
-					}
-
-					if (decCount > 0 || ackCount > 0) {
-						groupAckDivider.setVisibility(View.VISIBLE);
-					}
-				}
-			}
-		}
-	}
-
-	private void appendChip(ChipGroup chipGroup, ContactModel contactModel) {
-		Chip chip = new Chip(getContext());
-		ChipDrawable chipDrawable = ChipDrawable.createFromAttributes(getContext(),
-			null,
-			0,
-			R.style.Threema_Chip_MessageDetails);
-		chip.setChipDrawable(chipDrawable);
-		chip.setEnsureMinTouchTargetSize(false);
-		chip.setTag(contactModel.getIdentity());
-		chip.setOnClickListener(this);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			chip.setTextAppearance(R.style.Threema_TextAppearance_Chip_ChatNotice);
-		} else {
-			chip.setTextSize(14);
-		}
-
-		new AsyncTask<Void, Void, Bitmap>() {
-			@Override
-			protected Bitmap doInBackground(Void... params) {
-				Bitmap bitmap = contactService.getAvatar(contactModel, false);
-				if (bitmap != null) {
-					return BitmapUtil.replaceTransparency(bitmap, Color.WHITE);
-				}
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Bitmap avatar) {
-				if (avatar != null) {
-					chip.setChipIcon(AvatarConverterUtil.convertToRound(getResources(), avatar));
-				} else {
-					chip.setChipIconResource(R.drawable.ic_contact);
-				}
-			}
-		}.execute();
-
-		chip.setText(NameUtil.getShortName(contactModel));
-		chipGroup.addView(chip);
-	}
-
-	private @StringRes int getStateTextRes(AbstractMessageModel messageModel) {
-		int stateResource = 0;
-		if (messageModel.getState() != null) {
-			switch (messageModel.getState()) {
-				case READ:
-					stateResource = R.string.state_read;
-					break;
-				case USERACK:
-					stateResource = R.string.state_ack;
-					break;
-				case USERDEC:
-					stateResource = R.string.state_dec;
-					break;
-				case DELIVERED:
-					stateResource = R.string.state_delivered;
-					break;
-				case SENT:
-					stateResource = R.string.state_sent;
-					break;
-				case SENDING:
-				case UPLOADING:
-					stateResource = R.string.state_sending;
-					break;
-				case SENDFAILED:
-					stateResource = R.string.state_failed;
-					break;
-				case PENDING:
-					stateResource = R.string.state_pending;
-					break;
-				case TRANSCODING:
-					stateResource = R.string.state_transcoding;
-					break;
-				case CONSUMED:
-					stateResource = R.string.listened_to;
-					break;
-				case FS_KEY_MISMATCH:
-					stateResource = R.string.fs_key_mismatch;
-					break;
-			}
-		} else {
-			stateResource = R.string.state_sent;
-		}
-		return stateResource;
-	}
-
-	@Override
-	public void onClick(View v) {
-		if (v instanceof Chip) {
-			String identity = (String) v.getTag();
-			if (identity != null && !identity.equals(identityStore.getIdentity())) {
-				Intent intent = new Intent(getContext(), ContactDetailActivity.class);
-				intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				ActivityCompat.startActivityForResult(getActivity(), intent, ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL, null);
-			}
-		}
-	}
+    @Override
+    public void onClick(View view) {
+        if (identityStore == null || !(view instanceof Chip)) {
+            return;
+        }
+        final @Nullable String identity = (String) view.getTag();
+        if (identity != null && !identity.equals(identityStore.getIdentity())) {
+            Intent intent = new Intent(getContext(), ContactDetailActivity.class);
+            intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            ActivityCompat.startActivityForResult(
+                requireActivity(),
+                intent,
+                ThreemaActivity.ACTIVITY_ID_CONTACT_DETAIL,
+                null
+            );
+        }
+    }
 }

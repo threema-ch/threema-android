@@ -31,6 +31,13 @@
     <color name="md_theme_light_surfaceTint">#EDA19D</color>
     <color name="md_theme_light_outlineVariant">#f5ddda</color>
     <color name="md_theme_light_scrim">#000000</color>
+    <!-- new tonal roles -->
+    <color name="md_theme_light_surfaceContainerLowest">#faf0f3</color>
+    <color name="md_theme_light_surfaceContainerLow">#faf0f3</color>
+    <color name="md_theme_light_surfaceContainer">#f8e9ec</color>
+    <color name="md_theme_light_surfaceContainerHigh">#f6e4e7</color>
+    <color name="md_theme_light_surfaceContainerHighest">#f3dddf</color>
+
     <color name="md_theme_dark_primary">#FFB5A0</color>
     <color name="md_theme_dark_onPrimary">#850005</color>
     <color name="md_theme_dark_primaryContainer">#872100</color>
@@ -61,4 +68,10 @@
     <color name="md_theme_dark_surfaceTint">#FFB4AA</color>
     <color name="md_theme_dark_outlineVariant">#534341</color>
     <color name="md_theme_dark_scrim">#000000</color>
+    <!-- new tonal roles -->
+    <color name="md_theme_dark_surfaceContainerLowest">#1d1918</color>
+    <color name="md_theme_dark_surfaceContainerLow">#1d1918</color>
+    <color name="md_theme_dark_surfaceContainer">#241e1c</color>
+    <color name="md_theme_dark_surfaceContainerHigh">#2a2220</color>
+    <color name="md_theme_dark_surfaceContainerHighest">#312724</color>
 </resources>

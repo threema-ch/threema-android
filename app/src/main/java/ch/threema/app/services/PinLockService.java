@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.WidgetUtil;
 import ch.threema.base.utils.LoggingUtil;
 

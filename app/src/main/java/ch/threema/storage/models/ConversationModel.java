@@ -40,7 +40,7 @@ public class ConversationModel {
 
 	private final @NonNull Context context;
 
-	private final MessageReceiver receiver;
+	private MessageReceiver<?> receiver;
 
 	private long messageCount;
 
@@ -84,7 +84,6 @@ public class ConversationModel {
 
 	/**
 	 * Return the date used for sorting.
-	 *
 	 * Corresponds to {@link #getLastUpdate()} if set.
 	 */
 	public @NonNull Date getSortDate() {
@@ -151,8 +150,11 @@ public class ConversationModel {
 		return this.receiver.getType();
 	}
 
-	public MessageReceiver getReceiver() {
+	public MessageReceiver<?> getReceiver() {
 		return this.receiver;
+	}
+	public void setReceiver(MessageReceiver<?> receiver) {
+		this.receiver = receiver;
 	}
 
 	@NonNull

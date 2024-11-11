@@ -1969,7 +1969,7 @@ public class CallActivity extends ThreemaActivity implements
 	@Override
 	public void onSelected(String tag, String data) {
 		logger.debug("*** onSelected");
-		if (!TestUtil.empty(tag)) {
+		if (!TestUtil.isEmptyOrNull(tag)) {
 			int ordinal = Integer.valueOf(tag);
 			final AudioDevice device = AudioDevice.values()[ordinal];
 			this.selectAudioDevice(device);

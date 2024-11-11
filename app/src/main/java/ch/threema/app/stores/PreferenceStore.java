@@ -405,7 +405,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	@Nullable
 	public String getStringCompat(String key) {
 		String value = getString(key, true);
-		if (TestUtil.empty(value)) {
+		if (TestUtil.isEmptyOrNull(value)) {
 			value = getString(key);
 			if (value != null) {
 				save(key, value, true);

@@ -96,7 +96,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
 						.setDisplayTags(cursorFactory.getInt(AbstractMessageModel.COLUMN_DISPLAY_TAGS))
 				;
 				String stateString = cursorFactory.getString(AbstractMessageModel.COLUMN_STATE);
-				if (!TestUtil.empty(stateString)) {
+				if (!TestUtil.isEmptyOrNull(stateString)) {
 					try {
 						messageModel.setState(MessageState.valueOf(stateString));
 					}

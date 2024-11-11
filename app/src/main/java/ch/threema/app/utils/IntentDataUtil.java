@@ -143,7 +143,7 @@ public class IntentDataUtil {
 		intent.putExtra(INTENT_DATA_LOCATION_LAT, latLng.getLatitude());
 		intent.putExtra(INTENT_DATA_LOCATION_LNG, latLng.getLongitude());
 		intent.putExtra(INTENT_DATA_LOCATION_PROVIDER, provider);
-		if (TestUtil.empty(name)) {
+		if (TestUtil.isEmptyOrNull(name)) {
 			intent.putExtra(INTENT_DATA_LOCATION_NAME, address);
 		} else {
 			intent.putExtra(INTENT_DATA_LOCATION_NAME, name);
@@ -357,7 +357,7 @@ public class IntentDataUtil {
 		}
 
 		String identity = ContactUtil.getIdentityFromViewIntent(context, intent);
-		if (!TestUtil.empty(identity)) {
+		if (!TestUtil.isEmptyOrNull(identity)) {
 			return contactService.createReceiver(contactService.getByIdentity(identity));
 		}
 
@@ -526,9 +526,9 @@ public class IntentDataUtil {
 
 			if (id >= 0) {
 				if (messageReceiver.getType() == MessageReceiver.Type_CONTACT) {
-					return messageService.getContactMessageModel(id, true);
+					return messageService.getContactMessageModel(id);
 				} else if (messageReceiver.getType() == MessageReceiver.Type_GROUP) {
-					return messageService.getGroupMessageModel(id, true);
+					return messageService.getGroupMessageModel(id);
 				}
 			}
 		}

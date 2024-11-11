@@ -35,8 +35,9 @@
     <string name="webclient_clear_all_sessions">Limpar todas as sessões</string>
     <string name="webclient_clear_all_sessions_confirm">Tem certeza de que deseja interromper e remover todas as sessões?</string>
     <string name="webclient_prefs_debug_tool_summary">Inicie essa ferramenta para depurar problemas com a configuração de uma conexão com o aplicativo para desktop ou o cliente web</string>
-    <string name="webclient_diagnostics">"Diagnóstico para Desktop/Web "</string>
+    <string name="webclient_diagnostics">Diagnóstico para Desktop/Web</string>
     <string name="webclient_diagnostics_start">Iniciar</string>
     <string name="webclient_diagnostics_intro">Pressione o botão Iniciar para começar o teste.</string>
     <string name="webclient_diagnostics_done">Pronto. Se você tiver problemas com o estabelecimento da conexão com o aplicativo para desktop ou com o cliente web, envie este log para o suporte do Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">No momento, esse aplicativo beta para desktop só pode ser vinculado a um dispositivo iOS. Para dispositivos Android, baixe o aplicativo normal para desktop.</string>
 </resources>

@@ -485,7 +485,7 @@ public class Message extends Converter {
 	 */
 	private static void maybePutCaption(MsgpackObjectBuilder builder, String field, AbstractMessageModel message) {
 		String caption = message.getCaption();
-		if (TestUtil.empty(caption) && message.getType() == ch.threema.storage.models.MessageType.FILE) {
+		if (TestUtil.isEmptyOrNull(caption) && message.getType() == ch.threema.storage.models.MessageType.FILE) {
 			//use description as caption!
 			//hack!
 			caption = message.getFileData().getCaption();

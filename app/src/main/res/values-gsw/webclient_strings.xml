@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Tipped Sie ufde «Start»-Button, zum de Test z’starte.</string>
     <string name="webclient_diagnostics_done">Beendet. Falls Problem bim Ufbau vode Desktop-/Web-Verbindig ufträtted, schicked Sie das Log bitte an Threema-Support.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Im Momänt laht sich die Beta-App für Desktop nur miteme iOS-Grät verchnüpfe. Laded Sie für Android-Grät bitte di regulär Desktop-App abe.</string>
 </resources>

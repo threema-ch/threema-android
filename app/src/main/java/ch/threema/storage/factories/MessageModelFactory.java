@@ -47,508 +47,500 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
-	public MessageModelFactory(DatabaseServiceNew databaseService) {
-		super(databaseService, MessageModel.TABLE);
-	}
+    public MessageModelFactory(DatabaseServiceNew databaseService) {
+        super(databaseService, MessageModel.TABLE);
+    }
 
-	public List<MessageModel> getAll() {
-		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null));
-	}
+    public List<MessageModel> getAll() {
+        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null));
+    }
 
-	public MessageModel getByApiMessageIdAndIdentity(MessageId apiMessageId, String identity) {
-		return getFirst(
-				MessageModel.COLUMN_API_MESSAGE_ID + "=?" +
-						" AND " + MessageModel.COLUMN_IDENTITY + "=?",
-				new String[]{
-						apiMessageId.toString(),
-						identity
-				});
-	}
+    public MessageModel getByApiMessageIdAndIdentity(MessageId apiMessageId, String identity) {
+        return getFirst(
+            MessageModel.COLUMN_API_MESSAGE_ID + "=?" +
+                " AND " + MessageModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                apiMessageId.toString(),
+                identity
+            });
+    }
 
-	public MessageModel getByApiMessageIdAndIdentityAndIsOutbox(MessageId apiMessageId, @NonNull String recipientIdentity, boolean isOutbox) {
-		return getFirst(
-			MessageModel.COLUMN_API_MESSAGE_ID + "=?"
-				+ " AND " + MessageModel.COLUMN_IDENTITY + "=?"
-				+ " AND " + MessageModel.COLUMN_OUTBOX + "=?",
-			new String[]{
-				apiMessageId.toString(),
-				recipientIdentity,
-				isOutbox ? "1" : "0"
-			});
-	}
+    public MessageModel getByApiMessageIdAndIdentityAndIsOutbox(MessageId apiMessageId, @NonNull String recipientIdentity, boolean isOutbox) {
+        return getFirst(
+            MessageModel.COLUMN_API_MESSAGE_ID + "=?"
+                + " AND " + MessageModel.COLUMN_IDENTITY + "=?"
+                + " AND " + MessageModel.COLUMN_OUTBOX + "=?",
+            new String[]{
+                apiMessageId.toString(),
+                recipientIdentity,
+                isOutbox ? "1" : "0"
+            });
+    }
 
-	public MessageModel getById(int id) {
-		return getFirst(
-				MessageModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(id)
-				});
-	}
+    public MessageModel getById(int id) {
+        return getFirst(
+            MessageModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(id)
+            });
+    }
 
-	public MessageModel getByUid(String uid) {
-		return getFirst(
-				MessageModel.COLUMN_UID + "=?",
-				new String[]{
-						uid
-				});
-	}
+    public MessageModel getByUid(String uid) {
+        return getFirst(
+            MessageModel.COLUMN_UID + "=?",
+            new String[]{
+                uid
+            });
+    }
 
-	public List<AbstractMessageModel> getMessagesByText(@Nullable String text, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
-		String displayClause, sortClause;
-		if (starredOnly) {
-			displayClause = " AND (displayTags & " + DISPLAY_TAG_STARRED + ") > 0 ";
-		} else {
-			displayClause = "";
-		}
+    public List<AbstractMessageModel> getMessagesByText(@Nullable String text, boolean includeArchived, boolean starredOnly, boolean sortAscending) {
+        String displayClause, sortClause;
+        if (starredOnly) {
+            displayClause = " AND (displayTags & " + DISPLAY_TAG_STARRED + ") > 0 ";
+        } else {
+            displayClause = "";
+        }
 
-		if (sortAscending) {
-			sortClause = " ASC ";
-		} else {
-			sortClause = " DESC ";
-		}
+        if (sortAscending) {
+            sortClause = " ASC ";
+        } else {
+            sortClause = " DESC ";
+        }
 
-		if (includeArchived) {
-			if (text == null) {
-				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
-					"SELECT * FROM " + MessageModel.TABLE +
-						" WHERE isStatusMessage = 0" +
-						displayClause +
-						" ORDER BY createdAtUtc" + sortClause +
-						"LIMIT 200",
-					new String[]{}));
-			}
+        if (includeArchived) {
+            if (text == null) {
+                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                    "SELECT * FROM " + MessageModel.TABLE +
+                        " WHERE isStatusMessage = 0" +
+                        displayClause +
+                        " ORDER BY createdAtUtc" + sortClause +
+                        "LIMIT 200",
+                    new String[]{}));
+            }
 
-			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
-				"SELECT * FROM " + MessageModel.TABLE +
-					" WHERE ( ( body LIKE ? " +
-					" AND type IN (" +
-					MessageType.TEXT.ordinal() + "," +
-					MessageType.LOCATION.ordinal() + "," +
-					MessageType.BALLOT.ordinal() + ") )" +
-					" OR ( caption LIKE ? " +
-					" AND type IN (" +
-					MessageType.IMAGE.ordinal() + "," +
-					MessageType.FILE.ordinal() + ") ) )" +
-					" AND isStatusMessage = 0" +
-					displayClause +
-					" ORDER BY createdAtUtc" + sortClause +
-					"LIMIT 200",
-				new String[]{
-					"%" + text + "%",
-					"%" + text + "%"
-				}));
-		} else {
-			if (text == null) {
-				return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
-					"SELECT * FROM " + MessageModel.TABLE + " m" +
-						" INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
-						" WHERE c.isArchived = 0" +
-						" AND m.isStatusMessage = 0" +
-						displayClause +
-						" ORDER BY m.createdAtUtc" + sortClause +
-						"LIMIT 200",
-					new String[]{}));
-			}
-			return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
-				"SELECT * FROM " + MessageModel.TABLE + " m" +
-					" INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
-					" WHERE c.isArchived = 0" +
-					" AND ( ( m.body LIKE ? " +
-					" AND m.type IN (" +
-					MessageType.TEXT.ordinal() + "," +
-					MessageType.LOCATION.ordinal() + "," +
-					MessageType.BALLOT.ordinal() + ") )" +
-					" OR ( m.caption LIKE ? " +
-					" AND m.type IN (" +
-					MessageType.IMAGE.ordinal() + "," +
-					MessageType.FILE.ordinal() + ") ) )" +
-					" AND m.isStatusMessage = 0" +
-					displayClause +
-					" ORDER BY m.createdAtUtc" + sortClause +
-					"LIMIT 200",
-				new String[]{
-					"%" + text + "%",
-					"%" + text + "%"
-				}));
-		}
-	}
+            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                "SELECT * FROM " + MessageModel.TABLE +
+                    " WHERE ( ( body LIKE ? " +
+                    " AND type IN (" +
+                    MessageType.TEXT.ordinal() + "," +
+                    MessageType.LOCATION.ordinal() + "," +
+                    MessageType.BALLOT.ordinal() + ") )" +
+                    " OR ( caption LIKE ? " +
+                    " AND type IN (" +
+                    MessageType.IMAGE.ordinal() + "," +
+                    MessageType.FILE.ordinal() + ") ) )" +
+                    " AND isStatusMessage = 0" +
+                    displayClause +
+                    " ORDER BY createdAtUtc" + sortClause +
+                    "LIMIT 200",
+                new String[]{
+                    "%" + text + "%",
+                    "%" + text + "%"
+                }));
+        } else {
+            if (text == null) {
+                return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                    "SELECT * FROM " + MessageModel.TABLE + " m" +
+                        " INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
+                        " WHERE c.isArchived = 0" +
+                        " AND m.isStatusMessage = 0" +
+                        displayClause +
+                        " ORDER BY m.createdAtUtc" + sortClause +
+                        "LIMIT 200",
+                    new String[]{}));
+            }
+            return convertAbstractList(this.databaseService.getReadableDatabase().rawQuery(
+                "SELECT * FROM " + MessageModel.TABLE + " m" +
+                    " INNER JOIN " + ContactModel.TABLE + " c ON c.identity = m.identity" +
+                    " WHERE c.isArchived = 0" +
+                    " AND ( ( m.body LIKE ? " +
+                    " AND m.type IN (" +
+                    MessageType.TEXT.ordinal() + "," +
+                    MessageType.LOCATION.ordinal() + "," +
+                    MessageType.BALLOT.ordinal() + ") )" +
+                    " OR ( m.caption LIKE ? " +
+                    " AND m.type IN (" +
+                    MessageType.IMAGE.ordinal() + "," +
+                    MessageType.FILE.ordinal() + ") ) )" +
+                    " AND m.isStatusMessage = 0" +
+                    displayClause +
+                    " ORDER BY m.createdAtUtc" + sortClause +
+                    "LIMIT 200",
+                new String[]{
+                    "%" + text + "%",
+                    "%" + text + "%"
+                }));
+        }
+    }
 
-	private List<AbstractMessageModel> convertAbstractList(Cursor cursor) {
-		List<AbstractMessageModel> result = new ArrayList<AbstractMessageModel>();
-		if(cursor != null) {
-			try {
-				while (cursor.moveToNext()) {
-					result.add(convert(cursor));
-				}
-			}
-			finally {
-				cursor.close();
-			}
-		}
-		return result;
-	}
+    private List<AbstractMessageModel> convertAbstractList(Cursor cursor) {
+        List<AbstractMessageModel> result = new ArrayList<AbstractMessageModel>();
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    result.add(convert(cursor));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return result;
+    }
 
-	private List<MessageModel> convertList(Cursor c) {
-		List<MessageModel> result = new ArrayList<>();
-		if(c != null) {
-			try {
-				while (c.moveToNext()) {
-					result.add(convert(c));
-				}
-			}
-			finally {
-				c.close();
-			}
-		}
-		return result;
-	}
+    private List<MessageModel> convertList(Cursor c) {
+        List<MessageModel> result = new ArrayList<>();
+        if (c != null) {
+            try {
+                while (c.moveToNext()) {
+                    result.add(convert(c));
+                }
+            } finally {
+                c.close();
+            }
+        }
+        return result;
+    }
 
-	private MessageModel convert(Cursor cursor) {
-		if(cursor != null && cursor.getPosition() >= 0) {
+    private MessageModel convert(Cursor cursor) {
+        if (cursor != null && cursor.getPosition() >= 0) {
 
-			MessageModel c = new MessageModel();
+            MessageModel c = new MessageModel();
 
-			//convert default
-			super.convert(c, new CursorHelper(cursor, columnIndexCache));
+            //convert default
+            super.convert(c, new CursorHelper(cursor, columnIndexCache));
 
-			return c;
-		}
+            return c;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public long countMessages(String identity) {
-		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
-			"SELECT COUNT(*) FROM " + this.getTableName()
-				+ " WHERE " + MessageModel.COLUMN_IDENTITY + "=?",
-			new String[]{
-				identity
-			}
-		));
-	}
+    public long countMessages(String identity) {
+        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+            "SELECT COUNT(*) FROM " + this.getTableName()
+                + " WHERE " + MessageModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                identity
+            }
+        ));
+    }
 
-	public long countUnreadMessages(String identity) {
-		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
-				"SELECT COUNT(*) FROM " + this.getTableName()
-						+ " WHERE " + MessageModel.COLUMN_IDENTITY + "=?"
-						+ " AND " + MessageModel.COLUMN_OUTBOX + "=0"
-						+ " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
-						+ " AND " + MessageModel.COLUMN_IS_READ + "=0"
-						+ " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
-						+ " AND " + MessageModel.COLUMN_DELETED_AT + " IS NULL",
-				new String[]{
-						identity
-				}
-		));
-	}
+    public long countUnreadMessages(String identity) {
+        return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
+            "SELECT COUNT(*) FROM " + this.getTableName()
+                + " WHERE " + MessageModel.COLUMN_IDENTITY + "=?"
+                + " AND " + MessageModel.COLUMN_OUTBOX + "=0"
+                + " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
+                + " AND " + MessageModel.COLUMN_IS_READ + "=0"
+                + " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
+                + " AND " + MessageModel.COLUMN_DELETED_AT + " IS NULL",
+            new String[]{
+                identity
+            }
+        ));
+    }
 
-	/**
-	 * Get the number of contact messages that are currently in rejected state. Only messages up to
-	 * two weeks old are considered.
-	 *
-	 * @return the number of recent messages that have been rejected
-	 */
-	public long countRecentForwardSecurityFailedMessages() {
-		long currentDate = new Date().getTime();
-		long twoWeeks = 2 * DateUtils.WEEK_IN_MILLIS;
+    /**
+     * Get the number of contact messages that are currently in rejected state. Only messages up to
+     * two weeks old are considered.
+     *
+     * @return the number of recent messages that have been rejected
+     */
+    public long countRecentForwardSecurityFailedMessages() {
+        long currentDate = new Date().getTime();
+        long twoWeeks = 2 * DateUtils.WEEK_IN_MILLIS;
 
-		return DatabaseUtil.count(databaseService.getReadableDatabase().rawQuery(
-				"SELECT COUNT(*) FROM " + getTableName()
-					+ " WHERE " + AbstractMessageModel.COLUMN_STATE + "=?"
-					+ " AND " + AbstractMessageModel.COLUMN_CREATED_AT + ">?",
-				new String[]{
-					MessageState.FS_KEY_MISMATCH.toString(),
-					String.valueOf(currentDate - twoWeeks)
-				}
-			)
-		);
-	}
+        return DatabaseUtil.count(databaseService.getReadableDatabase().rawQuery(
+                "SELECT COUNT(*) FROM " + getTableName()
+                    + " WHERE " + AbstractMessageModel.COLUMN_STATE + "=?"
+                    + " AND " + AbstractMessageModel.COLUMN_CREATED_AT + ">?",
+                new String[]{
+                    MessageState.FS_KEY_MISMATCH.toString(),
+                    String.valueOf(currentDate - twoWeeks)
+                }
+            )
+        );
+    }
 
-	public List<MessageModel> getUnreadMessages(String identity) {
-		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
-			null,
-			MessageModel.COLUMN_IDENTITY + "=?"
-				+ " AND " + MessageModel.COLUMN_OUTBOX + "=0"
-				+ " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
-				+ " AND " + MessageModel.COLUMN_IS_READ + "=0"
-				+ " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
-			new String[]{
-				identity
-			},
-			null,
-			null,
-			null));
-	}
+    public List<MessageModel> getUnreadMessages(String identity) {
+        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+            null,
+            MessageModel.COLUMN_IDENTITY + "=?"
+                + " AND " + MessageModel.COLUMN_OUTBOX + "=0"
+                + " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
+                + " AND " + MessageModel.COLUMN_IS_READ + "=0"
+                + " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
+            new String[]{
+                identity
+            },
+            null,
+            null,
+            null));
+    }
 
-	public MessageModel getLastMessage(String identity) {
-		Cursor cursor = this.databaseService.getReadableDatabase().query(
-				this.getTableName(),
-				null,
-				MessageModel.COLUMN_IDENTITY + "=?",
-				new String[]{identity},
-				null,
-				null,
-				MessageModel.COLUMN_ID +" DESC",
-				"1");
+    public MessageModel getLastMessage(String identity) {
+        Cursor cursor = this.databaseService.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            MessageModel.COLUMN_IDENTITY + "=?",
+            new String[]{identity},
+            null,
+            null,
+            MessageModel.COLUMN_ID + " DESC",
+            "1");
 
-		if(cursor != null ) {
-			try {
-				if (cursor.moveToFirst()) {
-					return convert(cursor);
-				}
-			}
-			finally {
-				cursor.close();
-			}
-		}
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    return convert(cursor);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public long countByTypes(MessageType[] messageTypes) {
-		String[] args = new String[messageTypes.length];
-		for(int n = 0; n < messageTypes.length; n++) {
-			args[n] = String.valueOf(messageTypes[n].ordinal());
-		}
-		Cursor c = this.databaseService.getReadableDatabase().rawQuery(
-				"SELECT COUNT(*) FROM " + this.getTableName()
-						+ " WHERE " + MessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
-				args
-		);
+    public long countByTypes(MessageType[] messageTypes) {
+        String[] args = new String[messageTypes.length];
+        for (int n = 0; n < messageTypes.length; n++) {
+            args[n] = String.valueOf(messageTypes[n].ordinal());
+        }
+        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+            "SELECT COUNT(*) FROM " + this.getTableName()
+                + " WHERE " + MessageModel.COLUMN_TYPE + " IN (" + DatabaseUtil.makePlaceholders(args.length) + ")",
+            args
+        );
 
-		return DatabaseUtil.count(c);
-	}
+        return DatabaseUtil.count(c);
+    }
 
-	public boolean createOrUpdate(MessageModel messageModel) {
-		boolean insert = true;
-		if(messageModel.getId() > 0) {
-			Cursor cursor = this.databaseService.getReadableDatabase().query(
-					this.getTableName(),
-					null,
-					MessageModel.COLUMN_ID + "=?",
-					new String[]{
-							String.valueOf(messageModel.getId())
-					},
-					null,
-					null,
-					null
-			);
+    public boolean createOrUpdate(@NonNull MessageModel messageModel) {
+        boolean insert = true;
+        if (messageModel.getId() > 0) {
+            Cursor cursor = this.databaseService.getReadableDatabase().query(
+                this.getTableName(),
+                null,
+                MessageModel.COLUMN_ID + "=?",
+                new String[]{
+                    String.valueOf(messageModel.getId())
+                },
+                null,
+                null,
+                null
+            );
 
+            if (cursor != null) {
+                try (cursor) {
+                    insert = !cursor.moveToNext();
+                }
+            }
+        }
 
-			if (cursor != null) {
-				try {
-					insert = !cursor.moveToNext();
-				} finally {
-					cursor.close();
-				}
-			}
-		}
+        if (insert) {
+            return create(messageModel);
+        } else {
+            return update(messageModel);
+        }
+    }
 
-		if(insert) {
-			return create(messageModel);
-		}
-		else {
-			return update(messageModel);
-		}
-	}
+    public boolean create(MessageModel messageModel) {
+        ContentValues contentValues = this.buildContentValues(messageModel);
+        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        if (newId > 0) {
+            messageModel.setId((int) newId);
+            return true;
+        }
+        return false;
+    }
 
-	public boolean create(MessageModel messageModel) {
-		ContentValues contentValues = this.buildContentValues(messageModel);
-		long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-		if (newId > 0) {
-			messageModel.setId((int) newId);
-			return true;
-		}
-		return false;
-	}
+    public boolean update(MessageModel messageModel) {
+        ContentValues contentValues = this.buildContentValues(messageModel);
+        this.databaseService.getWritableDatabase().update(this.getTableName(),
+            contentValues,
+            MessageModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(messageModel.getId())
+            });
+        return true;
+    }
 
-	public boolean update(MessageModel messageModel) {
-		ContentValues contentValues = this.buildContentValues(messageModel);
-		this.databaseService.getWritableDatabase().update(this.getTableName(),
-				contentValues,
-				MessageModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(messageModel.getId())
-				});
-		return true;
-	}
+    public int delete(MessageModel messageModel) {
+        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+            MessageModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(messageModel.getId())
+            });
+    }
 
-	public int delete(MessageModel messageModel) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
-				MessageModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(messageModel.getId())
-				});
-	}
+    public List<MessageModel> find(String identity, MessageService.MessageFilter filter) {
+        QueryBuilder queryBuilder = new QueryBuilder();
 
-	public List<MessageModel> find(String identity, MessageService.MessageFilter filter) {
-		QueryBuilder queryBuilder = new QueryBuilder();
+        //sort by id!
+        String orderBy = MessageModel.COLUMN_ID + " DESC";
+        List<String> placeholders = new ArrayList<>();
 
-		//sort by id!
-		String orderBy = MessageModel.COLUMN_ID + " DESC";
-		List<String> placeholders = new ArrayList<>();
+        queryBuilder.appendWhere(MessageModel.COLUMN_IDENTITY + "=?");
+        placeholders.add(identity);
 
-		queryBuilder.appendWhere(MessageModel.COLUMN_IDENTITY +"=?");
-		placeholders.add(identity);
+        //default filters
+        this.appendFilter(queryBuilder, filter, placeholders);
+        queryBuilder.setTables(this.getTableName());
+        List<MessageModel> messageModels = convertList(queryBuilder.query(
+            this.databaseService.getReadableDatabase(),
+            null,
+            null,
+            placeholders.toArray(new String[placeholders.size()]),
+            null,
+            null,
+            orderBy,
+            this.limitFilter(filter)));
 
-		//default filters
-		this.appendFilter(queryBuilder, filter, placeholders);
-		queryBuilder.setTables(this.getTableName());
-		List<MessageModel> messageModels = convertList(queryBuilder.query(
-				this.databaseService.getReadableDatabase(),
-				null,
-				null,
-				placeholders.toArray(new String[placeholders.size()]),
-				null,
-				null,
-				orderBy,
-				this.limitFilter(filter)));
+        this.postFilter(messageModels, filter);
 
-		this.postFilter(messageModels, filter);
+        return messageModels;
+    }
 
-		return messageModels;
-	}
+    /**
+     * Check if there is a call with the given identity and call id within the latest calls.
+     *
+     * @param identity the identity of the call partner
+     * @param callId   the call id
+     * @param limit    the maximum number of latest calls
+     * @return {@code true} if this call exists in the latest calls, {@code false} otherwise
+     */
+    public boolean hasVoipStatusForCallId(@NonNull String identity, long callId, int limit) {
+        QueryBuilder queryBuilder = new QueryBuilder();
 
-	/**
-	 * Check if there is a call with the given identity and call id within the latest calls.
-	 *
-	 * @param identity the identity of the call partner
-	 * @param callId the call id
-	 * @param limit the maximum number of latest calls
-	 * @return {@code true} if this call exists in the latest calls, {@code false} otherwise
-	 */
-	public boolean hasVoipStatusForCallId(@NonNull String identity, long callId, int limit) {
-		QueryBuilder queryBuilder = new QueryBuilder();
+        String orderBy = AbstractMessageModel.COLUMN_CREATED_AT + " DESC";
 
-		String orderBy = AbstractMessageModel.COLUMN_CREATED_AT + " DESC";
+        queryBuilder.appendWhere(AbstractMessageModel.COLUMN_IDENTITY + "=?");
+        queryBuilder.appendWhere(AbstractMessageModel.COLUMN_TYPE + "=?");
 
-		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_IDENTITY + "=?");
-		queryBuilder.appendWhere(AbstractMessageModel.COLUMN_TYPE + "=?");
+        queryBuilder.setTables(this.getTableName());
 
-		queryBuilder.setTables(this.getTableName());
+        Cursor cursor = queryBuilder.query(this.databaseService.getReadableDatabase(),
+            null,
+            null,
+            new String[]{identity, String.valueOf(MessageType.VOIP_STATUS.ordinal())},
+            null,
+            null,
+            orderBy,
+            String.valueOf(limit));
 
-		Cursor cursor = queryBuilder.query(this.databaseService.getReadableDatabase(),
-			null,
-			null,
-			new String[]{identity, String.valueOf(MessageType.VOIP_STATUS.ordinal())},
-			null,
-			null,
-			orderBy,
-			String.valueOf(limit));
+        if (cursor != null) {
+            try (cursor) {
+                List<MessageModel> messageModels = convertList(cursor);
+                for (MessageModel messageModel : messageModels) {
+                    if (messageModel.getVoipStatusData() != null && callId == messageModel.getVoipStatusData().getCallId()) {
+                        return true;
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return false;
+    }
 
-		if (cursor != null) {
-			try (cursor) {
-				List<MessageModel> messageModels = convertList(cursor);
-				for (MessageModel messageModel : messageModels) {
-					if (messageModel.getVoipStatusData() != null && callId == messageModel.getVoipStatusData().getCallId()) {
-						return true;
-					}
-				}
-			} finally {
-				cursor.close();
-			}
-		}
-		return false;
-	}
+    public List<MessageModel> getByIdentityUnsorted(String identity) {
+        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+            null,
+            MessageModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                identity
+            },
+            null,
+            null,
+            null));
+    }
 
-	public List<MessageModel> getByIdentityUnsorted(String identity) {
-		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
-				null,
-				MessageModel.COLUMN_IDENTITY + "=?",
-				new String[]{
-						identity
-				},
-				null,
-				null,
-				null));
-	}
+    private MessageModel getFirst(String selection, String[] selectionArgs) {
+        Cursor cursor = null;
 
-	private MessageModel getFirst(String selection, String[] selectionArgs) {
-		Cursor cursor = null;
+        try {
+            cursor = this.databaseService.getReadableDatabase().query(
+                this.getTableName(),
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null
+            );
 
-		try {
-			cursor = this.databaseService.getReadableDatabase().query (
-				this.getTableName(),
-				null,
-				selection,
-				selectionArgs,
-				null,
-				null,
-				null
-			);
+            if (cursor != null && cursor.moveToFirst()) {
+                return convert(cursor);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
 
-			if (cursor != null && cursor.moveToFirst()) {
-				return convert(cursor);
-			}
-		}
-		finally {
-			if (cursor != null) {
-				cursor.close();
-			}
-		}
-		return null;
-	}
+    @Override
+    public String[] getStatements() {
+        return new String[]{
+            //create table
+            "CREATE TABLE `" + MessageModel.TABLE + "`(" +
+                "`" + MessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                "`" + MessageModel.COLUMN_UID + "` VARCHAR , " +
+                "`" + MessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
+                "`" + MessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
+                //TODO(ANDR-XXXX): change to TINYINT
+                "`" + MessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
+                "`" + MessageModel.COLUMN_TYPE + "` INTEGER , " +
+                "`" + MessageModel.COLUMN_BODY + "` VARCHAR , " +
+                "`" + MessageModel.COLUMN_CORRELATION_ID + "` VARCHAR , " +
+                "`" + MessageModel.COLUMN_CAPTION + "` VARCHAR , " +
+                //TODO(ANDR-XXXX): change to TINYINT
+                "`" + MessageModel.COLUMN_IS_READ + "` SMALLINT , " +
+                //TODO(ANDR-XXXX): change to TINYINT
+                "`" + MessageModel.COLUMN_IS_SAVED + "` SMALLINT , " +
+                "`" + MessageModel.COLUMN_IS_QUEUED + "` TINYINT , " +
+                "`" + MessageModel.COLUMN_STATE + "` VARCHAR , " +
+                "`" + MessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
+                "`" + MessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
+                "`" + MessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
+                //TODO(ANDR-XXXX): change to TINYINT
+                "`" + MessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
+                "`" + MessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
+                "`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
+                "`" + MessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
+                "`" + MessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
+                "`" + MessageModel.COLUMN_READ_AT + "` DATETIME ," +
+                "`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
+                "`" + MessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
+                "`" + MessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
+                "`" + MessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
-	@Override
-	public String[] getStatements() {
-		return new String[]{
-				//create table
-				"CREATE TABLE `" + MessageModel.TABLE + "`(" +
-						"`" + MessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
-						"`" + MessageModel.COLUMN_UID + "` VARCHAR , " +
-						"`" + MessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
-						"`" + MessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
-						//TODO: change to TINYINT
-						"`" + MessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
-						"`" + MessageModel.COLUMN_TYPE + "` INTEGER , " +
-						"`" + MessageModel.COLUMN_BODY + "` VARCHAR , " +
-						"`" + MessageModel.COLUMN_CORRELATION_ID + "` VARCHAR , " +
-						"`" + MessageModel.COLUMN_CAPTION + "` VARCHAR , " +
-						//TODO: change to TINYINT
-						"`" + MessageModel.COLUMN_IS_READ + "` SMALLINT , " +
-						//TODO: change to TINYINT
-						"`" + MessageModel.COLUMN_IS_SAVED + "` SMALLINT , " +
-						"`" + MessageModel.COLUMN_IS_QUEUED + "` TINYINT , " +
-						"`" + MessageModel.COLUMN_STATE + "` VARCHAR , " +
-						"`" + MessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
-						"`" + MessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
-						"`" + MessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
-						//TODO: change to TINYINT
-						"`" + MessageModel.COLUMN_IS_STATUS_MESSAGE +"` SMALLINT ," +
-						"`" + MessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID +"` VARCHAR ," +
-						"`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE +"` TINYINT ," +
-						"`" + MessageModel.COLUMN_MESSAGE_FLAGS +"` INT ," +
-						"`" + MessageModel.COLUMN_DELIVERED_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_READ_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE +"` TINYINT DEFAULT 0 ," +
-						"`" + MessageModel.COLUMN_DISPLAY_TAGS +"` TINYINT DEFAULT 0 ," +
-						"`" + MessageModel.COLUMN_EDITED_AT +"` DATETIME ," +
-						"`" + MessageModel.COLUMN_DELETED_AT +"` DATETIME );",
-
-			//indices
-				"CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_UID +"` )",
-				"CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_IDENTITY +"` )",
-				"CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_API_MESSAGE_ID +"` )",
-				"CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_OUTBOX +"` )",
-				"CREATE INDEX `messageCorrelationIdIx` ON `" + MessageModel.TABLE + "` ( `"+ MessageModel.COLUMN_CORRELATION_ID +"` )",
-				"CREATE INDEX `message_count_idx` ON `" + MessageModel.TABLE
-						+ "`(`"  + MessageModel.COLUMN_IDENTITY
-						+ "`, `" + MessageModel.COLUMN_OUTBOX
-						+ "`, `" + MessageModel.COLUMN_IS_SAVED
-						+ "`, `" + MessageModel.COLUMN_IS_READ
-						+ "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
-						+ "`)",
-				"CREATE INDEX `message_state_idx` ON `" + MessageModel.TABLE
-					+ "`(`"  + AbstractMessageModel.COLUMN_TYPE
-					+ "`, `" + AbstractMessageModel.COLUMN_STATE
-					+ "`, `" + AbstractMessageModel.COLUMN_OUTBOX
-					+ "`)"
-		};
-	}
+            //indices
+            "CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
+            "CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_IDENTITY + "` )",
+            "CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_API_MESSAGE_ID + "` )",
+            "CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_OUTBOX + "` )",
+            "CREATE INDEX `messageCorrelationIdIx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_CORRELATION_ID + "` )",
+            "CREATE INDEX `message_count_idx` ON `" + MessageModel.TABLE
+                + "`(`" + MessageModel.COLUMN_IDENTITY
+                + "`, `" + MessageModel.COLUMN_OUTBOX
+                + "`, `" + MessageModel.COLUMN_IS_SAVED
+                + "`, `" + MessageModel.COLUMN_IS_READ
+                + "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
+                + "`)",
+            "CREATE INDEX `message_state_idx` ON `" + MessageModel.TABLE
+                + "`(`" + AbstractMessageModel.COLUMN_TYPE
+                + "`, `" + AbstractMessageModel.COLUMN_STATE
+                + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+                + "`)"
+        };
+    }
 }

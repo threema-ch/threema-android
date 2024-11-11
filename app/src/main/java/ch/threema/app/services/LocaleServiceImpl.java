@@ -93,7 +93,7 @@ public class LocaleServiceImpl implements LocaleService {
 	@Override
 	public String getCountryCodePhonePrefix() {
 		String region = getCountryIsoCode();
-		if (!TestUtil.empty(region)) {
+		if (!TestUtil.isEmptyOrNull(region)) {
 			int countryCode = getPhoneNumberUtil().getCountryCodeForRegion(region);
 			if (countryCode > 0) {
 				return "+" + countryCode;

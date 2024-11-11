@@ -119,7 +119,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 			uniqueId = this.distributionListService.getUniqueIdString(model.getDistributionList());
 		}
 
-		if (TestUtil.empty(uniqueId)) {
+		if (TestUtil.isEmptyOrNull(uniqueId)) {
 			logger.warn("Cannot send updates, unique ID is null");
 			return;
 		} else if (this.hiddenChatsListService.has(uniqueId)) {

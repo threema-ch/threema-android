@@ -649,7 +649,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 	@Override
 	public void restoreBackup(String identity, String password, ThreemaSafeServerInfo serverInfo) throws ThreemaException, IOException {
-		if (TestUtil.empty(password) || serverInfo == null || TestUtil.empty(identity) || identity.length() != ProtocolDefines.IDENTITY_LEN) {
+		if (TestUtil.isEmptyOrNull(password) || serverInfo == null || TestUtil.isEmptyOrNull(identity) || identity.length() != ProtocolDefines.IDENTITY_LEN) {
 			throw new ThreemaException("Illegal arguments");
 		}
 
@@ -800,7 +800,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		byte[] privateKey, publicKey;
 
 		String encodedPrivateKey = user.getString(TAG_SAFE_USER_PRIVATE_KEY);
-		if (TestUtil.empty(encodedPrivateKey)) {
+		if (TestUtil.isEmptyOrNull(encodedPrivateKey)) {
 			throw new ThreemaException("Invalid JSON");
 		}
 		privateKey = Base64.decode(encodedPrivateKey);
@@ -876,7 +876,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	}
 
 	private void addUserLink(String type, String value) {
-		if (TestUtil.empty(type, value)) return;
+		if (TestUtil.isEmptyOrNull(type, value)) return;
 
 		switch (type) {
 			case TAG_SAFE_USER_LINK_TYPE_EMAIL:
@@ -958,7 +958,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					ContactModel contactModel = contactService.getByIdentity(result.identity);
 					if (contactModel == null) {
 						// create a new contact
-						if (verificationLevel == VerificationLevel.FULLY_VERIFIED && !TestUtil.empty(publicKey)) {
+						if (verificationLevel == VerificationLevel.FULLY_VERIFIED && !TestUtil.isEmptyOrNull(publicKey)) {
 							// use the public key from the backup
 							contactModel = new ContactModel(identity, Base64.decode(publicKey));
 							contactModel.verificationLevel = verificationLevel;
@@ -1058,7 +1058,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						JSONArray members = group.getJSONArray(TAG_SAFE_GROUP_MEMBERS);
 						for (int j = 0; j < members.length(); j++) {
 							String identity = members.getString(j);
-							if (!TestUtil.empty(identity)) {
+							if (!TestUtil.isEmptyOrNull(identity)) {
 								if (contactService.getByIdentity(identity) == null) {
 									// fetch group contact if not in contact list
 									try {
@@ -1121,7 +1121,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 				JSONArray members = distributionlist.getJSONArray(TAG_SAFE_DISTRIBUTIONLIST_MEMBERS);
 				for (int j = 0; j < members.length(); j++) {
 					String identity = members.getString(j);
-					if (!TestUtil.empty(identity)) {
+					if (!TestUtil.isEmptyOrNull(identity)) {
 						if (contactService.getByIdentity(identity) == null) {
 							// fetch contact if not in contact list
 							try {

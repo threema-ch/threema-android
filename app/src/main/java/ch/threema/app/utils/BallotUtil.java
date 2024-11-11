@@ -88,7 +88,7 @@ public class BallotUtil {
 	public static boolean isMine(BallotModel model, UserService userService) {
 		return model != null
 				&& userService != null
-				&& !TestUtil.empty(userService.getIdentity())
+				&& !TestUtil.isEmptyOrNull(userService.getIdentity())
 				&& TestUtil.compare(userService.getIdentity(), model.getCreatorIdentity());
 	}
 

@@ -145,6 +145,7 @@ public class CameraActivity extends ThreemaAppCompatActivity implements CameraFr
 
 	@Override
 	public void onError(String message) {
+        logger.error("Could not take a picture or record a video: {}", message);
 		setResult(RESULT_CANCELED);
 		this.finish();
 	}

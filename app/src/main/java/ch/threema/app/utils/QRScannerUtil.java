@@ -69,7 +69,7 @@ public class QRScannerUtil {
 		@QRCodeServiceImpl.QRCodeColor int qrType
 	) {
 		Intent intent = new Intent(context, QRScannerActivity.class);
-		if (!TestUtil.empty(hint)) {
+		if (!TestUtil.isEmptyOrNull(hint)) {
 			intent.putExtra(QRScannerActivity.KEY_HINT_TEXT, hint);
 		}
 		intent.putExtra(QRScannerActivity.KEY_QR_TYPE, qrType);
@@ -81,7 +81,7 @@ public class QRScannerUtil {
 
 	public void initiateGeneralThreemaQrScanner(Activity activity, String hint) {
 		Intent intent = new Intent(activity, BaseQrScannerActivity.class);
-		if (!TestUtil.empty(hint)) {
+		if (!TestUtil.isEmptyOrNull(hint)) {
 			intent.putExtra(QRScannerActivity.KEY_HINT_TEXT, hint);
 		}
 		if (activity != null) {

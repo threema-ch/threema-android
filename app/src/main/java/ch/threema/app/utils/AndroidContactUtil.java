@@ -296,7 +296,7 @@ public class AndroidContactUtil {
 					//lastname, firstname
 					String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
 
-					if (!TestUtil.empty(alternativeSortKey)) {
+					if (!TestUtil.isEmptyOrNull(alternativeSortKey)) {
 						String[] lastNameFirstName = alternativeSortKey.split(",");
 						if (lastNameFirstName.length == 2) {
 							String lastName = lastNameFirstName[0].trim();
@@ -538,7 +538,7 @@ public class AndroidContactUtil {
 		ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
 
 		for (Map.Entry<String, RawContactInfo> rawContact : rawContacts.entries()) {
-			if (!TestUtil.empty(rawContact.getKey()) && rawContact.getValue().rawContactId != 0L) {
+			if (!TestUtil.isEmptyOrNull(rawContact.getKey()) && rawContact.getValue().rawContactId != 0L) {
 				try {
 					ContentProviderOperation.Builder builder = ContentProviderOperation.newDelete(
 						ContactsContract.RawContacts.CONTENT_URI

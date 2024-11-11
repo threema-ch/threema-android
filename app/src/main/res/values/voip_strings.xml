@@ -1,110 +1,110 @@
 <resources>
-	<string name="voip_title">Threema Call</string>
-	<string name="voip_hangup">Hang up</string>
-	<string name="voip_toggle_mic">Toggle microphone</string>
-	<string name="voip_toggle_speaker">Toggle speaker</string>
-	<string name="voip_switch_cam">Switch camera</string>
-	<string name="voip_switch_cam_front">Switched to front camera</string>
-	<string name="voip_switch_cam_rear">Switched to rear camera</string>
-	<string name="voip_toggle_video">Toggle video mode</string>
-	<string name="voip_call_confirm">Do you want to call %1$s?</string>
-	<string name="voip_error_call">Error during Threema call</string>
-	<string name="voip_error_init_call">Error while initializing call</string>
-	<string name="voip_notification_title">Incoming Threema Call</string>
-	<string name="voip_notification_text">%1$s is calling</string>
-	<!-- Shown when starting a call, before the peer device is ringing -->
-	<string name="voip_status_initializing">Initializing</string>
-	<!-- Shown when the callee has accepted the call and the connection is being established -->
-	<string name="voip_status_connecting">Connecting</string>
-	<!-- Shown when a call is being disconnected -->
-	<string name="voip_status_disconnecting">Disconnecting</string>
-	<!-- Shown when the device of the callee is ringing -->
-	<string name="voip_status_ringing">Ringing</string>
-	<string name="voip_mic_enable">Enable microphone</string>
-	<string name="voip_mic_disable">Disable microphone</string>
-	<string name="voip_checking_compatibility">Checking if this contact can receive Threema calls</string>
-	<string name="voip_incompatible">This contact is not yet able to receive Threema calls.</string>
-	<string name="voip_call_status_unavailable">Call recipient is unavailable</string>
-	<string name="voip_call_status_rejected">Call declined</string>
-	<string name="voip_call_status_busy">Call recipient is busy</string>
-	<string name="voip_call_status_busy_short">Busy</string>
-	<string name="voip_call_status_disabled">Threema calls disabled by recipient</string>
-	<string name="voip_call_status_missed">Missed call</string>
-	<string name="voip_call_finished_outbox">Outgoing call</string>
-	<string name="voip_call_finished_inbox">Incoming call</string>
-	<string name="voip_call_status_aborted">Call aborted</string>
-	<string name="voip_return_call">Return call</string>
-	<string name="voip_accept">Accept</string>
-	<string name="voip_reject">Decline</string>
-	<string name="voip_speakerphone">Speakerphone</string>
-	<string name="voip_wired_headset">Headset</string>
-	<string name="voip_earpiece">Phone</string>
-	<string name="voip_bluetooth">Bluetooth</string>
-	<string name="voip_none">Not available</string>
-	<string name="voip_call_finished">Threema call has ended</string>
-	<string name="voip_another_call">Unable to connect. Another Threema Call is currently active.</string>
-	<string name="voip_prefs_title_aec">Echo Cancellation</string>
-	<string name="voip_prefs_aec_sw">Software echo cancellation</string>
-	<string name="voip_prefs_aec_hw">Hardware echo cancellation</string>
-	<string name="voip_prefs_title_video_codec">Video Codecs</string>
-	<string name="voip_prefs_video_aec_hw">Hardware accelerated</string>
-	<string name="voip_prefs_video_codec_no_vp8">Disable VP8</string>
-	<string name="voip_prefs_video_codec_no_h264hip">Disable H264-HiP</string>
-	<string name="voip_prefs_video_codec_sw">Software codecs</string>
-	<string name="voip_connection_failed">Connection could not be established</string>
-	<string name="voip_connection_lost">Connection lost</string>
-	<string name="prefs_voip_reject_incoming_calls_title">Decline mobile calls</string>
-	<string name="prefs_voip_reject_incoming_calls_summary">Decline incoming mobile calls while a Threema Call is active.</string>
-	<string name="voip_contact_not_found">No Threema contact found for this number.</string>
-	<string name="voip_another_pstn_call">Unable to initiate call. A regular phone call is still active.</string>
-	<string name="voip_call_status_off_hours">Off-hours call</string>
-	<string name="voip_peer_video_disabled">Video calls have been disabled by the other party.</string>
-	<string name="voip_reject_channel_name">Call state change</string>
+    <string name="voip_title">Threema Call</string>
+    <string name="voip_hangup">Hang up</string>
+    <string name="voip_toggle_mic">Toggle microphone</string>
+    <string name="voip_toggle_speaker">Toggle speaker</string>
+    <string name="voip_switch_cam">Switch camera</string>
+    <string name="voip_switch_cam_front">Switched to front camera</string>
+    <string name="voip_switch_cam_rear">Switched to rear camera</string>
+    <string name="voip_toggle_video">Toggle video mode</string>
+    <string name="voip_call_confirm">Do you want to call %1$s?</string>
+    <string name="voip_error_call">Error during Threema call</string>
+    <string name="voip_error_init_call">Error while initializing call</string>
+    <string name="voip_notification_title">Incoming Threema Call</string>
+    <string name="voip_notification_text">%1$s is calling</string>
+    <!-- Shown when starting a call, before the peer device is ringing -->
+    <string name="voip_status_initializing">Initializing</string>
+    <!-- Shown when the callee has accepted the call and the connection is being established -->
+    <string name="voip_status_connecting">Connecting</string>
+    <!-- Shown when a call is being disconnected -->
+    <string name="voip_status_disconnecting">Disconnecting</string>
+    <!-- Shown when the device of the callee is ringing -->
+    <string name="voip_status_ringing">Ringing</string>
+    <string name="voip_mic_enable">Enable microphone</string>
+    <string name="voip_mic_disable">Disable microphone</string>
+    <string name="voip_checking_compatibility">Checking if this contact can receive Threema calls</string>
+    <string name="voip_incompatible">This contact is not yet able to receive Threema calls.</string>
+    <string name="voip_call_status_unavailable">Call recipient is unavailable</string>
+    <string name="voip_call_status_rejected">Call declined</string>
+    <string name="voip_call_status_busy">Call recipient is busy</string>
+    <string name="voip_call_status_busy_short">Busy</string>
+    <string name="voip_call_status_disabled">Threema calls disabled by recipient</string>
+    <string name="voip_call_status_missed">Missed call</string>
+    <string name="voip_call_finished_outbox">Outgoing call</string>
+    <string name="voip_call_finished_inbox">Incoming call</string>
+    <string name="voip_call_status_aborted">Call aborted</string>
+    <string name="voip_return_call">Return call</string>
+    <string name="voip_accept">Accept</string>
+    <string name="voip_reject">Decline</string>
+    <string name="voip_speakerphone">Speakerphone</string>
+    <string name="voip_wired_headset">Headset</string>
+    <string name="voip_earpiece">Phone</string>
+    <string name="voip_bluetooth">Bluetooth</string>
+    <string name="voip_none">Not available</string>
+    <string name="voip_call_finished">Threema call has ended</string>
+    <string name="voip_another_call">Unable to connect. Another Threema Call is currently active.</string>
+    <string name="voip_prefs_title_aec">Echo Cancellation</string>
+    <string name="voip_prefs_aec_sw">Software echo cancellation</string>
+    <string name="voip_prefs_aec_hw">Hardware echo cancellation</string>
+    <string name="voip_prefs_title_video_codec">Video Codecs</string>
+    <string name="voip_prefs_video_aec_hw">Hardware accelerated</string>
+    <string name="voip_prefs_video_codec_no_vp8">Disable VP8</string>
+    <string name="voip_prefs_video_codec_no_h264hip">Disable H264-HiP</string>
+    <string name="voip_prefs_video_codec_sw">Software codecs</string>
+    <string name="voip_connection_failed">Connection could not be established</string>
+    <string name="voip_connection_lost">Connection lost</string>
+    <string name="prefs_voip_reject_incoming_calls_title">Decline mobile calls</string>
+    <string name="prefs_voip_reject_incoming_calls_summary">Decline incoming mobile calls while a Threema Call is active.</string>
+    <string name="voip_contact_not_found">No Threema contact found for this number.</string>
+    <string name="voip_another_pstn_call">Unable to initiate call. A regular phone call is still active.</string>
+    <string name="voip_call_status_off_hours">Off-hours call</string>
+    <string name="voip_peer_video_disabled">Video calls have been disabled by the other party.</string>
+    <string name="voip_reject_channel_name">Call state change</string>
 
-	<!-- WebRTC debugger -->
-	<string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
-	<string name="voip_prefs_webrtc_debug_summary">Start this tool to debug problems with setting up a voice call connection</string>
-	<string name="voip_webrtc_debug">WebRTC Diagnostics</string>
-	<string name="voip_webrtc_debug_intro">Press the “Start“ button to start the test.</string>
-	<string name="voip_webrtc_debug_start">Start</string>
-	<string name="voip_webrtc_debug_done">Done. If you experience problems with call connection build-up, please send this output to Threema support.</string>
-	<string name="voip_webrtc_debug_copied">Copy to clipboard done.</string>
-	<string name="voip_webrtc_debug_copy_clipboard">Copy to clipboard</string>
+    <!-- WebRTC debugger -->
+    <string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
+    <string name="voip_prefs_webrtc_debug_summary">Start this tool to debug problems with setting up a voice call connection</string>
+    <string name="voip_webrtc_debug">WebRTC Diagnostics</string>
+    <string name="voip_webrtc_debug_intro">Press the “Start“ button to start the test.</string>
+    <string name="voip_webrtc_debug_start">Start</string>
+    <string name="voip_webrtc_debug_done">Done. If you experience problems with call connection build-up, please send this output to Threema support.</string>
+    <string name="voip_webrtc_debug_copied">Copy to clipboard done.</string>
+    <string name="voip_webrtc_debug_copy_clipboard">Copy to clipboard</string>
 
-	<!-- Group Calls -->
-	<string name="voip_gc_members_notified">All group members have been notified</string>
-	<string name="voip_gc_notification_channel_description">Group calls</string>
-	<string name="voip_gc_notification_title">Group call</string>
-	<string name="voip_gc_notification_call_started">%1$s started a group call in %2$s</string>
-	<string name="voip_gc_notification_call_started_generic">%1$s started a group call</string>
-	<string name="voip_gc_notification_call_started_generic_outbox">You started a group call</string>
-	<string name="voip_gc_dismiss_call">Ignore</string>
-	<string name="voip_gc_join_call">Join</string>
-	<string name="voip_gc_ongoing_call">Ongoing group call</string>
-	<string name="voip_gc_waiting_for_participants">Waiting for participants</string>
-	<string name="voip_gc_participant_avatar_description">Profile picture of participant</string>
-	<string name="voip_gc_participant_mute_status_description">Participant mute status</string>
-	<string name="voip_gc_notification_new_call_public">A new group call has been started</string>
-	<string name="voip_gc_open_call">Open</string>
-	<string name="voip_gc_call_started">Group call was started</string>
-	<string name="voip_gc_call_ended">Group call has ended</string>
-	<string name="voip_gc_in_call">In group call</string>
-	<string name="voip_gc_sfu_not_available">Server not available, try again later</string>
-	<string name="voip_gc_call_error">Call stopped due to an error</string>
-	<string name="voip_gc_call_start_error">Could not start group call</string>
-	<string name="voip_gc_call_already_ended">Group call has already ended</string>
-	<string name="voip_gc_call_full_generic">Maximum reached: No more participants can join this group call.</string>
-	<string name="voip_gc_call_full_n">Maximum of %1$d participants reached, you cannot join this group call.</string>
+    <!-- Group Calls -->
+    <string name="voip_gc_members_notified">All group members have been notified</string>
+    <string name="voip_gc_notification_channel_description">Group calls</string>
+    <string name="voip_gc_notification_title">Group call</string>
+    <string name="voip_gc_notification_call_started">%1$s started a group call in %2$s</string>
+    <string name="voip_gc_notification_call_started_generic">%1$s started a group call</string>
+    <string name="voip_gc_notification_call_started_generic_outbox">You started a group call</string>
+    <string name="voip_gc_dismiss_call">Ignore</string>
+    <string name="voip_gc_join_call">Join</string>
+    <string name="voip_gc_ongoing_call">Ongoing group call</string>
+    <string name="voip_gc_waiting_for_participants">Waiting for participants</string>
+    <string name="voip_gc_participant_avatar_description">Profile picture of participant</string>
+    <string name="voip_gc_participant_mute_status_description">Participant mute status</string>
+    <string name="voip_gc_notification_new_call_public">A new group call has been started</string>
+    <string name="voip_gc_open_call">Open</string>
+    <string name="voip_gc_call_started">Group call was started</string>
+    <string name="voip_gc_call_ended">Group call has ended</string>
+    <string name="voip_gc_in_call">In group call</string>
+    <string name="voip_gc_sfu_not_available">Server not available, try again later</string>
+    <string name="voip_gc_call_error">Call stopped due to an error</string>
+    <string name="voip_gc_call_start_error">Could not start group call</string>
+    <string name="voip_gc_call_already_ended">Group call has already ended</string>
+    <string name="voip_gc_call_full_generic">Maximum reached: No more participants can join this group call.</string>
+    <string name="voip_gc_call_full_n">Maximum of %1$d participants reached, you cannot join this group call.</string>
     <plurals name="n_participants_in_call">
-		<item quantity="one">%d participant</item>
-		<item quantity="few">%d participants</item>
-		<item quantity="many">%d participants</item>
-		<item quantity="other">%d participants</item>
-	</plurals>
-	<plurals name="n_members_dont_support_group_calls">
-		<item quantity="one">Notice: One member cannot participate in group calls.</item>
-		<item quantity="few">Notice: %d members cannot participate in group calls.</item>
-		<item quantity="many">Notice: %d members cannot participate in group calls.</item>
-		<item quantity="other">Notice: %d members cannot participate in group calls.</item>
-	</plurals>
+        <item quantity="one">%d participant</item>
+        <item quantity="few">%d participants</item>
+        <item quantity="many">%d participants</item>
+        <item quantity="other">%d participants</item>
+    </plurals>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Notice: One member cannot participate in group calls.</item>
+        <item quantity="few">Notice: %d members cannot participate in group calls.</item>
+        <item quantity="many">Notice: %d members cannot participate in group calls.</item>
+        <item quantity="other">Notice: %d members cannot participate in group calls.</item>
+    </plurals>
 </resources>

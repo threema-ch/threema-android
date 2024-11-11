@@ -37,7 +37,7 @@ public class StatusChatAdapterDecorator extends ChatAdapterDecorator {
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		String s = this.getMessageModel().getBody();
 
-		if(this.showHide(holder.bodyTextView, !TestUtil.empty(s))) {
+		if(this.showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(s))) {
 			holder.bodyTextView.setText(s);
 		}
 

@@ -271,7 +271,7 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
 			5, new FormatTextEntryDialog.FormatTextEntryDialogClickListener() {
 				@Override
 				public void onYes(String text) {
-					if (!TestUtil.empty(text)) {
+					if (!TestUtil.isEmptyOrNull(text)) {
 						synchronized (ballotChoiceModelList) {
 							if (editItemPosition != -1) {
 								ballotChoiceModelList.get(editItemPosition).setName(text);
@@ -305,7 +305,7 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
 	private void createChoice() {
 		if (TestUtil.required(this.createChoiceEditText.getText())) {
 			String text = createChoiceEditText.getText().toString();
-			if (!TestUtil.empty(text)) {
+			if (!TestUtil.isEmptyOrNull(text)) {
 				createChoice(text.trim(), BallotChoiceModel.Type.Text);
 				int insertPosition = this.ballotChoiceModelList.size() - 1;
 				listAdapter.notifyItemInserted(insertPosition);

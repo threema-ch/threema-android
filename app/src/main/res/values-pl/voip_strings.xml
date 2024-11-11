@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema Call</string>
     <string name="voip_hangup">Rozłącz</string>
@@ -42,8 +42,7 @@
     <string name="voip_earpiece">Telefon</string>
     <string name="voip_bluetooth">Bluetooth</string>
     <string name="voip_none">Niedostępne</string>
-    <string name="voip_call_finished">"Połączenie Threema zostało zakończone
-"</string>
+    <string name="voip_call_finished">Połączenie Threema zostało zakończone</string>
     <string name="voip_another_call">Nie można połączyć. Inne połączenie Threema jest obecnie aktywne.</string>
     <string name="voip_prefs_title_aec">Eliminacja echa</string>
     <string name="voip_prefs_aec_sw">Programowa eliminacja echa</string>
@@ -96,15 +95,15 @@
     <string name="voip_gc_call_full_generic">Osiągnięto maksimum: inni uczestnicy nie mogą dołączyć do tego połączenia grupowego.</string>
     <string name="voip_gc_call_full_n">Osiągnięto maks. %1$d uczestników, nie możesz dołączyć do tego połączenia grupowego.</string>
     <plurals name="n_participants_in_call">
+        <item quantity="one">%d uczestnik</item>
         <item quantity="few">%d uczestnicy</item>
         <item quantity="many">%d uczestników</item>
-        <item quantity="one">%d uczestnik</item>
         <item quantity="other">%d uczestników</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
-        <item quantity="many">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
-        <item quantity="few">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
         <item quantity="one">Uwaga: jeden uczestnik nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="few">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
+        <item quantity="many">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
         <item quantity="other">Uwaga: %d uczestników nie może brać udziału w połączeniach grupowych.</item>
     </plurals>
 </resources>

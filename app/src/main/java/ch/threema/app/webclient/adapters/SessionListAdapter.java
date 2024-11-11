@@ -130,7 +130,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 
 		// Set session name
 		String sessionName = model.getLabel();
-		holder.sessionNameView.setText(TestUtil.empty(sessionName) ?
+		holder.sessionNameView.setText(TestUtil.isEmptyOrNull(sessionName) ?
 				context.getString(R.string.webclient_unnamed_session) :
 				sessionName);
 
@@ -195,7 +195,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 		// Show invalid push token error message
 		ViewUtil.show(
 			holder.invalidPushToken,
-			!TestUtil.empty(model.getPushToken())
+			!TestUtil.isEmptyOrNull(model.getPushToken())
 			&& !TestUtil.compare(this.currentPushToken, model.getPushToken()));
 		switch (model.getState()) {
 			case INITIALIZING:

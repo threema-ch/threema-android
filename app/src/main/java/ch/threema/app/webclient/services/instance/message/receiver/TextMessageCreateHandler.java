@@ -93,9 +93,9 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 				AbstractMessageModel quotedMessageModel = null;
 				int quotedMessageID = Integer.valueOf(quoteMap.get(FIELD_QUOTE_MESSAGE_ID).toString());
 				if (receivers.get(0) instanceof ContactMessageReceiver) {
-					quotedMessageModel = messageService.getContactMessageModel(quotedMessageID, true);
+					quotedMessageModel = messageService.getContactMessageModel(quotedMessageID);
 				} else if (receivers.get(0) instanceof GroupMessageReceiver) {
-					quotedMessageModel = messageService.getGroupMessageModel(quotedMessageID, true);
+					quotedMessageModel = messageService.getGroupMessageModel(quotedMessageID);
 				} else {
 					logger.info("Unsupported receiver type for quotes");
 				}

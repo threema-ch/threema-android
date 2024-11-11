@@ -99,7 +99,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 			} else {
 				String backupString = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup));
 				String backupPassword = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup_password));
-				if (!TestUtil.empty(backupString) && !TestUtil.empty(backupPassword)) {
+				if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
 					Intent intent = new Intent(this, WizardBackupRestoreActivity.class);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
 					intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
@@ -124,7 +124,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
 		frameAnimation.start();
 
 		TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
-		if (TestUtil.empty(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url)) ||
+		if (TestUtil.isEmptyOrNull(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url)) ||
 			(ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService))) {
 			privacyPolicyExplainText.setVisibility(View.GONE);
 		} else {

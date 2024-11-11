@@ -34,7 +34,7 @@ class OutgoingVoipICECandidateMessageTask(
 ): OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingVoipICECandidateMessageTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipICECandidatesMessage()
         message.data = voipICECandidatesData
         message.toIdentity = toIdentity

@@ -210,7 +210,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 	}
 
 	private boolean checkTitle() {
-		if (TestUtil.empty(this.ballotTitle)) {
+		if (TestUtil.isEmptyOrNull(this.ballotTitle)) {
 			BallotWizardCallback callback = (BallotWizardCallback) this.fragmentList.get(0).get();
 			if (callback != null) {
 				callback.onMissingTitle();

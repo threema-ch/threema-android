@@ -157,7 +157,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 		String t = IntentDataUtil.getAbstractMessageType(intent);
 		int i = IntentDataUtil.getAbstractMessageId(intent);
-		if (TestUtil.empty(t) || i <= 0) {
+		if (TestUtil.isEmptyOrNull(t) || i <= 0) {
 			finish();
 			return false;
 		}
@@ -356,12 +356,12 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 		}
 
 		String captionText = MessageUtil.getCaptionText(messageModel);
-		if (!TestUtil.empty(captionText)) {
+		if (!TestUtil.isEmptyOrNull(captionText)) {
 			this.caption.setText(emojiMarkupUtil.addMarkup(this, captionText));
 		} else {
 			this.caption.setText("");
 		}
-		this.captionContainer.setVisibility(TestUtil.empty(captionText) ? View.GONE : View.VISIBLE);
+		this.captionContainer.setVisibility(TestUtil.isEmptyOrNull(captionText) ? View.GONE : View.VISIBLE);
 	}
 
 	private void updateMenus() {
@@ -575,7 +575,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements
 
 		showSystemUi();
 		actionBar.show();
-		if (this.captionContainer != null && !TestUtil.empty(caption.getText())) {
+		if (this.captionContainer != null && !TestUtil.isBlankOrNull(caption.getText())) {
 			this.captionContainer.setVisibility(View.VISIBLE);
 		}
 	}

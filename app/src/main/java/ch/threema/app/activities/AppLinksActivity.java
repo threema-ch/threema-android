@@ -26,6 +26,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -34,127 +36,130 @@ import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
 
-		checkLock();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public int getLayoutResource() {
-		// invisible activity
-		return 0;
-	}
+        checkLock();
+    }
 
-	@Override
-	protected boolean isPinLockable() {
-		// we handle pin locking ourselves
-		return false;
-	}
+    @Override
+    public int getLayoutResource() {
+        // invisible activity
+        return 0;
+    }
 
-	private void checkLock() {
-		LockAppService lockAppService;
-		try {
-			lockAppService = ThreemaApplication.getServiceManager().getLockAppService();
-		} catch (Exception e) {
-			finish();
-			return;
-		}
+    @Override
+    protected boolean isPinLockable() {
+        // we handle pin locking ourselves
+        return false;
+    }
 
-		if (lockAppService != null) {
-			if (lockAppService.isLocked()) {
-				HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
-			} else {
-				handleIntent();
-			}
-		} else {
-			finish();
-		}
-	}
+    private void checkLock() {
+        LockAppService lockAppService;
+        try {
+            lockAppService = ThreemaApplication.requireServiceManager().getLockAppService();
+        } catch (Exception e) {
+            logger.error("Exception while checking lock", e);
+            finish();
+            return;
+        }
 
-	private void handleIntent() {
-		String appLinkAction = getIntent().getAction();
-		final Uri appLinkData = getIntent().getData();
-		if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.contactActionUrl)) {
-			handleContactUrl(appLinkAction, appLinkData);
-		}
-		else if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.groupLinkActionUrl)) {
-			handleGroupLinkUrl(appLinkData);
-		}
-		finish();
-	}
+        if (lockAppService.isLocked()) {
+            HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
+        } else {
+            handleIntent();
+        }
+    }
 
-	private void handleContactUrl(String appLinkAction, Uri appLinkData) {
-		final String threemaId = appLinkData.getLastPathSegment();
-		if (threemaId != null) {
-			if (threemaId.equalsIgnoreCase("compose")) {
-				Intent intent = new Intent(this, RecipientListActivity.class);
-				intent.setAction(appLinkAction);
-				intent.setData(appLinkData);
-				startActivity(intent);
-			} else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
-				new AddContactAsyncTask(null, null, threemaId, false, () -> {
-					String text = appLinkData.getQueryParameter("text");
+    private void handleIntent() {
+        String appLinkAction = getIntent().getAction();
+        final Uri appLinkData = getIntent().getData();
+        if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.contactActionUrl)) {
+            handleContactUrl(appLinkAction, appLinkData);
+        }
+        else if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.groupLinkActionUrl)) {
+            handleGroupLinkUrl(appLinkData);
+        }
+        finish();
+    }
 
-					Intent intent = new Intent(AppLinksActivity.this, text != null ?
-						ComposeMessageActivity.class :
-						ContactDetailActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
-					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+    private void handleContactUrl(String appLinkAction, Uri appLinkData) {
+        logger.info("Handle contact url");
+        final String threemaId = appLinkData.getLastPathSegment();
+        if (threemaId != null) {
+            if (threemaId.equalsIgnoreCase("compose")) {
+                Intent intent = new Intent(this, RecipientListActivity.class);
+                intent.setAction(appLinkAction);
+                intent.setData(appLinkData);
+                startActivity(intent);
+            } else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
+                new AddContactAsyncTask(null, null, threemaId, false, () -> {
+                    String text = appLinkData.getQueryParameter("text");
 
-					if (text != null) {
-						text = text.trim();
-						intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
-					}
+                    Intent intent = new Intent(this, text != null ?
+                        ComposeMessageActivity.class :
+                        ContactDetailActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
+                    intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
 
-					startActivity(intent);
-				}).execute();
-			} else {
-				Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
-			}
-		} else {
-			Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
-		}
-	}
+                    if (text != null) {
+                        text = text.trim();
+                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
+                    }
 
-	private void handleGroupLinkUrl(Uri appLinkData) {
-		Intent intent = new Intent(AppLinksActivity.this, OutgoingGroupRequestActivity.class);
-		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
-		startActivity(intent);
-	}
+                    startActivity(intent);
+                }).execute();
+            } else {
+                Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+        }
+    }
 
-	@Override
-	public void finish() {
-		super.finish();
-		overridePendingTransition(0, 0);
-	}
+    private void handleGroupLinkUrl(Uri appLinkData) {
+        logger.info("Handle group link url");
+        Intent intent = new Intent(this, OutgoingGroupRequestActivity.class);
+        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
+        startActivity(intent);
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-				if (resultCode == RESULT_OK) {
-					lockAppService.unlock(null);
-					handleIntent();
-				} else {
-					Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();
-					finish();
-				}
-				break;
-			case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-				if (ThreemaApplication.getMasterKey().isLocked()) {
-					finish();
-				} else {
-					ConfigUtils.recreateActivity(this, AppLinksActivity.class, getIntent().getExtras());
-				}
-				break;
-			default:
-				super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
+                if (resultCode == RESULT_OK) {
+                    lockAppService.unlock(null);
+                    handleIntent();
+                } else {
+                    Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
+                if (ThreemaApplication.getMasterKey().isLocked()) {
+                    finish();
+                } else {
+                    ConfigUtils.recreateActivity(this, AppLinksActivity.class, getIntent().getExtras());
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

@@ -75,7 +75,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -106,6 +105,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 	private MediaPlayerStateWrapper mediaPlayer;
 	private MediaState status = MediaState.STATE_NONE;
 	private TextView timerTextView;
+    private MaterialButton sendButton;
 	private ImageView playButton;
 	private ImageView pauseButton;
 	private ImageView recordImage;
@@ -212,14 +212,12 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 
 			timerTextView = findViewById(R.id.timer_text);
 
-			MaterialButton sendButton = findViewById(R.id.send_button);
-			sendButton.setOnClickListener(new DebouncedOnClickListener(1000) {
-				@Override
-				public void onDebouncedClick(View v) {
-					stopAndReleaseMediaPlayer(mediaPlayer);
-					sendRecording(false);
-				}
-			});
+            sendButton = findViewById(R.id.send_button);
+			sendButton.setOnClickListener(view -> {
+                sendButton.setEnabled(false);
+                stopAndReleaseMediaPlayer(mediaPlayer);
+                sendRecording(false);
+            });
 
 			ImageView discardButton = findViewById(R.id.discard_button);
 			discardButton.setOnClickListener(this);
@@ -628,7 +626,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 		return 0;
 	}
 
-	private void returnData() {
+	private void reallySendRecording() {
 		releaseMediaRecorder();
 
 		if (this.mediaPlayer != null) {
@@ -636,18 +634,18 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 			this.mediaPlayer = null;
 		}
 
-		long fileduration = (long) getDurationFromFile();
-		if (fileduration > 0) {
-			if (fileduration < DateUtils.SECOND_IN_MILLIS) {
-				fileduration = DateUtils.SECOND_IN_MILLIS;
+        long fileDurationSeconds = getDurationFromFile();
+		if (fileDurationSeconds > 0L) {
+			if (fileDurationSeconds < DateUtils.SECOND_IN_MILLIS) {
+				fileDurationSeconds = DateUtils.SECOND_IN_MILLIS;
 			}
 			MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
-			mediaItem.setDurationMs(fileduration);
+			mediaItem.setDurationMs(fileDurationSeconds);
 			messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
 			this.finish();
-		}
-		else {
+		} else {
 			Toast.makeText(this, R.string.unable_to_determine_recording_length, Toast.LENGTH_LONG).show();
+            sendButton.setEnabled(true);
 		}
 	}
 
@@ -669,9 +667,15 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 
 		if (recordingDuration > 0) {
 			if (isCancelable) {
-				GenericAlertDialog.newInstance(R.string.recording_stopped_title, R.string.recording_stopped_message, R.string.yes, R.string.no, false).show(getSupportFragmentManager(), DIALOG_TAG_EXPIRED_CONFIRM);
+				GenericAlertDialog.newInstance(
+                    R.string.recording_stopped_title,
+                    R.string.recording_stopped_message,
+                    R.string.yes,
+                    R.string.no,
+                    false
+                ).show(getSupportFragmentManager(), DIALOG_TAG_EXPIRED_CONFIRM);
 			} else {
-				returnData();
+				reallySendRecording();
 			}
 		} else {
 			reallyCancelRecording();
@@ -972,7 +976,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 				reallyCancelRecording();
 				break;
 			case DIALOG_TAG_EXPIRED_CONFIRM:
-				returnData();
+				reallySendRecording();
 				break;
 		}
 

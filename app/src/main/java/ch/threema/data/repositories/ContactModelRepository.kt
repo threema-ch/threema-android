@@ -46,14 +46,12 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Date
 
+private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
+
 class ContactModelRepository(
     private val cache: ModelTypeCache<String, ContactModel>, // Note: Synchronize access
     private val databaseBackend: DatabaseBackend,
 ) {
-    companion object {
-        private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
-    }
-
     private object ContactModelRepositoryToken : RepositoryToken
 
     init {
@@ -85,7 +83,7 @@ class ContactModelRepository(
      *
      * @throws ContactCreateException if inserting the contact in the database failed
      */
-    suspend fun createFromLocal(
+    fun createFromLocal(
         identity: String,
         publicKey: ByteArray,
         date: Date,
@@ -132,7 +130,7 @@ class ContactModelRepository(
 
     @Synchronized
     fun createFromSync(contactModelData: ContactModelData): ContactModel {
-        databaseBackend.createContact(ContactModelDataFactory().toDbType(contactModelData))
+        databaseBackend.createContact(ContactModelDataFactory.toDbType(contactModelData))
 
         notifyDeprecatedListenersNew(contactModelData.identity)
 
@@ -145,7 +143,7 @@ class ContactModelRepository(
      *
      * @throws ContactCreateException if inserting the contact in the database failed
      */
-    private suspend fun createAndReflect(
+    private fun createAndReflect(
         identity: String,
         publicKey: ByteArray,
         date: Date,
@@ -175,14 +173,16 @@ class ContactModelRepository(
             androidContactLookupKey = null,
             localAvatarExpires = null,
             isRestored = false,
-            profilePictureBlobId = null
+            profilePictureBlobId = null,
+            jobTitle = null,
+            department = null
         )
 
         // TODO(ANDR-3002) and TODO(ANDR-3003): Reflect contact sync create
 
         val contactModel = synchronized(this) {
             try {
-                databaseBackend.createContact(ContactModelDataFactory().toDbType(contactModelData))
+                databaseBackend.createContact(ContactModelDataFactory.toDbType(contactModelData))
             } catch (exception: SQLiteException) {
                 // Note that in case the insertion fails, this is most likely because the identity
                 // already exists.
@@ -206,7 +206,7 @@ class ContactModelRepository(
         return cache.getOrCreate(identity) {
             val dbContact =
                 databaseBackend.getContactByIdentity(identity) ?: return@getOrCreate null
-            ContactModel(identity, ContactModelDataFactory().toDataType(dbContact), databaseBackend)
+            ContactModel(identity, ContactModelDataFactory.toDataType(dbContact), databaseBackend)
         }
     }
 

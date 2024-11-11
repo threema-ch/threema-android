@@ -77,7 +77,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.secondaryTextView.setVisibility(GONE);
 		}
 
-		if(!TestUtil.empty(location.getPoi())) {
+		if(!TestUtil.isEmptyOrNull(location.getPoi())) {
 			if(holder.bodyTextView != null) {
 				holder.bodyTextView.setText(highlightMatches(location.getPoi(), filterString));
 				holder.bodyTextView.setWidth(this.getThumbnailWidth());

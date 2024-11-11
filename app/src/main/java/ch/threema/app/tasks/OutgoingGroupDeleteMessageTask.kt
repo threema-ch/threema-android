@@ -42,12 +42,9 @@ class OutgoingGroupDeleteMessageTask(
 
     override val type: String = "OutgoingGroupDeleteMessageTask"
 
-    private val groupService by lazy { serviceManager.groupService }
-    private val messageService by lazy { serviceManager.messageService }
-
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getGroupMessageModel(messageModelId, true)
-            ?: throw ThreemaException("No group message model found for messageId=$messageModelId")
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        val message = getGroupMessageModel(messageModelId)
+            ?: throw ThreemaException("No group message model found for messageModelId=$messageModelId")
 
         val editedMessageIdLong = MessageId.fromString(message.apiMessageId).messageIdLong
 

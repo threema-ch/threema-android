@@ -24,6 +24,8 @@ package ch.threema.app.tasks
 import ch.threema.app.listeners.MessageListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
+import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.utils.OutgoingCspContactMessageCreator
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.filterBroadcastIdentity
@@ -32,6 +34,7 @@ import ch.threema.app.utils.sendContactMessage
 import ch.threema.app.utils.sendGroupMessage
 import ch.threema.app.utils.toKnownContactModels
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.Utils
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.fs.BadDHStateException
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
@@ -39,7 +42,10 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.NetworkException
+import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.domain.taskmanager.catchExceptNetworkException
+import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
@@ -51,20 +57,47 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingCspMessageTask")
 sealed class OutgoingCspMessageTask(serviceManager: ServiceManager) :
     ActiveTask<Unit>, PersistableTask {
     private val myIdentity by lazy { serviceManager.userService.identity }
-    private val contactService by lazy { serviceManager.contactService }
-    private val groupService by lazy { serviceManager.groupService }
-    private val contactStore by lazy { serviceManager.contactStore }
-    private val identityStore by lazy { serviceManager.identityStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-    private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    private val messageService by lazy { serviceManager.messageService }
-    private val databaseService by lazy { serviceManager.databaseServiceNew }
-    private val rejectedGroupMessageFactory by lazy { databaseService.rejectedGroupMessageFactory }
+    protected val contactService by lazy { serviceManager.contactService }
+    protected val groupService by lazy { serviceManager.groupService }
+    protected val contactStore by lazy { serviceManager.contactStore }
+    protected val identityStore by lazy { serviceManager.identityStore }
+    protected val nonceFactory by lazy { serviceManager.nonceFactory }
+    protected val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
+    protected val messageService by lazy { serviceManager.messageService }
+    private val rejectedGroupMessageFactory by lazy { serviceManager.databaseServiceNew.rejectedGroupMessageFactory }
 
     // It is important that the task creator is loaded lazily, as the task archiver may instantiate
     // this class before the connection is initialized (which is used for the task creator).
     private val taskCreator by lazy { serviceManager.taskCreator }
     private val blackListService by lazy { serviceManager.blackListService }
+
+    final override suspend fun invoke(handle: ActiveTaskCodec) {
+        suspend {
+            runSendingSteps(handle)
+        }.catchAllExceptNetworkException { exception ->
+            onSendingStepsFailed(exception)
+            throw exception
+        }
+    }
+
+    /**
+     * Run the steps that need to be performed to send the message(s). If this throws an exception
+     * that is not an [NetworkException], [onSendingStepsFailed] is called.
+     */
+    abstract suspend fun runSendingSteps(handle: ActiveTaskCodec)
+
+    /**
+     * This method is called if the sending steps have thrown an exception.
+     *
+     * Note that this method won't be called if the thrown exception is a [NetworkException].
+     *
+     * Note that the task will be finished and [runSendingSteps] must not be executed again to
+     * prevent infinite retries. The task will exit by throwing [e]. This exception will then be
+     * handled by the task manager that may re-run this task.
+     */
+    open fun onSendingStepsFailed(e: Exception) {
+        // Nothing to do here
+    }
 
     /**
      * Encapsulate and send the given message. Note that the message must be ready to be sent. This
@@ -266,5 +299,66 @@ sealed class OutgoingCspMessageTask(serviceManager: ServiceManager) :
         }
 
         groupService.setIsArchived(group, false)
+    }
+
+    /**
+     * Returns the message id of the message model.
+     *
+     * @throws IllegalArgumentException if the message id of the message model is null
+     */
+    protected fun ensureMessageId(messageModel: AbstractMessageModel): MessageId {
+        messageModel.apiMessageId?.let {
+            return MessageId(Utils.hexStringToByteArray(it))
+        }
+
+        throw IllegalArgumentException("Message id of message model is null")
+    }
+
+    /**
+     * Get the message model with the given local database message model id.
+     *
+     * @throws IllegalArgumentException if receiver type is not [MessageReceiver.Type_CONTACT] or
+     * [MessageReceiver.Type_GROUP]
+     */
+    protected fun getMessageModel(
+        @MessageReceiverType receiverType: Int,
+        messageModelId: Int
+    ): AbstractMessageModel? {
+        return when (receiverType) {
+            MessageReceiver.Type_CONTACT -> getContactMessageModel(messageModelId)
+            MessageReceiver.Type_GROUP -> getGroupMessageModel(messageModelId)
+            else -> throw IllegalArgumentException("Invalid receiver type: $receiverType")
+        }
+    }
+
+    /**
+     * Get the contact message model with the given local database message model id.
+     */
+    protected fun getContactMessageModel(messageModelId: Int): MessageModel? {
+        val messageModel = messageService.getContactMessageModel(messageModelId)
+        if (messageModel == null) {
+            logger.warn("Could not find contact message model with id {}", messageModelId)
+        }
+        return messageModel
+    }
+
+    /**
+     * Get the group message model with the given local database message model id.
+     */
+    protected fun getGroupMessageModel(messageModelId: Int): GroupMessageModel? {
+        val messageModel = messageService.getGroupMessageModel(messageModelId)
+        if (messageModel == null) {
+            logger.warn("Could not find group message model with id {}", messageModelId)
+        }
+        return messageModel
+    }
+
+    /**
+     * Set the message model state to [MessageState.SENDFAILED] and save the model to the database.
+     */
+    protected fun AbstractMessageModel.saveWithStateFailed() {
+        logger.info("Setting message state of model with message id {} to failed", apiMessageId)
+        state = MessageState.SENDFAILED
+        messageService.save(this)
     }
 }

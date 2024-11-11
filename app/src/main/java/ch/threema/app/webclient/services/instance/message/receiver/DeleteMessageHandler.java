@@ -94,13 +94,13 @@ public class DeleteMessageHandler extends MessageReceiver {
 		switch (receiver.getType())
 		{
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId, true);
+				messageModel = this.messageService.getContactMessageModel(messageId);
 				break;
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId, true);
+				messageModel = this.messageService.getGroupMessageModel(messageId);
 				break;
 			case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId, true);
+				messageModel = this.messageService.getDistributionListMessageModel(messageId);
 				break;
 		}
 

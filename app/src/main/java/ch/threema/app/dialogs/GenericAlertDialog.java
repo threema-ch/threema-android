@@ -236,7 +236,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 		final String tag = this.getTag();
 
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-		if (TestUtil.empty(titleString)) {
+		if (TestUtil.isEmptyOrNull(titleString)) {
 			if (title != 0) {
 				builder.setTitle(title);
 			}

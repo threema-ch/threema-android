@@ -88,7 +88,7 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 		logger.debug("loadInitial");
 
 		if (queryCategories.size() > 0) {
-			if (TestUtil.empty(queryText)) {
+			if (TestUtil.isEmptyOrNull(queryText)) {
 				queryText = WILDCARD_SEARCH_ALL;
 			}
 		} else {

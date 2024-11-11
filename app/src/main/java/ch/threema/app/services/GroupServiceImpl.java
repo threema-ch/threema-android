@@ -378,7 +378,8 @@ public class GroupServiceImpl implements GroupService {
 		}
 		//remove last request sync table
 
-		this.databaseServiceNew.getGroupRequestSyncLogModelFactory().deleteAll();
+		this.databaseServiceNew.getOutgoingGroupSyncRequestLogModelFactory().deleteAll();
+		this.databaseServiceNew.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
 	}
 
 
@@ -794,8 +795,8 @@ public class GroupServiceImpl implements GroupService {
 		// Fire the group rename listener
 		ListenerManager.groupListeners.handle(listener -> listener.onRename(groupModel));
 
-		// delete share target shortcut as name is different
-		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(groupModel.getId()));
+		// recreate share target shortcut as name is different
+		ShortcutUtil.updateShareTargetShortcut(createReceiver(groupModel));
 
 		// Send rename message to group members if group owner
 		Set<String> groupIdentities = Set.of(getGroupIdentities(groupModel));
@@ -986,7 +987,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	private boolean isGroupMember(@NonNull GroupModel groupModel, @Nullable String identity) {
-		if (!TestUtil.empty(identity)) {
+		if (!TestUtil.isEmptyOrNull(identity)) {
 			for (String existingIdentity : this.getGroupIdentities(groupModel)) {
 				if (TestUtil.compare(existingIdentity, identity)) {
 					return true;
@@ -1284,7 +1285,7 @@ public class GroupServiceImpl implements GroupService {
 	@NonNull
 	public List<GroupModel> getGroupsByIdentity(@Nullable String identity) {
 		List<GroupModel> groupModels = new ArrayList<>();
-		if (TestUtil.empty(identity) || !TestUtil.required(this.databaseServiceNew, this.groupModelCache)) {
+		if (TestUtil.isEmptyOrNull(identity) || !TestUtil.required(this.databaseServiceNew, this.groupModelCache)) {
 			return groupModels;
 		}
 

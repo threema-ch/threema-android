@@ -102,7 +102,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun initTermsOfServicePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__terms_of_service)
-        if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
+        if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.ONPREM) {
             licensePreference.isVisible = false
         } else {
             licensePreference.setOnPreferenceClickListener {
@@ -114,7 +114,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private fun initEndUserLicensePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__eula)
-        if (BuildFlavor.getLicenseType() == BuildFlavor.LicenseType.GOOGLE) {
+        if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.GOOGLE) {
             licensePreference.setOnPreferenceClickListener {
                 startActivity(Intent(context, EulaActivity::class.java))
                 true
@@ -152,7 +152,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initSelfUpdatePref() {
         val checkUpdatePreference = getPref<Preference>(R.string.preferences__check_updates)
 
-        if (BuildFlavor.maySelfUpdate()) {
+        if (BuildFlavor.current.maySelfUpdate) {
             checkUpdatePreference.setOnPreferenceClickListener {
                 checkForUpdates(licenseService as LicenseServiceSerial)
                 true
@@ -229,7 +229,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     }
 
     private fun StringBuilder.appendBuildFlavor(): StringBuilder {
-        append(" ").append(BuildFlavor.getName())
+        append(" ").append(BuildFlavor.current.fullDisplayName)
         if (BuildConfig.DEBUG) {
             append(" Commit ").append(BuildConfig.GIT_HASH)
         }
@@ -238,7 +238,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     @SuppressLint("StaticFieldLeak")
     private fun checkForUpdates(licenseServiceSerial: LicenseServiceSerial) {
-        if (!BuildFlavor.maySelfUpdate()) {
+        if (!BuildFlavor.current.maySelfUpdate) {
             logger.warn("Called checkForUpdate in a build variant without self-updating")
             return
         }
@@ -258,7 +258,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                     // be set to a non-null value.
                     updateUrl = licenseServiceSerial.updateUrl
                     updateMessage = licenseServiceSerial.updateMessage
-                    if (TestUtil.empty(updateUrl, updateMessage)) {
+                    if (TestUtil.isEmptyOrNull(updateUrl, updateMessage)) {
                         // No update available...
                         getString(R.string.no_update_available)
                     } else null

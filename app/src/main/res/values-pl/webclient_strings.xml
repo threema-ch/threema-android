@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Start</string>
     <string name="webclient_diagnostics_intro">Wciśnij przycisk Start, aby rozpocząć test.</string>
     <string name="webclient_diagnostics_done">Gotowe. W razie problemów z nawiązaniem połączenia z aplikacją komputerową lub klientem sieciowym  skontaktuj się z działem pomocy Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Tę aplikację w wersji beta na komputery stacjonarne można obecnie powiązać jedynie z urządzeniem posiadającym system iOS. W przypadku urządzeń z systemem Android pobierz zwykłą aplikację desktopową.</string>
 </resources>

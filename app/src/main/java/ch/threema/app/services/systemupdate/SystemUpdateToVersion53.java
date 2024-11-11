@@ -24,6 +24,8 @@ package ch.threema.app.services.systemupdate;
 import android.app.NotificationManager;
 import android.content.Context;
 
+import androidx.core.app.NotificationManagerCompat;
+
 import org.slf4j.Logger;
 
 import ch.threema.app.BuildConfig;
@@ -42,18 +44,14 @@ public class SystemUpdateToVersion53 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runDirectly() {
-		if (ConfigUtils.supportsNotificationChannels()) {
-			NotificationManager notificationManager = (NotificationManager) ThreemaApplication.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
-			if (notificationManager != null) {
-				try {
-					notificationManager.deleteNotificationChannel("passphrase_service");
-					notificationManager.deleteNotificationChannel("webclient");
-					notificationManager.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "passphrase_service");
-					notificationManager.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "webclient");
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-			}
+		NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(ThreemaApplication.getAppContext());
+		try {
+			notificationManagerCompat.deleteNotificationChannel("passphrase_service");
+			notificationManagerCompat.deleteNotificationChannel("webclient");
+			notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "passphrase_service");
+			notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "webclient");
+		} catch (Exception e) {
+			logger.error("Exception", e);
 		}
 		return true;
 	}

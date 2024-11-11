@@ -29,15 +29,17 @@ public interface DeadlineListService {
 	void init();
 
 	boolean has(String uid);
+
 	void remove(String uid);
+
 	/**
 	 * Return the deadline timestamp for this uid.
-	 *
 	 * If no entry is found, 0 is returned.
-	 *
 	 * For indefinite settings, DeadlineListService.DEADLINE_INDEFINITE is returned.
 	 */
 	long getDeadline(String uid);
+
 	int getSize();
+
 	void clear();
 }

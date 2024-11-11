@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +70,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	public static final int TYPE_ITEM = 0;
 	public static final int TYPE_FOOTER = 1;
+	private static final int UPDATE_DATE_PAYLOAD = 0;
 
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({TYPE_ITEM, TYPE_FOOTER})
@@ -113,6 +116,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	private String filterQuery;
 
 	private final @NonNull RequestManager requestManager;
+
+	private long lastDateRefreshTimestamp = -1L;
 
 
 	public static class FooterViewHolder extends RecyclerView.ViewHolder {
@@ -254,6 +259,16 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 	}
 
 	@Override
+	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+		if (payloads.isEmpty()) {
+			onBindViewHolder(holder, position);
+		} else if (payloads.contains(UPDATE_DATE_PAYLOAD) && holder instanceof MessageListViewHolder) {
+			MessageListAdapterItem item = messageListAdapterItemsCache.get(getEntity(position));
+			((MessageListViewHolder) holder).initializeMessageListItemDateView(item);
+		}
+	}
+
+	@Override
 	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder h, int p) {
 		if (h instanceof MessageListViewHolder) {
 			ConversationModel conversationModel = getEntity(h.getAbsoluteAdapterPosition());
@@ -275,6 +290,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 				}
 			}
 			((MessageListViewHolder) h).setMessageListAdapterItem(item);
+			lastDateRefreshTimestamp = System.currentTimeMillis();
 		} else {
 			// footer
 			MaterialButton archivedButton = h.itemView.findViewById(R.id.archived_text);
@@ -342,5 +358,25 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 	public void setFilterQuery(String filterQuery) {
 		this.filterQuery = filterQuery;
+	}
+
+	public void updateDateView() {
+		if (!hasDayChangedSinceLastDateRefresh()) {
+			return;
+		}
+		for (ConversationModel conversation : messageListAdapterItemsCache.keySet()) {
+			notifyItemChanged(conversation.getPosition(), UPDATE_DATE_PAYLOAD);
+		}
+		lastDateRefreshTimestamp = System.currentTimeMillis();
+	}
+
+	private boolean hasDayChangedSinceLastDateRefresh() {
+		Calendar currentCal = Calendar.getInstance();
+		currentCal.setTime(new Date(System.currentTimeMillis()));
+
+		Calendar lastRefreshCal = Calendar.getInstance();
+		lastRefreshCal.setTime(new Date(lastDateRefreshTimestamp));
+
+		return currentCal.get(Calendar.DAY_OF_YEAR) != lastRefreshCal.get(Calendar.DAY_OF_YEAR);
 	}
 }

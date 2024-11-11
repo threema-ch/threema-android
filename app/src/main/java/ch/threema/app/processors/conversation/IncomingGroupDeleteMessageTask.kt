@@ -51,7 +51,8 @@ class IncomingGroupDeleteMessageTask(
         val message = runCommonDeleteMessageReceiveSteps(deleteMessage, receiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
 
-        messageService.deleteMessageContents(message, deleteMessage.date)
+        messageService.deleteMessageContentsAndEditHistory(message, deleteMessage.date)
+
         return ReceiveStepsResult.SUCCESS
     }
 }

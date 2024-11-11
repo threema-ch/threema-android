@@ -94,10 +94,10 @@ class MessageListAdapterItem(
     }
 
     val latestMessage = conversationModel.latestMessage
-    val latestMessageDate: String? =
-        MessageUtil.getDisplayDate(conversationModel.context, latestMessage, false)
-    val latestMessageDateContentDescription =
-        "." + conversationModel.context.getString(R.string.state_dialog_modified) + "." + latestMessageDate + "."
+    val latestMessageDate: String?
+        get() = MessageUtil.getDisplayDate(conversationModel.context, latestMessage, false)
+    val latestMessageDateContentDescription
+        get() = "." + conversationModel.context.getString(R.string.state_dialog_modified) + "." + latestMessageDate + "."
     val latestMessageViewElement =
         latestMessage?.let { MessageUtil.getViewElement(conversationModel.context, it) }
 
@@ -124,7 +124,7 @@ class MessageListAdapterItem(
     val latestMessageIsDec = latestMessage != null && latestMessage.state == MessageState.USERDEC
 
     val latestMessageGroupMemberName =
-        if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.empty(getDraft())) {
+        if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(getDraft())) {
             String.format(
                 "%s: ",
                 NameUtil.getShortName(conversationModel.context, latestMessage, contactService)

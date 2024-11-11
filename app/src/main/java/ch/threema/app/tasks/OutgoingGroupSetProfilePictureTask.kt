@@ -45,7 +45,7 @@ class OutgoingGroupSetProfilePictureTask(
     messageId: MessageId?,
     serviceManager: ServiceManager,
 ): OutgoingCspGroupControlMessageTask(serviceManager) {
-    private val apiService = serviceManager.apiService
+    private val apiService by lazy { serviceManager.apiService }
     private val groupPhotoUploadResult by lazy { tryUploadingGroupPhoto(groupPhoto) }
 
     override val type = "OutgoingGroupSetProfilePictureTask"

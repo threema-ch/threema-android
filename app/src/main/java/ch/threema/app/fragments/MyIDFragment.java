@@ -554,7 +554,7 @@ public class MyIDFragment extends MainFragment
 				neutral = R.string.unlink;
 			} else {
 				presetNumber = localeService.getCountryCodePhonePrefix();
-				if (!TestUtil.empty(presetNumber)) {
+				if (!TestUtil.isEmptyOrNull(presetNumber)) {
 					presetNumber += " ";
 				}
 			}
@@ -642,7 +642,7 @@ public class MyIDFragment extends MainFragment
 			@Override
 			protected void onPostExecute(String result) {
 				if (isAdded() && !isDetached() && !isRemoving() && getContext() != null) {
-					if (TestUtil.empty(result)) {
+					if (TestUtil.isEmptyOrNull(result)) {
 						Toast.makeText(getContext(), R.string.verification_started, Toast.LENGTH_LONG).show();
 					} else {
 						FragmentManager fragmentManager = getFragmentManager();
@@ -658,7 +658,7 @@ public class MyIDFragment extends MainFragment
 
 	@UiThread
 	private void reloadNickname() {
-		this.nicknameTextView.setText(!TestUtil.empty(userService.getPublicNickname()) ? userService.getPublicNickname() : userService.getIdentity());
+		this.nicknameTextView.setText(!TestUtil.isEmptyOrNull(userService.getPublicNickname()) ? userService.getPublicNickname() : userService.getIdentity());
 	}
 
 	@SuppressLint("StaticFieldLeak")

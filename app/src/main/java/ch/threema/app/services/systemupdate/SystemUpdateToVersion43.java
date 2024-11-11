@@ -101,7 +101,7 @@ public class SystemUpdateToVersion43 implements UpdateSystemService.SystemUpdate
 			while (contacts.moveToNext()) {
 				final String identity = contacts.getString(0);
 
-				if (!TestUtil.empty(identity)) {
+				if (!TestUtil.isEmptyOrNull(identity)) {
 					String rawUid = "c-" + identity;
 					int oldUid = (rawUid).hashCode();
 

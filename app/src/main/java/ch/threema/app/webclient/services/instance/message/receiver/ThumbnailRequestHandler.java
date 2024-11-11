@@ -81,13 +81,13 @@ public class ThumbnailRequestHandler extends MessageReceiver {
 		AbstractMessageModel messageModel = null;
 		switch(type) {
 			case Receiver.Type.GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId, true);
+				messageModel = this.messageService.getGroupMessageModel(messageId);
 				break;
 			case Receiver.Type.CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId, true);
+				messageModel = this.messageService.getContactMessageModel(messageId);
 				break;
 			case Receiver.Type.DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId, true);
+				messageModel = this.messageService.getDistributionListMessageModel(messageId);
 				break;
 		}
 

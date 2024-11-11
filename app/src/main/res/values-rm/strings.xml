@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Contacts</string>
     <string name="title_section1">Messadis</string>
@@ -32,7 +32,6 @@
     <string name="prefs_masterkey">Codaziun da datas memorisadas localmain</string>
     <string name="prefs_header_contacts">Contacts</string>
     <string name="prefs_header_chat">Chat</string>
-    <string name="prefs_header_reset">Maletg dal fund davos</string>
     <string name="prefs_header_keyboard">Tastatura</string>
     <string name="prefs_sum_sync_contacts_on">Colliar ils contacts da %s cun il cudesch d\'adressas da l\'apparat</string>
     <string name="prefs_sum_sync_contacts_off">Allontanar la colliaziun tranter %s ed il cudesch d\'adressas</string>
@@ -49,7 +48,6 @@
     <string name="prefs_sum_notification_sound">Standard dal sistem</string>
     <string name="prefs_vibrate">Vibrar</string>
     <string name="prefs_sum_vibrate">Vibrar cura ch\'in messadi entra</string>
-    <string name="prefs_light">Glisch da l\'avis</string>
     <string name="prefs_sum_light">Alv</string>
     <string name="prefs_title_wallpaper">Tscherner il maletg dal fund davos</string>
     <string name="prefs_sum_wallpaper">Tscherner il maletg dal fund davos</string>
@@ -235,14 +233,10 @@
     <string name="search_contact">Tschertgar in contact</string>
     <string name="push_reset_title">Reinizialisà il simbol da push</string>
     <string name="push_reset_text">Il simbol da push è vegnì reinizialisà.</string>
-    <string name="emoji_things">Objects</string>
-    <string name="emoji_traffic">Traffic</string>
-    <string name="emoji_symbols">Simbols</string>
+    <string name="emoji_recent">Ultims</string>
     <string name="emoji_nature">Natira</string>
     <string name="emoji_food">Mangiar e baiver</string>
-    <string name="emoji_recent">Ultims</string>
-    <string name="emoji_emotions">Emoziuns</string>
-    <string name="emoji_activities">Activitads</string>
+    <string name="emoji_symbols">Simbols</string>
     <string name="emoji_flags">Bandieras</string>
     <string name="emoji_search">Tschertgar emojis</string>
     <string name="emoji_search_no_result">Nagins resultats da retschertga</string>
@@ -418,7 +412,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="add_group_description">Agiuntar ina descripziun da la gruppa</string>
     <string name="read_more">leger dapli</string>
     <string name="read_less">leger damain</string>
-    <string name="changed_group_desc_date">"Mid\u00e0 sco ultim: "</string>
+    <string name="changed_group_desc_date">Mid\u00e0 sco ultim: </string>
     <string name="num_items_sected">Tschernì %s</string>
     <string name="really_delete_media">Vuls ti propi stizzar quest(s) %d messadi(s) da medias?</string>
     <string name="check_updates">Tschertgar updates</string>
@@ -430,8 +424,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="contact_not_found">Betg chattà il contact</string>
     <string name="contact_now_blocked">Bloccà il contact</string>
     <string name="contact_now_unblocked">Debloccà il contact</string>
-    <string name="not_enough_disk_space_title">Memia pauca capacitad da memorisar</string>
-    <string name="not_enough_disk_space_text">Ti dovras almain %1$s per retschaiver il messadi</string>
     <string name="sending_images">Trametter maletgs</string>
     <string name="share_conversation_body">Ti dovras in tool da ZIP modern che sustegna AES per avrir la datoteca, p.ex. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Il chat vegn tramess sco datoteca da ZIP codada. P.pl. tscherner in pled-clav:</string>
@@ -661,7 +653,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="error_out_of_memory">Memia pauca capacitad libra per exequir questa acziun</string>
     <string name="configure">Configurar</string>
     <string name="file_is_not_audio">Nagina audiodatoteca</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">L\'administratur ha deactivà insaquantas configuraziuns</string>
     <string name="select_all">Tscherner tuts</string>
     <string name="deleting_messages">Ils messadis vegnan stizzads</string>
@@ -738,7 +729,7 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="battery_optimizations_disable_confirm">Vuls ti propi laschar activà l\'optimaziun da la prestaziun da l\'accu per %1$s? Uschia na po %2$s betg vegnir utilisà a moda raschunaivla.</string>
     <string name="enter_text_hint">Endatar il text</string>
     <string name="backup_explain_text">En cas che ti midas u perdas tes apparat na po nagin restaurar tia ID da Threema e tes chats. Segirescha perquai tias datas cun las pussaivladads da backup avant maun.</string>
-    <string name="data_backup_explain">"In backup da las datas segirescha:\n\n&#9679; ID e pèr da clavs\n&#9679; contacts e status da confidenza\n&#9679; commembranzas da las gruppas\n&#9679; chats\n&#9679; medias e datotecas (opziunal)\n\nLas datas vegnan segiradas en in ZIP codà. Il backup duess alura vegnir memorisà en in lieu adattà ordaifer l'apparat. "</string>
+    <string name="data_backup_explain">In backup da las datas segirescha:\n\n&#9679; ID e pèr da clavs\n&#9679; contacts e status da confidenza\n&#9679; commembranzas da las gruppas\n&#9679; chats\n&#9679; medias e datotecas (opziunal)\n\nLas datas vegnan segiradas en in ZIP codà. Il backup duess alura vegnir memorisà en in lieu adattà ordaifer l\'apparat. </string>
     <string name="draw">dissegnar</string>
     <string name="edit">Elavurar</string>
     <string name="edit_message">Elavurar il messadi</string>
@@ -750,8 +741,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="prefs_ipv6_preferred_off">Utilisar mo colliaziuns IPv4</string>
     <string name="prefs_ipv6_preferred_on">Preferir IPv6</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 per telefonats e web</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Acceptar IPv6 per telefonats da Threema e Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Betg utilisar IPv6 per telefonats da Threema e Threema Web</string>
     <string name="ipv6_requires_restart">Questa midada basegna ina reinizialisaziun da l\'app.</string>
     <string name="ipv6_restart_now">Reaviar ussa</string>
     <string name="on_cap">Activà</string>
@@ -1018,14 +1007,6 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="delete_for_all">Stizzar per tuts</string>
     <string name="message_was_deleted">Stizzà quest messadi</string>
     <string name="continue_recording">Registrar vinavant</string>
-    <string name="whatsnew_title">Novas funcziuns en %1$s 5.2</string>
-    <string name="whatsnew_headline"><![CDATA[
-<p>Marcar messadis: cun tippar ditg sin in messadi marcheschas ti el cun ina staila, uschia che ti al chattas spert pli tard.</p>
-
-<p>Stizzar automaticamain: ti pos laschar far urden automaticamain cun tes chats suenter in temp che ti defineschas. La funcziun da stizzar automaticamain messadis pos ti activar en il management da l\'arcun.</p>
-
-<p>Numerusas ulteriuras meglieraziuns ed optimaziuns.</p>
-		]]></string>
     <string name="tap_to_start">Smatga qua per aviar uss %s.</string>
     <string name="two_years">2 onns</string>
     <string name="invalid_backup_path">Percurs dal backup nunvalaivel</string>
@@ -1148,14 +1129,12 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="only_images_or_videos">Ti pos selecziunar mo maletgs e videos</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">Chattà naginas medias sin quest apparat</string>
-    <string name="enable_formatting">Activar la formataziun</string>
     <string name="original_file_no_longer_avilable">Nagin access pli a la datoteca originala. P.pl. trametter anc ina giada quest messadi.</string>
     <string name="state_transcoding">vegn transcodà</string>
     <string name="importing_files">Las datotecas vegnan importadas</string>
     <string name="tooltip_image_resolution_hint">Adattar individualmain la resoluziun</string>
     <string name="ballot_created_successfully">La retschertga è vegnida creada cun success.</string>
     <string name="file_size">Grondezza da la datoteca</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 dis</string>
     <string name="show_in_chat">Mussar en il chat</string>
     <string name="group_create_no_members">Es ti segir che ti vuls crear ina gruppa vida senza ulteriurs commembers?</string>
@@ -1282,7 +1261,7 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="unable_to_determine_recording_length">Registraziun vida u betg pussaivel da determinar la lunghezza</string>
     <string name="prefs_header_receipts">Confermas</string>
     <string name="prefs_title_reset_receipts">Redefinir configuraziuns individualas</string>
-    <string name="prefs_sum_reset_receipts">"Redefinir il standard per las configuraziuns specificas dals contacts per la conferma da lectura e «Mussar che jau scriv» "</string>
+    <string name="prefs_sum_reset_receipts">Redefinir il standard per las configuraziuns specificas dals contacts per la conferma da lectura e «Mussar che jau scriv» </string>
     <string name="reset_successful">Redefinì cun success las config. da standard</string>
     <string name="group_link_add">Crear ina colliaziun</string>
     <string name="group_requests_show_menu_title">Mussar las dumondas da gruppa avertas</string>
@@ -1366,7 +1345,6 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="prefs_title_use_system_ringtone">Duvrar il tun dal sistem</string>
     <string name="organization_type">Organisaziun</string>
     <string name="permission_bluetooth_connect_required">Activescha l\'autorisaziun «apparats en la vischinanza» per chattar apparats da bluetooth colliads.</string>
-    <string name="threema_push_start_webclient_sessions_manually">Activà Threema Push. Threema Web e sesidas da dektop stos ti perquai avrir manualmain.</string>
     <string name="tooltip_multiple_recipients_title">Plirs destinaturs</string>
     <string name="tooltip_multiple_recipients_text">Tippar ditg per tscherner plirs destinaturs e trametter a tuts il medem messadi.</string>
     <string name="synchronizing">Sincronisaziun …</string>
@@ -1518,6 +1496,7 @@ Sche ti midas sin in nov apparat, deinstallescha u deactivescha p.pl. %s sin l\'
     <string name="group_dissolved_notice">Questa gruppa è vegnida schliada e na po betg pli vegnir duvrada.</string>
     <string name="directory_request_failed">Betg reussì da consultar il register. P.pl. empruvar anc ina giada.</string>
     <string name="add_shortcut_exists">Igl exista gia ina scursanida per quest object.</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

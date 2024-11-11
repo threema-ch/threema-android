@@ -39,6 +39,8 @@ import androidx.lifecycle.ViewModel;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
 import ch.threema.app.services.ContactService;
+import ch.threema.data.models.GroupModel;
+import ch.threema.data.models.GroupModelData;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -79,6 +81,13 @@ public class GroupDetailViewModel extends ViewModel {
 				return getGroupContacts();
 			}
 		};
+	}
+
+	@Nullable
+	public LiveData<GroupModelData> group;
+
+	public void setGroup(@NonNull GroupModel group) {
+		this.group = group.liveData();
 	}
 
 	public File getAvatarFile() {

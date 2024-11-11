@@ -26,7 +26,9 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.PendingIntent.*
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.getActivity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -43,18 +45,23 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
-import androidx.media3.common.*
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
-import androidx.media3.session.*
+import androidx.media3.session.DefaultMediaNotificationProvider
+import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.Callback
+import androidx.media3.session.MediaSessionService
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.listeners.SensorListener
 import ch.threema.app.listeners.SensorListener.keyIsNear
-import ch.threema.app.services.NotificationService.NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER
+import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.SoundUtil
 import ch.threema.app.voicemessage.SamsungQuirkAudioSink
@@ -86,7 +93,6 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
     companion object {
         private const val TAG = "VoiceMessagePlayerService"
         private const val NOTIFICATION_ID = 59843
-        private const val CHANNEL_ID = "voice_message_player_service"
     }
 
     override fun onCreate() {
@@ -110,7 +116,7 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
 
         val mediaNotificationProvider = DefaultMediaNotificationProvider.Builder(this)
             .setChannelName(R.string.notification_channel_voice_message_player)
-            .setChannelId(NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER)
+            .setChannelId(NotificationChannels.NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER)
             .setNotificationIdProvider { ThreemaApplication.VOICE_MSG_PLAYER_NOTIFICATION_ID }
             .build()
         mediaNotificationProvider.setSmallIcon(R.drawable.ic_notification_small)
@@ -228,9 +234,8 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
             @SuppressLint("MissingPermission")
             if (ConfigUtils.isPermissionGranted(this@VoiceMessagePlayerService, Manifest.permission.POST_NOTIFICATIONS)) {
                 val notificationManagerCompat = NotificationManagerCompat.from(this@VoiceMessagePlayerService)
-                ensureNotificationChannel(notificationManagerCompat)
                 val builder =
-                        NotificationCompat.Builder(this@VoiceMessagePlayerService, CHANNEL_ID)
+                        NotificationCompat.Builder(this@VoiceMessagePlayerService, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
                                 .setContentIntent(getSessionActivityPendingIntent())
                                 .setSmallIcon(R.drawable.ic_notification_small)
                                 .setColor(ResourcesCompat.getColor(resources, R.color.md_theme_light_primary, theme))
@@ -245,24 +250,6 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
             } else {
                 Toast.makeText(this@VoiceMessagePlayerService, R.string.notifications_disabled_title, LENGTH_LONG).show()
             }
-        }
-    }
-
-    private fun ensureNotificationChannel(notificationManagerCompat: NotificationManagerCompat) {
-        if (Build.VERSION.SDK_INT < 26 || notificationManagerCompat.getNotificationChannel(CHANNEL_ID) != null) {
-            return
-        }
-
-        val channel =
-                NotificationChannel(
-                        CHANNEL_ID,
-                        getString(R.string.vm_fg_service_not_allowed),
-                        NotificationManager.IMPORTANCE_DEFAULT
-                )
-        try {
-            notificationManagerCompat.createNotificationChannel(channel)
-        } catch (e: Exception) {
-            logger.error("Unable to create notification channel.", e)
         }
     }
 

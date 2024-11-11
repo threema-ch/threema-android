@@ -45,13 +45,14 @@ import ch.threema.app.exceptions.FileSystemNotPresentException
 import ch.threema.app.listeners.SynchronizeContactsListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.routines.SynchronizeContactsRoutine
-import ch.threema.app.services.NotificationService.logger
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.localcrypto.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
 
+private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
 
 class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.DialogClickListener {
 

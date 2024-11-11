@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Несапраўдныя дадзеныя QR кода</string>
+    <string name="webclient_qr_scan_error">Несапраўдныя даныя QR кода</string>
     <string name="webclient_init_session">Пачаць новую сесію</string>
     <string name="webclient_sessions_really_delete">Вы сапраўды жадаеце выдаліць гэтую сесію версіі для ПК/вэб-версіі?</string>
     <string name="webclient_last_usage">Апошн. выкарыст.: %s</string>
@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Пуск</string>
     <string name="webclient_diagnostics_intro">Націсніце кнопку \"Пуск\" для запуску тэсту</string>
     <string name="webclient_diagnostics_done">Гатова! Калі ў вас узнікаюць непаладкі з наладжваннем злучэння з праграмай для ПК або вэб-кліентам, адпраўце дадзеныя ў службу падтрымкі Threema.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Бэта-версію праграмы для Пк можна звязаць толькі з прыладамі на базе iOS. Для прылад на базе Android выкарыстоўвайце стабільны выпуск праграмы для ПК.</string>
 </resources>

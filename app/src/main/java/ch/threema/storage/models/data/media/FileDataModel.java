@@ -283,7 +283,7 @@ public class FileDataModel implements MediaMessageDataInterface {
 	}
 
 	private void fromString(String s) {
-		if (TestUtil.empty(s)) {
+		if (TestUtil.isEmptyOrNull(s)) {
 			return;
 		}
 

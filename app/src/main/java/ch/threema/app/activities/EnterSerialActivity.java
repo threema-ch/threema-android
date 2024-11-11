@@ -39,13 +39,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.text.HtmlCompat;
-
 import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -62,7 +61,10 @@ import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
+import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.base.utils.LoggingUtil;
 
 // this should NOT extend ThreemaToolbarActivity
@@ -79,6 +81,9 @@ public class EnterSerialActivity extends ThreemaActivity {
 	private Button loginButton;
 	private LicenseService licenseService;
 	private PreferenceService preferenceService;
+
+	private final LazyProperty<BackgroundExecutor> backgroundExecutor =
+		new LazyProperty<>(BackgroundExecutor::new);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +121,8 @@ public class EnterSerialActivity extends ThreemaActivity {
 			return;
 		}
 
+		checkForValidCredentialsInBackground();
+
 		stateTextView = findViewById(R.id.unlock_state);
 		licenseKeyOrUsernameText = findViewById(R.id.license_key);
 		passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
@@ -133,6 +140,32 @@ public class EnterSerialActivity extends ThreemaActivity {
 		}
 
 		handleUrlIntent();
+	}
+
+	private void checkForValidCredentialsInBackground() {
+		// In case there are credentials, we can validate them and skip this activity so that the
+		// user does not have to enter them again.
+		if (licenseService.hasCredentials()) {
+			backgroundExecutor.get().execute(new BackgroundTask<Boolean>() {
+				@Override
+				public void runBefore() {
+					// Nothing to do
+				}
+
+				@Override
+				public Boolean runInBackground() {
+					return licenseService.validate(false) == null;
+				}
+
+				@Override
+				public void runAfter(Boolean result) {
+					if (Boolean.TRUE.equals(result)) {
+						logger.info("Credentials are available and valid");
+						ConfigUtils.recreateActivity(EnterSerialActivity.this);
+					}
+				}
+			});
+		}
 	}
 
 	private void setupForShopBuild() {
@@ -209,7 +242,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 				String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
 				String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
 
-				if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
+				if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
 					check(new UserCredentials(username, password), server);
 				}
 			}
@@ -238,7 +271,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void parseUrlAndCheck(Uri data) {
 		String query = data.getQuery();
-		if (!TestUtil.empty(query)) {
+		if (!TestUtil.isEmptyOrNull(query)) {
 			if (licenseService instanceof LicenseServiceUser) {
 				parseWorkLicense(data);
 			} else {
@@ -249,7 +282,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
 	private void parseConsumerLicense(Uri data) {
 		final String key = data.getQueryParameter("key");
-		if (!TestUtil.empty(key)) {
+		if (!TestUtil.isEmptyOrNull(key)) {
 			check(new SerialCredentials(key), null);
 		}
 	}
@@ -260,7 +293,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 		final String server = data.getQueryParameter("server");
 
 		if (ConfigUtils.isOnPremBuild()) {
-			if (!TestUtil.empty(username) && !TestUtil.empty(password) && !TestUtil.empty(server)) {
+			if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
 				check(new UserCredentials(username, password), server);
 			} else {
 				licenseKeyOrUsernameText.setText(username);
@@ -268,7 +301,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 				serverText.setText(server);
 			}
 		} else {
-			if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
+			if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
 				check(new UserCredentials(username, password), null);
 			} else {
 				licenseKeyOrUsernameText.setText(username);
@@ -284,14 +317,14 @@ public class EnterSerialActivity extends ThreemaActivity {
 		this.enableLogin(false);
 
 		if (ConfigUtils.isOnPremBuild()) {
-			if (!TestUtil.empty(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.empty(this.passwordText.getText().toString()) && !TestUtil.empty(this.serverText.getText().toString())) {
+			if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString()) && !TestUtil.isEmptyOrNull(this.serverText.getText().toString())) {
 				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
 			} else {
 				this.enableLogin(true);
 				this.stateTextView.setText(getString(R.string.invalid_input));
 			}
 		} else if (ConfigUtils.isWorkBuild()) {
-			if (!TestUtil.empty(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.empty(this.passwordText.getText().toString())) {
+			if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString())) {
 				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
 			} else {
 				this.enableLogin(true);
@@ -347,15 +380,15 @@ public class EnterSerialActivity extends ThreemaActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (licenseKeyOrUsernameText != null && !TestUtil.empty(licenseKeyOrUsernameText.getText())) {
+		if (licenseKeyOrUsernameText != null && !TestUtil.isBlankOrNull(licenseKeyOrUsernameText.getText())) {
 			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
 		}
 
-		if (passwordText != null && !TestUtil.empty(passwordText.getText())) {
+		if (passwordText != null && !TestUtil.isBlankOrNull(passwordText.getText())) {
 			outState.putString(BUNDLE_PASSWORD, passwordText.getText().toString());
 		}
 
-		if (serverText != null && !TestUtil.empty(serverText.getText())) {
+		if (serverText != null && !TestUtil.isBlankOrNull(serverText.getText())) {
 			outState.putString(BUNDLE_SERVER, serverText.getText().toString());
 		}
 	}

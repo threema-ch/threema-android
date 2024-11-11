@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-	<string name="hamlet">Weiler</string>
-	<string name="village">Dorf</string>
-	<string name="town">Stadt</string>
-	<string name="isolated_dwelling">Einzelsiedlung</string>
-	<string name="island">Insel</string>
-	<string name="islet">Inselchen</string>
-	<string name="suburb">Stadtteil</string>
-	<string name="city">Grosstadt</string>
-	<string name="city_block">Stadtblock</string>
-	<string name="neighbourhood">Stadtviertel</string>
-	<string name="locality">Örtlichkeit</string>
-	<string name="state">Bundesland/Kanton</string>
-	<string name="farm">Bauernhof</string>
-	<string name="street" tools:ignore="Typos">Strasse</string>
-	<string name="country">Land</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="hamlet">Weiler</string>
+    <string name="village">Dorf</string>
+    <string name="town">Stadt</string>
+    <string name="isolated_dwelling">Einzelsiedlung</string>
+    <string name="island">Insel</string>
+    <string name="islet">Inselchen</string>
+    <string name="suburb">Stadtteil</string>
+    <string name="city">Grosstadt</string>
+    <string name="city_block">Stadtblock</string>
+    <string name="neighbourhood">Stadtviertel</string>
+    <string name="locality">Örtlichkeit</string>
+    <string name="state">Bundesland/Kanton</string>
+    <string name="farm">Bauernhof</string>
+    <string name="street">Strasse</string>
+    <string name="country">Land</string>
 </resources>

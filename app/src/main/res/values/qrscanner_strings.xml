@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="msg_default_status">Place a QR code inside the viewfinder rectangle to scan it.</string>
-	<string name="msg_camera_framework_bug">Unable to access Android camera. Make sure permission to access the camera has been granted or restart your device.</string>
+    <string name="msg_default_status">Place a QR code inside the viewfinder rectangle to scan it.</string>
+    <string name="msg_camera_framework_bug">Unable to access Android camera. Make sure permission to access the camera has been granted or restart your device.</string>
 </resources>

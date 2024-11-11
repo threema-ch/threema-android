@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="recording">Nahrávanie správy</string>
+    <string name="recording">Správa sa nahráva</string>
     <string name="recording_stopped_title">Nahrávanie zastavené</string>
     <string name="recording_stopped_message">Chcete teraz odoslať nahratú hlasovú správu?</string>
     <string name="recording_canceled">Nahrávanie bolo prerušené z dôvodu neznámej chyby.</string>

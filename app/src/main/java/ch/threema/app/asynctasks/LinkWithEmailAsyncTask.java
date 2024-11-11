@@ -73,7 +73,7 @@ public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
 	protected void onPreExecute() {
 		@StringRes int dialogText = 0;
 
-		if (TestUtil.empty(emailAddress)) {
+		if (TestUtil.isEmptyOrNull(emailAddress)) {
 			if (userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
 				linkingMode = MODE_UNLINK;
 				dialogText = R.string.unlinking_email;

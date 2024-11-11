@@ -88,7 +88,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 		this.backupData = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP);
 		this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
 
-		if (TestUtil.empty(this.backupData)) {
+		if (TestUtil.isEmptyOrNull(this.backupData)) {
 			finish();
 			return;
 		}

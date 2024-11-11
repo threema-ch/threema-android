@@ -21,24 +21,25 @@
 
 package ch.threema.app.workers
 
-import android.app.NotificationManager
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.HomeActivity
-import ch.threema.app.notifications.NotificationBuilderWrapper
-import ch.threema.app.services.NotificationService
+import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 
 class AutostartWorker(val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
     private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
 
+    @SuppressLint("MissingPermission")
     override fun doWork(): Result {
         logger.info("Processing AutoStart - start")
 
@@ -50,10 +51,9 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
 
         // check if masterkey needs a password and issue a notification if necessary
         if (masterKey.isLocked) {
-            val notificationCompat: NotificationCompat.Builder = NotificationBuilderWrapper(
+            val notificationCompat: NotificationCompat.Builder = NotificationCompat.Builder(
                 context,
-                NotificationService.NOTIFICATION_CHANNEL_NOTICE,
-                null
+                NotificationChannels.NOTIFICATION_CHANNEL_NOTICE
             )
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setContentTitle(context.getString(R.string.master_key_locked))
@@ -74,8 +74,7 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
                 IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
             )
             notificationCompat.setContentIntent(pendingIntent)
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(
+            NotificationManagerCompat.from(context).notify(
                 ThreemaApplication.MASTER_KEY_LOCKED_NOTIFICATION_ID,
                 notificationCompat.build()
             )

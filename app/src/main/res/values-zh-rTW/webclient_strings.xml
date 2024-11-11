@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">開始</string>
     <string name="webclient_diagnostics_intro">點擊「開始」以啟動測試。</string>
     <string name="webclient_diagnostics_done">大功告成。如果您在桌面版應用程式或網頁版連線遇到問題，請將此日誌傳送至 Threema 支援。</string>
+    <string name="webclient_unsupported_desktop_beta_message">此測試版桌面應用程式現時只能連結至 iOS 裝置，Android 使用者請下載普通版桌面應用程式。</string>
 </resources>

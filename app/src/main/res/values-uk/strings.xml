@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">Контакти</string>
     <string name="title_section1">Чати</string>
@@ -21,6 +21,8 @@
     <string name="menu_add_contact">Додати контакт</string>
     <string name="menu_done">OK</string>
     <string name="compose_message_and_enter">Написати…</string>
+    <string name="title_job_title">Посада</string>
+    <string name="title_department">Відділ</string>
     <string name="send">Надіслати</string>
     <string name="prefs_privacy">Конфіденційність</string>
     <string name="prefs_notifications">Звуки та сповіщення</string>
@@ -50,7 +52,6 @@
     <string name="prefs_sum_notification_sound">Налаштування системи</string>
     <string name="prefs_vibrate">Вібрація</string>
     <string name="prefs_sum_vibrate">Вібрувати, коли надходить повідомлення</string>
-    <string name="prefs_light">Світловий індикатор</string>
     <string name="prefs_sum_light">Білий</string>
     <string name="prefs_title_wallpaper">Вибрати фон</string>
     <string name="prefs_sum_wallpaper">Виберіть зображення для фону</string>
@@ -244,14 +245,15 @@
     <string name="search_contact">Пошук контактів</string>
     <string name="push_reset_title">Скинути маркер сповіщень</string>
     <string name="push_reset_text">Маркер сповіщень скинуто</string>
-    <string name="emoji_things">Предмети</string>
-    <string name="emoji_traffic">Подорожі й місця</string>
-    <string name="emoji_symbols">Символи</string>
+    <string name="emoji_recent">Нещодавні</string>
+    <string name="emoji_smileys">Смайлики й емоції</string>
+    <string name="emoji_people">Люди й тіло</string>
     <string name="emoji_nature">Тварини та природа</string>
     <string name="emoji_food">Їжа й напої</string>
-    <string name="emoji_recent">Нещодавні</string>
-    <string name="emoji_emotions">Смайлики та люди</string>
-    <string name="emoji_activities">Заняття</string>
+    <string name="emoji_travel">Подорожі й місця</string>
+    <string name="emoji_activity">Заняття</string>
+    <string name="emoji_objects">Предмети</string>
+    <string name="emoji_symbols">Символи</string>
     <string name="emoji_flags">Прапори</string>
     <string name="emoji_search">Пошук емодзі</string>
     <string name="emoji_search_no_result">Нічого не знайдено</string>
@@ -435,7 +437,7 @@
     <string name="add_group_description">Додати опис групи</string>
     <string name="read_more">розгорнути</string>
     <string name="read_less">згорнути</string>
-    <string name="changed_group_desc_date">"\u0412\u043e\u0441\u0442\u0430\u043d\u043d\u0454 \u0437\u043c\u0456\u043d\u0435\u043d\u043e: "</string>
+    <string name="changed_group_desc_date">Дата останньої зміни:\u0020</string>
     <string name="num_items_sected">Вибрано %s</string>
     <string name="really_delete_media">Справді видалити повідомлення з медіафайлами (%d)?</string>
     <string name="check_updates">Шукати оновлення</string>
@@ -448,8 +450,6 @@
     <string name="contact_not_found">Контакт не знайдено</string>
     <string name="contact_now_blocked">Контакт заблоковано</string>
     <string name="contact_now_unblocked">Контакт розблоковано</string>
-    <string name="not_enough_disk_space_title">Пам\'ять пристрою заповнена</string>
-    <string name="not_enough_disk_space_text">Звільніть принаймні %1$s, щоб отримати це повідомлення</string>
     <string name="sending_images">Надсилання зображень</string>
     <string name="share_conversation_body">Щоб відкрити цей файл, скористайтеся сучасною програмою для роботи з ZIP-файлами, яка підтримує стандарт шифрування AES, наприклад
 		http://www.7-zip.org або https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
@@ -481,6 +481,8 @@
 		анкету або запитайте в друзів що завгодно.</string>
     <string name="ballot_add_choices">Додати варіанти</string>
     <string name="blocked_cannot_send">Ви не можете надсилати повідомлення заблокованому контакту</string>
+    <string name="invalid_some_cannot_send">Деяких отримувачів неможливо вибрати.</string>
+    <string name="invalid_all_cannot_send">Цих отримувачів неможливо вибрати.</string>
     <string name="really_block_contact">Ви більше не отримуватимете повідомлення від цього контакта. Продовжити?</string>
     <string name="ballot_result_final">Остаточні результати</string>
     <string name="invalid_cannot_send">Ви не можете надсилати повідомлення недійсному контакту</string>
@@ -651,6 +653,7 @@
     <string name="new_wizard_linked_to">Зв\'язані контактні дані</string>
     <string name="new_wizard_need_internet">Щоб створити унікальний ID Threema, потрібне стабільне з\'єднання з Інтернетом. Повторіть спробу.</string>
     <string name="new_wizard_more_information">Додаткова інформація</string>
+    <string name="message_details_message_id_copied">ID повідомлення скопійовано в буфер обміну</string>
     <string name="contact_details_id_copied">ID скопійовано в буфер обміну</string>
     <string name="contact_details_nickname_copied">Псевдонім скопійовано в буфер обміну</string>
     <string name="new_wizard_use_id_as_nickname">Використовувати ID Threema як псевдонім?</string>
@@ -708,7 +711,6 @@
     <string name="error_out_of_memory">Недостатньо пам\'яті для виконання цієї дії</string>
     <string name="configure">Налаштувати</string>
     <string name="file_is_not_audio">Вибраний файл не є аудіо</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">Деякі налаштування було вимкнено через політику пристрою</string>
     <string name="select_all">Вибрати все</string>
     <string name="deleting_messages">Видалення повідомлень</string>
@@ -791,14 +793,15 @@
     <string name="edit_message">Редагувати повідомлення</string>
     <string name="edited">Відредаговано</string>
     <string name="confirm_edit_desc">Підтвердити зміни</string>
+    <string name="edit_history">Редагувати історію</string>
     <string name="discard_changes">Справді відхилити зміни?</string>
     <string name="prefs_title_network">Мережа</string>
     <string name="prefs_title_ipv6_preferred">IPv6 для повідомлень</string>
     <string name="prefs_ipv6_preferred_off">Використовувати лише підключення IPv4</string>
     <string name="prefs_ipv6_preferred_on">Надавати перевагу підключенням IPv6</string>
     <string name="prefs_title_ipv6_webrtc_allowed">IPv6 для викликів і веб-клієнта</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Дозволити IPv6 для викликів Threema і веб-клієнта Threema Web</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Заборонити IPv6 для викликів Threema і веб-клієнта Threema Web</string>
+    <string name="prefs_ipv6_webrtc_allowed_on">Дозволити IPv6 для викликів Threema та веб-клієнта й додатка для ПК.</string>
+    <string name="prefs_ipv6_webrtc_allowed_off">Заборонити IPv6 для викликів Threema та веб-клієнта й додатка для ПК</string>
     <string name="ipv6_requires_restart">Щоб застосувати цей параметр, потрібно перезапустити додаток.</string>
     <string name="ipv6_restart_now">Перезапустити</string>
     <string name="on_cap">Увімкнено</string>
@@ -1061,18 +1064,13 @@
     <string name="system_default">Налаштування системи</string>
     <string name="open_in_maps_app">Відкрити в додатку для карт</string>
     <string name="delete">Видалити</string>
-    <string name="delete_from_this_device">Видалити із цього пристрою</string>
+    <string name="delete_from_this_device">Видалити для мене</string>
     <string name="delete_for_all">Видалити для всіх</string>
     <string name="message_was_deleted">Це повідомлення видалено</string>
     <string name="continue_recording">Продовжити запис</string>
-    <string name="whatsnew_title">Що нового в %1$s 5.2?</string>
-    <string name="whatsnew_headline"><![CDATA[
-		<p>Повідомлення із зірочкою. Утримуйте й позначайте зірочкою важливі повідомлення, щоб легко знаходити їх пізніше.</p>
-		<p>Автоматичне видалення. Видаляйте чати автоматично через указаний час. Щоб ввімкнути цю функцію, відкрийте налаштування Threema й виберіть \"Медіафайли та сховище\" > \"Керування сховищем\".</p>
-		<p>Чимало інших покращень і оптимізацій.</p>
-		]]></string>
-    <string name="whatsnew2_title">" "</string>
-    <string name="whatsnew2_body">" "</string>
+    <string name="whatsnew_title">Що нового в %1$s %2$s?</string>
+    <string name="whatsnew_headline"><![CDATA[        <p>Щоб покращити показ сповіщень, ми змінили їх обробку у фоновому режимі. Якщо ви налаштовували параметри сповіщень для окремих чатів, їх потрібно налаштувати знову.</p>
+        ]]></string>
     <string name="tap_to_start">Торкніться тут, щоб запустити %s.</string>
     <string name="two_years">2 роки</string>
     <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
@@ -1195,14 +1193,12 @@
     <string name="only_images_or_videos">Можна вибрати лише зображення або відео</string>
     <string name="media_gallery_gifs">Файли GIF</string>
     <string name="no_media_found_global">На цьому пристрої медіафайлів не знайдено</string>
-    <string name="enable_formatting">Увімкнути форматування</string>
     <string name="original_file_no_longer_avilable">Оригінальний файл більше недоступний. Надішліть повідомлення ще раз.</string>
     <string name="state_transcoding">перекодування</string>
     <string name="importing_files">Імпортування файлів</string>
     <string name="tooltip_image_resolution_hint">Торкніться тут, щоб змінити роздільну здатність зображення.</string>
     <string name="ballot_created_successfully">Опитування створено.</string>
     <string name="file_size">Розмір файлу</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30 днів</string>
     <string name="show_in_chat">Показати в чаті</string>
     <string name="group_create_no_members">Справді створити порожню групу?</string>
@@ -1344,7 +1340,9 @@
     <string name="group_request_already_sent_title">Запит вже надіслано</string>
     <string name="qr_scanner_id_hint">Підтвердьте дані контакта, відсканувавши його QR-код. Щоб побачити код, попросіть людину натиснути на фото її профілю в лівому верхньому куті головного екрана Threema.</string>
     <string name="enable_storage_access_for_media">Щоб бачити зображення та відео, збережені на пристрої, надайте доступ до сховища.</string>
+    <string name="select_storage_access_for_media_is_granted">Ви надали доступ до окремих фото й відео.</string>
     <string name="take_me_there">Перейти…</string>
+    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Керувати</string>
     <string name="notification_channel_group_join_request">Канал сповіщень для отриманих запитів на приєднання до груп</string>
     <string name="reset_default_group_link_title">Скинути дані посилання за умовчанням</string>
     <string name="reset_default_group_link_desc">Посилання, яке використовувалося раніше, стане недійсним, а запити за ним автоматично відхилятимуться. Користувачі бачитимуть повідомлення про те, що термін дії посилання завершився.</string>
@@ -1409,7 +1407,6 @@
     <string name="prefs_title_use_system_ringtone">Звук дзвінка системи</string>
     <string name="organization_type">Організація</string>
     <string name="permission_bluetooth_connect_required">Щоб знаходити підключені Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\".</string>
-    <string name="threema_push_start_webclient_sessions_manually">Увімкнено push-сповіщення Threema. Сеанси веб-клієнта та додатка для ПК потрібно запускати вручну.</string>
     <string name="tooltip_multiple_recipients_title">Кілька отримувачів</string>
     <string name="tooltip_multiple_recipients_text">Натисніть і утримуйте екран, щоб вибрати кілька отримувачів повідомлення.</string>
     <string name="synchronizing">Триває синхронізація…</string>
@@ -1585,8 +1582,6 @@
     <string name="problemsolver_to_settings">Відкрити налаштування</string>
     <string name="prefs_advanced_options">Розширені налаштування</string>
     <string name="push_service">Сервіс push-сповіщень</string>
-    <string name="zoom_out">Зменшити</string>
-    <string name="zoom_in">Збільшити</string>
     <string name="edit_and_send">Змінити й надіслати</string>
     <string name="media_gallery_animated_webps">Анімовані WebP</string>
     <string name="unsupported_image_type">Непідтримуваний тип зображення: %s</string>
@@ -1595,6 +1590,11 @@
     <string name="edit_message_not_supported_for_contact">Неможливо редагувати повідомлення, оскільки в отримувача встановлено версію додатка, яка не підтримує цю функцію.</string>
     <string name="edit_message_not_supported_for_all_group_members">Ваші зміни не бачитимуть такі учасники групи: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Неможливо редагувати повідомлення, оскільки в жодного з учасників групи не встановлено версію додатка, яка підтримує цю функцію.</string>
+    <string name="prefs_notification_settings">Налаштування сповіщень</string>
+    <string name="prefs_notification_settings_summary">Змінити звук і вібрацію в налаштуваннях системи</string>
+    <string name="new_messages">Нові повідомлення</string>
+    <string name="new_group_messages">Нові групові повідомлення</string>
+    <string name="individual_notification_settings">Індивідуальні налаштування сповіщень</string>
     <string name="delete_message_not_supported_for_all_group_members">Це повідомлення не буде видалено для таких учасників групи: %1$s</string>
     <string name="work_intro_more_link_text">Докладніше про Threema Work</string>
     <string name="work_intro_subtitle">Безпечний месенджер\nдля компаній.</string>
@@ -1603,136 +1603,163 @@
     <string name="consumer_notice_playstore_link_description">Threema в Google Play</string>
     <string name="consumer_notice_appgallery_link_description">Threema в AppGallery</string>
     <string name="consumer_notice_subtitle">Для особистого використання</string>
+    <string name="individual_notification_settings_warn">Для кожного чату з індивідуальними налаштуваннями сповіщень створюється канал налаштувань, тому ім\'я чату буде видно в налаштуваннях пристрою, навіть якщо додаток заблоковано. Усе одно продовжити?</string>
+    <string name="incoming_calls">Вхідні виклики</string>
+    <string name="group_chats">Групові чати</string>
+    <string name="edit_history_file_no_caption">Без підпису</string>
+    <!-- accessibility -->
+    <string name="cd_ack_icon">\"погоджуюся\" надіслано</string>
+    <string name="cd_dec_icon">\"не погоджуюся\" надіслано</string>
+    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">стількома учасниками групи: %d</string>
+    <string name="cd_edited">повідомлення відредаговано</string>
+    <string name="cd_created_at">створено о %s</string>
+    <string name="cd_edited_at">відредаговано о %s</string>
+    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d редагування в історії</string>
+    <string name="cd_message_details_container">про повідомлення</string>
+    <string name="cd_enable_formatting">Увімкнути форматування</string>
+    <string name="cd_message">повідомлення</string>
     <plurals name="contacts_counter_label">
+        <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>
         <item quantity="many">%d контактів</item>
-        <item quantity="one">%d контакт</item>
         <item quantity="other">%d контакта</item>
     </plurals>
     <plurals name="really_delete_thread_message">
+        <item quantity="one">Справді видалити %d чат?</item>
         <item quantity="few">Справді видалити %d чати?</item>
         <item quantity="many">Справді видалити %d чатів?</item>
-        <item quantity="one">Справді видалити %d чат?</item>
         <item quantity="other">Справді видалити %d чату?</item>
     </plurals>
     <plurals name="sending_message_failed">
+        <item quantity="one">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="few">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="many">Не вдалося надіслати повідомлення (%1$d)</item>
-        <item quantity="one">Не вдалося надіслати повідомлення (%1$d)</item>
         <item quantity="other">Не вдалося надіслати повідомлення (%1$d)</item>
     </plurals>
     <plurals name="selection_counter_label">
+        <item quantity="one">Вибрано зображень: %d</item>
         <item quantity="few">Вибрано зображень: %d</item>
         <item quantity="many">Вибрано зображень: %d</item>
-        <item quantity="one">Вибрано зображень: %d</item>
         <item quantity="other">Вибрано зображень: %d</item>
     </plurals>
     <plurals name="message_copied">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Повідомлення скопійовано</item>
-        <item quantity="other">Повідомлення скопійовано</item>
+        <item quantity="one">Повідомлення скопійовано</item>
         <item quantity="few">Повідомлення скопійовано</item>
         <item quantity="many">Повідомлення скопійовано</item>
+        <item quantity="other">Повідомлення скопійовано</item>
     </plurals>
     <plurals name="new_messages">
+        <item quantity="one">%d нове повідомлення</item>
         <item quantity="few">%d нові повідомлення</item>
         <item quantity="many">%d нових повідомлень</item>
-        <item quantity="one">%d нове повідомлення</item>
         <item quantity="other">%d нового повідомлення</item>
     </plurals>
     <plurals name="unread_messages">
+        <item quantity="one">%d непрочитане повідомлення</item>
         <item quantity="few">%d непрочитані повідомлення</item>
         <item quantity="many">%d непрочитаних повідомлень</item>
-        <item quantity="one">%d непрочитане повідомлення</item>
         <item quantity="other">%d непрочитаного повідомлення</item>
     </plurals>
     <plurals name="file_saved">
+        <item quantity="one">%d файл збережено.</item>
         <item quantity="few">%d файли збережено.</item>
         <item quantity="many">%d файлів збережено.</item>
-        <item quantity="one">%d файл збережено.</item>
         <item quantity="other">%d файлу збережено.</item>
     </plurals>
     <plurals name="saving_media">
+        <item quantity="one">Збереження медіафайлу</item>
         <item quantity="few">Збереження %d медіафайлів</item>
         <item quantity="many">Збереження %d медіафайлів</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">Збереження медіафайлу</item>
         <item quantity="other">Збереження %d медіафайлу</item>
     </plurals>
     <plurals name="ballot_really_delete">
+        <item quantity="one">Видалити опитування</item>
         <item quantity="few">Видалити опитування</item>
         <item quantity="many">Видалити опитування</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">Видалити опитування</item>
         <item quantity="other">Видалити опитування</item>
     </plurals>
     <plurals name="ballot_really_delete_text">
+        <item quantity="one">Справді видалити %1$d опитування? Ви не зможете відновити голоси.</item>
         <item quantity="few">Справді видалити %1$d опитування? Ви не зможете відновити голоси.</item>
         <item quantity="many">Справді видалити %1$d опитувань? Ви не зможете відновити голоси.</item>
-        <item quantity="one">Справді видалити %1$d опитування? Ви не зможете відновити голоси.</item>
         <item quantity="other">Справді видалити %1$d опитування? Ви не зможете відновити голоси.</item>
     </plurals>
+    <plurals name="media_files_deleted">
+        <item quantity="one">%d медіафайл видалено</item>
+        <item quantity="few">%d медіафайли видалено</item>
+        <item quantity="many">%d медіафайлів видалено</item>
+        <item quantity="other">%d медіафайлу видалено</item>
+    </plurals>
     <plurals name="message_deleted">
+        <item quantity="one">%d повідомлення видалено</item>
         <item quantity="few">%d повідомлення видалено</item>
         <item quantity="many">%d повідомлень видалено</item>
-        <item quantity="one">%d повідомлення видалено</item>
         <item quantity="other">%d повідомлення видалено</item>
     </plurals>
     <plurals name="notifications_for_x_hours">
+        <item quantity="one">На %d годину</item>
         <item quantity="few">На %d години</item>
         <item quantity="many">На %d годин</item>
-        <item quantity="one">На %d годину</item>
         <item quantity="other">На %d години</item>
     </plurals>
+    <plurals name="really_delete_contacts_message">
+        <item quantity="one">Справді видалити %1$d контакт і всі пов\'язані з ним чати?</item>
+        <item quantity="few">Справді видалити %1$d контакти й усі пов\'язані з ними чати?</item>
+        <item quantity="many">Справді видалити %1$d контактів і всі пов\'язані з ними чати?</item>
+        <item quantity="other">Справді видалити %1$d контакта й усі пов\'язані з ними чати?</item>
+    </plurals>
     <plurals name="some_contacts_not_deleted">
+        <item quantity="one">%d контакт не вдалося видалити, оскільки він досі є учасником групи.</item>
         <item quantity="few">%d контакти не вдалося видалити, оскільки вони досі є учасниками групи.</item>
         <item quantity="many">%d контактів не вдалося видалити, оскільки вони досі є учасниками групи.</item>
-        <item quantity="one">%d контакт не вдалося видалити, оскільки він досі є учасником групи.</item>
         <item quantity="other">%d контакта не вдалося видалити, оскільки вони досі є учасниками групи.</item>
     </plurals>
     <plurals name="message_archived">
+        <item quantity="one">%d чат архівовано</item>
         <item quantity="few">%d чати архівовано</item>
         <item quantity="many">%d чатів архівовано</item>
-        <item quantity="one">%d чат архівовано</item>
         <item quantity="other">%d чату архівовано</item>
     </plurals>
     <plurals name="new_messages_in_chats">
+        <item quantity="one">%1$d нове повідомлення у %2$d чатах</item>
         <item quantity="few">%1$d нових повідомлення у %2$d чатах</item>
         <item quantity="many">%1$d нових повідомлень у %2$d чатах</item>
-        <item quantity="one">%1$d нове повідомлення у %2$d чатах</item>
         <item quantity="other">%1$d нового повідомлення у %2$d чатах</item>
     </plurals>
     <plurals name="webclient_running_sessions">
+        <item quantity="one">%d запущений сеанс</item>
         <item quantity="few">%d запущених сеанси</item>
         <item quantity="many">%d запущених сеансів</item>
-        <item quantity="one">%d запущений сеанс</item>
         <item quantity="other">%d запущеного сеансу</item>
     </plurals>
     <plurals name="really_delete_outgoing_request">
+        <item quantity="one">Справді видалити %d запит на приєднання до групи? Зауважте, що запит не буде відкликано і вас можуть усе одно прийняти або запросити до групи, якщо на запит ще не відповіли.</item>
         <item quantity="few">Справді видалити %d запити на приєднання до групи?
 			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи,
 			якщо на запити ще не відповіли.</item>
         <item quantity="many">Справді видалити %d запитів на приєднання до групи?
 			Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи,
 			якщо на запити ще не відповіли.</item>
-        <item quantity="one">Справді видалити %d запит на приєднання до групи? Зауважте, що запит не буде відкликано і вас можуть усе одно прийняти або запросити до групи, якщо на запит ще не відповіли.</item>
         <item quantity="other">Справді видалити %d запита на приєднання до групи? Зауважте, що запити не буде відкликано і вас можуть усе одно прийняти або запросити до групи, якщо на запити ще не відповіли.</item>
     </plurals>
     <plurals name="really_delete_incoming_request">
+        <item quantity="one">Справді видалити %d запит на приєднання до групи?
+			Ви не зможете відповісти на нього, якщо його буде видалено.</item>
         <item quantity="few">Справді видалити %d запити на приєднання до групи?
 			Ви не зможете відповісти на них, якщо їх буде видалено.</item>
         <item quantity="many">Справді видалити %d запитів на приєднання до групи?
 			Ви не зможете відповісти на них, якщо їх буде видалено.</item>
-        <item quantity="one">Справді видалити %d запит на приєднання до групи?
-			Ви не зможете відповісти на нього, якщо його буде видалено.</item>
         <item quantity="other">Справді видалити %d запиту на приєднання до групи?
 			Ви не зможете відповісти на них, якщо їх буде видалено.</item>
     </plurals>
     <plurals name="really_delete_group_link">
+        <item quantity="one">Справді видалити %d посилання на групу?
+			Люди не зможуть надсилати нові запити,
+			проте можна буде прийняти або відхилити вже отримані.</item>
         <item quantity="few">Справді видалити %d посилання на групу?
 			Люди не зможуть надсилати нові запити,
 			проте можна буде прийняти або відхилити вже отримані.</item>
         <item quantity="many">Справді видалити %d посилань на групу?
-			Люди не зможуть надсилати нові запити,
-			проте можна буде прийняти або відхилити вже отримані.</item>
-        <item quantity="one">Справді видалити %d посилання на групу?
 			Люди не зможуть надсилати нові запити,
 			проте можна буде прийняти або відхилити вже отримані.</item>
         <item quantity="other">Справді видалити %d посилання на групу?
@@ -1740,27 +1767,33 @@
 			проте можна буде прийняти або відхилити вже отримані.</item>
     </plurals>
     <plurals name="chat_deleted">
+        <item quantity="one">%d чат видалено.</item>
         <item quantity="few">%d чати видалено.</item>
         <item quantity="many">%d чатів видалено.</item>
-        <item quantity="one">%d чат видалено.</item>
         <item quantity="other">%d чату видалено.</item>
     </plurals>
+    <plurals name="num_archived_chats">
+        <item quantity="one">%d архівований чат</item>
+        <item quantity="few">%d архівовані чати</item>
+        <item quantity="many">%d архівованих чатів</item>
+        <item quantity="other">%d архівованого чату</item>
+    </plurals>
     <plurals name="forward_security_messages_skipped">
+        <item quantity="one">З моменту отримання останнього повідомлення було втрачено 1 повідомлення.</item>
         <item quantity="few">З моменту отримання останнього повідомлення було втрачено %d повідомлення.</item>
         <item quantity="many">З моменту отримання останнього повідомлення було втрачено %d повідомлень.</item>
-        <item quantity="one" tools:ignore="ImpliedQuantity">З моменту отримання останнього повідомлення було втрачено 1 повідомлення.</item>
         <item quantity="other">З моменту отримання останнього повідомлення було втрачено %d повідомлення.</item>
     </plurals>
     <plurals name="delete_messages">
+        <item quantity="one">Видалити це повідомлення?</item>
         <item quantity="few">Видалити %d повідомлення?</item>
         <item quantity="many">Видалити %d повідомлень?</item>
-        <item quantity="one">Видалити %d повідомлення?</item>
         <item quantity="other">Видалити %d повідомлення?</item>
     </plurals>
     <plurals name="number_of_group_members">
+        <item quantity="one">%d учасник групи</item>
         <item quantity="few">%d учасники групи</item>
         <item quantity="many">%d учасників групи</item>
-        <item quantity="one">%d учасник групи</item>
         <item quantity="other">%d учасника групи</item>
     </plurals>
 </resources>

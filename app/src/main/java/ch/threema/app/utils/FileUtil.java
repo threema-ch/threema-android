@@ -21,7 +21,6 @@
 
 package ch.threema.app.utils;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
@@ -359,7 +358,7 @@ public class FileUtil {
 				mimeType = MimeUtil.MIME_TYPE_APPLE_PKPASS;
 			}
 		}
-		if (TestUtil.empty(mimeType)) {
+		if (TestUtil.isEmptyOrNull(mimeType)) {
 			return MimeUtil.MIME_TYPE_DEFAULT;
 		}
 		return mimeType;
@@ -371,7 +370,7 @@ public class FileUtil {
 			ContentResolver contentResolver = context.getContentResolver();
 			String type = contentResolver.getType(uri);
 
-			if (TestUtil.empty(type) || MimeUtil.MIME_TYPE_DEFAULT.equals(type)) {
+			if (TestUtil.isEmptyOrNull(type) || MimeUtil.MIME_TYPE_DEFAULT.equals(type)) {
 				String filename = FileUtil.getFilenameFromUri(contentResolver, uri);
 
 				return getMimeTypeFromPath(filename);
@@ -409,7 +408,7 @@ public class FileUtil {
 			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(inUri.getScheme()) && inUri.toString().toUpperCase().contains("%3A")) {
 				String path = getRealPathFromURI(context, inUri);
 
-				if (!TestUtil.empty(path)) {
+				if (!TestUtil.isEmptyOrNull(path)) {
 					File file = new File(path);
 
 					if (file.exists()) {
@@ -590,7 +589,7 @@ public class FileUtil {
 	 * @return a filename with an extension
 	 */
 	public static @NonNull String getDefaultFilename(@Nullable String mimeType) {
-		if (TestUtil.empty(mimeType)) {
+		if (TestUtil.isEmptyOrNull(mimeType)) {
 			mimeType = MimeUtil.MIME_TYPE_DEFAULT;
 		}
 
@@ -599,8 +598,8 @@ public class FileUtil {
 	}
 
 	public static String sanitizeFileName(String filename) {
-		if (!TestUtil.empty(filename)) {
-			return filename.replaceAll("[:/*\"?|<>' ]", "_");
+		if (!TestUtil.isEmptyOrNull(filename)) {
+			return filename.replaceAll("[:/*\"?|<>' ]|\\.{2}", "_");
 		}
 		return null;
 	}
@@ -686,7 +685,7 @@ public class FileUtil {
 		File destFile = new File(destPath, destFilename);
 
 		String extension = MimeTypeMap.getFileExtensionFromUrl(destFilename);
-		if (!TestUtil.empty(extension)) {
+		if (!TestUtil.isEmptyOrNull(extension)) {
 			extension = "." + extension;
 		}
 		String filePart = destFilename.substring(0, destFilename.length() - extension.length());

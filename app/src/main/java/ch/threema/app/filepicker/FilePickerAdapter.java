@@ -112,7 +112,7 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 				if (mimeType != null && mimeType.equals(MimeUtil.MIME_TYPE_ZIP)) {
 					String id = getBackupID(fileInfo.getName());
 
-					if (!TestUtil.empty(id)) {
+					if (!TestUtil.isEmptyOrNull(id)) {
 						viewHolder.extra.setText(id);
 						viewHolder.extra.setVisibility(View.VISIBLE);
 					}
@@ -131,10 +131,10 @@ public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 	}
 
 	private String getBackupID(final String filename) {
-		if (!TestUtil.empty(filename)) {
+		if (!TestUtil.isEmptyOrNull(filename)) {
 			String[] pieces = filename.split("_");
 			if (pieces.length > 2 && pieces[0].equals("threema-backup")) {
-				if (!TestUtil.empty(pieces[1]) && !TestUtil.empty(pieces[2])) {
+				if (!TestUtil.isEmptyOrNull(pieces[1]) && !TestUtil.isEmptyOrNull(pieces[2])) {
 					final String identity = pieces[1];
 					final Date time = new Date();
 

@@ -86,7 +86,7 @@ class ArchiveRepository {
 
 
 	public void setFilter(String constraint) {
-		if (!TestUtil.empty(constraint)) {
+		if (!TestUtil.isEmptyOrNull(constraint)) {
 			this.filter = constraint.trim();
 		}
 		else {

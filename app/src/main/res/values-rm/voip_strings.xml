@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Telefonat da Threema</string>
     <string name="voip_hangup">Pender si</string>
@@ -69,4 +69,5 @@
     <string name="voip_webrtc_debug_done">Finì. Sche ti has problems cun la creaziun d\'ina colliaziun da telefon, trametta quest output al support da Threema.</string>
     <string name="voip_webrtc_debug_copied">Il text è vegnì copià en l\'archiv provisoric.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copiar en l\'archiv provisoric</string>
+    <!-- Group Calls -->
 </resources>

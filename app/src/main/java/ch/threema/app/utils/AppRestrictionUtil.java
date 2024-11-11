@@ -112,7 +112,7 @@ public class AppRestrictionUtil {
 	 * @return true if a password pattern has been set and its syntax is valid, false otherwise
 	 */
 	public static boolean isSafePasswordPatternSet(Context context) {
-		if (ConfigUtils.isWorkRestricted() && !TestUtil.empty(getSafePasswordPattern(context))) {
+		if (ConfigUtils.isWorkRestricted() && !TestUtil.isEmptyOrNull(getSafePasswordPattern(context))) {
 			// check validity of regex pattern
 			try {
 				Pattern.compile(getSafePasswordPattern(context));
@@ -128,7 +128,7 @@ public class AppRestrictionUtil {
 
 	public static String getSafePasswordMessage(Context context) {
 		String message = getStringRestriction(context.getString(R.string.restriction__safe_password_message));
-		if (TestUtil.empty(message)) {
+		if (TestUtil.isEmptyOrNull(message)) {
 			return context.getString(R.string.password_does_not_comply);
 		}
 		return message;
@@ -221,7 +221,7 @@ public class AppRestrictionUtil {
 		if (appRestrictions != null && appRestrictions.containsKey(string)) {
 			String preset = appRestrictions.getString(string);
 
-			if (!TestUtil.empty(preset)) {
+			if (!TestUtil.isEmptyOrNull(preset)) {
 				return preset;
 			}
 		}

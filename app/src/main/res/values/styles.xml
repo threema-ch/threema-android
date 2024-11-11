@@ -276,6 +276,8 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="Threema.Bubble.Text.Body.HistoryNoCaption" parent="@style/Threema.Bubble.Text.Body.Deleted" />
+
 	<style name="Threema.Bubble.Text.Body.Status" parent="">
 		<item name="fontFamily">@font/lab_grotesque</item>
 		<item name="android:textColor">@color/bubble_text_status_colorstatelist</item>
@@ -643,6 +645,14 @@
 		<item name="android:id">@id/action_overflow_button</item>
 	</style>
 
+    <style name="Threema.ActionOverflowMenuStyle.Light" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@color/md_theme_light_surfaceContainerHigh</item>
+    </style>
+
+    <style name="Threema.ActionOverflowMenuStyle.Dark" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@color/md_theme_dark_surfaceContainerHigh</item>
+    </style>
+
 	<style name="Threema.BottomSheetStyle" parent="@style/Widget.Material3.BottomSheet.Modal">
 		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearanceOverlay.BottomSheetDialog</item>
 	</style>
@@ -829,7 +839,7 @@
 
 	<style name="Threema.Chip.Outline.Action.WithIcon" parent="@style/Widget.Material3.Chip.Assist">
 		<item name="android:textColor">?attr/colorPrimary</item>
-		<item name="chipBackgroundColor">@android:color/transparent</item>
+		<item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
 		<item name="chipStrokeWidth">1dp</item>
 		<item name="chipMinHeight">36dp</item>
 		<item name="chipIconTint">?attr/colorPrimary</item>
@@ -1112,7 +1122,7 @@
 		<item name="boxCornerRadiusBottomEnd">@dimen/compose_textinputlayout_radius</item>
 		<item name="boxCornerRadiusTopStart">@dimen/compose_textinputlayout_radius</item>
 		<item name="boxCornerRadiusTopEnd">@dimen/compose_textinputlayout_radius</item>
-		<item name="boxBackgroundColor">?attr/colorSecondaryContainer</item>
+		<item name="boxBackgroundColor">?attr/colorOnSurfaceInverse</item>
 	</style>
 
 	<style name="Threema.EditText.Compose" parent="@style/Widget.Material3.TextInputEditText.FilledBox">

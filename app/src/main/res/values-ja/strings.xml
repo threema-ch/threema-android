@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_section2">連絡先</string>
     <string name="title_section1">トーク</string>
@@ -50,7 +50,6 @@
     <string name="prefs_sum_notification_sound">システム設定</string>
     <string name="prefs_vibrate">バイブレーション</string>
     <string name="prefs_sum_vibrate">メッセージを受信するとバイブレーションを鳴らします</string>
-    <string name="prefs_light">通知ライト</string>
     <string name="prefs_sum_light">白</string>
     <string name="prefs_title_wallpaper">壁紙を選ぶ</string>
     <string name="prefs_sum_wallpaper">壁紙の選択</string>
@@ -242,15 +241,16 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="search_contact">連絡先の検索</string>
     <string name="push_reset_title">プッシュトークンをリセット</string>
     <string name="push_reset_text">プッシュトークンはリセットされました</string>
-    <string name="emoji_things">アイテム</string>
-    <string name="emoji_traffic">移動と場所</string>
-    <string name="emoji_symbols">記号</string>
-    <string name="emoji_nature">動物と自然</string>
-    <string name="emoji_food">食べ物と飲み物</string>
     <string name="emoji_recent">最近</string>
-    <string name="emoji_emotions">顔と人</string>
-    <string name="emoji_activities">アクティビティ</string>
-    <string name="emoji_flags">旗</string>
+    <string name="emoji_smileys">スマイリーと感情</string>
+    <string name="emoji_people">人体</string>
+    <string name="emoji_nature">動物と自然</string>
+    <string name="emoji_food">飲み物・食べ物</string>
+    <string name="emoji_travel">旅行・場所</string>
+    <string name="emoji_activity">有効化</string>
+    <string name="emoji_objects">オブジェクト</string>
+    <string name="emoji_symbols">シンボル</string>
+    <string name="emoji_flags">フラグ</string>
     <string name="emoji_search">絵文字を探す</string>
     <string name="emoji_search_no_result">検索結果が見つかりません</string>
     <string name="title_lock">ロック</string>
@@ -425,7 +425,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="add_group_description">グループの説明を追加</string>
     <string name="read_more">続きを読む</string>
     <string name="read_less">軽く把握する</string>
-    <string name="changed_group_desc_date">"\u6700\u7d42\u66f4\u65b0\u65e5: "</string>
     <string name="num_items_sected">%s 件を選択中</string>
     <string name="really_delete_media">本当に %d メディアメッセージを削除したいですか？</string>
     <string name="check_updates">アップデートを確認する</string>
@@ -438,8 +437,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="contact_not_found">そのような連絡先はありません</string>
     <string name="contact_now_blocked">連絡先はブロックされています</string>
     <string name="contact_now_unblocked">連絡先のブロックを解除しました</string>
-    <string name="not_enough_disk_space_title">ストレージ不足</string>
-    <string name="not_enough_disk_space_text">メッセージを受信するには、少なくとも %1$s のストレージを解放する必要があります。</string>
     <string name="sending_images">画像を送信中</string>
     <string name="share_conversation_body">ファイルを解凍するには、AESをサポートする最新のZIPツールが必要です。
 http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id425424353 などから入手してください。</string>
@@ -672,7 +669,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="error_out_of_memory">この操作を完了するための十分なメモリがありません</string>
     <string name="configure">設定</string>
     <string name="file_is_not_audio">音声ファイルではありません</string>
-    <!-- restrictions -->
     <string name="disabled_by_policy">一部の設定は管理者によって無効にされています</string>
     <string name="select_all">すべて選択</string>
     <string name="deleting_messages">メッセージを削除</string>
@@ -760,8 +756,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_ipv6_preferred_off">IPv4 の接続のみが使用されます</string>
     <string name="prefs_ipv6_preferred_on">IPv4 より IPv6 の接続を優先します</string>
     <string name="prefs_title_ipv6_webrtc_allowed">通話とウェブに IPv6 を使用</string>
-    <string name="prefs_ipv6_webrtc_allowed_on">Threema通話とThreema Webで IPv6 は許可されます</string>
-    <string name="prefs_ipv6_webrtc_allowed_off">Threema通話とThreema WebでIPv6は許可されません</string>
     <string name="ipv6_requires_restart">この設定を適用するには、アプリを再起動する必要があります。</string>
     <string name="ipv6_restart_now">再起動する</string>
     <string name="on_cap">オン</string>
@@ -1026,12 +1020,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="delete_for_all">全員から削除</string>
     <string name="message_was_deleted">このメッセージは削除されました</string>
     <string name="continue_recording">録音を続ける</string>
-    <string name="whatsnew_title">%1$sのバージョン5.2での新機能は何ですか？</string>
-    <string name="whatsnew_headline"><![CDATA[<p>スター付きメッセージ: 重要なメッセージを後で簡単に見つけるために、長押しでスターを付けてください。</p>
-<p>自動削除: 選択可能な期間後にチャットが自動的に整理されるようにします。メッセージの自動削除機能はストレージ管理で有効にすることができます。</p>
-<p>その他多数の改善と最適化。</p>]]></string>
-    <string name="whatsnew2_title">(空のフレーズ)</string>
-    <string name="whatsnew2_body">(空のフレーズ)</string>
     <string name="tap_to_start">タップして %s を始めましょう</string>
     <string name="two_years">2年</string>
     <string name="invalid_backup_path">バックアップのパスが無効です</string>
@@ -1154,14 +1142,12 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="only_images_or_videos">画像か動画のみ選択できます</string>
     <string name="media_gallery_gifs">GIF画像</string>
     <string name="no_media_found_global">この端末ではメディアが見つかりません</string>
-    <string name="enable_formatting">フォーマットの有効化</string>
     <string name="original_file_no_longer_avilable">元のファイルにはもうアクセスできません。再送してください。</string>
     <string name="state_transcoding">トランスコーディング</string>
     <string name="importing_files">ファイルの読み込み</string>
     <string name="tooltip_image_resolution_hint">ここをタップすると、画像の解像度を調整できます。</string>
     <string name="ballot_created_successfully">投票を作成しました。</string>
     <string name="file_size">ファイルサイズ</string>
-    <!-- Abbreviation for "30 days", shown at the bottom of the contact list -->
     <string name="thirty_days_abbrev">30日</string>
     <string name="show_in_chat">トークで表示</string>
     <string name="group_create_no_members">本当に他のメンバーがいない空のグループを作成しますか？</string>
@@ -1372,7 +1358,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="prefs_title_use_system_ringtone">システムの着信音を使用</string>
     <string name="organization_type">組織</string>
     <string name="permission_bluetooth_connect_required">接続済みBluetoothヘッドセットを検出するために、「付近のデバイス」権限を許可してください。</string>
-    <string name="threema_push_start_webclient_sessions_manually">Threemaプッシュが有効になっています。そのため、Threema WebおよびDesktopセッションは手動で起動する必要があります。</string>
     <string name="tooltip_multiple_recipients_title">受信者の複数選択</string>
     <string name="tooltip_multiple_recipients_text">長押しすると、同じメッセージを送る複数の受信者を選択できます。</string>
     <string name="synchronizing">同期中…</string>
@@ -1540,12 +1525,11 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="problemsolver_to_settings">設定へ</string>
     <string name="prefs_advanced_options">高度なオプション</string>
     <string name="push_service">プッシュサービス</string>
-    <string name="zoom_out">縮小</string>
-    <string name="zoom_in">拡大</string>
     <string name="edit_and_send">編集して送信</string>
     <string name="media_gallery_animated_webps">アニメーションWebP</string>
     <string name="unsupported_image_type">サポート外の画像形式: %s</string>
     <string name="add_contact_failed">連絡先の追加が失敗しました</string>
+    <!-- accessibility -->
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>
@@ -1621,9 +1605,6 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     </plurals>
     <plurals name="forward_security_messages_skipped">
         <item quantity="other">%d 件のメッセージが最後のメッセージからロストしました。</item>
-    </plurals>
-    <plurals name="delete_messages">
-        <item quantity="other">%d 件のメッセージを削除しますか？</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="other">%d名のグループメンバー</item>

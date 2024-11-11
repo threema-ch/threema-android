@@ -25,7 +25,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -45,277 +44,284 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 public class ContactModelFactory extends ModelFactory {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
 
-	public ContactModelFactory(DatabaseServiceNew databaseService) {
-		super(databaseService, ContactModel.TABLE);
-	}
+    public ContactModelFactory(DatabaseServiceNew databaseService) {
+        super(databaseService, ContactModel.TABLE);
+    }
 
-	public List<ContactModel> getAll() {
-		return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null));
-	}
+    public List<ContactModel> getAll() {
+        return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null));
+    }
 
-	@Nullable
-	public ContactModel getByIdentity(String identity) {
-		return this.getFirst(ContactModel.COLUMN_IDENTITY + "=?",
-				new String[]{
-						identity
-				});
-	}
+    @Nullable
+    public ContactModel getByIdentity(String identity) {
+        return this.getFirst(ContactModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                identity
+            });
+    }
 
-	@Nullable
-	public ContactModel getByPublicKey(byte[] publicKey) {
-		return getFirst(
-				"" + ContactModel.COLUMN_PUBLIC_KEY + " =x'" + Utils.byteArrayToHexString(publicKey) + "'",
-				null);
-	}
+    @Nullable
+    public ContactModel getByPublicKey(byte[] publicKey) {
+        return getFirst(
+            "" + ContactModel.COLUMN_PUBLIC_KEY + " =x'" + Utils.byteArrayToHexString(publicKey) + "'",
+            null);
+    }
 
-	@Nullable
-	public ContactModel getByLookupKey(String lookupKey) {
-		return getFirst(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + " =?",
-				new String[]{
-					lookupKey
-				});
-	}
+    @Nullable
+    public ContactModel getByLookupKey(String lookupKey) {
+        return getFirst(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + " =?",
+            new String[]{
+                lookupKey
+            });
+    }
 
-	public List<ContactModel> convert(
-	                                         QueryBuilder queryBuilder,
-	                                         String[] args,
-	                                         String orderBy) {
-		queryBuilder.setTables(this.getTableName());
-		return convertList(queryBuilder.query(
-				this.databaseService.getReadableDatabase(),
-				null,
-				null,
-				args,
-				null,
-				null,
-				orderBy));
-	}
+    public List<ContactModel> convert(
+        QueryBuilder queryBuilder,
+        String[] args,
+        String orderBy) {
+        queryBuilder.setTables(this.getTableName());
+        return convertList(queryBuilder.query(
+            this.databaseService.getReadableDatabase(),
+            null,
+            null,
+            args,
+            null,
+            null,
+            orderBy));
+    }
 
-	private List<ContactModel> convertList(Cursor c) {
-		List<ContactModel> result = new ArrayList<>();
-		if(c != null) {
-			try {
-				while (c.moveToNext()) {
-					result.add(this.convert(new CursorHelper(c, columnIndexCache)));
-				}
-			}
-			catch (SQLiteException e) {
-				logger.debug("Exception", e);
-			}
-			finally {
-				c.close();
-			}
-		}
-		return result;
-	}
+    private List<ContactModel> convertList(Cursor c) {
+        List<ContactModel> result = new ArrayList<>();
+        if (c != null) {
+            try {
+                while (c.moveToNext()) {
+                    result.add(this.convert(new CursorHelper(c, columnIndexCache)));
+                }
+            } catch (SQLiteException e) {
+                logger.debug("Exception", e);
+            } finally {
+                c.close();
+            }
+        }
+        return result;
+    }
 
-	private ContactModel convert(CursorHelper cursorFactory) {
-		final ContactModel[] cm = new ContactModel[1];
-		cursorFactory.current(new CursorHelper.Callback() {
-			@Override
-			public boolean next(@NonNull CursorHelper cursorFactory) {
-				ContactModel c = new ContactModel(
-					cursorFactory.getString(ContactModel.COLUMN_IDENTITY),
-					cursorFactory.getBlob(ContactModel.COLUMN_PUBLIC_KEY)
-				);
+    private ContactModel convert(CursorHelper cursorFactory) {
+        final ContactModel[] cm = new ContactModel[1];
+        cursorFactory.current((CursorHelper.Callback) cursorFactory1 -> {
+            ContactModel c = new ContactModel(
+                cursorFactory1.getString(ContactModel.COLUMN_IDENTITY),
+                cursorFactory1.getBlob(ContactModel.COLUMN_PUBLIC_KEY)
+            );
 
-				c
-					.setName(
-						cursorFactory.getString(ContactModel.COLUMN_FIRST_NAME),
-						cursorFactory.getString(ContactModel.COLUMN_LAST_NAME))
-					.setPublicNickName(cursorFactory.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
-					.setState(ContactModel.State.valueOf(cursorFactory.getString(ContactModel.COLUMN_STATE)))
-					.setAndroidContactLookupKey(cursorFactory.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
-					.setIsWork(cursorFactory.getInt(ContactModel.COLUMN_IS_WORK) == 1)
-					.setIdentityType(
-						cursorFactory.getInt(ContactModel.COLUMN_TYPE) == 1
-						? IdentityType.WORK
-						: IdentityType.NORMAL
-					)
-					.setFeatureMask(cursorFactory.getLong(ContactModel.COLUMN_FEATURE_MASK))
-					.setIdColorIndex(cursorFactory.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
-					.setAcquaintanceLevel(
-						cursorFactory.getInt(ContactModel.COLUMN_ACQUAINTANCE_LEVEL) == 1
-						? AcquaintanceLevel.GROUP
-						: AcquaintanceLevel.DIRECT
-					)
-					.setLocalAvatarExpires(cursorFactory.getDate(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
-					.setProfilePicBlobID(cursorFactory.getBlob(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
-					.setDateCreated(cursorFactory.getDate(ContactModel.COLUMN_CREATED_AT))
-					.setLastUpdate(cursorFactory.getDate(ContactModel.COLUMN_LAST_UPDATE))
-					.setIsRestored(cursorFactory.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
-					.setArchived(cursorFactory.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
-					.setReadReceipts(cursorFactory.getInt(ContactModel.COLUMN_READ_RECEIPTS))
-					.setTypingIndicators(cursorFactory.getInt(ContactModel.COLUMN_TYPING_INDICATORS))
-					.setForwardSecurityState(cursorFactory.getInt(ContactModel.COLUMN_FORWARD_SECURITY_STATE));
+            c
+                .setName(
+                    cursorFactory1.getString(ContactModel.COLUMN_FIRST_NAME),
+                    cursorFactory1.getString(ContactModel.COLUMN_LAST_NAME))
+                .setPublicNickName(cursorFactory1.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
+                .setState(ContactModel.State.valueOf(cursorFactory1.getString(ContactModel.COLUMN_STATE)))
+                .setAndroidContactLookupKey(cursorFactory1.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
+                .setIsWork(cursorFactory1.getInt(ContactModel.COLUMN_IS_WORK) == 1)
+                .setIdentityType(
+                    cursorFactory1.getInt(ContactModel.COLUMN_TYPE) == 1
+                        ? IdentityType.WORK
+                        : IdentityType.NORMAL
+                )
+                .setFeatureMask(cursorFactory1.getLong(ContactModel.COLUMN_FEATURE_MASK))
+                .setIdColorIndex(cursorFactory1.getInt(ContactModel.COLUMN_ID_COLOR_INDEX))
+                .setAcquaintanceLevel(
+                    cursorFactory1.getInt(ContactModel.COLUMN_ACQUAINTANCE_LEVEL) == 1
+                        ? AcquaintanceLevel.GROUP
+                        : AcquaintanceLevel.DIRECT
+                )
+                .setLocalAvatarExpires(cursorFactory1.getDate(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
+                .setProfilePicBlobID(cursorFactory1.getBlob(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
+                .setDateCreated(cursorFactory1.getDate(ContactModel.COLUMN_CREATED_AT))
+                .setLastUpdate(cursorFactory1.getDate(ContactModel.COLUMN_LAST_UPDATE))
+                .setIsRestored(cursorFactory1.getInt(ContactModel.COLUMN_IS_RESTORED) == 1)
+                .setArchived(cursorFactory1.getInt(ContactModel.COLUMN_IS_ARCHIVED) == 1)
+                .setReadReceipts(cursorFactory1.getInt(ContactModel.COLUMN_READ_RECEIPTS))
+                .setTypingIndicators(cursorFactory1.getInt(ContactModel.COLUMN_TYPING_INDICATORS))
+                .setForwardSecurityState(cursorFactory1.getInt(ContactModel.COLUMN_FORWARD_SECURITY_STATE))
+                .setJobTitle(cursorFactory1.getString(ContactModel.COLUMN_JOB_TITLE))
+                .setDepartment(cursorFactory1.getString(ContactModel.COLUMN_DEPARTMENT));
 
-				// Convert state to enum
-				switch (cursorFactory.getString(ContactModel.COLUMN_STATE)) {
-					case "INACTIVE":
-						c.setState(ContactModel.State.INACTIVE);
-						break;
-					case "INVALID":
-						c.setState(ContactModel.State.INVALID);
-						break;
-					case "ACTIVE":
-					case "TEMPORARY": // Legacy state, see !276
-					default:
-						c.setState(ContactModel.State.ACTIVE);
-						break;
-				}
+            // Convert state to enum
+            switch (cursorFactory1.getString(ContactModel.COLUMN_STATE)) {
+                case "INACTIVE":
+                    c.setState(ContactModel.State.INACTIVE);
+                    break;
+                case "INVALID":
+                    c.setState(ContactModel.State.INVALID);
+                    break;
+                case "ACTIVE":
+                case "TEMPORARY": // Legacy state, see !276
+                default:
+                    c.setState(ContactModel.State.ACTIVE);
+                    break;
+            }
 
-				switch (cursorFactory.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL)) {
-					case 1:
-						c.verificationLevel = VerificationLevel.SERVER_VERIFIED;
-						break;
-					case 2:
-						c.verificationLevel = VerificationLevel.FULLY_VERIFIED;
-						break;
-					default:
-						c.verificationLevel = VerificationLevel.UNVERIFIED;
-				}
+            switch (cursorFactory1.getInt(ContactModel.COLUMN_VERIFICATION_LEVEL)) {
+                case 1:
+                    c.verificationLevel = VerificationLevel.SERVER_VERIFIED;
+                    break;
+                case 2:
+                    c.verificationLevel = VerificationLevel.FULLY_VERIFIED;
+                    break;
+                default:
+                    c.verificationLevel = VerificationLevel.UNVERIFIED;
+            }
 
-				cm[0] = c;
+            cm[0] = c;
 
-				return false;
-			}});
+            return false;
+        });
 
-		return cm[0];
-	}
+        return cm[0];
+    }
 
-	public boolean createOrUpdate(ContactModel contactModel) {
-		if(TestUtil.empty(contactModel.getIdentity())) {
-			logger.error("try to create or update a contact model without identity");
-			return false;
-		}
-		Cursor cursor = this.databaseService.getReadableDatabase().query (
-				this.getTableName(),
-				null,
-				ContactModel.COLUMN_IDENTITY + "=?",
-				new String[]{
-						contactModel.getIdentity()
-				},
-				null,
-				null,
-				null
-		);
+    public boolean createOrUpdate(ContactModel contactModel) {
+        if (TestUtil.isEmptyOrNull(contactModel.getIdentity())) {
+            logger.error("try to create or update a contact model without identity");
+            return false;
+        }
+        Cursor cursor = this.databaseService.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            ContactModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                contactModel.getIdentity()
+            },
+            null,
+            null,
+            null
+        );
 
-		boolean insert = true;
-		if(cursor != null) {
-			insert = !cursor.moveToNext();
-			cursor.close();
-		}
+        boolean insert = true;
+        if (cursor != null) {
+            insert = !cursor.moveToNext();
+            cursor.close();
+        }
 
-		ContentValues contentValues = new ContentValues();
+        ContentValues contentValues = new ContentValues();
 
-		contentValues.put(ContactModel.COLUMN_PUBLIC_KEY, contactModel.getPublicKey());
-		contentValues.put(ContactModel.COLUMN_FIRST_NAME, contactModel.getFirstName());
-		contentValues.put(ContactModel.COLUMN_LAST_NAME, contactModel.getLastName());
-		contentValues.put(ContactModel.COLUMN_PUBLIC_NICK_NAME, contactModel.getPublicNickName());
-		contentValues.put(ContactModel.COLUMN_VERIFICATION_LEVEL, contactModel.verificationLevel.ordinal());
+        contentValues.put(ContactModel.COLUMN_PUBLIC_KEY, contactModel.getPublicKey());
+        contentValues.put(ContactModel.COLUMN_FIRST_NAME, contactModel.getFirstName());
+        contentValues.put(ContactModel.COLUMN_LAST_NAME, contactModel.getLastName());
+        contentValues.put(ContactModel.COLUMN_PUBLIC_NICK_NAME, contactModel.getPublicNickName());
+        contentValues.put(ContactModel.COLUMN_VERIFICATION_LEVEL, contactModel.verificationLevel.ordinal());
 
-		if(contactModel.getState() == null) {
-			contactModel.setState(ContactModel.State.ACTIVE);
-		}
-		contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
-		contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
-		contentValues.put(ContactModel.COLUMN_FEATURE_MASK, contactModel.getFeatureMask());
-		contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColorIndex());
-		contentValues.put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contactModel.getLocalAvatarExpires() != null ?
-				contactModel.getLocalAvatarExpires().getTime()
-				: null);
-		contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
-		contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType() == IdentityType.WORK ? 1 : 0);
-		contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
-		contentValues.put(ContactModel.COLUMN_CREATED_AT, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
-		contentValues.put(ContactModel.COLUMN_LAST_UPDATE, contactModel.getLastUpdate() != null ? contactModel.getLastUpdate().getTime() : null);
-		contentValues.put(ContactModel.COLUMN_ACQUAINTANCE_LEVEL, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP ? 1 : 0);
-		contentValues.put(ContactModel.COLUMN_IS_RESTORED, contactModel.isRestored());
-		contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
-		contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
-		contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
-		contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
-		// Note: Sync state not implemented in "old model" anymore
+        if (contactModel.getState() == null) {
+            contactModel.setState(ContactModel.State.ACTIVE);
+        }
+        contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
+        contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
+        contentValues.put(ContactModel.COLUMN_FEATURE_MASK, contactModel.getFeatureMask());
+        contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColorIndex());
+        contentValues.put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contactModel.getLocalAvatarExpires() != null ?
+            contactModel.getLocalAvatarExpires().getTime()
+            : null);
+        contentValues.put(ContactModel.COLUMN_IS_WORK, contactModel.isWork());
+        contentValues.put(ContactModel.COLUMN_TYPE, contactModel.getIdentityType() == IdentityType.WORK ? 1 : 0);
+        contentValues.put(ContactModel.COLUMN_PROFILE_PIC_BLOB_ID, contactModel.getProfilePicBlobID());
+        contentValues.put(ContactModel.COLUMN_CREATED_AT, contactModel.getDateCreated() != null ? contactModel.getDateCreated().getTime() : null);
+        contentValues.put(ContactModel.COLUMN_LAST_UPDATE, contactModel.getLastUpdate() != null ? contactModel.getLastUpdate().getTime() : null);
+        contentValues.put(ContactModel.COLUMN_ACQUAINTANCE_LEVEL, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP ? 1 : 0);
+        contentValues.put(ContactModel.COLUMN_IS_RESTORED, contactModel.isRestored());
+        contentValues.put(ContactModel.COLUMN_IS_ARCHIVED, contactModel.isArchived());
+        contentValues.put(ContactModel.COLUMN_READ_RECEIPTS, contactModel.getReadReceipts());
+        contentValues.put(ContactModel.COLUMN_TYPING_INDICATORS, contactModel.getTypingIndicators());
+        contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, contactModel.getForwardSecurityState());
+        contentValues.put(ContactModel.COLUMN_JOB_TITLE, contactModel.getJobTitle());
+        contentValues.put(ContactModel.COLUMN_DEPARTMENT, contactModel.getDepartment());
+        // Note: Sync state not implemented in "old model" anymore
 
-		if (insert) {
-			//never update identity field
-			contentValues.put(ContactModel.COLUMN_IDENTITY, contactModel.getIdentity());
-			this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-		}
-		else {
-			this.databaseService.getWritableDatabase().update(this.getTableName(),
-					contentValues,
-					ContactModel.COLUMN_IDENTITY + "=?",
-					new String[]{
-							contactModel.getIdentity()
-					});
-		}
-		return true;
-	}
+        if (insert) {
+            //never update identity field
+            contentValues.put(ContactModel.COLUMN_IDENTITY, contactModel.getIdentity());
+            this.databaseService.getWritableDatabase().insertOrThrow(
+                this.getTableName(),
+                null,
+                contentValues
+            );
+        } else {
+            this.databaseService.getWritableDatabase().update(
+                this.getTableName(),
+                contentValues,
+                ContactModel.COLUMN_IDENTITY + "=?",
+                new String[]{
+                    contactModel.getIdentity()
+                }
+            );
+        }
+        return true;
+    }
 
-	public int delete(ContactModel contactModel) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
-				ContactModel.COLUMN_IDENTITY + "=?",
-				new String[]{
-						contactModel.getIdentity()
-				});
-	}
+    public int delete(ContactModel contactModel) {
+        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+            ContactModel.COLUMN_IDENTITY + "=?",
+            new String[]{
+                contactModel.getIdentity()
+            });
+    }
 
-	@Override
-	public String[] getStatements() {
-		return new String[] {
-				"CREATE TABLE `" + ContactModel.TABLE + "` (" +
-						"`" + ContactModel.COLUMN_IDENTITY + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_PUBLIC_KEY + "` BLOB ," +
-						"`" + ContactModel.COLUMN_FIRST_NAME + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_LAST_NAME + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_PUBLIC_NICK_NAME + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_VERIFICATION_LEVEL + "` INTEGER ," +
-						"`" + ContactModel.COLUMN_STATE + "` VARCHAR DEFAULT 'ACTIVE' NOT NULL ," +
-						"`" + ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + "` VARCHAR ," +
-						"`" + ContactModel.COLUMN_FEATURE_MASK + "` INTEGER DEFAULT 0 NOT NULL ," +
-						"`" + ContactModel.COLUMN_ID_COLOR_INDEX + "` INTEGER ," +
-						"`" + ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES + "` BIGINT," +
-						"`" + ContactModel.COLUMN_IS_WORK + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_PROFILE_PIC_BLOB_ID + "` BLOB DEFAULT NULL," +
-						"`" + ContactModel.COLUMN_CREATED_AT + "` BIGINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_LAST_UPDATE + "` INTEGER," +
-						"`" + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + "` TINYINT DEFAULT 0 NOT NULL," +
-						"`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_FORWARD_SECURITY_STATE + "` TINYINT DEFAULT 0," +
-						"`" + ContactModel.COLUMN_SYNC_STATE + "` INTEGER NOT NULL DEFAULT 0," +
-					"PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
-		};
-	}
+    @Override
+    public String[] getStatements() {
+        return new String[]{
+            "CREATE TABLE `" + ContactModel.TABLE + "` (" +
+                "`" + ContactModel.COLUMN_IDENTITY + "` VARCHAR ," +
+                "`" + ContactModel.COLUMN_PUBLIC_KEY + "` BLOB ," +
+                "`" + ContactModel.COLUMN_FIRST_NAME + "` VARCHAR ," +
+                "`" + ContactModel.COLUMN_LAST_NAME + "` VARCHAR ," +
+                "`" + ContactModel.COLUMN_PUBLIC_NICK_NAME + "` VARCHAR ," +
+                "`" + ContactModel.COLUMN_VERIFICATION_LEVEL + "` INTEGER ," +
+                "`" + ContactModel.COLUMN_STATE + "` VARCHAR DEFAULT 'ACTIVE' NOT NULL ," +
+                "`" + ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY + "` VARCHAR ," +
+                "`" + ContactModel.COLUMN_FEATURE_MASK + "` INTEGER DEFAULT 0 NOT NULL ," +
+                "`" + ContactModel.COLUMN_ID_COLOR_INDEX + "` INTEGER ," +
+                "`" + ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES + "` BIGINT," +
+                "`" + ContactModel.COLUMN_IS_WORK + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_TYPE + "` INT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_PROFILE_PIC_BLOB_ID + "` BLOB DEFAULT NULL," +
+                "`" + ContactModel.COLUMN_CREATED_AT + "` BIGINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_LAST_UPDATE + "` INTEGER," +
+                "`" + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + "` TINYINT DEFAULT 0 NOT NULL," +
+                "`" + ContactModel.COLUMN_IS_RESTORED + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_READ_RECEIPTS + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_TYPING_INDICATORS + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_FORWARD_SECURITY_STATE + "` TINYINT DEFAULT 0," +
+                "`" + ContactModel.COLUMN_SYNC_STATE + "` INTEGER NOT NULL DEFAULT 0," +
+                "`" + ContactModel.COLUMN_JOB_TITLE + "` VARCHAR DEFAULT NULL," +
+                "`" + ContactModel.COLUMN_DEPARTMENT + "` VARCHAR DEFAULT NULL," +
+                "PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
+        };
+    }
 
-	private @Nullable ContactModel getFirst(String selection, String[] selectionArgs) {
-		try (Cursor cursor = this.databaseService.getReadableDatabase().query(
-			this.getTableName(),
-			null,
-			selection,
-			selectionArgs,
-			null,
-			null,
-			null
-		)) {
-			if (cursor != null && cursor.moveToFirst()) {
-				return convert(new CursorHelper(cursor, columnIndexCache));
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return null;
-	}
+    private @Nullable ContactModel getFirst(String selection, String[] selectionArgs) {
+        try (Cursor cursor = this.databaseService.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )) {
+            if (cursor != null && cursor.moveToFirst()) {
+                return convert(new CursorHelper(cursor, columnIndexCache));
+            }
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+        return null;
+    }
 }

@@ -105,6 +105,8 @@ data class ContactModelData(
      * BlobId of the latest profile picture that was sent to this contact.
      */
     @JvmField val profilePictureBlobId: ByteArray?,
+    @JvmField val jobTitle: String?,
+    @JvmField val department: String?,
 ) {
     companion object {
         /**
@@ -132,6 +134,8 @@ data class ContactModelData(
             localAvatarExpires: Date?,
             isRestored: Boolean,
             profilePictureBlobId: ByteArray?,
+            jobTitle: String?,
+            department: String?
         ): ContactModelData {
             if (colorIndex < 0 || colorIndex > 255) {
                 throw IllegalArgumentException("colorIndex must be between 0 and 255")
@@ -160,6 +164,8 @@ data class ContactModelData(
                 localAvatarExpires,
                 isRestored,
                 profilePictureBlobId,
+                jobTitle,
+                department,
             )
         }
     }
@@ -172,7 +178,8 @@ data class ContactModelData(
     /**
      * Return the [featureMask] as [BigInteger].
      */
-    fun featureMaskBigInteger(): BigInteger = UnsignedHelper.unsignedLongToBigInteger(featureMask.toLong())
+    fun featureMaskBigInteger(): BigInteger =
+        UnsignedHelper.unsignedLongToBigInteger(featureMask.toLong())
 
     /**
      * Return the [featureMask] as positive [Long].
@@ -385,7 +392,7 @@ class ContactModel(
                 return
             }
             val dbContact = databaseBackend.getContactByIdentity(identity) ?: return
-            val newData = ContactModelDataFactory().toDataType(dbContact)
+            val newData = ContactModelDataFactory.toDataType(dbContact)
             runtimeAssert(
                 newData.identity == identity,
                 "Cannot update contact model with data for different identity: ${newData.identity} != $identity"
@@ -418,7 +425,7 @@ class ContactModel(
     }
 
     private fun updateDatabase(updatedData: ContactModelData) {
-        databaseBackend.updateContact(ContactModelDataFactory().toDbType(updatedData))
+        databaseBackend.updateContact(ContactModelDataFactory.toDbType(updatedData))
     }
 
     /**
@@ -429,7 +436,7 @@ class ContactModel(
     }
 }
 
-class ContactModelDataFactory : ModelDataFactory<ContactModelData, DbContact> {
+internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbContact> {
     override fun toDbType(value: ContactModelData): DbContact = DbContact(
         value.identity,
         value.publicKey,
@@ -451,6 +458,8 @@ class ContactModelDataFactory : ModelDataFactory<ContactModelData, DbContact> {
         value.localAvatarExpires,
         value.isRestored,
         value.profilePictureBlobId,
+        value.jobTitle,
+        value.department
     )
 
     override fun toDataType(value: DbContact): ContactModelData = ContactModelData(
@@ -474,5 +483,7 @@ class ContactModelDataFactory : ModelDataFactory<ContactModelData, DbContact> {
         value.localAvatarExpires,
         value.isRestored,
         value.profilePictureBlobId,
+        value.jobTitle,
+        value.department
     )
 }

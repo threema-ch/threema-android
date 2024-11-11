@@ -56,7 +56,7 @@ public class SystemUpdateToVersion91 implements UpdateSystemService.SystemUpdate
 
 	@Override
 	public boolean runDirectly() throws SQLException {
-		if (BuildFlavor.isLibre()) {
+		if (BuildFlavor.getCurrent().isLibre()) {
 			final boolean isSyncContacts = PreferenceManager.getDefaultSharedPreferences(this.context).getBoolean(context.getString(R.string.preferences__sync_contacts), false);
 
 			if (!SynchronizeContactsUtil.isRestrictedProfile(context) && isSyncContacts) {

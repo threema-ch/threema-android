@@ -35,7 +35,7 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 
 	@Override
 	public boolean hasCredentials() {
-		return !TestUtil.empty(this.preferenceService.getLicenseUsername(),
+		return !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(),
 				this.preferenceService.getLicensePassword());
 	}
 
@@ -57,7 +57,7 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 		String username = this.preferenceService.getLicenseUsername();
 		String password = this.preferenceService.getLicensePassword();
 
-		if(!TestUtil.empty(username, password)) {
+		if(!TestUtil.isEmptyOrNull(username, password)) {
 			return new UserCredentials(username, password);
 		}
 		return null;

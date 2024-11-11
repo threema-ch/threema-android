@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <string name="voip_title">Appel Threema</string>
     <string name="voip_hangup">Raccrocher</string>
     <string name="voip_toggle_mic">Activer/désactiver micro</string>
@@ -94,12 +94,12 @@
     <string name="voip_gc_call_already_ended">L\'appel de groupe est déjà terminé</string>
     <string name="voip_gc_call_full_generic">Maximum atteint : plus aucun participant ne peut rejoindre cet appel de groupe.</string>
     <string name="voip_gc_call_full_n">Maximum de %1$d participants atteint, vous ne pouvez pas rejoindre cet appel de groupe.</string>
-    <plurals name="n_participants_in_call" tools:ignore="MissingQuantity">
+    <plurals name="n_participants_in_call">
         <item quantity="one">%d participant</item>
         <item quantity="other">%d participants</item>
     </plurals>
-    <plurals name="n_members_dont_support_group_calls" tools:ignore="MissingQuantity">
-        <item quantity="one" tools:ignore="ImpliedQuantity">Attention : un membre ne peut pas participer aux appels de groupe.</item>
+    <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Attention : un membre ne peut pas participer aux appels de groupe.</item>
         <item quantity="other">Attention : %d membres ne peuvent pas participer aux appels de groupe.</item>
     </plurals>
 </resources>

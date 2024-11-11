@@ -105,7 +105,7 @@ public class StringConversionUtil {
 	public static String join(CharSequence delimiter, String... pieces) {
 		final StringBuilder builder = new StringBuilder();
 		for (String p: pieces) {
-			if (!TestUtil.empty(p)) {
+			if (!TestUtil.isEmptyOrNull(p)) {
 				if (builder.length() > 0) {
 					builder.append(delimiter);
 				}

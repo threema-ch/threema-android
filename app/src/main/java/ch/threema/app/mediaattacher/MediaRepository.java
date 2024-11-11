@@ -44,8 +44,6 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -88,7 +86,9 @@ public class MediaRepository {
 
 			// Process images
 			try (Cursor imageCursor = appContext.getContentResolver().query(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+					? MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+					: MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 				imageProjection,
 				imageQueryBundle,
 				null
@@ -100,7 +100,9 @@ public class MediaRepository {
 
 			// Process videos
 			try (Cursor videoCursor = appContext.getContentResolver().query(
-				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+					? MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+					: MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
 				videoProjection,
 				videoQueryBundle,
 				null

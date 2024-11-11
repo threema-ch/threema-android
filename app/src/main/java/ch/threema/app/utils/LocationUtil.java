@@ -43,7 +43,7 @@ public class LocationUtil {
 		String defPackage = context.getPackageName();
 		String type = poi.getType();
 
-		if (!TestUtil.empty(poi.getType())) {
+		if (!TestUtil.isEmptyOrNull(poi.getType())) {
 			id = context.getResources().getIdentifier("ic_places_" + type, "drawable", defPackage);
 		}
 

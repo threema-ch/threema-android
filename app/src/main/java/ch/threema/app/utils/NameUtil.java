@@ -23,15 +23,12 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
@@ -92,7 +89,7 @@ public class NameUtil {
 	 * Return the display name for a distribution list.
 	 */
 	public static String getDisplayName(DistributionListModel distributionListModel, DistributionListService distributionListService) {
-		if (!TestUtil.empty(distributionListModel.getName()) || distributionListService == null) {
+		if (!TestUtil.isEmptyOrNull(distributionListModel.getName()) || distributionListService == null) {
 			return distributionListModel.getName();
 		}
 
@@ -141,8 +138,8 @@ public class NameUtil {
 
 	public static String getShortName(ContactModel model) {
 		if (model != null) {
-			if (TestUtil.empty(model.getFirstName())) {
-				if (TestUtil.empty(model.getLastName())) {
+			if (TestUtil.isEmptyOrNull(model.getFirstName())) {
+				if (TestUtil.isEmptyOrNull(model.getLastName())) {
 					return getFallbackName(model);
 				} else {
 					return getDisplayName(model);
@@ -166,7 +163,7 @@ public class NameUtil {
 	}
 
 	private static String getFallbackName(ContactModel model) {
-		if (!TestUtil.empty(model.getPublicNickName()) &&
+		if (!TestUtil.isEmptyOrNull(model.getPublicNickName()) &&
 				!model.getPublicNickName().equals(model.getIdentity())) {
 			return "~" + model.getPublicNickName();
 		} else {
@@ -192,7 +189,7 @@ public class NameUtil {
 		String f = contactModel.getFirstName();
 		String l = contactModel.getLastName();
 
-		if (TestUtil.empty(f, l)) {
+		if (TestUtil.isEmptyOrNull(f, l)) {
 			return contactModel.getIdentity();
 		}
 
@@ -215,7 +212,7 @@ public class NameUtil {
 			}
 		}
 
-		if (TestUtil.empty(c)) {
+		if (TestUtil.isEmptyOrNull(c)) {
 			c = contactModel.getIdentity();
 		}
 
@@ -265,7 +262,7 @@ public class NameUtil {
 		// return the nickname.
 		if (userService.isMe(contactModel.getIdentity())) {
 			final String myNickname = userService.getPublicNickname();
-			if (!TestUtil.empty(myNickname) && !myNickname.equals(userService.getIdentity())) {
+			if (!TestUtil.isEmptyOrNull(myNickname) && !myNickname.equals(userService.getIdentity())) {
 				return myNickname;
 			}
 		}
@@ -298,29 +295,6 @@ public class NameUtil {
 			return identity;
 		} else {
 			return quoteName;
-		}
-	}
-
-	public static void showNicknameInView(TextView nickNameTextView, ContactModel contactModel, String filterString, FilterableListAdapter adapter) {
-		if (nickNameTextView != null) {
-			if (contactModel != null) {
-				String nickname = contactModel.getPublicNickName();
-
-				if (!TestUtil.empty(nickname) && !nickname.equals(contactModel.getIdentity())) {
-					String text = "~" + nickname;
-
-					if (filterString != null && adapter != null) {
-						nickNameTextView.setText(adapter.highlightMatches(text, filterString));
-					}
-					else {
-						nickNameTextView.setText(text);
-					}
-					nickNameTextView.setVisibility(View.VISIBLE);
-					return;
-				}
-			}
-
-			nickNameTextView.setVisibility(View.GONE);
 		}
 	}
 

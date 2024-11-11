@@ -1,463 +1,465 @@
-⁉️|interpunkcia|otázka|výkričník s otáznikom|znak
-ℹ️|informácie|informačný zdroj
-↔️|šípka doprava aj doľava
-↕️|šípka nahor aj nadol
-↖️|doľava nahor|severozápad|šípka doľava nahor
-↗️|doprava nahor|severovýchod|šípka doprava nahor
-↘️|doprava nadol|juhovýchod|šípka doprava nadol
-↙️|doľava nadol|juhozápad|šípka doľava nadol
+⁉️|interpunkcia|interpunkčné znamienka|otázka|výkričník s otáznikom|znak
+ℹ️|informácie|informačný zdroj|tlačidlo i|značka
+↔️|obojstranná šípka|šípka doprava aj doľava|vľavo aj vpravo
+↕️|dole|hore|šípka nahor aj nadol
+↖️|doľava nahor|kardinálne|severozápad|šikmo|šípka doľava nahor|smer|svetové strany
+↗️|doprava nahor|interkardinálne|severovýchod|šikmo|šípka doprava nahor|šípka nahor a doprava|smer|svetové strany
+↘️|doprava nadol|interkardinálne|juhovýchod|šikmo|šípka doprava a nadol|šípka doprava nadol|smer|svetové strany
+↙️|doľava nadol|interkardinálne|juhozápad|šikmo|šípka doľava a nadol|šípka doľava nadol|smer|svetové strany
 ⌨️|klávesnica|počítač
-☀️|jas|lúče|počasie|slnečno|slnko|vesmír
-☁️|oblak|počasie
-☂️|dážď|dáždnik|oblečenie|počasie
-☃️|počasie|snehuliak|studené
-☄️|kométa|vesmír
-☑️|✓|začiarknuť|začiarknuté políčko|začiarknutie
-☔|dážď|dáždnik s kvapkami|kvapka|oblečenie|počasie
-☕|čaj|drink|horúce|horúci nápoj|káva|nápoj|para
-☘️|rastlina|trojlístok
-☠️|lebka s prekríženými kosťami|skrížené hnáty|smrť|tvár
+☀️|hviezda|jasno|lúče|počasie|príroda|slnečno|slniečko|slnko|vesmír
+☁️|oblak|počasie|príroda|zamračené
+☂️|dážď|dáždnik|fialová|oblečenie|otvorený dáždnik|počasie
+☃️|počasie|príroda|snehuliak|sneží|studené|zima
+☄️|kométa|meteor|vesmír
+☑️|✓|anketa|dotazník|fajka|hotovo|odpoveď|políčko|začiarkavacie|začiarknuť|začiarknuté
+☔|dážď|dáždnik s kvapkami|kvapka|oblečenie|počasie|príroda|prší
+☕|čaj|drink|espresso|horúce|horúci nápoj|jedlo|káva|nápoj|para
+☘️|írsky|príroda|rastlina|šťastie|trojlístok|zelený
+☠️|lebka s prekríženými kosťami|pirát|skrížené hnáty|smrť|smrtka|stvorenie|telo|tvár
 ☢️|rádioaktivita|značka
-☣️|biologické riziko|značka
-☦️|kresťanské|kríž|náboženstvo|pravoslávny kríž
-☸️|budhista|dharma|koleso dharmy|náboženstvo
-☹️|tvár|zamračená
-♈|baran|znamenie barana|zverokruh
-♉|býk|byvol|znamenie býka|zverokruh
-♐|strelec|znamenie strelca|zverokruh
-♑|koza|znamenie kozorožca|zverokruh
-♒|vodna|vodnár|znamenie vodnára|zverokruh
-♓|ryba|znamenie rýb|zverokruh
-♠️|farba|hra|karta|pika
-♣️|farba|hra|karta|kríž|trojlístky|trojlístok
-♥️|farba|hra|karta|srdce|srdcia
-♦️|farba|hra|kára|káro|karta
-♨️|horúce pramene|para|žriedla
-⚒️|kladivo a krompáč|krompáč|nástroj
-⚓|kotva|loď|nástroj
-⚔️|meče|prekrížené meče|skrížené|zbraň
-⚖️|hmotnosť|miskové váhy|rovnováha|spravodlivosť|váhy|váženie|zverokruh
-⚗️|chémia|krivuľa|nástroja
-⚙️|nástroj|ozubené koliesko
-✂️|nástroj|nožnice
-✅|✓|začiarkavacie políčko|začiarknuť|začiarknutie
-✈️|dopravný prostriedok|lietadlo
-✉️|e-mail|email|list|obálka
-✒️|čierne pero|hrot|pero
-✔️|začiarknuť|znak začiarknutia
-✖️|×|krát|násobenie|násobiť|x|znak|zrušiť
-✡️|dávidova hviezda|hviezda|náboženstvo|židovské
-✨|*|hviezda|iskra|iskry
-✳️|*|hviezdička|osemcípa
-✴️|*|hviezda|osemcípa
-❄️|počasie|snehová vločka|studené
-❇️|*|iskra|trblietanie
+☣️|biohazard|biologické riziko|značka biologického nebezpečenstva
+☦️|kresťanské|kresťanstvo|kríž|náboženstvo|ortodoxný kríž|pravoslávny kríž|viera
+☸️|budhista|dharma|koleso dharmy|náboženstvo|viera
+☹️|smajlík|smutný smajlík|tvár|výraz|zamračená
+♈|baran|horoskop|škopec|znamenie barana|zverokruh
+♉|býk|byvol|horoskop|znamenie býka|zverokruh
+♐|horoskop|strelec|znamenie strelca|zverokruh
+♑|horoskop|koza|kozorožec|znamenie kozorožca|zverokruh
+♒|horoskop|voda|vodna|vodnár|znamenie vodnára|zverokruh
+♓|horoskop|ryba|ryby|znamenie rýb|zverokruh
+♠️|čierna|farba|hra|karta|pika|žolík
+♣️|čierna|farba|hra|karta|kríž|poker|tref|trojlístky|trojlístok|žaluď|žolík
+♥️|červená|cit|farba|hra|karta|láska|srdce|srdcia|žolík
+♦️|červená|farba|hra|kára|káro|karta|žolík
+♨️|horúca para|horúce pramene|horúci prameň|kúpele|para|teplo|žriedla
+⚒️|baníctvo|kladivo a krompáč|krompáč|nástroj|práca|zamestnanie
+⚓|cestovanie|kotva|loď|nástroj|oceán|prístav
+⚔️|legenda|meče|prekrížené meče|rozprávka|rytier|skrížené|zbraň
+⚖️|hmotnosť|justícia|miskové váhy|nástroj|rovnoramenné váhy|rovnováha|spravodlivosť|váhy|váženie|zverokruh
+⚗️|banka|chémia|destilačná nádoba|krivuľa|laboratórium|nástroja|skúmavka
+⚙️|mechanika|nástroj|ozubené koleso|ozubené koliesko|prístroj
+✂️|nástroj|nožnice|papier|strihanie
+✅|✓|biely hrubý znak začiarknutia|fajka|hotovo|opravené|overené|začiarkavacie políčko|začiarknuť|začiarknutie|zelené tlačidlo
+✈️|cestovanie|doprava|dopravný prostriedok|letieť|letisko|lietadlo
+✉️|dopis|e-mail|email|list|obálka|pošta|zásielka
+✒️|atramentovné pero|čierne pero|hrot|pero|plniace pero|tuš
+✔️|fajka|hotovo|hrubý znak začiarknutia|veľký znak začiarknutia|začiarknuť|znak začiarknutia
+✖️|×|hrubý znak násobenia|násobenie|násobiť|x|znak|zrušenie|zrušiť
+✡️|davidova hviezda|dávidova hviezda|hviezda|judaizmus|náboženstvo|viera|židovské|židovstvo
+✨|*|hviezda|iskra|iskry|kúzlo|mágia|trblietať sa|žiariť
+✳️|*|hviezda|hviezdička|osemcípa|zelená
+✴️|*|hviezda|hviezdička|oranžová|osemcípa
+❄️|počasie|príroda|snehová vločka|studené|zima
+❇️|*|hviezdička|iskra|trblietanie
 ❓|?|červený otáznik|interpunkcia|otázka|otáznik|znak
-❔|biely otáznik|interpunkcia|obrys|otázka|znak
-❕|biely výkričník|interpunkcia|obrys|výkričník|znak
-❗|!|červený výkričník|interpunkcia|výkričník|znak|zvolanie
-❣️|interpunkcia|srdce|výkričník v tvare srdca|znak|zvolanie
-❤️|červené|srdce
-➕|+|matematika|plus|znak sčítania
-➖|-|−|matematika|mínus|znak odčítania
-➗|÷|delenie|deleno|deliť|matematika|znak delenia
-⤴️|šípka doprava zakrivená nahor
-⤵️|nadol|šípka doprava zakrivená nadol
-〰️|interpunkcia|vlnovka|vlnovková pomlčka|vlnovkovitá
-㊗️|blahoželám|blahoželanie|ideograf|japončina|japonský ideograf blahoželám
-㊙️|ideograf|japončina|japonský ideograf tajomstvo|tajomstvo
-😀|škeriaca sa tvár|tvár|úškľabok|úškrn
-😃|otvorené|škeriaca sa tvár s veľkými očami|tvár|úsmev|ústa
-😄|oko|prižmúrené|škeriaca sa tvár s prižmúrenými očami|tvár|úsmev|ústa
-😁|natešená tvár s prižmúrenými očami|oko|tvár|úškľabok|úškrn|úsmev
-😆|otvorené|škeriaca sa tvár s privretými očami|smiech|spokojné|tvár|úsmev|ústa
-😅|horúco|otvorené|pot|škeriaca sa tvár s potom|tvár|úsmev
-🤣|smiech|tvár|váľam sa od smiechu
-😂|plačem od smiechu|radosť|slza|smiech|tvár
-🙂|tvár|úsmev|usmievajúca sa tvár
-🙃|otočená|prevrátená|tvár
-🫠|rozpustiť|roztiecť|roztopená tvár|roztopiť|zmiznúť
-😉|tvár|žmurkajúca tvár|žmurkanie|žmurknutie
-😊|oko|smejúca sa tvár s prižmúrenými očami|tvár|úsmev|zapýrenie
-😇|anjel|nevinná|smejúca sa tvár so svätožiarou|svätá|svätožiara|tvár|úsmev
-🥰|smejúca sa tvár s tromi srdiečkami|zaľúbená|zaľúbený|zamilovaná|zamilovaný|zbožňujem
-😍|láska|oko|smejúca sa tvár so srdiečkami|srdce|tvár|úsmev
-🤩|oči|pobláznená tvár|pobláznenie|tvár|úškľabok|úškrn
-😘|bozk|srdce|tvár posielajúca bozk
-😗|bozkávajúca tvár|tvár
-☺️|pohoda|smejúca sa tvár|tvár|úsmev
-😚|bozkávajúca tvár so zatvorenými očami|oko|tvár|zatvorené
-😙|bozkávajúca tvár s prižmúrenými očami|oko|tvár|úsmev
-🥲|hrdosť|slza|smejúca sa tvár so slzou|uľahčenie|úsmev|vďačnosť
-😋|dobrota|jedlo|mňam|pochutnávajúca si tvár|tvár|úsmev
-😛|drzá|jazyk|tvár s vyplazeným jazykom
-😜|jazyk|oko|tvár|vtip|žmurkajúca tvár s vyplazeným jazykom|žmurkať
-🤪|bláznivá|šialená|šialenec|tvár
-😝|chuť|hrozná|jazyk|oko|škúliaca tvár s jazykom|škúliť|tvár
-🤑|peniaze|tvár s peniazmi na jazyku|ústa
-🤗|objatie|objímajúca tvár|objímanie|tvár
-🤭|chi|joj|tvár s rukou na ústach
-🫢|nevera|prekvapenie|strach|tvár s otvorenými očami a rukou na ústach|úžas|v rozpakoch|zdesenie
-🫣|pokukávanie|tvár vykúkajúca pomedzi prsty|uchvátená|zízanie
-🤫|čit|pst|ticho|tvár s prstom na ústach
-🤔|premýšľajúca tvár|premýšľať|tvár
-🫡|ako povieš|áno|salutovať|salutujúca tvár|slnko v očiach|zdravím
-🤐|mlčať|tvár so zazipsovanými ústami|ústa
-🤨|nedôvera|pochyba|skeptik|tvár so zdvihnutým obočím
-😐|kamenná|neutrálna|tvár
-😑|bezvýrazná|neurčitá|tvár
-😶|nemá|tichá|tvár bez úst|ústa
-🫥|introvert|neviditeľná|skľúčená|skryť|tvár s prerušovanou čiarou|zmiznúť
+❔|?|biely otáznik|interpunkcia|obrys|otázka|znak
+❕|!|biely výkričník|interpunkcia|obrys|výkričník|znak
+❗|!|červený výkričník|interpunkcia|nebezpečenstvo|pozor|výkričník|výstraha|znak|zvolanie
+❣️|emócia|interpunkcia|láska|srdce|výkričník v tvare srdca|znak|zvolanie
+❤️|červené|cit|emócia|láska|srdce
+➕|+|hrubý znak sčítania|matematika|plus|počítať|pripočítať|sčítať|znak sčítania
+➖|-|–|hrubý znak odčítania|matematika|mínus|odčítanie|počítanie|znak odčítania
+➗|÷|delenie|deleno|deliť|hrubý znak delenia|matematika|znak delenia
+⤴️|hore|šípka doprava zakrivená nahor|tlačidlo
+⤵️|dole|nadol|šípka doprava zakrivená nadol|tlačidlo
+〰️|interpunkcia|interpunkčné znamienka|vlnitá čiara|vlnovka|vlnovková pomlčka|vlnovkovitá
+㊗️|blahoželám|blahoželanie|ideograf|ideogram|japončina|japonský|okrúhly ideograf blahoželám|okrúhly ideogram blahoželám
+㊙️|ideograf|ideogram|japončina|japonský|okrúhly ideograf tajomstvo|tajomstvo
+😀|škeriaca sa tvár|smajlík s veľkým úsmevom|šťastný|tvár|úškľabok|úškrn|usmievavá tvár|veselý|zuby
+😃|otvorené|škeriaca sa tvár s veľkými očami|smajlík|smejúca sa tvár s otvorenými ústami|šťastie|tvár|úsmev|ústa|zuby
+😄|lol|oko|otvorené|prižmúrené|rofl|škeriaca sa tvár s prižmúrenými očami|smajlík|smejúca sa tvár s otvorenými ústami a prižmúrenými očami|smiech|šťastie|tvár|úsmev|ústa|vyškerený
+😁|milý|natešená tvár s prižmúrenými očami|oko|škeriaca sa tvár s prižmúrenými očami|smajlík|šťastný|tvár|úškľabok|úškrn|úsmev|veselý|zuby
+😆|lol|otvorené|rofl|škeriaca sa tvár s privretými očami|smiech|spokojné|tvár|úsmev|ústa
+😅|horúco|nervózny|otvorené|pot|škeriaca sa tvár s potom|smajlík|smejúca sa tvár s otvorenými ústami a kvapkou potu|stres|studený|tvár|úsmev
+🤣|haha|lol|rofl|smiech|tvár pučiaca sa od smiechu|váľam sa od smiechu|váľať sa
+😂|haha|lol|plačem od smiechu|popukať sa|radosť|rehot|slza|smiech|sranda|tvár
+🙂|radosť|smajlík|šťastie|tvár|úsmev|usmievajúca sa tvár|veselý
+🙃|hore nohami|naopak|obrátený|otočená|otočený smajlík|prevrátená|smajlík|tvár dolu hlavou
+🫠|horúčava|horúco|rozpustiť|roztiecť|roztopená tvár|roztopiť|zmiznúť
+😉|flirt|mrkajúci smajlík|mrknutie|sexi|tvár|žmurkajúca tvár|žmurkanie|žmurknutie
+😊|oko|smajlík|smejúca sa tvár s prižmúrenými očami|spokojný|šťastný|tvár|úsmev|zapýrenie|žiariť od šťastia
+😇|anjel|biblia|dobrý|fantasy|nevinná|nevinné|pokojný|rozprávka|smajlík|smejúca sa tvár so svätožiarou|svätá|svätožiara|tvár|úsmev
+🥰|láska|mať rád|milovať|milujem ťa|romantika|smajlík s tromi srdiečkami|smejúca sa tvár s tromi srdiečkami|srdce|srdcia|srdiečka|srdiečko|tvár|úsmev|usmiate srdiečka|vrúcne ľúbiť|zaľúbená|zaľúbený|zamilovaná|zamilovanosť
+😍|emócia|láska|nádhera|oko|rande|romanca|smajlík|smejúca sa tvár s očami v tvare srdiečok|smejúca sa tvár so srdiečkami|srdce|tvár|úsmev
+🤩|hviezdičky|nadšený|oči|pobláznená tvár|pobláznenie|smajlík|tvár|úškľabok|úškrn|úsmev|vzrušený|wau
+😘|bozk|láska|rande|smajlík posielajúci bozk|srdce|tvár posielajúca bozk
+😗|bozkávajúca tvár|flirt|láska|milujem ťa|pusa|rande|smajlík|tvár
+☺️|hanblivý|pohoda|relaxovaný|smajlík|smejúca sa tvár|šťastný|tvár|úsmev|uvoľnený|výraz|zahanbený
+😚|bozkávajúca tvár so zatvorenými očami|flirt|láska|oko|pusa|rande|smajlík|tvár|zatvorené
+😙|bozkávajúca tvár s prižmúrenými očami|flirt|láska|oko|smajlík|tvár|úsmev|zavreté oči
+🥲|dojatý|hrdosť|radosť|slza|smejúca sa tvár so slzou|šťastie|uľahčenie|úsmev|vďačnosť
+😋|chutné|dobrota|hlad|jedlo|lahodné|lahodný|mňam|pochutnávajúca si tvár|smajlík|tvár pochutnávajúca si na lahodnom jedle|úsmev|vychutnávajúci si
+😛|drzá|jazyk|party|smajlík s vyplazeným jazykom|tvár s vyplazeným jazykom|zábava
+😜|bláznivý|divný|jazyk|mrk|oko|smajlík|sranda|tvár s vyplazeným jazykom a žmurkajúcim okom|vtip|vyplazený|žmurkajúca tvár s vyplazeným jazykom|žmurkať|žmurknutie
+🤪|bláznivá|bláznivý|oči|šialená|šialenec|šialený|smajlík s bláznivými očami|tvár
+😝|chuť|fuj|hrozná|jazyk|nechutné|oko|omg|škúliaca tvár s jazykom|škúliť|smajlík|tvár s vyplazeným jazykom a privretými očami|vyplazený
+🤑|bohatstvo|peniaze|platiť|smajlík|tvár s peniazmi na jazyku|ústa|výplata
+🤗|objatie|objímajúca tvár|objímanie|smajlík|tvár
+🤭|chichotajúci sa smajlík|hopla|joj|prekvapenie|prekvapený smajlík|smajlík|tajomstvo|tvár s rukou cez ústa|tvár s rukou na ústach|ups
+🫢|nevera|prekvapenie|šok|strach|tichá|tvár s otvorenými očami a rukou na ústach|úžas|v rozpakoch|zdesenie
+🫣|kuk|ostýchavá|pokukávanie|skrývať sa|strach|tvár vykúkajúca pomedzi prsty|uchvátená|vystrašená|zízanie
+🤫|buď ticho|čit|psst|pst|smajlík|ššš|ticho|tíšiaci smajlík|tvár s prstom na ústach
+🤔|hmm|myslieť|premýšľajúca|premýšľať|smajlík|tvár|zamyslený
+🫡|ako povieš|áno|pozdravovať zdvihnutím ruky|rešpekt|salutovať|salutujúca tvár|slnko v očiach|zdravím
+🤐|ani slovo|mlčať|mlčím|pst|smajlík|tajomný|tvár s ústami na zips|tvár so zazipsovanými ústami|ústa|zips
+🤨|nedôvera|nesúhlas|neveriaci smajlík|obočie|pochyba|prekvapenie|skeptický smajlík|skeptik|smajlík|tvár so zdvihnutým obočím
+😐|bez výrazu|bez záujmu|kamenná|neutrálna|prázdny pohľad|rozpačitý|smajlík|trápne|tvár
+😑|bez výrazu|bezvýrazná|divný|fajn|neštastný|neurčitá|neutrálny|smajlík s úzkymi očami|tvár|wtf
+😶|bez slov|mlčať|nemá|no comment|smajlík|tajomstvo|tichá|ticho|tvár bez úst|ústa
+🫥|deprimovaná|introvert|neviditeľná|skľúčená|skryť|tvár s prerušovanou čiarou|zmiznúť
 😶‍🌫️|hlava v oblakoch|neprítomná|nesústredená|tvár v hmle|tvár v oblakoch
-😏|samoľúba|tvár
-😒|nespokojná|nuda|tvár|znudená
-🙄|oči|prevracať|tvár prevracajúca oči
-😬|grimasa|tvár|vyškerená
-😮‍💨|hvízdať|pískať|šepkať|úľava|vydýchnuť|vydychujúca tvár|vzdychať
-🤥|klamať|klamstvo|lož|tvár s dlhým nosom
-🫨|roztrasená tvár|šok|trasenie|tvár|vibrovanie|zemetrasenie
-😌|tvár vyjadrujúca úľavu|úľava|upokojená
-😔|deprimovaná|tvár|zamyslená
-😪|ospalá|tvár|únava
-🤤|blaho|slintajúca tvár|slintať|tvár
-😴|spánok|spať|spiaca tvár|tvár
-😷|chorá|choroba|doktor|lekár|tvár s rúškom
-🤒|chorá|nezdravá|teplomer|tvár s teplomerom
-🤕|obväz|poranená|tvár s obväzom|zranenie
-🤢|nevoľnosť|tvár, ktorej je zle|vracať|zle
-🤮|tvár, ktorá vracia|vracať|zle
-🤧|kýchajúca tvár|kýchať|kýchnutie|tvár
-🥵|horúčka|horúco|potenie|rozhorúčená tvár|úpal
-🥶|cencúľ|chladno|mráz|mrznúca tvár|zima
-🥴|malátna tvár|omámený|opilec|opitý|podnapitý|závrat
-😵|tvár so závratom|závrat
-😵‍💫|hypnóza|problém|špirála|tvár so špirálovými očami|závrat
-🤯|nechápem|šokovaná|vybuchujúca hlava
-🤠|klobúk|kovbojka|tvár s kovbojským klobúkom
-🥳|oslava|oslavujúca tvár|párty|večierok|žúr
-🥸|inkognito|maska|maskovaná tvár|nos|okuliare|prestrojenie|tvár
-😎|okuliare|slnko|smejúca sa tvár s okuliarmi|super|tvár|úsmev
-🤓|bifľloš|čudák|šprták|tvár|vedátor
-🧐|staromódna|tvár s monoklom
-😕|neviem|tvár|zmätená|zmätok
-🫤|ach|neistá|pochybovačná|sklamanie|tvár so šikmými ústami
-😟|obavy|tvár|ustaraná
-🙁|trochu zamračená tvár|tvár|zamračená
-😮|otvorené|súcit|tvár s otvorenými ústami|ústa
-😯|ohromená|prekvapená|tvár|umlčaná
-😲|absolútne|šokovaná|tvár|udivená
-😳|sčervenená|tvár|zapýrená
-🥺|prosebná tvár|prosím|psie oči|zľutovanie
-🥹|nahnevaná|odolávanie|plač|pyšná|smútok|tvár zadržujúca slzy
-😦|otvorené|tvár|ústa|zamračená tvár s otvorenými ústami
-😧|tvár|utrápená
-😨|bojazlivá|strach|tvár|vystrašená
-😰|náhliť|otvorené|pot|tvár|ústa|znepokojená tvár s potom
-😥|sklamaná, ale uvoľnená tvár|tvár|uf|uvoľnená
-😢|plačúca tvár|plakať|slza|smutná|tvár
-😭|nariekajúca tvár|nariekať|plač|slza|smutná|tvár
-😱|strach|tvár kričiaca od strachu|vydesená|výkrik|vystrašená
-😖|popletená|tvár v rozpakoch
-😣|tvár|urputná tvár|vydržať|vytrvať
-😞|sklamaná|tvár
-😓|deprimovaná|pot|skľúčená tvár s potom|tvár
-😩|tvár|unavená|ustatá
-😫|tvár|únava|unavená
+😏|obočie|samoľúba|smajlík s úškrnom|tvár|úškrn|uškŕňajúca sa tvár|vtip|žart
+😒|divný|nespokojná|nešťastný|nuda|smajlík|tvár|žiarlivý|znechutený|znudená
+🙄|ach jaj|gúľa očami|oči|otrávený smajlík|prevracanie očami|prevracať|prevrátené|tvár
+😬|grimasa|trapas|trápny smajlík|tvár v grimase|úsmev|vyškerená|zubár|zubatý smajlík
+😮‍💨|fúkať|hvízdať|pískať|povzdych|šepkať|úľava|unavený|vyčerpaný|vydýchnuť|vydychujúca tvár|vzdychať
+🤥|dlhý|klamajúca tvár s dlhým nosom|klamár|klamať|klamstvo|lož|luhár|nos|pinocchio|podvodník|smajlík|tvár s dlhým nosom
+🫨|prekvapenie|šok|trasenie|triaška|tvár|úžas|vibrovanie|zemetrasenie
+🙂‍↔️|hlava krútiaca sa zo strany na stranu|krútenie|nie
+🙂‍↕️|áno|prikývnutie|prikyvujúca hlava
+😌|spokojnosť|spokojný smajlík|tvár|úľava|upokojená|uvoľnená|uvoľnený smajlík|zen
+😔|deprimovaná|odmietnutá|sklamaný|skleslý|smajlík|smutný|stratený|tvár|zadumaná|zamyslená|znudený
+😪|ospalá|plakať|smajlík|smutný|spánok|tvár|únava|unavený
+🤤|blaho|chutné|hlad|slintajúca tvár|slintať|smajlík|tvár
+😴|spánok|spať|spiaca tvár|tvár|unavený|znudený|zzz
+😷|bacily|chorá|choroba|doktor|lekár|maska|medicína|nemocnica|rúško|smajlík|studená|tvár s rúškom|zubár
+🤒|chorá|choroba|horúčka|nezdravá|smajlík|teplomer|teplota|tvár s teplomerom
+🤕|bandáž|bolesť|chorý|obväz|poranená|smajlík|tvár s bandážou|tvár s obväzom|úraz|zranenie
+🤢|ktorej je zle|na vracanie|nechuť|nevoľnosť|smajlík|tvár, ktorej je zle|vracať|zle|zvracať
+🤮|chorý|dáviť|ktorá vracia|nevoľnosť|opica|smajlík|tvár, ktorá vracia|vracajúca tvár|vracanie|vracať|vydáviť|vyvrátiť|žalúdok|zle
+🤧|choroba|chorý|chrípka|horúčka|kýchajúca tvár|kýchať|kýchnutie|na zdravie|prechladnutie|smajlík s vreckovkou|tvár|vreckovka
+🥵|červená tvár|horúci|horúčka|horúčkovitý|horúčkový|horúco|potenie|prehriaty|rozhorúčená tvár|rozpálená tvár|rozpálený|smrť na jazyku|spotený|ťažko dýchať|tvár|úpal|vyplazený jazyk|zadýchaný|zadychčaný
+🥶|cencúľ|cencúle|chladno|chladný|modrý|mráz|mrznúci|mrznúť|prezimený|triasť sa|uzimený|zima
+🥴|chytený|dezorientovaný|malátna tvár|mdloby|omámený|opilec|opitý|opojený|podnapitý|pripitý|závrat
+😵|chorý|mŕtvy|smajlík|smrť|tvár so závratom|unavený smajlík|závrat
+😵‍💫|hypnóza|omámený|popletený|problém|špirála|tvár so špirálovými očami|závrat|zhypnotizovaný|zmätený
+🤯|nechápem|smajlík s vybuchujúcou hlavou|šokovaná|šokovaný smajlík|tvár|výbuch|vybuchujúca hlava
+🤠|klobúk|kovbojka|smajlík s klobúkom|tvár s kovbojským klobúkom
+🥳|hurá|konfety|narodeniny|oslava|oslavovať|oslavujúca tvár|párty|večierok|zábava|žúr
+🥸|fúzy|inkognito|maska|maskovaná tvár|nos|obočie|okuliare|prestrojenie|tvár
+😎|cool|jasné|oko|okuliare|počasie|slnečné okuliare|slnko|smajlík|smejúca sa tvár s okuliarmi|super|tvár|úsmev
+🤓|bifľloš|bifľoš|čudák|geek|nerd|okuliare|smajlík s okuliarmi|šprták|tvár|vedátor
+🧐|bohatý|luxusný|okuliare|smajlík s okuliarmi|staromódna|tvár s monoklom|tvár s monoklom|zámožný
+😕|hm|neistý|neviem|prepáč|smajlík|smutný smajlík|tvár|zamyslený|zmätená|zmätený|zmätok
+🫤|ach|frustrácia|neistá|pochybovačná|rozpačitá|skeptická|sklamanie|tvár so šikmými ústami|zmätok
+😟|nervózny|obavy|smajlík|smutný smajlík|smútok|starosti|strach|tvár|ustaraná|ustráchaná
+🙁|mierne zamračená tvár|mračiaca sa tvár|smajlík|smutný|trochu zamračená tvár|tvár|zamračená
+😮|neveriaci smajlík|otvorené|prekvapený smajlík|smajlík s otvorenými ústami|súcit|sympatia|tvár s otvorenými ústami|ústa
+😯|ohromená|prekvapená|smajlík|šokovaná|tvár|umlčaná|upokojená tvár|utíšená|zarazená
+😲|absolútne|ohromená tvár|omg|prekvapená|smajlík|šokovaná|tvár|udivená|úplne|wtf|zaskočený
+😳|červenajúca sa tvár|cvičenie|horúco|neveriaci|sčervenená|smajlík|tvár|úžas|zahanbený|zapýrená|zmätená
+🥺|drankať|milosť|pekne prosím|prečo nie|prosebná tvár|prosebný pohľad|prosíkať|prosím|prosiť|psie oči|smajlík|smutné oči|smutný|tvár|úpenlivý|veľké oči|zľutovanie|žobroniť
+🥹|dojatá|nahnevaná|odolávanie|plač|pyšná|slzy šťastia|smutná|smútok|tvár zadržujúca slzy|vďačná|vďaka
+😦|otvorené|prekvapený|smajlík|tvár|ústa|zamračená tvár s otvorenými ústami|zaskočený
+😧|nešťastie|prekvapenie|smajlík|strach|stres|tvár|utrápená|úzkostná
+😨|bojazlivá|previnilý|smajlík|strach|tvár|vinný|vystrašená
+😰|modrá|náhliť|nervózny|otvorené|pot|smajlík|spotený|strach|studená|tvár s otvorenými ústami a kvapkou potu|udychčaná|ústa|vystrašený|znepokojená tvár s potom
+😥|ale uvoľnená tvár|pot|sklamaná, ale uvoľnená tvár|smajlík|smútok|tvár|uf|uvoľnená|úzkosť
+😢|nešťastný|plačúca tvár|plakať|slza|smajlík|smutná|smutné|tvár
+😭|hlasne plačúca tvár|nariekajúca tvár|nariekanie|nariekať|neštastný|plač|slza|smajlík|smutná|smutné|tvár
+😱|bojazlivá|des|krik|munch|smajlík|šok|strach|tvár kričiaca od strachu|údiv|vydesená|výkrik|vystrašená
+😖|čertovská tvár|frustrácia|grimasa|hnev|lotrovská|popletená|rozpačitý|smajlík|smútok|tvár v rozpakoch|zlosť|zmätok
+😣|bolesť hlavy|koncentrácia|smajlík s bolesťou hlavy|sústrediaca sa tvár|tvár|urputná tvár|urputnosť|vydržať|vytrvať
+😞|nešťastie|nešťastný smajlík|sklamaná|smajlík|tvár
+😓|bolesť hlavy|deprimovaná|nervozita|pot|skľúčená tvár s potom|smajlík|strach|studené|tvár s kvapkou potu
+😩|hladný|nahnevaný|plač|smajlík|tvár|unavená|unavený|ustatá
+😫|kýchať|smajlík|smutný|tvár|únava|unavená|zamračený smajlík
 🥱|unavený|unudený|zívajúca tvár|zívať|znudený
-😤|triumf|tvár s parou z nosa|víťazná
-😡|hnev|nahnevaná|nazlostená|podráždená tvár|trucujúca|tvár|zlosť
-😠|hnev|nahnevaná|nazlostená|tvár|zlosť
-🤬|nadávajúca tvár|nadávať|nadávky
-😈|rohy|rozprávka|smejúca sa tvár s rohmi|tvár|úsmev
-👿|čert|démon|diabol|nahnevaná tvár s rohmi|rozprávka|tvár
-💀|lebka|rozprávka|smrť|tvár
-💩|hnoj|hovienko|hovno|tvár
-🤡|klaun|tvár klauna
-👹|netvor|obluda|rozprávka|tvár
-👺|netvor|obluda|rozprávka|škrat|tvár
-👻|duch|netvor|rozprávka|strašidlo|tvár
-👽|mimozemšťan|tvár|ufón|vesmír
-👾|mimozemská príšera|mimozemšťan|netvor|obluda|vesmír|votrelec
-🤖|netvor|robot|tvár
-😺|mačka|otvorené|škeriaca sa mačka|tvár|úsmev|ústa
-😸|mačka|oko|škeriaca sa mačka s prižmúrenými očami|tvár|úškľabok|úškrn|úsmev
-😹|mačka plače od smiechu|slza|smiech|tvár
-😻|láska|mačka|oko|smejúca sa mačka so srdiečkami|srdce|tvár|úsmev
-😼|ironická|mačka s úškľabkom|tvár|úsmev|uštipačná
-😽|bozkávajúca mačka|mačka|oko|tvár
-🙀|mačka|prekvapená|tvár|ustatá|vyčerpaná mačka
-😿|mačka|plačúca mačka|slza|smutná|tvár
-😾|mačka|podráždená|trucujúca|tvár
-🙈|gesto|nevidím|opica|tvár|zakázané|zlé|zlo
-🙉|gesto|nepočujem|opica|tvár|zakázané|zlé|zlo
-🙊|gesto|nehovorím|opica|tvár|zakázané|zlé|zlo
-💌|láska|list|ľúbostný list|pošta|srdce
-💘|kupido|šíp|srdce so šípom
-💝|srdce so stuhou|stuha|valentín
-💖|ligotanie|ligotavé srdce|radosť|srdce|trblietanie
-💗|nervózne|pulz|radosť|rastúce srdce|srdce
-💓|pulz|srdce|tlčúce srdce|tlkot
-💞|krúžiace srdcia|srdce
-💕|dve srdcia|láska|srdce
-💟|ozdoba v tvare srdca|srdce
-💔|srdce|zlomené|zlomiť
+😤|hnev|nahnevaný|rozčúlený|smajlík|triumf|tvár s parou z nosa|víťazná|vytočený|zlostný
+😡|červená|hnev|nahnevaná|nazlostená|podráždená tvár|smajlík|trucujúca|tvár|zlosť|zlostný
+😠|frustrovaný|hnev|nahnevaná|nazlostená|nešťastný|smajlík|tvár|zamračený|zlosť
+🤬|cenzúra|hnev|nadávajúca tvár|nadávanie|nadávať|nadávky|nahnevaný|rozčúlený|smajlík so symbolmi pred ústami|tvár|vulgárna
+😈|čert|diabol|fantasy|fialový čert|rohy|rozprávka|smajlík|smejúca sa tvár s rohami|smejúca sa tvár s rohmi|tvár|úsmev
+👿|čertík|démon|diabol|fantasy|nahnevaná tvár s rohmi|nahnevaný|rozprávka|smutný|tvár
+💀|lebka|rozprávka|smrť|smrtka|stvorenie|telo|tvár
+💩|hnoj|hovienko|hovno|komixové|stolica|strašidlo|stvorenie|tvár|zápach
+🤡|klaun|oslava|party|tvár klauna|zábava
+👹|diabol|fantasy|japonská|netvor|obluda|príšera|rozprávka|strašidlo|stvorenie|tvár
+👺|fantasy|japonská|netvor|obluda|rozprávka|škrat|škriatok|stvorenie|tvár|výraz
+👻|bubák|duch|fantasy|netvor|obluda|rozprávka|strašidlo|stvorenie|tvár
+👽|bytosť|fantasy|mimozemšťan|obluda|rozprávka|stvorenie|tvár|ufo|ufón|vesmír
+👾|fantasy|mimozemská príšera|mimozemšťan|netvor|obluda|pixely|počítačová hra|rozprávka|stvorenie|tvár|ufo|vesmírne monštrum|votrelec
+🤖|automat|netvor|robot|strašidlo|stvorenie|tvár robota
+😺|mačka|otvorené|škeriaca sa mačka|smejúca sa mačacia tvár s otvorenými ústami|tvár|úsmev|ústa|zviera
+😸|mačka|oko|škeriaca sa mačacia tvár so smejúcimi sa očami|škeriaca sa mačka s prižmúrenými očami|tvár|úškľabok|úškrn|úsmev
+😹|mačacia tvár plačúca od smiechu|mačka plače od smiechu|plač|radosť|slza|smiech|tvár
+😻|láska|mačka|oko|rande|smejúca sa mačacia tvár s očami v tvare srdiečok|smejúca sa mačka so srdiečkami|srdce|tvár|úsmev
+😼|ironická|mačacia tvár s úškľabkom|mačka s úškľabkom|tvár|úškrn|úsmev|uštipačná
+😽|bozkávajúca mačacia tvár so zatvorenými očami|bozkávajúca mačka|mačka|oko|poslať bozk|tvár
+🙀|mačka|och|prekvapená|tvár|unavená mačacia tvár|ustatá|vyčerpaná mačka|zviera
+😿|mačka|plačúca mačacia tvár|plačúca mačka|slza|smutná|tvár
+😾|domáce zviera|mačka|nahnevaná mačka|podráždená|príroda|trucujúca mačacia tvár|tvár|zviera
+🙈|gesto|nevidím|nie|oči|oko|opica|pozerať|príroda|skrývať|tvár|vidieť|zakázané|zlé|zlo|zviera
+🙉|gesto|nepočujem|nie|opica|príroda|tvár|ucho|uši|zakázané|zlé|zlo|zviera
+🙊|gesto|hovoriť|nehovorím|nie|opica|príroda|tajomstvo|ticho|tvár|ups|zakázané|zlé|zlo|zviera
+💌|láska|list|ľúbostný|milostný list|pošta|romanca|srdce|valentín|zásielka
+💘|amor|city|kupido|láska|rande|romanca|šíp|srdce so šípom
+💝|emócia|láska|srdce so stuhou|stuha|valentín|výročie
+💖|emócia|láska|ligotanie|ligotavé srdce|radosť|srdce|trblietajúce sa srdce|trblietanie|vzrušené
+💗|láska|nervózne|pulz|radosť|rastúce|srdce|tlkot srdca|vzrušené
+💓|buchot srdca|emócia|láska|milujem ťa|pulzovanie|srdce|tlčúce|tlkot srdca
+💞|city|emócia|krúžiace srdcia|láska|otáčajúce sa|srdce|výročie
+💕|dve srdcia|emócia|láska|rande|ružová|srdce|výročie
+💟|biele srdce|emócia|fialové srdce|ily|láska|ozdoba v tvare srdca|srdce
+💔|emócia|rozchod|smútok|srdce|zlomené|zlomiť
 ❤️‍🔥|horiace srdce|láska|oheň|srdce|túžba
 ❤️‍🩹|dobre|lepšie|srdce s obväzom|uzdravovať sa|zdravšie|zotavovať sa
 🩷|láska|páči|roztomilé|ružové|srdce
-🧡|oranžové|srdce
-💛|srdce|žlté
-💚|srdce|zelené
-💙|modré|srdce
-🩵|azúrové|sivozelené|srdce|svetlomodré
-💜|fialové|srdce
+🧡|láska|oranžové|srdce
+💛|emócia|láska|srdce|srdcový|žlté
+💚|emócia|láska|srdce|zelené
+💙|emócia|láska|modré|srdce
+🩵|azúrové|roztomilé|sivozelené|srdce|svetlomodré
+💜|city|emócia|fialové|láska|purpurové|srdce
 🤎|hnedé|srdce
-🖤|čierne|podlosť|srdce|zlo
-🩶|šedé|sivé|srdce|strieborné
+🖤|čierne|hra|karty|podlosť|smútok|srdce|zlo
+🩶|láska|šedé|sivé|srdce|strieborné
 🤍|biele|srdce
-💋|bozk|odtlačok pier|pery
-💯|100|plný počet|sto bodov
-💢|hnev|komiks|symbol hnevu|zlosť
-💥|buch|bum|komiks|zrážka
-💫|hviezdičky|komiks|mám závrat|závrat
-💦|komiks|kvapky potu|pot
-💨|bežať|komiks|trieliť|utekám|utekať
+💋|bozk|emócia|odtlačok pier|pery|pusa|romanca|sexi
+💯|100|plný počet|skóre|sto bodov|súhlas|určite
+💢|hnev|japonský symbol hnevu|komiks|komixové|nahnevané|symbol hnevu|zlosť
+💥|bang|bomba|buch|bum|explózia|komiks|komixové|náraz|výbuch|zrážka
+💫|hviezda|hviezdičky|kométa|komiks|komixové|mám závrat|mdloby|padajúca hviezda|závrat
+💦|cvičenie|komiks|komixové|kvapky potu|pot|príroda|špliechajúce|voda
+💨|beh|bežať|bežiaci|dym|komiks|komixové|letím|oblak|ponáhľať|príroda|trieliť|utekám|utekať|vietor|zadychčaný
 🕳️|diera|jama|kanál
-💬|bublina|hovoriť|komiks|reč
-👁️‍🗨️|bublina|dialóg|oko v bubline|reč
-🗨️|dialóg|komiks|ľavá bublina|reč
-🗯️|bublina|hnev|komiks|zlosť
-💭|bublina|komiks|myšlienka
-💤|chŕ|komiks|spánok
-👋|mávajúca ruka|mávať|ruka
-🤚|ruka|spakruky|zdvihnutá
-🖐️|prst|roztiahnutá|ruka
-✋|ruka|stáť|stop|zdvihnutá ruka
-🖖|prst|ruka|spock|vulkánsky pozdrav
-🫱|doprava|ruka|vpravo
-🫲|doľava|ruka|vľavo
-🫳|heš|pustiť|ruka dlaňou nadol|zahodiť
-🫴|chytiť|mávať|poď|ponúkať|ruka dlaňou nahor
-🫷|čakať|high five|ruka tlačiaca vľavo|stop|tlačiť|vľavo|zákaz
-🫸|čakať|high five|ruka tlačiaca vpravo|stop|tlačiť|vpravo|zákaz
-👌|ok|ruka|výborne
-🤌|málo|prsty|štipka|trocha|troška
-🤏|malé množstvo|málo|trocha|troška
-✌️|ruka|víťazstvo
-🤞|držať|držím palce|palce|ruka|šťastie
+💬|balón|bublina|dialóg|hovoriť|komiks|komixové|písať|rečová bublina|sms|text
+👁️‍🗨️|bublina|dialóg|oko v bubline|reč|svedok
+🗨️|dialóg|komiks|ľavá bublina|ľavá rečová bublina|reč
+🗯️|balón|bublina|hnev|komiks|nahnevaný|pravá rečová bublina (hnev)|zlosť|zúrivý
+💭|balón|bublina myšlienky|komiks|komixové|myšlienka|nápad|oblak|sen|sny|vynález
+💤|chŕ|chrápanie|komiks|spánok|únava|unavený|zzz
+👋|ahoj|čau|dovi|kývanie|mávajúca ruka|mávať|pá|pozdrav|ruka
+🤚|5 prstov|chrbát ruky|dlaň|pozdrav|prst|ruka|spakruky|stop|telo|zastavenie|zastavujúca ruka s vystretou dlaňou|zdvihnutá
+🖐️|5|prst|roztiahnutá|roztiahnuté|ruka s roztiahnutými prstami|stop|telo
+✋|5|päť|pozdrav|ruka|stáť|stop|telo|zdvihnutá ruka|zodvihnutá ruka
+🖖|pozdrav kap. spocka|prst|ruka|spock|star trek|telo|vulkánsky pozdrav
+🫱|doprava|podanie ruky|potrasenie rukou|pravá ruka|ruka|vpravo
+🫲|doľava|ľavá ruka|podanie ruky|potrasenie rukou|ruka|vľavo
+🫳|heš|pustiť|ruka dlaňou nadol|zahodiť|zobrať|zodvihnúť
+🫴|chytiť|držať|mávať|poď|ponúkať|ruka dlaňou nahor
+🫷|čakať|high five|ruka tlačiaca vľavo|stop|tlačiť|tľapnime si|vľavo|zákaz
+🫸|čakať|high five|ruka tlačiaca vpravo|stop|tlačiť|tľapnime si|vpravo|zákaz
+👌|áno|ok|rozumiem|ruka|super|telo|výborne
+🤌|ale choď!|eh|kdeže!|málo|nesúhlas|nevzrušuj sa!|no tak!|pohoršenie|prosím ťa!|prsty|štipka|trocha|troška|zdesenie|zhrozenie
+🤏|malé množstvo|málo|štipka|trocha|troška
+✌️|mier|prsty v tvare písmena v|ruka|telo|víťazstvo|znamenie víťazstva
+🤞|držať|držím palce|palce|prekrížené prsty pre štastie|prekrížiť|prsty|ruka|šťastie|telo
 🫰|drahé|láska|lusknutie|peniaze|ruka s prekríženým ukazovákom a palcom|srdce
-🤟|ľúbim ťa|ľúbiť|ruka
-🤘|paroháč|prst|ruka
-🤙|hovor|ruka|telefonovať|zavoláme si|zavolať
-👈|doľava|prst|ruka|ukazovák|ukazovať
-👉|doprava|prst|ruka|ukazovák|ukazovať
-👆|nahor|prst|ruka|spakruky|ukazovák|ukazovať
-🖕|prostredník|prst|ruka
+🤟|gesto ľúbim ťa|ľúbim ťa|ľúbiť|prsty|ruka|tri prsty
+🤘|gesto v tvare rohov|paroháč|prst|rock and roll|rock’n’roll|rock&roll|ruka
+🤙|hovor|prst|ruka s gestom zavolaj mi|telefonovať|telo|zatelefonovať|zavolaj|zavoláme si|zavolať
+👈|chrbát ruky|doľava|prst|ruka|telo|ukazovák spakruky ukazujúci doľava|ukazovať|vľavo
+👉|chrbát ruky|doprava|pravo|prst|ruka|telo|ukazovák spakruky ukazujúci doprava|ukazovať
+👆|chrbát ruky|hore|nahor|prst|ruka|spakruky|telo|ukazovák spakruky ukazujúci nahor|ukazovák ukazujúci nahor|ukazovať
+🖕|prostredník|prst|ruka|telo|urážka
 👇|nadol|prst|ruka|spakruky|ukazovák|ukazovať
-☝️|nahor|prst|ruka|ukazovák|ukazovať
-🫵|na teba|ukazovanie ukazovákom
-👍|+1|nahor|palec|ruka
-👎|-1|nadol|palec|ruka
-✊|päsť|ruka|úder|zdvihnutá päsť|zovretá
-👊|päsť spredu|ruka|úder|zovretá
-🤛|doľava|päsť
-🤜|doprava|päsť
-👏|potlesk|ruka|tlieskajúce ruky|tlieskať
-🙌|gesto|hurá|oslava|ruka|zdvihnuté ruky
-🫶|láska|srdce z dlaní
-👐|otvorená|roztvorené dlane|ruka
-🤲|modliť sa|modlitba|zdvihnuté dlane
-🤝|dohoda|dohodnuté|podať|potrasenie rukami|potriasť|ruka
-🙏|ďakovať|modliť sa|modlitba|prosba|prosiť|ruka|zopäté ruky
-✍️|pero|písať|píšuca ruka|ruka
-💅|kozmetika|lakovanie nechtov|manikúra|necht|starostlivosť|telo
-🤳|selfie|telefón
-💪|biceps|napnuté|napnutý biceps|sval|telo
+☝️|hore|nahor|prst|ruka|telo|ukazovák|ukazovať
+🫵|na teba|ruka|štuchnutie|ty|ukazovák|ukazovanie ukazovákom
+👍|+1|áno|dobre|like|nahor|ok|palec|ruka|súhlas|super
+👎|-1|dole|mínus 1|nadol|nie|palec|prst|ruka|telo|zle
+✊|päsť|ruka|sila|solidarita|telo|úder|zatvorená|zdvihnutá päsť|zodvihnutá päsť|zovretá
+👊|dohoda|päsť spredu|pozdrav|ruka|súhlas|telo|úder|zatvorená|zovretá
+🤛|doľava|päsť|pozdrav|ruka|telo|zaťatá päsť smerujúca doľava
+🤜|doprava|päsť|pozdrav|ruka|telo|zaťatá päsť smerujúca doprava
+👏|aplauz|modlenie|modlitba|ovácia|paráda|pochvala|potlesk|ruka|skvelé|telo|tleskot|tlieskajúce ruky|tlieskať
+🙌|gesto|hurá|oslava|osoba zdvíhajúca ruky|ruka|telo|zdvihnuté ruky
+🫶|láska|milujem ťa|ruky|srdce z dlaní
+👐|dlane|objať|objatie|otvorená|otvorené ruky|roztvorené dlane|ruka|ruky|telo
+🤲|modliť sa|modlitba|ruky s dlaňami nahor|telo|zdvihnuté dlane|želanie
+🤝|dohoda|dohodnuté|míting|podať|potrasenie rukami|potriasť|ruka|rukou|stretnutie|súhlas|telo
+🙏|daj mi päť|ďakovať|ďakujem|gesto|modliace sa ruky|modliť sa|modlitba|poklonenie sa|prosba|prosím|prosiť|ruka|telo|vďaka|zopäté ruky
+✍️|ceruzka|pero|písať|píšuca ruka|ruka|telo
+💅|kozmetika|lakovanie nechtov|manikúra|necht|nuda|starostlivosť|telo
+🤳|fotoaparát|ruka|selfie|telefón|telo
+💪|biceps|cvičenie|komixové|napínanie|napnuté|napnutý biceps|posiľňovňa|ruka|sila|sval|telo|vzpieranie
 🦾|handicap|hendikep|invalidné|mechanická paža|pomôcka|postihnutie|protéza
 🦿|handicap|hendikep|invalidné|mechanická noha|pomôcka|postihnutie|protéza
-🦵|kopať|kopnúť|noha
-🦶|chodidlo|dupať|kopať
-👂|telo|ucho
+🦵|chodidlo|koleno|končatina|kopať|kopnúť|nakopnúť|noha|ohnuté koleno|stehno|zohnuté koleno
+🦶|chodidlá|chodidlo|členok|dupať|kopanec|kopať|kopnúť|nakopnúť|noha|nohy|päta
+👂|načúvať|počúvať|sluch|telo|ucho|uši|zmysel|zvuk
 🦻|handicap|hendikep|načúvadlo|nedoslýchavosť|pomôcka|postihnutie|ucho s načúvadlom
-👃|nos|telo
-🧠|bystrý|inteligentný|mozog
-🫀|kardiológia|orgán srdca|pulz|srdce
-🫁|dýchanie|nádych|orgán|pľúca|výdych
-🦷|zubár
-🦴|kosť|kostra
-👀|oči|oko|tvár
-👁️|oko|telo
-👅|jazyk|telo
-👄|pery|ústa
-🫦|flirt|nepohodlie|nervy|obavy|strach|úzkosť|zahryznutie do pery
-👶|bábätko
-🧒|decko|dieťa
-👦|chalan|chlapec
-👧|dievča|panna
-🧑|dospelá|dospelý
-👱|blond|svetlovlasý človek
-👨|dospelý|muž
-🧔|brada|bradáč|fúzatý|fúzy
+👃|aróma|dýchať|nos|nozdry|telo|vôňa|zápach
+🧠|bystrý|inteligentný|iq|kôra|mozog|múdrosť|múdry
+🫀|anatómia|kardiológia|orgán srdca|pulz|srdce|tlkot
+🫁|dýchanie|dýchať|nádych|orgán|pľúca|výdych
+🦷|biele|biely|dentista|perla|perleťový|perlička|perličky|perlový|perly|stomatológ|zubár|zubná lekárka|zubná technička|zubný lekár|zubný technik|zuby
+🦴|kosť|kostička|kôstka|kostra|pes|skelet
+👀|hľadieť|kuk|nakuknúť|oči|oko|pozerať|telo|tvár
+👁️|1 oko|hnedé|jedno oko|oko|telo
+👅|jazyk|lízať|srkať|telo
+👄|bozk|pery|rúž|telo|ústa|zuby
+🫦|flirtovanie|koketovanie|napätie|nepohodlie|nervy|obavy|pera|rúž|sexy|strach|úzkosť|zahryznutie do pery
+👶|bábätko|bábo|deti|dieťa|mladosť|novorodenec|osoba|tehotná
+🧒|decko|dieťa|mladý
+👦|chalan|chlapec|dieťa|malý|osoba
+👧|copíky|dcéra|dievča|mladá|ofina|osoba|panna|slečna|vrkoče|žena
+🧑|človek|dospelá|dospelý|osoba
+👱|blond|blonďák|človek|muž|osoba s blond vlasmi|osoba so svetlými vlasmi|svetlovlasý človek|tvár
+👨|brat|chlap|dospelý|kamarát|muž|osoba|priateľ
+🧔|bradáč|bradatý|fúzatý|fúzy|muž s bradou|osoba s bradou|zarastený
 🧔‍♂️|bradatý muž|muž
 👱‍♂️|blondín|muž|svetlovlasý
-👩|dospelá|žena
+👩|dospelá|osoba|účes|vlasy|žena
 🧔‍♀️|bradatá žena|žena
-👱‍♀️|blondína|blondínka|svetlovlasá|žena
-🧓|človek|starší človek|starý
-👴|muž|starší muž|starý
-👵|stará|staršia žena|žena
-🙍|výraz|zamračená|zamračený človek
-🙍‍♂️|muž|tvár|zamračený
+👱‍♀️|blondína|blondínka|drdol|osoba|svetlovlasá|žena
+🧓|človek|dôchodca|osoba|šedivý|starší človek|staršia osoba|starý
+👴|dedko|dôchodca|múdry|muž|osoba|plešatý|starec|starký|starší muž|starý|vševed
+👵|babička|babka|blondína|dáma|okuliare|osoba|stará mama|starenka|starká|staršia žena|žena
+🙍|frustrovaná|mračiaca sa osoba|mračiť sa|nahnevaná|nespokojná|osoba|výraz|zamračená|zamračený človek|žena|znepokojená
+🙍‍♂️|muž|nahnevaný|osoba|tvár|zamračený
 🙍‍♀️|tvár|zamračená|žena
-🙎|podráždený človek|trucujúca|výraz
-🙎‍♂️|muž|podráždený muž|trucujúci|výraz
+🙎|gesto|grimasa|mračiť sa|nevrlosť|osoba|podráždená|podráždený človek|trucujúca|výraz|žena
+🙎‍♂️|gesto|muž špúli ústa|osoba|podráždený muž|špúlenie|trucujúci|ústa|výraz
 🙎‍♀️|podráždená|trucujúca|výraz|žena
-🙅|človek s prekríženými rukami|gesto|nie|ruka|zakázané
-🙅‍♂️|gesto|muž s prekríženými rukami|nie|ruka|zakázané
+🙅|človek s prekríženými rukami|gesto|nie|osoba|prekrížené ruky|ruka|stop|určite nie|vylúčiť|zakázané|zakázať
+🙅‍♂️|gesto|muž s prekríženými rukami|nie|osoba|prekrížené|ruka|tvár|zakázané
 🙅‍♀️|gesto|nie|ruka|zakázané|žena s prekríženými rukami
-🙆|človek s rukami nad hlavou|gesto|ok|ruka
-🙆‍♂️|hlava|muž s rukami nad hlavou|ruka
+🙆|človek s rukami nad hlavou|cvičenie|gesto|ok|osoba|ruka|ruky hore|súhlas|žena
+🙆‍♂️|hlava|muž s rukami na hlave|muž s rukami nad hlavou|ok gesto|osoba|ruka|súhlas
 🙆‍♀️|hlava|ruka|žena s rukami nad hlavou
-💁|človek s nastavenou dlaňou|dlaň|nastavená|ruka
-💁‍♂️|dlaň|muž s nastavenou dlaňou|nastavená|ruka
+💁|človek s nastavenou dlaňou|dlaň|informácie|klebeta|nastavená|osoba s nastavenou rukou|pomoc|prehodenie vlasov|ruka|sarkastický|žena
+💁‍♂️|dlaň|gesto|informácia|klebeta|muž s nastavenou dlaňou|nastavená|osoba|pomoc|ruka|sarkazmus|tringelt
 💁‍♀️|dlaň|nastavená|ruka|žena s nastavenou dlaňou
-🙋|človek so zdvihnutou rukou|gesto|ruka|zdvihnutá
-🙋‍♂️|muž so zdvihnutou rukou|ruka|zdvihnutá
+🙋|človek so zdvihnutou rukou|gesto|ja viem|osoba|otázka|pozdrav|prihlásiť sa|ruka hore|šťastná|zdvihnutá
+🙋‍♂️|muž so zdvihnutou rukou|osoba|otázka|prihlásiť sa|ruka|zdvihnúť|zdvihnutá
 🙋‍♀️|ruka|zdvihnutá|žena so zdvihnutou rukou
 🧏|hendikep|hluchota|nedoslýchavosť|nepočujúci človek|postihnutie|sluch|ucho
 🧏‍♂️|hluchota|hluchý|muž|nedoslýchavosť|nedoslýchavý|nepočujúci
 🧏‍♀️|hluchá|hluchota|nedoslýchavá|nedoslýchavosť|nepočujúca|žena
-🙇|človek|gesto|klaňajúci sa človek|ľutujem|poklona|prepáčte
+🙇|človek|gesto|klaňajúca sa osoba|klaňajúci sa človek|ľútosť|ľutujem|meditácia|meditovať|muž|odpustenie|odpustiť|osoba|ospravedlnenie|poklona|prepáčte
 🙇‍♂️|gesto|klaňajúci sa muž|ľutujem|muž|poklona|prepáčte
-🙇‍♀️|gesto|klaňajúca sa žena|ľutujem|poklona|prepáčte|žena
-🤦|človek chytajúci sa za hlavu|dlaň|neviera|tvár|zúfalstvo
-🤦‍♂️|dlaň|muž chytajúci sa za hlavu|neviera|tvár|zúfalstvo
-🤦‍♀️|dlaň|neviera|tvár|žena chytajúca sa za hlavu|zúfalstvo
-🤷|človek krčiaci plecami|nezáujem|plece|pochybnosť|pokrčenie
-🤷‍♂️|muž krčiaci plecami|nezáujem|plece|pochybnosť|pokrčenie
-🤷‍♀️|nezáujem|plece|pochybnosť|pokrčenie|žena krčiaca plecami
+🙇‍♀️|gesto|klaňajúca sa žena|ľútosť|ľutujem|osoba|ospravedlnenie|poklona|prepáčte|žena
+🤦|človek chytajúci sa za hlavu|dlaň|hnev|neverím|neviera|nie znova|och nie|tvár|zúfalstvo
+🤦‍♂️|dlaň|muž chytajúci sa za hlavu|muž sa chytá za hlavu|neveriť|neviera|osoba|panebože!|rozčúlenie|šok|tvár|zúfalstvo
+🤦‍♀️|dlaň|neuveriteľné|neveriť|neviera|osoba|panebože!|rozčúlenie|šok|tvár|žena chytajúca sa za hlavu|žena sa chytá za hlavu|zúfalstvo
+🤷|asi|človek krčiaci plecami|kto vie|nevedomosť|neviem|nezáujem|plece|pochybnosť|pokrčenie
+🤷‍♂️|možno|muž krčí plecami|muž krčiaci plecami|nevedomosť|neviem|nezáujem|osoba|plece|pochybnosť|pokrčenie
+🤷‍♀️|možno|nevedomosť|neviem|nezáujem|osoba|plece|pochybnosť|pokrčenie|žena krčí plecami|žena krčiaca plecami
 🧑‍⚕️|doktor|lekár|medik|nemocnica|zdravotník
-👨‍⚕️|doktor|lekár|muž|nemocnica|zdravotník
-👩‍⚕️|doktorka|lekárka|nemocnica|zdravotníčka|žena
+👨‍⚕️|doktor|lekár|muž|nemocnica|ošetrovateľ|osoba|povolanie|práca|terapeut|zamestnanie|zdravotník
+👩‍⚕️|doktorka|lekárka|nemocnica|ošetrovateľka|osoba|povolanie|práca|sestra|terapeutka|zamestnanie|zdravotníčka|žena
 🧑‍🎓|promócia|študent|univerzita
-👨‍🎓|muž|promócia|študent|univerzita
-👩‍🎓|promócia|študentka|univerzita|žena
+👨‍🎓|absolvent|muž|osoba|promócia|škola|študent|univerzita|vzdelanie
+👩‍🎓|absolventka|osoba|promócia|škola|študentka|univerzita|vzdelanie|žena
 🧑‍🏫|pedagóg|profesor|škola|učiteľ
-👨‍🏫|muž|pedagóg|profesor|škola|učiteľ
-👩‍🏫|pedagogička|profesorka|škola|učiteľka|žena
+👨‍🏫|muž|osoba|pedagóg|povolanie|práca|prednáška|profesor|škola|tréning|učiteľ|vzdelanie|zamestnanie
+👩‍🏫|osoba|pedagogička|povolanie|práca|prednáška|profesorka|škola|tréning|učiteľka|vzdelanie|zamestnanie|žena
 🧑‍⚖️|justícia|sudca|váhy
-👨‍⚖️|muž|právo|sudca|zákon
-👩‍⚖️|právo|sudkyňa|zákon|žena
+👨‍⚖️|muž|osoba|povolanie|práca|právnik|právo|sudca|zákon|zamestnanie
+👩‍⚖️|osoba|povolanie|práca|právnička|právo|sudkyňa|zákon|zamestnanie|žena
 🧑‍🌾|farmár|poľnohospodár|roľník|sedliak
-👨‍🌾|farmár|muž|poľnohospodár|roľník|sedliak
-👩‍🌾|farmárka|poľnohospodár|roľníčka|sedliačka|žena
+👨‍🌾|farmár|muž|osoba|poľnohospodár|povolanie|práca|roľník|sedliak|záhradkár|zamestnanie
+👩‍🌾|farmárka|osoba|poľnohospodár|povolanie|práca|roľníčka|sedliačka|záhradkárka|zamestnanie|žena
 🧑‍🍳|kuchár|kuchyňa|šéfkuchár
-👨‍🍳|kuchár|kuchyňa|muž|šéfkuchár
-👩‍🍳|kuchárka|kuchyňa|šéfkuchárka|žena
+👨‍🍳|kuchár|kuchyňa|muž|osoba|povolanie|práca|reštaurácia|šéfkuchár|zamestnanie
+👩‍🍳|kuchárka|kuchyňa|osoba|povolanie|práca|reštaurácia|šéfkuchárka|varenie|variť|zamestanie|žena
 🧑‍🔧|elektrikár|inštalatér|remeselník
-👨‍🔧|elektrikár|inštalatér|muž|remeselník
-👩‍🔧|elektrikárka|inštalatérka|remeselníčka|žena
+👨‍🔧|automechanik|elektrikár|inštalatér|muž|povolanie|práca|remeselník|zamestnanie
+👩‍🔧|automechanička|elektrikárka|inštalatérka|opravárka|osoba|povolanie|práca|remeselníčka|zamestnanie|žena
 🧑‍🏭|priemysel|robotník|továreň
-👨‍🏭|muž|priemysel|robotník|továreň
-👩‍🏭|priemysel|robotníčka|továreň|žena
+👨‍🏭|muž|osoba|povolanie|práca|pracovník|priemysel|robotník|továreň|zamestnanie|zvárač
+👩‍🏭|osoba|povolanie|práca|priemysel|prilba|robotníčka|továreň|zamestnanie|žena|zváračka|zváranie
 🧑‍💼|kancelária|manažér|pracovník v kancelárii|úradník
-👨‍💼|kancelária|manažér|muž|pracovník v kancelárii muž|úradník
-👩‍💼|kancelária|manažérka|pracovníčka v kancelárii|úradníčka|žena
+👨‍💼|architekt|biznis|kancelária|manažér|muž|osoba|povolanie|práca|pracovník v kancelárii muž|úradník|zamestnanie
+👩‍💼|architektka|biznis|kancelária|manažérka|osoba|povolanie|práca|pracovníčka v kancelárii|úradníčka|zamestnanie|žena
 🧑‍🔬|inžinier|vedec|výskum
-👨‍🔬|inžinier|muž|vedec|výskum
-👩‍🔬|inžinierka|vedkyňa|výskum|žena
+👨‍🔬|biológ|chemik|fyzik|inžinier|matematik|muž|osoba|povolanie|práca|vedec|výskum|zamestnanie
+👩‍🔬|biologička|chemička|fyzička|inžinierka|matematička|osoba|povolanie|práca|vedkyňa|výskum|zamestnanie|žena
 🧑‍💻|programátor|softvér|vývojár
-👨‍💻|muž|programátor|softvér|vývojár
-👩‍💻|programátorka|softvér|vývojárka|žena
+👨‍💻|it|kód|muž|osoba|počítač|povolanie|práva|programátor|softvér|technológ|vývojár|zamestnanie
+👩‍💻|kód|povolanie|práca|programátorka|softvér|software|vývojárka|žena
 🧑‍🎤|hudba|hviezda|spevák
-👨‍🎤|hudba|hviezda|muž|spevák
-👩‍🎤|hudba|hviezda|speváčka|žena
+👨‍🎤|hudba|hviezda|muž|osoba|pankáč|povolanie|práca|punker|rocker|spevák|zabávač|zamestnanie
+👩‍🎤|hudba|hviezda|osoba|pankáčka|povolanie|práca|punkerka|rockerka|speváčka|zamestnanie|žena
 🧑‍🎨|maliar|paleta
-👨‍🎨|maliar|muž|paleta
-👩‍🎨|maliarka|paleta|žena
+👨‍🎨|maliar|maľovať|muž|osoba|paleta|povolanie|práca|umenie|zamestnanie
+👩‍🎨|maliarka|maľovať|osoba|paleta|povolanie|práca|umenie|zamestnanie|žena
 🧑‍✈️|lietadlo|pilot
-👨‍✈️|lietadlo|muž|pilot
-👩‍✈️|lietadlo|pilotka|žena
+👨‍✈️|lietadlo|muž|osoba|pilot|povolanie|práca|zamestnanie
+👩‍✈️|lietadlo|osoba|pilotka|povolanie|práca|zamestnanie|žena
 🧑‍🚀|astronaut|kozmonaut|raketa
-👨‍🚀|astronaut|kozmonaut|muž|raketa
-👩‍🚀|astronautka|kozmonautka|raketa|žena
+👨‍🚀|astronaut|kozmonaut|muž|osoba|povolanie|práca|raketa|veda|vesmír|zamestnanie
+👩‍🚀|astronautka|kozmonautka|osoba|povolanie|raketa|vesmír|žena
 🧑‍🚒|hasič|požiarnik
-👨‍🚒|hasič|muž|požiarnik
-👩‍🚒|hasička|požiarnička|žena
-👮|policajt|polícia|príslušník
+👨‍🚒|hasič|muž|osoba|povolanie|požiarnik|práca|striekačka|zamestnanie
+👩‍🚒|hasička|hasičské auto|povolanie|požiarnička|práca|striekačka|žena
+👮|chytiť|muž|osoba|policajt|polícia|poliš|práca|predvolanie|príslušník|zákon|zatknúť
 👮‍♂️|muž|policajt|polícia
-👮‍♀️|policajtka|polícia|žena
-🕵️|detektív|špión|vyšetrovateľ
+👮‍♀️|chytiť|osoba|policajtka|polícia|poliš|predvolanie|zákon|zastaviť|zatknúť|žena
+🕵️|detektív|osoba|povolanie|práca|špeh|špiceľ|špión|vyšetrovateľ|zamestnanie
 🕵️‍♂️|agent|detektív|muž|špión
-🕵️‍♀️|agentka|detektívka|špiónka|žena
-💂|stráž
+🕵️‍♀️|agentka|detektívka|osoba|povolanie|práca|špiónka|zamestnanie|žena
+💂|buckingham|čestná stráž|garda|londýn|povolanie|práca|prilba|strážca|zamestnanie
 💂‍♂️|muž|strážca
-💂‍♀️|strážkyňa|žena
-🥷|bojovník|nindža|skrytý|utajený
-👷|čapica|pracovník na stavbe|stavba
+💂‍♀️|buckinghamský palác|čestná stráž|londýn|osoba|prilba|strážkyňa|žena
+🥷|bojovať|bojovník|nindža|skrytý|tajný|utajený
+👷|čapica|muž|osoba|povolanie|práca|pracovník na stavbe|prilba|robotník|stavba|stavbár|vesta
 👷‍♂️|muž|robotník|stavba|stavbár
-👷‍♀️|robotníčka|stavba|stavbárka|žena
-🫅|kráľovský|kráľovstvo|monarcha|osoba s korunou|vládca
-🤴|princ
-👸|princezná|rozprávka
-👳|človek s turbanom|turban
+👷‍♀️|osoba|povolanie|práca|prilba|robotníčka|stavba|stavbárka|zamestnanie|žena
+🫅|koruna|kráľovná|kráľovský|kráľovstvo|monarcha|osoba s korunou|vládca
+🤴|kráľ|princ|šľachta
+👸|fantastické|koruna|kráľovná|princezná|rozprávka
+👳|človek s turbanom|muž|osoba s turbanom|turban
 👳‍♂️|muž s turbanom|turban
-👳‍♀️|turban|žena s turbanom
-👲|čapica|čína|muž s čínskou čapicou
-🧕|hidžáb|hlava|šatka|žena so šatkou
-🤵|človek v smokingu|smoking
+👳‍♀️|osoba|turban|žena s turbanom
+👲|čapica|čína|čínsky|gua pi mao|muž s čínskou čapicou|muž s čínskou čapicou|osoba
+🧕|bandana|hidžáb|hlava|mantila|osoba|šatka na hlavu|žena so šatkou
+🤵|človek v smokingu|motýlik|muž v smokingu|osoba|smoking|svadba|ženích
 🤵‍♂️|muž v smokingu|smoking
 🤵‍♀️|smoking|žena v smokingu
-👰|človek so závojom|nevesta so závojom|svadba|závoj
+👰|človek so závojom|nevesta so závojom|osoba|svadba|závoj|žena
 👰‍♂️|muž so závojom|závoj
 👰‍♀️|závoj|žena so závojom
-🤰|tehotenstvo|tehotná žena|žena
-🫃|brucho|nafúknuté|plné|tehotná|tehotný muž
-🫄|brucho|nafúknuté|plné|tehotná osoba|tehotný
-🤱|bábä|dojčenie|dojčiť
-👩‍🍼|bábätko|kojenie|kŕmenie|žena kŕmiaca bábätko
-👨‍🍼|bábätko|kŕmenie|muž kŕmiaci bábätko
-🧑‍🍼|bábätko|človek kŕmiaci bábätko|dojčenie|kojenie|kŕmenie
-👼|anjelik|bábä|rozprávka|tvár
-🎅|muž|oslava|santa claus|vianoce
-🤶|oslava|pani santová|santa|vianoce|žena
-🧑‍🎄|mx santa|oslava|santa|vianoce
-🦸|hrdina|hrdinka|superčlovek|superhrdina|superschopnosť
+🤰|človek|osoba|tehotenstvo|tehotná žena|žena
+🫃|brucho|nafúknuté|plné|prejedanie|tehotná|tehotný muž
+🫄|brucho|nafúknuté|plné|prejedanie|tehotná osoba|tehotný
+🤱|bábä|bábo|dieťa|dojča|dojčenie|dojčiť|kojenec|kojenie|nemluvňa|novorodenec|prsník
+👩‍🍼|bábätko|kojenie|kŕmenie|mama|matka|novorodenec|opatrovateľka|osoba|pestúnka|žena kŕmiaca bábätko
+👨‍🍼|bábätko|kŕmenie|láska|muž kŕmiaci bábätko|novorodenec|opatrovateľka|otec|pestúnka
+🧑‍🍼|bábätko|človek kŕmiaci bábätko|dojčenie|kojenie|kŕmenie|mama|matka|novorodenec|pestúnka
+👼|anjelik|bábä|dieťa|fantastické|kostol|náboženstvo|osoba|rozprávka|tvár|viera
+🎅|darček|fantastické|mikuláš|muž|oslava|osoba|rozprávka|santa claus|vianoce
+🤶|babička|darček|oslava|osoba|pani santová|santa|stará|starenka|vianoce|žena
+🧑‍🎄|červená čiapka|mx santa|oslava|santa claus|sviatky|veselé vianoce|vianoce
+🦸|batwoman|dobrá|dobro|hrdina|hrdinka|kladná hrdinka|superčlovek|superhrdina|superhrdinka|superschopnosť|superschopnosti|superwoman
 🦸‍♂️|hrdina|muž|supermuž|superschopnosť
 🦸‍♀️|hrdinka|superschopnosť|superžena|žena
-🦹|darebák|superdarebácka bytosť|superschopnosť|zločinec|zloduch
+🦹|darebák|diabolský|gauner|lotor|muž|superdarebácka bytosť|superschopnosť|superschopnosti|záporný hrdina|zločinec|zloduch|zlý
 🦹‍♂️|darebák|muž|superdarebák|superschopnosť|zločinec|zloduch
 🦹‍♀️|darebák|superdarebáčka|superschopnosť|žena|zločinec|zloduch
-🧙|bosorák|čarodejná bytosť|čarodejník|kúzelník|strigôň
+🧙|bosorák|čarodejná bytosť|čarodejník|černokňažník|kúzelník|kúzlo|mágia|osoba|strigôň
 🧙‍♂️|bosorák|čarodejník|kúzelník|strigôň
 🧙‍♀️|bosorka|čarodejníčka|kúzelníčka|striga
-🧚|rozprávka|rozprávková bytosť
+🧚|cililink|krídla|oberon|puck|rozprávka|rozprávková bytosť|titania|víla|zvonilka
 🧚‍♂️|rozprávka|škriatok
 🧚‍♀️|rozprávka|víla
-🧛|drakula|upíri|upírska bytosť
+🧛|drakula|halloween|kostým|krv|nemŕtvy|tesáky|transylvánia|upíri|upírska bytosť|vampír|zuby
 🧛‍♂️|drakula|muž|upír
 🧛‍♀️|upírka|žena
-🧜|more|morská bytosť|muž|panna
+🧜|ariel|malá morská víla|more|morská bytosť|morská panna|morská víla|muž|panna|rozprávka|siréna|trojzubec
 🧜‍♂️|more|morský muž|muž
 🧜‍♀️|more|morská panna|panna
-🧝|fantasy|lesná bytosť
+🧝|čarovný|elf|fantasy|fantázia|kúzelný|legolas|lesná bytosť|mágia|pán prsteňov|rozprávkový|vymyslený
 🧝‍♂️|elf|fantasy
 🧝‍♀️|elfka|fantasy
-🧞|džin|fľaša|lampa
+🧞|aladin|džin|fľaša|kúzelný lampáš|kúzlo|lampa
 🧞‍♂️|džin|fľaša|lampa|mužský džin
 🧞‍♀️|džin|fľaša|lampa|ženský džin
-🧟|mátoha|mŕtvola|zombia
+🧟|halloween|mátoha|mŕtvola|nemŕtvy|smrtka|strašidelný|strašidlo|zombia|zombie|zombík
 🧟‍♂️|mátoha|mŕtvola|mužská zombia
 🧟‍♀️|mátoha|mŕtvola|ženská zombia
-🧌|fantasy|obluda|obor|rozprávka
-💆|masáž tváre|salón|tvár
-💆‍♂️|masáž|muž dostáva masáž tváre|tvár
+🧌|fantasy|monštrum|obluda|obor|príšera|rozprávka|trolling|trolovanie
+💆|bolesť hlavy|kúpele|masáž tváre|napätie|osoba|relax|salón|terapia|tvár|upokojiť|uvoľnenie
+💆‍♂️|bolesť hlavy|masáž|muž dostáva masáž tváre|osoba|relax|tvár|uvoľnenie
 💆‍♀️|masáž|tvár|žena dostáva masáž tváre
-💇|holič|krása|salón|strihanie vlasov
-💇‍♂️|muž u kaderníka|strihanie|účes|vlasy
+💇|holič|kaderníctvo|krása|nožnice|osoba|salón|strihanie vlasov|strihať vlasy|štýl|vlasy|žena
+💇‍♂️|holičstvo|kaderníctvo|krása|muž u kaderníka|pánsky strih|strihanie|účes|vlasy
 💇‍♀️|strihanie|účes|vlasy|žena u kaderníka
-🚶|chodiaci človek|chodiť|chôdza|kráčať|pešo
+🚶|chodiaci človek|chodiť|chôdza|kráčajúci|kráčať|osoba|pešo|prechádzať sa|prechádzka
 🚶‍♂️|chodec|chodiť|chôdza|kráčať|muž|pešo
-🚶‍♀️|chodiť|chodkyňa|chôdza|kráčať|pešo|žena
+🚶‍♀️|chodiť|chodkyňa|chôdza|kráčať|osoba|pešo|prechádzka|žena
 🧍|postoj|stáť|státie|stojaci človek
 🧍‍♂️|muž|postoj|státie|stojaci
 🧍‍♀️|postoj|státie|stojaca|žena
@@ -465,1043 +467,1052 @@
 🧎‍♂️|kľačať|kľačiaci|kľak|muž|pokľak
 🧎‍♀️|kľačať|kľačiaca|kľak|pokľak|žena
 🧑‍🦯|človek s bielou palicou|handicap|hendikep|pomôcka|postihnutie
-👨‍🦯|handicap|hendikep|muž s bielou palicou|muž so slepeckou palicou|pomôcka|postihnutie|slepý|uľahčenie
-👩‍🦯|handicap|hendikep|pomôcka|postihnutie|slepá|uľahčenie|žena so slepeckou palicou
+👨‍🦯|handicapovaný|hendikep|muž s bielou palicou|muž so slepeckou palicou|pomôcka|postihnutie|postihnutý|slepý|uľahčenie
+👩‍🦯|handicap|hendikep|pomôcka|postihnutie|slepá|žena so slepeckou palicou
 🧑‍🦼|človek na elektrickom invalidnom vozíku|handicap|hendikep|invalidný|pomôcka|postihnutie|vozík
-👨‍🦼|handicap|hendikep|invalidný|muž na elektrickom invalidnom vozíku|pomôcka|postihnutie|vozík
-👩‍🦼|handicap|hendikep|invalidný|pomôcka|postihnutie|vozík|žena na elektrickom invalidnom vozíku
+👨‍🦼|handicapovaný|hendikep|invalidný|muž na elektrickom invalidnom vozíku|pomôcka|postihnutie|postihnutý|telesne postihnutý|vozík
+👩‍🦼|handicapovaná|hendikep|invalidný|pomôcka|postihnutá|postihnutie|telesne postihnutá|vozík|žena na elektrickom invalidnom vozíku
 🧑‍🦽|človek na mechanickom invalidnom vozíku|handicap|hendikep|invalidný|pomôcka|postihnutie|vozík
 👨‍🦽|handicap|hendikep|invalidný|muž na mechanickom invalidnom vozíku|pomôcka|postihnutie|vozík
-👩‍🦽|handicap|hendikep|invalidný|pomôcka|postihnutie|vozík|žena na mechanickom invalidnom vozíku
-🏃|beh|bežiaci človek|maratón|preteky
+👩‍🦽|handicapovaná|hendikep|invalidná|invalidný|pomôcka|postihnutá|postihnutie|telesne postihnutá|vozík|žena na mechanickom invalidnom vozíku
+🏃|beh|bežec|bežiaci človek|maratón|osoba|pohyb|preteky|rýchlosť|rýchly|šport
 🏃‍♂️|beh|bežec|maratón|muž|preteky
-🏃‍♀️|beh|bežkyňa|maratón|preteky|žena
-💃|tanec|tanečníčka|žena
-🕺|muž|tanec|tanečník
-🕴️|levitujúci muž v saku|muž|oblek|podnikanie
-👯|ľudia so zajačími ušami|tanec|uši|zábava|zajačik
-👯‍♂️|muži so zajačími ušami|tanec|uši|zábava|zajačik
+🏃‍♀️|beh|bežať|bežkyňa|maratón|osoba|pretekať|preteky|rýchlosť|šport|utekať|žena
+💃|flamenco|oslava|osoba|ples|salsa|tancovanie|tanec|tanečníčka|tanečník|tango|zábava|žena
+🕺|flamenco|muž|osoba|party|salsa|tancovať|tancujúci muž|tanec|tanečník|tango|zábava
+🕴️|biznis|levitujúci muž v saku|manažér|muž|oblek|podnikanie|povolanie|práca|vznášajúci sa muž v saku|zamestnanie
+👯|dvojča|identické|ľudia so zajačími ušami|osoba|pár|party|spriaznená duša|tancujúce dievčatá|tanec|uši|zábava|zajačik|žena
+👯‍♂️|dvojičky|muži na párty|muži so zajačími ušami|párty|tanec|uši|zábava|zajačik
 👯‍♀️|tanec|uši|zábava|zajačik|ženy so zajačími ušami
-🧖|človek v pare|kúpeľ|para|sauna
+🧖|človek v pare|kúpeľ|luxus|oddych|osoba v parnej miestnosti|para|parná sauna|parný kúpeľ|relax|sauna|uvoľnenie|žena v saune
 🧖‍♂️|kúpeľ|muž v pare|para|sauna
 🧖‍♀️|kúpeľ|para|sauna|žena v pare
-🧗|človek na skale|horolezectvo|lezectvo
+🧗|človek na skale|hora|horolezectvo|lezectvo|lezenie|liezť|skala|skalná stena|skalolezec|šport
 🧗‍♂️|horolezectvo|lezectvo
 🧗‍♀️|horolezectvo|lezectvo|lezkyňa
 🤺|človek|kord|meč|šermiar|šport
-🏇|dostihy|džokej|kôň|preteky
-⛷️|lyže|lyžiar|sneh
-🏂|lyže|sneh|snoubordista|snowboard
-🏌️|golf|hráč golfu|loptička
+🏇|dostihový kôň|dostihy|džokej|jazdec|jazdenie|kôň|osoba|preteky|šport
+⛷️|aktivita|človek|free ride|lyže|lyžiarka|sneh|šport|zima
+🏂|jazdec na snowboarde|lyže|lyžovanie|osoba|sneh|snoubordista|snowboard|šport|zima
+🏌️|golfista|golfový hráč|hráč golfu|jamkovisko|loptička|odpalisko|osoba|šport|švih
 🏌️‍♂️|golfista|muž
-🏌️‍♀️|golfistka|žena
-🏄|človek na surfe|surfing|surfovanie
+🏌️‍♀️|golfistka|odpal|osoba|šport|švih|žena
+🏄|človek na surfe|doska|more|muž|oceán|osoba|pláž|šport|surfer|surfing|surfovanie|vlny
 🏄‍♂️|muž|surfing|surfista|surfovanie
-🏄‍♀️|surfing|surfistka|surfovanie|žena
-🚣|čln|človek na veslici|loď|veslica
+🏄‍♀️|doska|oceán|osoba|šport|surferka|surfing|surfistka|surfovanie|vlny|žena
+🚣|čln|človek na veslici|jazero|kanoe|loď|osoba|pádlovať|rieka|šport|veslár|veslica|veslovať
 🚣‍♂️|čln|loď|muž|veslár|veslica
-🚣‍♀️|čln|loď|veslárka|veslica|žena
-🏊|plávajúci človek|plávať
+🚣‍♀️|čln|loďka|šport|veslárka|veslica|veslovanie|žena
+🏊|bazén|osoba|plávajúci človek|plávanie|plávať|plavec|šport|triatlon|voľný štýl
 🏊‍♂️|muž|plávanie|plavec
-🏊‍♀️|plávanie|plavkyňa|žena
-⛹️|človek s loptou|lopta
+🏊‍♀️|osoba|plávanie|plavkyňa|šport|voda|žena
+⛹️|atletický|basketbalista|čistý hod|človek s loptou|dribling|lopta|muž s loptou|osoba|šport
 ⛹️‍♂️|lopta|muž s loptou
-⛹️‍♀️|lopta|žena s loptou
-🏋️|činky|vzpierajúci človek|vzpierať
+⛹️‍♀️|basketbalistka|dribling|driblovať|lopta|osoba|šport|žena s loptou
+🏋️|činky|cvičenie|mŕtvy ťah|muž|osoba|posilňovanie|šport|vzpierajúci človek|vzpieranie|vzpierať|závažie|zdvíhanie
 🏋️‍♂️|činky|muž|vzpierač|vzpierať
-🏋️‍♀️|činky|vzpieračka|vzpierať|žena
-🚴|bicykel|bicyklovať|človek na bicykli
+🏋️‍♀️|činka|činky|osoba|šport|vzpieračka|vzpieranie|vzpierať|závažie|žena
+🚴|bicykel|bicyklovať|človek na bicykli|cyklista|cyklistika|muž na bicykli|osoba|preteky|sagan|šport
 🚴‍♂️|bicykel|bicyklovať|cyklista|muž
-🚴‍♀️|bicykel|bicyklovať|cyklistka|žena
-🚵|bicykel|bicyklovať|človek na horskom bicykli|hory
+🚴‍♀️|bicykel|bicyklistka|bicyklovať|cyklistika|cyklistka|jazdenie|šport|žena
+🚵|atletický|bicykel|bicyklovať|človek na horskom bicykli|cyklista|hora|hory|osoba|sagan|šport
 🚵‍♂️|bicykel|bicyklovať|horský cyklista|hory|muž
-🚵‍♀️|bicykel|bicyklovať|horská cyklistka|hory|žena
-🤸|človek robí hviezdu|gymnastika|hviezda|premet
-🤸‍♂️|gymnastika|hviezda|muž robí hviezdu|premet
-🤸‍♀️|gymnastika|hviezda|premet|žena robí hviezdu
-🤼|ľudia|šport|zápasiaci ľudia
-🤼‍♂️|muž|zápasníci|zápasník
-🤼‍♀️|zápasníčka|zápasníčky|žena
-🤽|pólo|voda|vodné pólo
-🤽‍♂️|muž|pólista|pólo|voda
-🤽‍♀️|pólistka|pólo|voda|žena
-🤾|človek|hádzaná|lopta|šport
-🤾‍♂️|hádzanár|muž
-🤾‍♀️|hádzanárka|žena
-🤹|balansovať|žonglovanie|žonglovať
-🤹‍♂️|balansovať|muž|žonglér|žonglovať
-🤹‍♀️|balansovať|žena|žonglérka|žonglovať
-🧘|človek v lotosovom sede|joga|meditácia
+🚵‍♀️|bicykel|bicyklistka|bicyklovať|cyklistka|horská cyklistka|hory|šport|žena
+🤸|človek robí hviezdu|gymnastika|hviezda|mlynské kolo|nadšený|premet bokom|šťastný
+🤸‍♂️|aktívny|gymnastika|hviezda|mlynské kolo|muž robí hviezdu|nadšený|osoba|premet bokom|šport|šťastný
+🤸‍♀️|aktívna|gymnastika|hviezda|mlynské kolo|nadšená|osoba|premet bokom|šport|šťastná|žena robí hviezdu
+🤼|duel|ľudia|šport|v ringu|wrestling|zápasiaci ľudia
+🤼‍♂️|chlapi|muži|osoba|šport|súboj|v ringu|wrestling|zápasiť|zápasníci|zápasník
+🤼‍♀️|osoba|šport|súboj|v ringu|wrestling|zápasiť|zápasníčka|zápasníčky|žena|ženy
+🤽|osoba|plávanie|pólo|voda|vodné pólo|vodný šport
+🤽‍♂️|muž|osoba|plávanie|pólista|pólo|šport|voda|vodné pólo|vodný šport
+🤽‍♀️|osoba|plávanie|pólistka|pólo|šport|voda|vodné pólo|vodný šport|žena
+🤾|atletika|človek|hádzaná|hádzať|lopta|šport
+🤾‍♂️|hádzanár|lopta|muž|osoba|šport
+🤾‍♀️|atletika|chytiť|hádzanárka|hádzať|hod|lopta|osoba|šport|žena
+🤹|balansovať|multitasking|osoba|žonglovanie|žonglovať|zvládnuť
+🤹‍♂️|balansovať|multitasking|muž|osoba|šport|žonglérstvo|žonglovanie|žonglovať
+🤹‍♀️|balansovať|mutlitasking|šport|žena|žonglérka|žonglérstvo|žonglovanie|žonglovať
+🧘|človek v lotosovom sede|cvičenie|joga|meditácia|osoba v pozícii lotosového kvetu|prekrížené nohy|relax|rovnováha|vyrovnanosť
 🧘‍♂️|joga|meditácia|muž v lotosovom sede
 🧘‍♀️|joga|meditácia|žena v lotosovom sede
-🛀|človek vo vani|kúpeľ|vaňa
-🛌|človek v posteli|hotel|posteľ|spánok
+🛀|človek vo vani|domácnosť|kúpajúca sa osoba|kúpeľna|osoba|sprcha|vaňa
+🛌|človek v posteli|hotel|perina|posteľ|spánok|zdriemnuť si
 🧑‍🤝‍🧑|človek|držať|ľudia držiaci sa za ruky|pár|ruka
-👭|držať|pár|ruka|žena|ženy držiace sa za ruky
-👫|držať|muž|pár|ruka|žena a muž držiaci sa za ruky
-👬|blíženci|držať|dvojičky|muži držiaci sa za ruky|pár|ruka
-💏|bozk|pár|romanca
-💑|láska|pár so srdcom|romanca|srdce
-👪|dieťa|matka|otec|rodina
-🗣️|hlava|hovoriaca|hovoriť|silueta|tvár
-👤|busta|silueta busty
-👥|busta|silueta búst
-🫂|ďakujem|lúčenie|objatie|objímajúci sa ľudia|zbohom
-👣|šľapaj|stopa|stopy|topánka
-🐵|hlava opice|opica
-🐒|opica|opička
-🦍|gorila|opica
+👭|držať|kamarátky|láska|lesbičky|lesby|lgbtqia|osoba|pár|priateľky|rande|ruka|ruky|sestry|žena|ženy držiace sa za ruky
+👫|držať|flirt|muž a žena držiaci sa za ruky|pár|rande|ruka|žena a muž držiaci sa za ruky
+👬|blíženci|držať|dvojičky|gay|homosexuál|láska|lgbti|lgbtqia|muži držiaci sa za ruky|pár|rande|ruka|zverokruh
+💏|bozk|láska|pár|pusa|rande|romanca|romantika|srdce|výročie
+💑|bozk|dvojica|láska|pár so srdcom|pusa|rande|romanca|srdce|výročie
+🗣️|hlava|hovoriaca|hovoriť|prednáška|rečník|silueta|tvár
+👤|busta|osoba|silueta busty|tajomstvo|tieň|záhada
+👥|busta|hlavy|ľudia|osoba|osoby|priatelia|silueta búst|siluety búst
+🫂|ďakujem|lúčenie|objatie|objímajúci sa ľudia|objímanie|priateľstvo|rozlúčenie|útecha|utešiť|zbohom
+👪|chlapec|dieťa|matka|otec|rodičia|rodina|syn
+🧑‍🧑‍🧒|dieťa|dospelý|matka|otec|rodina: dospelý, dospelý, dieťa
+🧑‍🧑‍🧒‍🧒|brat a sestra|bratia|dieťa|dospelý|rodina: dospelý, dospelý, dieťa, dieťa|sestra|sestry|súrodenci
+🧑‍🧒|dcéra|dieťa|matka|otec|rodina: dospelý, dieťa|syn
+🧑‍🧒‍🧒|brat|dcéra|dieťa|dve deti|matka|otec|rodina: dospelý, dieťa, dieťa|sestra|syn
+👣|bosý|chodidlo|naboso|nohy|odtlačok|šľapaj|stopa|stopy|telo|topánka
+🐵|banán|hlava opice|opica|príroda|tvár opice|zvedavá|zvedavý george|zviera
+🐒|banány|džungľa|opica|opička|príroda|zviera
+🦍|gorila|opica|príroda|zviera
 🦧|ľudoopica|orangutan
-🐶|hlava psa|pes|zviera
-🐕|pes|psík|zviera
-🦮|asistencia|slepecký pes|sprievodca|vodiaci pes|zrakové postihnutie
-🐕‍🦺|asistencia|pes|pomoc|služba|služobný pes
-🐩|pes|pudel|pudlík
-🐺|hlava|vlk
-🦊|hlava|líška|šibalstvo
-🦝|huncút|ľstivý|medviedik čistotný|prefíkaný|šibal
-🐱|hlava mačky|mačka|zviera
-🐈|mačka|zviera
-🐈‍⬛|čierna|mačka|smola
-🦁|hlava|lev
-🐯|hlava tigra|tiger
-🐅|tiger
-🐆|leopard
-🐴|hlava koňa|kôň
+🐶|domáce zviera|hlava psa|pes|príroda|šteniatko|tvár psíka|zviera
+🐕|domáce zviera|miláčik|pes|príroda|psík|psy|zviera
+🦮|asistencia|postihnutie|slepecký pes|sprievodca|vodiaci pes|zrakové postihnutie
+🐕‍🦺|asistencia|pes|pomoc|služba|služobný pes|vodiaci pes
+🐩|domáce zviera|pes|príroda|pudel|pudlík|zviera
+🐺|hlava|príroda|tvár vlka|vlk|zviera
+🦊|hlava líšky|líška|šibalstvo|tvár|zviera
+🦝|huncút|ľstivý|medvedík čistotný|medviedik čistotný|prefíkaný|prešibaný|šibalský|zvedavý|zviera
+🐱|domáce zviera|hlava mačky|mačka|miláčik|príroda|tvár mačky|zviera
+🐈|domáce zviera|mačička|mačka|príroda|zviera
+🐈‍⬛|čierna|halloween|mačka|mňau|smola|zviera
+🦁|hlava|horoskop|kráľ zvierat|lev|príroda|safari|tvár leva|znamenie leva|zoo|zverokruh|zviera
+🐯|džungľa|hlava tigra|predátor|tiger|tvár tigra|zviera
+🐅|ázia|predátor|príroda|šelma|tiger|veľká mačka|zoo|zviera
+🐆|leopard|predátor|príroda|šelma|veľká mačka|zoo|zviera
+🐴|drezúra|farma|gazdovstvo|hlava koňa|kôň|kone|koník|príroda|statok|tvár koňa
 🫎|cicavec|los|parohy|zviera
-🫏|blbec|cicavec|osol|pako|somár|tvrdohlavec|zviera
-🐎|dostihový kôň|dostihy|jazdec|kôň
-🦄|hlava|jednorožec
-🦓|pruhy|zebra
-🦌|jeleň
-🦬|bizón|črieda|zubor
-🐮|hlava kravy|krava
-🐂|býk|vôl
-🐃|byvol|voda
-🐄|krava
-🐷|hlava prasaťa|prasa
-🐖|ošípaná|prasa|prasnica|sviňa
-🐗|diviak|prasa
-🐽|hlava|nos|prasací rypák
-🐏|baran|ovca|samec
-🐑|ovca|samica
-🐐|cap|koza
-🐪|dromedár|hrb|ťava
-🐫|hrb|ťava dvojhrbá
-🦙|alpaka|huanako|lama|vikuňa
-🦒|škvrny|žirafa
-🐘|slon
-🦣|chlpatý|kel|mamutí|vyhynutý|vymretý
-🦏|nosorožec
-🦛|hroch|vodný kôň
-🐭|hlava myši|myš
-🐁|myš
-🐀|krysa|potkan
-🐹|hlava|škrečok|zviera
-🐰|hlava zajaca|ušiak|zajac
-🐇|zajac|zajačik|zviera
-🐿️|čipmank|veverica
-🦫|bobor|hrádza|priehrada|voda
-🦔|ježko|pichľavý
-🦇|netopier|upír
-🐻|hlava|medveď
+🫏|blbec|cicavec|osol|pako|somár|truľo|tvrdohlavec|zviera
+🐎|derby|dostihový kôň|dostihy|farma|gazdovstvo|jazdec|kôň|preteky|zviera
+🦄|hlava|jednorožec|mytológia|rozprávka|tvár jednorožca|zviera
+🦓|príroda|pruhy|zebra|zviera
+🦌|hlava jeleňa|jeleň|les|príroda|vysoká zver|zviera
+🦬|bizón|črieda|zubor|zviera
+🐮|bú|farma|gazdovstvo|hlava kravy|krava|mlieko|mú|príroda|rohy|statok|tvár kravy|zviera
+🐂|býk|farma|horoskop|príroda|vôl|zviera
+🐃|afrika|byvol|príroda|voda|vodný|zoo|zviera
+🐄|býk|farma|gazdovstvo|krava|kravička|mlieko|mú|príroda|statok|zviera
+🐷|bravčovina|farma|gazdovstvo|hlava prasaťa|prasa|príroda|sádlo|slanina|statok|tvár prasaťa|zviera
+🐖|bravčové|farma|gazdovstvo|ošípaná|prasa|prasnica|príroda|sádlo|slanina|statok|sviňa|zviera
+🐗|diviak|les|prasa|príroda|sviňa|zviera
+🐽|hlava|nos|prasací rypák|tvár|zviera
+🐏|baran|dedina|farma|gazdovstvo|horoskop|ovca|príroda|rohy|salaš|samec|statok|zviera
+🐑|baran|bé|farma|gazdovstvo|ovca|príroda|salaš|samica|vlna|zviera
+🐐|cap|farma|gazdovstvo|horoskop|hory|koza|kozorožec|príroda|statok|zverokruh|zviera
+🐪|dromedár|hrb|jeden hrb|jednohrbá|príroda|púšť|ťava|zviera
+🐫|baktrijská|dvojhrbá|hrb|príroda|púšť|ťava|zviera
+🦙|alpaka|guanako|huanako|huňatá|lama|vikuňa|vlna|zviera
+🦒|afrika|príroda|rohy|škvrny|žirafa|zoo|zviera
+🐘|príroda|slon|zoo|zviera
+🦣|chlpatý|huňatý|kel|mamutí|vyhynutý|vymretý|zviera
+🦏|afrika|hlava nosorožca|nosorožec|príroda|roh|zoo|zviera
+🦛|hroch|hrošia koža|hrošica|hrošík|vodný kôň|zviera
+🐭|hlava myši|myš|príroda|tvár myši|zviera
+🐁|biela myš|myš|príroda|zviera
+🐀|kanál|krysa|odpad|potkan|príroda|stoka|zviera
+🐹|domáce zviera|hlava|myš|príroda|škrečok|tvár škrečka|zviera
+🐰|domáce zviera|hlava zajaca|príroda|tvár zajaca|ušiak|zajac|zajačik|zajko
+🐇|domáce zviera|les|príroda|zajac|zajačik|zviera
+🐿️|čipmank|les|príroda|veverica|veverička|zviera
+🦫|bobor|hrádza|priehrada|voda|zuby|zviera
+🦔|ježko|pichľavý|pichliač|príroda|schúlený|zviera
+🦇|batman|netopier|príroda|upír|zviera
+🐻|grizzly|hlava|kodiak|les|medveď|príroda|tvár medveďa|zviera
 🐻‍❄️|biely|ľadový medveď|medveď|polárny
-🐨|koala|medveď
-🐼|hlava|panda
+🐨|austrália|koala|medveď|príroda|protinožci|zviera
+🐼|bambus|čína|hlava|panda|príroda|tvár pandy|zviera
 🦥|lenivosť|lenivý|leňoch|pomalý
 🦦|hravé|lovec rýb|loví ryby|rybolov|vydra
 🦨|skunk|smradľavý
-🦘|austrália|kengura|skákať|skok|vačkovec
-🦡|jazvec|mediar|samotár
-🐾|labka|labky|nohy|odtlačok
-🦃|moriak|morka
-🐔|kura|sliepka
-🐓|kohút
-🐣|kuriatko|liahnuce sa kurča|liahnuť sa
-🐤|kurča|kuriatko
-🐥|kurča spredu|kuriatko
-🐦|vták
-🐧|tučniak
-🕊️|holubica|lietať|mier|vták
-🦅|orol|vták
-🦆|kačica|kačka|vták
-🦢|labuť|škaredé káčatko|vták
-🦉|múdrosť|sova|vták
-🦤|dodo|dront|maurícijský|vyhynutý|vymretý
+🦘|austrália|austrálsky cicavec|hopsať|kengura|kengurka|skákať|skippy|skokan|vačkovec|zviera
+🦡|dobiedzač|dotierať|jazvec|mediar svetlochrbtý|medojed kapský|mellivora capensis|obťažovať|otravovať|ratel|samotár|zviera
+🐾|labka|labky|laby|nohy|odtlačky labiek|odtlačok|stopy|zviera
+🦃|moriak|morka|príroda|vďakyvzdanie
+🐔|kura|kuriatko|príroda|sliepka|vtáka|zviera
+🐓|farma|gazdovstvo|kohút|príroda|statok|vták|zviera
+🐣|kura|kuriatko|liahnúce sa|liahnuce sa kurča|liahnuť sa|malé|príroda|škrupina|vajce|zviera
+🐤|kurča|kuriatko|malé|príroda|vtáčik|vták|zviera
+🐥|farma|gazda|kurča spredu|kuriatko|malé|príroda|statok|veľká noc|zviera
+🐦|holub|ornitológa|príroda|vták|zviera
+🐧|antarktída|príroda|tučniak|zviera
+🕊️|biela holubica|holubica|lietať|mier|príroda|vták|zviera
+🦅|orol|príroda|vták|zviera
+🦆|káčer|kačica|kačka|vták|zviera
+🦢|balet|biela|elegancia|elegantná|labuť|labutie jazero|labutie mláďa|mladá labuť|perie|škaredé káčatko|vták|zviera
+🦉|les|lietať|múdrosť|príroda|sova|vták|výr|zviera
+🦤|dodo|dront|maurícijský|nelietavý|vyhynutý|vymretý|zviera
 🪶|lietanie|perie|pero|pierko|vták
 🦩|nápadný|okázalý|plameniak|tropický
-🦚|nadutý|nafúkaný|páv|pyšný
-🦜|papagáj|pirát|rozprávať|vták
-🪽|anjelské|krídlo|lietanie|mytológia|vták
-🪿|gagotať|hlúpy|hus|hydina|vták
-🐸|hlava|žaba
-🐊|krokodíl
-🐢|korytnačka
-🦎|jašterica|plaz
-🐍|had|plaz
-🐲|drak|hlava draka|rozprávka|šarkan
-🐉|drak|rozprávka|šarkan
-🦕|brachiosaurus|brontosaurus|dinosaurus|diplodocus|sauropód
-🦖|dinosaurus|rex|tyrannosaurus
-🐳|gejzír|veľryba s gejzírom
-🐋|veľryba
-🐬|delfín|plutva
-🦭|more|tuleň|uškatec
-🐟|ryba
-🐠|ryba|tropická
-🐡|ryba|štvorzubec
-🦈|ryba|žralok
-🐙|chobotnica
-🐚|mušľa|špirálovitá
-🪸|koral|oceán|útes
-🪼|bezstavovec|bolesť|medúza|more|popáliť|želé|žihadlo
-🐌|slimák
-🦋|hmyz|motýľ
-🐛|hmyz|húsenica
-🐜|hmyz|mravec
-🐝|hmyz|včela
-🪲|chrobák|hmyz
-🐞|chrobák|hmyz|lienka
-🦗|saranča|svrček
-🪳|hmyz|škodca|šváb
-🕷️|hmyz|pavúk
+🦚|farebný|honosný|krásny vták|nadutý|nafúkaný|okrasný vták|páví chvost|pávica|pávie oko|pávie pero|pestrofarebný|pyšný|vejárovitý chvost|veľkolepý|vták|zviera
+🦜|farebný|hovoriť|opakovať ako papagáj|papagáj|pirát|rozprávať|ukecaný|uškriekaný|vták|zviera
+🪽|anjelské|krídlo|lietanie|mytológia|nebeský|vták
+🐦‍⬛|čierna|čierny|drozd|havran|škorec|vrana|vták|zobák|zviera
+🪿|gagotať|hlúpy|hus|hydina|vták|zviera
+🐦‍🔥|fantázia|fénix|nesmrteľný|obnova|ohnivý vták|oživenie|povstať|pretvoriť|reinkarnácia|vzostup|znovuzrodenie
+🐸|hlava|princezná|príroda|rozprávka|tvár žaby|voda|žaba|zviera
+🐊|aligátor|florida|krokodíl|príroda|zoo|zviera
+🐢|korytnačka|pancier|príroda|zviera
+🦎|jašterica|plaz|príroda|zviera
+🐍|hadonos|horoskop|kobra|nosič|plaz|príroda|zmija|zverokruh|zviera
+🐲|čínsky|drak|hlava draka|príroda|rozprávka|šarkan|tvár draka|zviera
+🐉|čínsky drak|drak|príroda|rozprávka|rytier|šarkan|zelený drak|zviera
+🦕|brachiosaurus|brontosaurus|dinosaurus|diplodocus|príroda|sauropod|sauropód
+🦖|dinosaurus|príroda|rex|t-rex|tyrannosaurus|zviera
+🐳|chŕliaca|gejzír|oceán|príroda|ryba|tvár|veľryba chrliaca vodu|veľryba s gejzírom|voda|zviera
+🐋|cicavec|more|oceán|príroda|veľryba|zviera
+🐬|delfín|fliper|more|oceán|pláž|plutva|príroda|zviera
+🦭|more|oceán|plutvonožec|tuleň|uškatec|zviera
+🐟|horoskop|jedlo|more|oceán|príroda|ryba|rybolov|ryby|voda|zverokruh|zviera
+🐠|oceán|ryba|tropická|voda|zviera
+🐡|dvojzubec|príroda|ryba|štvorzubec|zviera
+🦈|príroda|ryba|žralok|zviera
+🐙|chápadlá|chobotnica|more|oceán|príroda|zviera
+🐚|mušľa|oceán|pláž|príroda|škebľa|špirálovitá
+🪸|klíma|klimatické zmeny|koral|more|oceán|útes
+🪼|bezstavovec|bolesť|chápadlá|medúza|more|planktón|podmorský svet|popáliť|popŕhliť|želé|žihadlo|zviera
+🐌|príroda|slimák|záhrada|zviera
+🦋|hmyz|krása|modrý motýľ|motýľ|pekný|príroda|zviera
+🐛|chrobák|hmyz|húsenica|príroda|záhrada|zviera
+🐜|chrobák|hmyz|mravec|príroda|záhrada|zviera
+🐝|čmeliak|hmyz|jar|kvety|med|príroda|včela medonosná|zviera
+🪲|chrobák|hmyz|ploštica|zelený|zviera
+🐞|chrobák|hmyz|kravička|lienka|pánbožkova|príroda|záhrada|zviera
+🦗|chrobák|cvrček|hmyz|kobylka|príroda|rovnokrídly|saranča|svrček
+🪳|hmyz|škodca|špina|šváb|zviera
+🕷️|chrobák|hmyz|pavúk|príroda|zviera
 🕸️|pavučina|pavúk|sieť
-🦂|škorpión
-🦟|hmyz|horúčka|komár|vírus
-🪰|červ|choroba|mucha|škodca|zhnité
-🪱|červík|dážďovka
-🦠|améba|baktéria|mikrób|vírus
-💐|kvetina|kytica|rastlina|romanca
-🌸|čerešňa|čerešňový kvet|kvetina|rastlina
-💮|biely kvet|kvetina|rastlina|romanca
-🪷|budhizmus|čistota|hinduizmus|india|kvet|lotos|vietnam
-🏵️|rastlina|ružička
-🌹|kvetina|rastlina|ruža
-🥀|kvetina|zvädnutá
-🌺|ibištek|kvetina|rastlina
-🌻|kvetina|rastlina|slnečnica|slnko
-🌼|kvetina|rastlina
-🌷|kvetina|rastlina|tulipán
-🪻|hyacint|kvet|levanduľa|lupina|papuľka|pyštek
-🌱|mladá|rastlina|sadenica
-🪴|doma|kvetináč|rás´´ť|rastlina|zalievať
-🌲|ihličnatý strom|neopadavý|rastlina|strom
-🌳|listnatý strom|opadavý|rastlina|strom
-🌴|palma|rastlina|strom
-🌵|kaktus|rastlina
-🌾|klas|rastlina|ryža|snop ryže
-🌿|bylina|bylinka|list|rastlina
-🍀|ďatelina|list|rastlina|štvorlístok|štyri
-🍁|javorový list|list|opadavý|rastlina
-🍂|list|opadavý|opadnutý list|rastlina
-🍃|fúkať|list vo vetre|rastlina|vánok|vietor
-🪹|hniezdenie|prázdne hniezdo
-🪺|hniezdenie|hniezdo s vajcami
-🍄|hríb|huba
-🍇|hrozno|ovocie|rastlina
-🍈|cukrový melón|ovocie|rastlina
-🍉|melón|ovocie|rastlina
-🍊|mandarínka|oranžové|ovocie|rastlina
-🍋|citrón|citrus|ovocie|rastlina
-🍌|banán|ovocie|rastlina
-🍍|ananás|ovocie|rastlina
-🥭|mango|ovocie|tropické
-🍎|červené|jablko|ovocie|rastlina
-🍏|jablko|ovocie|rastlina|zelené
-🍐|hruška|ovocie|rastlina
-🍑|broskyňa|ovocie|rastlina
-🍒|čerešňa|čerešne|ovocie|rastlina
-🍓|jahoda|ovocie|rastlina
-🫐|bobuľa|čučoriedka|čučoriedky|ovocie
+🦂|horoskop|púšť|škorpión|zverokruh|zviera
+🦟|bzučanie|bzukot|choroba|exotická choroba|hmyz|horúčka|komár|malária|poštípanie|štípanec|uštipnutie|vírus
+🪰|bzučivka|červ|choroba|hmyz|mucha|škodca|zhnité|zviera
+🪱|červík|dážďovka|zviera
+🦠|améba|baktéria|biológia|jednobunkový organizmus|laboratórium|meňavka|mikrób|mikrobiológia|mikroorganizmus|organizmus|prvok|veda|vírus|výskum|živočích
+💐|kvetina|kytica|láska|narodeniny|príroda|rande|rastlina|romanca|ruže|výročie
+🌸|čerešňa|čerešňový kvet|jar|kvetina|príroda|rastlina
+💮|biely kvet|japonský|kvetina|rastlina|romanca|výborná práca|znak dobre vykonanej práce
+🪷|budhizmus|čistota|hinduizmus|india|krása|kvet|lotos|mier|pokoj|vietnam
+🏵️|kvet|príroda|rastlina|rozeta|ružička
+🌹|červená|kvetina|láska|príroda|rastlina|ruža|sad|valentín|záhrada
+🥀|kvetina|príroda|ruža|záhrada|zvädnutá
+🌺|ibištek|kvetina|príroda|rastlina|rozkvitnutá
+🌻|kvetina|príroda|rastlina|slnečnica|slnko
+🌼|kvetina|lúka|príroda|púpava|rastlina|žltá kvetina
+🌷|kvetina|kvitnúť|príroda|rastlina|rozkvitnúť|tulipán
+🪻|hyacint|jar|kvet|levanduľa|lupina|papuľka|pyštek
+🌱|klíčiť|listy|mladá|príroda|rastlina|sadenica|výhonok
+🪴|dekorácia|doma|kvetináč|rásť|rastlina|výzdoba|zalievať|zeleň
+🌲|borovica|ihličnan|ihličnatý strom|jedľa|jedlička|les|neopadavý|príroda|rastlina|smrek|strom|vianoce|vianočný stromček|vždyzelený
+🌳|listnatý strom|opadavý|príroda|rastlina|strom
+🌴|palma|pláž|príroda|rastlina|strom|tropický
+🌵|kaktus|pichliače|príroda|púšť|rastlina|sucho
+🌾|farma|jačmeň|jedlo|klas|rastlina|ryža|snop ryže
+🌿|bylina|bylinka|list|príroda|rastlina
+🍀|4|ďatelina|írsky|list|príroda|rastlina|šťastie|šťastný|štvorlístok|štyri
+🍁|javorový list|jeseň|kanada|list|opadavý|padať|príroda|rastlina
+🍂|jeseň|list|opadavý|opadnutý list|padať|príroda|rastlina
+🍃|fúkať|list vo vetre|príroda|rastlina|vánok|vietor
+🪹|domov|hniezdenie|hniezdo|prázdne hniezdo
+🪺|hniezdenie|hniezdo s vajcami|vajce|vajíčko|vtáča|vták
+🍄|hríb|huba|mario|muchotrávka|príroda|rastlina
+🍇|dionýzos|hrozno|jedlo|ovocie|rastlina|réva|vinná réva
+🍈|cukrový melón|jedlo|melón|ovocie|rastlina|žltá dyňa
+🍉|červený melón|dyňa|jedlo|melón|ovocie|rastlina|vodný melón
+🍊|jedlo|mandarinka|mandarínka|nektárinka|oranžové|ovocie|pomaranč|rastlina|vitamín c
+🍋|citrón|citrus|jedlo|ovocie|rastlina|tropické|žltý citrón
+🍋‍🟩|citrus|džús|kokteil|kyslé|limetka|margarita|mojito|ovocie|tequila|tropické
+🍌|banán|draslík|hlad|jedlo|ovocie|príroda|rastlina
+🍍|ananás|jedlo|ovocie|piňakoláda|rastlina|tropické
+🥭|dužnatý plod|jedlo|mango|ovocie|sladké|tropické
+🍎|červené|diéta|jablko|jedlo|ovocie|rastlina|životospráva
+🍏|jablko|jedlo|ovocie|rastlina|zelené
+🍐|hruška|jedlo|ovocie|príroda|rastlina|sad|záhrada
+🍑|broskyňa|jedlo|ovocie|rastlina
+🍒|čerešňa|čerešne|červená|jedlo|ovocie|rastlina
+🍓|jahoda|jedlo|ovocie|rastlina|záhrada
+🫐|bobuľa|čučoriedka|čučoriedky|jedlo|ovocie
 🥝|jedlo|kivi|ovocie
-🍅|paradajka|rajčina|rastlina|zelenina
+🍅|červená|jedlo|paradajka|rajčina|rastlina|záhrada|zelenina
 🫒|jedlo|oliva
-🥥|kokos|orech|palma
-🥑|avokádo|jedlo|ovocie
-🍆|baklažán|ľuľok|rastlina|zelenina
-🥔|jedlo|zelenina|zemiak
-🥕|jedlo|mrkva|zelenina
-🌽|klas|kukurica|kukuričný klas|rastlina
-🌶️|čili paprička|pálivá|paprika|rastlina
-🫑|kapia|paprika|zelenina
-🥒|jedlo|kyslá|nakladaná|uhorka|zaváraná|zelenina
-🥬|kapusta|kel|listová zelenina|šalát
-🥦|brokolica|kapusta
+🥥|jedlo|kokosový orech|orech|ovocie|palma|piña colada|piňakoláda
+🥑|avokádo|hlad|jedlo|ovocie
+🍆|baklažán|jedlo|ľuľok|rastlina|záhrada|zelenina
+🥔|hlad|jedlo|príroda|záhrada|zelenina|zemiak
+🥕|jedlo|karotka|mrkva|príroda|záhrada|zelenina
+🌽|farma|gazdovstvo|jedlo|klas|kukurica|kukuričný|rastlina
+🌶️|čili paprička|feferónka|hlad|jedlo|korenie|pálivá|paprika|príroda|rastlina|štipľavá|zelenina
+🫑|jedlo|kapia|paprika|zelenina
+🥒|jedlo|kvašák|kyslá|nakladaná|uhorka|zaváraná|zelenina
+🥬|bok čoj|čínska kapusta|hlávkový šalát|jedlo|kapusta|kel|listová zelenina|pak čoj|šalát|zelené|zelenina
+🥦|brokolica|jedlo|kapusta|záhrada|zelenina
 🧄|cesnak|dochutenie|korenie|ochutenie|zelenina
 🧅|cibuľa|dochutenie|korenie|ochutenie|zelenina
 🥜|arašidy|jedlo|orech|zelenina
-🫘|fazuľa|jedlo|strukovina
-🌰|gaštan|rastlina
-🫚|koreň ďumbiera|pivo|štipľavý
-🫛|edamame|fazuľa|hrachový struk|strukovina|zelenina
-🍞|bochník|chlieb|peceň
-🥐|croissant|francúzske|jedlo|pečivo
-🥖|bageta|francúzske|jedlo|pečivo
-🫓|arabský|chlebová placka|chlieb|lavaš|naan|pita|tortilla
-🥨|praclík|skrútené|slané
-🥯|bagel|pečivo|pekáreň
-🥞|jedlo|lievance|lievanec|palacinka
-🧇|forma|mriežka|múčnik|sendvičovač|vafľa|vaflovač|vafľovač
-🧀|kus syra|syr
-🍖|kosť|mäso s kosťou
-🍗|hydina|kosť|kuracie stehno|mäso
-🥩|bravčové|jahňacie|plátok mäsa|rezeň
-🥓|jedlo|mäso|slanina
-🍔|hamburger
-🍟|hranolčeky|pomfritky
-🍕|pizza|syr
-🌭|hotdog|párok v rožku
-🥪|chlieb|plátky|sendvič
-🌮|jedlo|mexické|taco
-🌯|burrito|jedlo|mexické
-🫔|mexické|tamal
-🥙|falafel|gyros|jedlo|kebab|plnené
+🫘|fazuľa|jedlo|malý|strukovina
+🌰|gaštan|les|príroda|rastlina
+🫚|koreň ďumbiera|korenina|pivo|rastlina|štipľavý|zázvor|zdravie
+🫛|edamame|fazuľa|hrachový struk|strukovina|vegetariánske|zelenina
+🍄‍🟫|hnedý hríb|huba|huby|jedlo|príroda|vegetarián|výhonok|zelenina
+🍞|bochník|chlieb|jedlo|karbohydráty|múčny|peceň|pšenica|reštaurácia|sacharidy|toastový chlieb
+🥐|croissant|francúzske|francúzsky|jedlo|pečivo|rožok
+🥖|bageta|chlieb|francúzske|jedlo|pečivo
+🫓|arabský|chlebová placka|chlieb|jedlo|lavaš|naan|pečivo|pita|placka|tortilla
+🥨|jedlo|pečivo|praclík|skrútené|skrútený|slané|spletený
+🥯|bagel|chleba|chlieb|nátierka|pečivo|pekáreň|pomazánka|raňajky|žemľa
+🥞|jedlo|lievance so sirupom|lievanec|palacinka|palacinky
+🧇|forma|mriežka|múčnik|raňajky|sendvičovač|vafľa|vaflovač|vafľovač
+🧀|ementál|jedlo|kus syra|syr
+🍖|hlad|jedlo|kosť|mäso s kosťou
+🍗|hlad|hydina|hydinové stehno|jedlo|kosť|kuracie stehno|mäso|morka
+🥩|bravčové|červené mäso|jahňací steak|jahňacie|jedlo|kotleta|krvavé|mäso|plátok mäsa|rezeň|steak
+🥓|hlad|jedlo|mäso|sádlo|slanina|varenie
+🍔|burger|cheeseburger|fast food|hamburger|hlad|jedlo
+🍟|fast food|hranolčeky|hranolky|jedlo|pomfritky|zemiakové hranolky
+🍕|hlad|jedlo|kus|pizza|saláma|syr
+🌭|fast food|hlad|hotdog|jedlo|párok v rožku|rožok|v rožku
+🥪|chlieb|desiata|jedlo|obložený chlieb|plátky|sendvič
+🌮|jedlo|mexické|placka|taco
+🌯|burrito|jedlo|mexické|rolka|tortilla|wrap
+🫔|jedlo|kukuričné cesto|mexické|pamonha|tamal
+🥙|falafel|gyros|jedlo|kebab|placka|plnené|plnený|sendvič
 🧆|bôby|cícer|falafel|fašírka|gule|guličky
-🥚|jedlo|vajce
-🍳|panvica|vajce|varenie
-🥘|jedlo|panvica s jedlom
-🍲|jedlo|kastról|kotlík s jedlom
-🫕|čokoláda|fondue|rozpustiť|švajčiarske|syr
-🥣|kaša|misa s lyžicou|puding|raňajky
-🥗|jedlo|šalát|zelený
-🍿|popcorn|pukance
-🧈|maslo|mliečne|mliekareň|mliekarenské
-🧂|ochutiť|soľnička
-🥫|konzerva|plechovka
-🍱|krabička na jedlo|škatuľka
-🍘|kreker|ryža|ryžová sušienka
-🍙|kopček ryže|ryža
-🍚|ryža|uvarená
-🍛|karí|ryža s karí
-🍜|miska s horúcim jedlom|para|ramen|rezance
-🍝|cestoviny|špagety
-🍠|pečený|sladký|zemiak
-🍢|ihlica|jedlo na špajdli|kebab|ražeň
-🍣|suši
-🍤|garnát|kreveta|pražená kreveta|smažená
-🍥|fašírka|ryba|rybia fašírka
-🥮|jeseň|jüe-ping|mesačný koláč|slávnosť
-🍡|dango|dezert|palička|sladkosť|špajľa
-🥟|haluška|knedlička|pirôžok
-🥠|predpoveď|sušienka s predpoveďou
-🥡|jedlo|rýchle občerstvenie|škatuľka
-🦀|krab|rak
-🦞|dary mora|homár|klepetá
-🦐|jedlo|kreveta|mäkkýš
-🦑|jedlo|kalmár|mäkkýš
+🥚|jedlo|vajce|vajíčko
+🍳|hlad|jedenie|jedlo|panvica|praženica|reštaurácia|vajce|varenie|volské oko
+🥘|hrniec|jedlo|kastról|kuchyňa|paella|panvica s jedlom|rajnica|varenie|zapečené jedlo
+🍲|hlad|hrniec|jedlo|kastról|kotlík s jedlom|miska|polievka|tanier jedla
+🫕|čokoláda|fondue|jedlo|rozpustiť|švajčiarske|syr|tavený syr
+🥣|cereálie|jedlo|kaša|lyžička|misa s lyžicou|miska s lyžicou|ovsené vločky|polievka|puding|raňajky
+🥗|hlad|jedlo|šalát|zdravie|zelený
+🍿|fast food|film|jedlo|kino|popcorn|pukance
+🧈|maslo|mliečne|mliečny výrobok|mliekareň|mliekarenské
+🧂|chuťová prísada|jedlo|korenie|koreniť|ochucovadlo|ochutenie|ochutiť|okoreniť|posoliť|príchuť|slaný|soľnička
+🥫|jedlo v konzerve|konzerva|plechovica|plechovka
+🍱|balíček|bento|jedlo|krabička na jedlo|ryža|sashimi|škatuľka|sushi
+🍘|hlad|jedlo|kreker|morská riasa|ryža|ryžová sušienka|ryžový kreker|sušienka
+🍙|guľa|japonská|kopček ryže|ryža|ryžová guľa
+🍚|hlad|jedlo|miska ryže|ryža|uvarená
+🍛|hlad|jedlo|kari|karí|ryža s kari|ryža s karí
+🍜|horúci|jedlo|miska s horúcim jedlom|paličky|para|pariaca sa miska|pho|polievka|ramen|reštaurácia|rezance|tanier
+🍝|cestoviny|jedlo|mäsové guľky|paradajková omáčka|reštaurácia|špagety|talianske
+🍠|batát|jedlo|pečený|sladký|zemiak
+🍢|ihlica|jedlo na špajdli|kebab|morské plody|palička|ražeň|ražniči|šašlík|špajľa
+🍣|hlad|jedlo|losos|ryža|sushi|suši|tuniak
+🍤|garnát|jedlo|kreveta|pražená kreveta|smažená|smažené|tempura
+🍥|fašírka|koláč|rybací|rybí koláč so špirálou|rybia fašírka|ryžový|špirála|sushi
+🥮|čínsky|jeseň|jesenný festival|jüe-ping|koláč|mesačný koláč|pečivo|slávnosť|vítanie jesene|yuèbǐng
+🍡|dango|dezert|japonský|palička|sladkosť|špajľa
+🥟|buchta|buchtička|dim sum|empanada|gyoza|haluška|jedlo|knedlička|knedlík|piroh|pirôžok|pirôžtek|ravioli
+🥠|budúcnosť|čínsky koláčik|jedlo|koláčik šťastia|predpoveď|proroctvo|sušienka s predpoveďou
+🥡|donáška|dovoz jedla|jedlo|krabička na jedlo|paličky|rýchle občerstvenie|ryža|škatuľka
+🦀|horoskop|krab|oceán|príroda|rak|voda|zverokruh|zviera
+🦞|dary mora|homár|klepetá|kôrovec|krab|morské plody|morský rak|morský živočích|pancier|plody mora|polievka z homára|rak|zviera
+🦐|hlad|jedlo|kreveta|mäkkýš|malá|oceán|príroda|zviera
+🦑|jedlo|kalmár|mäkkýš|oceán|príroda|zviera
 🦪|perla|potápanie|ustrica
-🍦|čapovaná|dezert|krém|sladkosť|točená zmrzlina|zmrzlina
-🍧|dezert|dreň|mrazená dreň|sladkosť|zmrzlina
-🍨|dezert|krém|sladkosť|zmrzlina
-🍩|dezert|šiška|sladkosť
-🍪|dezert|sladkosť|sušienka
-🎂|dezert|koláč|narodeninová torta|narodeniny|oslava|sladkosť|torta
-🍰|dezert|koláč|kus torty|sladkosť|torta
-🧁|košíček|pečivo|sladkosť|zákusok
-🥧|koláč|pečivo|plnka
-🍫|čokoláda|dezert|sladkosť|tyčinka
-🍬|cukrík|dezert|sladkosť
-🍭|dezert|lízanka|sladkosť
-🍮|dezert|puding|sladkosť
-🍯|med|pohár medu|sladkosť
-🍼|detská|fľaša|mlieko|nápoj
-🥛|mlieko|nápoj|pohár mlieka
-🫖|čajník|čajová kanvica|kanvica
-🍵|čajová šálka|drink|nápoj|pohár|šálka
-🍶|bar|drink|fľaša|nápoj|pohár|saké
-🍾|bar|drink|fľaša|otváranie zátky|šampanské|zátka
-🍷|bar|drink|nápoj|pohár|vínový pohár
-🍸|bar|drink|kokteilový pohár|koktejl|pohár
-🍹|bar|drink|tropický nápoj
-🍺|bar|drink|pivový pohár|pohár
-🍻|bar|drink|pivo|pohár|štrngajúce pivové poháre|štrngať
-🥂|nápoj|oslavovať|pohár|prípitok|štrngajúce poháriky|štrngať
-🥃|alkohol|pohár na whisky|pohárik|whisky
-🫗|liatie|nápoj|pohár|prázdny|rozliať
-🥤|džús|limonáda|pohár so slamkou
-🧋|bublinky|čaj|mlieko|perlivý čaj
-🧃|džús v krabičke|krabicový džús|nápoj v krabičke|nápojová krabička|pitie v krabičke
+🍦|čapovaná|dezert|jedlo|krém|sladkosť|strojová zmrzlina|točená zmrzlina|zmrzlina
+🍧|dezert|dreň|hlad|jedlo|mrazená dreň|ochutená ľadová drť|reštaurácia|sladkosť|zmrzlina
+🍨|dezert|jedlo|krém|sladkosť|sorbet|zmrzlina
+🍩|čokoládová šiška|dezert|donut|hlad|jedlo|šiška|sladkosť
+🍪|čokoláda|dezert|hlad|jedlo|koláčik|sladkosť|sušienka
+🎂|dezert|koláč|narodeninová torta|narodeniny|oslava|sladkosť|torta|zákusok
+🍰|dezert|jedlo|koláč|kus torty|sladkosť|torta|zákusok
+🧁|cukor|cupcake|dezert|dobrota|koláč|košíček|lahôdka|maškrta|pečivo|pekáreň|pochúťka|poleva|sladkosť|sladký|torta|zákusok
+🥧|cesto|jablkový koláč|jedlo|koláč|kúsok koláča|ovocný|pečivo|plnený koláč|plnka
+🍫|čokoláda|dezert|jedlo|sladkosť|tabuľka čokolády|tyčinka
+🍬|bonbón|cukrík|dezert|jedlo|maškrta|sladkosť|zubný kaz
+🍭|dezert|jedlo|lízanka|lízatko|maškrta|sladkosť|zubný kaz
+🍮|dezert|hlad|jedlo|koláčik|puding|sladkosť|zákusok
+🍯|džbán|hlad|jedlo|macko pu|medveď|pohár medu|sladkosť|včela
+🍼|detská fľaška|dojča|fľaša|jedlo|mlieko|nápoj|novorodenec|príkrm
+🥛|jedlo|mlieko|nápoj|pohár mlieka
+🫖|čajník|čajová kanvica|kanvica|nápoj|odvar
+🍵|čajová šálka bez uška|drink|jedlo|nápoj|oolong|pohár|šálka čaju|zelený čaj
+🍶|bar|drink|fľaša|japonský|jedlo|nápoj|pohár|saké
+🍾|bar|drink|fľaša s odlietajúcou zátkou|jedlo|nápoj|otváranie zátky|šampanské|sekt|zátka
+🍷|bar|červené víno|drink|jedlo|krčma|nápoj|pohár|vináreň|vínový pohár
+🍸|alkohol|bar|drink|jedlo|kokteilový pohár|koktejlový pohár|martini|party|pohár
+🍹|bar|drink|jedlo|klub|koktejl|party|tropický nápoj
+🍺|alkohol|bar|drink|jedlo|krígeľ|nápoj|nemecko|oktoberfest|pivový pohár|pohár|polliter
+🍻|bar|drink|jedlo|krígeľ|nazdravie|pivo|pohár|prípitok|štrngajúce pivné poháre|štrngajúce pivové poháre|štrngať|štrngnutie
+🥂|jedlo|nápoj|oslavovať|pohár|prípitok|šampanké|sekt|štrngajúce poháriky|štrngať|štrngnutie
+🥃|alkohol|brandy|kapurková|kbš|koňak|likér|nápoj|panák|pohár na whisky|pohárik|štamprlík|whisky
+🫗|liať|liatie|nápoj|nehoda|pohár|prázdny|rozliať|voda|vyliať
+🥤|cola|drink|džús|limonáda|nápoj|piť|pohár so slamkou|slamka|voda
+🧋|boba|bublinky|čaj|jedlo|mlieko|nápoj|perlivý čaj|pop boba|taiwan|tapiokové perly
+🧃|džús v krabičke|krabicový džús|nápoj v krabičke|nápojová krabička|pitie v krabičke|slamka
 🧉|maté|nápoj|pitie
 🧊|chlad|kocka ľadu|ľadová kocka|ľadovec|studený
-🥢|jedlo|paličky
-🍽️|nôž|tanier|varenie|vidlička, nôž a tanier
-🍴|nôž|varenie|vidlička a nôž
-🥄|lyžica|príbor
-🔪|kuchynský nôž|nástroj|nôž|varenie|zbraň
-🫙|nádoba|pohár|prázdny|pyré|zásoby|zaváranina
-🏺|amfora|krčah|nádoba|nápoj|varenie
-🌍|afrika|európa|glóbus|svet|zemeguľa s európou a afrikou
-🌎|amerika|glóbus|svet|zemeguľa s amerikou
-🌏|austrália|ázia|glóbus|svet|zemeguľa s áziou a austráliou
-🌐|glóbus|poludníky|svet|zemeguľa s poludníkmi
-🗺️|mapa sveta|svet
-🗾|japonsko|mapa japonska
-🧭|buzola|kompas|magnet|navigácia|orientácia
-🏔️|chlad|hora|sneh|vrch|zasnežený vrch
-⛰️|hora|štít|vrch
-🌋|erupcia|hora|sopka|vrch
-🗻|fudžisan|hora|vrch
-🏕️|kemping|stanovanie|táborenie
-🏖️|pláž so slnečníkom|slnečník
-🏜️|púšť|pustatina
-🏝️|opustený|ostrov
-🏞️|národný park|park|rezervácia
-🏟️|aréna|ihrisko|štadión
-🏛️|dom|historická budova|historické
-🏗️|budova|dom|stavba
-🧱|hlina|malta|stena|tehla|tehly
-🪨|balvan|kameň|skala
+🥢|čína|japonsko|jedlo|paličky|sushi
+🍽️|jedlo|kuchyňa|nôž a tanier|nož, tanier, vidlička|obed|prestieranie|príbor|tanier|varenie|večera|vidlička, nôž a tanier
+🍴|jedlo|mňam|nôž|prestieranie|príbor|varenie|vidlička a nôž
+🥄|jedenie|jedlo|lyžica|príbor|stolovanie
+🔪|krájať|kuchár|kuchynský nôž|nástroj|nôž|rezať|šéfkuchár|varenie|zbraň
+🫙|dóza|nádoba|pohár|prázdny|pyré|zásoby|zaváranina
+🏺|amfora|drink|džbán|krčah|nádoba|nápoj|varenie|vodnár|zbraň|zverokruh
+🌍|afrika|európa|glóbus s európou a afrikou|planéta|svet|zemeguľa s európou a afrikou
+🌎|amerika|glóbus s amerikami|planéta|príroda|svet|zemeguľa s amerikou
+🌏|austrália|ázia|glóbus s áziou a austráliou|planéta|svet|zemeguľa s áziou a austráliou
+🌐|glóbus|poludníky|svet|web|zemeguľa s poludníkmi
+🗺️|cestovanie|mapa sveta|svet
+🗾|cestovanie|japonsko|mapa japonska|ostrov
+🧭|azimut|buzola|juh|kompas|magnetický|magnetka|navigácia|orientácia|orientačné preteky|orientačný beh|sever|smer|svetové strany|východ|západ
+🏔️|cestovanie|chlad|hora|hory so zasneženými vrcholmi|príroda|sneh|vrchol|zasnežený vrch
+⛰️|cestovanie|hora|kopec|príroda|štít|vrch
+🌋|cestovanie|erupcia|hora|počasie|príroda|sopka|vrch
+🗻|cestovanie|fudžisan|hora|príroda|vrch
+🏕️|cestovanie|dovolenka|kemping|príroda|stanovanie|táborenie
+🏖️|cestovanie|leto|more|pláž so slnečníkom|slnečník|teplo
+🏜️|cestovanie|hory|púšť|pustatina
+🏝️|cestovanie|dovolenka|oceán|opustený|ostrov
+🏞️|cestovanie|hory|národný park|obrázok|park|príroda|rezervácia
+🏟️|aréna|budova|ihrisko|mesto|šport|štadión
+🏛️|antika|budova|dom|grécko|historická budova|historické|klasicistická|panteón
+🏗️|budova|dom|stavba budovy|žeriav
+🧱|hlina|malta|múr|murársky|murovať|oddeliť|postaviť|prekážka|stena|tehla|tehlová stena|tehlový|tehly|zamurovať
+🪨|balvan|drsný|kameň|skala|tvrdý
 🪵|brvno|drevo|klát|poleno
-🛖|búda|chatrč|chyža|jurta
-🏘️|budova|domy
-🏚️|budova|dom|opustený dom|spustnutý dom
-🏠|budova|bydlisko|domov
-🏡|budova|bydlisko|dom so záhradou|domov|záhrada
-🏢|administratíva|budova|kancelárie|kancelárska budova
+🛖|búda|chatrč|chyža|domov|jurta|prístrešok
+🏘️|budova|cesta|dedina|domy|rodinnné domy|ulica
+🏚️|budova|dom|mesto|opustený dom|ošarpaná|ošarpaný dom|ruina|spustnutý dom|zemetrasenie
+🏠|budova|bydlisko|dedina|domov|predmestie|ranč|rodinný dom|usadiť sa
+🏡|budova|bydlisko|dedina|dom so záhradou|domov|predmestie|ranč|rodinný dom|strom|záhrada
+🏢|administratíva|administratívna budova|budova|kancelárie|kancelárska budova|mesto|práca|zamestnanie
 🏣|budova|japonská|pošta
-🏤|budova|európska|pošta
+🏤|budova|európska|mesto|pošta
 🏥|budova|doktor|lekár|nemocnica
-🏦|banka|budova
-🏨|budova|hotel
-🏩|hodinový|hotel|láska
-🏪|obchod|potraviny|tovar|zmiešaný tovar
-🏫|budova|škola
-🏬|budova|obchodný dom|obchody
-🏭|budova|továreň
+🏦|banka|budova|sporiteľňa
+🏨|budova|cestovanie|hotel
+🏩|budova|hodinový|hotel|láska|verejná|verejný dom
+🏪|budova|mesto|nonstop|obchod|potraviny|predajňa|tovar|večierka|zmiešaný tovar
+🏫|budova|škola|učiť sa|vzdelanie
+🏬|budova|nákupné centrum|obchodný dom|obchody|oddelenie
+🏭|budova|priemysel|továreň
 🏯|budova|hrad|japonský zámok
-🏰|budova|európska|zámok
-💒|kaplnka|romantika|svadba
+🏰|budova|európska|historický|hrad|zámok
+💒|budova|kaplnka|kostol|láska|romanca|romantika|svadba
 🗼|tokijská veža|tokio|veža
-🗽|sloboda|socha slobody
-⛪|budova|kostol|kresťan|kríž|náboženstvo
-🕌|budova|islam|mešita|moslim|náboženstvo
+🗽|amerika|cestovanie|mesto|new york|ny|sloboda|socha slobody|usa|veľkomesto
+⛪|budova|kaplnka|kostol|kresťanská|kríž|náboženstvo|viera
+🕌|budova|islam|mešita|moslim|náboženstvo|viera
 🛕|chrám|hinduista|hinduistický chrám|hinduizmus|svätyňa
-🕍|budova|chrám|náboženstvo|synagóga|žid
-⛩️|náboženstvo|šintó|šintoistická svätyňa|svätyňa
-🕋|islam|kába|moslim|náboženstvo
-⛲|fontána|vodomet|vodostrek
-⛺|kempovať|stan|táboriť
-🌁|hmla|hmlisto|počasie
-🌃|hviezda|noc s hviezdami|počasie
-🏙️|budova|mesto|mestská panoráma
-🌄|hora|počasie|ráno|slnko|východ slnka nad horami
-🌅|počasie|ráno|slnko|východ slnka
-🌆|mesto|mestská panoráma pri súmraku|panoráma|večer|západ slnka|zotmenie
-🌇|budova|počasie|slnko|západ slnka|zotmenie
-🌉|most v noci|noc|počasie
-🎠|kolotočový kôň|kôň
-🛝|hra|ihrisko|šmykľavka
-🎡|koleso|lunapark|ruské
-🎢|dráha|horská dráha|lunapark
-💈|holič|pútač holičstva|účes
-🎪|cirkus|šapito|stan
-🚂|lokomotíva|rušeň|vlak|železnica
-🚃|vagón|vlak|vozeň|železnica
-🚄|dopravný prostriedok|rýchlostný|rýchlovlak|šinkansen|vlak|železnica
-🚅|dopravný prostriedok|japonský rýchlovlak|rýchlostný|šinkansen|vlak|železnica
-🚆|dopravný prostriedok|vlak|železnica
-🚇|dopravný prostriedok|dráha|metro|podzemná
-🚈|dopravný prostriedok|ľahké metro|železnica
-🚉|dopravný prostriedok|stanica|vlak|železnica
-🚊|dopravný prostriedok|električka
-🚝|dopravný prostriedok|monorail
-🚞|dopravný prostriedok|horská|vozeň|železnica|zubačka
-🚋|dopravný prostriedok|električka|trolejbus|vozeň električky
-🚌|autobus|dopravný prostriedok
-🚍|autobus|dopravný prostriedok|prichádzajúce|prichádzajúci autobus
-🚎|autobus|dopravný prostriedok|električka|trolejbus
-🚐|autobus|dopravný prostriedok|minibus
-🚑|dopravný prostriedok|sanitka
-🚒|auto|dopravný prostriedok|hasiči|hasičské auto|oheň
-🚓|auto|dopravný prostriedok|hliadka|policajné auto|polícia
-🚔|auto|dopravný prostriedok|polícia|prichádzajúce policajné auto
-🚕|dopravný prostriedok|taxi|taxík
-🚖|dopravný prostriedok|prichádzajúce|prichádzajúci taxík|taxi
-🚗|auto|dopravný prostriedok
-🚘|automobil|dopravný prostriedok|prichádzajúce
-🚙|dopravný prostriedok|rekreačné|suv
-🛻|auto|pikap|zásobovanie
-🚚|dopravný prostriedok|kamión|zásobovacie auto|zásobovanie
-🚛|dopravný prostriedok|kamión|nákladné auto|náves|ťahač s návesom
-🚜|dopravný prostriedok|traktor
-🏎️|auto|pretekárske auto|preteky
-🏍️|motocykel|motorka|preteky
-🛵|motorka|skúter
-🦽|invalid|mechanický invalidný vozík|pomôcka|prístupnosť
-🦼|elektrický invalidný vozík|invalid|pomôcka|prístupnosť
-🛺|autorikša|motorikša|tuk‑tuk
-🚲|bicykel|dopravný prostriedok
-🛴|kolobežka
-🛹|doska|skejtbord
-🛼|koliesková|korčuľa
-🚏|autobusová zastávka|zastávka
-🛣️|cesta|diaľnica
-🛤️|vlak|železnica|železničná trať
-🛢️|barel|ropa|sud
-⛽|benzín|čerpacia stanica|čerpacie zariadenie|palivo|pumpa|stanica
-🛞|koleso|kruh|otáčanie|pneumatika
-🚨|auto|dopravný prostriedok|maják|otáčajúce sa|policajný maják|polícia|svetlo
-🚥|premávka|signál|svetlo|vodorovný semafor
-🚦|premávka|signál|svetlo|zvislý semafor
-🛑|osemuholník|stop|zastaviť|značka
-🚧|bariéra|práce na ceste
-🛟|bezpečnosť|koleso|pomoc|vznášanie|záchrana|záchranné koleso
-⛵|dopravný prostriedok|jachta|loď|more|plachetnica|stredisko
-🛶|kanoe|loď
-🚤|čln|loď|motorový čln|rýchly čln
-🛳️|dopravný prostriedok|loď|pasažier|zaoceánska loď
-⛴️|loď|trajekt
-🛥️|dopravný prostriedok|loď|motorová loď|motorový čln
-🚢|dopravný prostriedok|loď
-🛩️|dopravný prostriedok|lietadlo|malé lietadlo
-🛫|dopravný prostriedok|lietadlo|odlet lietadla|odlety|registrácia
-🛬|dopravný prostriedok|lietadlo|prílet lietadla|prílety|pristávajúce
+🕍|budova|chrám|judaizmus|náboženstvo|synagóga|viera|židovstvo
+⛩️|chrám|japonský|náboženstvo|šintó|šintoistická svätyňa|šintoistický chrám|svätyňa
+🕋|cestovanie|hadždž|islam|kába|moslimstvo|náboženstvo
+⛲|fontána|kúpele|vodomet|vodostrek
+⛺|cestovanie|dovolenka|kempovanie|kempovať|leto|príroda|stan|táboriť
+🌁|hmla|hmlisto|most|počasie
+🌃|hviezda|noc s hviezdami|obrázok|počasie
+🏙️|budova|mesto|mestská panoráma|obrázok|veľkomesto
+🌄|hora|obrázok|počasie|príroda|ráno|slnko|svit|východ slnka nad horami
+🌅|obrázok|počasie|príroda|ráno|slnko|svitanie|východ slnka
+🌆|budova|mesto|mestská panoráma pri súmraku|mestská panoráma pri zotmení|obrázok|panelák|panoráma|počasie|slnko|večer|západ slnka|zotmenie
+🌇|budova|mesto|obrázok|počasie|slnko|súmrak|západ slnka|zotmenie
+🌉|most v noci|noc|obrázok|počasie
+🎠|hody|kolotočový kôň|kôň|zábava
+🛝|hra|ihrisko|kĺzačka|šmýkačka|šmýkanie|šmykľavka
+🎡|hody|koleso|kolotoč|lunapark|ruské|zábavný park
+🎢|dráha|horská dráha|húsenková|kolotoč|lunapark|zábavný park
+💈|holič|kaderníctvo|pútač holičstva|špirála|stĺp v tvare špirály|strih|účes|vlasy
+🎪|budova|cirkus|šapito|stan|zábava
+🚂|cestovanie|dopravný prostriedok|lokomotíva|parný|rušeň|vlak|železnica
+🚃|cestovanie|doprava|dopravný prostriedok|električka|elektrický|trolejbus|vagón|vlak|vozeň električky|železnica
+🚄|cestovanie|dopravný prostriedok|rýchlostný|rýchlovlak|šinkansen|tgv|vlak|železnica
+🚅|cestovanie|dopravný prostriedok|japonský|oblá časť|rýchlostný vlak s oblou prednou časťou|rýchlovlak|šinkansen|vlak|železnica
+🚆|cestovanie|doprava|dopravný prostriedok|lokomotíva|rušeň|vlak|železnica
+🚇|cestovanie|dopravný prostriedok|dráha|metro|podzemná|tunel
+🚈|cestovanie|doprava|dopravný prostriedok|električka|ľahké metro|mestský vlak|vlak|železnica
+🚉|dopravný prostriedok|elektrický vlak|rušeň|stanica|vlak|železnica
+🚊|cestovanie|doprava|dopravný prostriedok|električka|trolejbus|vozidlo
+🚝|doprava|dopravný prostriedok|jednokoľajka|jednokoľajová|monorail|rýchlovlak|visutá dráha
+🚞|dopravný prostriedok|horská|vlak|vozeň|výlet|železnica|zubačka
+🚋|cestovanie|dopravný prostriedok|električka|trolejbus|vagón električky|vozeň električky
+🚌|autobus|cestovanie|doprava|dopravný prostriedok|škola|vozidlo
+🚍|autobus|cestovanie|dopravný prostriedok|prichádzajúce|prichádzajúci autobus|vozidlo
+🚎|autobus|cestovanie|doprava|dopravný prostriedok|električka|trolejbus|vozidlo
+🚐|autobus|cestovanie|dopravný prostriedok|minibus|van|vozidlo
+🚑|dopravný prostriedok|lekár|nehoda|pohotovosť|prvá pomoc|sanitka|úraz|vozidlo|záchranka
+🚒|auto|dopravný prostriedok|hasiči|hasičské auto|oheň|požiarnicke auto|vozidlo
+🚓|auto|dopravný prostriedok|hliadka|policajné auto|polícia|siréna|vozidlo
+🚔|auto|dopravný prostriedok|polícia|prichádzajúce policajné auto|vozidlo
+🚕|auto|cestovanie|doprava|dopravný prostriedok|taxi|taxík|vozidlo
+🚖|cestovanie|dopravný prostriedok|prichádzajúce|prichádzajúci taxík|taxi
+🚗|auto|červené|dopravný prostriedok|osobné|riadiť|šoférovať|vozidlo
+🚘|automobil|červené|cestovanie|doprava|dopravný prostriedok|osobné|prichádzajúce|vozidlo
+🚙|auto|cestovanie|dopravný prostriedok|jazda|rekreačné|šoférovanie|suv|vozidlo
+🛻|auto|doprava|nákladiak|nákladné auto|pick-up|pikap|preprava|vozidlo|zásobovanie
+🚚|doprava|dopravný prostriedok|kamión – zásobovanie|šoférovanie|vozidlo|zásobovacie auto|zásobovanie
+🚛|doprava|dopravný prostriedok|kamión|náklaďák|nákladné auto s otáčajúcou sa nápravou|náves|sťahovanie|ťahač s návesom|transport
+🚜|dedina|dopravný prostriedok|farma|gazdovstvo|statok|traktor|vozidlo
+🏎️|auto|červené|cestovanie|f1|formula|pretekárske auto|preteky|šport|vozidlo
+🏍️|cestovanie|dopravný prostriedok|motocykel|motorka|preteky
+🛵|doprava|dopravný prostriedok|moped|motorka|skúter|vozidlo
+🦽|hendikep|invalidita|mechanický invalidný vozík|pomôcka|postihnutie|prístupnosť
+🦼|elektrický invalidný vozík|handicap|hendikep|invalidita|pomôcka|postihnutie|prístupnosť
+🛺|autorikša|motorikša|rikša|tuk‑tuk
+🚲|bicykel|cestný bicykel|doprava|dopravný prostriedok|jazda|jazdenie|spinning|vozidlo
+🛴|dopravný prostriedok|kolobežka|šport
+🛹|doska|kolieska|skateboard|skejťák|skejtbordista|skejtbordistka|skejtbordový|šport
+🛼|koliesková|korčuľa|korčuľovanie|korčuľovať sa|šport
+🚏|autobusová zastávka|cestovanie|doprava|zastávka
+🛣️|cesta|cestovanie|diaľnica|ulica
+🛤️|koľaje|koľajnice|vlak|železnica|železničná trať
+🛢️|barel|nafta|olejový sud|ropa|sud
+⛽|benzín|čerpacia stanica|čerpacie zariadenie|cestovanie|diesel|nafta|palivo|pumpa|stanica
+🛞|auto|koleso|kruh|otáčanie|pneumatika|vozidlo
+🚨|auto|dopravný prostriedok|maják|otáčajúce sa|policajný maják|polícia|svetlo|výstraha
+🚥|cestovanie|križovatka|premávka|semafor|signál|svetlo|vodorovný semafor
+🚦|križovatka|premávka|semafor|signál|svetlo|zvislý semafor
+🛑|osemuholník|stop|zastaviť|značka zastavenia
+🚧|bariéra|blokovať|práce na ceste|uzávera|zábrana
+🛟|bezpečnosť|bója|koleso|plávanie|pomoc|vznášanie|záchrana|záchranné koleso|záchranný kruh
+⛵|cestovanie|čln|dopravný prostriedok|jachta|loď|more|plachetnica|plachtiť|rezort|stredisko
+🛶|čln|doprava|kanoe|loďka
+🚤|cestovanie|čln|jazero|leto|loď dopravný prostriedok|luxus|miliónar|motorový čln|rýchlostný čln|rýchly čln
+🛳️|cestovanie|dopravný prostriedok|dovolenka|loď|parník|pasažier|výletná loď|zaoceánska loď
+⛴️|doprava|dopravný prostriedok|loď|oceán|plaviť sa|rieka|trajekt
+🛥️|cestovanie|čln|dopravný prostriedok|loď|motorová loď|motorový čln|oceán
+🚢|dopravný prostriedok|loď|parník|pasažier|titanic
+🛩️|cestovanie|dopravný prostriedok|letisko|lietadlo|malé lietadlo
+🛫|cestovanie|check-in|dopravný prostriedok|letisko|lietadlo|odlet lietadla|odlety|registrácia
+🛬|cestovanie|dopravný prostriedok|letisko|lietadlo|prílet lietadla|prílety|pristávajúce
 🪂|padák|paragliding|parašutizmus|plachtenie|závesné lietanie|zoskok s padákom
-💺|kreslo|sedadlo|stolička
-🚁|dopravný prostriedok|helikoptéra|vrtuľník
-🚟|dopravný prostriedok|lanovka|závesná|železnica
-🚠|dopravný prostriedok|gondola|hora|horská lanovka|lanovka
-🚡|dopravný prostriedok|gondola|kabína|lanovka|lanovková doprava|visutá
-🛰️|dopravný prostriedok|družica|vesmír
-🚀|dopravný prostriedok|raketa|vesmír
-🛸|lietajúci tanier|ufo|ufóni
+💺|cestovanie|kreslo|sedadlo|stolička|vlak
+🚁|cestovanie|doprava|dopravný prostriedok|helikoptéra|vrtuľník
+🚟|cestovanie|doprava|dopravný prostriedok|lanovka|lanovková železnica|závesná|železnica
+🚠|cestovanie|dopravný prostriedok|gondola|hora|horská lanovka|kabínka|lanovka|vrchol
+🚡|cestovanie|dopravný prostriedok|gondola|kabína|lanovka|lanovková doprava|visutá
+🛰️|dopravný prostriedok|družica|komunikácia|satelit|veda|vesmír|výskum
+🚀|aeroplán|astronautika|cestovanie|dopravný prostriedok|kozmos|raketa|štart|vesmír
+🛸|lietajúci tanier|mimozemský|mimozešťania|ufo|ufóni
 🛎️|hotelový sluha|recepčný zvonček|zvonček
-🧳|baliť|batožina|cesta|cestovať|dovolenka
-⌛|meranie času|piesok|presýpacie hodiny
-⏳|bežiace presýpacie hodiny|meranie času|piesok
-⌚|hodinky|hodiny
-⏰|budík|hodiny
-⏱️|hodiny|stopky
-⏲️|časovač|hodiny|meranie času
-🕰️|hodiny|kozubové hodiny
-🕛|00|12:00|dvanásť|hodín
-🕧|12:30|30|dvanásť|hodín|pol jednej|tridsať
-🕐|00|1:00|hodiny|jedna hodina
-🕜|1:30|30|hodiny|pol druhej|tridsať
-🕑|00|2:00|dve|hodiny
-🕝|2:30|30|dve|hodiny|pol tretej|tridsať
-🕒|00|3:00|hodiny|tri
-🕞|3:30|30|hodiny|pol štvrtej|tridsať
-🕓|00|4:00|hodiny|štyri
-🕟|30|4:30|hodiny|pol piatej|štyri|tridsať
-🕔|00|5:00|hodiny|päť hodín
-🕠|30|5:30|hodiny|päť|pol šiestej|tridsať
-🕕|00|6:00|hodiny|šesť hodín
-🕡|30|6:30|hodiny|pol siedmej|šest|tridsať
-🕖|00|7:00|hodiny|sedem hodín
-🕢|30|7:30|hodiny|pol ôsmej|sedem|tridsať
-🕗|00|8:00|hodiny|osem hodín
-🕣|30|8:30|hodiny|osem|pol deviatej|tridsať
-🕘|00|9:00|deväť hodín|hodiny
-🕤|30|9:30|deväť|hodiny|pol desiatej|tridsať
-🕙|00|10:00|desať hodín|hodiny
-🕥|10:30|30|desať|hodiny|pol jedenástej|tridsať
-🕚|00|11:00|hodiny|jedenásť hodín
-🕦|11:30|30|hodiny|jedenásť|pol dvanástej|tridsať
-🌑|mesiac|nov|počasie|tmavý|vesmír
-🌒|dorastajúci polmesiac|mesiac|narastajúci|počasie|polmesiac|vesmír
-🌓|mesiac|počasie|prvá štvrť mesiaca|štvrť|vesmír
-🌔|dorastajúci mesiac|mesiac|narastajúci|počasie|vesmír|vypuklý
-🌕|mesiac|počasie|spln|vesmír
-🌖|mesiac|počasie|ubúdajúci|vesmír|vypuklý
-🌗|mesiac|počasie|posledná štvrť mesiaca|štvrť|vesmír
-🌘|mesiac|počasie|polmesiac|ubúdajúci|vesmír
-🌙|mesiac|počasie|polmesiac|vesmír
-🌚|mesiac|nov s tvárou|počasie|tvár|vesmír
-🌛|mesiac v prvej štvrti s tvárou|počasie|štvrť|tvár|vesmír
-🌜|mesiac v poslednej štvrti s tvárou|počasie|štvrť|tvár|vesmír
-🌡️|počasie|teplomer
-🌝|jas|mesiac|počasie|spln s tvárou|tvár|vesmír
-🌞|jas|počasie|slnko s tvárou|tvár|vesmír
-🪐|planéta s prstencom|saturn
-⭐|biela stredná hviezda|hviezda
-🌟|hviezda|jas|trblietať|záblesk|žiariaca hviezda|žiariť
-🌠|hviezda|padajúca|vesmír
-🌌|mliečna dráha|počasie|vesmír
-⛅|oblak|počasie|slnko za oblakom
-⛈️|dážd|hrom|oblak s bleskom a dažďom|počasie
-🌤️|oblak|počasie|slnko za malým oblakom
-🌥️|oblak|počasie|slnko za veľkým oblakom
-🌦️|dážď|oblak|počasie|slnko za dažďovým oblakom
-🌧️|dážď|dažďový oblak|oblak|počasie
-🌨️|oblak|počasie|snehový oblak|studený
-🌩️|blesk|oblak s bleskom|počasie
-🌪️|oblak|počasie|tornádo|vzdušný vír
-🌫️|hmla|oblak|počasie
-🌬️|fúkanie|oblak|počasie|tvár|vietor
-🌀|cyklón|kolotoč|počasie|tajfún|točiaca sa hlava
-🌈|dážď|dúha|počasie
-🌂|dážď|dáždnik|oblečenie|počasie|zatvorený dáždnik
-⛱️|dážď|počasie|slnečník|slnko
-⚡|blesk|elektrina|napätie|nebezpečenstvo|prúd|vysoké napätie
-⛄|počasie|snehuliak bez snehu|studené
-🔥|oheň|plameň
-💧|kvapka|počasie|pot|studené
-🌊|morská vlna|oceán|počasie|vlna|voda
-🎃|halloweenska tekvica|halloweenská tekvica|oslava|svietnik|tekvica
-🎄|oslava|stromček|vianoce|vianočný stromček
-🎆|ohňostroj|oslava
-🎇|iskra|ohňostroj|oslava|prskavka
-🧨|dynamit|ohňostroj|petarda|výbušnina
-🎈|balónik|oslava
-🎉|konfety|oslava|párty|salónka
-🎊|guľa|konfetová guľa|konfety|oslava
+🧳|balenie|baliť sa|batožina|cesta|cestovanie|cestovať|cestovná horúčka|dovolenka|kufor na kolieskach|prázdniny
+⌛|časovač|hodiny|meranie času|piesočné|piesok|presýpacie hodiny
+⏳|bežiace presýpacie hodiny|časovač|meranie času|piesok|presýpacie hodiny s padajúcim pieskom
+⌚|čas|hodinky|hodiny
+⏰|budík|čakanie|čas|hodiny|neskoro|zvonenie
+⏱️|čas|hodiny|šport|stopky
+⏲️|budík|časovač|hodiny|meranie času
+🕰️|čas|hodiny|kozubové hodiny|krbové hodiny
+🕛|00|12:00|čas|dvanásť|hodín|polnoc|poludnie
+🕧|00:30|12:30|30|čas|dvanásť|hodín|pol jednej|tridsať
+🕐|00|1:00|13:00|čas|hodiny|jedna hodina
+🕜|1:30|13:30|30|čas|hodiny|pol druhej|tridsať
+🕑|00|14:00|2:00|čas|dve|hodiny
+🕝|14:30|2:30|30|čas|dve|hodiny|pol tretej|tridsať
+🕒|00|15:00|3:00|čas|hodiny|tri
+🕞|15:30|3:30|30|čas|hodiny|pol štvrtej|tridsať
+🕓|00|16:00|4:00|čas|hodiny|štyri
+🕟|16:30|30|4:30|čas|hodiny|pol piatej|štyri|tridsať
+🕔|00|17:00|5:00|čas|hodiny|päť hodín
+🕠|17:30|30|5:30|čas|hodiny|päť|pol šiestej|tridsať
+🕕|00|18:00|6:00|čas|hodiny|šesť hodín
+🕡|18:30|30|6:30|čas|hodiny|pol siedmej|šest|tridsať
+🕖|00|19:00|7:00|čas|hodiny|sedem hodín
+🕢|19:30|30|7:30|čas|hodiny|pol ôsmej|sedem|tridsať
+🕗|00|20:00|8:00|čas|hodiny|osem hodín
+🕣|20:30|30|8:30|čas|hodiny|osem|pol deviatej|tridsať
+🕘|00|21:00|9:00|čas|deväť hodín|hodiny
+🕤|21:30|30|9:30|čas|deväť|hodiny|pol desiatej|tridsať
+🕙|00|10:00|22:00|čas|desať hodín|hodiny
+🕥|10:30|22:30|30|čas|desať|hodiny|pol jedenástej|tridsať
+🕚|00|11:00|23:00|čas|hodiny|jedenásť hodín
+🕦|11:30|23:30|30|čas|hodiny|jedenásť|pol dvanástej|tridsať
+🌑|mesiac|noc|nočná obloha|nov|počasie|príroda|tmavý|vesmír
+🌒|dorastajúci|mesiac|narastajúci|nočná obloha|počasie|polmesiac|vesmír
+🌓|dorastajúci|mesiac v prvej štvrtine|noc|nočná obloha|počasie|príroda|prvá štvrť mesiaca|štvrť|štvrtina|vesmír
+🌔|dorastajúci mesiac|mesiac|narastajúci|počasie|príroda|vesmír|vypuklý
+🌕|mesiac|nočná obloha|obloha|počasie|spln|vesmír
+🌖|cúvajúci mesiac|mesiac|noc|nočná obloha|počasie|ubúdajúci|vesmír|vypuklý
+🌗|cúva|mesiac v poslednej štvrtine|noc|nočná|počasie|polmesiac|posledná štvrť mesiaca|príroda|štvrť|štvrtina|vesmír
+🌘|cúvajúci|mesiac|noc|nočná obloha|počasie|polmesiac|príroda|ubúdajúci|vesmír
+🌙|dorastá|mesiac|počasie|polmesiac|príroda|ramadán|vesmír
+🌚|mesiac v nove|nočná obloha|nov s tvárou|obloha|počasie|tvár|vesmír
+🌛|dorastá|mesiac v prvej štvrti s tvárou|mesiac v prvej štvrtine s tvárou|počasie|príroda|štvrť|štvrtina|tvár|vesmír
+🌜|cúvajúci|mesiac v poslednej štvrti s tvárou|mesiac v poslednej štvrtine s tvárou|noc|nočná obloha|počasie|štvrť|štvrtina|tvár|ubúdajúci|vesmír
+🌡️|horúčka|počasie|teplomer|teplota
+🌝|jas|mesiac|noc|nočná obloha|počasie|príroda|spln s tvárou|tvár|vesmír
+🌞|deň|jas|počasie|príroda|slnečný|slnko s tvárou|teplo|tvár|vesmír
+🪐|planéta s prstencom|prstenec|saturn
+⭐|astronómia|biela stredná hviezda|hviezda|hviezdy|stredná hviezda
+🌟|hviezda|jas|noc|nočná|príroda|trblietajúca sa hviezda|trblietajúce sa|trblietanie|trblietať|záblesk|žiariaca hviezda|žiariť
+🌠|hviezda|kométa|padajúca|vesmír
+🌌|mliečna dráha|noc|nočná obloha|obloha|počasie|vesmír
+⛅|oblačno|oblak|počasie|polooblačno|slnko za oblakom|zamračené
+⛈️|búrka|dážd|hrom|oblak s bleskom a dažďom|počasie|príroda
+🌤️|oblak|počasie|polojasno|polooblačno|slnečno|slnko za malým oblakom
+🌥️|oblačno|oblak|počasie|príroda|slnko za veľkým oblakom|zamračené
+🌦️|dážď|oblak|počasie|prehánky|príroda|slnko za dažďovým oblakom
+🌧️|dážď|dažďový oblak|oblačno|oblak|počasie|prší
+🌨️|chladno|mráz|oblak|počasie|príroda|snehový oblak|sneží|studený|zima
+🌩️|blesk|búrka|oblak s bleskom|počasie
+🌪️|oblak|počasie|príroda|tornádo|vietor|vzdušný vír
+🌫️|hmla|oblak|počasie|príroda
+🌬️|fujavica|fúkanie|oblak|počasie|príroda|tvár|vietor|zima
+🌀|cyklón|kolotoč|počasie|špirála|tajfún|točiaca sa hlava|tornádo
+🌈|bisexuál|dážď|dúha|farebná dúha|gay|lesba|lgbtqia|počasie|pride|príroda|transsexuál
+🌂|dážď|dáždnik|fialový|oblečenie|počasie|zatvorený dáždnik
+⛱️|dážď|leto|pláž|počasie|slnečník na zemi|slnko
+⚡|blesk|búrka|elektrické|elektrina|hrom|napätie|nebezpečenstvo|príroda|prúd|vysoké napätie|zásah prúdom
+⛄|počasie|snehuliak bez snehu|studené|zima
+🔥|horenie|horúci|oheň|plameň|požiar|prostriedok|teplo
+💧|komixové|kvapka|počasie|pot|príroda|slza|smútok|studené|tekutina|voda
+🌊|cunami|kanagawa|morská vlna|oceán|počasie|surfovať|vlna|voda
+🎃|dyňa|halloweenska dyňa|halloweenska tekvica|halloweenská tekvica|lampáš|oslava|svetlonoš|svietnik|tekvica|vyrezávaná
+🎄|darčeky|oslava|ozdoby|stromček|vianoce|vianočný stromček
+🎆|bum|ohňostroj|oslava|výbuch|zábava
+🎇|iskra|obrázok|ohňostroj|oslava|prskavka|silvester
+🧨|bomba|buchnúť|dynamit|explodovať|explózia|iskra|oheň|ohňostroj|petarda|prasknúť|prasknutie|rozbuška|svetlica|svetlo|výbuch|vybuchnúť|výbušnina|zapáliť
+🎈|balónik|červený|narodeniny|oslava|slávnosť
+🎉|hurá|konfety|narodeniny|oslava|párty|salónka|super
+🎊|guľa|konfetová guľa|konfety|lopta|narodeniny|oslava|párty
 🎋|japonský|oslava|stromček|tanabata|zástava
-🎍|bambus|borovicová dekorácia|ihličie|japonské|oslava|rastlina
+🎍|bambus|borovicová dekorácia|ihličie|ikebana|japonské|oslava|rastlina
 🎎|bábka|festival|japonské bábiky|japonský|oslava
-🎏|kapor|koinobori|oslava|vlajka
-🎐|oslava|veterná zvonkohra|vietor|zvonec|zvonkohra
-🎑|mesiac|obrad|oslava|slávnosti mesiaca
-🧧|červená obálka|chung-pao|darček|peniaze|šťastie
-🎀|oslava|stuha
-🎁|balík|darček|oslava|zabalený
-🎗️|oslava|pripomienka|stužka
+🎏|deň detí|japonský|kapor|koinobori|oslava|ryby|vlajka v tvare kapra|zástava
+🎐|oslava|veterná zvonkohra|vietor|zvonec|zvoniec|zvonkohra
+🎑|mesačný obrad|mesiac|obrad|obrázok|oslava|slávnosti mesiaca
+🧧|ang pow|bohatstvo|červená obálka|červený balíček|chung-pao|čínsky nový rok|darček|hóngbāo|lai see|novoročná červená obálka|peniaze|pre šťastie|šťastie|šťastné peniaze
+🎀|mašľa|oslava|ružová|stuha
+🎁|balík|darček|oslava|prekvapenie|vianoce|zabalený
+🎗️|oslava|pamiatka|pripomienka|stužka
 🎟️|lístok|vstupenka|vstupenky
-🎫|lístok|vstupenka
-🎖️|armáda|oslava|vojenská medaila|vyznamenanie
-🏆|cena|trofej
-🏅|medaila|športová medaila|víťaz
-🥇|medaila|prvé miesto|šport|víťaz|zlatá medaila|zlato
-🥈|druhé miesto|medaila|šport|strieborná medaila|striebro
-🥉|bronzová medaila|medaila|šport|tretie miesto
-⚽|futbal|lopta
-⚾|bejzbal|lopta
-🥎|loptička|rukavica|softbal
-🏀|basketbal|kôš|lopta
-🏐|hra|lopta|volejbal
-🏈|americký|futbal|lopta
-🏉|futbal|lopta|ragby
-🎾|lopta|raketa|tenis
-🥏|disk|lietajúci disk|tanier
-🎳|bowling|guľa|hra
-🏏|hra|kriket|lopta|pálka
-🏑|hokejka|hra|lopta|pole|pozemný hokej
-🏒|hokejka|hra|ľadový hokej|puk
-🥍|bránka|lakros|loptička|palica
-🏓|hra|lopta|raketa|stolný|tenis
-🏸|bedminton|hra|loptička|raketa
-🥊|boxovacia rukavica|rukavica|šport
-🥋|bojové umenia|džudo|karate|šport|taekwondo|úbor na bojové umenie
-🥅|bránka|gól|sieť|šport
-⛳|golf|jamka|zástava v jamke
-⛸️|korčuľa|ľad
-🎣|ryba|udica
+🎫|lístok|ústrižok|útržok|vstupenka
+🎖️|armáda|medaila|medajla|odznak|oslava|vojenská|vyznamenanie
+🏆|cena|pohár|šampión|titul|trofej|víťazný pohár|víťazstvo|výhra
+🏅|cena|hviezda|medaila|ocenenie|športová medaila|trikolóra|víťazstvo|výhra|zlato
+🥇|medaila za 1. miesto|miesto|prvé|šampión|šport|titul|trikolóra|víťazstvo|výhra|zlatá medaila|zlato
+🥈|druhé|medaila za 2. miesto|miesto|šport|strieborná medaila|striebro|trikolóra
+🥉|bronzová medaila|medaila za 3. miesto|miesto|šport|tretie|trikolóra
+⚽|futbal|gól|lopta|messi|ronaldo|šport|zápas
+⚾|baseball|bejzbal|lopta|loptička|šport
+🥎|lopta|loptička|nadhodenie|podanie|rukavica|softbalová lopta|šport
+🏀|basketbal|kôš|lopta|obruč|šport
+🏐|hra|lopta|šport|volejbal
+🏈|americký|futbal|lopta|šiška|šport|super bowl
+🏉|americký futbal|futbal|lopta|ragby|rugby|šport
+🎾|lopta|raketa|šport|tenis
+🥏|aerodynamický|chytanie|chytať|disk|frisbee|hádzanie|hádzať|hrať sa|let|lietajúci disk|lietajúci tanier|rekreácia|šport|tanier|ultimate frisbee
+🎳|bowling|guľa|hra|kolky|kuželky|šport|zábava
+🏏|hra|kriket|lopta|palica|pálka|šport
+🏑|hokejka|hra|lopta|pole|pozemný hokej|šport
+🏒|hokejka a puk|hra|ľadový hokej|puk|šport
+🥍|bránka|gól|lakroska|lopta|loptička|palica
+🏓|hra|lopta|ping pong|raketa|šport|stolný|tenis
+🏸|badminton|bedminton|hra|košík|loptička|raketa|šport|zápas
+🥊|boxovacia rukavica|červená|ring|rukavica|šport
+🥋|bojové umenia|džudo|karate|kimono|šport|taekwondo|úbor na bojové umenie
+🥅|bránka|gól|hokej|sieť|šport
+⛳|červená vlajka|golf|jamka|šport|zástava v jamke
+⛸️|kĺzanie|korčuľa|korčuľovanie|krasokorčuľovanie|ľad|šport
+🎣|chytanie rýb|ryba|rybolov|šport|udica|zábava
 🤿|okuliare|potápačská maska|potápačské okuliare|potápanie|šnorchel|šnorchlovanie
-🎽|beh|bežecké tričko|šerpa|tričko
-🎿|lyže|sneh
-🛷|sane|sánky
-🥌|curlingový kameň|kameň
-🎯|cieľ|hra|oko|presný stred|presný zásah|šípka|stred|zásah
+🎽|atletika|beh|bežecké tričko|šerpa|šport|tričko
+🎿|cestovanie|free ride|lyže|lyžiarky|skialp|sneh|šport
+🛷|boby|sane|sánkovať sa|sánky|sneh|šport|tobogán|zima
+🥌|curlingový kameň|hra|kameň|ľad|šport|zimný
+🎯|cieľ|hra|oko|presný stred|presný zásah|šípka|šport|stred|terč|úspech|zásah
 🪀|cievka|hračka|jo-jo|jojo|kolísanie
 🪁|let|lietanie|papierový šarkan|púšťanie|stúpanie|vzlietnutie
-🔫|nástroj|pištoľ|revolver|vodná pištoľ|zbraň
-🎱|8|biliardová guľa č. 8|guľa č. 8|hra|osem
-🔮|fantasy|krištáľová guľa|rozprávka|veštenie
-🪄|čarodejníčka|čarodejník|kúzelná palička|kúzlo
-🎮|hra|ovládač|videohra
-🕹️|hra|joystick|páka|videohra
-🎰|hazard|hra|výherný automat|výhra
-🎲|hracia kocka|kocka|kocky
-🧩|dieliky|puzzle|skladačka
-🧸|hračka|medvedík|plyšiak|plyšový
-🪅|oslava|párty|piñata|večierok
+🔫|hračkárska pištoľ|nástroj|pištoľ|revolver|vodná pištoľ|zbraň
+🎱|8|biliárd|biliardová guľa č. 8|čierna|guľa č. 8|hra|osem|šport
+🔮|fantasy|guľa|krištáľová guľa|kryštálová|kryšťalová|nástroj|rozprávka|sklená|veštenie
+🪄|čarodejníčka|čarodejník|kúzelná palička|kúzlo|palička
+🎮|hra|ovládač|počítač|videohra
+🕹️|hra|joystick|páka|počítač|videohra|zábava
+🎰|automat|gambling|hazard|hra|kasíno|výherná|výherný automat|výhra
+🎲|hracia kocka|kocka|kocky|zábava
+🧩|dieliky|kľúč|kúsok|prepojený|puzzle|skladačka|zapadať do seba
+🧸|hračka|hrať sa|macko|mäkkučký|maznáčik|medveď|medvedík|plyšiak|plyšová|plyšový|roztomilý|vypchatý
+🪅|cinco de mayo|mexické|oslava|párty|pinata|piňata|piñata|sladkosti|večierok
 🪩|blyšťanie|disko|párty|tanec|zrkadlová guľa
 🪆|bábika|matrioška|matriošky|ruská
 ♟️|figúrka|pešiak|šach
-🃏|hracie|karta|žolík
-🀄|červený|hra|madžongový červený drak
-🎴|hracie|japonská|japonské karty|karta|kvetová
-🎭|divadelné|divadlo|maska|umenie
-🖼️|maľba|múzeum|obraz|rám|umenie|zarámovaný obraz
-🎨|maľba|maliarska paleta|múzeum|paleta|umenie
-🧵|cievka nite|ihla|niť|šitie|vlákno
-🪡|ihla|krajčír|šitie|stehy|vyšívanie
-🧶|háčkovanie|klbko|pletenie
+🃏|divoká karta|hracie|karta|zábava|žolík
+🀄|červený|hra|madžongový červený drak|mahjongový červerný drak
+🎴|hracie|japonská|japonské hracie karty|japonské karty|karta|kvetová
+🎭|divadelné|divadlo|maska|muzikál|opera|povolanie|scéna|shakespeare|umenie
+🖼️|galéria|maľba|múzeum|obraz|rám|umenie|zarámovaný obraz
+🎨|farebná|galéria|maľba|maliarska paleta|múzeum|paleta|umenie
+🧵|bavlnka|cievka nite|ihla|krajčírstvo|motúz|niť|nitka|povrázok|šiť|šitíčko|šitie|šňúrka|vlákno
+🪡|ihla|krajčír|niť|šitie|stehy|vlákno|vyšívanie
+🧶|bavlnka|háčkovanie|háčkovať|klbko|pletenie|pliesť|priadza|štrikovanie|štrikovať|vlákno|vlna|zmotať
 🪢|lano|povraz|šnúra|uzol|zamotané|zaviazať
-👓|oko|okuliare
+👓|oblečenie|oko|okuliare|sklá
 🕶️|oko|okuliare|slnečné okuliare|tmavé
-🥽|ochrana očí|ochranné okuliare|plávanie|zváranie
-🥼|doktor|laboratórny plášť|pokus|vedec
+🥽|akvalung|ochrana očí|ochranné okuliare|plávanie|plavecké okuliare|potápačské okuliare|potápanie|šport|zváračské okuliare|zváranie
+🥼|biely plášť|doktorka|dr.|experiment|laboratórny plášť|lekárka|oblečenie|odev|plášť|pokus|vedec|vedkyňa
 🦺|bezpečnosť|bezpečnostná vesta|núdza|reflexná|vesta|výstražná
-👔|kravata|oblečenie
-👕|košeľa|oblečenie|tričko
-👖|gate|nohavice|oblečenie|rifle
-🧣|krk|šál
-🧤|rukavice
-🧥|bunda|kabát
-🧦|pančucha|ponožky
-👗|oblečenie|šaty
-👘|kimono|oblečenie
+👔|kravata|nakupovanie|oblečenie|obliekanie|povolanie|práca|zamestnanie
+👕|golier|košeľa|nákup|nakupovanie|oblečenie|tričko
+👖|džínsy|gate|nakupovanie|nohavice|oblečenie|rifle
+🧣|chlad|krk|šál|šatka|uviazaný|uzol|zelený|zima
+🧤|modrá rukavica|rukavica|rukavice
+🧥|bunda|červená|chlad|kabát|páperová bunda|vetrovka|zima
+🧦|oblečenie|pančucha|pár ponožiek|ponožky
+👗|bál|dámske šaty|oblečenie|ples|šaty
+👘|japonsko|kimono|oblečenie|pohodlie
 🥻|oblečenie|odev|sárí|šaty
-🩱|dámske plavky|jednodielne plavky
+🩱|dámske plavky|jednodielne plavky|plavky
 🩲|bielizeň|jednodielne|plavky|slipy|spodky
 🩳|jednodielne|kraťasy|krátke nohavice|plavky|šortky|spodky|trenírky
-👙|bikini|oblečenie|plávanie|plávať
-👚|dámske oblečenie|oblečenie|žena
-🪭|chladenie|hanblivosť|horúco|kmitavý pohyb|skladací vejár|tanec|vejár
-👛|koruna|oblečenie|peňaženka
-👜|kabelka|oblečenie|taška
-👝|malá kabelka|oblečenie|taška
-🛍️|hotel|nákupné tašky|nakupovanie|taška
-🎒|aktovka|batoh|škola|školský batoh
-🩴|pláž|sandále|žabky
-👞|muž|oblečenie|pánska topánka|topánka
-👟|bežecká topánka|oblečenie|športové|teniska|topánka
-🥾|kempovať|pohorka|stanovať|táboriť|turistika
-🥿|balerína|balerínka|cvička|papučka
-👠|oblečenie|podpätok|topánka na podpätku|žena
-👡|dámsky sandál|oblečenie|sandál|topánka|žena
-🩰|baletné špice|tanec
-👢|čižma|dámska čižma|oblečenie|obuv|žena
+👙|bazén|bikini|dámske|leto|more|oblečenie|plávanie|plávať|plavky|pláž
+👚|blúza|blúzka|dámske oblečenie|dámske šaty|golier|oblečenie|polo tričko|ružová|žena|ženské šaty
+🪭|chladenie|flirtovať|hanblivosť|horúco|kmitavý pohyb|skladací vejár|tanec|vejár
+👛|kabelka|koruna|minca|móda|oblečenie|peňaženka|peniaze
+👜|dáma|doplnky|kabelka|nakupovanie|nákupy|oblečenie|taška
+👝|kabelka|malá kabelka|oblečenie|peňaženka|taška
+🛍️|darčeková taška|hotel|nákupné tašky|nakupovanie|nákupy|taška
+🎒|aktovka|batoh|plecniak|škola|školský batoh|školský ruksak|taška|učenie|vzdelanie
+🩴|flip flopy|pláž|sandále|šľapky|žabky
+👞|hnedá|kožená|muž|noha|oblečenie|obuv|pánska topánka|topánka
+👟|beh|bežecká topánka|botaska|oblečenie|športové|teniska|tennis|topánka
+🥾|cestovanie|kempovanie|kempovať|pešia túra|šport|stanovanie|stanovať|táborenie|táboriť|topánka|túra
+🥿|balerína|balerínka|balerínky|baleríny|bez podpätkov|cvička|ľahká topánka|nazúvacie|nízka obuv|nízky|papučka|plochá obuv|pohodlie|pohodlné|rovná podrážka
+👠|lodička|móda|nakupovanie|oblečenie|podpätok|topánka na podpätku|žena
+👡|dámska šľapka|dámsky sandál|nakupovanie|oblečenie|sandál|topánka|žena
+🩰|balerína|baletné špice|tanec
+👢|čižma|dámska čižma|kozačka|nakupovanie|oblečenie|obuv|topánka|žena
 🪮|afro|česať|hrebeň na kučeravé vlasy|vlasy
-👑|koruna|kráľovná|oblečenie
-👒|dámsky klobúk|klobúk|oblečenie|žena
-🎩|cylinder|klobúk|oblečenie|vysoký
-🎓|čiapka|klobúk|oblečenie|oslava|promócia|promočná čiapka
-🧢|bejzbalová čiapka|šiltovka
-🪖|armáda|helma|prilba|vojak|vojenská helma|vojsko
-⛑️|helma|kríž|pomoc|prilba|tvár|záchranárska helma
-📿|koráliky|modlitba|modlitebné koráliky|náhrdelník|ruženec
-💄|kozmetika|makeup|rúž
-💍|diamant|prsteň|romanca
-💎|diamant|drahokam|klenot|romanca
+👑|klenot|koruna|korunovácia|kráľovná|oblečenie|rozprávka|šľachta
+👒|dámsky klobúk|derby|doplnok|dostihy|klobúk|móda|oblečenie|oslava|záhradná party|žena
+🎩|čierny klobúk|cylinder|formálny|klobúk|kúzelník|oblečenie|vysoký
+🎓|čiapka|klobúk|oblečenie|oslava|promócia|promócie|promočná čiapka|škola|univerzita|vysoká|vzdelanie
+🧢|bejzbalová čiapka|čiapka|oblečenie|okrúhly šilt|šiltovka
+🪖|armáda|helma|prilba|vojak|vojenská helma|vojna|vojsko
+⛑️|čapica|helma s bielym krížom|kríž|pomoc|prilba|tvár|záchranárska helma
+📿|koráliky|korálky|modlitba|modlitebné koráliky|modlitebné korálky|náboženstvo|náhrdelník|oblečenie|pátričky|ruženec
+💄|kozmetika|líčenie|make-up|makeup|rande|rúž
+💍|briliant|diamant|drahokam|manželstvo|požiadať o ruku|prsteň|romanca|svadba|vydatá|zásnuby|ženatý|žiarivý
+💎|bohatstvo|briliant|diamant|drahokam|klenot|peniaze|prsteň|romanca|šperk|svadba|zásnuby
 🔇|hlasitosť|reproduktor|stlmený|tichý|vypnutý
-🔈|nízka hlasitosť|reproduktor
-🔉|reproduktor|stredná hlasitosť
-🔊|reproduktor|vysoká hlasitosť
-📢|amplión|nahlas|verejný rozhlas
-📣|megafón|povzbudzovanie
-📯|pošta|poštová|trúba
-🔔|zvonček
-🔕|prečiarknutý zvon|stíšené|stlmené|ticho|zakázané zvonenie
-🎼|hudba|notová osnova|osnova
-🎵|hudba|nota
-🎶|hudba|nota|noty
-🎙️|hudba|mikrofón|štúdiový mikrofón
-🎚️|hudba|posúvač|úroveň
-🎛️|gombíky|hudba|ovládanie
-🎤|karaoke|mikrofón
-🎧|slúchadlá|slúchadlo
-📻|rádio|video
-🎷|hudba|nástroj|saxofón
-🪗|akordeón|harmonika|ťahacia
-🎸|gitara|hudba|nástroj
-🎹|hudba|klávesy|klavír|nástroj
-🎺|hudba|nástroj|trúbka
-🎻|hudba|husle|nástroj
-🪕|banjo|bendžo|hudba|nástroj|strunový
-🥁|bubenícke|bubon|hudba|paličky
-🪘|bubenícke|bubon|kongo|rytmus
-🪇|hrkať|hudba|nástroj|perkusie|rumbagule|triasť
-🪈|drevený dychový hudobný nástroj|flauta|hudba|pikola|píšťalka|záznamník
-📱|mobilný|telefón
-📲|hovor|mobil so šípkou|mobilný|prijímať|šípka|telefón
-☎️|telefón
-📞|slúchadlo telefónu|telefón
-📟|pager|pejdžer
-📠|fax|telefax
-🔋|batéria
-🪫|elektronika|málo energie|slabá batéria
-🔌|elektrická|elektrina|prípojka|zástrčka
-💻|osobný|pc|počítač|prenosný počítač
-🖥️|stolný počítač
-🖨️|počítač|tlačiareň
+🔈|hlasitosť|nahlas|nízka hlasitosť|reproduktor|zvuk
+🔉|hlasitosť|reproduktor|stredná|vlna|zapnutý reproduktor|zvuk
+🔊|hlasitosť|nahlas zapnutý reproduktor|reproduktor|vysoká|zvuk
+📢|amplión|dedina|hudba|nahlas|rozhlas|verejný rozhlas|zvuk
+📣|megafón|povzbudzovanie|zvuk
+📯|hudba|lesný roh|pošta|poštová|trúba
+🔔|kostol|pauza|prestávka|zvonček
+🔕|nepovolené|nie|prečiarknutý zvoniec|stíšené|stlmené|ticho|zakázané zvonenie|zvonec
+🎼|hudba|husľový kľúč|notová osnova|osnova
+🎵|hudba|nota|štvrťové noty|zvuk
+🎶|hudba|nota|noty|zvuk
+🎙️|hudba|mikrofón|podcast|štúdiový mikrofón|zvuk
+🎚️|hlasitosť|hudba|intenzita|pošúvač|posúvač úrovne|úroveň
+🎛️|gombíky|hudba|ovládače|ovládacie prvky|ovládanie|zvuk
+🎤|hudba|karaoke|mikrofón|pieseň|spevák|spievanie|zvuk
+🎧|slúchadlá|slúchadlo|zvuk
+📻|hudba|rádio|video|zábava|zvuk
+🎷|hudba|hudobný nástroj|nástroj|saxafón|saxofón|zvuk
+🪗|akordeón|harmonika|hudobný nástroj|ťahacia
+🎸|elektrická gitara|gitara|hudba|nástroj|zábava|zvuk
+🎹|hudba|klávesy|klaviatúra|klavír|nástroj|piáno|zvuk
+🎺|hudba|nástroj|trúbka|trumpeta|zvuk
+🎻|hudba|husle|nástroj|sláčik|stradivárky|viola|zvuk
+🪕|banjo|bendžo|hudba|hudobný nástroj|nástroj|strunový
+🥁|bubenícke|bubon|hudba|paličky|zvuk
+🪘|bubenícke|bubon|hudobný nástroj|kongo|rytmus
+🪇|hrkať|hudba|nástroj|párty|perkusie|rumbagule|tancovať|triasť
+🪈|drevený dychový hudobný nástroj|drevený dychový nástroj|flauta|hudba|nástroj|orchester|pikola|píšťalka|záznamník
+📱|komunikácia|mobilný|telefón
+📲|hovor|mobil so šípkou|mobilný telefón so šípkou|prijímať|šípka|telefón
+☎️|červená|pevná linka|telefón|volať
+📞|komunikácia|slúchadlo telefónu|telefón
+📟|komunikácia|pager|pejdžer
+📠|fax|komunikácia|telefax
+🔋|batéria|baterka|nabíjanie|zelená
+🪫|batéria|elektronika|málo energie|slabá batéria|vyčerpanie
+🔌|domácnosť|elektrická|elektrina|prípojka|zástrčka
+💻|macbook|notebook|osobný|pc|počítač|prenosný počítač
+🖥️|desktop|monitor|pc|počítač|stolný
+🖨️|počítač|tlačiareň|tlačiť|vytlačiť
 🖱️|myš|počítačová myš|tlačidlo
-🖲️|počítač|trackball
-💽|disk|optický|počítačový disk
+🖲️|počítač|trackball|trekbol
+💽|cd|disk|hudba|minidisk|optický|počítačový disk|zvuk
 💾|disketa|počítač
-💿|cd|dvd|optický disk|počítač
-📀|blu-ray|cd|dvd|počítač
-🧮|abakus|počítadlo|počítanie|počty
-🎥|filmová kamera|kamera|kino
-🎞️|filmový|kino|pás
+💿|blu-ray|cd|cédéčko|disk|dvd|optický|počítač
+📀|blu-ray|cd|cédéčko|disk|dvd|optický|počítač
+🧮|abakus|deti|detské|guľôčkové počítadlo|guľôčky|kalkulácia|kalkulačka|matematika|myslenie hrou|počítadlo|počítanie|počty|škola|výpočet
+🎥|bollywood|filmová kamera|hollywood|kamera|kino|zábava
+🎞️|celuloid|filmový|kino|okienka|pás
 📽️|filmový projektor|kino|projektor|video
-🎬|film|klapka
-📺|televízia|televízor|tv|video
-📷|fotoaparát|video
+🎬|akcia|film|klapka|video|zábava
+📺|obrazovka|televízia|televízor|tv|video
+📷|fotiť|fotoaparát|kamera|selfie|video
 📸|blesk|fotoaparát s bleskom|video
 📹|fotoaparát|videokamera
-📼|kazeta|vhs|videokazeta
+📼|kazeta|páska|vhs|videokazeta
 🔍|doľava naklonená lupa|hľadanie|lupa|nástroj|priblíženie
-🔎|doprava naklonená lupa|hľadanie|lupa|nástroj|priblíženie
-🕯️|svetlo|sviečka
-💡|elektrické|komiks|nápad|svetlo|žiarovka
+🔎|doprava naklonená lupa|hľadanie|lupa|nástroj|priblíženie|zväčšenie|zväčšovacie sklo
+🕯️|oheň|romantika|svetlo|sviečka
+💡|elektrické|komiks|komixové|nápad|svetlo|žiarivka|žiarovka
 🔦|baterka|elektrické|nástroj|svetlo|svietidlo
-🏮|bar|červené|červený lampión|japonský|lampión|svetlo
+🏮|bar|červené|červený lampión|japonský|lampión|reštaurácia|svetlo
 🪔|dija|indická|lampa|olej
-📔|kniha|obal|zápisník so zdobeným obalom|zdobený
-📕|kniha|zatvorená
-📖|kniha|otvorená
-📗|kniha|zelená
-📘|kniha|modrá
-📙|kniha|oranžová
-📚|kniha|knihy|literatúra
-📓|poznámkový zošit|zápisník
-📒|poznámkový zošit|účtovná kniha
-📃|dokument|ohnutá stránka|ohnutie|stránka
-📜|papier|zvitok
-📄|dokument|líce stránky|stránka
-📰|noviny|správy
-🗞️|noviny|správy|zrolované|zvinuté
-📑|karty|označenie|záložka|záložky|značka
+📔|čítanie|kniha|notes|obal|písanie|vzdelanie|zápisník so zdobeným obalom|zdobený|zošit
+📕|červená kniha|čítanie|kniha|vzdelanie|zatvorená
+📖|čítanie|kniha|knižnica|otvorená|román|rozprávka|učenie|vedomosť|vzdelanie
+📗|čítanie|kniha|knižnica|vzdelanie|zatvorená|zelená
+📘|čítanie|kniha|knižnica|modrá|rozprávka|vzdelanie
+📙|čítanie|kniha|knižnica|oranžová|rozprávka|učenie|vzdelanie
+📚|fantázia|kniha|knihy|knižnica|literatúra|poviedka|román|rozprávka|škola|štúdium|vedomosti|vzdelanie
+📓|notes|písanie|písať|poznámkový zošit|zápisník
+📒|blok|kreslenie|písanie|poznámkový zošit|skicár|účtovná kniha|zápisník
+📃|čítanie|dokument|list|ohnutá stránka|ohnutie|papier|skrútená stránka|stránka
+📜|papier|papyrus|písanie|zvitok
+📄|dokument|líce stránky|list|stránka
+📰|čítať|informácie|komunikácia|novinky|noviny|papierové|správy
+🗞️|čítanie|noviny|papierové|správy|zrolované|zvinuté
+📑|karta|karty so záložkami|označenie|záložka|záložky|značka
 🔖|karty|označenie|záložka|značka
 🏷️|ceduľka|menovka|štítok
-💰|dolár|mešec peňazí|peniaze|vrece na peniaze
-🪙|minca|peniaze|poklad|zlato
-💴|banka|bankovka|jenová bankovka|mena|peniaze|účet
-💵|banka|bankovka|dolárová bankovka|mena|peniaze|účet
-💶|banka|bankovka|eurová bankovka|mena|peniaze|účet
-💷|banka|bankovka|libra|librová bankovka|mena|peniaze|účet
+💰|bohatstvo|dolár|držgroš|dukáty|hotovosť|mešec peňazí|peniaze|platiť|poklad|vrece
+🪙|bohatstvo|dolár|euro|minca|peniaze|poklad|zlato
+💴|banka|bankovka yenu|čína|hotovosť|jenová bankovka|mena|peniaze|yen
+💵|banka|bankovka dolára|dolárová bankovka|mena|peniaze|účet
+💶|100 €|banka|bankovka eura|bohatstvo|éčka|európa|eurová bankovka
+💷|anglická|banka|bankovka libry|britská|hotovosť|libra šterlingov|librová bankovka|mena
 💸|bankovka|dolár|krídla|lietať|peniaze s krídlami
-💳|banka|karta|kredit|peniaze|platiť|platobná karta
-🧾|doklad|potvrdenie|účtenka|účtovníctvo
-💹|graf|mena|nárast|peniaze|stúpajúci graf jenu|trend|trh
-📧|e-mail|email|list|pošta
-📨|e-mail|email|list|obálka s prichádzajúcou poštou|pošta|prichádzajúca|prijať
-📩|e-mail|list|obálka so šípkou|odchádzajúca|odoslané|pošta
-📤|list|odchádzajúca pošta|odoslaná|pošta|priečinok na odchádzajúcu poštu
-📥|list|pošta|prichádzajúca pošta|priečinok na prichádzajúcu poštu|prijatá
-📦|škatuľa|zásielka
+💳|banka|karta|kreditka|kreditná karta|peniaze|platiť|platobná karta
+🧾|dôkaz|doklad|faktúra|paragón|potvrdenie|potvrdenka|príjmový doklad|účtenka|účtovná evidencia|účtovníctvo
+💹|banka|graf|mena|nahor|nárast|peniaze|stúpajúci graf jenu|stúpajúci graf yenu|trend|trh
+📧|e-mail|email|list|pošta|zásielka
+📨|doručená|e-mail|email|list|obálka prichádzajúcej pošty|obálka s prichádzajúcou poštou|pošta|prichádzajúca|prijať
+📩|e-mail|list|nadol|obálka so šípkou|odchádzajúca|odoslané|pošta|šípka
+📤|box|e-mail|email|list|odchádzajúca pošta|odoslaná|pošta|priečinok na odchádzajúcu poštu|priečinok odchádzajúcej pošty
+📥|box|e-mail|email|list|pošta|prichádzajúca pošta|priečinok na prichádzajúcu poštu|priečinok prichádzajúcej pošty|prijať
+📦|balík|doručovanie|komunikácia|škatuľa|zásielka
 📫|pošta|poštová schránka|zatvorená schránka so zdvihnutou zástavkou
 📪|pošta|poštová schránka|spustené|zatvorená schránka so spustenou zástavkou
-📬|otvorená schránka so zdvihnutou zástavkou|pošta|poštová schránka
-📭|otvorená schránka so spustenou zástavkou|pošta|poštová schránka|spustená
-📮|pošta|poštová schránka
-🗳️|urna|volebná schránka s lístkom
-✏️|ceruzka
-🖋️|pero|plniace
-🖊️|guľôčkové pero|pero
-🖌️|maľovať|štetec
-🖍️|pastelka
-📝|ceruzka|obežník|oznam
-💼|aktovka
-📁|fascikel|priečinok|súbor
-📂|otvorený fascikel|priečinok|súbor
-🗂️|index|karta|rozdeľovače|štítky na indexovanie
-📅|dátum|kalendár
-📆|kalendár|trhací kalendár
-🗒️|poznámka|špirála|špirálový zápisník|zápisník
-🗓️|kalendár|špirála|špirálový kalendár
-📇|index|karta|otáčací stojan na vizitky|vizitka
-📈|graf|nárast|stúpajúci|trend
-📉|graf|klesajúci|pokles|trend
-📊|graf|pruhový graf
-📋|písacia podložka|písanie|podložka|poznámka
-📌|špendlík
-📍|guľatý špendlík|špendlík
-📎|príloha|sponka na papier
-🖇️|spojené sponky na papier|sponky
-📏|pravítko|rovné
-📐|pravítko|trojuholníkové pravítko
-🗃️|karta|škatuľa s kartotékou|súbor
-🗄️|kabinet|kartotéková skriňa|súbor
-🗑️|kôš|odpadkový kôš
-🔒|zámka|zamknuté|zatvorená zámka|zatvorené
-🔓|odomknuté|otvorená zámka|otvorené|zámka
-🔏|atrament|hrot|pero|súkromie|zámka s perom
-🔐|kľúč|zabezpečiť|zámka s kľúčom|zatvorené
-🔑|heslo|kľúč|zámka
-🗝️|kľúč|staré|starý kľúč|vodidlo|zámka
-🔨|kladivo|nástroj
-🪓|drevo|rúbať|sekať|sekera|štiepať
-⛏️|dolovanie|krompáč|nástroj
-🛠️|francúzsky kľúč|kladivo a kľúč|nástroj
-🗡️|dýka|nôž|zbraň
-💣|bomba|komiks
-🪃|austrálsky|bumerang|následky|návrat
-🏹|luk a šíp|lukostrelec|šíp|strelec|zbraň|zverokruh
-🛡️|štít|zbraň
-🪚|drevo|píla|tesárska píla
-🔧|francúzsky kľúč|nástroj
-🪛|nástroj|skrutka|skrutkovač
-🔩|matica a skrutka|matka|nástroj|skrutka
-🗜️|nástroj|zverák
+📬|list|obálka|otvorená schránka so zdvihnutou zástavkou|pošta|poštová schránka
+📭|otvorená schránka so spustenou zástavkou|pošta|poštová schránka|prázdna|spustená
+📮|list|pošta|poštová schránka|schránka
+🗳️|hlasovanie|lístok|urna|voľby|volebná schránka s lístkom
+✏️|ceruzka|písať|skica
+🖋️|atramentové pero|hrot|pero|plniace
+🖊️|guľôčkové pero|pero|písanie
+🖌️|maľovanie|maľovať|štetec|umenie
+🖍️|ceruzka|farbička|farebná ceruzka|pastelka|voskovka
+📝|ceruzka|obežník|odkaz|oznam|poznámka|správa
+💼|aktovka|kufrík|práca|taška|zamestnanie
+📁|dokumenty|fascikel|otvoriť|priečinok|súbor
+📂|otvorený fascikel|priečinok|súbor|založiť
+🗂️|fascikel|index|karta|menovky|rozdeľovače|štítky na indexovanie|zakladať|založiť|zložka
+📅|17|čas|dátum|kalendár
+📆|17|júl|kalendár|trhací kalendár
+🗒️|blok|notes|písanie|poznámka|špirála|špirálový zápisník|zápisník
+🗓️|čas|dátum|kalendár|špirála|špirálový kalendár
+📇|adresár|indexový register|karta|kartotéka|otáčací stojan na vizitky|register|vizitka
+📈|dáta|graf|krivka|nárast|stúpajúci|trend|údaje|vývoj
+📉|graf|klesajúci|krivka|negatívny trend|pokles|práca|trend|výkon
+📊|dáta|graf|pruhový graf|stĺpcový graf|stĺpec|údaje
+📋|písacia podložka|písanie|podložka na písanie|poznámka
+📌|koláž|pin|pripínačka|špendlík
+📍|cestovanie|guľatý špendlík|mapa|pin|pripináčik|špendlíkový pripináčik|trasa
+📎|kancelárska spinka|príloha|spinka|sponka na papier
+🖇️|kancelárska spinka|prepojenie|spinky|spojené sponky na papier|sponka|sponky
+📏|geometria|matematika|pravítko|rovné
+📐|geometria|matematika|pravítko|pravouhlý|trojuholníkové pravítko|zostava
+🗃️|karta|krabica|škatuľa s kartotékou|súbor|zakladač
+🗄️|archív|kabinet|kartotéková skriňa|súbor|zásuvky
+🗑️|kôš|odpadkový kôš|odpadový kôš|smetný kôš
+🔒|súkromie|zámka|zamknuté|zamknutý|zatvorená zámka|zatvorené
+🔓|odmknúť|odomknuté|otvorená zámka|otvorené|otvorený zámok|otvoriť|zámka|zamknúť|zámok
+🔏|atrament|hrot|listové tajomstvo|pero|súkromie|zámka s perom
+🔐|kľúč|zabezpečiť|zámka s kľúčom|zamknutá zámka s kľúčom|zámok na bicykel|zatvorené
+🔑|dvere|heslo|hlavný kľúč|kľúč|odomknúť|zámka|zamknúť
+🗝️|kľúč|nápoveda|šifra|stará|staré|starý kľúč|vodidlo|zámka
+🔨|búchanie|domáce práce|domáci majster|kladivo|kutil|nástroj
+🪓|drevo|rúbanie|rúbať|sekať|sekera|štiepať
+⛏️|baňa|dolovanie|krompáč|nástroj|práca|zamestnanie
+🛠️|francúzsky kľúč|kladivo a kľúč|nástroj|povolanie|práca|zamestnanie
+🗡️|dýka|meč|nôž|rozprávka|rytier|zbraň
+💣|bomba|explózia|hrozba|komiks|nebezpečenstvo|výbuch
+🪃|aborigén|austrálsky|bumerang|následky|návrat|zbraň
+🏹|horoskop|luk a šíp|lukostrelec|nástroj|šíp|šport|strelec|zbraň|znamenie strelca
+🛡️|erb|rytier|štít|zbraň
+🪚|drevo|nástroj|píla|píliť|rezať|tesárska píla
+🔧|domáci majster|domácnosť|francúzsky kľúč|klúč|nástroj
+🪛|nástroj|plochý skrutkovač|šikovný|skrutka|skrutkovač
+🔩|kutil|matica a skrutka|matka|nástroj|skrutka
+🗜️|nástroj|svorka|zverák
 🦯|handicap|hendikep|nevidiaci|postihnutie|slepecká palica|slepý
-🔗|odkaz|prepojenie|spojenie|spojovací článok
-⛓️|reťaze
+🔗|odkaz|prepojenie|reťaz|spojenie|spojovací článok
+⛓️‍💥|pretrhnutá|putá|reťaz|roztrhnutá|sloboda
+⛓️|reťaze|spojiť
 🪝|háčik|hák|lákadlo|nachytať|skoba
-🧰|debna|kufrík na náradie|náradie|nástroje
-🧲|magnet|podkova|príťažlivosť
+🧰|bedňa|bednička|červená krabica|debna|francúzsky kľúč|inštrumenty|kliešte|krabica|kufrík na náradie|mechanik
+🧲|magnet v tvare podkovy|magnet v tvare u|magnetické pole|magnetický|negatívny pól|odpudzovať|podkova|pozitívny pól|priťahovať
 🪜|priečka|rebrík|stúpadlo
-🧪|chémia|chemik|laboratórium|pokus|skúmavka|veda
-🧫|baktéria|biológia|kultúra|laboratórium|petriho miska
-🧬|biológ|gén|genetika|skrutkovica|život
-🔬|laboratórium|mikroskop|veda
-🔭|ďalekohľad|nástroj|teleskop
-📡|anténa|satelitná anténa|tanier
-💉|choroba|doktor|ihla|injekcia|medicína|nástroj
+🧪|chémia|chemička|chemik|elixír|experiment|kvapalina|laboratórium|pokus|skúmavka|veda
+🧫|baktéria|biológia|biologička|bunky|chémia|experimenty|kultivácia|kultivovať|kultúra
+🧬|biológia|biologička|deoxyribonukleová kyselina|dna|dvojzávitnica|dvojzávitnicová špirála|evolúcia|gén|genetická informácia
+🔬|laboratórium|mikroskop|nástroj|škola|veda|výskum|vzdelanie
+🔭|astronómia|ďalekohľad|hviezdy|nástroj|noc|obloha|refraktor|teleskop
+📡|anténa|kontakt|satelitná anténa|tanier|veda
+💉|choroba|doktor|ihla|injekcia|injekčná striekačka|krv|liek|medicína|nástroj|vakcína
 🩸|darcovstvo|darovanie|krv|kvapka krvi|lekárstvo|medicína|menštruácia
-💊|choroba|doktor|medicína|tabletka
+💊|antibiotikum|choroba|doktor|lekár|liek|medicína|tabletka|vitamín
 🩹|leukoplast|náplasť|obväz
-🩼|barla|palica|podpera|postihnutie|zdravotná pomôcka|zranenie
+🩼|barla|opora|palica|podpera|pomoc|postihnutie|zdravotná pomôcka|zranenie
 🩺|doktor|lekárstvo|medicína|srdce|stetoskop
-🩻|kosti|kostra|lekár|röntgen|zdravie
-🚪|dvere
-🛗|výťah
-🪞|odraz|zrkadlenie|zrkadlo
-🪟|okno|otvoriť|rám|výhľad|vzduch
-🛏️|hotel|posteľ|spánok
-🛋️|gauč a lampa|hotel|lampa
-🪑|sedadlo|sedenie|sedieť|stolička
-🚽|toaleta|záchod
+🩻|kosti|kostra|lekár|röntgenová snímka|zdravie
+🚪|dvere|skriňa|vchodové dvere|zadné dvere|zadné vráta
+🛗|bezbariérové|dostupnosť|výťah|zdvihnutie
+🪞|make-up|mejkap|odraz|zrkadlenie|zrkadlo
+🪟|oblok|okno|otvoriť|rám|sklo|výhľad|vzduch
+🛏️|hotel|perina|posteľ|spánok|spať|vankúš
+🛋️|domácnosť|gauč a lampa|hotel|hovník|lampa|pohodlie
+🪑|kreslo|sedadlo|sedenie|sedieť|stolička
+🚽|domácnosť|misa|toaleta|wc|záchod
 🪠|čistiaci zvon|inštalatér|upchatý|záchod
-🚿|sprcha|voda
-🛁|vaňa
+🚿|čistota|kúpanie|sprcha|voda|zdravie
+🛁|domov|kúpanie|kúpeľ|vaňa
 🪤|myš|nástraha|návnada|pasca na myši|syr
 🪒|britva|holenie|holiace|holiť|oholiť|ostrý
-🧴|hydratačný krém|šampón|slnečný krém|vodička
-🧷|pankáčka|spínací špendlík
-🧹|metla|striga|upratovať|zametať
-🧺|kôš|piknik|pranie
-🧻|papierová utierka|rolka papiera|toaletný papier
-🪣|nádoba|súdok|vedro
-🧼|kúpanie|mydlo|pena|sprchovanie|umývanie
-🫧|bubliny|čistota|grgnutie|mydlo|pod vodou
-🪥|čistiť|kefka|kúpeľňa|zubná kefka|zuby
-🧽|čistiť|kúpať|špongia|sprchovať|vsať
-🧯|hasiaci prístroj|hasiť|požiar
-🛒|košík|nákupný|nakupovanie|vozík
-🚬|cigareta|fajčenie
-⚰️|rakva|smrť
-🪦|cintorín|hrobka|náhrobok
-⚱️|pohrebná urna|smrť
-🧿|amulet|korálka|modré oko|nazar|prívesok|talizman
+🧴|fľaštička|hydratačný krém|kondicionér|krém|nádobka|opaľovací krém|opaľovacie mlieko|pleťová voda|pleťové mlieko|šampón
+🧷|krajčírstvo|pankáčka|prišpendliť|šitíčko|spínací špendlík|zápinka|zapnúť|zatvárací špendlík|zicherka
+🧹|bosorka|čarodejnica|čistenie|čistiť|ježibaba|lietať|metla|omelo|ometlo
+🧺|bielizňový kôš|kôš na bielizeň|kôš na prádlo|košík|piknik|pranie|prútený|prútie
+🧻|papierová utierka|papierové utierky|rolka papiera|rolka toaletného papiera|toaleťák|toaletný papier
+🪣|kýbeľ|kýblik|nádoba|súdok|vedro
+🧼|čistenie|čistý|kocka mydla|kúpanie|kúpať sa|mydelnička|mydliny|mydliť|mydlová pena
+🫧|bublifuk|bubliny|čistota|grgnutie|mydlo|pod vodou|vznášať sa
+🪥|čistiť|kefka|kúpeľňa|vyčistiť|zubná kefka|zuby
+🧽|čistenie|čistiť|huba|hubka|kúpať|nasiaknuť|penový|porézny|sajúci|savý
+🧯|hasiaci prístroj|hasiť|oheň|požiar|uhasiť|zahasiť
+🛒|košík|nákupný|nakupovanie|nákupy|obchod|vozík
+🚬|cigareta|fajčenie|zapáliť
+⚰️|pohreb|rakva|smrť|upír|vampír
+🪦|cintorín|hrobka|náhrobný kameň|náhrobok|pamätník|pohreb|pomník
+⚱️|pohrebná urna|popol|smrť|spopolnenie|urna
+🧿|amulet|koráľ|korálik|korálka|modré oko|modrobiele oko|modrý|nazar|ochrana|prívesok|talizman
 🪬|amulet|fatima|fatimina ruka|hamsa|mária|ochrana|ruka
-🗿|moai|socha|tvár
+🗿|kameň|kamenná tvár|moai|moyai|socha tváre moai|tvár|veľkonočné ostrovy
 🪧|demonštrácia|protest|štrajk|tabuľa|transparent
-🪪|bezpečnosť|doklady|preukaz totožnosti|vodičský preukaz
-🏧|automat|banka|bankomat|hotovosť
-🚮|odpadkový kôš|odpadky|smeti|symbol odpadkového koša
-🚰|pitie|pitná|voda
-♿|invalidný vozík|prístup
-🚹|muž|pánske toalety|toaleta|wc|záchod
-🚺|dámske toalety|toaleta|wc|záchod|žena
+🪪|bezpečnosť|doklady|občiansky preukaz|preukaz totožnosti|vodičský preukaz
+🏧|atm|automatický|banka|bankomat|hotovosť|symbol bankomatu
+🚮|odpadkový kôš|odpadky|smeti|symbol odpadkového koša|vyhodiť smeti
+🚰|drink|kohútik|pitie|pitná|voda|vodovod
+♿|handikepovaný|hendikep|invalidný vozík|prístup
+🚹|mužské wc|pánske toalety|toaleta|wc|záchod
+🚺|dámske toalety|toaleta|wc|záchod|žena|ženské wc
 🚻|toalety|wc|záchod
-🚼|dieťa|prebalenie|prebaľovacia miestnosť
+🚼|dieťa|prebalenie|prebaľovacia miestnosť|značka
 🚾|splachovací záchod|toaleta|voda|wc|záchod
-🛂|hranica|kontrola|pasová kontrola
-🛃|colná prehliadka|colnica|hranica
-🛄|batožina|výdaj batožiny
-🛅|batožina|tašky|úschovňa batožiny
-⚠️|varovanie
-🚸|chodec|deti na ceste|dieťa|prechádzajúce|premávka
-⛔|jednosmerná|premávka|vjazd|zákaz vjazdu
-🚫|vstup|zákaz|zakázaný
-🚳|bicykel|zákaz bicyklov|zakázaný
-🚭|fajčenie|zákaz fajčenia|zakázané
-🚯|neodhadzujte odpadky|zákaz|zakázané
-🚱|nepitná|voda|zakázané
-🚷|chodec|zákaz chodcov|zakázané
-📵|mobil|telefón|zákaz mobilov|zakázaný
-🔞|18|maloletí|osemnásť|vekové obmedzenie|zákaz vstupu osobám mladším ako osemnásť rokov|zakázané
-⬆️|hore|nahor|sever|šípka
-➡️|doprava|šípka|východ
-⬇️|dolu|juh|nadol|šípka
-⬅️|doľava|šípka|západ
-↩️|šípka doprava zakrivená doľava
+🛂|hranica|kontrola|letisko|pasová kontrola
+🛃|balenie|batožina|clo|colná prehliadka|colnica|hranica|kufor|zákon
+🛄|batožina|cestovanie|kufor|letisko|náklad|výdaj batožiny|výlet
+🛅|batožina|skrinka|tašky|úschovňa batožiny
+⚠️|upozornenie|varovanie|výkričník|značka
+🚸|chodec|deti na ceste|deti prechádzajúce cez cestu|dieťa|prechádzajúce|premávka
+⛔|jednosmerná|nie|premávka|vjazd|vstup|zákaz vjazdu|zakázané|zakázaný|značka
+🚫|nie|vstup|zákaz|zakázané|zakázaný|značka
+🚳|bicykel|dopravný prostriedok|nepovolené|nie|zákaz bicyklov|zákaz cyklistov|zakázané|zakázaný
+🚭|fajčenie|nefajčiť|nepovolené|nie|zákaz fajčenia|zakázané
+🚯|neodhadzujte odpadky|nepovolené|nie|odpad|zákaz odpadkov|zakázané
+🚱|nepitná|nepovolené|nie|otrávená|voda|zákaz|zakázané
+🚷|chodec|nie|zákaz chodcov|zákaz vstupu|zakázané
+📵|bez mobilov|mobilný|nepovolené|telefón|zákaz mobilov|zakázané|zakázaný
+🔞|18|maloletí|nepovolené|nie|osemnásť|vekové obmedzenie|zákaz osobám mladším ako osemnásť rokov|zákaz vstupu osobám mladším ako osemnásť rokov|zakázané
+⬆️|hore|kardinálne|nahor|sever|šípka|smer|tlačidlo
+➡️|doprava|kardinálne|šípka|smer|tlačidlo|východ
+⬇️|dole|dolu|juh|nadol|šípka|smer|tlačidlo
+⬅️|doľava|kardinálne|šípka|smer|tlačidlo|vľavo|západ
+↩️|naspäť|šípka doprava zakrivená doľava
 ↪️|šípka doľava zakrivená doprava
-🔃|šípka|v smere hodinových ručičiek|znovu načítať|zvislé šípky v smere hodinových ručičiek
-🔄|proti smeru hodinových ručičiek|šípka|tlačidlo so šípkami proti smeru hodinových ručičiek
-🔙|šípka back|späť
-🔚|koniec|šípka end
-🔛|šípka on!|zapnuté|značka
+🔃|hrať dokola|šípka|v smere hodinových ručičiek|znovu načítať|zvislé šípky v smere hodinových ručičiek
+🔄|dejavu|prehrať znovu|pretočiť|proti smeru hodinových ručičiek|šípka|tlačidlo so šípkami proti smeru hodinových ručičiek|znova
+🔙|back|šípka|späť
+🔚|koniec|nakoniec|šípka end
+🔛|šípka on!|šípka vpred|šípka zapnuté!|zapnuté|značka
 🔜|čoskoro|šípka soon
-🔝|nahor|navrch|šípka top
-🛐|bohoslužba|modlitba|modlitebné miesto|náboženstvo
-⚛️|atóm|symbol atómu
-🕉️|indické|náboženstvo|óm
-☯️|jang|jin a jang|náboženstvo|taoista
-✝️|kresťanské|kríž|latinský kríž|náboženstvo
-☪️|hviezda a polmesiac|islam|moslim|náboženstvo
-☮️|mier|symbol mieru
-🕎|menóra|náboženstvo|svietnik|židovstvo
-🔯|hviezda|šesťcípa hviezda s bodkou uprostred|šťastie
-🪯|khanda|náboženstvo|sikhizmus
-♊|dvojičky|znamenie blížencov|zverokruh
-♋|rak|znamenie raka|zverokruh
-♌|lev|znamenie leva|zverokruh
-♍|panna|znamenie panny|zverokruh
-♎|rovnováha|spravodlivosť|váhy|znamenie váh|zverokruh
-♏|škorpión|znamenie škorpióna|zverokruh
-⛎|had|znamenie hadonosa|zverokruh
-🔀|šípka|skrížená|tlačidlo náhodného prehrávania
-🔁|opakovať|proti smere hodinových ručičiek|šípka|tlačidlo opakovania
-🔂|raz|šípka|tlačidlo opakovania skladby|v smere hodinových ručičiek
+🔝|nahor|najlepší|navrch|šípka na začiatok|top
+🛐|bohoslužba|chrám|kostol|modlenie|modlitba|modlitebné miesto|náboženstvo|viera|zbožnosť
+⚛️|ateista|ateistické|atóm|symbol atómu
+🕉️|hinduizmus|indické|náboženstvo|óm|viera
+☯️|jang|jin a jang|náboženstvo|taoista|viera
+✝️|katolícky|kresťanské|kresťanstvo|kríž|latinský kríž|náboženstvo|viera
+☪️|hviezda a polmesiac|islam|moslim|náboženstvo|ramadán|viera
+☮️|hippies|mier|symbol mieru|viera
+🕎|chanuka|judaizmus|menóra|náboženstvo|sedemramenný|svietnik|viera|židovský|židovstvo
+🔯|dávidova hviezda|hviezda|judaizmus|šesťcípa hviezda s bodkou uprostred|šťastie|židovská
+🪯|khalsa|khanda|náboženstvo|sikhizmus|viera
+♊|blíženci|dvojičky|horoskop|znamenie blížencov|zverokruh
+♋|horoskop|rak|znamenie raka|zverokruh
+♌|horoskop|lev|znamenie leva|zverokruh
+♍|horoskop|panna|znamenie panny|zverokruh
+♎|horoskop|rovnováha|spravodlivosť|váhy|znamenie váh|zverokruh
+♏|horoskop|škorpión|znamenie škorpióna|zverokruh
+⛎|hadonos|horoskop|znamenie hadonosa|zverokruh
+🔀|premiešať|preskočiť|šípka|skrížená|tlačidlo náhodného prehrávania|tlačidlo striedavo prehrávať skladby
+🔁|opakovanie|opakovať|proti smere hodinových ručičiek|šípka|tlačidlo opakovania|tlačidlo opakovať
+🔂|raz|šípka|tlačidlo opakovania skladby|tlačidlo opakovať skladbu|v smere hodinových ručičiek
 ▶️|doprava|prehrať|šípka|tlačidlo prehrávania|trojuholník
-⏩|dopredu|dvojitá|pretočiť|šípka|tlačidlo pretáčania dopredu
-⏭️|ďalšia položka|ďalšia skladba|šípka|tlačidlo ďalšej skladby|trojuholník
-⏯️|doprava|pozastaviť|prehrať|šípka|tlačidlo prehrávania a pozastavenia|trojuholník
-◀️|doľava|pretočiť späť|šípka|tlačidlo spätného prehrávania|trojuholník
-⏪|dvojitá|pretočiť|šípka|tlačidlo pretáčania späť
-⏮️|predchádzajúca položka|predchádzajúca skladba|šípka|tlačidlo predošlej skladby|trojuholník
-🔼|červené|šípka|tlačidlo nahor
-⏫|dvojitá|šípka|tlačidlo rýchlo nahor
+⏩|dopredu|dvojitá|pretočiť|rýchlo|šípka|tlačidlo pretáčania dopredu
+⏭️|ďalšia položka|ďalšia skladba|preskočiť|šípka|tlačidlo ďalšej skladby|tlačidlo ďalšia skladba|trojuholník|zrýchlené prehrávanie
+⏯️|doprava|pozastaviť|prehrať|šípka|tlačidlo prehrať a pozastaviť|tlačidlo prehrávania a pozastavenia|trojuholník
+◀️|doľava|pretočiť späť|šípka|späť|tlačidlo pretočiť späť|tlačidlo spätného prehrávania|tlačidlo spiatočného prehrávania|trojuholník
+⏪|dvojitá|pretočiť|šípka|späť|tlačidlo pretáčania späť|tlačidlo rýchlo pretočiť späť
+⏮️|predchádzajúca položka|predchádzajúca skladba|predošlý|šípka|späť|tlačidlo posledná skladba|tlačidlo predošlej skladby|trojuholník
+🔼|červené|hore|šípka|tlačidlo nahor
+⏫|dvojitá|hore|nahor|rýchlo nahor|šípka|tlačidlo rýchlo nahor
 🔽|červené|nadol|šípka|tlačidlo
-⏬|dvojitá|nadol|šípka|tlačidlo rýchlo nadol
-⏸️|dvojitý|pás|pozastaviť|tlačidlo pozastavenia|zvislé
-⏹️|štvorec|tlačidlo zastavenia|zastaviť
-⏺️|kruh|nahrať|tlačidlo nahrávania|zaznamenať
+⏬|dole|dvojitá|nadol|šípka|tlačidlo rýchlo nadol
+⏸️|dvojitý|pás|pauza|pozastaviť|tlačidlo pozastavenia|zvislé
+⏹️|stop|štvorec|tlačidlo zastavenia|tlačidlo zastaviť|zastaviť
+⏺️|kruh|nahrať|nahrávanie|tlačidlo nahrávania|tlačidlo nahrávanie|tlačidlo zaznamenať|zaznamenať
 ⏏️|tlačidlo vysunutia|vysunúť
-🎦|film|kamera|kino
-🔅|jas|stlmiť|tlačidlo stlmenia jasu|znížiť
-🔆|jasný|tlačidlo jasu
-📶|anténa|mobilné|pás|signál|sila signálu|telefón
-🛜|bezdrôtový|internet|počítač|sieť
-📳|mobilný|režim|telefón|vibrácia|vibračný režim
-📴|mobilý|telefón|vypnuté|vypnutý mobil
+🎦|film|kamera|kino|tlačidlo|zábava
+🔅|jas|stlmiť|tlačidlo stlmenia jasu|tlačidlo stlmiť|znížiť
+🔆|jasný|slniečko|slnko|svetlo|tlačidlo jasu
+📶|anténa|mobilné|operátor|pás|signál|sila signálu|telefón
+🛜|bezdrôtový|hotspot|internet|počítač|pripojenie|sieť|wifi
+📳|mobilný|režim|telefón|tichý režim|vibrácia|vibračný režim
+📴|mobilý|telefón|vypnuté|vypnutý mobilný telefón
 ⚧️|transgenderový symbol
-🟰|matematika|rovné|rovnosť
+🟰|matematika|odpoveď|rovná sa|rovné|rovnosť
 ♾️|navždy|nekonečno|večný
-‼️|!!|dvojitý výkričník|interpunkcia|výkričník|znak|zvolanie
-💱|banka|mena|peniaze|zmenáreň
-💲|dolár|mena|peniaze|znak dolára
-♻️|recyklovať|symbol recyklácie
-⚜️|heraldický symbol ľalie|ľalia
-🔱|emblém trojzubca|kotva|loď|nástroj|trojzubec
-📛|menovka
-🔰|japonská|japonský symbol pre začiatočníka|list|páska|začiatočník|zelená|žltá
-⭕|červený|kruh|prázdny červený kruh|veľký
-❌|×|krížik|násobenie|násobiť|x|znak|zrušiť
-❎|×|štvorec|tlačidlo s krížikom|x|znak
+‼️|!!|dvojitý výkričník|interpunkcia|interpunkčné znamienka|výkričník|výstraha|znak|zvolanie
+💱|banka|dolár|mena|peniaze|yen|zmenáreň
+💲|bohatstvo|dolár|hrubý znak dolára|mena|milión|peniaze|platiť|znak dolára
+♻️|recyklácia|recyklovanie|recyklovaný|recyklovať
+⚜️|erb|heraldika|ľalia|rytier|skaut|symbol
+🔱|emblém trojzubca|kotva|loď|nástroj|poseidón|trojzubec|znak trojzubca
+📛|menovka|odznak
+🔰|japonská|japonský symbol pre začiatočníka|list|nástroj|odznak|páska|začiatočník|zelená|žltá
+⭕|červený|kruh|o|prázdny červený kruh|veľký hrubý kruh
+❌|×|krát|krížik|matematika|násobenie|násobiť|x|znak|zrušiť
+❎|×|krát|krížik|násobenie|štvorec|tlačidlo s krížikom|x|znak
 ➰|slučka
-➿|dvojitá|slučka
-〽️|part|znak začiatku partu
-🔠|latinka|písmená|veľké písmená|zadať|zadávanie veľkých písmen latinky
-🔡|abcd|latinka|malé písmená|písmená|zadať|zadávanie malých písmen latinky
-🔢|1234|čísla|zadať|zadávanie čísel
-🔣|zadať|zadávanie symbolov
-🔤|abc|abeceda|latinka|písmená|zadať|zadávanie písmen latinky
-🅰️|a|krv|štítok a
-🆎|ab|krv|štítok ab
-🅱️|b|krv|štítok b
-🆑|cl|štítok cl
-🆒|cool|štítok cool
-🆓|free|štítok free
-🆔|identita|štítok id
-Ⓜ️|kruh|m v kruhu
-🆕|new|štítok new
-🆖|ng|štítok ng
-🅾️|krv|o|štítok 0
-🆗|ok|štítok ok
-🅿️|parkovanie|štítok p
-🆘|pomoc|sos|štítok sos
-🆙|štítok up!|up|značka
-🆚|štítok vs|verzus|vs
-🈁|japončina|japonský ideograf tu
-🈂️|japončina|japonský ideograf poplatok za službu
-🈷️|japončina|japonský ideograf mesačná suma
-🈶|japončina|japonský ideograf nie je zadarmo
-🈯|japončina|japonský ideograf vyhradené
-🉐|japončina|japonský ideograf výhodný nákup
-🈹|japončina|japonský ideograf zľava
-🈚|japončina|japonský ideograf zadarmo
-🈲|japončina|japonský ideograf zákaz
-🉑|japončina|japonský ideograf prijateľné
-🈸|japončina|japonský ideograf žiadosť
-🈴|japončina|japonský ideograf úspešne vykonaná skúška
-🈳|japončina|japonský ideograf voľné
-🈺|japončina|japonský ideograf otvorené
-🈵|japončina|japonský ideograf žiadne voľné miesta
+➿|cyklus|dvojitá|slučka
+〽️|časť|graf|krivka|part|značka striedania častí|znak začiatku partu
+🔠|abcd|kapitálky|latinka|písmená|veľké písmená|zadať veľké písma latinky|zadávanie veľkých písmen latinky
+🔡|abcd|latinka|malé písmená|písmená|zadať malé písma latinky|zadávanie malých písmen latinky
+🔢|1234|čísla|klávesnica|numerická|zadať|zadávanie čísel
+🔣|&|%|♪|〒|zadať symboly|zadávanie symbolov
+🔤|abc|abeceda|latinka|písmená|zadať písmená latinky|zadávanie písmen latinky
+🅰️|a|červené a|krvná skupina|písmeno a|štítok a|tlačidlo a|značka
+🆎|ab|krvná skupina|skupina ab|štítok ab|tlačidlo ab|znak
+🅱️|b|krvná skupina|štítok b|tlačidlo b|značka
+🆑|clear|štítok cl|tlačidlo cl|značka
+🆒|cool|hranatý nápis cool|hustý|štítok cool|super|tlačidlo cool|znak cool
+🆓|bezplatne|free|štítok free|tlačidlo|voľný|zadarmo|zdarma|značka free
+🆔|hranatý nápis id|identita|štítok id|tlačidlo id
+Ⓜ️|doprava|kruh|m v kruhu|metro|okrúhle písmeno m
+🆕|hranatý nápis new|new|novinka|nový|štítok new|značka nový
+🆖|hranatý nápis ng|ng|štítok ng|tlačidlo ng|značka ng
+🅾️|0|krvná skupina 0|o|skupina|štítok 0|tlačidlo o|znak
+🆗|hranatý nápis ok|ok|štítok ok|tlačidlo ok|značka ok
+🅿️|parkovanie|parkovisko|štítok p|tlačidlo p|značka p
+🆘|hranatý nápis sos|morzeovka|pomoc|sos|štítok sos|tlačidlo sos
+🆙|hore|nahor|štítok up!|tlačidlo up!|up|značka
+🆚|hranatý nápis vs|štítok vs|tlačidlo vs|verzus|vs
+🈁|hranatý nápis katakana|hranatý nápis tu|japončina|japonský ideograf tu|tu
+🈂️|hranatý nápis servisný poplatok|japončina|japonský ideograf poplatok za službu|katakana|poplatok za službu|servisný poplatok
+🈷️|hranatý ideograf mesačné množstvo|ideograf|japončina|japonský ideograf mesačná suma|mesačne
+🈶|hranatý ideograf za poplatok|ideograf|japončina|japonský ideograf nie je zadarmo|za poplatok
+🈯|hranatý ideograf rezervované|ideograf|japončina|japonský ideograf vyhradené|rezervované
+🉐|ideograf|japončina|japonský ideograf výhodný nákup|okrúhly ideograf zľava|výhodná kúpa|zľava
+🈹|hranatý ideograf zľava|japončina|japonský ideograf zľava|zľava
+🈚|hranatý ideograf zdarma|ideograf|japončina|japonský ideograf zadarmo|zdarma
+🈲|hranatý ideograf zakázané|ideograf|japončina|japonský|zákaz|zakázané
+🉑|ideograf|japončina|japonský ideograf prijateľné|okrúhly ideograf prijať|prijať
+🈸|čínsky opica|hranatý ideograf prihláška|ideograf|japončina|japonský ideograf žiadosť|opica|prihláška|žiadosť
+🈴|dohoda|hranatý ideograf jednoty|ideograf|japončina|japonský ideograf úspešne vykonaná skúška
+🈳|hranatý ideograf voľné|ideograf|japončina|japonský ideograf voľné|neobsadené|voľné
+🈺|hranatý ideograf otvorené|ideograf|japončina|japonský ideograf otvorené|otvorené|prevádzka
+🈵|hranatý ideograf obsadené|japončina|japonský ideograf žiadne voľné miesta|naplnené|obsadené
 🔴|červený|geometria|kruh
 🟠|koliesko|kruh|krúžok|oranžová|oranžový kruh
 🟡|koliesko|kruh|krúžok|žltá|žltý kruh
@@ -1509,8 +1520,8 @@
 🔵|geometria|kruh|modrý
 🟣|fialová|fialový kruh|koliesko|kruh|krúžok
 🟤|hnedá|hnedý kruh|koliesko|kruh|krúžok
-⚫|čierny kruh|geometria|kruh
-⚪|biely kruh|geometria|kruh
+⚫|čierna|čierny kruh|geometria|kruh|tvar
+⚪|biela|biely kruh|geometria|kruh|tvar
 🟥|červená|červený štvorec|štvorček|štvorec
 🟧|oranžová|oranžový štvorec|štvorček|štvorec
 🟨|štvorček|štvorec|žltá|žltý štvorec
@@ -1518,30 +1529,30 @@
 🟦|modrá|modrý štvorec|štvorček|štvorec
 🟪|fialová|fialový štvorec|štvorček|štvorec
 🟫|hnedá|hnedý štvorec|štvorček|štvorec
-⬛|geometria|štvorec|veľký čierny štvorec
-⬜|geometria|štvorec|veľký biely štvorec
-◼️|geometria|stredný čierny štvorec|štvorec
-◻️|geometria|stredný biely štvorec|štvorec
-◾|geometria|stredne malý čierny štvorec|štvorec
-◽|geometria|stredne malý biely štvorec|štvorec
-▪️|čierny štvorček|geometria|štvorec
-▫️|biely štvorček|geometria|štvorec
-🔶|diamant|geometria|oranžový|veľký oranžový kosoštvorec
-🔷|diamant|geometria|modrý|veľký modrý kosoštvorec
-🔸|diamant|geometria|malý oranžový kosoštvorec|oranžový
-🔹|diamant|geometria|malý modrý kosoštvorec|modrý
-🔺|červený trojuholník nahor|geometria
-🔻|červená|červený trojuholník nadol|geometria|nadol
-💠|diamant|geometria|kosoštvorec s bodkou|vnútri
-🔘|geometria|okrúhle tlačidlo|otáčacie|tlačidlo
-🔳|biele hranaté tlačidlo|geometria|obrys|štvorec|tlačidlo
-🔲|čierne hranaté tlačidlo|geometria|štvorec|tlačidlo
-🏁|kockovaná zástava|preteky|šachovnicová|vlajka
-🚩|trojuholníková zástava|vlajka
-🎌|oslava|prekrížené|skrížené zástavy|vlajky
-🏴|čierna zástava|vlajka
-🏳️|biela zástava|vlajka
-🏳️‍🌈|dúha|dúhová zástava|vlajka|zástava
+⬛|čierna|čierny štvorec|čierny veľký štvorec|geometria|štvorec|veľký čierny štvorec
+⬜|biela|biely veľký štvorec|geometria|štvorec|tvar|veľký biely štvorec
+◼️|čierna|čierny stredný štvorec|geometria|stredný čierny štvorec|štvorec|tvar
+◻️|biela|biely stredný štvorec|geometria|stredný biely štvorec|štvorec|tvar
+◾|čierna|čierny menší štvorec|čierny stredne malý štvorec|geometria|stredne malý čierny štvorec|štvorec|tvar
+◽|biela|biely menší štvorec|biely stredne malý štvorec|geometria|stredne malý biely štvorec|štvorec|tvar
+▪️|čierna|čierny štvorček|geometria|malý čierny štvorec|štvorec|tvar
+▫️|biela|biely štvorček|geometria|malý biely štvorec|štvorec|tvar
+🔶|diamant|geometria|kosoštvorec|oranžový|veľký oranžový kosoštvorec
+🔷|diamant|geometria|kosoštvorec|modrý|veľký modrý kosoštvorec
+🔸|diamant|geometria|kosoštvorec|malý oranžový kosoštvorec|oranžová|oranžový|tvar
+🔹|diamant|geometria|kosoštvorec|malý modrý kosoštvorec|modrý|tvar
+🔺|červený trojuholník nahor|geometria|tvar
+🔻|červená|červený trojuholník nadol|geometria|nadol|trojuholník
+💠|diamant|geometria|kosoštvorec s bodkou|tvar|vnútri
+🔘|geometria|kruh|obrys|okrúhle tlačidlo|otáčacie|rádio|tlačidlo
+🔳|biele hranaté tlačidlo|geometria|obrys|štvorec|tlačidlo|tvar
+🔲|čierne hranaté tlačidlo|geometria|obrys|štvorec|tlačidlo
+🏁|cieľ|formula|kockovaná zástava|koniec|preteky|šachovnicová|šport|víťazstvo|vlajka
+🚩|červená vlajka|golf|post|šport|stavba|stĺp|trojuholníková vlajka|trojuholníková zástava|vlajka
+🎌|japonské|kríž|oslava|prekrížené|prekrýžené|skrížené zástavy|vlajky
+🏴|čierna vlajka|čierna zástava|mávanie|vlajka|vlajúca čierna vlajka|zástava
+🏳️|biela vlajka|biela zástava|vlajka|vlajúca biela vlajka|vzdať sa|zástava
+🏳️‍🌈|bisexuál|dúha|dúhová zástava|gay|lesba|lgbtqia|pride|transgender
 🏳️‍⚧️|biela|ružová|svetlomodrá|transgenderová zástava|vlajka
 🏴‍☠️|korisť|pirátska zástava|poklad
 🇦🇩|andorra

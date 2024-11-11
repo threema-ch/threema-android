@@ -153,13 +153,13 @@ public class RateDialog extends ThreemaDialogFragment {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, getTheme());
 		builder.setView(dialogView);
 
-		if (!TestUtil.empty(title)) {
+		if (!TestUtil.isEmptyOrNull(title)) {
 			builder.setTitle(title);
 		}
 
 		if (preferenceService != null) {
 			String review = preferenceService.getRatingReviewText();
-			if (!TestUtil.empty(review)) {
+			if (!TestUtil.isEmptyOrNull(review)) {
 				editText.append(review);
 			}
 		}
@@ -187,7 +187,7 @@ public class RateDialog extends ThreemaDialogFragment {
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				if (!TestUtil.empty(text)) {
+				if (!TestUtil.isEmptyOrNull(text)) {
 					preferenceService.setRatingReviewText(text);
 				}
 

@@ -141,7 +141,7 @@ class ContactUpdateWorker(
             return success
         }
 
-        private fun fetchAndUpdateContactModels(
+        fun fetchAndUpdateContactModels(
             contactModels: List<ContactModel>,
             apiConnector: APIConnector,
             contactService: ContactService,

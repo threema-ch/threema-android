@@ -41,11 +41,10 @@ class OutgoingContactDeleteMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
 
     override val type: String = "OutgoingContactDeleteMessageTask"
-    val messageService by lazy { serviceManager.messageService }
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
-        val message = messageService.getContactMessageModel(messageModelId, true)
-            ?: throw ThreemaException("No contact message model found for messageId=$messageModelId")
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
+        val message = getContactMessageModel(messageModelId)
+            ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
 
         val deleteMessage = DeleteMessage(
             DeleteMessageData(messageId = MessageId.fromString(message.apiMessageId).messageIdLong)

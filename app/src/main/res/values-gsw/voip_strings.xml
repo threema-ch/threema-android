@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Threema-Aruef</string>
     <string name="voip_hangup">Uflegge</string>
@@ -52,7 +52,7 @@
     <string name="voip_prefs_video_codec_no_vp8">VP8 deaktiviere</string>
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviere</string>
     <string name="voip_prefs_video_codec_sw">Software-Codecs</string>
-    <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde.</string>
+    <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde</string>
     <string name="voip_connection_lost">Verbindig isch unterbroche worde</string>
     <string name="prefs_voip_reject_incoming_calls_title">Natel-Arüef zruggwiise</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Iigehendi Mobiltelefon-Arüef zruggwiise, während en Threema-Aruef lauft.</string>
@@ -95,9 +95,11 @@
     <string name="voip_gc_call_full_generic">Kei Teilnahm möglich: Die maximal Teilnehmerzahl isch erreicht.</string>
     <string name="voip_gc_call_full_n">Kei Teilnahm möglich: Di maximal Teilnehmerzahl (%1$d) isch erreicht.</string>
     <plurals name="n_participants_in_call">
+        <item quantity="one">%d Teilnehmer</item>
         <item quantity="other">%d Teilnehmer</item>
     </plurals>
     <plurals name="n_members_dont_support_group_calls">
+        <item quantity="one">Hiiwis: %d Mitglied cha nöd a Gruppearüef teilneh.</item>
         <item quantity="other">Hiiwis: %d Mitglieder chönd nöd a Gruppearüef teilneh.</item>
     </plurals>
 </resources>

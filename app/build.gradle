@@ -18,14 +18,14 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 // version codes
 
 // Only use the scheme "<major>.<minor>.<patch>" for the app_version
-def app_version = "5.5.1"
+def app_version = "5.6.0"
 
 // beta_suffix with leading dash (e.g. `-beta1`)
 // should be one of (alpha|beta|rc) and an increasing number or empty for a regular release.
 // Note: in nightly builds this will be overwritten with a nightly version "-n12345"
 def beta_suffix = ""
 
-def defaultVersionCode = 998
+def defaultVersionCode = 1012
 
 /**
  * Return the git hash, if git is installed.
@@ -101,7 +101,7 @@ android {
         testInstrumentationRunnerArguments notAnnotation: 'ch.threema.app.TestFastlaneOnly,ch.threema.app.DangerousTest', disableAnalytics: 'true'
         minSdkVersion 21
         //noinspection OldTargetApi
-        targetSdkVersion 33
+        targetSdkVersion 34
         vectorDrawables.useSupportLibrary = true
         applicationId "ch.threema.app"
         testApplicationId 'ch.threema.app.test'
@@ -148,6 +148,7 @@ android {
         buildConfigField "boolean", "MD_ENABLED", "false"
         buildConfigField "boolean", "EDIT_MESSAGES_ENABLED", "true"
         buildConfigField "boolean", "DELETE_MESSAGES_ENABLED", "true"
+        buildConfigField "boolean", "SHOW_TIMESTAMPS_AND_TECHNICAL_INFO_IN_MESSAGE_DETAILS", "false"
 
         // config fields for action URLs / deep links
         buildConfigField "String", "uriScheme", "\"threema\""
@@ -214,7 +215,7 @@ android {
     }
 
     namespace 'ch.threema.app'
-    flavorDimensions "default"
+    flavorDimensions = ["default"]
     productFlavors {
         none { }
         store_google { }
@@ -343,46 +344,8 @@ android {
                 callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call",
             ]
         }
-        onprem_internal {
-            versionName "${app_version}o${beta_suffix}"
-            applicationId "ch.threema.app.onprem.internal"
-            testApplicationId 'ch.threema.app.onprem.internal.test'
-            resValue "string", "app_name", "Threema OnPrem Internal"
-            resValue "string", "package_name", applicationId
-            resValue "string", "contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.internal.profile"
-            resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.onprem.internal.call"
-            buildConfigField "int", "MAX_GROUP_SIZE", "256"
-            buildConfigField "String", "CHAT_SERVER_PREFIX", "\"\""
-            buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"\""
-            buildConfigField "String", "CHAT_SERVER_SUFFIX", "null"
-            buildConfigField "String", "MEDIA_PATH", "\"ThreemaOnPremInt\""
-            buildConfigField "boolean", "CHAT_SERVER_GROUPS", "false"
-
-            buildConfigField "byte[]", "SERVER_PUBKEY", "null"
-            buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "null"
-            buildConfigField "String", "DIRECTORY_SERVER_URL", "null"
-            buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DONE_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DONE_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "null"
-            buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "new String[] {\"ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=\", \"Hrk8aCjwKkXySubI7CZ3y9Sx+oToEHjNkGw98WSRneU=\", \"5pEn1T/5bhecNWrp9NgUQweRfgVtu/I8gRb3VxGP7k4=\"}"
-            buildConfigField "String", "LOG_TAG", "\"3maoi\""
-
-            // config fields for action URLs / deep links
-            buildConfigField "String", "uriScheme", "\"threemaonprem\""
-            buildConfigField "String", "actionUrl", "\"onprem.threema.ch\""
-
-            manifestPlaceholders = [
-                uriScheme: "threemaonprem",
-                actionUrl: "onprem.threema.ch",
-                callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.onprem.internal.call",
-            ]
-        }
-        blue { // Essentially like sandbox work, but with a different icon and accent color, used for internal testing
-            versionName "${app_version}r${beta_suffix}"
+        blue { // Essentially like sandbox work, but with a different icon and application id, used for internal testing
+            versionName "${app_version}b${beta_suffix}"
             // The app was previously named `red`. The app id remains unchanged to still be able to install updates.
             applicationId "ch.threema.app.red"
             testApplicationId 'ch.threema.app.blue.test'
@@ -541,9 +504,6 @@ android {
             java.srcDir 'src/foss_based/java'
         }
         onprem {
-            java.srcDir 'src/google_services_based/java'
-        }
-        onprem_internal {
             java.srcDir 'src/google_services_based/java'
         }
         green {
@@ -747,6 +707,15 @@ android {
         // if true, generate an XML report for use by for example Jenkins
         xmlReport true
     }
+
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.7"
+    }
 }
 
 dependencies {
@@ -815,9 +784,20 @@ dependencies {
     implementation 'androidx.window:window:1.3.0'
     kapt 'androidx.room:room-compiler:2.6.1'
 
+    // Jetpack Compose
+    def composeBom = platform('androidx.compose:compose-bom:2024.06.00')
+    implementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.activity:activity-compose:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.8.6'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    androidTestImplementation composeBom
+
     implementation 'org.bouncycastle:bcprov-jdk15to18:1.78.1'
 
-    implementation 'com.google.android.material:material:1.10.0' // last version before switch to tonal system: https://github.com/material-components/material-components-android/releases/tag/1.11.0
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.39' // make sure to update this in domain's build.gradle as well
 
@@ -927,7 +907,6 @@ dependencies {
         store_google_workImplementation(dependency) { excludes.each { exclude it } }
         store_threemaImplementation(dependency) { excludes.each { exclude it } }
         onpremImplementation(dependency) { excludes.each { exclude it } }
-        onprem_internalImplementation(dependency) { excludes.each { exclude it } }
         greenImplementation(dependency) { excludes.each { exclude it } }
         sandbox_workImplementation(dependency) { excludes.each { exclude it } }
         blueImplementation(dependency) { excludes.each { exclude it } }
@@ -938,7 +917,6 @@ dependencies {
     store_googleImplementation(name: 'libgsaverification-client', ext: 'aar')
     store_google_workImplementation(name: 'libgsaverification-client', ext: 'aar')
     onpremImplementation(name: 'libgsaverification-client', ext: 'aar')
-    onprem_internalImplementation(name: 'libgsaverification-client', ext: 'aar')
     store_threemaImplementation(name: 'libgsaverification-client', ext: 'aar')
     greenImplementation(name: 'libgsaverification-client', ext: 'aar')
     sandbox_workImplementation(name: 'libgsaverification-client', ext: 'aar')
@@ -952,7 +930,6 @@ dependencies {
     store_threemaImplementation maplibreDependency
     libreImplementation maplibreDependency, { exclude group: 'com.google.android.gms' }
     onpremImplementation maplibreDependency
-    onprem_internalImplementation maplibreDependency
     greenImplementation maplibreDependency
     sandbox_workImplementation maplibreDependency
     blueImplementation maplibreDependency

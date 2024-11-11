@@ -157,7 +157,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 				(workDirectoryContact.firstName != null ? workDirectoryContact.firstName : "");
 		}
 
-		if (!TestUtil.empty(workDirectoryContact.csi)) {
+		if (!TestUtil.isEmptyOrNull(workDirectoryContact.csi)) {
 			name += " " + workDirectoryContact.csi;
 		}
 

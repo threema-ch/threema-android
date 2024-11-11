@@ -23,6 +23,8 @@ package ch.threema.data.storage
 
 import android.database.sqlite.SQLiteException
 
+import ch.threema.data.models.GroupIdentity
+
 /**
  * This interface fully abstracts the database access.
  */
@@ -57,4 +59,32 @@ interface DatabaseBackend {
      * Return whether the contact was deleted (true) or wasn't found (false).
      */
     fun deleteContactByIdentity(identity: String): Boolean
+
+    /**
+     * Insert a new group.
+     *
+     * @throws SQLiteException if insertion fails due to a conflict
+     */
+    fun createGroup(group: DbGroup)
+
+    /**
+     * Return the group with the specified [localDbId].
+     */
+    fun getGroupByLocalGroupDbId(localDbId: Long): DbGroup?
+
+    /**
+     * Return the group with the specified [groupIdentity].
+     */
+    fun getGroupByGroupIdentity(groupIdentity: GroupIdentity): DbGroup?
+
+    /**
+     * Update the specified group (using the creator identity and group id as lookup key).
+     *
+     * Note: Some fields will not be overwritten:
+     *
+     * - The creator identity
+     * - The group id
+     * - The createdAt timestamp
+     */
+    fun updateGroup(group: DbGroup)
 }

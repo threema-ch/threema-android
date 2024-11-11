@@ -45,15 +45,14 @@ class OutgoingGroupProfilePictureTask(
     messageId: MessageId?,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val messageId = messageId ?: MessageId()
-    private val userService = serviceManager.userService
-    private val receiverIdentities = receiverIdentities - userService.identity
-    private val groupService = serviceManager.groupService
-    private val fileService = serviceManager.fileService
+    private val messageId by lazy { messageId ?: MessageId() }
+    private val userService by lazy { serviceManager.userService }
+    private val receiverIdentities by lazy { receiverIdentities - userService.identity }
+    private val fileService by lazy { serviceManager.fileService }
 
     override val type: String = "OutgoingGroupProfilePictureTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         if (creatorIdentity != userService.identity) {
             logger.warn("Only the group creator should send the group picture to the members")
             return

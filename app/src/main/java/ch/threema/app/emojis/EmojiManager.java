@@ -40,115 +40,116 @@ import java8.util.function.Consumer;
 import java8.util.function.Supplier;
 
 public class EmojiManager {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiManager");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiManager");
 
-	// Singleton
-	private static volatile EmojiManager instance = null;
+    // Singleton
+    private static volatile EmojiManager instance = null;
 
-	public static final int EMOJI_HEIGHT = 64;
-	public static final int EMOJI_WIDTH = 64;
-	private final int spritemapInSampleSize;
-	private final Context appContext;
-	private static final EmojiGroup[] emojiGroups = {
-		new EmojiGroup(null, null, R.drawable.emoji_category_recent, R.string.emoji_recent),
-		new EmojiGroup("emojis/people-", ".png", R.drawable.emoji_category_people, R.string.emoji_emotions),
-		new EmojiGroup("emojis/nature-", ".png", R.drawable.emoji_category_nature, R.string.emoji_nature),
-		new EmojiGroup("emojis/food-", ".png", R.drawable.emoji_category_food, R.string.emoji_food),
-		new EmojiGroup("emojis/activity-", ".png", R.drawable.emoji_category_activities, R.string.emoji_activities),
-		new EmojiGroup("emojis/travel-", ".png", R.drawable.emoji_category_travel, R.string.emoji_traffic),
-		new EmojiGroup("emojis/objects-", ".png", R.drawable.emoji_category_objects, R.string.emoji_things),
-		new EmojiGroup("emojis/symbols-", ".png", R.drawable.emoji_category_symbols, R.string.emoji_symbols),
-		new EmojiGroup("emojis/flags-", ".png", R.drawable.emoji_category_flags, R.string.emoji_flags),
-	};
+    public static final int EMOJI_HEIGHT = 64;
+    public static final int EMOJI_WIDTH = 64;
+    private final int spritemapInSampleSize;
+    private final Context appContext;
+    private static final EmojiGroup[] emojiGroups = {
+        new EmojiGroup(null, null, R.drawable.emoji_category_recent, R.string.emoji_recent),
+        new EmojiGroup("emojis/smileys-", ".png", R.drawable.emoji_category_smileys, R.string.emoji_smileys),
+        new EmojiGroup("emojis/people-", ".png", R.drawable.emoji_category_people, R.string.emoji_people),
+        new EmojiGroup("emojis/nature-", ".png", R.drawable.emoji_category_nature, R.string.emoji_nature),
+        new EmojiGroup("emojis/food-", ".png", R.drawable.emoji_category_food, R.string.emoji_food),
+        new EmojiGroup("emojis/activity-", ".png", R.drawable.emoji_category_activities, R.string.emoji_activity),
+        new EmojiGroup("emojis/travel-", ".png", R.drawable.emoji_category_travel, R.string.emoji_travel),
+        new EmojiGroup("emojis/objects-", ".png", R.drawable.emoji_category_objects, R.string.emoji_objects),
+        new EmojiGroup("emojis/symbols-", ".png", R.drawable.emoji_category_symbols, R.string.emoji_symbols),
+        new EmojiGroup("emojis/flags-", ".png", R.drawable.emoji_category_flags, R.string.emoji_flags),
+    };
 
-	public static EmojiManager getInstance(Context context) {
-		if (instance == null) {
-			synchronized (EmojiManager.class) {
-				if (instance == null) {
-					instance = new EmojiManager(context);
-				}
-			}
-		}
-		return instance;
-	}
+    public static EmojiManager getInstance(Context context) {
+        if (instance == null) {
+            synchronized (EmojiManager.class) {
+                if (instance == null) {
+                    instance = new EmojiManager(context);
+                }
+            }
+        }
+        return instance;
+    }
 
-	private EmojiManager(Context context) {
-		this.appContext = context.getApplicationContext();
-		this.spritemapInSampleSize = context.getResources().getDisplayMetrics().density <= 1f ? 2 : 1;
-	}
+    private EmojiManager(Context context) {
+        this.appContext = context.getApplicationContext();
+        this.spritemapInSampleSize = context.getResources().getDisplayMetrics().density <= 1f ? 2 : 1;
+    }
 
-	public static EmojiGroup[] getEmojiGroups() {
-		return emojiGroups;
-	}
+    public static EmojiGroup[] getEmojiGroups() {
+        return emojiGroups;
+    }
 
-	public static int getNumberOfEmojiGroups() {
-		return emojiGroups.length;
-	}
+    public static int getNumberOfEmojiGroups() {
+        return emojiGroups.length;
+    }
 
-	/**
-	 * @param emojiSequence - sequence of UTF-8 characters representing the emoji
-	 * @return Drawable for emoji or null if there is no matching emoji
-	 */
-	public Drawable getEmojiDrawable(String emojiSequence) {
-		EmojiParser.ParseResult result = EmojiParser.parseAt(emojiSequence, 0);
+    /**
+     * @param emojiSequence - sequence of UTF-8 characters representing the emoji
+     * @return Drawable for emoji or null if there is no matching emoji
+     */
+    public Drawable getEmojiDrawable(String emojiSequence) {
+        EmojiParser.ParseResult result = EmojiParser.parseAt(emojiSequence, 0);
 
-		return result != null ? getEmojiDrawable(result.coords) : null;
-	}
+        return result != null ? getEmojiDrawable(result.coords) : null;
+    }
 
-	/**
-	 * @param coordinates - The sprite coordinates
-	 * @return Drawable for emoji
-	 */
-	@UiThread
-	@Nullable
-	public Drawable getEmojiDrawable(SpriteCoordinates coordinates) {
-		if (coordinates != null) {
-			final EmojiGroup emojiGroup = emojiGroups[coordinates.groupId];
-			if (!emojiGroup.hasSpritemapBitmap(coordinates.spritemapId)) {
-				emojiGroup.setSpritemapBitmap(coordinates.spritemapId, new EmojiSpritemapBitmap(appContext, emojiGroup, coordinates.spritemapId, spritemapInSampleSize));
-			}
+    /**
+     * @param coordinates - The sprite coordinates
+     * @return Drawable for emoji
+     */
+    @UiThread
+    @Nullable
+    public Drawable getEmojiDrawable(SpriteCoordinates coordinates) {
+        if (coordinates != null) {
+            final EmojiGroup emojiGroup = emojiGroups[coordinates.groupId];
+            if (!emojiGroup.hasSpritemapBitmap(coordinates.spritemapId)) {
+                emojiGroup.setSpritemapBitmap(coordinates.spritemapId, new EmojiSpritemapBitmap(appContext, emojiGroup, coordinates.spritemapId, spritemapInSampleSize));
+            }
 
-			final EmojiDrawable drawable = new EmojiDrawable(coordinates, spritemapInSampleSize);
+            final EmojiDrawable drawable = new EmojiDrawable(coordinates, spritemapInSampleSize);
 
-			if (emojiGroup.getSpritemapBitmap(coordinates.spritemapId) != null) {
-				if (emojiGroup.getSpritemapBitmap(coordinates.spritemapId).isSpritemapLoaded()) {
-					drawable.setBitmap(emojiGroup.getSpritemapBitmap(coordinates.spritemapId).getSpritemapBitmap());
-				} else {
-					try {
-						CompletableFuture
-							.supplyAsync(new Supplier<Bitmap>() {
-								@Override
-								public Bitmap get() {
-									return emojiGroup.getSpritemapBitmap(coordinates.spritemapId).loadSpritemapAsset();
-								}
-							})
-							.thenAccept(new Consumer<Bitmap>() {
-								@Override
-								public void accept(Bitmap bitmap) {
-									RuntimeUtil.runOnUiThread(new Runnable() {
-										@Override
-										public void run() {
-											drawable.setBitmap(bitmap);
-										}
-									});
-								}
-							})
-							.get();
-					} catch (InterruptedException | ExecutionException e) {
-						logger.error("Exception", e);
-					}
-				}
-				return drawable;
-			}
-		}
-		return null;
-	}
+            if (emojiGroup.getSpritemapBitmap(coordinates.spritemapId) != null) {
+                if (emojiGroup.getSpritemapBitmap(coordinates.spritemapId).isSpritemapLoaded()) {
+                    drawable.setBitmap(emojiGroup.getSpritemapBitmap(coordinates.spritemapId).getSpritemapBitmap());
+                } else {
+                    try {
+                        CompletableFuture
+                            .supplyAsync(new Supplier<Bitmap>() {
+                                @Override
+                                public Bitmap get() {
+                                    return emojiGroup.getSpritemapBitmap(coordinates.spritemapId).loadSpritemapAsset();
+                                }
+                            })
+                            .thenAccept(new Consumer<Bitmap>() {
+                                @Override
+                                public void accept(Bitmap bitmap) {
+                                    RuntimeUtil.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            drawable.setBitmap(bitmap);
+                                        }
+                                    });
+                                }
+                            })
+                            .get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+                return drawable;
+            }
+        }
+        return null;
+    }
 
-	public int getSpritemapInSampleSize() {
-		return this.spritemapInSampleSize;
-	}
+    public int getSpritemapInSampleSize() {
+        return this.spritemapInSampleSize;
+    }
 
-	public static @StringRes int getGroupName(int id) {
-		return emojiGroups[id].getGroupName();
-	}
+    public static @StringRes int getGroupName(int id) {
+        return emojiGroups[id].getGroupName();
+    }
 }

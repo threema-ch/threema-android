@@ -59,7 +59,7 @@ public class SMSVerificationLinkActivity extends AppCompatActivity {
 					if (data != null) {
 						final String code = data.getQueryParameter("code");
 
-						if (!TestUtil.empty(code)) {
+						if (!TestUtil.isEmptyOrNull(code)) {
 							resultText = null;
 
 							new AsyncTask<Void, Void, Boolean>() {

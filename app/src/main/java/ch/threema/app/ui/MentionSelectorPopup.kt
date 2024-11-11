@@ -109,7 +109,7 @@ class MentionSelectorPopup(
                 var spacePosition = -1
                 try {
                     filterTextAfterAtChar = s.toString().substring(filterStart)
-                    if (!TestUtil.empty(filterTextAfterAtChar)) {
+                    if (!TestUtil.isEmptyOrNull(filterTextAfterAtChar)) {
                         spacePosition = filterTextAfterAtChar.indexOf(" ")
                         if (spacePosition == -1) {
                             spacePosition = filterTextAfterAtChar.indexOf("\n")

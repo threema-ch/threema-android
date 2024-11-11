@@ -23,23 +23,25 @@ package ch.threema.app.tasks
 
 import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.NotificationService.logger
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.fetchContactModel
 import ch.threema.app.utils.sendMessageToReceivers
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.storage.models.GroupRequestSyncLogModel
+import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel
 import kotlinx.serialization.Serializable
 import java.util.Date
 
+private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncRequestTask")
+
 /**
  * Send a group sync request to the specified group creator. Note that maximum one sync request is
- * sent per group and week. If a sync request has been sent within the last week, this task does not
+ * sent per group and hour. If a sync request has been sent within the last hour, this task does not
  * send a sync request.
  *
  * The sync request is also sent to unknown or blocked contacts.
@@ -51,29 +53,24 @@ class OutgoingGroupSyncRequestTask(
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     private val messageId = messageId ?: MessageId()
-    private val contactService by lazy { serviceManager.contactService }
     private val apiConnector by lazy { serviceManager.apiConnector }
-    private val identityStore by lazy { serviceManager.identityStore }
-    private val contactStore by lazy { serviceManager.contactStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val taskCreator by lazy { serviceManager.taskCreator }
-    private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    private val groupRequestSyncLogModelFactory by lazy { serviceManager.databaseServiceNew.groupRequestSyncLogModelFactory }
+    private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory }
     private val blackListService by lazy { serviceManager.blackListService }
 
     override val type: String = "OutgoingGroupSyncRequestTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Don't send group sync request to myself
         if (creatorIdentity.equals(identityStore.identity, true)) {
             return
         }
 
-        // Only send a group sync request once a week for a specific group
-        val model = groupRequestSyncLogModelFactory.get(groupId.toString(), creatorIdentity)
-        val oneWeekAgo = Date(System.currentTimeMillis() - DateUtils.WEEK_IN_MILLIS)
+        // Only send a group sync request once in an hour for a specific group
+        val model = outgoingGroupSyncRequestLogModelFactory.get(groupId.toString(), creatorIdentity)
+        val oneHourAgo = Date(System.currentTimeMillis() - DateUtils.HOUR_IN_MILLIS)
         val lastSyncRequest = model?.lastRequest ?: Date(0)
-        if (lastSyncRequest.after(oneWeekAgo)) {
+        if (lastSyncRequest.after(oneHourAgo)) {
             logger.info(
                 "Do not send request sync to group creator {}: last sync request was at {}",
                 creatorIdentity,
@@ -105,15 +102,13 @@ class OutgoingGroupSyncRequestTask(
 
         // Update sync request sent date
         if (model == null) {
-            val newModel = GroupRequestSyncLogModel()
+            val newModel = OutgoingGroupSyncRequestLogModel()
             newModel.setAPIGroupId(groupId.toString(), creatorIdentity)
-            newModel.count = 1
             newModel.lastRequest = Date()
-            groupRequestSyncLogModelFactory.create(newModel)
+            outgoingGroupSyncRequestLogModelFactory.create(newModel)
         } else {
             model.lastRequest = Date()
-            model.count = model.count + 1
-            groupRequestSyncLogModelFactory.update(model)
+            outgoingGroupSyncRequestLogModelFactory.update(model)
         }
     }
 

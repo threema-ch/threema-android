@@ -37,7 +37,7 @@ public class ContactNotificationsActivity extends NotificationsActivity {
 		super.onCreate(savedInstanceState);
 
 		this.identity = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-		if (TestUtil.empty(this.identity)) {
+		if (TestUtil.isEmptyOrNull(this.identity)) {
 			finish();
 			return;
 		}

@@ -22,6 +22,8 @@
 package ch.threema.app.adapters;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -66,432 +69,436 @@ import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactListAdapter extends FilterableListAdapter implements SectionIndexer {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactListAdapter");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactListAdapter");
 
-	private static final int MAX_RECENTLY_ADDED_CONTACTS = 1;
+    private static final int MAX_RECENTLY_ADDED_CONTACTS = 1;
 
-	private final ContactService contactService;
-	private final PreferenceService preferenceService;
-	private final IdListService blackListIdentityService;
+    private final ContactService contactService;
+    private final PreferenceService preferenceService;
+    private final IdListService blackListIdentityService;
 
-	public static final int VIEW_TYPE_NORMAL = 0;
-	public static final int VIEW_TYPE_RECENTLY_ADDED = 1;
-	public static final int VIEW_TYPE_COUNT = 2;
+    public static final int VIEW_TYPE_NORMAL = 0;
+    public static final int VIEW_TYPE_RECENTLY_ADDED = 1;
+    public static final int VIEW_TYPE_COUNT = 2;
 
-	private static final String PLACEHOLDER_BLANK_HEADER = " ";
-	private static final String PLACEHOLDER_CHANNELS = "\uffff";
-	private static final String PLACEHOLDER_RECENTLY_ADDED = "\u0001";
-	private static final String CHANNEL_SIGN = "\u002a";
-	public static final String RECENTLY_ADDED_SIGN = "+";
+    private static final String PLACEHOLDER_BLANK_HEADER = " ";
+    private static final String PLACEHOLDER_CHANNELS = "\uffff";
+    private static final String PLACEHOLDER_RECENTLY_ADDED = "\u0001";
+    private static final String CHANNEL_SIGN = "\u002a";
+    public static final String RECENTLY_ADDED_SIGN = "+";
 
-	private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
-	private ContactListFilter contactListFilter;
-	private final AvatarListener avatarListener;
-	private final HashMap<String, Integer> alphaIndexer = new HashMap<String, Integer>();
-	private final HashMap<Integer, String> positionIndexer = new HashMap<Integer, String>();
-	private String[] sections;
-	private Integer[] counts;
-	private final LayoutInflater inflater;
-	private final Collator collator;
-	private final @NonNull RequestManager requestManager;
+    private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
+    private ContactListFilter contactListFilter;
+    private final AvatarListener avatarListener;
+    private final HashMap<String, Integer> alphaIndexer = new HashMap<String, Integer>();
+    private final HashMap<Integer, String> positionIndexer = new HashMap<Integer, String>();
+    private String[] sections;
+    private Integer[] counts;
+    private final LayoutInflater inflater;
+    private final Collator collator;
+    private final @NonNull RequestManager requestManager;
 
-	public interface AvatarListener {
-		void onAvatarClick(View view, int position);
-		boolean onAvatarLongClick(View view, int position);
-		void onRecentlyAddedClick(ContactModel contactModel);
-	}
+    public interface AvatarListener {
+        void onAvatarClick(View view, int position);
 
-	public ContactListAdapter(
-		@NonNull Context context,
-		@NonNull List<ContactModel> values,
-		ContactService contactService,
-		PreferenceService preferenceService,
-		IdListService blackListIdentityService,
-		AvatarListener avatarListener,
-		@NonNull RequestManager requestManager
-	) {
-		super(context, R.layout.item_contact_list, (List<Object>) (Object) values);
+        boolean onAvatarLongClick(View view, int position);
 
-		this.values = updateRecentlyAdded(values);
-		this.ovalues = this.values;
-		this.contactService = contactService;
-		this.preferenceService = preferenceService;
-		this.blackListIdentityService = blackListIdentityService;
-		this.avatarListener = avatarListener;
-		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        void onRecentlyAddedClick(ContactModel contactModel);
+    }
 
-		this.collator = Collator.getInstance();
-		this.collator.setStrength(Collator.PRIMARY);
+    public ContactListAdapter(
+        @NonNull Context context,
+        @NonNull List<ContactModel> values,
+        ContactService contactService,
+        PreferenceService preferenceService,
+        IdListService blackListIdentityService,
+        AvatarListener avatarListener,
+        @NonNull RequestManager requestManager
+    ) {
+        super(context, R.layout.item_contact_list, (List<Object>) (Object) values);
 
-		this.requestManager = requestManager;
+        this.values = updateRecentlyAdded(values);
+        this.ovalues = this.values;
+        this.contactService = contactService;
+        this.preferenceService = preferenceService;
+        this.blackListIdentityService = blackListIdentityService;
+        this.avatarListener = avatarListener;
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-		setupIndexer();
-	}
+        this.collator = Collator.getInstance();
+        this.collator.setStrength(Collator.PRIMARY);
 
-	private List<ContactModel> updateRecentlyAdded(List<ContactModel> all) {
-		ArrayList<ContactModel> recents = new ArrayList<>();
-		Date recentlyAddedDate = new Date(System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS);
+        this.requestManager = requestManager;
 
-		for (ContactModel contactModel : all) {
-			if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !"ECHOECHO".equalsIgnoreCase(contactModel.getIdentity())) {
-				recents.add(contactModel);
-			}
-		}
+        setupIndexer();
+    }
 
-		if (recents.size() > 0 && recents.size() < 10) {
-			// filter latest
-			Collections.sort(recents, (o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()));
-			this.recentlyAdded = recents.subList(0, Math.min(recents.size() , MAX_RECENTLY_ADDED_CONTACTS));
+    private List<ContactModel> updateRecentlyAdded(List<ContactModel> all) {
+        ArrayList<ContactModel> recents = new ArrayList<>();
+        Date recentlyAddedDate = new Date(System.currentTimeMillis() - DateUtils.DAY_IN_MILLIS);
 
-			all.addAll(0, this.recentlyAdded);
-		} else {
-			this.recentlyAdded.clear();
-		}
-		return all;
-	}
+        for (ContactModel contactModel : all) {
+            if (contactModel != null && contactModel.getDateCreated() != null && recentlyAddedDate.before(contactModel.getDateCreated()) && !"ECHOECHO".equalsIgnoreCase(contactModel.getIdentity())) {
+                recents.add(contactModel);
+            }
+        }
 
-	public void updateData(@NonNull List<ContactModel> all) {
-		setNotifyOnChange(false);
-		this.values = updateRecentlyAdded(all);
-		this.ovalues = this.values;
-		setupIndexer();
-		setNotifyOnChange(true);
-		notifyDataSetChanged();
-	}
+        if (recents.size() > 0 && recents.size() < 10) {
+            // filter latest
+            Collections.sort(recents, (o1, o2) -> o2.getDateCreated().compareTo(o1.getDateCreated()));
+            this.recentlyAdded = recents.subList(0, Math.min(recents.size(), MAX_RECENTLY_ADDED_CONTACTS));
 
-	private boolean containsKeyLocaleAware(String newKey) {
-		for (String key : alphaIndexer.keySet()) {
-			if (collator.equals(key, newKey)) {
-				return true;
-			}
-		}
-		return false;
-	}
+            all.addAll(0, this.recentlyAdded);
+        } else {
+            this.recentlyAdded.clear();
+        }
+        return all;
+    }
 
-	/**
-	 * Get Unicode-aware index character for headers and thumbscroller
-	 * @param input Input string
-	 * @return Unicode character at beginning of input
-	 */
-	private String getIndexCharacter(String input) {
-		try {
-			int codePoint = Character.codePointAt(input, 0);
-			return input.substring(0, Character.charCount(codePoint)).toUpperCase();
-		} catch (Exception e) {
-			return input.substring(0, 1).toUpperCase();
-		}
-	}
+    public void updateData(@NonNull List<ContactModel> all) {
+        setNotifyOnChange(false);
+        this.values = updateRecentlyAdded(all);
+        this.ovalues = this.values;
+        setupIndexer();
+        setNotifyOnChange(true);
+        notifyDataSetChanged();
+    }
 
-	private void setupIndexer() {
-		int size = values.size();
-		String firstLetter;
+    private boolean containsKeyLocaleAware(String newKey) {
+        for (String key : alphaIndexer.keySet()) {
+            if (collator.equals(key, newKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-		alphaIndexer.clear();
-		positionIndexer.clear();
+    /**
+     * Get Unicode-aware index character for headers and thumbscroller
+     *
+     * @param input Input string
+     * @return Unicode character at beginning of input
+     */
+    private String getIndexCharacter(String input) {
+        try {
+            int codePoint = Character.codePointAt(input, 0);
+            return input.substring(0, Character.charCount(codePoint)).toUpperCase();
+        } catch (Exception e) {
+            return input.substring(0, 1).toUpperCase();
+        }
+    }
 
-		// create index for fast scroll
-		for (int i = 0; i < size; i++) {
-			ContactModel c = values.get(i);
+    private void setupIndexer() {
+        int size = values.size();
+        String firstLetter;
 
-			if (c == null) {
-				// this case only happens if setupList() is called on
-				// values that already have headers added
-				values.remove(i);
-				i--;
-				size--;
-				continue;
-			}
+        alphaIndexer.clear();
+        positionIndexer.clear();
 
-			firstLetter = getInitial(c, false, i);
+        // create index for fast scroll
+        for (int i = 0; i < size; i++) {
+            ContactModel c = values.get(i);
 
-			if (PLACEHOLDER_BLANK_HEADER.equals(firstLetter) ||
-					PLACEHOLDER_CHANNELS.equals(firstLetter) ||
-					PLACEHOLDER_RECENTLY_ADDED.equals(firstLetter)) {
-				// placeholders
-				if (!alphaIndexer.containsKey(firstLetter)) {
-					alphaIndexer.put(firstLetter, i);
-					positionIndexer.put(i, firstLetter);
-				}
-			} else {
-				if (!containsKeyLocaleAware(firstLetter)) {
-					firstLetter = Normalizer.normalize(firstLetter, Normalizer.Form.NFD);
-					alphaIndexer.put(firstLetter, i);
-					positionIndexer.put(i, firstLetter);
-				}
-			}
-		}
+            if (c == null) {
+                // this case only happens if setupList() is called on
+                // values that already have headers added
+                values.remove(i);
+                i--;
+                size--;
+                continue;
+            }
 
-		// create a list from the set to sort
-		ArrayList<String> sectionList = new ArrayList<String>(alphaIndexer.keySet());
-		Collections.sort(sectionList, collator);
-		if (sectionList.contains(PLACEHOLDER_CHANNELS)) {
-			// replace channels placeholder by star sign AFTER sorting
-			sectionList.set(sectionList.indexOf(PLACEHOLDER_CHANNELS), CHANNEL_SIGN);
-			if (alphaIndexer.containsKey(PLACEHOLDER_CHANNELS)) {
-				alphaIndexer.put(CHANNEL_SIGN, alphaIndexer.get(PLACEHOLDER_CHANNELS));
-				alphaIndexer.remove(PLACEHOLDER_CHANNELS);
-			}
-		}
-		sections = new String[sectionList.size()];
-		sectionList.toArray(sections);
+            firstLetter = getInitial(c, false, i);
 
-		// create array for reverse lookup
-		ArrayList<Integer> countsList = new ArrayList<Integer>(positionIndexer.keySet());
-		Collections.sort(countsList);
-		counts = new Integer[countsList.size()];
-		countsList.toArray(counts);
-	}
+            if (PLACEHOLDER_BLANK_HEADER.equals(firstLetter) ||
+                PLACEHOLDER_CHANNELS.equals(firstLetter) ||
+                PLACEHOLDER_RECENTLY_ADDED.equals(firstLetter)) {
+                // placeholders
+                if (!alphaIndexer.containsKey(firstLetter)) {
+                    alphaIndexer.put(firstLetter, i);
+                    positionIndexer.put(i, firstLetter);
+                }
+            } else {
+                if (!containsKeyLocaleAware(firstLetter)) {
+                    firstLetter = Normalizer.normalize(firstLetter, Normalizer.Form.NFD);
+                    alphaIndexer.put(firstLetter, i);
+                    positionIndexer.put(i, firstLetter);
+                }
+            }
+        }
 
-	private String getInitial(ContactModel c, boolean afterSorting, int position) {
-		String firstLetter, sortingValue;
+        // create a list from the set to sort
+        ArrayList<String> sectionList = new ArrayList<String>(alphaIndexer.keySet());
+        Collections.sort(sectionList, collator);
+        if (sectionList.contains(PLACEHOLDER_CHANNELS)) {
+            // replace channels placeholder by star sign AFTER sorting
+            sectionList.set(sectionList.indexOf(PLACEHOLDER_CHANNELS), CHANNEL_SIGN);
+            if (alphaIndexer.containsKey(PLACEHOLDER_CHANNELS)) {
+                alphaIndexer.put(CHANNEL_SIGN, alphaIndexer.get(PLACEHOLDER_CHANNELS));
+                alphaIndexer.remove(PLACEHOLDER_CHANNELS);
+            }
+        }
+        sections = new String[sectionList.size()];
+        sectionList.toArray(sections);
 
-		sortingValue = ContactUtil.getSafeNameString(c, preferenceService.isContactListSortingFirstName());
-		if (sortingValue.length() == 0) {
-			firstLetter = PLACEHOLDER_BLANK_HEADER;
-		} else {
-			if (ContactUtil.isGatewayContact(c)) {
-				firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
-			} else if (getItemViewType(position) == VIEW_TYPE_RECENTLY_ADDED) {
-				if (contactListFilter != null && contactListFilter.getFilterString() != null) {
-					if (position > 0) {
-						for (int i = Math.min(position - 1, MAX_RECENTLY_ADDED_CONTACTS - 1) ; i >= 0; i--) {
-							if (values.get(i).equals(values.get(position))) {
-								return getIndexCharacter(sortingValue);
-							}
-						}
-					}
-				}
-				firstLetter = afterSorting ? RECENTLY_ADDED_SIGN : PLACEHOLDER_RECENTLY_ADDED;
-			} else {
-				firstLetter = getIndexCharacter(sortingValue);
-			}
-		}
-		return firstLetter;
-	}
+        // create array for reverse lookup
+        ArrayList<Integer> countsList = new ArrayList<Integer>(positionIndexer.keySet());
+        Collections.sort(countsList);
+        counts = new Integer[countsList.size()];
+        countsList.toArray(counts);
+    }
 
-	private static class ContactListHolder extends AvatarListItemHolder {
-		TextView nameTextView;
-		TextView idTextView;
-		TextView nickTextView;
-		VerificationLevelImageView verificationLevelView;
-		ImageView blockedContactView;
-		EmojiTextView initialView;
-		ImageView initialImageView;
-		int originalPosition;
-		int viewType;
-		ShapeableImageView shapeableAvatarView;
-	}
+    private String getInitial(ContactModel c, boolean afterSorting, int position) {
+        String firstLetter, sortingValue;
 
-	@NonNull
-	@Override
-	public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
-		final int viewType = getItemViewType(position);
-		ConstraintLayout itemView = (ConstraintLayout) convertView;
+        sortingValue = ContactUtil.getSafeNameString(c, preferenceService.isContactListSortingFirstName());
+        if (sortingValue.length() == 0) {
+            firstLetter = PLACEHOLDER_BLANK_HEADER;
+        } else {
+            if (ContactUtil.isGatewayContact(c)) {
+                firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
+            } else if (getItemViewType(position) == VIEW_TYPE_RECENTLY_ADDED) {
+                if (contactListFilter != null && contactListFilter.getFilterString() != null) {
+                    if (position > 0) {
+                        for (int i = Math.min(position - 1, MAX_RECENTLY_ADDED_CONTACTS - 1); i >= 0; i--) {
+                            if (values.get(i).equals(values.get(position))) {
+                                return getIndexCharacter(sortingValue);
+                            }
+                        }
+                    }
+                }
+                firstLetter = afterSorting ? RECENTLY_ADDED_SIGN : PLACEHOLDER_RECENTLY_ADDED;
+            } else {
+                firstLetter = getIndexCharacter(sortingValue);
+            }
+        }
+        return firstLetter;
+    }
 
-		ContactListHolder holder;
+    private static class ContactListHolder extends AvatarListItemHolder {
+        TextView contactTextTopLeft;
+        TextView contactTextBottomLeft;
+        TextView contactTextBottomRight;
+        VerificationLevelImageView verificationLevelView;
+        ImageView blockedContactView;
+        EmojiTextView initialView;
+        ImageView initialImageView;
+        int originalPosition;
+        int viewType;
+        ShapeableImageView shapeableAvatarView;
+    }
 
-		if (convertView == null) {
-			// This a new view we inflate the new layout
-			holder = new ContactListHolder();
+    @NonNull
+    @Override
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
+        final int viewType = getItemViewType(position);
+        ConstraintLayout itemView = (ConstraintLayout) convertView;
 
-			itemView = (ConstraintLayout) inflater.inflate(
-						viewType == VIEW_TYPE_RECENTLY_ADDED ?
-						R.layout.item_contact_list_recently_added :
-						R.layout.item_contact_list, parent, false);
+        ContactListHolder holder;
 
-			holder.nameTextView = itemView.findViewById(R.id.name);
-			holder.idTextView = itemView.findViewById(R.id.subject);
-			holder.nickTextView = itemView.findViewById(R.id.nick);
-			holder.verificationLevelView = itemView.findViewById(R.id.verification_level);
-			holder.avatarView = itemView.findViewById(R.id.avatar_view);
-			holder.shapeableAvatarView = itemView.findViewById(R.id.shapeable_avatar_view);
-			holder.blockedContactView = itemView.findViewById(R.id.blocked_contact);
-			holder.initialView = itemView.findViewById(R.id.initial);
-			holder.initialImageView = itemView.findViewById(R.id.initial_image);
+        if (convertView == null) {
+            // This a new view we inflate the new layout
+            holder = new ContactListHolder();
 
-			itemView.setTag(holder);
+            itemView = (ConstraintLayout) inflater.inflate(
+                viewType == VIEW_TYPE_RECENTLY_ADDED ?
+                    R.layout.item_contact_list_recently_added :
+                    R.layout.item_contact_list, parent, false
+            );
 
-			if (viewType == VIEW_TYPE_NORMAL) {
-				((CheckableConstraintLayout) itemView).setOnCheckedChangeListener((checkableView, isChecked) -> {
-					if (isChecked) {
-						checkedItems.add(((ContactListHolder) checkableView.getTag()).originalPosition);
-					} else {
-						checkedItems.remove(((ContactListHolder) checkableView.getTag()).originalPosition);
-					}
-				});
-			} else if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
-				int cornerSize = getContext().getResources().getDimensionPixelSize(R.dimen.recently_added_background_corner_size);
-				int recentlyAddedLastPosition = recentlyAdded.size() - 1;
+            holder.contactTextTopLeft = itemView.findViewById(R.id.contact_text_top_left);
+            holder.contactTextBottomLeft = itemView.findViewById(R.id.contact_text_bottom_left);
+            holder.contactTextBottomRight = itemView.findViewById(R.id.contact_text_bottom_right);
 
-				ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel.Builder()
-					.setTopLeftCornerSize(position == 0 ? cornerSize : 0)
-					.setTopRightCornerSize(position == 0 ? cornerSize : 0)
-					.setBottomLeftCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
-					.setBottomRightCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
-					.build();
+            holder.verificationLevelView = itemView.findViewById(R.id.verification_level);
+            holder.avatarView = itemView.findViewById(R.id.avatar_view);
+            holder.shapeableAvatarView = itemView.findViewById(R.id.shapeable_avatar_view);
+            holder.blockedContactView = itemView.findViewById(R.id.blocked_contact);
+            holder.initialView = itemView.findViewById(R.id.initial);
+            holder.initialImageView = itemView.findViewById(R.id.initial_image);
 
-				MaterialCardView cardView = itemView.findViewById(R.id.recently_added_background);
-				cardView.setShapeAppearanceModel(shapeAppearanceModel);
-				cardView.setOnClickListener(v -> {
-					avatarListener.onRecentlyAddedClick(values.get(position));
-				});
-			}
-		} else {
-			holder = (ContactListHolder) itemView.getTag();
-			if (holder.avatarView != null) {
-				try {
-					requestManager.clear(holder.avatarView);
-				} catch (IllegalArgumentException e) {
-					logger.debug("Invalid destination view");
-				}
-			}
-		}
+            itemView.setTag(holder);
 
-		final ContactModel contactModel = values.get(position);
-		holder.originalPosition = ovalues.indexOf(contactModel);
+            if (viewType == VIEW_TYPE_NORMAL) {
+                ((CheckableConstraintLayout) itemView).setOnCheckedChangeListener((checkableView, isChecked) -> {
+                    if (isChecked) {
+                        checkedItems.add(((ContactListHolder) checkableView.getTag()).originalPosition);
+                    } else {
+                        checkedItems.remove(((ContactListHolder) checkableView.getTag()).originalPosition);
+                    }
+                });
+            } else if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
+                int cornerSize = getContext().getResources().getDimensionPixelSize(R.dimen.recently_added_background_corner_size);
+                int recentlyAddedLastPosition = recentlyAdded.size() - 1;
 
-		String filterString = null;
-		if (contactListFilter != null) {
-			filterString = contactListFilter.getFilterString();
-		}
+                ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel.Builder()
+                    .setTopLeftCornerSize(position == 0 ? cornerSize : 0)
+                    .setTopRightCornerSize(position == 0 ? cornerSize : 0)
+                    .setBottomLeftCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
+                    .setBottomRightCornerSize(position == recentlyAddedLastPosition ? cornerSize : 0)
+                    .build();
 
-		String displayName = NameUtil.getDisplayNameOrNickname(contactModel, true);
+                MaterialCardView cardView = itemView.findViewById(R.id.recently_added_background);
+                cardView.setShapeAppearanceModel(shapeAppearanceModel);
+                cardView.setOnClickListener(v -> {
+                    avatarListener.onRecentlyAddedClick(values.get(position));
+                });
+            }
+        } else {
+            holder = (ContactListHolder) itemView.getTag();
+            if (holder.avatarView != null) {
+                try {
+                    requestManager.clear(holder.avatarView);
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Invalid destination view");
+                }
+            }
+        }
 
-		ViewUtil.showAndSet(
-				holder.nameTextView,
-				highlightMatches(displayName, filterString, true));
+        final ContactModel contactModel = values.get(position);
+        holder.originalPosition = ovalues.indexOf(contactModel);
 
-		AdapterUtil.styleContact(holder.nameTextView, contactModel);
+        String filterString = null;
+        if (contactListFilter != null) {
+            filterString = contactListFilter.getFilterString();
+        }
 
-		ViewUtil.showAndSet(
-				holder.idTextView,
-				highlightMatches(contactModel.getIdentity(), filterString, true));
+        // Text slot top left
+        final @NonNull String contactTextTopLeft = contactModel.getContactListItemTextTopLeft(preferenceService);
+        final @NonNull Spannable contactTextTopLeftSpannable = (viewType != VIEW_TYPE_RECENTLY_ADDED)
+            ? highlightMatches(contactTextTopLeft, filterString, true)
+            : new SpannableString(contactTextTopLeft);
+        ViewUtil.showAndSet(
+            holder.contactTextTopLeft,
+            contactTextTopLeftSpannable
+        );
+        AdapterUtil.styleContact(holder.contactTextTopLeft, contactModel);
 
-		AdapterUtil.styleContact(holder.idTextView, contactModel);
+        // Text slot bottom left
+        final @NonNull String contactTextBottomLeft = contactModel.getContactListItemTextBottomLeft();
+        final @NonNull Spannable contactTextBottomLeftSpannable = (viewType != VIEW_TYPE_RECENTLY_ADDED)
+            ? highlightMatches(contactTextBottomLeft, filterString, true)
+            : new SpannableString(contactTextBottomLeft);
+        ViewUtil.showAndSet(
+            holder.contactTextBottomLeft,
+            contactTextBottomLeftSpannable
+        );
+        AdapterUtil.styleContact(holder.contactTextBottomLeft, contactModel);
 
-		if (holder.verificationLevelView != null) {
-			holder.verificationLevelView.setContactModel(contactModel);
-		}
+        // Text slot bottom right
+        final @NonNull String contactTextBottomRight = contactModel.getContactListItemTextBottomRight();
+        ViewUtil.showAndSet(
+            holder.contactTextBottomRight,
+            highlightMatches(contactTextBottomRight, filterString, true)
+        );
+        AdapterUtil.styleContact(holder.contactTextBottomRight, contactModel);
 
-		ViewUtil.show(
-				holder.blockedContactView,
-				blackListIdentityService != null && blackListIdentityService.has(contactModel.getIdentity()));
+        if (holder.verificationLevelView != null) {
+            holder.verificationLevelView.setContactModel(contactModel);
+        }
 
-		if (holder.nickTextView != null) {
-			if (displayName.length() > 1 && displayName.startsWith("~") && displayName.substring(1).equals(contactModel.getPublicNickName())) {
-				holder.nickTextView.setText("");
-			} else {
-				NameUtil.showNicknameInView(holder.nickTextView, contactModel, filterString, this);
-			}
-		}
+        ViewUtil.show(
+            holder.blockedContactView,
+            blackListIdentityService != null && blackListIdentityService.has(contactModel.getIdentity())
+        );
 
-		if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
-			contactService.loadAvatarIntoImage(
-				contactModel,
-				holder.shapeableAvatarView,
-				new AvatarOptions.Builder()
-					.setHighRes(true)
-					.toOptions(),
-				requestManager
-			);
-			holder.viewType = VIEW_TYPE_RECENTLY_ADDED;
-		} else {
-			AvatarListItemUtil.loadAvatar(
-				contactModel,
-				this.contactService,
-				holder,
-				requestManager
-			);
-			holder.avatarView.setContentDescription(
-				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
-					ThreemaApplication.getAppContext().getString(R.string.mime_contact),
-					displayName));
-			holder.avatarView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					avatarListener.onAvatarClick(v, position);
-				}
-			});
-			holder.avatarView.setOnLongClickListener(new View.OnLongClickListener() {
-				@Override
-				public boolean onLongClick(View v) {
-					return avatarListener.onAvatarLongClick(v, position);
-				}
-			});
-			holder.viewType = VIEW_TYPE_NORMAL;
-		}
+        if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
+            contactService.loadAvatarIntoImage(
+                contactModel,
+                holder.shapeableAvatarView,
+                new AvatarOptions.Builder()
+                    .setHighRes(true)
+                    .toOptions(),
+                requestManager
+            );
+            holder.viewType = VIEW_TYPE_RECENTLY_ADDED;
+        } else {
+            AvatarListItemUtil.loadAvatar(
+                contactModel,
+                this.contactService,
+                holder,
+                requestManager
+            );
+            holder.avatarView.setContentDescription(
+                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                    ThreemaApplication.getAppContext().getString(R.string.mime_contact),
+                    contactTextTopLeft
+                )
+            );
+            holder.avatarView.setOnClickListener(v -> avatarListener.onAvatarClick(v, position));
+            holder.avatarView.setOnLongClickListener(v -> avatarListener.onAvatarLongClick(v, position));
+            holder.viewType = VIEW_TYPE_NORMAL;
+        }
 
-		String previousInitial = PLACEHOLDER_CHANNELS;
-		String currentInitial = getInitial(contactModel, true, position);
-		if (position > 0) {
-			previousInitial = getInitial(values.get(position - 1), true, position - 1);
-		}
+        String previousInitial = PLACEHOLDER_CHANNELS;
+        String currentInitial = getInitial(contactModel, true, position);
+        if (position > 0) {
+            previousInitial = getInitial(values.get(position - 1), true, position - 1);
+        }
 
-		if (holder.initialView != null) {
-			if (previousInitial != null && !previousInitial.equals(currentInitial)) {
-				if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
-					holder.initialView.setText(currentInitial);
-					holder.initialView.setVisibility(View.VISIBLE);
-					holder.initialImageView.setVisibility(View.GONE);
-				}
-			} else {
-				if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
-					holder.initialView.setVisibility(View.GONE);
-					holder.initialImageView.setVisibility(View.GONE);
-				}
-			}
-		}
+        if (holder.initialView != null) {
+            if (previousInitial != null && !previousInitial.equals(currentInitial)) {
+                if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
+                    holder.initialView.setText(currentInitial);
+                    holder.initialView.setVisibility(View.VISIBLE);
+                    holder.initialImageView.setVisibility(View.GONE);
+                }
+            } else {
+                if (!RECENTLY_ADDED_SIGN.equals(currentInitial)) {
+                    holder.initialView.setVisibility(View.GONE);
+                    holder.initialImageView.setVisibility(View.GONE);
+                }
+            }
+        }
 
-		return itemView;
-	}
+        return itemView;
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		ContactModel c = values.get(position);
+    @Override
+    public int getItemViewType(int position) {
+        ContactModel c = values.get(position);
 
-		if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
-			return VIEW_TYPE_RECENTLY_ADDED;
-		}
-		return VIEW_TYPE_NORMAL;
-	}
+        if (recentlyAdded != null && recentlyAdded.size() > 0 && position < recentlyAdded.size() && recentlyAdded.contains(c)) {
+            return VIEW_TYPE_RECENTLY_ADDED;
+        }
+        return VIEW_TYPE_NORMAL;
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return VIEW_TYPE_COUNT;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return VIEW_TYPE_COUNT;
+    }
 
-	@Override
-	public boolean isEnabled(int position) {
-		return true;
-	}
+    @Override
+    public boolean isEnabled(int position) {
+        return true;
+    }
 
-	@Override
-	public boolean areAllItemsEnabled() {
-		return false;
-	}
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
 
-	@Override
-	public int getPositionForSection(int section) {
-		if (section < 0 || section >= sections.length) {
-			return -1;
-		}
+    @Override
+    public int getPositionForSection(int section) {
+        if (section < 0 || section >= sections.length) {
+            return -1;
+        }
 
-		return alphaIndexer.get(sections[section]);
-	}
+        return alphaIndexer.get(sections[section]);
+    }
 
-	@Override
-	public int getSectionForPosition(int position) {
-		if (position < 0 || position >= values.size()) {
-			return -1;
-		}
-		int index = Arrays.binarySearch(counts, position);
+    @Override
+    public int getSectionForPosition(int position) {
+        if (position < 0 || position >= values.size()) {
+            return -1;
+        }
+        int index = Arrays.binarySearch(counts, position);
 
         /*
          * Consider this example: section positions are 0, 3, 5; the supplied
@@ -501,121 +508,115 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
          * To get from that number to the expected value of 1 we need to negate
          * and subtract 2.
          */
-		return index >= 0 ? index : -index - 2;
-	}
+        return index >= 0 ? index : -index - 2;
+    }
 
-	@Override
-	public Object[] getSections() {
-		return sections;
-	}
+    @Override
+    public Object[] getSections() {
+        return sections;
+    }
 
-	public class ContactListFilter extends Filter {
-		String filterString = null;
+    public class ContactListFilter extends Filter {
+        String filterString = null;
 
-		@Override
-		protected FilterResults performFiltering(CharSequence constraint) {
-			FilterResults results = new FilterResults();
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
 
-			if (constraint == null || constraint.length() == 0) {
-				// no filtering
-				filterString = null;
-				results.values = ovalues;
-				results.count = ovalues.size();
-			} else {
-				// perform filtering
-				List<ContactModel> nContactList = new ArrayList<ContactModel>();
-				filterString = constraint.toString();
+            if (constraint == null || constraint.length() == 0) {
+                // no filtering
+                filterString = null;
+                filterResults.values = ovalues;
+                filterResults.count = ovalues.size();
+            } else {
+                // perform filtering
+                filterString = constraint.toString();
+                List<ContactModel> filteredContacts = ovalues.stream()
+                    .filter(
+                        contactModel -> contactModel != null && contactModel.matchesFilterQuery(preferenceService, filterString)
+                    ).collect(Collectors.toList());
+                filterResults.values = filteredContacts;
+                filterResults.count = filteredContacts.size();
+            }
+            return filterResults;
+        }
 
-				for (ContactModel contactModel : ovalues) {
-					if (contactModel != null) {
-						if ((TestUtil.matchesConversationSearch(filterString, NameUtil.getDisplayNameOrNickname(contactModel, false))) ||
-							(contactModel.getIdentity().toUpperCase().contains(filterString.toUpperCase()))) {
-							nContactList.add(contactModel);
-						}
-					}
-				}
-				results.values = nContactList;
-				results.count = nContactList.size();
-			}
-			return results;
-		}
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            values = (List<ContactModel>) results.values;
+            notifyDataSetChanged();
+        }
 
-		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results) {
-			values = (List<ContactModel>) results.values;
-			notifyDataSetChanged();
-		}
+        public String getFilterString() {
+            return filterString;
+        }
+    }
 
-		public String getFilterString() {
-			return filterString;
-		}
-	}
+    @NotNull
+    @Override
+    public Filter getFilter() {
+        if (contactListFilter == null)
+            contactListFilter = new ContactListFilter();
 
-	@NotNull
-	@Override
-	public Filter getFilter() {
-		if (contactListFilter == null)
-			contactListFilter = new ContactListFilter();
+        return contactListFilter;
+    }
 
-		return contactListFilter;
-	}
+    @Override
+    public int getCount() {
+        return values != null ? values.size() : 0;
+    }
 
-	@Override
-	public int getCount() {
-		return values != null ? values.size() : 0;
-	}
+    @Override
+    public HashSet<ContactModel> getCheckedItems() {
+        HashSet<ContactModel> contacts = new HashSet<>();
+        ContactModel contactModel;
 
-	@Override
-	public HashSet<ContactModel> getCheckedItems() {
-		HashSet<ContactModel> contacts = new HashSet<>();
-		ContactModel contactModel;
+        Iterator<Integer> iterator = checkedItems.iterator();
+        while (iterator.hasNext()) {
+            int position = iterator.next();
+            try {
+                contactModel = ovalues.get(position);
+                if (contactModel != null) {
+                    contacts.add(contactModel);
+                }
+            } catch (IndexOutOfBoundsException e) {
+                iterator.remove();
+            }
+        }
+        return contacts;
+    }
 
-		Iterator<Integer> iterator = checkedItems.iterator();
-		while (iterator.hasNext()) {
-			int position = iterator.next();
-			try {
-				contactModel = ovalues.get(position);
-				if (contactModel != null) {
-					contacts.add(contactModel);
-				}
-			} catch (IndexOutOfBoundsException e) {
-				iterator.remove();
-			}
-		}
-		return contacts;
-	}
+    @Override
+    public ContactModel getClickedItem(View v) {
+        if (ovalues.size() > 0) {
+            return ovalues.get(getClickedItemPosition(v));
+        }
+        return null;
+    }
 
-	@Override
-	public ContactModel getClickedItem(View v) {
-		if (ovalues.size() > 0) {
-			return ovalues.get(getClickedItemPosition(v));
-		}
-		return null;
-	}
+    public int getClickedItemPosition(View v) {
+        if (v != null && v.getTag() != null) {
+            return ((ContactListHolder) v.getTag()).originalPosition;
+        }
+        return 0;
+    }
 
-	public int getClickedItemPosition(View v) {
-		if (v != null && v.getTag() != null) {
-			return ((ContactListHolder) v.getTag()).originalPosition;
-		}
-		return 0;
-	}
+    public int getViewTypeFromView(View v) {
+        if (v != null && v.getTag() != null) {
+            return ((ContactListHolder) v.getTag()).viewType;
+        }
+        return VIEW_TYPE_NORMAL;
+    }
 
-	public int getViewTypeFromView(View v) {
-		if (v != null && v.getTag() != null) {
-			return ((ContactListHolder) v.getTag()).viewType;
-		}
-		return VIEW_TYPE_NORMAL;
-	}
+    public String getInitial(int position) {
+        if (position < values.size() && position > 0) {
+            return getInitial(values.get(position), true, position);
+        }
+        return "";
+    }
 
-	public String getInitial(int position) {
-		if (position < values.size() && position > 0) {
-			return getInitial(values.get(position), true, position);
-		}
-		return "";
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return values != null && getCount() == 0;
-	}
+    @Override
+    public boolean isEmpty() {
+        return values != null && getCount() == 0;
+    }
 }

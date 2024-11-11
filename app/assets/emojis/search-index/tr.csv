@@ -7,21 +7,21 @@
 ↘️|ara yön|güney doğu|ok|sağ aşağı ok|yön
 ↙️|ara yön|güney batı|ok|sol aşağı ok|yön
 ⌨️|bilgisayar|klavye
-☀️|aydınlık|güneşli|hava durumu|ışık|uzay
+☀️|aydınlık|güneşli|hava durumu|ışık|sıcak|uzay
 ☁️|bulut|hava durumu
-☂️|giyim|hava durumu|şemsiye|yağmur
-☃️|hava durumu|kardan adam|soğuk
+☂️|giyim|hava durumu|mor şemsiye|şemsiye|yağmur
+☃️|hava durumu|kardan adam|kış|soğuk
 ☄️|kuyruklu yıldız|uzay
-☑️|✓|kutulu|onay|seçili onay işareti|seçilmiş onay kutusu
-☔|giyim|hava durumu|yağmur damlalı şemsiye
+☑️|✓|kutulu onay işareti|onay|seçili onay işareti|seçilmiş onay kutusu
+☔|giyim|hava durumu|ıslak|mor şemsiye|şemsiye|yağmur damlalı şemsiye|yağmurlu
 ☕|çay|dumanı tüten|içecek|kahve|sıcak
-☘️|bitki|yonca
-☠️|canavar|kemik|kuru kafa|ölüm|tehlike|yüz
+☘️|bitki|yeşil yaprak|yonca
+☠️|canavar|iskelet|kemik|kuru kafa|ölüm|tehlike|yüz
 ☢️|nükleer|radyoaktif
 ☣️|biyolojik tehlike|sembol
 ☦️|din|haç|hristiyan|isa|ortodoks haçı
 ☸️|budist|çember|darma çemberi|dharma tekeri|din
-☹️|asık surat|yüz
+☹️|asık surat|darılmış|üzgün|yüz
 ♈|burçlar|koç burcu
 ♉|boğa burcu|burçlar
 ♐|burçlar|yay burcu
@@ -31,437 +31,439 @@
 ♠️|iskambil|kart|maça|pik
 ♣️|iskambil|kart|sinek|trefl
 ♥️|iskambil|kart|kör|kupa
-♦️|iskambil|karo|kart
+♦️|baklava|iskambil|karo|kart|kırmızı
 ♨️|hamam|ılıca|kaplıca|sıcak
-⚒️|alet|çekiç ve kazma|kazma
-⚓|çıpa|gemi|işaret
+⚒️|alet|çekiç ve kazma|inşaat|kazma
+⚓|çapa|çıpa|denizcilik|gemi|işaret|tekne
 ⚔️|çapraz kılıçlar|çarpı|çatma|kılıç|silah
 ⚖️|adalet|ağırlık|alet|burç|denge|ölçek|terazi
 ⚗️|alet|damıtıcı|imbik|kimya
 ⚙️|alet|dişli
 ✂️|alet|makas
-✅|✓|düğme|işaret|onay işareti düğmesi
-✈️|taşıt|uçak
+✅|✓|düğme|işaret|kalın onay işareti|onay işareti düğmesi
+✈️|jet|seyahat|taşıt|uçak|uçmak|yolculuk
 ✉️|e-mail|e-posta|mektup|zarf
-✒️|kalem|siyah uç
-✔️|✓|işaret|onay işareti
-✖️|×|çarpım işareti|çarpma|iptal|işaret|x
+✒️|dolma kalem|kalem|siyah uç
+✔️|✓|işaret|kalın onay işareti|onay işareti
+✖️|×|çarpım işareti|çarpma|iptal|işaret|kalın çarpı işareti|x
 ✡️|davut yıldızı|din|yahudi|yıldız
-✨|*|parıltılar|pırıltı|yıldız
+✨|*|mucize|parıldayan yıldızlar|parıltılar|pırıldayan yıldızlar|pırıltı|sihir|yıldızlar
 ✳️|*|asterisk|sekiz uçlu yıldız|yıldız
 ✴️|*|sekiz noktalı yıldız|yıldız
-❄️|hava durumu|kar tanesi|soğuk
-❇️|*|parlama
+❄️|buz|hava durumu|kar tanesi|kış|soğuk
+❇️|*|parlama|pırıltı
 ❓|?|işaret|kırmızı soru işareti|noktalama|soru işareti
 ❔|?|beyaz soru işareti|işaret|noktalama|soru
 ❕|!|beyaz ünlem işareti|işaret|noktalama|ünlem
-❗|!|kırmızı ünlem işareti|noktalama|ünlem işareti
+❗|!|işaret|kırmızı ünlem işareti|noktalama|ünlem işareti
 ❣️|işaret|kalp şeklinde ünlem işareti|noktalama|ünlem işareti
-❤️|kalp|kırmızı kalp
-➕|+|artı işareti|işaret|matematik
-➖|-|−|eksi işareti|işaret|matematik
-➗|÷|bölü işareti|işaret|matematik
+❤️|aşk|kalp|kırmızı kalp
+➕|+|artı işareti|işaret|koyu renk artı işareti|matematik
+➖|-|−|eksi işareti|işaret|koyu renk eksi işareti|matematik
+➗|÷|bölü işareti|işaret|koyu renk bölü işareti|matematik
 ⤴️|ok|yukarı kıvrımlı sağ ok
 ⤵️|aşağı kıvrımlı sağ ok|ok
 〰️|çizgi|dalgalı|uzun ses işareti
-㊗️|japonca "tebrikler" düğmesi|kutlama|sembol|tebrik
-㊙️|japonca "sır" düğmesi|sembol|sır
-😀|gülen yüz|gülme|lol|neşeli|sırıtan yüz|yüz
-😃|ağzı açık gülen yüz|ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
-😄|ağzı açık gülen gözler|gülen gözlerle ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli
+㊗️|japonca "tebrikler" düğmesi|kutlama|sembol|tebrik sembolü
+㊙️|japonca "sır" düğmesi|japonca "sır" simgesi|sembol|sır
+😀|gülen yüz|gülme|keyifli|lol|mutlu|neşeli|sırıtan yüz|sırıtma|yüz
+😃|ağzı açık gülen yüz|ağzı açık gülümseme|ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
+😄|ağzı açık gülen gözler|gülen gözlerle ağzı açık gülümseme|gülen gözlerle ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
 😁|gülen gözlerle sırıtan yüz|gülen gözlerle sırıtma|gülen yüz|gülme|gülümseme|gülümseyen gözler|lol|neşeli|yüz
-😆|ağız açık|gözler kapalı|kapalı gözlerle ağzı açık sırıtma|kapalı gözlerle gülümseme|yüz
-😅|soğuk terli ağzı açık gülümseme
-🤣|gülmekten yerlere yatma|yatma|yer|yüz
-😂|gözyaşları|sevinç gözyaşları olan yüz|yüz
-🙂|gülme|hafifçe gülümseyen yüz|yüz
-🙃|ters yüz|yüz
-🫠|çözülme|erime|eriyen yüz|kaybolma|sıvılaşma
-😉|göz kırpan yüz|göz kırpma|yüz
-😊|ağzı açık gülme|gülümseyen gözler|gülümseyen yüz ve gözler|yüz
-😇|gülümseme|ışık halkalı gülümseme|ışık halkası|yüz
-🥰|3 kalpli gülümseyen yüz|aşık olma|çarpılma|hayranlık|kalpler|kalpli gülümseyen yüz
-😍|aşk|değer verme|gözler|kalp gözlü gülümseme|yüz
-🤩|gözler|sırıtan|yıldız çarpmış|yüz
-😘|öpücük gönderen yüz|yüz
-😗|öpen yüz|öpücük|yüz
-☺️|gülen yüz|içi boş gülen yüz|yüz
-😚|gözler kapalı öpüşme|kapalı gözlerle öpen yüz|yüz
-😙|gülen gözlerle öpen yüz|gülümseme|gülümseyen gözler|gülümseyerek öpen yüz|yüz
-🥲|duygulanmış|gözü yaşlı gülümseyen yüz|gözyaşı|gülümseme|gururlu|hislenmiş|minnettar|rahatlamış
-😋|gülümseyen yüz|harika yemek|lezzetli yiyecek beğenen yüz|oh oh harika|yüz
-😛|dil çıkarmış yüz|dil dışarıda kalmış|yüz
-😜|dil dışardayken göz kırpma|dili dışarda göz kırpma|göz kırpma|kışkırtma|şaka|yüz
-🤪|büyük|çılgın surat|göz|küçük
-😝|dil dışarıda ve gözler kapalı|gözler kapalı ve dil dışarıda|korkunç|yüz
-🤑|ağız|para ağızlı yüz|yüz
-🤗|kucaklama|kucaklayarak gülümseme|sarılma|yüz
-🤭|eliyle ağzını kapatan yüz|tüh
-🫢|gözleri açık ve eliyle ağzını kapatan yüz|hayret|inanamama|korku|şaşkınlık|sürpriz|utanma
-🫣|dikizleme|gizlice bakan yüz|gizlice bakma|gözetleme
-🤫|sessiz|şişt|sus işareti yapan yüz
+😆|32 diş|ağız açık|ahaha|çok komik|gözler kapalı|gülmekten ölmek|hahaha|inanılmaz|kahkaha|kapalı gözlerle ağzı açık sırıtma|kapalı gözlerle gülümseme|komik|lol|mutlu|yüz ifadesi
+😅|heyecanlı|soğuk terli ağzı açık gülümseme|stresli|yüz
+🤣|ahaha|aşırı komik|çok komik|eheh|gözümden yaş geldi|gözyaşı|gülmekten ölmek|gülmekten yerlere yatmak|hahaha|kahkaha|komik|lol|mutluluk|neşe|yerlere yatmak|yüz ifadesi
+😂|ağlamak|çok komik|gözyaşı|gözyaşları|gülmekten ağlamak|gülmekten ölmek|gülüş|haha|harika|inanılmaz|kahkaha|katılmak|komik|lol|mutluluk|neşe|sevinç
+🙂|gülme|gülümseme|hafifçe gülümseme|hafifçe gülümseyen yüz|mutlu|neşeli|yüz
+🙃|gülme|gülümseme|hehe|ters yüz|yüz
+🫠|aşkından erimek|çözülme|eridim|erimek|eriyen yüz|eriyorum|ifade|kaybolma|sıcak|sıvılaşma|utanç|yüz ifadesi
+😉|cilve|göz kırpan yüz|göz kırpma|yüz
+😊|ağzı açık gülme|gülen gözlerle gülümseme|gülümseyen gözler|gülümseyen yüz ve gözler|samimi|sevecen|yüz
+😇|gülümseme|hare|ışık halkalı gülümseme|ışık halkası|melek|yüz
+🥰|3 kalpli gülümseyen yüz|aşık olma|aşk|çarpılma|gülen yüz|hayranlık|ilk görüşte aşk|kalpler|kalpli gülümseyen yüz|mutluluk|romantik|seni seviyorum|sevgili|üç kalpli yüz|yüz ifadesi
+😍|aşk|değer verme|gözler|kalp gözlü gülümseme|kalpler|romantik|yüz
+🤩|gözler|heyecanlı|sırıtan|surat|vov|yıldız çarpmış|yüz
+😘|aşk|muah|muck|öptüm|öpücük gönderen yüz|romantik|sevgi|yüz
+😗|aşk|cilve|muah|muck|öpen yüz|öpücük|sevgi|yüz
+☺️|gülen yüz|içi boş gülen yüz|masum|mutlu|utandım|utanmış|yüz
+😚|aşk|gözler kapalı öpüşme|kapalı gözlerle öpen yüz|öpücük yollama|yüz
+😙|gülen gözlerle öpen yüz|gülümseme|gülümseyen gözler|gülümseyerek öpen yüz|öptüm|öpücük|yüz
+🥲|acı|duygulanmış|gözü yaşlı gülümseyen yüz|gözyaşı|gülümseme|gururlu|hislenmiş|memnun|minnettar|mutluluk|rahatlamış|sevinç|yüz ifadesi
+😋|gülümseyen yüz|harika yemek|keyifli yemek|lezzetli yiyecek beğenen yüz|oh oh harika|yüz
+😛|dil çıkarmış yüz|dil dışarıda kalmış|komik|şapşal|yüz
+😜|dil dışardayken göz kırpma|dili dışarda göz kırpma|göz kırpma|haylaz|kışkırtma|şaka|yaramaz|yüz
+🤪|büyük|çılgın|deli|gözler|küçük|surat
+😝|dil dışarıda ve gözler kapalı|gözler kapalı ve dil dışarıda|iğrenç|korkunç|öğk|yüz
+🤑|ağız|gözünü para bürümüş|para ağızlı yüz|para göz|yüz
+🤗|heyecanlı|kucaklama|kucaklayarak gülümseme|sarılma|yüz
+🤭|a ah|eliyle ağzını kapatan yüz|sır|şok olmak|süpriz|surat|tüh
+🫢|gözleri açık ve eliyle ağzını kapatan yüz|hayret|ifade|inanamama|inanılmaz|korku|şaşkınlık|şok|sürpriz|utanma|yüz ifadesi
+🫣|çaktırmadan|dikizleme|gizlice bakan yüz|gizlice bakma|gözetleme|ifade|korkma|saklanma|ürkek|utanma|yüz ifadesi
+🤫|sessiz|şişt|şş|surat|sus işareti yapan yüz
 🤔|düşünen yüz|düşünme|yüz
-🫡|asker|başüstüne|güneşli|onay|selamlayan yüz
-🤐|ağız|ağzı fermuarlı yüz|fermuar|yüz
-🤨|güvenmeyen|şüpheci|tek kaşı çatık yüz
-😐|duygusuz|nötr|yorum yok|yüz
-😑|ifadesiz yüz|yorum yok|yüz
-😶|ağız|ağzı olmayan yüz|sakin|sessiz|yüz
-🫥|depresif|gizlenme|görünmez|içe dönük|kaybolma|noktalı çizgili yüz
+🫡|anlaştık|asker|başüstüne|emredersiniz|güneşli|ifade|komutan|onay|saygı|selamlayan yüz|yüz ifadesi
+🤐|ağız|ağzı fermuarlı yüz|ağzım kapalı|fermuar|sır|yüz
+🤨|güvenmeyen|şüpheci|surat|tek kaşı çatık yüz|tek kaşı havada
+😐|duygusuz|etkilenmemiş|nötr|umurumda değil|yorum yok|yüz
+😑|ifadesiz yüz|ifadesizlik|kıskanç|umurumda değil|yorum yok|yüz
+😶|ağız|ağzı olmayan yüz|ifadesiz|sakin|sesi kesilmiş|sessiz|sır|suskun|yüz
+🫥|bilinmez|depresif|eh|endişe|gizlenme|gizli|görünmez|içe dönük|ifade|kaybolma|kaygılı|neyse|noktalı çizgili yüz|yüz ifadesi
 😶‍🌫️|bulutlardaki kafa|bulutlardaki yüz|dalgın|sisler arasındaki yüz
-😏|imalı gülümseme|yapmacık gülümseyen yüz|yüz
-😒|keyifsiz yüz|mutsuz|yüz
-🙄|gözlerini deviren yüz|yuvarlanma|yüz
-😬|dişlerini gösteren yüz|yüz
-😮‍💨|fısıldama|ıslık|nefes veren yüz|nefes verme|rahatlama|sızlanma
+😏|hin|imalı gülümseme|kuşkucu|sinsi|yapmacık gülümseme|yapmacık gülümseyen yüz|yüz
+😒|canı sıkkın|canım sıkıldı|garip|keyifsiz|mutsuz|neyse|sıkılmış|yüz
+🙄|bana ne|banane|beni ilgilendirmez|bilemiyorum|göz devirme|gözlerini deviren yüz|her neyse|hmm|neyse|yani|yüz ifadesi
+😬|dişçi|dişlerini gösteren yüz|dişlerini sıkmak|endişeli|tedirgin|yüzünü ekşitme
+😮‍💨|bitik|duman|fısıldama|iç çekme|ıslık|nefes veren yüz|nefes verme|off|rahatlama|sızlanma|üfleme|yorgun|yüz ifadesi
 🤥|pinokyo|yalan söyleme|yalan söyleyen yüz|yüz
-🫨|deprem|sallanan yüz|sallanma|şok|titreme|yüz
-😌|rahatlamış|yüz
-😔|düşünceli|karamsar|yüz
-😪|uykulu yüz|yüz
-🤤|salya akıtan yüz|salya akıtma|yüz
-😴|uykulu yüz|uyuyan yüz|yüz
-😷|maskeli yüz|rahatsız|soğuk|tıbbi maske|yüz
-🤒|ağzında termometre olan yüz|hasta|termometre|yüz
-🤕|bandaj|kafası sarılı yüz|yara|yüz
-🤢|istifra|kusmak üzere olan yüz|yüz
-🤮|hasta|istifra|kusan yüz|kusmak
-🤧|çok yaşa|hapşıran yüz|hapşırma|yüz
-🥵|ateşi çıkmış|kırmızı yüz|kızarmış yüz|sıcak çarpması|terleme
-🥶|buz kesme|buz sarkıtları|donma|morarmış yüz|soğuk|üşümüş yüz
-🥴|çakırkeyif|kaymış gözler|sarhoş yüz|sersemlemiş|titreyen ağız
-😵|sersemlemiş yüz|yüz
-😵‍💫|hipnotize|kafası bulanık|sarmal gözlü yüz|sersem|sıkıntı
-🤯|patlayan kafa|şoke
-🤠|kadın kovboy|kovboy şapkalı yüz|şapka|yüz
-🥳|kutlama|parti düdüğü|partide eğlenen yüz|şapka
-🥸|burun|gizlenmiş yüz|gizli|gözlük|kimliğini gizleyen|maskeli|yüz
-😎|gülümseme|güneş gözlükleriyle gülümseme|güneş gözlüklü gülümseme|soğukkanlı jane|soğukkanlı joe|yüz
-🤓|bilgili|inek öğrenci|ukala|yüz
-🧐|kendini beğenmiş|tek cam gözlüklü yüz
-😕|kafası karışık yüz|kafası karışmış|yüz
-🫤|hayal kırıklığına uğramış|hüsran|kırgın|şüpheli yüz|yamuk ağızlı yüz
-😟|endişeli yüz|yüz
-🙁|asık surat|biraz asık surat|yüz
-😮|ağız|ağzı açık yüz|yüz
+🫨|deprem|olamaz|panik|sallama|sallanan yüz|sallanma|sersemlik|şok|sürpriz|titreme|titreşim|titreyen yüz|yüz
+🙂‍↔️|hayır|sallama|yatay olarak sallanan yüz
+🙂‍↕️|dikey olarak sallanan yüz|evet|onay
+😌|huzur|rahatlamış|yüz
+😔|dargın|düşünceli|gemileri batmış|karamsar|üzgün|yüz
+😪|ağlayan yüz|uykulu yüz|yorgun|yüz
+🤤|ağzı sulanmış|salya akıtan yüz|salya akıtma|yüz
+😴|esnemek|geç oldu|iyi geceler|iyi uykular|kestirme|şekerleme|tatlı rüyalar|uyku saati|uykulu|uykum geldi|uyumak|uyuyan yüz|yatak|yatıyorum|yatmak|yorgun|yüz ifadesi|zzz
+😷|grip|hasta|maskeli yüz|nezle|rahatsız|soğuk|tıbbi maske|yüz
+🤒|ağzında termometre olan yüz|ateş|grip|hasta|nezle|termometre|yüz
+🤕|bandaj|kafası sarılı yüz|yaralı|yüz
+🤢|iğrenç|istifra|kusmak üzere olan yüz|midesi bulanmış|yüz
+🤮|hasta|istifra|kusan yüz|kusmak|kusmuk|surat
+🤧|çok yaşa|grip|hapşıran yüz|hapşırma|hasta|nezle|yüz
+🥵|ateşi çıkmış|ateşlenmek|bitmek|çarpıntı|çok sıcak|hararet|kırmızı surat|kırmızı yüz|kızarmış yüz|nefes nefese|sıcak çarpması|sıcaklamak|surat|terlemek|tükenmek|yorgunluktan ölmek|yüz ifadesi
+🥶|buz gibi|buz kesme|donma|kış|mavi surat|morarmış yüz|sıfırın altı|soğuktan donmak|titremek|üşümek|üşümüş yüz
+🥴|akşamdan kalma|alkollü|baş dönmesi|çakırkeyif|kaymış gözler|şapşal|sarhoş yüz|şaşı|sersemlemiş|titreyen ağız|yamuk ağız|yamulmak|yüz ifadesi
+😵|başı dönen|baygınlık|hasta|sersemlemiş|yüz
+😵‍💫|aklı karışık|aman tanrım|başım döndü|gülen yüz|hipnotize|inanamıyorum|kafası bulanık|kafası karışık|mide bulantısı|sarmal gözlü yüz|sersem|sıkıntı|yüz ifadesi
+🤯|aklını başından almak|patlayan kafa|şaşırmış|şok olmuş|şoke|surat
+🤠|kadın kovboy|kovboy şapkalı yüz|kovboy şapkası yüzü|şapka|yüz
+🥳|doğum günü|eğlence|eğlenmek|iyi ki doğdun|konfeti|kutlamak|mutlu yıllar|neşeli|oley|parti düdüğü|parti şapkası|partide eğlenen yüz|şapka|yaşasın|yılbaşı
+🥸|ajan|bıyık|burun|casus|gizlenmiş yüz|gizli|gözlük|kalın kaşlar|kimliğini gizlemek|kimliğini gizleyen|kişi|kılık değiştirmek|maskeli|yüz ifadesi
+😎|cool|gülümseme|güneş gözlüğü|güneş gözlükleriyle gülümseme|güneş gözlüklü gülümseme|havalı|janti|kanka|kanki|yüz
+🤓|akıllı|bilgili|bilmiş|çalışkan|gözlüklü|inek öğrenci|ukala|yüz|zeki
+🧐|havalı|kendini beğenmiş|klas|surat|tek cam gözlüklü yüz|varlıklı|zengin
+😕|bilmiyorum|emin olmayan|kafası karışık yüz|kafası karışmış|yüz
+🫤|eh|hayal kırıklığına uğramış|hüsran|ifade|kararsız|kırgın|meh|memnuniyetsiz|şüpheli yüz|yamuk ağızlı yüz|yüz ifadesi
+😟|endişeli|gergin|yüz
+🙁|asık surat|biraz asık surat|endişeli|yüz
+😮|ağız|ağzı açık yüz|şaşkın|şok|süpriz|yüz
 😯|şaşırmış|şaşkın yüz|şok olmuş|yüz
-😲|afallamış|şoke olmuş|tamamen şoke olmuş|yüz
-😳|kızarmış ve şaşkın yüz|kızarmış yüz|şaşırmış|şaşkınlık içinde|yüz
-🥺|acıklı bakışlar|merhamet|yalvaran yüz|yalvarma
-🥹|ağlamaklı|direnme|gözleri dolmuş yüz|gözyaşlarını tutan yüz|gurur|kızgın|üzgün
-😦|açık ağızlı hoşnutsuz yüz|ağzı açık|hoşnutsuz|yüz
-😧|acı çeken|kederli yüz|yüz
-😨|korkmuş|korkulu yüz|yüz
-😰|açık ağız|soğuk ter döken mavi yüz|terli ve endişeli yüz|yüz
-😥|canı sıkkın ama rahatlamış|rahatlamış|üzgün ama rahatlamış yüz|yüz
-😢|ağlayan yüz|gözyaşları|üzüntülü|yüz
-😭|ağlama|avaz avaz ağlayan yüz|gözyaşları|yüz
+😲|afallamış|şaşkın|şoke olmuş|tamamen şoke olmuş|yüz
+😳|kızarmış ve şaşkın yüz|şaşırmış|şaşkınlık içinde|şok|tuhaf|yüz
+🥺|acıklı bakışlar|af dilemek|gözleri dolmak|koca göz|lütfen|merhamet|pişmanlık|üzgün|üzülmek|yalvaran gözler|yalvaran yüz|yalvarırım|yalvarmak|yüz ifadesi
+🥹|ağlamaklı|direnme|duygusal|gözleri dolmak|gözleri dolmuş yüz|gözyaşı|gözyaşlarını tutan yüz|gurur|ifade|kızgın|mutlu|sevinç gözyaşları|sulugöz|üzgün|yüz ifadesi
+😦|açık ağızlı hoşnutsuz yüz|ağzı açık|boş bulunmuş|hoşnutsuz|korkmuş|yüz
+😧|acı çeken|kederli|mutsuz|şaşkın|yüz
+😨|endişeli|korkmuş|korkulu|yüz
+😰|açık ağız|endişeli|korkmuş|korkulu yüz|soğuk ter döken mavi yüz|terli ve endişeli yüz|yüz
+😥|canı sıkkın ama rahatlamış|endişeli|kafası karışmış|karışık|rahatlamış|üzgün ama rahatlamış yüz|yırttık!|yüz
+😢|ağlama|ağlayan yüz|gözyaşları|mutsuz|üzgün|üzüntülü|yüz
+😭|ağlama|avaz avaz ağlama|avaz avaz ağlayan yüz|gözyaşları|mutsuz|üzgün|yüz
 😱|korkmuş|korku içinde bağıran yüz|korkunç|korkuyla çığlık atan yüz|korkuyla haykıran yüz|yüz
-😖|kafası çok karışık yüz|kafası çok karışmış|yüz
-😣|dayanıklı|kararlı yüz|yüz|zorlanan yüz
-😞|kırgın yüz|kırgınlık|memnuniyetsiz yüz|yüz
-😓|soğuk terli yüz|yüz
-😩|çok yorgun|yorgun yüz|yorulmuş|yüz
-😫|yorgun yüz|yüz
-🥱|esneme|esneyen yüz|sıkılmış|yorgun
-😤|ben kazandım yüzü|burnundan soluyan yüz|yüz|zafer
-😡|deli gibi|kırmızı somurtkan yüz|kırmızı yüz|öfkeli|somurtkan yüz|yüz
-😠|deli gibi|öfkeli yüz|yüz
-🤬|ağzında semboller olan yüz|küfür eden
-😈|boynuzlar|boynuzlu gülen yüz|gülümseme|yüz
-👿|boynuzlu kızgın yüz|küçük şeytan|şeytan|yüz
-💀|kafatası|masal|ölüm|yüz
-💩|kaka yığını|pislik|yığın
+😖|kafası çok karışık yüz|kafası çok karışmış|kızgın|pişman|yüz
+😣|baş ağrısı|dayanıklı|dikkatli|inatçı|kararlı|konsantre olmuş|yüz|zorlanan yüz
+😞|kırgınlık|memnuniyetsiz yüz|mutsuz|umutsuz|yüz
+😓|baş ağrısı|endişeli|soğuk terli yüz|yüz
+😩|acıkmış|çok yorgun|hayır|olamaz|pişman|uykulu|yorgun yüz|yorulmuş|yüz
+😫|hapşuran yüz|perişan|pişman|üzgün|yorgun|yüz
+🥱|esnemek|esneyen yüz|gece|iyi geceler|iyi uykular|şekerleme|sıkıcı|sıkıldım|sıkılmış|uykulu|uykusuz|uyuklama|uyumak|yatıyorum|yatmak|yorgun|yüz ifadesi|zzz
+😤|ben kazandım yüzü|burnundan soluyan yüz|kızgın|mutsuz|sinirli|yüz|zafer
+😡|deli gibi|kırmızı somurtkan yüz|kırmızı yüz|öfkeli|somurtkan|yüz
+😠|deli gibi|kızgın|mutsuz|öfkeli|yüz
+🤬|ağzında semboller olan yüz|kızgın|kızmış|küfür eden|küfür etmek|sembol surat|sensör|surat
+😈|boynuzlar|boynuzlu gülen yüz|boynuzlu gülümseme|gülümseme|şeytani gülümseme|yüz
+👿|boynuzlu kızgın yüz|kızgın|küçük şeytan|şeytani|yüz
+💀|cadılar bayramı|canavar|iskelet|kafatası|masal|ölüm|yüz
+💩|kaka yığını|leş|pislik|yığın
 🤡|palyaço yüzü|yüz
-👹|canavar|dev|japon canavarı|oni|peri masalı|yüz
-👺|canavar|goblin|japon cini|peri masalı|tengu|yüz
-👻|hayalet|peri masalı|yüz
-👽|dünya dışı|fantastik|ufo|uzaylı|yaratık|yüz
-👾|canavar|dünya dışı|ufo|uzaylı|yaratık|yüz
+👹|canavar|dev|japon canavarı|korkunç|maske|oni|peri masalı|yaratık|yüz
+👺|canavar|cin|goblin|japon cini|maske|peri masalı|tengu|yaratık|yüz
+👻|cadılar bayramı|hayalet|öcü|peri masalı|yüz
+👽|dünya dışı|fantastik|peri masalı|ufo|uzaylı|yabancı|yaratık|yüz
+👾|canavar|dünya dışı|peri masalı|ufo|uzaylı|yabancı canavar|yaratık|yüz
 🤖|canavar|robot|yüz
-😺|açık|ağız|gülümseme|kedi|sırıtan|yüz
-😸|göz|gülen gözlerle sırıtan kedi|gülümseme|kedi|sırıtma|yüz
-😹|göz yaşı|kedi|sevinç gözyaşları döken kedi|yüz
-😻|aşk|gülümseme|kalp gözlü gülümseyen kedi|kedi|sevgi|yüz
-😼|iğneleyici gülümseme|iğneleyici kedi yüzü|ironik|kedi|yüz
-😽|göz|kedi|öpen kedi|öpücük|yüz
+😺|açık|ağız|gülümseme|gülümseyen kedi yüzü|gülümseyen ve ağzı açık kedi yüzü|kedi yüzü|sırıtan|yüz
+😸|göz|gülen gözlerle sırıtan kedi|gülümseme|kedi yüzü|sırıtan kedi yüzü|sırıtan ve gözleri gülümseyen kedi yüzü|sırıtma|yüz
+😹|göz yaşı|gülen kedi|kahkaha atan kedi|kedi yüzü|komik kedi|sevinç gözyaşları döken kedi yüzü|yüz
+😻|aşık|aşk|gözler|gülümseme|gülümseyen ve kalp şeklinde gözleri olan kedi yüzü|kalp gözlü gülümseyen kedi yüzü|kedi yüzü|sevgi|yüz
+😼|iğneleyici gülümseme|iğneleyici kedi yüzü|ironik|kedi yüzü|kurnaz|muzır|yüz
+😽|gözler|kapalı|kedi|öpen|öptüm|öpücük|yüz
 🙀|aman tanrım|kedi|korkuyla bağıran kedi|sahiden şaşırmış|şaşkın kedi yüzü|yüz
-😿|ağlama|ağlayan kedi|göz yaşı|kedi|üzgün|yüz
-😾|kedi|somurtan|somurtma|yüz
-🙈|görmedim|görmeyen maymun|maymun
-🙉|duymadım|duymayan maymun|maymun
-🙊|bilmiyorum|maymun|söylemeyen maymun
+😿|ağlama|ağlayan kedi yüzü|göz yaşı|kedi yüzü|üzgün|yüz
+😾|kedi yüzü|somurtan kedi yüzü|somurtma|yüz
+🙈|görmedim|görmeyen maymun|hayvan|komik|maymun|oyun|saklambaç
+🙉|duymadım|duymayan maymun|hayvan|kulak|maymun|üç maymun
+🙊|ağzı kapalı maymun|bilmiyorum|hayvan|konuşmadım|maymun|söylemedim|söylemeyen maymun|sus|üç maymun
 💌|aşk mektubu|kalpli mektup|mektup|romantizm
 💘|aşk|duygu|kalp|ok saplanmış kalp
 💝|duygu|kalp|kurdeleli kalp|sevgililer günü
-💖|duygu|heyecanlı|kalp|pırıldayan
+💖|duygu|heyecanlı|kalp|pembe kalp|pırıldayan
 💗|aşk|büyüyen kalp|coşkulu|duygu|kalp|sinirli
-💓|aşk|çarpan kalp|duygu|kalp
+💓|aşk|çarpan kalp|duygu|heyecan|kalp atışı
 💞|aşk|dönen kalpler|kalp|kawaii|sevimli
-💕|aşıklar|aşk|duygu|iki kalp
+💕|aşıklar|aşk|duygu|evlilik yıldönümü|iki kalp|seni seviyorum|sevgili
 💟|kalpli dekorasyon
-💔|duygu|kalp|kırık kalp|kırılmış|kırma
+💔|duygu|hüsran|kalp|kırık kalp|kırılmış|kırma
 ❤️‍🔥|alev|arzu|aşk|ateşli kalp|kalp|kutsal kalp|tutku
 ❤️‍🩹|daha sağlıklı|iyileşen kalp|onarılan
-🩷|aşk|beğen|kalp|pembe|şirin
-🧡|portakal|turuncu kalp
+🩷|aşk|beğen|duygu|kalp|özel kişi|pembe|seni seviyorum|sevgi|sevimli|şirin
+🧡|kalp|portakal|turuncu
 💛|duygu|kalp|sarı
 💚|duygu|kalp|yeşil
 💙|duygu|kalp|mavi
-🩵|açık mavi kalp|camgöbeği|deniz mavisi|kalp
+🩵|açık mavi kalp|aşk|camgöbeği|deniz mavisi|duygu|gökyüzü mavisi|kalp|özel kişi|sevgi
 💜|duygu|kalp|mor
 🤎|kahverengi|kalp
 🖤|fena|kalp|kötü|siyah
-🩶|gri|gümüş|kalp|kurşun|taş
+🩶|aşk|duygu|gri|gümüş|kalp|kurşun|özel kişi|sevgi|taş
 🤍|beyaz|kalp
-💋|dudaklar|öpücük izi|romantizm
-💯|100 puan|skor|yüz puan
+💋|aşk|dudaklar|öpücük izi|romantizm|seksi
+💯|100 puan|skor|yuz|yüz puan
 💢|çizgi roman|duygu|öfke işareti|öfke simgesi|öfkeli
-💥|çarpışma işareti|çizgi roman|duygu
-💫|baş dönmesi|çizgi roman|duygu|yıldızları görme
-💦|çizgi roman|duygu|ter damlası|terli
-💨|çizgi roman|duygu|hızla fırlama|kaçma|koşma
-🕳️|delik
+💥|bomba|bum|çarpışma işareti|çizgi roman|duygu|patlama
+💫|baş dönmesi|çizgi roman|dilek|duygu|gece|gökyüzü|kayan yıldız|uzay|yıldızları görme
+💦|çizgi roman|damla|duygu|fışkır|su|ter damlası|terli
+💨|çizgi roman|duygu|fırla|gaz çıkarma|hızla fırlama|hızlı|kaçma|koşma|rüzgar
+🕳️|çukur|delik
 💬|balon|çizgi roman|iletişim balonu|konuşma balonu
-👁️‍🗨️|göz|konuşma balonunda göz|tanıklık
+👁️‍🗨️|göz boncuğu|konuşma balonunda göz|nazar|tanıklık
 🗨️|diyalog|konuşma|sol konuşma balonu
 🗯️|balon|kızgın|öfke|sağ öfke balonu
-💭|balon|çizgi roman|düşünce balonu
-💤|çizgi roman|duygu|horlama|uyuma|zzz
-👋|el|sallama
+💭|balon|bulut|çizgi roman|düşünce balonu|fikir
+💤|çizgi roman|gece|iyi geceler|iyi uykular|uyku|uyuklama|uyuma|yorgun|zzz
+👋|bay bay|bye|el|görüşürüz|güle güle|hey|merhaba|orada mısın|sallamak|selam
 🤚|elinin tersini kaldırma|kaldırma
-🖐️|avuç|beden|el|parmaklar açık el kaldırma
-✋|el kaldırma|havada el
-🖖|beden|el|parmak|spock|vulcan selamı|vulkan selamı
-🫱|el|sağa bakan el
-🫲|el|sola bakan el
-🫳|atmak|avuç içi aşağı bakan el|düşürmek|kışkışlamak
-🫴|avuç içi yukarı bakan el|çağırmak|el etmek|gel|sunmak|yakalamak
-🫷|bekletme|çak|durdurma|itme|reddetme|sola iten el
-🫸|bekletme|çak|durdurma|itme|reddetme|sağa iten el
-👌|el|işaret|tamam el işareti|tamam işareti
-🤌|bravo|çok güzel|harika|kıstırma hareketi yapan parmaklar|lezzetli|parmaklar
-🤏|azıcık|bir tutam|kıstırma hareketi yapan el
-✌️|oleey|zafer eli|zafer işareti
-🤞|çapraz|el|parmak|şans dileme
-🫰|aşk|işaret parmağı ve baş parmak birbirine geçmiş el|kalp|pahalı|para
+🖐️|avuç|beden|dur|el|izin isteme|parmaklar açık el kaldırma
+✋|beş parmak|dur işareti|el kaldırma|havada el
+🖖|beden|el|parmak|spock|star trek|uzay yolu|volkanlı selamı|vulcan selamı|vulkan selamı
+🫱|anlaşma|dokun|el uzatma|merhaba|sağa bakan el|selam|temas|tokalaşmak
+🫲|anlaşma|dokun|el uzatma|merhaba|selam|sola bakan el|temas|tokalaşma
+🫳|al|atmak|avuç içi aşağı bakan el|bırak|düşürmek|el|kışkışlamak|uzanmak|uzat
+🫴|avuç içi yukarı bakan el|çağırmak|çağrı|davet|el etmek|el uzatmak|gel|sunmak|teklif|yakalamak|yardım
+🫷|bekletme|çakma|durdurma|itme|reddetme|sola iten el
+🫸|bekletme|çakma|durdurma|itme|reddetme|sağa iten el
+👌|anlaştık|budur|el|harika|inanılmaz|işaret|işte bu|kıstırma|leziz|mükemmel|müthiş|okey|süper|tam olarak|tamam el işareti|tamam işareti|tamamdır|yes
+🤌|bravo|çok güzel|el hareketleri|harika|kıstırma hareketi yapan parmaklar|lezzetli|parmaklar
+🤏|azıcık|bir tutam|biraz|kıstırma hareketi yapan el|kıstırma hareketi yapan parmaklar|küçük|parmaklar
+✌️|barış|el|oleey|zafer eli|zafer işareti
+🤞|çapraz|el|parmak|şans dileme|söz verme
+🫰|<3|aşk|borç|el|hesap|işaret parmağı ve baş parmak birbirine geçmiş el|kalp|nakit|pahalı|para|parmak|sevgi
 🤟|el|seni seviyorum işareti|ss
-🤘|beden|boynuz işareti|el|parmak|rock
-🤙|ara|beni ara işareti|el
+🤘|beden|boynuz işareti|el|metalci|parmak|rock|süper|yeah|yes
+🤙|ara|beni ara işareti|elle beni ara işareti
 👈|elin arkası|elinin tersiyle solu gösteren işaret parmağı|işaret parmağı|parmak|solu gösteren parmak
 👉|elin arkası|elinin tersiyle sağı gösteren işaret parmağı|işaret parmağı|parmak|sağı gösteren parmak
 👆|elin arkası|elinin tersiyle yukarıyı gösteren işaret parmağı|işaret parmağı|parmak|yukarıyı gösteren parmak
 🖕|beden|el|orta parmak|parmak
 👇|aşağıyı gösteren parmak|elin arkası|elinin tersiyle aşağıyı gösteren işaret parmağı|işaret parmağı|parmak
-☝️|beden|el|gösterme|işaret parmağı|parmak|yukarıyı gösteren işaret parmağı
-🫵|işaret|karşıyı işaret eden işaret parmağı|sen
-👍|baş parmak yukarıda|el|işaret|yukarı
+☝️|beden|el|gösterme|işaret parmağı|izin isteme|parmak|yukarıyı gösteren işaret parmağı
+🫵|dürtmek|el|göstermek|işaret parmağı|karşıyı işaret eden işaret parmağı|onlar|orası|parmak|sen
+👍|+1|anlaştık|beğendim|bence de|el|iyi|onay|tamam
 👎|aşağı|baş parmak aşağıda|el|işaret
-✊|havada yumruk|yumruk kaldırma
-👊|el|yaklaşan yumruk|yumruk
-🤛|sola bakan yumruk|sola doğru|yumruk
-🤜|sağa bakan yumruk|sağa doğru|yumruk
-👏|çırpma|el çırpma|eller|işaret
-🙌|eller havaya|her iki el|kutlamak için iki eli birden kaldırma
-🫶|aşk|kalp oluşturan eller|sevgi
+✊|el|havada yumruk|yumruk kaldırma
+👊|anlaştık|bam|el|katılıyorum|tamam|yaklaşan yumruk|yumruk
+🤛|el|güm|sola bakan yumruk|sola doğru|yumruk
+🤜|el|güm|sağa bakan yumruk|sağa doğru|yumruk
+👏|alkış|bravo|çırpma|eller|işaret|tebrik
+🙌|çak|eller havaya|her iki el|kutlamak için iki eli birden kaldırma|tebrikler
+🫶|<3|aşk|birlikte|biz|el|kalp oluşturan eller|sevgi|seviyorum
 👐|açık|eller açık işareti|işaret
-🤲|dua eden eller|iki avuç açık
+🤲|dilek|dua eden eller|dua etmek|ellerini açmak|iki avuç açık
 🤝|anlaşma|el sıkışma|sallama|toplantı
 🙏|birleşen eller|dua etme|el|hareket
-✍️|beden|el|yazı yazan el|yazma
-💅|kozmetik|manikür|oje sürme|tırnak
-🤳|kamera|selfie|telefon
-💪|çizgi roman|esnek|güçlü|kas esnetme|pazı
+✍️|beden|el|kalem tutma|yazı yazan el|yazma
+💅|kozmetik|manikür|oje sürme|tırnak bakımı
+🤳|kamera|kendi çekim|öz çekim|özçekim|selfie|telefon
+💪|çizgi roman|esnek|güçlü|kas esnetme|pazı|vücutcu
 🦾|erişilebilirlik|mekanik kol|protez
 🦿|erişilebilirlik|mekanik bacak|protez
-🦵|bacak|tekme
-🦶|ayak|tekme
-👂|gövde|kulak
+🦵|ayak|bacak|diz|tekme atmak|uzuv
+🦶|ayak|bilek|parmak|tekme|topuk
+👂|dinlemek|gövde|gürültü|kulak|ses
 🦻|erişilebilirlik|işitme cihazı olan kulak|işitme güçlüğü
-👃|burun|gövde|yüz
-🧠|beyin|zeki
-🫀|kalp atışı|kardiyoloji|merkez|nabız|organ
-🫁|akciğer|nefes|organ|soluk|solunum
-🦷|diş hekimi|dişçi
-🦴|iskelet|kemik
-👀|gözler|yüz
-👁️|beden|göz
-👅|dil|gövde|yüz
-👄|ağız|dudaklar|gövde|yüz
-🫦|davetkâr|endişeli|flört|gergin|ısırılan dudak|korku|rahatsız
+👃|burun|gövde|koklamak|koku|nefes|yüz
+🧠|akıllı|beyin|zeka|zeki
+🫀|anatomi|kalp atışı|kan|kardiyoloji|kırmızı|merkez|nabız|organ
+🫁|akciğer|beden|ciğerler|nefes almak|organ|soluk|solumak|solunum|vücut
+🦷|ağız sağlığı|ağrı|azı dişi|beyaz|diş ağrısı|diş hekimi|diş perisi|dişçi|inci gibi|köpek dişi|süt dişi
+🦴|iskelet|kemik|köpek kemiği|mama
+👀|bakmak|görmek|gözcü|gözetlemek|gözler|yüz
+👁️|beden|göz|kahverengi göz
+👅|ağız|dil|gövde|yalamak|yüz
+👄|ağız|aşk|dudaklar|gövde|öpme|öptüm|öpücük|yüz
+🫦|davetkar|davetkâr|dudak|endişeli|flört|gergin|ısırılan dudak|korku|öpücük|rahatsız|seksi|tutku
 👶|bebek|kişiler
-🧒|çocuk|genç|kişi
-👦|erkek çocuk|kişiler
-👧|genç|kişiler|kız çocuk
-🧑|kişi|yetişkin
-👱|saç|sarı saçlı kişi|sarışın kişi
-👨|erkek|kişiler
-🧔|sakallı kişi
+🧒|çocuk|genç|insan|kişi|küçük çocuk|surat
+👦|erkek çocuk|insan|kişiler|oğlan çocuk
+👧|genç|insan|kişiler|kız çocuk
+🧑|adam|insan|kişi|yetişkin|yüz
+👱|erkek|insan|kişiler|saç|sarı saçlı kişi|sarışın|yüz
+👨|adam|erkek|insan|kişiler|sarışın erkek
+🧔|insan|sakallı kişi|yüz
 🧔‍♂️|erkek: sakal|sakal
 👱‍♂️|adam|erkek|sarışın
-👩|kadın|kişiler
+👩|insan|kadın|kişiler|sarışın kadın
 🧔‍♀️|kadın: sakal|sakal
-👱‍♀️|bayan|kadın|sarışın
-🧓|kişi|yaşlı yetişkin
-👴|erkek|kişiler|yaşlı
-👵|kadın|kişiler|yaşlı
-🙍|hareket|kişi|somurtan kişi|somurtma
-🙍‍♂️|adam|erkek|mimik|somurtan erkek|somurtma
+👱‍♀️|bayan|insan|kadın|kız|sarışın
+🧓|insan|kişi|yaşlı yetişkin
+👴|büyükbaba|dede|erkek|insan|kişiler|yaşlı
+👵|anneanne|babaanne|insan|kadın|kişiler|yaşlı
+🙍|beğenmeme|hareket|hayal kırıklığı|kişi|mimik|öfkeli|rahatsız|sıkkın|somurtan kişi|somurtma|surat asma
+🙍‍♂️|adam|erkek|insan|mimik|mutsuz|somurtan erkek|somurtma
 🙍‍♀️|bayan|kadın|mimik|somurtan kadın|somurtma
-🙎|darılan kişi|darılma|hareket|kişi
+🙎|darılan kişi|darılma|hareket|hayal kırıklığı|kişi|kırgın|küsme|mimik|öfkeli|somurtma|surat asma|üzgün
 🙎‍♂️|adam|darılan erkek|darılma|erkek|mimik
 🙎‍♀️|bayan|darılan kadın|darılma|kadın|mimik
-🙅|hareket|hayır hareketi|iyi değil|yasak|yüz
-🙅‍♂️|el|erkek|hareket|hayır hareketi yapan erkek|iyi değil|yasak
+🙅|asla|hareket|hayır hareketi|insan|iyi değil|izin vermiyorum|izinsiz|kişi|olmaz|vücut|yasak|yüz
+🙅‍♂️|el|erkek|hareket|hayır hareketi yapan erkek|insan|iyi değil|yasak|yok
 🙅‍♀️|bayan|el|hareket|hayır hareketi yapan kadın|iyi değil|kadın|yasak
-🙆|hareket|oldu|tamam hareketi|yüz
-🙆‍♂️|adam|el|erkek|hareket|tamam hareketi yapan erkek
+🙆|aman tanrım|egzersiz|el|hareket|kişi|kocaman|oldu|tamam hareketi|vücut|yüz
+🙆‍♂️|adam|aman allah|aman tanrım|egzersiz|eller yukarı|erkek|hareket|insan|tamam hareketi yapan erkek
 🙆‍♀️|bayan|el|hareket|kadın|tamam hareketi yapan kadın
-💁|bilgilendirme|elini yana yatırma|kişiler|yardım
-💁‍♂️|adam|elini yana yatıran erkek|erkek|küstah|yana yatmış el
+💁|alaycı|bilgilendirme|dedikodu|elini yana yatırma|keyfin bilir|kişiler|neyse|saçını savurma|sen bilirsin|umurumda değil|yardım
+💁‍♂️|adam|bilgi|dedikodu|elini yana yatıran erkek|erkek|insan|küstah|sarkastik|yana yatmış el
 💁‍♀️|bayan|elini yana yatıran kadın|kadın|küstah|yana yatmış el
-🙋|el kaldıran kişi|elini kaldırma|hareket|kalkan el|kişi|mutlu
-🙋‍♂️|adam|el kaldırma|elini kaldıran erkek|erkek|hareket
+🙋|ben|burada|el kaldıran kişi|el kaldırma|elini kaldırma|hareket|kalkan el|kişi|merhaba|mutlu|selam|soru|söz isteme|vücut
+🙋‍♂️|adam|el hareketi|el kaldırma|elini kaldıran erkek|erkek|hareket|insan|soru
 🙋‍♀️|bayan|el kaldırma|elini kaldıran kadın|hareket|kadın
-🧏|erişilebilirlik|işitme engelli kişi|kulak
+🧏|duyma|erişilebilirlik|işitme engelli kişi|kulak
 🧏‍♂️|adam|erkek|işitme engelli erkek
 🧏‍♀️|işitme engelli kadın|kadın
-🙇|başını öne eğme|eğilme|hareket|kişi|üzgünüm
+🙇|affetme|bağışlama|başını öne eğme|eğilme|hareket|kişi|merhamet|özür dilerim|üzgünüm|yakarma|yalvarma
 🙇‍♂️|adam|baş eğme|başını öne eğen erkek|erkek|hareket|lütuf|özür
 🙇‍♀️|baş eğme|başını öne eğen kadın|bayan|hareket|kadın|lütuf|özür
-🤦|avuç|çileden çıkma|inanmama|yüzünü eliyle kapama
-🤦‍♂️|adam|çileden çıkma|eliyle yüzünü kapatan erkek|erkek|inanmama|utancından eliyle yüzünü kapatma
-🤦‍♀️|bayan|çileden çıkma|eliyle yüzünü kapatan kadın|inanmama|kadın|utancından eliyle yüzünü kapatma
-🤷|bilmeme|ilgisizlik|kararsız|omuz silkme
-🤷‍♂️|adam|cahillik|erkek|ilgisizlik|omuz silken erkek|omuz silkme|şüphe
-🤷‍♀️|bayan|cahillik|ilgisizlik|kadın|omuz silken kadın|omuz silkme|şüphe
+🤦|aman tanrım|avuç|çileden çıkma|inanamıyorum|inanmama|inanmıyorum|kişi|kızgınlık|öfke|olamaz|şok|vücut|yüzünü eliyle kapama
+🤦‍♂️|adam|aman tanrım|çileden çıkma|eliyle yüzünü kapatan erkek|erkek|inanamıyorum|inanmama|kişi|öfke|olamaz|sinir|utancından eliyle yüzünü kapatma|utanma
+🤦‍♀️|aman tanrım|bayan|çileden çıkma|eliyle yüzünü kapatan kadın|inanamıyorum|inanmama|kadın|öfke|olamaz|pişman|sinir|utanç|utancından eliyle yüzünü kapatma
+🤷|bilemem|bilmeme|bilmiyorum|ilgisizlik|kararsız|kişi|ne bileyim|ne yapalım|omuz silkme|sanırım|vücut
+🤷‍♂️|adam|belki|bilmem|cahillik|cehalet|erkek|her neyse|ilgisizlik|kişi|kuşku|omuz silken erkek|omuz silkme|sanırım|şüphe|vücut
+🤷‍♀️|bayan|belki|bilmem|cahillik|cehalet|her neyse|ilgisizlik|kadın|kişi|kuşku|omuz silken kadın|omuz silkme|sanırım|şüphe|vücut
 🧑‍⚕️|doktor|hasta bakıcı|hemşire|sağlık çalışanı|sağlık personeli|terapist
-👨‍⚕️|adam|doktor|erkek sağlık çalışanı|hastabakıcı|sağlık|terapist
-👩‍⚕️|bayan|doktor|hemşire|kadın sağlık çalışanı|sağlık|terapist
+👨‍⚕️|adam|doktor|erkek sağlık çalışanı|hastabakıcı|meslek|sağlık|terapist
+👩‍⚕️|bayan|doktor|hemşire|kadın sağlık çalışanı|meslek|sağlık|terapist
 🧑‍🎓|mezun|öğrenci|talebe
 👨‍🎓|adam|erkek|mezun|öğrenci
 👩‍🎓|bayan|kadın|kız öğrenci|mezun|öğrenci
 🧑‍🏫|doçent|eğitimci|öğretmen|profesör
-👨‍🏫|adam|eğitmen|erkek|öğretmen|profesör
-👩‍🏫|bayan|eğitmen|kadın|öğretmen|profesör
+👨‍🏫|adam|eğitmen|erkek|meslek|öğretmen|profesör
+👩‍🏫|bayan|eğitmen|kadın|meslek|öğretmen|profesör
 🧑‍⚖️|adalet|hakim|terazi|yargıç
-👨‍⚖️|adalet|adam|erkek hakim|terazi|yargıç
-👩‍⚖️|adalet|bayan|kadın hakim|terazi
+👨‍⚖️|adalet|adam|erkek hakim|meslek|terazi|yargıç
+👩‍⚖️|adalet|bayan|insan|kadın hakim|meslek|savcı|terazi
 🧑‍🌾|bahçıvan|çiftçi|rençper
-👨‍🌾|adam|bahçıvan|çiftçi|çiftlik sahibi|erkek
-👩‍🌾|bahçıvan|bayan|çiftçi|çiftlik sahibi|kadın
+👨‍🌾|adam|bahçıvan|çiftçi|çiftlik sahibi|erkek|meslek
+👩‍🌾|bahçıvan|bayan|çiftçi|çiftlik sahibi|kadın|meslek
 🧑‍🍳|aşçı|yemek pişirme
-👨‍🍳|adam|erkek aşçı|şef|yemek yapma
+👨‍🍳|adam|erkek aşçı|meslek|şef|yemek yapma
 👩‍🍳|bayan|kadın aşçı|şef|yemek yapma
 🧑‍🔧|elektrikçi|tamirci|tesisatçı
-👨‍🔧|adam|elektrikçi|erkek|esnaf|tamirci|tesisatçı
-👩‍🔧|bayan|elektrikçi|esnaf|kadın|tamirci|tesisatçı
+👨‍🔧|adam|elektrikçi|erkek|esnaf|meslek|tamirci|tesisatçı
+👩‍🔧|bayan|elektrikçi|esnaf|kadın|meslek|tamirci|tesisatçı
 🧑‍🏭|endüstri|fabrika işçisi|işçi|montaj|sanayi
-👨‍🏭|adam|erkek fabrika işçisi|fabrika|işçi|montaj|sanayi
-👩‍🏭|bayan|fabrika|işçi|kadın fabrika işçisi|montaj|sanayi
+👨‍🏭|adam|erkek fabrika işçisi|fabrika|işçi|meslek|montaj|sanayi
+👩‍🏭|bayan|fabrika|işçi|kadın fabrika işçisi|meslek|montaj|sanayi
 🧑‍💼|beyaz yakalı|iş yeri|mimar|müdür|ofis çalışanı|yönetici
-👨‍💼|adam|beyaz yaka|erkek ofis çalışanı|iş|mimar|ofis|yönetici
-👩‍💼|bayan|beyaz yaka|iş|kadın ofis çalışanı|mimar|ofis|yönetici
+👨‍💼|adam|beyaz yaka|erkek ofis çalışanı|iş|meslek|mimar|ofis|yönetici
+👩‍💼|bayan|beyaz yaka|iş kadını|işkadını|kadın ofis çalışanı|meslek|mimar|ofis|yönetici
 🧑‍🔬|bilim insanı|biyolog|fizikçi|kimyacı|kimyager
-👨‍🔬|adam|bilim adamı|biyolog|erkek bilim insanı|fizikçi|kimyacı|matematikçi|mühendis
-👩‍🔬|bayan|bilim adamı|biyolog|fizikçi|kadın bilim insanı|kimyacı|matematikçi|mühendis
+👨‍🔬|adam|bilim adamı|biyolog|erkek bilim insanı|fizikçi|kimyacı|matematikçi|meslek|mühendis
+👩‍🔬|bayan|bilim adamı|biyolog|fizikçi|kadın bilim insanı|kimyacı|matematikçi|meslek|mühendis
 🧑‍💻|geliştirici|kodlayıcı|mucit|teknolog|teknoloji uzmanı|yazılımcı
-👨‍💻|adam|erkek teknoloji uzmanı|geliştirici|kodlayıcı|mucit|teknoloji uzmanı|yazılım
-👩‍💻|bayan|geliştirici|kadın teknoloji uzmanı|kodlayıcı|mucit|teknoloji uzmanı|yazılım
+👨‍💻|adam|bilgisayar mühendisi|erkek bilgisayar mühendisi|erkek teknoloji uzmanı|geliştirici|kodlayıcı|meslek|mucit|mühendis|programlamacı|teknoloji uzmanı|yazılım
+👩‍💻|bayan|geliştirici|kadın mühendis|kadın teknoloji uzmanı|kodlayıcı|meslek|mucit|teknoloji uzmanı|yazılım
 🧑‍🎤|aktör|aktris|gösterici|şarkıcı|star|yıldız
-👨‍🎤|adam|aktör|erkek|gösterici|rock|şarkıcı|star
-👩‍🎤|aktör|bayan|gösterici|kadın|rock|şarkıcı|star
+👨‍🎤|adam|aktör|erkek|gösterici|meslek|rock|şarkıcı|star
+👩‍🎤|aktör|bayan|gösterici|kadın|meslek|rock|şarkıcı|star
 🧑‍🎨|palet|ressam|sanatçı
-👨‍🎨|adam|erkek ressam|palet|sanatçı
-👩‍🎨|bayan|kadın ressam|palet|sanatçı
+👨‍🎨|adam|erkek|meslek|palet|ressam|sanatçı
+👩‍🎨|bayan|kadın|meslek|palet|ressam|sanatçı
 🧑‍✈️|pilot|uçak
-👨‍✈️|adam|erkek|pilot|uçak
-👩‍✈️|bayan|kadın|pilot|uçak
+👨‍✈️|adam|erkek|insan|meslek|pilot|uçak
+👩‍✈️|bayan|kadın|meslek|pilot|uçak
 🧑‍🚀|astronot|roket|uzay
-👨‍🚀|adam|astronot|erkek|roket|uzay
-👩‍🚀|astronot|bayan|kadın|roket|uzay
+👨‍🚀|adam|astronot|erkek|meslek|roket|uzay
+👩‍🚀|astronot|bayan|kadın|meslek|roket|uzay
 🧑‍🚒|itfaiye aracı|itfaiyeci
-👨‍🚒|adam|erkek|itfaiye aracı|itfaiyeci
-👩‍🚒|bayan|itfaiye aracı|itfaiyeci|kadın
-👮|görevli|kişiler|polis memuru
+👨‍🚒|adam|erkek|itfaiye aracı|itfaiyeci|meslek
+👩‍🚒|bayan|itfaiye aracı|itfaiyeci|kadın|meslek
+👮|ceza|erkek polis|görevli|gözaltı|kanun|kişiler|meslek|polis memuru|tutuklama|yasa
 👮‍♂️|adam|aynasız|erkek polis memuru|memur|polis
-👮‍♀️|aynasız|bayan|kadın polis memuru|memur|polis
-🕵️|casus|dedektif|hafiye
+👮‍♀️|aynasız|bayan|ceza|gözaltı|kadın polis memuru|kanun|kişi|kolluk|memur|polis memuru|tutuklama|vücut|yasa
+🕵️|casus|dedektif|erkek casus|hafiye|meslek
 🕵️‍♂️|adam|casus|dedektif|erkek|hafiye
-🕵️‍♀️|bayan|casus|dedektif|hafiye|kadın
-💂|bekçi|kişiler|muhafız
+🕵️‍♀️|bayan|casus|dedektif|hafiye|kadın|meslek
+💂|bekçi|kişiler|koruma görevlisi|londra|muhafız
 💂‍♂️|adam|erkek|muhafız
-💂‍♀️|bayan|kadın|muhafız
-🥷|dövüşçü|gizli|ninja|saklı
-👷|inşaat işçisi|işçi|kişiler
+💂‍♀️|bayan|buckingham sarayı|kadın|londra|muhafız
+🥷|asker|dövüşçü|gizli|insan|katana|kavga|kiralık katil|ninja|saklı|savaş|suikast
+👷|baret|inşaat işçisi|işçi|kişiler|meslek|onarım|tadilat|tamirat|vücut
 👷‍♂️|adam|erkek inşaat işçisi|inşaat|işçi
-👷‍♀️|bayan|inşaat|işçi|kadın inşaat işçisi
-🫅|kraliyet|soylu|taç takmış insan
-🤴|prens
-👸|kişiler|peri masalı|prenses
-👳|kişiler|sarıklı erkek|sarıklı kişi
+👷‍♀️|bayan|inşaat|insan|işçi|kadın inşaat işçisi|kask|meslek
+🫅|asil|insan|kraliçe|kraliyet|soylu|taç takmış insan|taht
+🤴|insan|kraliyet|prens
+👸|insan|kişiler|kraliçe|peri masalı|prenses
+👳|başörtüsü|insan|kişiler|sarıklı erkek|sarıklı kişi|türbanlı kişi|vücut
 👳‍♂️|adam|erkek|sarıklı erkek
-👳‍♀️|bayan|kadın|sarıklı kadın
-👲|çin şapkalı erkek|gua pi mao takan erkek|kişiler
-🧕|başörtülü kadın
-🤵|damat|kişi|smokinli kişi
+👳‍♀️|bayan|insan|kadın|sarıklı kadın|türbanlı kadın
+👲|adam|çin şapkalı erkek|çinli şapkası olan adam|erkek|gua pi mao takan erkek|kişiler|meslek
+🧕|baş örtüsü|başörtülü kadın|insan|türbanlı
+🤵|adam|damat|kişi|simokin|smokinli adam|smokinli kişi
 🤵‍♂️|adam|smokinli adam|smokinli erkek
 🤵‍♀️|kadın|smokinli kadın
-👰|duvaklı gelin|evlilik|kişiler
+👰|duvaklı gelin|evlilik|gelin|kişiler
 👰‍♂️|adam|duvaklı adam|duvaklı erkek
 👰‍♀️|duvaklı kadın|kadın
 🤰|hamile|kadın
-🫃|göbekli|hamile adam|şişmiş
-🫄|göbekli|hamile kişi|şişmiş
-🤱|bebek|emziren kadın|emzirme|göğüs
-👩‍🍼|bakım|bebek emziren kadın|emzirme|kadın
-👨‍🍼|bakıcılık|bebek emziren erkek|emzirme|erkek
-🧑‍🍼|bakıcılık|bebek emziren kişi|emzirme|kişi
-👼|bebek melek|melek|peri masalı|yüz
-🎅|kutlama|noel baba|santa claus
-🤶|anne|noel anne
-🧑‍🎄|cinsiyet belirtmeyen noel karakteri|noel figürü
-🦸|iyi|kadın kahraman|kahraman|süper güç|süper kahraman
+🫃|gaz|göbekli|hamile adam|iki canlı|insan|karnı şiş|obur|şişmiş
+🫄|çok yemek|gaz|göbekli|hamile kişi|iki canlı|insan|karnı şiş|obur|şişmiş
+🤱|anne sütü|bebek|emziren kadın|emzirme|göğüs|meme verme|süt izni
+👩‍🍼|anne|bakıcı|bakım|bebek bakıcısı|bebek emziren kadın|beslemek|emzirme|insan|kadın|kucak|sevgi|yenidoğan
+👨‍🍼|baba|bakıcılık|bebek bakıcısı|bebek emziren erkek|beslemek|emzirme|erkek|insan|kucak|sevgi|yenidoğan
+🧑‍🍼|anne|baba|bakıcılık|bebek bakıcısı|bebek emziren kişi|beslemek|emzirme|erkek|insan|kadın|kişi|yenidoğan
+👼|bebek|melek|peri masalı|yüz
+🎅|insan|kutlama|noel baba|santa claus
+🤶|anne|insan|noel annesi
+🧑‍🎄|christmas|cinsiyet belirtmeyen noel karakteri|insan|mutlu noeller|mutlu yıllar|noel baba|noel figürü|santa claus|şapka|tatil|yılbaşı
+🦸|iyilik|kahraman|kurtarmak|pelerin|süper güç|süper kahraman|uçmak
 🦸‍♂️|erkek süper kahraman|iyi|kahraman|süper güç
 🦸‍♀️|iyi|kadın süper kahraman|kahraman|süper güç
-🦹|kötü|şeytani|suçlu|süper güç|süper kötü
+🦹|acımasız|hain|kötü adam|pelerin|şeytani|suçlu|süper güç|süper kahraman|süper kötü|vampir|zalim
 🦹‍♂️|erkek süper kötü|kötü|şeytani|suçlu|süper güç
 🦹‍♀️|kadın süper kötü|kötü|şeytani|suçlu|süper güç
 🧙|büyücü|cadı|sihirbaz
 🧙‍♂️|büyücü|erkek büyücü|sihirbaz
 🧙‍♀️|büyücü|cadı|kadın büyücü
-🧚|oberon|peri|puck|titania
+🧚|kanat|masal|mitoloji|oberon|peri|puck|titania
 🧚‍♂️|erkek peri|oberon|puck
 🧚‍♀️|kadın peri|titania
-🧛|drakula|hortlak|vampir
+🧛|drakula|hortlak|kan|vampir
 🧛‍♂️|drakula|erkek vampir|hortlak
 🧛‍♀️|hortlak|kadın vampir
-🧜|balık insan
+🧜|balık insan|balık kadın|deniz altı|deniz kızı|mitoloji|peri masalı|poseidon|su altı|üç dişli çatal
 🧜‍♂️|balık adam
 🧜‍♀️|balık kadın|denizkızı
-🧝|elf|sihirli
+🧝|elf|legolas|sihirli|sivri kulak
 🧝‍♂️|erkek elf|sihirli
 🧝‍♀️|kadın elf|sihirli
-🧞|cin
+🧞|alaaddin’in sihirli lambası|alaaddinin sihirli lambası|cin|dilek|lamba|sihir
 🧞‍♂️|cin|erkek cin
 🧞‍♀️|cin|kadın cin
-🧟|hortlak|yürüyen ölü|zombi
+🧟|hortlak|kişi|kıyamet|korkunç|ürkünç|yaşayan ölü|yürüyen ölü|zombi
 🧟‍♂️|erkek zombi|hortlak|yürüyen ölü
 🧟‍♀️|hortlak|kadın zombi|yürüyen ölü
-🧌|fantezi|peri masalı|trol|yaratık
-💆|masaj|salon|yüz masajı
+🧌|canavar|dev|fantezi|gerçek dışı|hayali|hulk|ork|peri masalı|trol|yaratık|yeşil dev
+💆|baş ağrısı|gerginlik|kişi|masaj yaptıran kişi|rahatlama|salon|spa|terapi|yüz masajı
 💆‍♂️|adam|erkek|masaj|yüz masajı yaptıran erkek
 💆‍♀️|bayan|kadın|masaj|yüz masajı yaptıran kadın
-💇|güzellik salonu|saç kesimi|salon
-💇‍♂️|adam|erkek|saç kesimi|saç kestiren erkek
+💇|bakım|güzellik salonu|kes|kişi|kuaför|makas|saç kesimi|saç kestirme|saç stili|salon|tarz
+💇‍♂️|adam|berber|erkek|insan|saç kesimi|saç kestiren erkek|saç kestirmek
 💇‍♀️|bayan|kadın|saç kesimi|saç kestiren kadın
-🚶|yürüyen kişi
+🚶|aylak|gezinti|kişi|salınma|tempo|vücut|yaya|yürüme|yürüyen adam|yürüyüş
 🚶‍♂️|adam|dolaşma|erkek|yürüme|yürüyen erkek
-🚶‍♀️|bayan|dolaşma|kadın|yürüme|yürüyen kadın
+🚶‍♀️|bayan|dolaşma|kadın|yaya|yürüme|yürüyen kadın
 🧍|ayakta duran kişi|ayakta durma
 🧍‍♂️|adam|ayakta duran erkek|erkek
 🧍‍♀️|ayakta duran kadın|kadın
-🧎|diz çöken kişi|diz çökme
+🧎|diz çöken kişi|diz çökme|dizler
 🧎‍♂️|adam|diz çöken erkek|erkek
 🧎‍♀️|diz çöken kadın|kadın
 🧑‍🦯|erişilebilirlik|görme engelli bastonlu kişi|kör
@@ -473,362 +475,370 @@
 🧑‍🦽|erişilebilirlik|tekerlekli sandalyede kişi
 👨‍🦽|erişilebilirlik|erkek|tekerlekli sandalyede erkek
 👩‍🦽|erişilebilirlik|kadın|tekerlekli sandalyede kadın
-🏃|koşan kişi|koşu|maraton|spor
+🏃|acele|çabuk|hızlı|kişi|koşan kişi|koşucu|maraton|spor|vücut|yarış
 🏃‍♂️|adam|erkek|koşan erkek|koşma|maraton|yarış
 🏃‍♀️|bayan|kadın|koşan kadın|koşma|maraton|yarış
-💃|dans eden kadın|kişiler
-🕺|adam|dans eden adam
-🕴️|erkek|havalanan takım elbiseli adam|işadamı|takım elbise
-👯|dansçı|parti|tavşan kulaklar|tavşan kulaklı kişiler
-👯‍♂️|adam|dansçı|erkek|partiye katılma|tavşan kulaklı erkekler
+💃|dans eden kadın|dansçı|festival|kadın dansçı|kişiler|meslek|tango
+🕺|adam|dans eden adam|meslek
+🕴️|erkek|havalanan takım elbiseli adam|işadamı|takım elbise|yukarıda süzülen takım elbiseli iş adamı
+👯|aynısı|dansçı|ikiz|kadın|parti|ruh ikizi|tavşan kulaklar|tavşan kulaklı kişiler|vücut
+👯‍♂️|adam|dans eden erkekler|dansçı|erkek|partiye katılan erkek|partiye katılma|tavşan kulaklı erkekler
 👯‍♀️|bayan|dansçı|kadın|partiye katılma|tavşan kulaklı kadınlar
-🧖|buhar odasındaki kişi|sauna
+🧖|buhar banyosu|buhar odasındaki kişi|hamam|rahatlamak|sauna
 🧖‍♂️|buhar odasındaki erkek|sauna
 🧖‍♀️|buhar odasındaki kadın|sauna
-🧗|dağcı kişi
+🧗|dağcı kişi|kaya tırmanışı|tırmanıcı|tırmanmak
 🧗‍♂️|dağcı erkek
 🧗‍♀️|dağcı kadın
 🤺|birey|eskrimci|kılıç|spor
 🏇|at yarışı|jokey|spor|yarış atı
 ⛷️|kar|kayakçı
-🏂|snowboard yapmak|snowbordçu|spor
-🏌️|golf oynayan kişi|top
+🏂|kar kayağı yapan|snowboard yapmak|snowbordçu|spor
+🏌️|golf oynayan kişi|golf sahası|golf sopası|golfçü|kişi|top|vücut|vuruş
 🏌️‍♂️|adam|erkek|golf oynayan erkek
-🏌️‍♀️|bayan|golf oynayan kadın|kadın
-🏄|sörf yapan kişi|sörfçü|spor
+🏌️‍♀️|bayan|gol oynayan kadın|golf oynayan kadın|kadın
+🏄|dalga sörfü|erkek sörfçü|kişi|okyanus|plaj|sahil|sörf yapan kişi|sörfçü|spor|vücut
 🏄‍♂️|adam|erkek|sörf yapan erkek
 🏄‍♀️|bayan|kadın|sörf yapan kadın
-🚣|sandalda kürek çeken kişi|taşıt|tekne
+🚣|göl|ırmak|kano|kayık|kürek çeken erkek|nehir|sandalda kürek çeken kişi|taşıt|tekne
 🚣‍♂️|adam|erkek|kayık|sandalda kürek çeken erkek
 🚣‍♀️|bayan|kadın|kayık|sandalda kürek çeken kadın
-🏊|spor|yüzen kişi|yüzme
+🏊|antrenman|hareket|havuz|kişi|serbest stil|spor|triatlon|vücut|yüzen kişi|yüzme|yüzücü
 🏊‍♂️|adam|erkek|yüzen erkek|yüzme
 🏊‍♀️|bayan|kadın|yüzen kadın|yüzme
-⛹️|top sektiren kişi
+⛹️|atletik|basketbolcu|kişi|sporcu|top sektiren kişi|top sürme|vücut
 ⛹️‍♂️|adam|erkek|top sektiren erkek
-⛹️‍♀️|bayan|kadın|top sektiren kadın
-🏋️|ağırlık kaldıran kişi|halter
+⛹️‍♀️|basketbolcu|bayan|kadın|top sektiren kadın
+🏋️|ağırlık kaldıran kişi|ağırlık kaldırma|antrenman|erkek halterci|halterci|kişi|vücut
 🏋️‍♂️|adam|ağırlık kaldıran erkek|erkek
-🏋️‍♀️|ağırlık kaldıran kadın|bayan|kadın
-🚴|bisiklet süren kişi
+🏋️‍♀️|ağırlık kaldıran kadın|bayan|halter|kadın
+🚴|antrenman|bisiklet süren kişi|bisiklet sürücüsü|bisikletçi|hareket|kişi|spor|vücut
 🚴‍♂️|adam|bisiklet süren erkek|bisiklet sürme|bisikletçi|erkek
 🚴‍♀️|bayan|bisiklet süren kadın|bisiklet sürme|bisikletçi|kadın
-🚵|bisikletçi|dağ bisikletçisi
+🚵|antrenman|atletik|bisikletçi|dağ bisikletçisi|kişi|spor|sürüş|vücut
 🚵‍♂️|adam|bisiklet sürme|bisikletçi|dağ bisikleti süren erkek|erkek
 🚵‍♀️|bayan|bisiklet sürme|bisikletçi|dağ bisikleti süren kadın|kadın
-🤸|birey|jimnastik|perende atan kişi|spor|yanlamasına takla
-🤸‍♂️|adam|çember hareketi|erkek|jimnastik|kişi|perende atan erkek|spor
-🤸‍♀️|bayan|çember hareketi|jimnastik|kadın|kişi|perende atan kadın|spor
-🤼|birey|güreşçi|güreşen kişiler|spor
-🤼‍♂️|adam|erkek|güreş yapan erkek|kişi|spor
-🤼‍♀️|bayan|güreş yapan kadın|kadın|kişi|spor
-🤽|birey|spor|su topu|top
-🤽‍♂️|adam|erkek|spor|su topu oynayan erkek
-🤽‍♀️|bayan|kadın|spor|su topu oynayan kadın
-🤾|birey|hentbol|spor|top
+🤸|aktif|birey|jimnastik|kişi|mutlu|neşe|perende atan kadın|perende atan kişi|sevinç|spor|vücut|yanlamasına takla
+🤸‍♂️|adam|aktif|çember hareketi|erkek|heyecanlı|jimnastik|kişi|mutlu|neşe|perende atan erkek|spor|vücut
+🤸‍♀️|aktif|bayan|çember hareketi|heyecanlı|jimnastik|kadın|kişi|mutlu|neşe|oyun|perende atan kadın|sevinç|spor
+🤼|birey|dövüş|düello|güreş minderi|güreşçilik|güreşen kişiler|kişi|spor|vücut
+🤼‍♂️|adam|antrenman|dövüş|düello|er meydanı|erkek|güreş yapan erkek|kişi|kırkpınar|spor
+🤼‍♀️|bayan|dövüş|er meydanı|güreş turnuvası|güreş yapan kadın|güreşçi|kadın|kişi|kırkpınar|spor|vücut
+🤽|antrenman|birey|havuz|kişi|spor|su sporları|su topu|top|vücut|yüzme
+🤽‍♂️|adam|antrenman|erkek|havuz|kişi|spor|su sporu|su topu oynayan erkek|top|vücut
+🤽‍♀️|antrenman|bayan|havuz|kadın|kişi|spor|su sporları|su topu oynayan kadın|vücut|yüzme
+🤾|atış|atletik|birey|el|hentbol|kişi|spor|top|vücut
 🤾‍♂️|adam|erkek|hentbol oynayan erkek|spor
-🤾‍♀️|bayan|hentbol oynayan kadın|kadın|spor
-🤹|aynı anda birçok iş yapma|denge|hokkabazlık|jonglör|yetenek
-🤹‍♂️|adam|aynı anda birçok iş|erkek|hokkabazlık|jonglör erkek
-🤹‍♀️|aynı anda birçok iş|bayan|hokkabazlık|jonglör kadın|kadın
-🧘|lotus pozisyonundaki kişi|meditasyon|yoga
+🤾‍♀️|antrenman|atış|atletik|bayan|hentbol oynayan kadın|kadın|kişi|spor|top|vücut
+🤹|aynı anda birçok iş yapma|denge|el becerisi|hokkabazlık|jonglörlük|kişi|top çeviren erkek|top çevirme|vücut|yetenek
+🤹‍♂️|adam|aynı anda birçok iş|denge|erkek|hokkabazlık|jonglör|top çevirme|vücut
+🤹‍♀️|aynı anda birçok iş|bayan|hokkabazlık yapan kadın|jonglör kadın|kadın
+🧘|bağdaş kurmak|lotus pozisyonundaki kişi|meditasyon|rahatlamak|yoga
 🧘‍♂️|lotus pozisyonundaki erkek|meditasyon|yoga
 🧘‍♀️|lotus pozisyonundaki kadın|meditasyon|yoga
 🛀|banyo yapan kişi|küvet
-🛌|otel|uyuma|yatakta yatan kişi
+🛌|gece|insan|iyi geceler|iyi uykular|kestirme|öğle uykusu|otel|uyku saati|uyumak|yastık|yatakta yatan kişi|yatan insan|yatıyorum|yatmak|zzz
 🧑‍🤝‍🧑|çift|el ele tutuşan insanlar|kişi|tutmak|tutuşan eller
-👭|çift|el ele tutuşan kadınlar|kadınlar
-👫|çift|el ele tutuşan erkek ve kadın|erkek|kadın
+👭|arkadaş|çift|dost|el ele tutuşan iki kadın|el ele tutuşan kadınlar|kadınlar|kanki|kişiler|kızkardeşler
+👫|çift|el ele tutuşan erkek ve kadın|el ele tutuşan kız ve erkek|erkek|kadın|kişiler|sevgili
 👬|çift|el ele tutuşan erkekler|el ele tutuşan iki erkek|erkek|ikizler|kişiler
-💏|kişiler|öpücük|öpüşme|romantizm
-💑|kalpli çift|kişiler|romantizm
-👪|aile|anne|baba|çocuk|kişiler
+💏|aşk|kişiler|öpücük|öpüşme|romantizm|seni seviyorum|yıldönümü
+💑|aşk|kadın erkek|kalpli çift|kişiler|romantizm
 🗣️|bağırma|kafa|konuşan kişi|konuşma|profil|siluet|yüz
 👤|büst|kişiler|siluet
 👥|büst|kişiler|siluet büstler
-🫂|güle güle|hoşçakalın|kucaklaşan insanlar|merhaba|sağolun|selam|teşekkürler
+🫂|aşk|elveda|güle güle|hoşçakalın|insan|kucaklaşan insanlar|kucaklaşma|merhaba|sağolun|sarılma|selam|sevgi|teşekkürler|teselli|veda
+👪|aile|anne|baba|bir erkek bir kadın bir erkek çocuk|çocuk|erkek çocuk|kişiler
+🧑‍🧑‍🧒|aile|çocuk|yetişkin
+🧑‍🧑‍🧒‍🧒|aile|çocuk|yetişkin
+🧑‍🧒|aile|çocuk|yetişkin
+🧑‍🧒‍🧒|aile|çocuk|yetişkin
 👣|ayak izi|gövde|iz
-🐵|hayvan|maymun yüzü|yüz
-🐒|hayvan|maymun
+🐵|hayvan|komik|maymun yüzü|meraklı maymun|muz|neşeli|yüz
+🐒|hayvan|maymun|muz|orman
 🦍|goril|hayvan
-🦧|maymun|orangutan
+🦧|hayvan|maymun|orangutan
 🐶|hayvan|köpek yüzü|yüz
-🐕|hayvan|köpek|süs köpeği
+🐕|hav hav|hayvan|köpek|kuçu kuçu|süs köpeği
 🦮|erişilebilirlik|görme engelli|rehber köpek
-🐕‍🦺|erişilebilirlik|köpek|rehberlik|yardımcı köpek
+🐕‍🦺|erişilebilirlik|köpek|rehber köpek|rehberlik|yardımcı köpek
 🐩|hayvan|kaniş|köpek
-🐺|kurt|yüz
-🦊|tilki|yüz
-🦝|meraklı|rakun|sinsi
-🐱|hayvan|kedi yüzü|yüz
-🐈|hayvan|kedi
-🐈‍⬛|kara|kedi|uğursuz
-🦁|aslan yüzü|burç|yüz
-🐯|kaplan yüzü|yüz
-🐅|kaplan
-🐆|leopar
+🐺|hayvan|kurt yüzü|orman|yüz
+🦊|akıllı|hayvan|kurnaz|tilki yüzü|yüz
+🦝|gri|hayvan|meraklı|rakun|sinsi
+🐱|ev hayvanı|hayvan|kedi yüzü|miyav|mındık|mırnav|pisi pisi|şirin|yüz
+🐈|hayvan|kedi|pisi pisi|sarman
+🐈‍⬛|cadılar bayramı|halloween|hayvan|kara|kedi|miyav|uğursuz
+🦁|aslan yüzü|burç|hayvan|ormanların kralı|yüz
+🐯|büyük kedi|etobur|hayvan|kaplan yüzü|kedigiller|vahşi|yüz
+🐅|büyük kedi|etobur|hayvanat bahçesi|kaplan|kedigiller|vahşi
+🐆|büyük kedi|hayvanat bahçesi|kedigiller|leopar|vahşi
 🐴|at yüzü|hayvan|yüz
-🫎|elk|geyik boynuzları|hayvan|memeli|sığın
-🫏|eşek|hayvan|inatçı|katır|memeli|merkep
-🐎|at|yarış atı
-🦄|tek boynuzlu at|unicorn|yüz
-🦓|çizgili|şeritli|zebra
-🦌|geyik|hayvan
-🦬|bizon|bufalo|sürü
+🫎|boynuzlar|elk|geyik boynuzları|hayvan|memeli|mus|sığın
+🫏|eşek|hayvan|inatçı|katır|memeli|merkep|sıpa
+🐎|at|hayvan|yarış atı
+🦄|hayal|hayvan|sihirli|tek boynuzlu at|unicorn|yüz
+🦓|çizgili|hayvan|hızlı|şeritli|zebra
+🦌|boynuz|geyik|hayvan|orman|ren geyiği
+🦬|bizon|boynuz|bufalo|hayvan|sürü
 🐮|hayvan|inek yüzü|yüz
-🐂|boğa burcu|burçlar|öküz
-🐃|buffalo|manda|su
-🐄|inek
+🐂|boğa burcu|burçlar|çiftlik|hayvan|öküz
+🐃|buffalo|hayvan|manda|su
+🐄|büyükbaş hayvan|çiftlik|inek|siyah beyaz|süt
 🐷|domuz yüzü|hayvan|yüz
-🐖|dişi domuz|domuz
-🐗|domuz|yaban domuzu
+🐖|çiftlik|dişi domuz|domuz|pembe domuz|şişko
+🐗|domuz|hayvan|inatçı|yaban domuzu
 🐽|burun|domuz burnu|hayvan|yüz
-🐏|burç|koç
-🐑|dişi koyun|koyun
-🐐|burçlar|keçi|oğlak burcu burçlar
+🐏|burç|hayvan|koç burcu|orman
+🐑|çiftlik|dişi koyun|koyun|küçük baş hayvan|yün
+🐐|burçlar|çiftlik|hayvan|keçi|koç|oğlak burcu burçlar|peynir|süt
 🐪|deve|hayvan|hecin devesi|hörgüç
-🐫|deve|hayvan|hörgüç|iki hörgüçlü deve
-🦙|alpaka|guanako|lama|vikunya|yün
-🦒|noktalar|puanlar|zürafa
-🐘|fil
-🦣|büyük|fil dişi|mamut|nesli tükenen|soyu tükenen
-🦏|gergedan|hayvan
-🦛|hipopotam|su aygırı
-🐭|fare yüzü|hayvan|yüz
-🐁|fare
-🐀|sıçan
-🐹|evcil hayvan|hamster|yüz
-🐰|hayvan|tavşan yüzü|yüz
-🐇|hayvan|tavşan
-🐿️|sincap
-🦫|baraj|kunduz
-🦔|dikenli|kirpi
-🦇|hayvan|vampir|yarasa
-🐻|ayı|yüz
+🐫|çöl|deve|hayvan|hörgüç|iki hörgüçlü deve|kinci|sahara
+🦙|alpaka|beyaz|guanako|hayvan|lama|sevimli|tatlı|vikunya|yün
+🦒|hayvan|noktalar|puanlar|uzun|zürafa
+🐘|fil|hayvan|safari
+🦣|büyük|diş|fil dişi|hayvan|mamut|nesli tükenen|soyu tükenen|yünlü mamut
+🦏|afrika|gergedan|hayvan|safari
+🦛|çamur|hayvan|hipopotam|mor hayvan|sevimli|su aygırı
+🐭|fare yüzü|hayvan|sıçan|yüz
+🐁|beyaz fare|fare|fil|hayvan|kemirgen
+🐀|hayvan|kemirgen|lağım faresi|sıçan
+🐹|evcil hayvan|hamster yüzü|hayvan|kemirgen|yüz
+🐰|havuç|hayvan|kemirgen|tavşan yüzü|yüz
+🐇|diş|havuç|hayvan|kemirgen|pamuk|şirin|tavşan|zıp zıp
+🐿️|fındık|sincap
+🦫|baraj|diş|hayvan|kemirgen|kemirmek|kunduz|kuyruk
+🦔|dikenli|hayvan|kirpi|şirin
+🦇|drakula|hayvan|kan emen|kanatlı|kuş|mağara|siyah|vampir|yarasa
+🐻|ayı yüzü|hayvan|orman|yüz
 🐻‍❄️|arktik|ayı|beyaz|kutup ayısı
 🐨|hayvan|koala ayısı
-🐼|panda|yüz
+🐼|bambu|hayvan|panda yüzü|tembel|yüz
 🦥|tembel hayvan|yavaş
 🦦|balık avlayan|oyuncu|su samuru
 🦨|kokan|kokarca
-🦘|avustralya|kanguru|keseli|sıçrama|yavru keseli
-🦡|bal porsuğu|bela|porsuk
-🐾|hayvan|iz|pençe izi
-🦃|hindi
-🐔|kuş|tavuk
-🐓|horoz|kuş
-🐣|civciv|hayvan|kuluçka|piliç|tavuk|yavru|yumurtadan çıkan civciv
-🐤|civciv|hayvan|piliç|tavuk|yavru
-🐥|hayvan|önden civciv|piliç|tavuk|yavru|yüzü dönük civciv
+🦘|avustralya|hayvan|kanguru|keseli|kulak|memeli|otçul|sıçrama|yavru|zıplamak
+🦡|bal porsuğu|bela|hayvan|porsuk|sevimli
+🐾|hayvan|iz|pati izi|pençe izi
+🦃|hayvan|hindi|kuş|şükran günü
+🐔|hayvan|kuş|tavuk
+🐓|hayvan|horoz|kuş
+🐣|civciv|hayvan|kuluçka tavuğu|piliç|tavuk|yavru|yumurtadan çıkan civciv
+🐤|civciv başı|hayvan|piliç|tavuk|yavru
+🐥|civciv|hayvan|önden civciv|piliç|sarı civciv|şirin|tavuk|yavru|yüzü dönük civciv
 🐦|hayvan|kuş
-🐧|hayvan|penguen
-🕊️|barış|güvercin|kuş|uçma
-🦅|kartal|kuş
-🦆|kuş|ördek
-🦢|çirkin ördek yavrusu|kuğu yavrusu|kuş
-🦉|baykuş|bilge|kuş
-🦤|büyük|dodo kuşu|mauritius|nesli tükenmiş|soyu tükenmiş
-🪶|hafif|kuş tüyü|tüylü|uçma
+🐧|antartika|buz|hayvan|penguen|soğuk
+🕊️|barış|beyaz güvercin|güvercin|kuş|uçma
+🦅|amerika|beşiktaş|beyaz başlı kartal|hayvan|kara kartal|kartal|kuş
+🦆|hayvan|kuş|ördek|suna
+🦢|beyaz|çirkin ördek yavrusu|gaga|göl|hayvan|kuğu yavrusu|kuş|ördek
+🦉|baykuş|bilge|hayvan|kuş
+🦤|büyük|dodo kuşu|hayvan|kuş|mauritius|nesli tükenmiş|soyu tükenmiş
+🪶|gıdıklamak|hafif|hayvan|kuş tüyü|tüylü|uçma
 🦩|flamingo|gösterişli|tropikal
-🦚|dişi tavus kuşu|gösterişli|gururlu|kuş|tavus kuşu
-🦜|konuşma|korsan|kuş|papağan
-🪽|kanat|kuş|melek gibi|mitoloji|uçma|uçuş
-🪿|kaz sesi|kümes hayvanı|kuş|şapşal
-🐸|kurbağa|yüz
+🦚|dişi tavus kuşu|gösterişli|gururlu|hayvan|kuş|mavi kuş|renkli|tavus kuşu|tavuskuşu|züppe
+🦜|hayvan|kırmızı kuş|kırmızı papağan|konuşma|korsan|kuş|papağan|renkli kuş
+🪽|cennet|havacılık|kanat|kuş|kutsal|melek gibi|mitoloji|semavi|uçma|uçuş
+🐦‍⬛|gaga|gak|hayvan|hilebaz|kara|kargagil|kuş|kuzgun|siyah
+🪿|hayvan|kaz sesi|kümes hayvanı|kuş|ördek|paytak|şapşal|vak
+🐦‍🔥|anka|ateş kuşu|dönüşüm|fantezi|hayvan|küllerinden doğmak|ölümsüz|reenkarnasyon|yeniden doğuş|yenilenme|zafer
+🐸|hayvan|kurbağa yüzü|vırak|yüz|zıp zıp
 🐊|hayvan|timsah
 🐢|hayvan|kaplumbağa
-🦎|kertenkele|sürüngen
+🦎|hayvan|kertenkele|sürüngen
 🐍|hayvan|yılan
-🐲|ejderha yüzü|hayvan|yüz
-🐉|ejderha|hayvan
-🦕|brachiosaurus|brontosaurus|brontozor|diplodocus|soropod
-🦖|t-rex|tyrannosaurus rex
-🐳|balina|hayvan|su püskürten balina
-🐋|balina|hayvan
-🐬|hayvan|yunus
-🦭|ayı balığı|denizaslanı|fok balığı
-🐟|balık|hayvan
-🐠|balık|hayvan|tropikal balık
+🐲|ejderha yüzü|hayvan|masal|yüz
+🐉|çin|efsane|ejderha|hayvan|masal
+🦕|brachiosaurus|brontosaurus|brontozor|dinazor|diplodocus|hayvan|korkunç|soropod
+🦖|dinazor|hayvan|korkunç|t-rex|tyrannosaurus rex
+🐳|balina|deniz|hayvan|mavi balina|okyanus|su püskürten balina
+🐋|balina|hayvan|okyanus
+🐬|balık|deniz|hayvan|mavi yunus|okyanus|yunus
+🦭|ayı balığı|balık|bıyıklı|deniz aslanı|denizaslanı|fok balığı|hayvan|okyanus
+🐟|balık|burç|deniz|hayvan|mavi balık
+🐠|balık|hayvan|okyanus|tropikal balık
 🐡|balık|balon balığı|hayvan
-🦈|balık|köpek balığı
-🐙|ahtapot|hayvan
-🐚|deniz kabuğu|hayvan|spiral deniz kabuğu
-🪸|mercan|okyanus|resif
-🪼|ahh|denizanası|iğne|medüz|omurgasız|yanma
-🐌|salyangoz
+🦈|balık|deniz|hayvan|jaws|köpek balığı|okyanus
+🐙|ahtapot|hayvan|okyanus
+🐚|deniz kabuğu|deniz sesi|hayvan|midye|okyanus|spiral deniz kabuğu
+🪸|canlı|dalış|deniz|doğa|hayvan|iklim değişikliği|mercan|okyanus|resif|su altı
+🪼|ahh|akvaryum|çarpma|denizanası|dokunaç|hayvan|iğne|medüz|okyanus|omurgasız|plankton|sokma|yanma
+🐌|böcek|hayvan|salyangoz|sümüklü böcek|yavaş
 🦋|böcek|kelebek|şirin
 🐛|böcek|hayvan|kırkayak|tırtıl
-🐜|böcek|karınca
-🐝|arı|bal arısı|hayvan
-🪲|böcek|haşere
-🐞|böcek|hanımböceği|hayvan|uğur böceği
-🦗|çekirge|cırcır böceği
-🪳|böcek|hamam böceği|haşere|karafatma
+🐜|bahçe|böcek|çalışkan|hayvan|karınca
+🐝|arı|bal arısı|hayvan|iğne|vız vız
+🪲|böcek|haşere|hayvan
+🐞|benekli|böcek|hanımböceği|hayvan|uğur böceği
+🦗|böcek|çekirge|cırcır böceği|hayvan
+🪳|böcek|hamam böceği|haşere|hayvan|iğrenç|kabuklu|karafatma
 🕷️|böcek|örümcek
 🕸️|örümcek ağı
-🦂|akrep|burç
-🦟|ateş|böcek|hastalık|sivrisinek|sıtma|virüs
-🪰|böcek|çürüme|hastalık|karasinek|larva|sinek
-🪱|kurtçuk|parazit|solucan
-🦠|amip|bakteri|mikrop|virüs
-💐|buket|çiçek|romantizm
-🌸|çiçek izleme|kiraz çiçeği
-💮|beyaz çiçek|çiçek|damga|iyi çalışma damgası
-🪷|budizm|çiçek|hindistan|hinduizm|nilüfer|saflık|vietnam
-🏵️|bitki|çiçek rozet|gülce
-🌹|bitki|çiçek|gül
-🥀|çiçek|solmuş
-🌺|bitki|çiçek|çingülü|hatmi çiçeği
+🦂|akrep|burç|hayvan|iğne|zehir
+🦟|ateş|böcek|hastalık|hayvan|ısırmak|kaşıntı|malarya|sinek ısırığı|sivrisinek|sıtma|virüs|vızıltı
+🪰|at sineği|böcek|çürüme|hastalık|hayvan|karasinek|kurt sineği|larva|sinek|uçmak
+🪱|hayvan|kurtçuk|parazit|solucan|sürüngen
+🦠|amip|bakteri|bilim|deney|hastalık|hücre|laboratuvar|mikrop|tek hücreli|virüs
+💐|aşk|buket|çiçek|doğum günü|gül|romantizm
+🌸|bahar|çiçek izleme|kiraz çiçeği
+💮|beyaz çiçek|çiçek damgası|damga|iyi çalışma damgası
+🪷|bitki|budizm|çiçek|hindistan|hinduizm|huzur|lotus|namaste|nilüfer|saflık|sakin|vietnam|yoga
+🏵️|bitki|çiçek rozet|gülce|sarı çiçek
+🌹|aşk|bitki|çiçek|gül|kırmızı gül
+🥀|boynu bükük|çiçek|gül|kırgın|kırmızı gül|solmuş|üzgün
+🌺|atatürk çiçeği|bitki|çiçek|çingülü|hatmi çiçeği
 🌻|ayçiçeği|bitki|çiçek|güneş
-🌼|bitki|çiçek açma
-🌷|bitki|çiçek|lale
-🪻|acı bakla|aslanağzı|çiçek|lavanta|lupin|sümbül
-🌱|fide|filizlenme|genç
-🪴|bitki|ev bitkisi|saksı bitkisi|yetiştirme
-🌲|ağaç|yaprak dökmeyen ağaç
-🌳|ağaç|yaprak döken ağaç
-🌴|ağaç|palmiye ağacı
-🌵|bitki|kaktüs
+🌼|bitki|çiçek açma|sarı çiçek
+🌷|bitki|çiçek|kırmızı lale|lale
+🪻|acı bakla|aslanağzı|bahar|bitki|çiçek|doğa|eflatun|lavanta|lila|lupin|mor|sümbül
+🌱|fide|filizlenme|genç bitki|yeşil
+🪴|bitki|çiçek|dekor|doğa|ev bitkisi|saksı bitkisi|yeşil|yetiştirme
+🌲|ağaç|çam|noel ağacı|orman|yaprak dökmeyen ağaç|yeni yıl|yeşil
+🌳|ağaç|orman|yaprak döken ağaç|yeşil ağaç
+🌴|ağaç|palmiye ağacı|yaz|yeşil
+🌵|bitki|çöl|diken|kaktüs
 🌾|başak|pirinç başağı|pirinç bitkisi
-🌿|ot|yaprak
-🍀|dört yapraklı yonca|şanslı|yaprak|yonca
-🍁|akçaağaç yaprağı|düşen yaprak|yaprak
-🍂|düşen|düşmüş|yapraklar
+🌿|bitki|ot|yaprak
+🍀|bitki|dört yapraklı yonca|iskoç|şanslı|yaprak|yeşil|yonca
+🍁|akçaağaç yaprağı|düşen yaprak|kırmızı yaprak|sarı yaprak|sonbahar|turuncu yaprak|yaprak
+🍂|düşen|düşmüş|güz|sonbahar|yapraklar
 🍃|esen|rüzgardaki yaprak|yaprak
-🪹|boş yuva|yuva
-🪺|yumurta bulunan yuva|yuva
-🍄|bitki|mantar
-🍇|meyve|üzüm
-🍈|kavun|meyve
-🍉|karpuz|meyve
-🍊|mandalina|meyve|portakal
-🍋|limon|meyve|narenciye
-🍌|meyve|muz
-🍍|ananas|meyve
-🥭|mango|meyve|tropikal
-🍎|elma|kırmızı|meyve
-🍏|elma|meyve|yeşil
-🍐|armut|meyve
-🍑|meyve|şeftali
-🍒|kiraz|meyve
-🍓|çilek|meyve|yumuşak meyve
-🫐|dağ mersini|mavi|mersin|yaban mersini
-🥝|kivi|meyve|yiyecek
-🍅|domates|meyve|sebze
-🫒|yiyecek|zeytin
-🥥|hindistan cevizi|palmiye|pina colada
-🥑|avokado|meyve|yiyecek
-🍆|patlıcan|sebze
-🥔|patates|sebze|yiyecek
-🥕|havuç|sebze|yiyecek
-🌽|başak|mısır koçanı
-🌶️|acı|biber|bitki
-🫑|biber|dolma biber|dolmalık biber|sebze
-🥒|salatalık|sebze|turşu|yiyecek
-🥬|çin lahanası|karalahana|lahana|marul|yeşil yapraklı sebze
-🥦|brokoli|yabani lahana
+🪹|boş yuva|dal|doğa|ev|kuş|yuva
+🪺|dal|doğa|hayvan|huzur|kuş yuvası|yavru kuş|yumurta bulunan yuva|yuva
+🍄|bitki|kırmızı mantar|mantar|masal
+🍇|gıda|meyve|salkım|üzüm
+🍈|gıda|kavun|meyve|meze|rakı|yemek
+🍉|gıda|karpuz|meyve
+🍊|gıda|mandalina|meyve|portakal|turunç
+🍋|gıda|limon|meyve|narenciye
+🍋‍🟩|limonlu turta|margarita|meyve|misket limonu|narenciye|salsa|tekila|tropik|yeşil|yiyecek
+🍌|gıda|maymun|meyve|muz
+🍍|ananas|gıda|meyve|tropik
+🥭|mango|meyve|tropikal|yiyecek
+🍎|elma|gıda|kırmızı|meyve
+🍏|ekşi elma|elma|gıda|meyve|yeşil|yiyecek
+🍐|armut|ayı|gıda|meyve
+🍑|gıda|meyve|şeftali
+🍒|gıda|kiraz|meyve
+🍓|çilek|gıda|meyve|yumuşak meyve
+🫐|dağ mersini|likapa|mavi|mersin|meyve|orman meyvesi|yaban mersini|yemek|yiyecek
+🥝|gıda|kivi|meyve|yiyecek
+🍅|domates|gıda|meyve|sebze
+🫒|dal|yemek|yeşil zeytin|yiyecek|zeytin dalı
+🥥|gıda|hindistan cevizi|maymun|palmiye|pina colada|tropikal
+🥑|avokado|gıda|meyve|tropik|yiyecek
+🍆|gıda|patlıcan|sebze|yemek
+🥔|gıda|patates|sebze|yiyecek
+🥕|gıda|havuç|sebze|tavşan|yiyecek
+🌽|başak|gıda|mısır başağı|mısır koçanı
+🌶️|acı|biber|bitki|gıda|kırmızı biber
+🫑|biber|dolmalık biber|sebze|yemek|yeşil biber|yiyecek
+🥒|gıda|hıyar|salatalık|sebze|turşu|yiyecek
+🥬|çin lahanası|karalahana|lahana|marul|salata|sebze|yaprak|yemek|yeşil yapraklı sebze|yeşillik|yiyecek
+🥦|bitki|brokoli|gıda|sebze|yabani lahana|yemek|yeşil
 🧄|baharat|sarımsak
-🧅|baharat|soğan
-🥜|fındık|fıstık|sebze|yer fıstığı|yiyecek
-🫘|baklagil|barbunya|fasulye|gıda
-🌰|bitki|kestane
-🫚|baharat|bira|kök zencefil|yumru
-🫛|baklagil|barbunya|bezelye|edamame|fasulye|kabuklu bezelye|sebze
-🍞|ekmek dilimi|restoran
-🥐|ay çöreği|ekmek|fransız|kruvasan|yiyecek
-🥖|baget|ekmek|fransız|yiyecek
-🫓|bazlama|lavaş|naan|pide|pita|yassı ekmek
-🥨|burgu|pretzel
-🥯|bagel|fırın|simit|sürme peynir
-🥞|gözleme|krep|pankek|yiyecek
-🧇|hamur|vafıl|waffle
-🧀|peynir dilimi
-🍖|kemikli et|restoran
-🍗|but|restoran|tavuk butu
-🥩|biftek|kuşbaşı|parça et|sote|steak
-🥓|domuz pastırması|et|yiyecek
-🍔|hamburger|restoran
-🍟|kızartma patates|patates kızartması|restoran
-🍕|dilim|pizza dilimi|restoran
-🌭|hot dog|sosisli sandviç
-🥪|ekmek|sandviç
-🌮|meksika sandviçi|tako
-🌯|burito|meksika dürümü
-🫔|dürüm|meksika yemeği|tamale
-🥙|döner|dürüm|falafel|kebap|pide|sarma|yiyecek
+🧅|baharat|sebze|soğan|yiyecek
+🥜|fındık|fıstık|gıda|kuruyemiş|sebze|yer fıstığı|yiyecek
+🫘|baklagil|barbunya|bitki|fasulye|gıda|tohum|vegan|vejetaryen|yiyecek
+🌰|ağaç|bitki|gıda|kestane
+🫚|baharat|bira|bitki|çeşni|doğal|kök|sağlık|şifalı|yiyecek|yumru|zencefil
+🫛|baklagil|barbunya|bezelye|edamame|fasulye sırığı|kabuklu bezelye|sebze|vejetaryen
+🍄‍🟫|doğa|gıda|kahverengi mantar|mantar|pizza malzemesi|portobello|sebze|şitaki|trüf|yiyecek
+🍞|ekmek dilimi|gıda|kahvaltı|restoran|yemek
+🥐|ay çöreği|ekmek|fransız|gıda|kruvasan|pastane|yiyecek
+🥖|baget|ekmek|fransız|gıda|yiyecek
+🫓|bazlama|ekmek|lavaş|naan|pide|pita|yassı ekmek|yemek|yiyecek
+🥨|burgu|çubuk kraker|gıda|pretzel
+🥯|bagel|donut|ekmek|fırın|kahvaltı|pasta|peynirli simit|simit|sürme peynir
+🥞|gıda|gözleme|kahvaltı|krep|pancake|pankek|yiyecek
+🧇|hamur|kahvaltı|vafıl|waffle
+🧀|fare|gıda|peynir dilimi
+🍖|et|gıda|kemikli et|restoran|yemek
+🍗|but|gıda|restoran|tavuk butu|yemek
+🥩|biftek|bonfile|et|gıda|ızgara|kırmızı et|kuşbaşı|parça et|sote|steak|yemek
+🥓|bacon|domuz pastırması|et|gıda|kahvaltı|yiyecek
+🍔|çizburger|gıda|hamburger|restoran|yemek|yiyecek
+🍟|gıda|kızartma patates|mcdonald’s|patates kızartması|restoran
+🍕|dilim|gıda|peynirli pizza|pizza dilimi|restoran|yiyecek
+🌭|gıda|hot dog|sosisli sandviç
+🥪|ekmek|gıda|sandviç|tost|yemek
+🌮|gıda|meksika sandviçi|tako
+🌯|burito|dürüm|gıda|meksika dürümü|yemek
+🫔|dürüm|meksika yemeği|tamale|yemek|yiyecek
+🥙|döner|dürüm|ekmek arası|falafel|gıda|kebap|pide arası|sarma|yiyecek
 🧆|falafel|köfte|nohut
-🥚|yiyecek|yumurta
-🍳|pişirme|restoran|yemek pişirme
-🥘|güveç|küçük|paella|sahanda yemek|tava|yiyecek
-🍲|restoran|tencere yemeği|yemek tenceresi
-🫕|çikolata|erimiş|fondü|isviçre|kap|peynir
-🥣|kahvaltı|kaşıklı kase|pirinç lapası|tahıl gevreği
-🥗|salata|yeşil|yiyecek
-🍿|mısır|patlamış mısır
+🥚|gıda|kahvaltı|tavuk|yiyecek|yumurta
+🍳|gıda|kahvaltı|kızartma tavası|pişirme|restoran|sahanda yumurta|tavada yumurta|yemek|yiyecek|yumurta
+🥘|gıda|güveç|kahvaltı|krep tavası|küçük|menemen|paella|sahanda yemek|tava|yemek|yiyecek
+🍲|gıda|restoran|tencere yemeği|yahni|yemek tenceresi|yiyecek
+🫕|çikolata|çubuk|dağ|erimiş|fondü|isviçre|kap|kayak|peynir|raklet|yemek|yiyecek
+🥣|çorba|gıda|kahvaltı|kase|kaşıklı kase|pirinç lapası|tahıl gevreği|yemek
+🥗|gıda|sağlıklı|salata|yemek|yeşil|yiyecek
+🍿|gıda|mısır|patlamış mısır|sinema
 🧈|süt ürünü|tereyağı
-🧂|çeşni|tuzluk
-🥫|konserve gıda
-🍱|bento paketi|paket|restoran
-🍘|pirinç gevreği
-🍙|onigiri|pirinç topu|restoran
-🍚|pilav|pirinç|restoran
-🍛|körili pilav|pirinç|restoran
-🍜|buharda pişmiş|erişte|noodle tabağı|restoran|tabak
-🍝|makarna|restoran|spagetti
-🍠|fırınlanmış patates|fırınlanmış tatlı patates|restoran|tatlı patates|tırınlanmış
-🍢|çubukta deniz ürünleri|oden|restoran
-🍣|restoran|suşi
-🍤|karides|kızarmış karides|restoran
-🍥|balık köftesi|restoran|rulo balık köftesi
-🥮|ay pastası|festival|sonbahar|yuèbǐng
-🍡|çubukta pirinç tatlısı topları|dango|japon pirinç tatlısı|pirinç tatlısı topları|restoran
-🥟|empanada|gyōza|jiaozi|mantı|pierogi|potsticker
-🥠|fal kurabiyesi|kehanet
-🥡|yiyecek paketi
-🦀|burç|ıstakoz|yengeç
-🦞|bisque|deniz ürünü|ıstakoz|kıskaç
-🦐|kabuklu deniz hayvanı|karides|küçük|yiyecek
-🦑|mürekkep balığı|yiyecek|yumuşakçalar sınıfı
+🧂|baharatlık|beyaz|çeşni|tuzluk|yemek
+🥫|konserve domates|konserve gıda
+🍱|bento paketi|gıda|paket|restoran|sushi|yemek
+🍘|gıda|pirinç gevreği|yemek
+🍙|gıda|onigiri|pirinç topu|restoran|yemek|yiyecek
+🍚|gıda|pilav|pirinç|restoran
+🍛|gıda|körili pilav|pirinç|restoran|yemek
+🍜|buharda pişmiş|erişte|gıda|makarna|noodle tabağı|restoran|tabak
+🍝|gıda|makarna|restoran|spagetti|yemek
+🍠|fırınlanmış patates|fırınlanmış tatlı patates|gıda|restoran|tatlı patates|tırınlanmış
+🍢|çubukta deniz ürünleri|gıda|kebap|oden|restoran|şiş kebap
+🍣|çiğ balık|gıda|japon|restoran|sushi|suşi nigiri
+🍤|deniz ürünü|gıda|karides|kızarmış karides|restoran|yiyecek
+🍥|balık köftesi|çörek|gıda|restoran|rulo balık köftesi|yiyecek
+🥮|ay pastası|çörek|festival|kek|pasta|sonbahar|tatlı|yemek|yiyecek|yuèbǐng
+🍡|çubukta pirinç tatlısı topları|dango|gıda|japon pirinç tatlısı|pirinç tatlısı topları|restoran|tatlı
+🥟|empanada|gıda|gyōza|hamur köftesi|haşlanmış içli hamur|jiaozi|mantı|pierogi|potsticker
+🥠|fal kurabiyesi|gıda|içinden fal çıkan çin kurabiye|kehanet|şans kurabiyesi|talih kurabiyesi
+🥡|çin yemeği|eve servis|gıda|kutu|paket yemek|yemek|yiyecek paketi
+🦀|burç|deniz|ıstakoz|yengeç
+🦞|bisque|deniz ürünü|hayvan|ıstakoz|kabuklu|kırmızı|kıskaç
+🦐|deniz mahsulü|kabuklu deniz hayvanı|karides|küçük|okyanus|yiyecek
+🦑|mürekkep balığı|okyanus|yiyecek|yumuşakçalar sınıfı
 🦪|dalma|inci|istiridye
-🍦|dondurma|krema|restoran|yumuşak dondurma
+🍦|dondurma külahı|gıda|krema|külah|restoran|vanilyalı dondurma|yumuşak dondurma
 🍧|buz|meyveli|restoran
-🍨|buz|dondurma|krema|restoran
-🍩|donat|donut|doughnut|restoran
-🍪|kurabiye|restoran
-🎂|doğum günü pastası|kutlama|pasta
-🍰|dilim pasta|pasta dilimi|restoran
-🧁|cupcake|fırın|kapkek|tatlı|top kek
-🥧|pasta|poğaça|tart
-🍫|bar|çikolata barı|restoran
-🍬|restoran|şekerleme
-🍭|lolipop|restoran|şekerleme
-🍮|krem karamel|puding|restoran
-🍯|bal kabı|kap|restoran
-🍼|biberon|içecek|şişe|süt
-🥛|bardak|içecek|süt bardağı
-🫖|çaydanlık|demlik|içecek
-🍵|çay fincanı|içecek
+🍨|buz|dondurma|gıda|krema|kup|restoran|tatlı
+🍩|çikolatalı donut|çikolatalı lokma|donat|donut|doughnut|gıda|restoran|tatlı|yiyecek
+🍪|çikolatalı kurabiye|cookie|gıda|kurabiye|restoran
+🎂|dilek|doğum günü pastası|gıda|iyi ki doğdun|kek|krema|kutlama|mum|mutlu yıllar|nice senelere|parti|pasta|tatlı|üflemek|yaş günü|yemek|yiyecek
+🍰|dilim pasta|doğum günü|gıda|pasta dilimi|restoran
+🧁|cupcake|fırın|kapkek|kek|krema|muffin|pastane|pembe krema|şekerli|tatlı|top kek|yemek
+🥧|elmalı pay|gıda|pasta|pay|poğaça|şeftalili pay|tart|tatlı|yemek
+🍫|bar|çikolata barı|gıda|restoran|tatlı
+🍬|bayram|restoran|şekerleme
+🍭|bayram|çocuk|gıda|lolipop|restoran|şekerleme
+🍮|gıda|krem karamel|puding|restoran|tatlı
+🍯|bal kabı|gıda|kahvaltı|kap|restoran|tatlı
+🍼|bebek|biberon|içecek|küçük şişe|şişe|süt
+🥛|bardak|gıda|içecek|süt bardağı
+🫖|çay demlemek|çaydanlık|demleme|demlik|içecek
+🍵|çay fincanı|içecek|yeşil çay
 🍶|bar|fincan|içecek|restoran|sake şişesi ve fincanı|şişe
-🍾|bar|içki|mantar|patlayan mantarlı şişe|şişe
-🍷|bardak şarap|içecek|kadeh|şarap bardağı|şarap kadehi
+🍾|bar|içki|kutlama|mantar|patlayan mantarlı şişe|şampanya|şişe
+🍷|bardak şarap|içecek|içedek|kadeh|kırmızı şarap|restoran|şarap bardağı|şarap kadehi
 🍸|bar|kokteyl bardağı|kokteyl kadehi|restoran
-🍹|bar|içecek|restoran|tropik
+🍹|bar|içecek|kokteyl|restoran|tropik
 🍺|bar|bira kupası|kupa|restoran
-🍻|bar|bira kupaları tokuşturma|kupalar|restoran
-🥂|bardak|içecek|kadeh tokuşturma|kutlama|tokuşturma
-🥃|bardak|kısa ve geniş bardak|likör|tek içki|viski
-🫗|bardak|boş|dökme|dökülen sıvı|içecek|sıvı
-🥤|pipetli bardak
-🧋|baloncuk|bubble tea|çay|inci çayı|süt
-🧃|içecek kutusu|kutu meyve suyu
+🍻|bar|bira kupaları tokuşturma|içki|kupalar|restoran
+🥂|bardak|içecek|kadeh tokuşturma|kutlama|şampanya|tokuşturma
+🥃|bardak|içki|kısa ve geniş bardak|likör|tek içki|viski
+🫗|bardak|boş|cam|dökmek|dökülen sıvı|içecek|kaza|sıvı
+🥤|ayran|gazoz|içecek|kamışlı bardak|kola|pipetli bardak|plastik bardak
+🧋|baloncuk|boba|bubble tea|çay|içecek|inci çayı|süt|tayvan
+🧃|içecek kutusu|kutu meyve suyu|meyve suyu|pipet
 🧉|içecek|mate çayı
 🧊|aysberg|buz küpü|soğuk
-🥢|chopsticks|yemek çubukları
+🥢|chopsticks|çin yemek çubuğu|yemek çubuğu|yemek çubukları
 🍽️|bıçak|çatal|tabakla birlikte çatal ve bıçak|yemek
-🍴|bıçak|çatal ve bıçak|restoran
+🍴|aç|akşam yemeği|beslenmek|bıçak|brunch|çatal ve bıçak|eline sağlık|kahvaltı|leziz|meyhane|mutfak|öğle yemeği|pişirmek|restoran|yemek|yiyecek
 🥄|kaşık|yemek takımı
 🔪|bıçak|mutfak bıçağı
-🫙|baharatlık|boş|kavanoz|saklama kabı|sos
+🫙|baharatlık|bitmiş|boş|cam|kap|kavanoz|mutfak|saklama kabı|sos|tamtakır
 🏺|alet|amfora|antika|içecek|kap|silah
 🌍|afrika|avrupa|dünya|yerkürede avrupa-afrika
 🌎|amerika bölgeleri|dünya|yerkürede amerika
@@ -836,139 +846,139 @@
 🌐|boylamlar|dünya|meridyenli yerküre|yerküre
 🗺️|dünya haritası|harita
 🗾|harita|japonya haritası
-🧭|hedef bulma|manyetik|navigasyon|oryantiring|pusula|yön bulma
-🏔️|dağ|karla kaplı dağ|soğuk
+🧭|hedef bulma|kaybolmak|manyetik|navigasyon|oryantiring|pusula|yön bulma
+🏔️|dağ|karla kaplı dağ|soğuk|uludağ
 ⛰️|dağ
-🌋|dağ|volkan|yanardağ patlaması
+🌋|dağ|doğa|volkan|yanardağ patlaması
 🗻|dağ|fuji dağı
 🏕️|kamp yapma
-🏖️|kumsal|plaj ve şemsiye|şemsiye
-🏜️|çöl
+🏖️|ada|kumsal|plaj ve şemsiye|şemsiye|tatil
+🏜️|çöl|güneş|sıcak
 🏝️|ada|çöl|ıssız ada
-🏞️|milli park|park|ulusal park
-🏟️|stadyum
+🏞️|açık hava|doğa|milli park|orman|park|ulusal park
+🏟️|maç|stadyum
 🏛️|bina|klasik|tarihi yapı
-🏗️|bina inşaatı|inşaat
-🧱|duvar|harç|kil|tuğlalar
-🪨|ağır|katı|kayalık|sert|taş
-🪵|ağaç|ahşap|kereste|kütük|tomruk
-🛖|ev|kulübe|yurt
-🏘️|bina|evler
+🏗️|bina inşaatı|inşaat|iş makinası|vinç
+🧱|duvar örmek|harç|inşaat|kil|kiremit|kırmızı|seramik|taş|tuğlalar
+🪨|ağır|büyük kaya|çakıl|katı|kayalık|sert|seyahat|taş
+🪵|ağaç|ahşap|kereste|kütük|odun|seyahat|tomruk
+🛖|baraka|ev|kulübe|seyahat|sığınak|yer|yurt
+🏘️|bina|evler|komşu|konut|site
 🏚️|bina|ev|harabe|terkedilmiş ev
-🏠|bina|ev
-🏡|bahçeli ev|bina
-🏢|bina|ofis binası
-🏣|bina|japon postanesi|posta
+🏠|bina|ev|konut|yuva
+🏡|bahçeli ev|bina|evim evim güzel evim|yazlık
+🏢|belediye|bina|devlet dairesi|ofis binası
+🏣|bina|japon postanesi|postane
 🏤|avrupa postanesi|bina|postane
-🏥|bina|hastane
-🏦|banka|bina
-🏨|bina|otel
+🏥|bina|hastane|klinik|sağlık ocağı
+🏦|banka|bina|dolar|para
+🏨|bina|kalacak yer|otel
 🏩|aşk oteli|bina|otel
-🏪|bina|market|sürekli açık market
-🏫|bina|okul binası
-🏬|çok katlı mağaza|mağaza
-🏭|bina|fabrika
-🏯|bina|japon şatosu|kale|şato
-🏰|bina|kale|şato
+🏪|24 saat açık|bina|market|sürekli açık market
+🏫|bina|ilkokul|lise|okul binası
+🏬|büyük mağaza|çok katlı mağaza|mağaza
+🏭|bina|fabrika|sanayi
+🏯|bina|japon kalesi|japon şatosu|kale|şato
+🏰|avrupalı|bina|kale|şato
 💒|düğün|evlenme|kilisede evlenme|romantizm
 🗼|kule|tokyo kulesi
-🗽|heykel|özgürlük heykeli
-⛪|din|haç|hristiyan|kilise
-🕌|cami|din|islam|müslüman
+🗽|heykel|new york|nyc|özgürlük heykeli
+⛪|bina|din|haç|hristiyan|kilise|papaz
+🕌|cami|din|ibadethane|islam|mescit|müslüman
 🛕|hindu tapınağı|tapınak
-🕍|din|sinagog|tapınak|yahudi
+🕍|din|musevi|sinagog|tapınak|yahudi
 ⛩️|din|şinto tapınağı|tapınak
-🕋|din|islam|kâbe|müslüman
-⛲|çeşme|fıskiye
+🕋|din|islam|kabe|kâbe|müslüman
+⛲|çeşme|fıskiye|süs havuzu
 ⛺|çadır|kamp yeri
 🌁|sisli
-🌃|gece|yıldızlar|yıldızlı gece
-🏙️|bina|şehir manzarası
-🌄|dağların arasından güneşin doğuşu|dağların ardında güneş|sabah güneşi
+🌃|gece|şehir|yıldızlar|yıldızlı gece
+🏙️|bina|gökdelen|şehir manzarası
+🌄|dağların arasından güneşin doğuşu|dağların ardında güneş|güneş|sabah güneşi
 🌅|gün doğumu|güneşin doğuşu|sabah güneşi|şafak
 🌆|akşam|alacakaranlık|bina|gün batımı|manzara|şehirde alacakaranlık
-🌇|alacakaranlık|binaların üzerinden gün batımı|gün batımı
-🌉|gece vakti köprü
-🎠|atlıkarınca atı|eğlence
-🛝|eğlence parkı|kaydırak|oyun
-🎡|dolap|dönme|eğlence parkı
-🎢|eğlence parkı|hız treni|tren
+🌇|alacakaranlık|binaların üzerinden gün batımı|gökdelen|gün batımı|maslak|new york|şehir
+🌉|boğaz|gece vakti köprü|golden gate|köprü|manzara
+🎠|atlı karınca|atlıkarınca atı|eğlence|karusel
+🛝|çocuk parkı|eğlence parkı|kaydırak|kaymak|oyun|park
+🎡|dolap|dönme|eğlence parkı|lunapark
+🎢|eğlence parkı|hız treni|lunapark|roller coaster|tren
 💈|berber dükkanı|berber işareti|işaret
 🎪|çadır|eğlence|sirk çadırı
-🚂|buharlı lokomotif|lokomotif|taşıt|tren
-🚃|demir yolu|elektrikli tren|taşıt|tramvay|vagon
-🚄|shinkansen|taşıt|tren|yüksek hızlı tren
-🚅|mermi burunlu shinkansen|shinkansen|taşıt|tren|yuvarlak uçlu yüksek hızlı tren
+🚂|buharlı lokomotif|lokomotif|seyahat|taşıt|tren yolu
+🚃|demir yolu|demiryolu|elektrikli tren|taşıt|toplu taşıma|tramvay|vagon
+🚄|hızlı tren|marmaray|metro|shinkansen|taşıt|tren|yüksek hızlı tren
+🚅|hızlı tren|mermi burunlu shinkansen|shinkansen|taşıt|tren|yuvarlak uçlu yüksek hızlı tren
 🚆|demiryolu|taşıt|tren
-🚇|metro|taşıt
-🚈|demiryolu|hafif raylı|taşıt
-🚉|istasyon|tren istasyonu
-🚊|taşıt|tramvay
-🚝|monoray|taşıt
-🚞|dağ teleferiği|demiryolu|taşıt|vagon
-🚋|taşıt|tramvay vagonu|vagon
-🚌|otobüs|taşıt
-🚍|otobüs|taşıt|yaklaşan
-🚎|otobüs|taşıt|troleybüs
-🚐|minibüs|otobüs|taşıt
-🚑|ambulans|taşıt
+🚇|marmaray|metro|taşıt|toplu taşıma|tren|ulaşım
+🚈|demiryolu|hafif raylı|taşıt|tren yolculuğu|tren yolu
+🚉|istasyon|taşıt|tren istasyonu|tren yolu
+🚊|metrobüs|taşıt|tramvay
+🚝|araç|metro|monoray|taşıt|tramvay
+🚞|dağ teleferiği|demiryolu|taşıt|teleferik|tren|vagon|yolculuk
+🚋|taşıt|toplu taşıma|tramvay vagonu|vagon
+🚌|minibüs|otobüs|taşıt|toplu taşıma
+🚍|araba|otobüs|servis|taşıt|toplu taşıma|yaklaşan
+🚎|otobüs|taşıt|toplu taşıma|troleybüs
+🚐|minibüs|otobüs|taşıt|toplu taşıma
+🚑|acil|ambulans|taşıt
 🚒|araba|itfaiye arabası|itfaiye kamyonu|taşıt|yangın
-🚓|devriye arabası|polis arabası|taşıt
+🚓|araba|devriye arabası|polis arabası|taşıt
 🚔|polis arabası|taşıt|yaklaşan polis arabası
-🚕|taksi|taşıt
+🚕|araba|sarı taksi|taksi|taşıt
 🚖|taksi|taşıt|yaklaşan taksi
-🚗|araba|otomobil|taşıt
-🚘|araba|otomobil|taşıt|yaklaşan
-🚙|araba|cip|eğlence taşıtı|taşıt
-🛻|kamyonet|pikap
-🚚|kamyon|nakliye kamyonu|taşıt
-🚛|çekici kamyon|taşıt|tır|treyler
+🚗|araba|araç|otomobil|taşıt
+🚘|araba|araç|otomobil|taşıt|yaklaşan
+🚙|aile arabası|araba|cip|eğlence taşıtı|karavan|mavi araba|minivan|spor araba|taşıt
+🛻|araba|araç|gitmek|kamyonet|otomobil|pikap|seyahat|ulaşım|yol
+🚚|eve servis|kamyon|nakliye kamyonu|taşıt|teslimat kamyonu|ulaştırma
+🚛|araba|araç|çekici|kamyon|taşıt|tır|treyler
 🚜|taşıt|traktör
-🏎️|araba|yarış arabası
-🏍️|motosiklet|yarış
+🏎️|araba|gokart|yarış arabası
+🏍️|motor|motosiklet|yarış
 🛵|motorlu skuter|skuter
 🦽|erişilebilirlik|tekerlekli sandalye
-🦼|elektrikli tekerlekli sandalye|erişilebilirlik
+🦼|akülü tekerlekli sandalye|elektrikli tekerlekli sandalye|erişilebilirlik
 🛺|elektrikli çekçek|tuk tuk
-🚲|bisiklet|taşıt
+🚲|bisiklete binmek|cycling|sürüş|taşıt
 🛴|ayakla sürülen skuter|skuter
-🛹|kaykay|tahta
-🛼|paten|tekerlekli paten
-🚏|durak|otobüs durağı
-🛣️|anayol|cadde|otoban
-🛤️|tren yolu
-🛢️|benzin|fıçı|petrol varili|varil
-⛽|akaryakıt istasyonu|benzin|istasyon|yakıt pompası
-🛞|çark|dönüş|lastik|tekerlek
-🚨|polis arabası|polis lambası|polis tepe lambası
-🚥|ışık|trafik sinyalleri|yatay trafik ışığı|yatay trafik ışıkları
-🚦|dikey trafik ışığı|dikey trafik ışıkları|ışık|trafik sinyalleri
+🛹|kaykaycı|kaymak|rampa|spor|tahta|tekerlek
+🛼|paten kaymak|patenle kaymak|roller blade|roller skate|seyahat|spor|tekerlekli patenler
+🚏|durak|minibüs durağı|otobüs durağı|toplu taşıma
+🛣️|anayol|cadde|çevre yolu|otoban|otoyol
+🛤️|demiryolu|tren yolu
+🛢️|benzin fıçısı|fıçı|petrol varili|varil
+⛽|akaryakıt istasyonu|benzin istasyonu|benzinci|gaz|istasyon|pompa|yakıt pompası
+🛞|araba|çark|dönüş|jant|lastik|otomobil|seyahat|tekerlek|yedek parça|yolculuk
+🚨|alarm|araba|polis arabası|polis lambası|polis tepe lambası|siren|tepe lambası
+🚥|ışık|trafik lambası|trafik sinyalleri|yatay trafik ışığı|yatay trafik ışıkları
+🚦|dikey trafik ışığı|dikey trafik ışıkları|ışık|trafik ışıkları|trafik lambası|trafik sinyalleri
 🛑|dur işareti|işaret|sekizgen
 🚧|inşaat işareti|işaret
-🛟|can simidi|cankurtaran simidi|güvenlik|hayat kurtaran|yüzme
-⛵|deniz tatil yeri|tatil yeri|tekne|yat|yelkenli tekne
-🛶|bot|kano
-🚤|sürat teknesi|taşıt|tekne
-🛳️|gemi|taşıt|yolcu gemisi
-⛴️|feribot|tekne
-🛥️|motorlu tekne|taşıt|tekne
-🚢|gemi|taşıt
+🛟|can simidi|cankurtaran simidi|deniz|güvenlik|havuz|hayat kurtaran|kurtarmak|önlem|simit|yüzme
+⛵|deniz tatil yeri|deniz tatili|tatil yeri|tekne|yat|yelkenli tekne
+🛶|bot|kano|kayık|tekne
+🚤|bot|sürat teknesi|taşıt|tekne
+🛳️|gemi|motor|taşıt|tekne|vapur|yolcu gemisi
+⛴️|arabalı vapur|feribot|gemi|tekne|vapur
+🛥️|motorlu tekne|taşıt|tekne|toplu taşıma|vapur|yat
+🚢|gemi|seyahat|taşıt|titanik|toplu taşıma|tur|vapur
 🛩️|küçük uçak|taşıt|uçak
-🛫|check in|kalkan uçak|kalkış|taşıt|uçak
-🛬|inen uçak|iniş|inme|taşıt|uçak|varış
+🛫|check in|chek in|kalkan uçak|kalkış|taşıt|uçak
+🛬|inen uçak|iniş|inmek|taşıt|uçak|varış|varmak
 🪂|delta kanat|deniz paraşütü|paraşütle atlama
 💺|koltuk|sandalye
 🚁|helikopter|taşıt
 🚟|asma|demiryolu|taşıt
-🚠|dağ teleferiği|dağ teleferik hattı|kablo|taşıt|vagon
+🚠|dağ teleferiği|dağ teleferik hattı|kablo|taşıt|teleferik|telesiyej|vagon
 🚡|gondol|hava tramvayı|havadan yol|kablo yolu|taşıt|teleferik|tramvay
 🛰️|araç|uydu|uzay
-🚀|roket|taşıt
-🛸|uçan daire|ufo
+🚀|çıkış|roket|taşıt|uzay|yolculuk
+🛸|uçan daire|ufo|uzaylı
 🛎️|çan|otel|resepsiyon zili|zil
-🧳|bagaj|bavul|seyahat|valiz
+🧳|bagaj|bavul|çanta|seyahat|tatil|valiz|yolculuk
 ⌛|kum saati
-⏳|akan kum saati|sayaç|zamanlayıcı
+⏳|akan kum saati|kum akan kum saati|kum saati|sayaç|zamanlayıcı
 ⌚|kol saati|saat
 ⏰|alarm|çalar saat|saat
 ⏱️|kronometre|saat
@@ -999,85 +1009,85 @@
 🕚|11:00|on bir|saat 11
 🕦|11:30|on bir buçuk|saat
 🌑|ay|karanlık|yeni
-🌒|ay|büyüyen ay|yükselen
-🌓|ay|ilk dördün
+🌒|ay|büyüyen ay|hilal|yükselen
+🌓|ay|ilk dördün|uzay
 🌔|ay|geniş ay|şişkin|yükselen
-🌕|ay|dolunay|parlak
-🌖|ay|küçülen ay|şişkin|solgun
+🌕|ay|dolunay|parlak|tam ay
+🌖|ay|küçülen ay|şişkin|solgun|uzay
 🌗|ay|dördün|son dördün
-🌘|ay|ince ay|solgun
-🌙|ay|hilal
-🌚|ay|yeni ay yüzü|yüzü olan yeni ay
+🌘|ay kararması|ay tutulması|gece|gökyüzü|hilal|ince ay|solgun|uzay
+🌙|ay|dilek|gece|gökyüzü|hilal|uzay|yeni ay
+🌚|ay|gece|yeni ay yüzü|yüzü olan yeni ay
 🌛|ay|dördün|ilk dördün ay yüzü|yüzü olan ay|yüzü olan ilk dördün
 🌜|ay|dördün|son dördün ay yüzü|yüzü olan ay|yüzü olan son dördün
-🌡️|hava durumu|termometre
+🌡️|derece|hava durumu|termometre
 🌝|ay|dolunay yüzü|yüzü olan ay|yüzü olan dolunay
-🌞|güneş|yüz
+🌞|güneş|parlak|sıcak|yaz|yüz
 🪐|halkalı gezegen|satürn
-⭐|beyaz orta yıldız|yıldız
-🌟|kıvılcım|parıldama|parıldayan yıldız|pırıltı|yıldız
-🌠|kayan|yıldız kayması
+⭐|beyaz orta yıldız|gece|gökyüzü|kutup yıldızı|yıldız
+🌟|dilek yıldızı|kıvılcım|kutup yıldızı|parıldama|parıldayan yıldız|parlak|parlayan yıldız|pırıltı|yıldız
+🌠|gece|kayan|meteor yağmuru|uzay|yıldız kayması
 🌌|gökyüzü|samanyolu|uzay
-⛅|bulutlar ardındaki güneş|bulutlu güneş|güneş
+⛅|bulutlar ardındaki güneş|bulutlu güneş|güneş|hava|parçalı bulutlu
 ⛈️|bulut|gökgürültüsü|hava durumu|şimşek ve yağmurlu bulut|yağmur
-🌤️|bulutun arkasındaki güneş|güneş|hava durumu
-🌥️|bulutta kaybolan güneş|güneş|hava durumu
-🌦️|bulut|güneş|hava durumu|yağmur bulutunun arkasındaki güneş
+🌤️|bulutun arkasındaki güneş|güneş|hava durumu|parçalı bulutlu
+🌥️|bulutta kaybolan güneş|güneş|hava durumu|parçalı bulutlu
+🌦️|bulut|güneş|hava durumu|parçalı bulutlu|yağmur bulutunun arkasındaki güneş|yer yer yağmur
 🌧️|bulut|hava durumu|yağmur bulutu
 🌨️|bulut|hava durumu|kar bulutu|soğuk
-🌩️|bulut|hava durumu|şimşek bulutu|yıldırım
-🌪️|bulut|hava durumu|hortum
-🌫️|bulut|hava durumu|sis
+🌩️|bulut|fırtına|hava durumu|şimşek bulutu|yıldırım
+🌪️|bulut|fırtına|hava durumu|hortum|tayfun
+🌫️|bulut|gökyüzü|hava durumu|sis
 🌬️|esme|hava durumu|rüzgar
 🌀|baş dönmesi|hortum|siklon|tayfun
-🌈|gökkuşağı|hava durumu|yağmur
-🌂|kapalı şemsiye|yağmurlu
-⛱️|güneş|hava durumu|sabit şemsiye|şemsiye|yağmur
-⚡|işaret|tehlike|voltaj|yüksek voltaj işareti|yüksek voltaj tehlikesi
-⛄|kar yağmadan kardan adam|karsız kardan adam
-🔥|alev|ateş
-💧|çizgi roman|damlacık|terli
-🌊|dalga|okyanus dalgası|su dalgası
+🌈|biseksüel|gay|gökkuşağı|hava durumu|lezbiyen|yağmur
+🌂|kapalı şemsiye|şemsiye|yağmurlu
+⛱️|gölge|güneş|hava durumu|kumsal|plaj|sabit şemsiye|şemsiye|yağmur
+⚡|doğa|elektrik|fırtına|işaret|şimşek|tehlike|voltaj|yıldırım|yüksek voltaj işareti|yüksek voltaj tehlikesi
+⛄|kar yağmadan kardan adam|kardan adam|karsız kardan adam|kış|soğuk
+🔥|alev|ateş|sıcak|yakmak
+💧|çizgi roman|damlacık|su|terli
+🌊|dalga|okyanus dalgası|sörf|su dalgası
 🎃|cadılar bayramı|fener|halloween|jack|kabak|kutlama
-🎄|ağaç|kutlama|noel ağacı
-🎆|havai fişek|kutlama
-🎇|fişek|havai fişek|kutlama
-🧨|dinamit|havai fişek|maytap|patlayıcı
-🎈|balon|kutlama
-🎉|konfeti|kutlama|parti konfetisi
+🎄|ağaç|çam|kutlama|noel ağacı|süs|yılbaşı
+🎆|eğlence|havai fişek|ışık|kutlama
+🎇|fişek|havai fişek|kıvılcım|kutlama|patlama
+🧨|ateş|bomba|dinamit|havai fişek|kırmızı|kıvılcım|maytap|patlama|patlayıcı
+🎈|balon|doğumgünü|kırmızı balon|kutlama|parti
+🎉|harika|konfeti|kutlama|parti konfetisi|tebrikler
 🎊|konfeti topu|kutlama|top
-🎋|ağaç|kağıt şeritler|kutlama|star festivali|tanabata ağacı
-🎍|çam süsleme|japon|kutlama|yeni yıl
+🎋|ağaç ve kağıt şeritler|japon|kağıt şeritler|kutlama|star festivali|tanabata ağacı
+🎍|bambu|çam süsleme|japon|kutlama|yeni yıl
 🎎|bebek festivali|festival|japon oyuncak bebekleri|kutlama
 🎏|flama|kutlama|sazan şekilli flama
 🎐|çan|rüzgar çanı
 🎑|ay izleme töreni|izleme|kutlama
-🧧|hediye|hóngbāo|iyi şanslar|kırmızı zarf|lai see|para
-🎀|kurdele|kutlama
-🎁|kutlama|paketlenmiş hediye|paketli hediye
+🧧|çin hediyesi|hediye|hóngbāo|iyi şanslar|kırmızı kağıt|kırmızı zarf|lai see|para|uzak doğu|zarf
+🎀|kız|kurdele|kutlama|pembe kurdele
+🎁|doğum günü|hediye|kutlama|paketlenmiş hediye|paketli
 🎗️|anma kurdelesi|kurdele|kutlama
 🎟️|bilet|giriş bileti
-🎫|bilet|giriş
+🎫|bilet|eğlence|giriş
 🎖️|askeri|kutlama|madalya
-🏆|ödül|zafer kupası
-🏅|madalya|spor madalyası
+🏆|kupa|ödül|zafer kupası
+🏅|altın madalya|madalya|spor madalyası
 🥇|altın|birincilik madalyası|madalya
 🥈|gümüş|ikincilik madalyası|madalya
 🥉|bronz|madalya|üçüncülük madalyası
-⚽|futbol topu|top
-⚾|beyzbol|top
-🥎|eldiven|kol|softball|top
-🏀|basketbol potası|pota|spor|top
-🏐|maç|top|voleybol
+⚽|futbol|spor|topu
+⚾|beyzbol topu|spor|top
+🥎|beyzbol eldiveni|eldiven|kol|oyun|softball|spor|tenis topu|top oynamak|yuvarlak
+🏀|basketbol potası|basketbol topu|pota|spor|top
+🏐|maç|top|voleybol topu
 🏈|amerikan futbolu|spor|top
-🏉|futbol topu|ragbi|spor|top
+🏉|futbol topu|ragbi futbolu|ragbi topu|spor|top
 🎾|spor|tenis raketi ve topu|tenis topu|top
-🥏|frizbi|ultimate
-🎳|bovling topu|oyun|top
+🥏|atmak|disk|fırlatmak|frizbi|oynamak|oyuncak|turuncu|tutmak|ultimate
+🎳|bovling ekipmanı|bovling topu|oyun|top
 🏏|kriket|maç|sopa|top
 🏑|çim hokeyi|hokey|maç|saha|sopa|top
-🏒|buz hokeyi|disk|hokey|maç|sopa
-🥍|gol|lakros|sopa|top
+🏒|buz hokeyi ve disk|disk|hokey|maç|sopa
+🥍|atış|gol|lakros|maç|oyun|raket|sayı|sopa|spor|top|vurmak
 🏓|maç|masa tenisi|pinpon|raket|top
 🏸|badminton|maç|raket|tüylü top
 🥊|boks eldiveni|eldiven|spor
@@ -1085,134 +1095,134 @@
 🥅|ağ|kale ağı|spor
 ⛳|delikteki bayrak|golf bayrağı
 ⛸️|buz pateni|paten
-🎣|balık|dinlenme|eğlence|kamış olta ve balık|olta
-🤿|aletli dalış|dalgıç maskesi|dalış|şnorkelle dalış
+🎣|balıkçı|dinlenme|eğlence|kamış olta ve balık|olta
+🤿|aletli dalış|dalgıç maskesi|dalış maskesi|skuba|şnorkelle dalış
 🎽|çizgili koşu tişörtü|koşu tişörtü|spor|tişört
 🎿|bot|kayak ve bot|spor
-🛷|kızak
-🥌|curling taşı|körling taşı|oyun|taş
-🎯|hedefe isabet|isabet|oyun|tam isabet
+🛷|kar|kaymak|kızak
+🥌|curling taşı|körling oyunu|körling taşı|oyun|taş
+🎯|hedefe isabet|isabet|on ikiden vurma|oyun|tam isabet
 🪀|inip çıkma|oyuncak|yoyo
 🪁|süzülme|uçma|uçurtma
 🔫|revolver|silah|su tabancası|tabanca
 🎱|bilardo|oyun|sekiz top
 🔮|fal bakma|kristal|küre
-🪄|büyücü|cadı|sihirli asa
-🎮|kontrol cihazı|oyun kontrol cihazı|video oyunu
+🪄|aktivite|asa|büyücü|cadı|değnek|etkinlik|sihirbaz|sihirli asa|sihirli değnek
+🎮|kontrol cihazı|oyun konsolu|oyun kontrol cihazı|video oyunu|xbox
 🕹️|oyun çubuğu|video oyunu
-🎰|kumar makinesi|oyun
-🎲|oyun zarı|zar
-🧩|ipucu|kenetleme|parça|puzzle|yapboz parçası
-🧸|dolgu|oyuncak ayı|pelüş
-🪅|kutlama|parti|pinyata
-🪩|aynalı küre|dans|disko|parlak|parti
-🪆|bebek|iç içe|matruşka|rusya
+🎰|kollu makina|kumar makinesi|oyun|şans oyunu
+🎲|oyun zarı|tavla|zar
+🧩|bulmaca|ipucu|karmaşık|kenetleme|oyun|parça|puzzle|yap boz|yapboz parçası
+🧸|ayıcık|çocuk|dolgu|oyuncak|peluş|pelüş|sevimli|uyku
+🪅|aktivite|cinco de mayo|etkinlik|kutlama|meksika|parti|pinata|pinyata|şapka|şeker
+🪩|90‘lar|aynalı küre|dans|disko topu|eğlence|gece hayatı|gece kulübü|parlak|parti
+🪆|aktivite|babuşka|bebekler|etkinlik|iç içe|matruşka bebekleri|oyuncak|rusya
 ♟️|harcanabilir|kullanılma|piyon|satranç
 🃏|iskambil kartı|joker|kart
 🀄|ejderha|kızıl ejder mahjong taşı|mahjong|taş
 🎴|çiçekli kart|çiçekli oyun kağıtları|hanafuda|kağıt oyunu|kart|oyun
-🎭|eğlence|performans sanatı|sahne sanatları|sanat
+🎭|eğlence|performans sanatı|sahne sanatları|sanat|tiyatro
 🖼️|çerçeve|müze|resimli çerçeve|sanat|yağlı boya
-🎨|boya paleti|palet|sanatçı paleti
-🧵|dikiş|iğne|iplik|makara
-🪡|dikiş iğnesi|dikme|iğne|nakış|sökük|terzi
-🧶|iplik yumağı|kroşe|top|yumak
-🪢|bağlı|denizci düğümü|dolaşık|düğüm|halat|sicim
+🎨|boya paleti|palet|ressam|sanatçı paleti
+🧵|dikiş|dikmek|iğne|iplik|kırmızı ip|makara|terzi
+🪡|aktivite|dikiş iğnesi|dikme|etkinlik|iğne|iplik|nakış|sökük|terzi
+🧶|iplik yumağı|kedi|kroşe|örgü ipi|tığ|top|yumak|yün
+🪢|aktivite|bağlama|bağlı|denizci düğümü|dolaşık|düğüm|halat|sicim
 👓|giyim|gözlük
-🕶️|gözlük|güneş gözlüğü|kara
-🥽|göz koruması|kaynak|koruyucu gözlük|yüzme
-🥼|bilim insanı|deney|doktor|laboratuvar önlüğü
+🕶️|gözlük|güneş gözlüğü|kara|siyah gözlük
+🥽|dalgıç gözlüğü|dalış gözlüğü|dalmak|emniyet gözlüğü|göz koruması|gözlük|iş gözlüğü|kar gözlüğü|kayak gözlüğü|kaynak gözlüğü|kaynakçı gözlüğü|koruma gözlüğü|koruyucu gözlük|yüzme|yüzücü gözlüğü
+🥼|beyaz önlük|bilim insanı|deney|doktor önlüğü|dr|giysi|gömlek|hasta bakıcı|hastane|laboratuvar önlüğü|önlük
 🦺|acil durum|güvenlik yeleği|yelek
-👔|giyim|kravat
-👕|giyim|gömlek|tişört
-👖|blucin|blue jean|giyim|kot|pantolon
-🧣|atkı|yaka
-🧤|eldiven
-🧥|kaban
+👔|giyim|gömlek|iş adamı|kravat|takım kıyafet
+👕|alışveriş|giyim|gömlek|tişört
+👖|blucin|blue jean|bluejean|giyim|kot pantalon|pantolon
+🧣|atkı|sıkı giyinmek|soğuk|yaka
+🧤|eldiven|mavi eldiven
+🧥|ceket|kaban|manto|mont|sıkı giyinmek|soğuk
 🧦|çorap
-👗|elbise|giyim|tek parça
+👗|alışveriş|elbise|giyim|kokteyl elbisesi|şık|tek parça
 👘|elbise|giyim|kimono
 🥻|elbise|giysi|sari
 🩱|mayo|tek parça mayo
-🩲|alt|mayo|slip|tek parça
-🩳|alt|mayo|şort
-👙|bikini|deniz giysisi|giyim
-👚|giyim|giysiler|kadın giysisi
-🪭|dans|heyecan|serinletme|sıcak|utangaç|yelpaze
+🩲|alt|iç çamaşırı|mayo|slip|tek parça
+🩳|alt|iç çamaşırı|mayo|şort
+👙|benekli bikini|bikini|deniz giysisi|giyim|havuz|kumsal|tatil|yaz
+👚|alışveriş|bluz|giyim|giysiler|kadın giysisi
+🪭|çırpma|dans|flört|heyecan|nesne|şak|serinletme|sıcak|utangaç|yelleme|yelpaze
 👛|bozuk para çantası|cüzdan|giyim
-👜|çanta|el çantası|giyim
+👜|çanta|el çantası|giyim|kadın el çantası
 👝|çanta|giyim|para kesesi
-🛍️|alışveriş çantası|çanta|otel
-🎒|okul çantası|okul sırt çantası|sırt çantası
-🩴|deniz terliği|kumsal terliği|parmak arası terlik|sandalet
+🛍️|alışveriş çantası|çanta|hediye|otel|paket
+🎒|kırmızı sırt çantası|okul çantası|okul sırt çantası|sırt çantası
+🩴|ayakkabı|deniz terliği|eşya|flip flop|kumsal terliği|parmak arası terlik|sahil|sandalet|terlik|zori
 👞|ayakkabı|erkek ayakkabısı|giyim
-👟|ayakkabı|bez ayakkabı|giyim|koşu ayakkabısı
-🥾|bot|kamp|sırt çantası|yürüyüş botu
-🥿|babet|düz ayakkabı|terlik|topuksuz
-👠|ayakkabı|giyim|yüksek topuklu ayakkabı
-👡|giyim|kadın sandaleti|sandalet
-🩰|bale ayakkabıları|dans
-👢|bot|giyim|kadın botu
-🪮|afro saç|kıvırcık saç|perma tarağı|saç|seçme|tarak
-👑|giyim|taç
+👟|ayakkabı|bez ayakkabı|giyim|koşu ayakkabısı|spor
+🥾|ayakkabı|bot|dağcılık|kamp|kar botu|kışlık|sırt çantası|yürümek|yürüyüş botu
+🥿|ayakkabı|babet|bale ayakkabısı|dans|düz ayakkabı|pabuç|patik|puant|rahat|terlik|topuksuz|yeşil ayakkabı|yürümek|yürüyüş
+👠|ayakkabı|giyim|kırmızı ayakkabı|topuklu ayakkabı|yüksek topuklu ayakkabı
+👡|ayakkabı|giyim|kadın sandaleti|sandalet|topuklu ayakkabı
+🩰|bale ayakkabıları|bale pabucu|dans
+👢|bot|çizme|giyim|kadın botu|kadın çizmesi
+🪮|afro saç|kıvırcık saç|nesne|perma tarağı|saç|seçme|tarak|tarama|toka
+👑|giyim|kraliçe|kraliyet|taç
 👒|giyim|kadın şapkası|şapka
-🎩|eğlence|şapka|silindir şapka
+🎩|eğlence|şapka|sihirbaz|silindir şapka
 🎓|kep|kutlama|mezuniyet kepi
-🧢|beyzbol şapkası|siperli şapka
-🪖|asker kaskı|askerlik|kask|ordu|savaşçı
-⛑️|haç|kask|şapka|yardım ekibi kaskı|yüz
+🧢|beyzbol şapkası|şapka|siperli şapka
+🪖|asker kaskı|askerlik|eşya|kafa|kask|miğfer|ordu|savaşçı
+⛑️|beyaz haçlı kask|haç|kask|meslek|şapka|yardım ekibi kaskı|yüz
 📿|boncuk|din|dua|giyim|kolye|tesbih|tespih
-💄|kozmetik|makyaj|ruj
-💍|romantizm|tek taş|yüzük
-💎|elmas|mücevher taşı|romantizm
+💄|kırmızı ruj|kozmetik|makyaj|ruj
+💍|alyans|evlilik|nikah|nişan|pırlanta yüzük|romantizm|tek taş|yüzük
+💎|elmas|mücevher taşı|pırlanta|romantizm
 🔇|iptal işaretli hoparlör|lütfen sessiz olun|ses kapalı|sessiz olun
-🔈|kısık ses|ses düzeyi
+🔈|hoparlör ses düzeyi|kısık ses|ses düzeyi
 🔉|düşük sesli hoparlör|ses açık
 🔊|yüksek sesli hoparlör
 📢|halka hitap|hoparlör|iletişim|megafon
 📣|iletişim|karşılama|megafon
-📯|klakson|posta klaksonu
-🔔|çan|kilise|zil
-🔕|çan|iptal işaretli çan|ses yok|üzeri çizili zil
-🎼|müzik|partisyon|sol anahtarı
+📯|borozan|klakson|posta klaksonu
+🔔|çan|kilise|ses|tenefüs|zil
+🔕|çan yok|iptal işaretli çan|ses yok|sessiz|üzeri çizili zil
+🎼|müzik partisyonu|partisyon|sol anahtarı
 🎵|müzik notası|nota
 🎶|müzik notaları|notalar
 🎙️|mikrofon|müzik|stüdyo mikrofonu
 🎚️|ayar çubuğu|ayarlama çubuğu|kol|müzik
 🎛️|düğme|kontrol düğmeleri|müzik
-🎤|eğlence|karaoke|mikrofon
-🎧|eğlence|kulaklık
+🎤|eğlence|karaoke|mikrofon|müzik|şarkıcı
+🎧|eğlence|kulaklık|müzik
 📻|radyo|video
 🎷|alet|müzik aleti|saksafon
-🪗|akordeon|akordiyon
-🎸|alet|gitar|müzik aleti
-🎹|alet|klavye|müzik aleti|müzik klavyesi
+🪗|akordeon|akordiyon|armonika|çalmak|enstrüman|eşya|körük|müzik aleti|tuş
+🎸|alet|elektrik gitar|gitar|müzik aleti
+🎹|alet|klavye|müzik aleti|müzik klavyesi|piyano
 🎺|alet|müzik aleti|trompet
 🎻|alet|keman|müzik aleti
 🪕|banjo|müzik|yaylı
-🥁|davul|müzik|tokmak
-🪘|conga|davul|ritm|tempo|uzun davul|vuruş
-🪇|alet|çıngırak|marakas|müzik aleti|perküsyon|sallama|vurmalı
-🪈|ahşap üflemeli|boru|fife|flüt|kaval|müzik|nefesli|recorder
-📱|cep telefonu|mobil telefon|telefon
-📲|çağrı yapmak|mobil telefon|ok işaretli cep telefonu|telefon
-☎️|telefon
+🥁|bateri|davul|müzik|ramazan davulu|tokmak
+🪘|conga|davul çalmak|enstrüman|eşya|müzik aleti|perküsyon|ritim|ritm|tempo|tumba|uzun davul|vurmak|vuruş
+🪇|alet|çaça|çıngırak|dans|enstrüman|marakas|müzik aleti|nesne|parti|perküsyon|sallamalı|vurmalı
+🪈|ahşap üflemeli|bando|blokflüt|boru|enstrüman|fife|fifre|flüt|kaval|müzik|nefesli|orkestra|recorder|üflemeli
+📱|cep telefonu|iphone|mobil telefon|telefon
+📲|çağrı yapmak|cep telefonu|mobil telefon|ok işaretli cep telefonu|telefon
+☎️|kırmızı telefon|telefon
 📞|ahize|alıcı|telefon
 📟|çağrı cihazı|iletişim
 📠|faks makinesi|iletişim
 🔋|pil
-🪫|düşük enerji|düşük pil|elektronik
+🪫|az şarj|batarya|düşük enerji|düşük pil|elektronik|güçsüz|nesne|pil|şarj
 🔌|elektrik fişi
 💻|bilgisayar|dizüstü bilgisayar|kişisel
 🖥️|bilgisayar|masaüstü
 🖨️|bilgisayar|yazıcı
 🖱️|bilgisayar faresi|düğme|fare
 🖲️|bilgisayar|iz topu
-💽|disk|mini disk
+💽|bilgisayar|disk|mini disk
 💾|disket|floppy
 💿|cd|disk|dvd|optik disk
-📀|blu-ray|disk|dvd disk
-🧮|abaküs|hesaplama
+📀|blu-ray|cd|disk|dvd|müzik
+🧮|abaküs|çocuk|hesaplama|renkli abaküs
 🎥|eğlence|film kamerası|sinema
 🎞️|film kareleri|film karesi|sinema
 📽️|film projektörü|projektör|sinema|video
@@ -1222,78 +1232,78 @@
 📸|flaşlı fotoğraf makinesi|kamera|video
 📹|kamera|video
 📼|teyp|video kaseti|videokaset
-🔍|arama|cam|sola dönük büyüteç|solu gösteren büyüteç
-🔎|arama|cam|sağa dönük büyüteç|sağı gösteren büyüteç
+🔍|arama|büyüteç|cam|sola dönük büyüteç|solu gösteren büyüteç
+🔎|arama|büyüteç|cam|sağa dönük büyüteç|sağı gösteren büyüteç
 🕯️|ışık|mum
 💡|ampul|bir fikrim var|çizgi roman|elektrik|ışık
 🔦|el feneri|elektrik|ışık
 🏮|bar|fener|izakaya|kırmızı kağıt fener|restoran
 🪔|diya|lamba|yağ
 📔|dekorasyonlu not defteri|kapak|not defteri|süslü not defteri
-📕|kapalı kitap|kitap
-📖|açık kitap|kitap
-📗|kitap|yeşil kitap
+📕|kapalı kitap|kitap|kırmızı kitap
+📖|açık defter|açık kitap|defter|kitap|okul
+📗|eğitim|kitap|kütüphane|okul|yeşil kitap
 📘|kitap|mavi kitap
 📙|kitap|turuncu kitap
 📚|kitaplar
-📓|not defteri
+📓|defter|not defteri
 📒|not defteri|resmi defter
 📃|kenarı kıvrılmış sayfa|kıvrık sayfa|sayfa
-📜|kağıt parşömen|parşömen
+📜|bildiri|kağıt|parşömen
 📄|doküman|ön yüzü görünen sayfa|sayfa|yüzü yukarıda sayfa
-📰|gazete|haber|kâğıt
+📰|gazete|haber|kağıt|kâğıt
 🗞️|gazete|haber|kağıt|rulo
 📑|ayraçlar|işaretçi|sayfa ayraçları|sayfa işareti
-🔖|işaret|yer işareti
+🔖|defter|işaret|kitap|not|yer işareti
 🏷️|etiket
-💰|çanta|dolar çantası|para torbası
-🪙|altın|bozuk para|gümüş|hazine|jeton|metal|para|sikke
+💰|çanta|dolar çantası|para çuvalı|para torbası|zengin
+🪙|altın|avro|bozuk para|dolar|eşya|euro|gümüş|hazine|jeton|madeni para|metal|para|sikke|zengin
 💴|banknot|döviz|para|yen
-💵|banknot|dolar|döviz|para
-💶|avro|banknot|döviz|euro|para
+💵|banknot|dolar|döviz|fatura|para
+💶|avro|banknot|döviz|euro|fatura|para
 💷|banknot|döviz|para|sterlin
 💸|banka|banknot|kanatlı para|para|uçan banknot
 💳|kart|kredi kartı
-🧾|defter tutma|kanıt|kayıt|makbuz|muhasebe
-💹|grafik|piyasa|yen simgeli artış grafiği|yukarı giden grafik|yukarı yönlü
+🧾|bakiye|belge|defter tutma|dekont|ekstre|evrak|fatura|finans|fiş|hesap|irsaliye|kağıt|kanıt|kayıt|makbuz|maliyet|muhasebe|senet
+💹|banka|grafik|para|piyasa|yen simgeli artış grafiği|yukarı giden grafik|yukarı yönlü
 📧|e-posta|iletişim|mektup|posta
 📨|alınan posta|e-posta|gelen|iletişim|mektup|posta|zarf
-📩|e-posta|giden|gönderilen posta|oklu zarf|zarf
+📩|e-posta|giden|gönderilen posta|iletişim|mektup|oklu zarf|posta|zarf
 📤|giden kutusu|iletişim|kutu|posta|tepsi
 📥|gelen kutusu|iletişim|kutu|posta|tepsi
-📦|kutu|paket
+📦|kutu|paket|posta
 📫|işareti kaldırılmış posta kutusu|işareti yukarıda kapalı posta kutusu|kapalı|posta
 📪|işareti aşağıda kapalı posta kutusu|işareti indirilmiş posta kutusu|kapalı|posta
 📬|açık|işareti kaldırılmış açık posta kutusu|işareti yukarıda açık posta kutusu|posta
 📭|açık|işareti aşağıda açık posta kutusu|işareti indirilmiş açık posta kutusu|posta
 📮|posta kutusu
-🗳️|kutu|oy sandığı|sandık
+🗳️|kutu|oy sandığı|sandık|seçim
 ✏️|kurşun kalem
-🖋️|dolma kalem|kalem
+🖋️|dolma kalem|kalem|mürekkepli kalem
 🖊️|kalem|tükenmez kalem
-🖌️|boya fırçası|boyama
-🖍️|mum boya|pastel boya
-📝|iletişim|not defteri
-💼|evrak çantası
+🖌️|boya fırçası|boyama|fırça
+🖍️|boya|mum|pastel
+📝|ders|iletişim|kalem kağıt|not defteri
+💼|evrak çantası|müfettiş|ofis
 📁|dosya klasörü|klasör
 📂|açık dosya klasörü|dosya|klasör
-🗂️|ayırıcı|dizin|dosya ayırıcı|kart
+🗂️|ayırıcı|dizin|dosya|kart
 📅|takvim|tarih
-📆|koparmalı takvim|takvim
+📆|koparmalı takvim|takvim sayfası|tarih
 🗒️|defter|not|spiral not defteri
 🗓️|defter|spiral|takvim
 📇|dizin|kart dizini|rolodeks
 📈|artış grafiği|grafik|yukarı yönlü|yükselen grafik
 📉|alçalan grafik|aşağı yönlü|grafik|iniş grafiği
 📊|çubuk grafiği|grafik
-📋|pano
+📋|duyuru|pano
 📌|iğne|raptiye
 📍|iğne|raptiye|yuvarlak raptiye
 📎|ataş|klips
 🖇️|ataş|bağlantı|iç içe geçmiş ataşlar
 📏|cetvel|düz cetvel
 📐|cetvel|gönye|üçgen
-🗃️|dosya kutusu|kart|kutu
+🗃️|dosya kutusu|kart kutusu|kutu
 🗄️|dolap|dosya dolabı
 🗑️|çöp sepeti
 🔒|kapalı kilit|kilit
@@ -1303,97 +1313,98 @@
 🔑|anahtar|kilit|parola|şifre
 🗝️|anahtar|eski|ipucu|kilit
 🔨|araç|çekiç
-🪓|ağaç|balta|kesme|kısa balta|yarma
+🪓|ağaç|balta|kesme|kısa balta|odun|yarma
 ⛏️|alet|kazma|maden
 🛠️|alet|çekiç ve ingiliz anahtarı|çekiç ve somun anahtarı|ingiliz anahtarı
 🗡️|bıçak|hançer|silah
 💣|bomba|çizgi roman|duygu
-🪃|avustralya|bumerang|geri tepme|sekme|tepki
+🪃|aborjin|atmak|avustralya|boomerang|bumerang|eşya|fırlatmak|geri gelmek|geri tepme|oyun|sekme|silah|tepki
 🏹|araç|burç|ok ve yay|okçu|silah|yay
 🛡️|kalkan|silah
-🪚|alet|kereste|marangoz|testere
+🪚|alet|eşya|kereste|kesmek|marangoz|odun|testere
 🔧|araç|ingiliz anahtarı|somun anahtarı
-🪛|alet|sıkma|tornavida|vida
+🪛|alet|düz uçlu|eşya|montaj|sıkıştırmak|sıkma|tamirci|tornavida|usta|vida
 🔩|araç|somun ve vida|vida
 🗜️|alet|mengene|sıkıştırma
 🦯|erişilebilirlik|görme engelli bastonu
 🔗|bağlantı işareti|bağlantılar|iki halka
+⛓️‍💥|kelepçe|kırık zincir|kırmak|özgürlük|patlama|zincirleri kırmak
 ⛓️|zincir
-🪝|askı|çengel|eğri|kanca
-🧰|alet çantası|sandık|tamirci
-🧲|at nalı|çekim|manyetik|mıknatıs
-🪜|adım|basamak|merdiven|tırmanış
-🧪|bilim|deney tüpü|kimyacı|laboratuvar
-🧫|bakteri|biyolog|biyoloji|kültür|laboratuvar|petri kabı
-🧬|biyolog|dna|evrim|genetik|yaşam
-🔬|alet|bilim|mikroskop
-🔭|alet|teleskop
+🪝|askı|asmak|çengellemek|eğri|eşya|kanca
+🧰|alet çantası|alet kutusu|çanta|ingiliz anahtarı|kırmızı|kutu|onarmak|sandık|tamirat|tamirci
+🧲|at nalı|çekim|çekmek|elektrik yükü|eş kutuplar|manyetik|mıknatıs|pozitif negatif|zıt kutuplar
+🪜|adım|aşağı|ayaklı merdiven|basamak|çıkmak|eşya|merdiven|tırmanış|tırmanmak|yukarı
+🧪|beher|bilim adamı|bilim insanı|bilim kadını|biyoloji|deney tüpü|deney yapmak|doktor|fizik|genetik|kimyacı|kimyager|laboratuvar|test|tüp|yeşil sıvı
+🧫|bakteri|bilim|biyolog|biyoloji|damlatmak|deney tüpü|kimya|kültür|laboratuvar|mikrop|petri kabı|tıp|virüs
+🧬|biyolog|biyoloji|dna|evrim|genetik|sarmal|yaşam
+🔬|alet|bilim|labrotuar|mikroskop|test
+🔭|alet|teleskop|uzay gözlemleme
 📡|anten|çanak|iletişim|uydu anteni
 💉|doktor|iğne|ilaç|şırınga
-🩸|âdet|aybaşı|ilaç|kan bağışı|kan damlası|mens|regl
+🩸|âdet|aybaşı|ilaç|kan bağışı|kan damlası|menstrüasyon|regl|tıp|yaralanma
 💊|doktor|hap|ilaç
 🩹|bandaj|bant|yapışkanlı bandaj|yara bandı
-🩼|baston|değnek|engellilik|koltuk değneği|yürüme yardımı
+🩼|araç|baston|değnek|engellilik|kırık|koltuk değneği|nesne|sakatlanmak|yaralı|yürüme engelli|yürüme yardımı
 🩺|doktor|kalp|stetoskop|tıp
-🩻|doktor|iskelet|kemik|röntgen|tıbbi|x ışını
+🩻|doktor|film|iskelet|kaburga|kemik|medikal|muayene|nesne|röntgen|tıbbi|x ışını
 🚪|kapı
-🛗|asansör|erişilebilirlik|lift
-🪞|ayna|reflektör|spekulum|yansıma|yansıtıcı
-🪟|açılım|çerçeve|manzara|pencere|saydam|şeffaf|temiz hava
-🛏️|otel|uyuma|yatak
-🛋️|kanepe ve lamba|lamba|otel
+🛗|alt kat|aşağı|asansör|çağırmak|çıkmak|erişilebilirlik|eşya|inmek|lift|üst kat|yukarı
+🪞|ayna|eşya|görüntü|makyaj|reflektör|spekulum|yansıma|yansıtıcı
+🪟|cam|çerçeve|dışarı bakmak|eşya|izlemek|manzara|pencere|saydam|şeffaf|temiz hava
+🛏️|otel|uyku|uyuma|yatak
+🛋️|kanepe ve lamba|koltuk|lamba|otel
 🪑|iskemle|oturma|sandalye
-🚽|klozet|tuvalet|wc
-🪠|açıcı|çekme|lavabo açıcı|lavabo pompası|tuvalet
+🚽|alafranga tuvalet|klozet|tuvalet|wc
+🪠|açıcı|çekme|eşya|lavabo açıcı|lavabo pompası|pompa|tuvalet|vakum
 🚿|duş|su
-🛁|banyo küveti
-🪤|fare kapanı|kapan|kıskaç|tuzak
-🪒|keskin|tıraş|ustura
-🧴|güneş kremi|losyon şişesi|nemlendirici|şampuan
-🧷|bebek bezi|çengelli iğne|punk rock
-🧹|cadı|süpürge|süpürme|temizlik
-🧺|çamaşır|çiftçilik|piknik|sepet
-🧻|kağıt havlu|kağıt rulosu|tuvalet kağıdı
-🪣|fıçı|kap|kepçe|kova
-🧼|banyo|kalıp|köpük|sabunluk|temizlik
-🫧|baloncuk|kabarcık|sabun|su altı|temiz
-🪥|banyo|dental|diş fırçası|fırça|hijyen|lavabo
-🧽|emici|gözenekli|sünger|temizlik
-🧯|ateş|söndürme|yangın söndürücü
+🛁|banyo küveti|köpüklü banyo
+🪤|eşya|fare kapanı|kapan|kıskaç|kıstırmak|peynir|tuzak|yem
+🪒|jilet|keskin|tıraş|ustura
+🧴|güneş koruyucu|güneş kremi|krem|losyon şişesi|nemlendirici|saç kremi|şampuan şişesi|şişe
+🧷|bebek bezi|çengelli|dikiş|iğne kancası|iğnelemek|kanca|punk rock|tutturmak
+🧹|büyücü|cadı|ev işi|harry potter|süpürge|süpürmek|temizlik|uçmak
+🧺|çamaşır sepeti|çiftçilik|hasır|piknik sepeti|sepet
+🧻|banyo|emici|havlu|kağıt rulosu|rulo|silmek|temizlik|tuvalet kağıdı
+🪣|bakraç|eşya|fıçı|gerdel|kap|kepçe|kova|sap|silmek|temizlik
+🧼|banyo yapmak|el sabunu|el yıkamak|kalıp|katı sabun|köpük|köpürmek|köpürtmek|sabun köpüğü|sabunlamak|sabunluk|temizlik|yıkamak|yıkanmak
+🫧|baloncuk|hava kabarcığı|kabarcık|köpük|nesne|sabun|su altı|temiz
+🪥|ağız|banyo|dental|diş fırçası|eşya|fırça|hijyen|lavabo|oral hijyen|temizlik
+🧽|banyo yapmak|bulaşık|emici|emmek|ev işi|gözenekli|keselemek|köpürmek|köpürtmek|silmek|sünger|temizlik|yıkamak|yıkanmak
+🧯|ateş|söndürmek|yangın söndürücü|yangın tüpü
 🛒|alışveriş arabası|araba|pazar arabası
-🚬|işaret|sigara içilebilir|sigara içme
+🚬|duman|işaret|sigara içilebilir|sigara içme işareti
 ⚰️|cenaze|ölüm|tabut
-🪦|defin|mezar taşı|mezarlık
+🪦|cenaze|defin|defnetmek|eşya|huzur içinde uyu|huzur içinde yat|mezar taşı|mezarlık|nur içinde yat|ölüm
 ⚱️|cenaze|kül kavanozu|ölüm|vazo
-🧿|boncuk|kem göz|mavi boncuk|muska|nazarlık|tılsım
-🪬|fatıma’nın eli|fatma ana’nın eli|fatma’nın eli|meryem|muska|nazarlık
-🗿|heykel|moyai heykeli
-🪧|gösteri|işaret|protesto|tabela
-🪪|güvenlik|kimlik bilgisi|kimlik kartı|lisans
+🧿|boncuk|göz|iyi şans|kem göz|kötü şans|maşallah|mavi boncuk|muska|nazar boncuğu|nazar değmesin|nazarlık|tılsım
+🪬|fatıma’nın eli|fatma ana’nın eli|fatma’nın eli|hamsa|koruyucu|meryem|muska|nazarlık|şans|sembol
+🗿|heykel|moyai heykeli|taştan surat
+🪧|bildiri|döviz|eşya|gösteri|işaret|levha|pankart|plaka|protesto|tabela
+🪪|belge|ehliyet|güvenlik|kart|kimlik bilgisi|kimlik kartı|lisans|nesne|nüfus cüzdanı
 🏧|atm işareti|otomatik|vezne
 🚮|çöp kutusu işareti|çöpü yerine atın|işaret
-🚰|içilebilir su|içme suyu|işaret
+🚰|içilebilir su|içme suyu|işaret|musluk ve bardak|su
 ♿|erişim|işaret|tekerlekli sandalye erişimi|tekerlekli sandalye sembolü|tekerlekli sandalye simgesi
 🚹|erkekler tuvaleti|işaret|tuvalet
-🚺|işaret|kadınlar tuvaleti|tuvalet
+🚺|bayanlar tuvaleti|işaret|kadınlar tuvaleti|tuvalet
 🚻|lavabo|tuvalet|wc
 🚼|bebek alt değiştirme yeri|bebek işareti|bebek teknede
 🚾|lavabo|tuvalet|wc
 🛂|kontrol|pasaport kontrolü
 🛃|gümrük
-🛄|bagaj teslim
-🛅|bagaj hizmeti|eşya emanet
-⚠️|işaret|uyarı işareti
+🛄|bagaj alma yeri|bagaj teslim|bavul|çanta|seyahat
+🛅|bagaj hizmeti|eşya emanet|kasa|kayıp bagaj
+⚠️|dikkat|işaret|uyarı işareti
 🚸|çocuklar|işaret|karşıya geçen çocuklar|karşıya geçiş
-⛔|girilmez|hayır|işaret|yasak
+⛔|girilmez işareti|hayır|işaret|yasak
 🚫|girilmez|girmek yasak|işaret
 🚳|bisiklet giremez|bisiklet yasak|taşıt
-🚭|duman|sigara içilmez|tütün|yasak
+🚭|duman|sigara içilmez işareti|tütün|yasak
 🚯|çöp atılmaz|çöp atmayın işareti|işaret
 🚱|içilmeyen|içilmez|su
-🚷|işaret|yayalar giremez|yayalara yasak
+🚷|işaret|yayalar giremez|yayalara yasak|yürüyen
 📵|çağrı yapılmaz|cep telefonu yasak|mobil|telefon
-🔞|18 yaş altı yasaktır
+🔞|18 yaş altı yasaktır|18‘den küçükler giremez
 ⬆️|ana yön|kuzey|ok|yön|yukarı ok|yukarı yönlü ok
 ➡️|ana yön|doğu|ok|sağ ok|yön
 ⬇️|ana yön|aşağı yönlü ok|güney|ok|yön
@@ -1406,7 +1417,7 @@
 🔚|bitiş oku|ok|sol bitiş oku|sol ok
 🔛|açık oku|ok|ünlem işareti ve okla açık
 🔜|ok|sağ okla yakında|yakında işareti
-🔝|yukarı okla yukarı|yukarı oku
+🔝|yukarı işareti|yukarı okla yukarı|yukarı oku
 🛐|din|ibadethane|tapınma
 ⚛️|ateist|atom sembolü
 🕉️|din|hinduizm|om
@@ -1414,16 +1425,16 @@
 ✝️|din|haç|hristiyan|isa|latin haçı
 ☪️|ay yıldız|din|islam|müslüman
 ☮️|barış sembolü
-🕎|din|menora|mum|şamdan|yahudi şamdanı
+🕎|din|menora|mumluk|şamdan|yahudi şamdanı
 🔯|altı köşeli yıldız|fal bakma|yıldız
-🪯|din|khanda|sih
+🪯|deg tegh fateh|din|inanç|khalsa|khanda|sihizm
 ♊|burçlar|ikizler burcu
 ♋|burçlar|yengeç burcu
 ♌|aslan burcu|burçlar
 ♍|başak burcu|burçlar
 ♎|burçlar|terazi burcu
 ♏|akrep burcu|burçlar
-⛎|burçlar|yılancı
+⛎|burçlar|hain|iblis|yılancı|zodyak
 🔀|çapraz sağ oklar|oklar|parça karıştırma düğmesi
 🔁|oklar|saat yönünde|tekrarlama düğmesi
 🔂|1 sayısı olan saat yönünde oklar|oklar|saat yönünde|tek parça tekrarlama düğmesi
@@ -1432,8 +1443,8 @@
 ⏭️|ok|sonraki parça düğmesi|sonraki sahne|üçgen
 ⏯️|duraklatma|ok|oynatma veya duraklatma düğmesi|sağ|üçgen
 ◀️|geri düğmesi|ok|sol|ters|üçgen
-⏪|hızlı geri düğmesi|ok|sola çift ok
-⏮️|ok|önceki parça|önceki sahne|son parça düğmesi|üçgen
+⏪|geri sarma düğmesi|hızlı geri düğmesi|ok|sola çift ok
+⏮️|ok|önceki parça|önceki sahne|parça atlama düğmesi|son parça düğmesi|üçgen
 🔼|düğme|üçgen|yukarı düğmesi|yukarı üçgen düğmesi
 ⏫|hızlı yukarı düğmesi|ok|yukarı çift ok
 🔽|aşağı düğmesi|aşağı üçgen düğmesi|düğme|üçgen
@@ -1446,11 +1457,11 @@
 🔅|düşük parlaklık işareti|karanlık|parlaklık
 🔆|parlaklık|yüksek parlaklık işareti
 📶|anten|çubuk işaretli anten|mobil|sinyal gücü|telefon
-🛜|ağ|bilgisayar|internet|kablosuz
+🛜|ağ|akıllı telefon|bağlantı|bilgisayar|geniş bant|internet|kablosuz|modem|wifi|wlan
 📳|cep telefonu|mobil|mod|telefon|titreşim modu
 📴|cep telefonu kapalı|kapalı|mobil|telefon
 ⚧️|transgender sembolü|transseksüel
-🟰|eşitlik|kalın eşittir işareti|matematik
+🟰|eşitlik|eşittir işareti|işaret|kalın eşittir işareti|matematik|sembol
 ♾️|evrensel|sınırsız|sonsuzluk
 ‼️|!!|çift ünlem|işaret|noktalama|ünlem
 💱|bozdurma|döviz|kambiyo|para
@@ -1462,18 +1473,18 @@
 🔰|japonca yeni başlayan sembolü|yeni başlayan|yeşil ve sarı yaprak
 ⭕|çember|kalın çember|kalın kırmızı çember|o
 ❌|×|çarpı işareti|çarpma|iptal|işaret|x
-❎|×|çarpı işareti düğmesi|kare|x
+❎|×|çarpı işareti düğmesi|çarpım|çarpma|kare|x kare içinde
 ➰|döngü|dönüş|kıvrık döngü
 ➿|çift kıvrık döngü|japonya|kıvrık döngü|ücretsiz numara
-〽️|işaret|parça değiştirme işareti
-🔠|büyük harfler|latin büyük harfleriyle giriş
-🔡|küçük harfler|latin küçük harfleriyle giriş
-🔢|sayı girişi|sayılar
+〽️|bölüm değiştirme işareti|işaret|parça değiştirme işareti
+🔠|abcd|büyük harfler|latin büyük harfleriyle giriş
+🔡|abcd|alfabe|küçük harfler|latin küçük harfleriyle giriş
+🔢|1234|sayı girişi|sayılar
 🔣|işaret girişi|işaretler
 🔤|abc|ingilizce|latin alfabesiyle giriş
-🅰️|a düğmesi (kan grubu)|a grubu kan|kan grubu a
+🅰️|a düğmesi (kan grubu)|a grubu kan|kan grubu a|kırmızı kutuda a harfi
 🆎|ab düğmesi (kan grubu)|ab grubu kan|kan grubu ab
-🅱️|b grubu (kan grubu)|b grubu kan|kan grubu b
+🅱️|b grubu (kan grubu)|b grubu kan|b tuşu|kan grubu b|kırmızı kutuda b harfi
 🆑|cl düğmesi|cl işareti|sil
 🆒|cool düğmesi|harika|hoş|serin işareti
 🆓|bedava|bedelsiz|free düğmesi|işaret|ücretsiz işareti
@@ -1487,21 +1498,21 @@
 🆘|işaret|sos düğmesi|sos işareti|yardım
 🆙|işaret|up! düğmesi|yukarı! işareti
 🆚|işaret|karşılaştırma işareti|vs düğmesi
-🈁|japonca "burada" düğmesi
-🈂️|japonca "servis ücreti" düğmesi
-🈷️|japonca "aylık ücret" düğmesi
-🈶|japonca "ücretsiz değil" düğmesi
-🈯|japonca "rezerve" düğmesi
-🉐|japonca "avantaj" düğmesi
-🈹|japonca "indirim" düğmesi
-🈚|japonca "ücretsiz" düğmesi
-🈲|japonca "yasak" düğmesi
-🉑|japonca "kabul edilebilir" düğmesi
-🈸|japonca "uygulama" düğmesi
-🈴|japonca "geçer not" düğmesi
-🈳|japonca "yer var" düğmesi
-🈺|japonca "hizmete hazır" düğmesi
-🈵|japonca "yer yok" düğmesi
+🈁|burada|japonca "burada" düğmesi|japonca burada işareti
+🈂️|japonca "servis ücreti" düğmesi|japonca "servis ücreti" simgesi|servis ücreti
+🈷️|aylık|japonca "aylık ücret" düğmesi|japonca "aylık" düğmesi|japonca "aylık" sembolü
+🈶|bedava değil|japonca "bedava değil" düğmesi|japonca "bedava değil" simgesi|japonca "ücretsiz değil" düğmesi
+🈯|japonca "rezerve" düğmesi|japonca rezerve sembolü|rezerve düğmesi
+🉐|indirim|japonca "avantaj" düğmesi|japonca "indirim" düğmesi|japonca "indirim" simgesi
+🈹|indirim|japonca "indirim" düğmesi|japonca "indirim" sembolü
+🈚|bedava işareti|japonca "ücretsiz" düğmesi|japonca bedava düğmesi
+🈲|japon "yasak" düğmesi|japon "yasak" sembolü|japonca "yasak" düğmesi
+🉑|japonca "kabul edilebilir" düğmesi|japonca "kabul edilebilir" işareti|kabul edilebilir
+🈸|başvuru|japonca "başvuru" düğmesi|japonca "başvuru" simgesi|japonca "uygulama" düğmesi
+🈴|geçer not|japonca "geçer not" düğmesi
+🈳|çince|japonca "yer var" düğmesi
+🈺|işletme açık|japinca "işletme açık" düğmesi|japonca "hizmete hazır" düğmesi|japonca "işletme açık" sembolü
+🈵|japonca "yer yok" düğmesi|yer yok
 🔴|büyük kırmızı çember|çember|kırmızı daire
 🟠|daire|turuncu
 🟡|daire|sarı
@@ -1518,12 +1529,12 @@
 🟦|kare|mavi
 🟪|kare|mor
 🟫|kahverengi|kare
-⬛|büyük siyah kare|geometri|kare
+⬛|büyük siyah kare|geometri|kare|siyah kare
 ⬜|büyük beyaz kare|geometri|kare
-◼️|geometri|kare|orta boy siyah kare
-◻️|geometri|kare|orta boy beyaz kare
+◼️|geometri|kare|orta boy siyah kare|siyah
+◻️|geometri|gri|kare|orta boy beyaz kare
 ◾|geometri|kare|küçük-orta siyah kare
-◽|geometri|kare|küçük-orta beyaz kare
+◽|geometri|gri|kare|küçük-orta beyaz kare
 ▪️|geometri|kare|küçük siyah kare
 ▫️|geometri|kare|küçük beyaz kare
 🔶|büyük turuncu karo|karo|turuncu
@@ -1532,16 +1543,16 @@
 🔹|karo|küçük mavi karo|mavi
 🔺|kırmızı|üçgen|yukarı bakan kırmızı üçgen|yukarı kırmızı üçgen
 🔻|aşağı bakan kırmızı üçgen|aşağı kırmızı üçgen|kırmızı|üçgen
-💠|baklava|çizgi roman|geometrik|içinde noktalı baklava şekli|içinde noktalı karo|karo
+💠|baklava|çizgi roman|elmas biçimli|geometrik|içinde noktalı baklava şekli|içinde noktalı elmas biçimi|içinde noktalı karo|karo
 🔘|düğme|radyo düğmesi
 🔳|beyaz kare düğme|düğme|kare
 🔲|düğme|kare|siyah kare düğme
-🏁|bayrak|damalı|spor|yarış
-🚩|işaret|konum bilgisi işareti|üçgen bayrak|üçgen işaret|üçgen konum işareti
-🎌|bayraklar|çapraz japon bayrakları|kutlama
-🏴|bayrak|siyah bayrak
-🏳️|bayrak|beyaz bayrak
-🏳️‍🌈|bayrak|gökkuşağı bayrağı
+🏁|bayrak|bitiş|damalı|ralli|spor|yarış
+🚩|bayrak|işaret|kırmızı bayrak|konum bilgisi işareti|konum işareti|üçgen bayrak|üçgen işaret|üçgen konum işareti
+🎌|bayraklar|çapraz japon bayrakları|japon|kutlama
+🏴|bayrak|dalgalanan siyah bayrak|siyah bayrak
+🏳️|bayrak|beyaz bayrak|dalgalanan bayrak
+🏳️‍🌈|bayrak|biseksüel|gay|gökkuşağı bayrağı|homoseksüel|lezbiyen|lgbt|trans
 🏳️‍⚧️|açık mavi|bayrak|beyaz|pembe|transgender bayrağı
 🏴‍☠️|hazine|jolly roger|korsan bayrağı|yağmacı
 🇦🇩|andorra
@@ -1594,7 +1605,7 @@
 🇨🇴|kolombiya
 🇨🇷|kosta rika
 🇨🇺|küba
-🇨🇻|cape verde
+🇨🇻|cabo verde
 🇨🇼|curaçao
 🇨🇽|christmas adası
 🇨🇾|kıbrıs

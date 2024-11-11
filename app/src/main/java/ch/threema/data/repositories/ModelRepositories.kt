@@ -23,6 +23,7 @@ package ch.threema.data.repositories
 
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelCache
+import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.data.storage.SqliteDatabaseBackend
 import ch.threema.storage.DatabaseServiceNew
 
@@ -31,8 +32,11 @@ class ModelRepositories(databaseService: DatabaseServiceNew) {
 
     private val cache = ModelCache()
     private val databaseBackend = SqliteDatabaseBackend(databaseService)
+    private val editHistoryDao = EditHistoryDaoImpl(databaseService)
 
     val contacts = ContactModelRepository(cache.contacts, databaseBackend)
+    val groups = GroupModelRepository(cache.groups, databaseBackend)
+    val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao)
 
     init {
         logger.debug("Created")

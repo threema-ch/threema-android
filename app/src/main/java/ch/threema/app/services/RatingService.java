@@ -69,7 +69,7 @@ public class RatingService {
 		String ref = this.preferenceService.getRandomRatingRef();
 		boolean success = false;
 
-		if (TestUtil.empty(ref)) {
+		if (TestUtil.isEmptyOrNull(ref)) {
 			// Create a new random ref
 			byte[] ratingRef = new byte[32];
 			SecureRandom rnd = new SecureRandom();

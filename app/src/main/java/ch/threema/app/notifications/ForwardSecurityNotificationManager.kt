@@ -37,7 +37,6 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.DeadlineListService
-import ch.threema.app.services.NotificationService
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import kotlin.random.Random
@@ -52,15 +51,9 @@ class ForwardSecurityNotificationManager(
 
     @SuppressLint("MissingPermission")
     fun showForwardSecurityNotification(messageReceiver: MessageReceiver<*>) {
-        val builder: NotificationCompat.Builder = NotificationBuilderWrapper(
-            context,
-            NotificationService.NOTIFICATION_CHANNEL_FORWARD_SECURITY,
-            null
-        )
-
         val contentText = getNotificationContextText(messageReceiver)
 
-        builder
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_FORWARD_SECURITY)
             .setContentTitle(context.getString(R.string.forward_security_notification_rejected_title))
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_baseline_key_off_24)

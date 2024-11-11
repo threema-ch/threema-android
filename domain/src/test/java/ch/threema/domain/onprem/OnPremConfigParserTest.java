@@ -51,7 +51,13 @@ public class OnPremConfigParserTest {
 
 	@Test
 	public void testRefresh() {
-		Assert.assertEquals(86400, config.getRefresh());
+		long expiresValueFromTestData = 86400;
+		long now = System.currentTimeMillis();
+		long accuracyMs = 10_000;
+		long expectedValidUntilMax = now + expiresValueFromTestData * 1000L + accuracyMs;
+		long expectedValidUntilMin = now + expiresValueFromTestData * 1000L - accuracyMs;
+		Assert.assertTrue(config.getValidUntil() < expectedValidUntilMax);
+		Assert.assertTrue(config.getValidUntil() > expectedValidUntilMin);
 	}
 
 	@Test

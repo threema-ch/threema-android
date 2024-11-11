@@ -376,7 +376,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
 			CharSequence contentDescription;
 
-			if (!TestUtil.empty(datePrefix)) {
+			if (!TestUtil.isBlankOrNull(datePrefix)) {
 				contentDescription = getContext().getString(R.string.state_dialog_modified) + ": " + s;
 				if (messageModel.isOutbox()) {
 					s = TextUtils.concat(datePrefix, " | " + s);
@@ -568,7 +568,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 	}
 
 	protected void configureBodyText(@NonNull ComposeMessageHolder holder, @Nullable String caption) {
-		if (!TestUtil.empty(caption)) {
+		if (!TestUtil.isEmptyOrNull(caption)) {
 			holder.bodyTextView.setText(formatTextString(caption, filterString));
 
 			LinkifyUtil.getInstance().linkify(

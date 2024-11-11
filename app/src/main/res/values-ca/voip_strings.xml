@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="voip_title">Trucada Threema</string>
     <string name="voip_hangup">Penjar</string>
@@ -69,4 +69,5 @@
     <string name="voip_webrtc_debug_done">Fet. Si continueu experimentant problemes amb l\'establiment de la connexió de trucada, envieu aquesta sortida al suport de Threema.</string>
     <string name="voip_webrtc_debug_copied">S\'ha copiat al porta-retalls.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copiar al porta-retalls</string>
+    <!-- Group Calls -->
 </resources>

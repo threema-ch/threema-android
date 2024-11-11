@@ -32,7 +32,6 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
@@ -46,7 +45,6 @@ import java.util.regex.Pattern;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
@@ -289,7 +287,7 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 		int maxLines = getResources().getInteger(R.integer.message_edittext_max_lines);
 
 		if (this.mentionTextWatcher != null) {
-			if (TestUtil.empty(getText())) {
+			if (TestUtil.isBlankOrNull(getText())) {
 				// workaround to keep hint ellipsized on the first line
 				setMaxLines(1);
 				setHint(this.hint);

@@ -90,7 +90,7 @@ public class WorkUserListFragment extends RecipientListFragment {
 			String orgaName = preferenceService.getWorkOrganization().getName();
 
 			RelativeLayout header = (RelativeLayout) getLayoutInflater().inflate(R.layout.item_user_list_directory_header, listView, false);
-			((TextView) header.findViewById(R.id.name)).setText(TestUtil.empty(orgaName) ? getString(R.string.directory_title) : orgaName);
+			((TextView) header.findViewById(R.id.name)).setText(TestUtil.isEmptyOrNull(orgaName) ? getString(R.string.directory_title) : orgaName);
 			((ImageView) header.findViewById(R.id.avatar)).setImageResource(R.drawable.ic_business);
 			header.setOnClickListener(new View.OnClickListener() {
 				@Override

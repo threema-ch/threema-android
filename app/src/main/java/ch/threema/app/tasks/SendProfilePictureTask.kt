@@ -39,11 +39,10 @@ private val logger = LoggingUtil.getThreemaLogger("SendProfilePictureTask")
  */
 class SendProfilePictureTask(private val toIdentity: String, serviceManager: ServiceManager) :
     OutgoingProfilePictureTask(serviceManager) {
-    private val contactService = serviceManager.contactService
 
     override val type: String = "SendProfilePictureTask"
 
-    override suspend fun invoke(handle: ActiveTaskCodec) {
+    override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val data = contactService.updatedProfilePictureUploadData
         if (data.blobId == null) {
             logger.warn("Blob ID is null; cannot send profile picture")

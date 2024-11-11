@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="recording">Recording Message</string>
-	<string name="recording_stopped_title">Recording stopped</string>
-	<string name="recording_stopped_message">Would you like to send the recorded voice message now?</string>
-	<string name="recording_canceled">Recording was canceled due to an unknown error.</string>
-	<string name="cancel_recording">Discard recording</string>
-	<string name="cancel_recording_message">Do you really want to cancel and discard the recording?</string>
-	<string name="stop">Stop</string>
+    <string name="recording">Recording Message</string>
+    <string name="recording_stopped_title">Recording stopped</string>
+    <string name="recording_stopped_message">Would you like to send the recorded voice message now?</string>
+    <string name="recording_canceled">Recording was canceled due to an unknown error.</string>
+    <string name="cancel_recording">Discard recording</string>
+    <string name="cancel_recording_message">Do you really want to cancel and discard the recording?</string>
+    <string name="stop">Stop</string>
 </resources>

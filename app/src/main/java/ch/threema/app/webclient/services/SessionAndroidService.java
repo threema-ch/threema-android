@@ -21,27 +21,31 @@
 
 package ch.threema.app.webclient.services;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import org.slf4j.Logger;
 
 import androidx.annotation.MainThread;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
-import ch.threema.app.notifications.NotificationBuilderWrapper;
-import ch.threema.app.services.NotificationService;
+import ch.threema.app.notifications.NotificationChannels;
+import ch.threema.app.notifications.NotificationGroups;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.base.utils.LoggingUtil;
+
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 
 @MainThread
 public class SessionAndroidService extends Service {
@@ -52,6 +56,8 @@ public class SessionAndroidService extends Service {
 	public static final String ACTION_STOP = "stop";
 	public static final String ACTION_UPDATE = "update";
 	public static final String ACTION_FORCE_STOP = "force_stop";
+
+	private static final int FG_SERVICE_TYPE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING : 0;
 
 	private SessionService sessionService;
 
@@ -70,17 +76,19 @@ public class SessionAndroidService extends Service {
 		// Initialization of the session service may lock the app for a while, so we display
 		// a temporary notification before getting the service, in order to avoid a
 		// "Context.startForegroundService() did not then call Service.startForeground()" exception
-		final NotificationCompat.Builder builder = new NotificationBuilderWrapper(
-			this,
-			NotificationService.NOTIFICATION_CHANNEL_WEBCLIENT,
-			null
-		);
-		builder.setContentTitle(getString(R.string.webclient))
+		final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_WEBCLIENT)
+			.setContentTitle(getString(R.string.webclient))
 			.setContentText(getString(R.string.please_wait))
 			.setSmallIcon(R.drawable.ic_web_notification)
 			.setPriority(Notification.PRIORITY_LOW)
-			.setLocalOnly(true);
-		startForeground(WEBCLIENT_ACTIVE_NOTIFICATION_ID, builder.build());
+			.setLocalOnly(true)
+            .setGroup(NotificationGroups.WEB_DESKTOP_SESSIONS)
+            .setGroupSummary(false);
+		ServiceCompat.startForeground(
+			this,
+			WEBCLIENT_ACTIVE_NOTIFICATION_ID,
+			builder.build(),
+			FG_SERVICE_TYPE);
 		logger.info("startForeground called");
 
 		// Instantiate session service
@@ -177,30 +185,27 @@ public class SessionAndroidService extends Service {
 		Intent stopIntent = new Intent(this, StopSessionsAndroidService.class);
 		PendingIntent stopPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
 
-		NotificationCompat.Builder builder = new NotificationBuilderWrapper(this, NotificationService.NOTIFICATION_CHANNEL_WEBCLIENT, null);
-		builder.setContentTitle(getString(R.string.webclient))
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_WEBCLIENT)
+				.setContentTitle(getString(R.string.webclient))
 				.setContentText(ConfigUtils.getSafeQuantityString(this, R.plurals.webclient_running_sessions, amountOfRunningSessions, amountOfRunningSessions))
 				.setSmallIcon(R.drawable.ic_web_notification)
 				.setPriority(Notification.PRIORITY_LOW)
 				.setContentIntent(contentPendingIntent)
 				.setLocalOnly(true)
+                .setGroup(NotificationGroups.WEB_DESKTOP_SESSIONS)
+                .setGroupSummary(false)
 				.addAction(R.drawable.ic_close_white_24dp, getString(R.string.webclient_session_stop_all), stopPendingIntent);
 
 		return builder.build();
 	}
 
+	@SuppressLint("MissingPermission")
 	private void updateNotification() {
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		if (notificationManager != null) {
-			notificationManager.notify(WEBCLIENT_ACTIVE_NOTIFICATION_ID, getNotification());
-		}
+		NotificationManagerCompat.from(this).notify(WEBCLIENT_ACTIVE_NOTIFICATION_ID, getNotification());
 	}
 
 	private void removeNotification() {
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		if (notificationManager != null) {
-			notificationManager.cancel(WEBCLIENT_ACTIVE_NOTIFICATION_ID);
-		}
+		NotificationManagerCompat.from(this).cancel(WEBCLIENT_ACTIVE_NOTIFICATION_ID);
 	}
 
 	public static boolean isRunning() {

@@ -1,4 +1,4 @@
-⁉️|!?|?|interrobang|spørsmålstegn|tegnsetting|utropstegn og spørsmålstegn
+⁉️|!?|?|‽|interrobang|spørsmålstegn|tegnsetting|utropstegn og spørsmålstegn
 ℹ️|informasjon
 ↔️|pil venstre-høyre
 ↕️|pil opp og ned
@@ -14,7 +14,7 @@
 ☄️|komet|verdensrommet
 ☑️|✓|avkrysset boks|boks med hakemerke|hakemerke
 ☔|dråpe|klær|paraply med regndråper|regn|vær
-☕|drikke|kaffe|rykende|te|varm
+☕|drikke|kaffekopp|koffein|morgen|rykende|tekopp|varm
 ☘️|kløver|plante|trekløver
 ☠️|bein|dødningehode|fjes|hodeskalle|monster
 ☢️|radioaktivitet|radioaktivt
@@ -40,7 +40,7 @@
 ⚗️|destillasjonskolbe|destillerkolbe|kjemi|verktøy
 ⚙️|del|tannhjul|verktøy
 ✂️|klippe|saks|verktøy
-✅|✓|avkryssing|avmerking|hakemerke i firkant
+✅|✓|avkryssing|avmerking|hakemerke|utført
 ✈️|fly|fremkomstmiddel
 ✉️|brev|e-post|konvolutt
 ✒️|pennespiss|svart pennesplitt
@@ -52,10 +52,10 @@
 ✴️|*|åttetagget stjerne|stjerne
 ❄️|kaldt|snøfnugg|vær
 ❇️|*|gnist
-❓|?|rødt spørsmålstegn|spørsmålstegn
-❔|?|hvitt spørsmålstegn|spørsmål
-❕|!|hvitt utropstegn|utrop
-❗|!|rødt utropstegn|tegnsetting|utropstegn
+❓|?|rød|spørsmålstegn
+❔|?|hvit|spørsmålstegn
+❕|!|hvit|utropstegn
+❗|!|rød|utropstegn
 ❣️|tegnsetting|utropstegn med hjerte
 ❤️|hjerte|rødt hjerte
 ➕|+|addisjon|fortegn|matte|plusstegn|positivt
@@ -64,23 +64,23 @@
 ⤴️|pil som bøyer opp
 ⤵️|ned|pil som bøyer ned
 〰️|bølgestrek|bølget bindestrek|tegn for lang lyd
-㊗️|«gratulerer» på japansk|gratulerer|ideograf|japansk|祝
-㊙️|«hemmelig» på japansk|hemmelig|ideograf|japansk|秘
-😀|fjes|glisefjes
+㊗️|gratulerer|ideograf|japansk|knapp
+㊙️|hemmelig|ideograf|japansk|knapp
+😀|fint|fjes|flir|glad|glisefjes|latter|smilefjes|smiler|tenner
 😃|åpen|fjes|glisende fjes med vidåpne øyne|latter|munn|smilefjes med åpen munn
-😄|latter|med tenner|morsomt|smilefjes med åpen munn og smilende øyne
+😄|fjes|flir|glisende fjes med smilende øyne|latter|lol|med tenner|morsomt|øye|smilefjes med åpen munn og smilende øyne
 😁|fjes|glisefjes med smilende øyne|latter|lol|smilefjes
-😆|åpen munn|fjes|latter|smil med sammenknepne øyne
+😆|åpen munn|artig|fjes|flir|fornøyd|glad|gøy|haha|latter|ler|lol|lykkelig|morsomt|smil med sammenknepne øyne|smiler
 😅|åpen|glisende fjes som svetter|kaldsvette|munn|smil med svette|svett smil med åpen munn
-🤣|fjes|gulv|latter|ruller rundt på gulvet i latter
-😂|fjes med gledestårer|gledestårer|tårer
+🤣|artig|fjes|flirer|gøyalt|gulv|hæhæ|haha|hoho|latter|ler så jeg griner|lol|lykkelig|morsomt|roflmao|ruller rundt på gulvet i latter
+😂|fjes med gledestårer|flire|gledestårer|glise|gøy|hæhæ|haha|hoho|latter|ler så jeg griner|lol|morsomt|roflmao|tårer
 🙂|fjes|smiler litt
 🙃|fjes som er opp-ned|opp-ned
-🫠|fjes som smelter|forsvinner|går i oppløsning|væske
+🫠|fjes som smelter|flau|forsvinner|går i oppløsning|haha|lol|sarkasme|sarkastisk|smelter
 😉|blunkende ansikt|fjes
 😊|fjes|rødme|smil med smilende øyne|smilende øyne
 😇|engel|fjes|glorie|smil med glorie|uskyldig
-🥰|elsker|forelsket|kjærlighet|smilefjes med hjerter
+🥰|elsker|forelsket|kjærlighet|romantikk|smilefjes med hjerter
 😍|fjes|hjerteøyne|kjærlighet|øyne|smilefjes med hjerteøyne
 🤩|fjes|gliser|smil|stjerner i øynene
 😘|elsker deg|fjes|glad i deg|hjerte|kyss|slengkyss
@@ -88,7 +88,7 @@
 ☺️|fjes|omriss|smilefjes
 😚|elsker deg|fjes|glad i deg|kyss med lukkede øyne|lukkede øyne|trutmunn
 😙|fjes|kyss med smilende øyne|slengkyss|smilende øyne
-🥲|lettet|rørt|smilefjes med tåre|smiler|stolt|takknemlig|tåre
+🥲|gledestårer|lettet|rørt|smilefjes med tåre|smiler|stolt|takknemlig|tåre
 😋|deilig mat|fjes|mmm|nam-nam|sulten
 😛|fjes som rekker tunge|rekker tunge|tungen ut
 😜|blunker og rekker tunge|erte|fjes|rekke tunge med blunk|spøk
@@ -96,31 +96,33 @@
 😝|æsj|fælt|fjes|lukkende øyne|rekke tunge|tungen ut med øynene lukket
 🤑|fjes|munn|pengegal|penger
 🤗|fjes som gir klem|klem
-🤭|flire|hånden over munnen|ops
-🫢|fjes med åpne øyne og hånd over munnen|flau|forskrekkelse|overraskelse|redd
-🫣|fjes som titter frem bak hendene|klarer ikke dy seg|må se|stirre|titte
+🤭|flire|hand over munnen|hånd over munnen|handa over munnen|hånden over munnen|oi|oops|ops|ups
+🫢|fjes med åpne øyne og hånd over munnen|flau|forskrekkelse|gispe|omg|overraskelse|redd|sjokkert|stille
+🫣|engstelig|fjes som titter frem bak hendene|flau|gjemme seg|gjemmer seg|kikker|klarer ikke dy seg|må se|redd|sjenert|stirre|titte
 🤫|hysj|stillhet|vær stille
 🤔|fjes|tankefull|tenkefjes|tenker
-🫡|fjes som viser honnør|ja|militærhilsen|salutt
+🫡|fjes som viser honnør|honnør|ja|lykke til|militærhilsen|respekt|salutt|skal bli|yes ma’am|yes sir
 🤐|fjes med glidelåsmunn|glidelås|munn
-🤨|hevet øyenbryn|skeptisk|tvil
+🤨|hevet øyebryn|hevet øyenbryn|hm|hva|overrasket|skeptisk|tvil|uenig
 😐|fjes|ingen kommentar|nøytral|stum
 😑|fjes|ingen kommentar|nøytral|stum|uttrykksløs
 😶|fjes|ingen munn|uten munn
-🫥|fjes med stiplet omriss|forsvinner|gjemme seg|introvert|usynlig
+🫥|deprimert|forsvinner|gjemme seg|introvert|meh|samme det|skjult|smilefjes|stiplet|usynlig
 😶‍🌫️|distré|fjes i skyer|fraværende|uoppmerksom
 😏|fjes|lurt smil|selvtilfreds
 😒|fjes|misfornøyd|sur
-🙄|fjes|himler med øynene|øyne|ruller
+🙄|å nei|fjes|himler med øynene|hva i all verden?|oppgitt|øyne|ruller|utrolig
 😬|fjes|grimase
-😮‍💨|fjes|gispe|hviske|lettet|plystre|puste ut|puster ut|sukke
+😮‍💨|fjes|gisper|hviske|lettet|plystre|pust|sliten|sukk|utpust|utslitt
 🤥|fjes|løgn|lyver|pinocchio
-🫨|ansikt|fjes|jordskjelv|riste|sjokk|skjelvende
+🫨|ansikt|fjes|jordskjelv|omg|ør|overraskelse|panikk|rister|sjokk|skjelvende|sprøtt|vibrerer|wow
+🙂‍↔️|nei|ristende hode|rister på hodet
+🙂‍↕️|ja|nikkende hode|nikker
 😌|fjes|lettet
 😔|alvorlig|fjes|lei seg|tankefull
 😪|fjes|søvnig
 🤤|fjes|sikler
-😴|fjes|sovende fjes|sover|zzz
+😴|fjes|gjesp|god natt|godnatt|natt|snork|sove|søvn|trett|trøtt
 😷|bakteriemaske|fjes med munnbind|sykdom
 🤒|fjes med termometer|syk|termometer
 🤕|bandasjert hode|fjes|skadet
@@ -131,16 +133,16 @@
 🥶|blå|frost|fryser|istapper|kaldt fjes
 🥴|bølgete munn|brisen|full|svimmelt fjes|ujevne øyne
 😵|fjes|ør|svimmel
-😵‍💫|fjes med spiraløyne|hypnotisert|problem|spiral|svimmel|uææ
+😵‍💫|fjes|forvirret|hypnotisert|øyne|problem|spiral|svimmel|uææ
 🤯|eksploderende hode|forbløffet|overrasket|sjokkert
 🤠|cowboy|cowgirl|fjes med cowboyhatt|hatt
-🥳|feiring|fest|fløyte|hatt|partyfjes
-🥸|briller|fjes med forkledning|forkledning|inkognito|nese
+🥳|bursdag|feiring|fest|fløyte|fødselsdag|glad|gratulerer|hatt|hurra|jippi|partyfjes
+🥸|bart|briller|fjes|forkledning|inkognito|maske|nese|øyenbryn
 😎|fjes|kul|lyst|smilefjes med solbriller|solbriller
-🤓|fjes|nerdefjes
-🧐|fjes med monokkel|formell|monokkel|stiv
+🤓|begavet|briller|ekspert|fjes|fornøyd nerdefjes|intelligent|lur|nerdefjes|smart
+🧐|fancy|fjes med monokkel|formell|monokkel|rik|stiv
 😕|fjes|forvirret
-🫤|fjes med diagonal munn|fjes med skråstrek|meh|skeptisk|skuffet|usikker
+🫤|fjes|forvirret|frustrert|meh|næsj|skeptisk|skrått|skuffet|tja|tvil|uansett|usikker
 😟|bekymret|fjes
 🙁|fjes|litt surt fjes|trist
 😮|åpen munn|fjes|forbauset
@@ -148,7 +150,7 @@
 😲|fjes|overrasket|sjokkert|stum
 😳|fjes|rødmer
 🥺|bedende fjes|nåde|trygler|valpeøyne
-🥹|fjes som holder tilbake tårene|gråte|motstå|rørt|sint|stolt|trist
+🥹|ååå|beundring|følelser|glede|gråte|rørt|stolt|takknemlig|tårer|trist
 😦|fjes|oppgitt|overrasket|sjokkert med åpen munn
 😧|fjes|lider|pine|smerte
 😨|fjes|frykt|redd|skremt
@@ -163,7 +165,7 @@
 😓|ansikt|kaldsvetter
 😩|fjes|sliten|trøtt
 😫|fjes|overtrøtt|sliten|søvnig|trøtt fjes
-🥱|gjespende fjes|kjedelig|sliten
+🥱|gjespende fjes|kjedelig|sliten|sove|søvnig|trøtt
 😤|fjes|jeg vant|triumferende
 😡|fjes|rasende|raseri|rødt|sinna|sint|sur
 😠|fjes|raseri|sinna|sint|sur
@@ -196,23 +198,23 @@
 💝|bånd|følelser|hjerte med bånd|valentine
 💖|følelser|kjærlighet|skinnende hjerte
 💗|følelser|kjærlighet|nervøs|spent|voksende hjerte
-💓|bankende|følelser|hjerte|kjærlighet
+💓|bankende|følelser|hjertebank|kjærlighet|pulserende
 💞|følelser|hjerter|kjærlighet|snurrende|søtt
 💕|elskere|følelser|kjærlighet|to hjerter
 💟|hjertedekorasjon
 💔|brudd|følelser|hjerte|knust hjerte
 ❤️‍🔥|brann|hellig hjerte|hjerte i brann|ild|kjærlighet|lidenskap
 ❤️‍🩹|bedre|bra|forbedring|komme seg|lindret hjerte|lindring|sterkere
-🩷|elsker|hjerte|liker|rosa|søtt
+🩷|elsker|følelse|hjerte|kjærlighet|liker|rosa|søtt|spesiell
 🧡|følelser|hjerte|oransje
 💛|følelser|gult hjerte|hjerte
 💚|følelser|grønn|grønt hjerte|hjerte
 💙|blått hjerte|følelser|hjerte
-🩵|blågrønt|cyan|hjerte|lyseblått
+🩵|blågrønt|cyan|følelse|himmelblå|hjerte|kjærlighet|liker|lyseblått|søtt|spesiell
 💜|følelser|hjerte|lilla
 🤎|brunt hjerte|hjerte
 🖤|hjerte|ond|svart
-🩶|grått|hjerte|skifer|sølv
+🩶|følelse|grått|hjerte|kjærlighet|skifer|sølv|spesiell
 🤍|hjerte|hvitt hjerte
 💋|kyssemerke|lepper|romantikk
 💯|100|full pott|hundre poeng|poeng
@@ -227,26 +229,26 @@
 🗨️|dialog|snakkeboble mot venstre|tale
 🗯️|ballong|boble|sint snakkeboble mot høyre|sur
 💭|boble|tankeboble|tegneserie
-💤|følelse|snorker|sover|soving|tegneserie|zzz
-👋|hånd|vinkende hånd|vinking
+💤|følelse|god natt|snorker|sover|soving|søvnig|tegneserie|trett|trøtt|zzz
+👋|er du der?|ha det|hallo|hånd|hei|hilse|sees|ses|vi sees|vi ses|vinkende hånd|vinking
 🤚|håndbak|løftet
 🖐️|finger|flat hånd med spredte fingre|hånd|spredt
 ✋|flat hånd|håndflate|hevet hånd
 🖖|finger|hånd|spock|vulcan-hilsen
-🫱|hånd mot høyre|høyre
-🫲|hånd mot venstre|venstre
-🫳|avfeie|håndflaten ned|husj|slippe
-🫴|gripe|håndflaten opp|invitere|kalle på|lokke|tilby
-🫷|håndflate hevet mot venstre|high five|mot venstre|nekte|skyv|stopp|vent
-🫸|håndflate hevet mot høyre|high five|mot høyre|nekte|skyv|stopp|vent
-👌|hånd|ok-hånd|tegn
-🤌|fingrene sammen|hånd med fingertuppene sammen|sarkastisk|spørsmål
-🤏|hånd som klyper|liten
+🫱|håndhilse|håndtrykk|høyrevendt|rekke ut
+🫲|håndhilse|håndtrykk|rekke ut|venstrevendt
+🫳|avfeie|hand|hånd|husj|ned|opp|plukke|slapp|slippe
+🫴|fortell meg|gripe|håndflaten opp|holde|invitere|kalle på|kom|løfte|lokke|tilbud|tilby|vet ikke
+🫷|håndflate hevet mot venstre|high five|high-five|holdt|mot venstre|nekte|skyv|stopp|venstre|vent
+🫸|håndflate hevet mot høyre|high five|high-five|holdt|høyre|mot høyre|nekte|skyv|stopp|vent
+👌|ålreit|bra|glimrende|greit|hand|hånd|klart|kult|okay|perfekt|supert
+🤌|betal|fingertupper|fingre|hand|hånd|penger|sarkastisk|spørsmål
+🤏|hand|hånd|klype|knipe|lite|smått
 ✌️|hånd|peace-tegn|seierstegn
-🤞|finger|hånd|hell|kryssede fingre
-🫰|dyrt|hånd med pekefinger og tommel krysset|hjerte|kjærlighet|knipse|penger
+🤞|finger|flaks|hand|hånd|hell|kryss|lykke|tvi
+🫰|dyrt|hand|hånd|knips|kostbar|kroner|pekefinger|penger|tommel
 🤟|glad i deg-tegn|hånd|ily|tegnspråk
-🤘|finger|hånd|horn|rock’n’roll
+🤘|bra|finger|hånd|horn|kult|metal|rock’n’roll|rocker|to fingre
 🤙|hånd|ring meg-hånd|ringe
 👈|finger|hånd|pekende finger|peker mot venstre – bakhånd|peker venstre
 👉|finger|hånd|pekende finger|peker mot høyre – bakhånd|peker opp
@@ -254,17 +256,17 @@
 🖕|finger|hånd|kropp|langfinger|vise fingeren
 👇|finger|hånd|pekende finger|peker ned – bakhånd
 ☝️|finger|hånd|kropp|opp|pekefinger|peker opp
-🫵|deg|pekefinger peker på leseren|peker på deg|uncle sam
-👍|hånd|tegn|tommel opp
+🫵|deg|der|du|finger|hand|hånd|pekefinger|stikk
+👍|bra|fint|flott|greit|ja|klart|okay|okei|tommel|topp
 👎|hånd|tegn|tommel ned
 ✊|hånd|hevet knyttneve|knyttet neve|neve
-👊|hånd|knyttneve|neve
+👊|enig|hand|hånd|knyttet neve|knyttneve|kompis|neve|stein
 🤛|hånd|knyttneve mot venstre|neve|venstrevendt
 🤜|hånd|høyrevendt|knyttneve mot høyre|neve
 👏|hånd|hender|klappende hender|klapping
 🙌|begge hender|feirer|feiring|hånd|hevede hender|rekker begge armene i været
-🫶|hender som lager hjerte|hjertehender|kjærlighet
-👐|åpne|hånd|hender
+🫶|<3|elsker deg|hender som lager hjerte|hjertehender|kjærlighet
+👐|åpen hand|åpen hånd|åpne|hand|hånd|hender|klem
 🤲|ber|bønn|håndflatene sammen
 🤝|avtale|håndhilse|håndtrykk|møte
 🙏|ber|bevegelse|bønn|foldede hender|hånd
@@ -277,64 +279,64 @@
 🦵|bein|lem|sparke
 🦶|fot|sparke|tråkke
 👂|kropp|øre
-🦻|øre med høreapparat|svak hørsel|tilgjengelighet
+🦻|hørselshemmet|øre med høreapparat|svak hørsel|tilgjengelighet
 👃|fjes|kropp|nese
-🧠|hjerne|intelligent
-🫀|hjerte-kar|hjertemuskel|hjerteslag|kardiologi|muskel|organ|puls|senter
-🫁|innpust|lunger|organ|puste|respirasjon|utpust
+🧠|hjerne|intelligent|smart
+🫀|anatomi|blodpumpe|hjerte-kar|hjertemuskel|hjerteslag|kardiologi|muskel|organ|puls
+🫁|åndedrett|innpust|lunger|organ|puste|respirasjon|utpust
 🦷|tannlege
-🦴|knokkel|skjelett
+🦴|bein|hundebein|knokkel|skjelett
 👀|fjes|øye|øyne
 👁️|kropp|øye
 👅|fjes|kropp|tunge
 👄|fjes|kropp|lepper|munn
-🫦|bekymret|bite seg i leppa|bite seg i leppen|flørte|nervøs|redd|ukomfortabel
+🫦|bekymre seg|bekymret|bite seg i leppa|bite seg i leppen|flørte|kyss|leppestift|nervøs|redd|sexy|ukomfortabel
 👶|baby|menneske|ung
 🧒|barn|kjønnsnøytral|menneske|ung
 👦|gutt|menneske|ung
 👧|jente|jomfruen|menneske|stjernebilde|stjernetegn|ung
 🧑|kjønnsnøytral|menneske|person|voksen
-👱|blond person|hår|menneske|person: blond
+👱|ansikt|blond|fjes|hår|lyshåret|menneske|person
 👨|mann|menneske|voksen
 🧔|mann med skjegg|mann: skjegg|person: skjegg|skjegg
 🧔‍♂️|mann: skjegg|skjegg
-👱‍♂️|blond|hår|mann: blond
+👱‍♂️|blond|hår|lyshåret|mann
 👩|kvinne|menneske|voksen
 🧔‍♀️|kvinne: skjegg|skjegg
-👱‍♀️|blondine|hår|kvinne: blond
-🧓|eldre voksen|gammel|kjønnsnøytral|menneske|voksen
-👴|eldre|mann|menneske
-👵|eldre|kvinne|menneske
-🙍|mimikk|rynker brynene|rynker pannen
+👱‍♀️|blondine|hår|kvinne|lyshåret
+🧓|eldre|gammel|menneske|senior|voksen
+👴|bestefar|eldre|fyr|gubbe|klok|mann|mister håret|morfar
+👵|bestemor|dame|eldre|gammel|kjerring|klok|kvinne|mormor
+🙍|frustrert|ikke fornøyd|irritert|mimikk|misfornøyd|person|rynker brynene|rynker pannen|skuffet|sur
 🙍‍♂️|mann som rynker brynene|mimikk|rynker pannen|skeptisk
 🙍‍♀️|kvinne som rynker brynene|mimikk|rynker pannen|skeptisk
-🙎|furter|furting|mimikk|surmuling
+🙎|furter|furting|grimase|mimikk|opprørt|person|skuffet|surmuling
 🙎‍♂️|furting|mann som furter|mimikk|surmuling
 🙎‍♀️|furting|kvinne som furter|mimikk|surmuling
-🙅|forbudt|gestikulerer nei|ikke|mimikk|nei
+🙅|forbudt|hånd|ikke lov|mimikk|nei|person|uaktuelt
 🙅‍♂️|avbryt|forbudt|mann som gestikulerer nei|nei|stopp
 🙅‍♀️|avbryt|forbudt|kvinne som gestikulerer nei|nei|stopp
-🙆|gestikulerer ok|greit|ok
+🙆|gestikulerer|greit|hånd|ok|person
 🙆‍♂️|greit|mann som gestikulerer ok|ok
 🙆‍♀️|greit|kvinne som gestikulerer ok|ok
-💁|hjelpende person|informasjon|menneske
+💁|hånd|hjelpende|informasjon|menneske|person|sarkasme|sarkastisk|seriøst|sladder
 💁‍♂️|hjelpende mann|informasjon|mann
 💁‍♀️|hjelpende kvinne|informasjon|kvinne
-🙋|hånd|person|rekker opp hånden
+🙋|hand|hånd|her|jeg|meg|opp|person|rekke opp|spørsmål|svaret|vet
 🙋‍♂️|mann som rekker opp hånden|rekke opp hånden
 🙋‍♀️|kvinne som rekker opp hånden|rekke opp hånden
 🧏|døv person|høre|øre|tilgjengelighet
 🧏‍♂️|døv|mann
 🧏‍♀️|døv|kvinne
-🙇|beklagelse|beklager|bukker|unnskyld
+🙇|angrer|beklager|bukke|meditasjon|meditere|person|sorry|synd|tilgi|unnskyld
 🙇‍♂️|beklagelse|bukkende mann|mann|unnskyld
 🙇‍♀️|beklagelse|bukkende kvinne|kvinne|unnskyld
-🤦|ansikt|facepalm|fjes|irritasjon|oppgitt|slår hånden mot pannen|vantro
-🤦‍♂️|ansikt|facepalm|fjes|irritasjon|mann som slår hånden mot pannen|oppgitt|vantro
-🤦‍♀️|ansikt|facepalm|fjes|irritasjon|kvinne som slår hånden mot pannen|oppgitt|vantro
-🤷|likegyldighet|skuldertrekning|trekker på skuldrene|tvil
-🤷‍♂️|likegyldighet|mann som trekker på skuldrene|skuldertrekning|tvil
-🤷‍♀️|kvinne som trekker på skuldrene|likegyldighet|skuldertrekning|tvil
+🤦|å nei|ansikt|facepalm|fjes|hånd|ikke igjen|irritasjon|omg|oppgitt|person|sjokk|slår hånden mot pannen|vantro
+🤦‍♂️|å nei|ansikt|facepalm|fjes|hånd|ikke igjen|irritasjon|mann som slår hånden mot pannen|omg|oppgitt|person|sjokk|vantro
+🤦‍♀️|å nei|ansikt|facepalm|fjes|hånd|ikke igjen|irritasjon|kvinne som slår hånden mot pannen|omg|oppgitt|person|sjokk|vantro
+🤷|hand|hånd|idk|kanskje|likegyldighet|person|skuldertrekning|trekker på skuldrene|tvil|vet ikke
+🤷‍♂️|hand|hånd|kanskje|likegyldighet|mann som trekker på skuldrene|person|skuldertrekning|tvil|vet ikke
+🤷‍♀️|hand|hånd|kanskje|kvinne som trekker på skuldrene|likegyldighet|person|skuldertrekning|tvil|vet ikke
 🧑‍⚕️|doktor|helsearbeider|helsevesen|lege|sykepleier|terapeut
 👨‍⚕️|doktor|helsevesen|lege|mannlig helsearbeider|sykepleier|terapeut
 👩‍⚕️|doktor|helsevesen|kvinnelig helsearbeider|lege|sykepleier|terapeut
@@ -353,24 +355,24 @@
 🧑‍🍳|kokk|matlaging|restaurant
 👨‍🍳|mannlig kokk|matlaging|restaurant
 👩‍🍳|kvinnelig kokk|matlaging|restaurant
-🧑‍🔧|bil|elektriker|håndverker|mekaniker|motor|rørlegger
-👨‍🔧|bil|elektriker|håndverker|mannlig mekaniker|mekaniker|motor|rørlegger
-👩‍🔧|bil|elektriker|håndverker|kvinnelig mekaniker|mekaniker|motor|rørlegger
+🧑‍🔧|elektriker|handverker|håndverker|mekaniker|rørlegger
+👨‍🔧|bil|elektriker|handverker|håndverker|mann|maskin|mekaniker|motor|rørlegger
+👩‍🔧|bil|elektriker|handverker|håndverker|kvinne|maskin|mekaniker|motor|rørlegger
 🧑‍🏭|arbeider|fabrikk|industriarbeider|produksjon
-👨‍🏭|arbeider|fabrikk|industriarbeider|mannlig industriarbeider|produksjon
-👩‍🏭|fabrikk|industri|kvinnelig industriarbeider|produksjon
+👨‍🏭|arbeider|fabrikk|industri|mann|produksjon|sveiser|verft
+👩‍🏭|arbeider|fabrikk|industri|kvinne|produksjon|sveiser|verft
 🧑‍💼|kontorarbeider|leder|næringsliv
 👨‍💼|kontor|leder|mannlig kontorarbeider|næringsliv
 👩‍💼|kontor|kvinnelig kontorarbeider|leder|næringsliv
 🧑‍🔬|biologi|forsker|forskning|kjemi|laboratorium|medisin|vitenskap
-👨‍🔬|kjemi|laboratorium|mannlig forsker|vitenskap
-👩‍🔬|kjemi|kvinnelig forsker|laboratorium|vitenskap
+👨‍🔬|biologi|forsker|forskning|kjemi|laboratorium|mann|medisin|vitenskap
+👩‍🔬|biologi|forsker|forskning|kjemi|kvinne|laboratorium|medisin|vitenskap
 🧑‍💻|data|it-ekspert|koding|programvare|teknologi
 👨‍💻|data|it|koding|mannlig it-ekspert|programvare|teknologi
 👩‍💻|data|it|koding|kvinnelig it-ekspert|programvare|teknologi
 🧑‍🎤|artist|konsert|rock|sanger
-👨‍🎤|artist|konsert|mannlig artist|sanger
-👩‍🎤|artist|konsert|kvinnelig artist|rock|sanger
+👨‍🎤|artist|konsert|mann|pop|rock|sanger|stjerne|underholder|underholdning
+👩‍🎤|artist|konsert|kvinne|pop|rock|sanger|stjerne|underholder|underholdning
 🧑‍🎨|kunstner|maler
 👨‍🎨|kunstner|maler|mannlig kunstner
 👩‍🎨|kunstner|kvinnelig kunstner|maler
@@ -383,79 +385,79 @@
 🧑‍🚒|brannbil|brannkonstabel|brannmann|brannvesenet
 👨‍🚒|brannbil|brannkonstabel|brannmann|brannvesenet|mannlig brannkonstabel
 👩‍🚒|brannbil|brannkonstabel|brannmann|brannvesenet|kvinnelig brannkonstabel
-👮|betjent|menneske|politibetjent
+👮|arrestere|betjent|menneske|pågripe|politibetjent|purk|spaner
 👮‍♂️|betjent|mannlig politibetjent|politibetjent
-👮‍♀️|betjent|kvinnelig politibetjent|politibetjent
-🕵️|detektiv|spion
-🕵️‍♂️|etterforske|forbrytelse|mannlig detektiv|privatdetektiv
-🕵️‍♀️|etterforske|forbrytelse|kvinnelig detektiv|privatdetektiv
+👮‍♀️|betjent|kvinnelig politibetjent|person|politibetjent|politidame|politikvinne
+🕵️|detektiv|etterforsker|spion
+🕵️‍♂️|etterforsker|forbrytelse|mannlig detektiv|privatdetektiv|spion
+🕵️‍♀️|detektiv|etterforske|forbrytelse|krim|kvinne|spion
 💂|gardist|menneske|vakt
 💂‍♂️|gardist|mannlig gardist|vakt
 💂‍♀️|gardist|kvinnelig gardist|vakt
-🥷|kampkunst|kriger|ninja|skjult
-👷|anleggsarbeider|arbeider|hjelm|ingeniør|menneske
+🥷|hemmelig|kampkunst|kampsport|kriger|ninja|skjult|slåss|snikende
+👷|anleggsarbeider|arbeider|hjelm|ingeniør|menneske|person|refleksvest|vernehjelm
 👷‍♂️|anlegg|arbeider|bygg|hjelm|ingeniør|mannlig anleggsarbeider
 👷‍♀️|anlegg|arbeider|bygg|hjelm|ingeniør|kvinnelig anleggsarbeider
-🫅|adel|kongelig|majestetisk|monark|person med krone
+🫅|adelig|høyhet|kongelig|krone|majestetisk|monark|person|royal
 🤴|prins
 👸|eventyr|fantasy|menneske|prinsesse
-👳|menneske|turbankledd person
+👳|hodeplagg|person|turbankledd
 👳‍♂️|mann|turbankledd mann
 👳‍♀️|kvinne|turbankledd kvinne
 👲|gua pi mao|hatt|lue|mann med kinesisk lue|menneske
 🧕|hijab|hodeskjerf|hodeslør|kvinne med hodeslør|muslim
-🤵|brudgom|person i smoking|smoking
-🤵‍♂️|mann i smoking|smoking
-🤵‍♀️|kvinne i smoking|smoking
+🤵|bryllup|formelt|person|smoking
+🤵‍♂️|brudgom|bryllup|formelt|mann|smoking
+🤵‍♀️|bryllup|formelt|kvinne|smoking
 👰|brud med slør|bryllup|mennesker|person med slør|slør
 👰‍♂️|mann med slør|slør
 👰‍♀️|kvinne med slør|slør
 🤰|gravid|kvinne
-🫃|full mage|gravid|mann|mett|oppblåst
-🫄|full mage|gravid person|kjønnsnøytral|mett|oppblåst
+🫃|gravid|mann|mett|oppblåst|overspise|person|stappmett
+🫄|gravid|mett|oppblåst|overspise|person|stappmett
 🤱|ammer|amming|baby|bryst|morsmelk
-👩‍🍼|baby|kvinne som mater baby|mat|tåteflaske
-👨‍🍼|baby|mann som mater baby|mat|tåteflaske
-🧑‍🍼|baby|mat|person som mater baby|tåteflaske
+👩‍🍼|babyflaske|barn|kvinne|mamma|mat|mor|tåteflaske
+👨‍🍼|babyflaske|barn|far|mann|mat|pappa|tåteflaske
+🧑‍🍼|baby|forelder|mate|nursing|nyfødt|spedbarn|tåteflaske
 👼|ansikt|babyengel|engel|eventyr
 🎅|feiring|julenissen|nissefar|nissen
 🤶|julenissemor|mor|nisse
-🧑‍🎄|feiring|julenisse|nisse|person
-🦸|god|heltinne|superhelt|superkrefter
+🧑‍🎄|feiring|julenisse|nisselue|person
+🦸|helt|person|superkraft|superkrefter
 🦸‍♂️|god|helt|mannlig superhelt|superkrefter
 🦸‍♀️|god|heltinne|kvinnelig superhelt|superkrefter
-🦹|kriminell|ond|skurk|superkrefter|superskurk
+🦹|kriminell|ond|person|skurk|superkrefter|superskurk
 🦹‍♂️|kriminell|mannlig superskurk|ond|skurk|superkrefter
 🦹‍♀️|kriminell|kvinnelig superskurk|ond|skurk|superkrefter
-🧙|heks|trollkvinne|trollmann|trollperson
+🧙|fantasy|heks|magiker|person|rollespill|stav|trolldom|trollkvinne|trollmann|trollperson
 🧙‍♂️|heksemester|trollmann
 🧙‍♀️|heks|trollkvinne
-🧚|fe|oberon|puck|titania
+🧚|eventyr|fantasi|fantasy|fe|myte|person|vinger
 🧚‍♂️|fe|mannlig fe|oberon|puck
 🧚‍♀️|fe|kvinnelig fe|titania
-🧛|dracula|vampyr|vandød
+🧛|blod|dracula|halloween|huggtenner|kostyme|person|skummel|vampyr|vandød
 🧛‍♂️|dracula|mannlig vampyr|vandød
 🧛‍♀️|kvinnelig vampyr|vandød
-🧜|havfrue|havkvinne|havmann|havperson
-🧜‍♂️|havmann|triton
-🧜‍♀️|havfrue|havkvinne
-🧝|alv|magi
+🧜|ariel|eventyr|havfolk|havfrue|havkvinne|havmann|havperson|havvesen|person|sirene|trident
+🧜‍♂️|eventyr|fork|havmann|neptun|poseidon|sirene|sjø
+🧜‍♀️|havfrue|havkvinne|sirene
+🧝|alv|eventyr|fantasy|folklore|magisk|mystisk|myte|mytologi
 🧝‍♂️|magi|mannlig alv
 🧝‍♀️|kvinnelig alv|magi
-🧞|ånd|djinn
-🧞‍♂️|djinn|mannlig ånd
-🧞‍♀️|djinn|kvinnelig ånd
-🧟|udød|vandød|zombie
+🧞|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|ønsker
+🧞‍♂️|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|mann|ønsker
+🧞‍♀️|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|kvinne|ønsker
+🧟|apocalypse|dead|halloween|skrekk|skummel|udød|vandød|walking|zombie
 🧟‍♂️|mannlig zombie|udød|vandød
 🧟‍♀️|kvinnelig zombie|udød|vandød
-🧌|eventyr|fantasi|fantasy|monster|troll
-💆|ansiktsmassasje|massasje|skjønnhetssalong
+🧌|eventyr|fantasi|fantasy|monster|nettroll|troll
+💆|ansiktsmassasje|anspent|avslapning|hodepine|massasje|person|skjønnhetssalong|terapi
 💆‍♂️|ansikt|avslapning|hodemassasje|mann som får ansiktsmassasje|massasje|velvære
 💆‍♀️|ansikt|avslapning|hodemassasje|kvinne som får ansiktsmassasje|massasje|velvære
-💇|frisør|hårklipp|salong|skjønnhetssalong
-💇‍♂️|frisør|hårklipp|mann som får hårklipp|sveis
+💇|frisørsalong|frisyre|hårklipp|person|salong|skjønnhetssalong
+💇‍♂️|frisør|hårklipp|klipp|mann som får hårklipp|sveis
 💇‍♀️|frisør|frisyre|hårklipp|kvinne som får hårklipp
-🚶|fotgjenger|gående
+🚶|fotgjenger|fottur|gående|går|gåtur|person|spasere|steg|tur
 🚶‍♂️|fotgjenger|gå|mannlig fotgjenger|tur
 🚶‍♀️|fotgjenger|gå|kvinnelig fotgjenger|tur
 🧍|person som står|stå
@@ -468,85 +470,89 @@
 👨‍🦯|blind|mann med blindestokk|tilgjengelighet
 👩‍🦯|blind|kvinne med blindestokk|tilgjengelighet
 🧑‍🦼|person i motorisert rullestol|rullestol|tilgjengelighet
-👨‍🦼|mann i motorisert rullestol|rullestol|tilgjengelighet
-👩‍🦼|kvinne i motorisert rullestol|rullestol|tilgjengelighet
+👨‍🦼|mann|motorisert|rullestol|tilgjengelighet
+👩‍🦼|kvinne|motorisert|rullestol|tilgjengelighet
 🧑‍🦽|person i manuell rullestol|rullestol|tilgjengelighet
-👨‍🦽|mann i manuell rullestol|rullestol|tilgjengelighet
-👩‍🦽|kvinne i manuell rullestol|rullestol|tilgjengelighet
-🏃|jogger|jogging|løper|løping|maraton|sport
+👨‍🦽|mann|manuell|rullestol|tilgjengelighet
+👩‍🦽|kvinne|manuell|rullestol|tilgjengelighet
+🏃|fart|fort|idrett|jogger|jogging|løp|maraton|person|rask|sport
 🏃‍♂️|jogge|løpe|mannlig løper|maraton
 🏃‍♀️|jogge|kvinnelig løper|løpe|maraton
 💃|dansende kvinne|kvinne
 🕺|dansende mann|mann
 🕴️|business|dress|forretningsmann|mann|svevende mann i dress
-👯|danser|fest|hareører|menneske|personer med kaninører
+👯|bestevenner|danser|fest|hareører|identiske personer|kaninører|menneske|par|sjelevenner|tvillinger
 👯‍♂️|danser|hareører|mann|menn med kaninører
 👯‍♀️|danser|hareører|kvinner med kaninører
-🧖|dampbad|person i badstu|sauna
+🧖|avslapping|badstue|dampbad|luksus|person|sauna|spa
 🧖‍♂️|dampbad|mann i badstu|sauna
 🧖‍♀️|dampbad|kvinne i badstu|sauna
-🧗|klatrer|klatring
+🧗|bestige|bestigning|fjell|klatre|klatring|person|sikring|sport
 🧗‍♂️|klatring|mannlig klatrer
 🧗‍♀️|klatring|kvinnelig klatrer
 🤺|fekter|fekting|person|sport|sverd
 🏇|galopp|hesteveddeløp|jockey|løp|sport|veddeløpshest
 ⛷️|skiløper|snø
 🏂|snøbrettkjøring|snowboarder|snowboarding|vintersport
-🏌️|ball|golfspiller
+🏌️|ball|caddie|caddy|drive|driving range|golfball|golfer|golfslag|golfspiller|green|pga|putte|sport|tee
 🏌️‍♂️|golfspiller|mannlig golfspiller
 🏌️‍♀️|golfspiller|kvinnelig golfspiller
-🏄|sport|surfer|surfing
+🏄|hav|sport|strand|surfebrett|surfer|surfing
 🏄‍♂️|mannlig surfer|surfing
 🏄‍♀️|kvinnelig surfer|surfing
-🚣|båt|fartøy|person i robåt
+🚣|åre|båt|elv|fartøy|fiske|innsjø|kano|padle|person i robåt|rafting|robåt|transport|vann
 🚣‍♂️|båt|mann i robåt|robåt
 🚣‍♀️|båt|kvinne i robåt|robåt
-🏊|sport|svømmer|svømming
+🏊|crawl|fristil|frisvømming|krål|person|sport|svømmer|svømming|triatlon
 🏊‍♂️|mannlig svømmer|svømme|svømming
 🏊‍♀️|kvinnelig svømmer|svømme|svømming
-⛹️|ballsport|person med ball
-⛹️‍♂️|ballsport|mann med ball
-⛹️‍♀️|ballsport|kvinne med ball
-🏋️|løfter|vektløfter
-🏋️‍♂️|bodybuilding|mannlig vektløfter|vektløfter
-🏋️‍♀️|bodybuilding|kvinnelig vektløfter|vektløfting
-🚴|sykkel|sykle|syklist
+⛹️|atletisk|ball|basketball|drible|kaste|kurv|mesterskap|person|spiller
+⛹️‍♂️|atletisk|ball|basketball|drible|kaste|kurv|mann|mesterskap|spiller
+⛹️‍♀️|atletisk|ball|basketball|drible|kaste|kurv|kvinne|mesterskap|spiller
+🏋️|bodybuilder|kroppsbygger|løfte vekter|løfter|person|sport|styrke|trening|vektløfter|vektstang
+🏋️‍♂️|bodybuilding|mannlig vektløfter|styrke|trening|vekter|vektløfter
+🏋️‍♀️|bodybuilding|kvinnelig vektløfter|styrke|trening|vekter|vektløfting
+🚴|sport|sykkelløp|sykle|syklist
 🚴‍♂️|mannlig syklist|sykkel|sykle
 🚴‍♀️|kvinnelig syklist|sykkel|sykle
-🚵|mountainbike|sykkel|terrengsykkel|terrengsyklist
+🚵|atletisk|mountainbike|sport|sykkel|sykle|syklist|terrengsykkel|terrengsyklist
 🚵‍♂️|mann på terrengsykkel|mountainbike|sykkel|terrengsykkel
 🚵‍♀️|kvinne på terrengsykkel|mountainbike|sykkel|terrengsykkel
-🤸|gymnastikk|person|slå hjul|sport
-🤸‍♂️|mann som slår hjul|slå hjul
-🤸‍♀️|kvinne som slår hjul|slå hjul
-🤼|brytere|bryting|person|sport
-🤼‍♂️|bryter|mannlige brytere|menn
-🤼‍♀️|bryter|kvinnelige brytere|kvinner
-🤽|person|polo|sport|vannpolo
-🤽‍♂️|mannlig vannpolospiller|vannpolo
-🤽‍♀️|kvinnelig vannpolospiller|vannpolo
-🤾|ball|håndball|person|sport
+🤸|aktiv|flikkflakk|glad|gymnastikk|hjul|person|slå|sport|turn
+🤸‍♂️|aktiv|begeistret|glad|gymnastikk|mann som slår hjul|person|slå hjul|turn
+🤸‍♀️|aktiv|begeistret|glad|gymnastikk|kvinne som slår hjul|person|slå hjul|turn
+🤼|bryter|bryting|duell|personer|ring|sport|turnering|wrestling
+🤼‍♂️|bryter|bryting|duell|menn|ring|sport|turnering|wrestling
+🤼‍♀️|bryter|bryting|duell|kvinne|personer|sport|turnering|wrestling
+🤽|person|polo|sport|svømming|vannpolo
+🤽‍♂️|mann|person|polo|sport|svømmer|vannpolo|vannsport
+🤽‍♀️|kvinne|person|polo|sport|svømmer|vannpolo|vannsport
+🤾|ball|håndball|idrett|kaste|person|skudd|sport
 🤾‍♂️|håndball|mannlig håndballspiller
-🤾‍♀️|håndball|kvinnelig håndballspiller
-🤹|balanse|ferdighet|multitasking|sjonglering
-🤹‍♂️|mannlig sjonglør|multitasking|sirkus|sjonglere
-🤹‍♀️|kvinnelig sjonglør|multitasking|sirkus|sjonglere
-🧘|lotusstilling|meditasjon|yoga
+🤾‍♀️|ball|damehåndball|håndballspiller|hoppskudd|kaste|kvinnehåndball|sport
+🤹|balanse|ferdighet|kunst|multitasking|sirkus|sjonglere|sjonglering|sjonglør|underholdning
+🤹‍♂️|balanse|ferdighet|kunst|mann|multitasking|sirkus|sjonglere|sjonglering|sjonglør|underholdning
+🤹‍♀️|balanse|ferdighet|kunst|kvinne|multitasking|sirkus|sjonglere|sjonglering|sjonglør|underholdning
+🧘|avslapning|bena i kryss|fredfull|lotusstilling|meditasjon|meditering|slappe av|yoga|zen
 🧘‍♂️|mann i lotusstilling|meditasjon|yoga
 🧘‍♀️|kvinne i lotusstilling|meditasjon|yoga
 🛀|badekar|person i badekar
-🛌|hotell|person i seng|sove
+🛌|god natt|hotell|overnatting|person i seng|sengetid|sove
 🧑‍🤝‍🧑|hånd|holde hender|par|personer som leier
-👭|hånd|holder hender|kvinner som leier|par
-👫|hånd|holder hender|kvinne|mann og kvinne som leier|par
-👬|hånd|holde hender|mann|menn som leier|par|stjernetegn|tvillingene
+👭|bestevenner|bff|damer|dating|forelsket|hånd|hender|holde|homo|jenter|kjærester|kvinner|lesbisk|lhbt|par|skeiv|søstre|venner|vennskap
+👫|bestevenner|bff|dating|forelsket|hånd|holder hender|kjærester|kvinne|mann|par|søsken
+👬|bestevenner|bff|brødre|dating|forelsket|gutter|hånd|hender|holde|homo|kjærester|lhbt|mann|menn|par|skeiv|venner|vennskap
 💏|kyssing|mennesker|romantikk
 💑|hjerte|kjærlighet|mennesker|par med hjerte|romantikk
-👪|barn|familie|far|mennesker|mor
 🗣️|fjes|hode|silhuett|snakkende hode i profil|snakker
 👤|byste|menneske|silhuett av byste
 👥|byste|menneske|silhuett av byster
-🫂|farvel|ha det|hadet|hei|klem|takk
+🫂|farvel|ha det|hadet|hei|kjærlighet|klem|omfavnelse|takk|trøst|venner|vennskap
+👪|barn|familie|far|mennesker|mor
+🧑‍🧑‍🧒|barn|familie|voksen
+🧑‍🧑‍🧒‍🧒|barn|familie|voksen
+🧑‍🧒|barn|familie|voksen
+🧑‍🧒‍🧒|barn|familie|voksen
 👣|avtrykk|fotavtrykk|fotspor|kropp|spor
 🐵|apefjes|dyr|fjes
 🐒|ape|dyr
@@ -562,19 +568,19 @@
 🦝|nysgjerrig|sky|vaskebjørn
 🐱|dyr|fjes|kattefjes
 🐈|dyr|katt
-🐈‍⬛|dyr|katt|svart katt|uhell|ulykke
+🐈‍⬛|dyr|katt|mjau|pus|svart|uhell|ulykke
 🦁|fjes|løven|stjernebilde|stjernetegn
 🐯|dyr|fjes|tigerfjes
 🐅|dyr|tiger
 🐆|dyr|leopard
 🐴|dyr|fjes|hestefjes
 🫎|dyr|elg|gevir|pattedyr
-🫏|dyr|esel|muldyr|pattedyr|sta
+🫏|dyr|esel|muldyr|mulesel|pakkesel|pattedyr|sta
 🐎|dyr|galopp|hest|trav
 🦄|enhjørning|fjes
-🦓|dyr|sebra|striper
+🦓|dyr|sebra|striper|zebra
 🦌|dyr|hjort
-🦬|bison|bøffel|dyr|visent
+🦬|bison|bøffel|dyr|horn|okse|stor|visent
 🐮|dyr|fjes|kufjes
 🐂|dyr|okse|stjernebilde|stjernetegn|tyren
 🐃|bøffel|dyr|vannbøffel
@@ -591,7 +597,7 @@
 🦙|alpakka|dyr|guanaco|lama|ull
 🦒|dyr|flekker|sjiraff
 🐘|dyr|elefant
-🦣|dyr|mammut|stor|støttenner|ull|utdødd
+🦣|dyr|forhistorisk|istid|mammut|stor|støttenner|tundra|ull|utdødd
 🦏|dyr|horn|nese|neshorn
 🦛|dyr|flodhest
 🐭|dyr|fjes|musefjes
@@ -601,14 +607,14 @@
 🐰|dyr|fjes|kaninfjes
 🐇|dyr|hare|kanin
 🐿️|dyr|ekorn|jordekorn
-🦫|bever|dam|dyr
+🦫|bever|dam|dyr|tenner
 🦔|dyr|pigger|piggsvin|pinnsvin
 🦇|dyr|flaggermus|vampyr
 🐻|bjørn|dyr|fjes
 🐻‍❄️|arktis|bjørn|dyr|hvit|isbjørn
 🐨|dyr|koalabjørn
 🐼|dyr|fjes|panda
-🦥|dovendyr|dyr|lat|treg
+🦥|dovendyr|dyr|henge|lat|treg
 🦦|dyr|fisker|lekende|oter
 🦨|dyr|stank|stinkdyr|stinke
 🦘|australia|dyr|hoppe|kenguru|pungdyr
@@ -625,15 +631,17 @@
 🕊️|due|dyr|fly|fredsdue|fugl
 🦅|dyr|fugl|ørn
 🦆|and|dyr|fugl
-🦢|den stygge andungen|fugl|svane
+🦢|den stygge andungen|dyr|fugl|ornitologi|svane|vakker
 🦉|dyr|fugl|ugle|vis
-🦤|dodo|dronte|mauritius|stor|utdødd
-🪶|fjærdrakt|fugl|lett
+🦤|dodo|dronte|fugl|mauritius|stor|utdødd
+🪶|fjærdrakt|fjærpenn|fugl|lett
 🦩|dyr|flamingo|fugl|prangende|tropisk
 🦚|dyr|fugl|påfugl|prangende|stolt
 🦜|dyr|fugl|papegøye|pirat|snakkende|snakker
-🪽|engleaktig|flyr|fugl|mytologi|vinge
-🪿|dum|fjærkre|fugl|gås|tute
+🪽|engel|engleaktig|englevinge|flyr|fugl|himmelsk|mytologi|vinge
+🐦‍⬛|dyr|fugl|kra|kråke|nebb|ravn|svart
+🪿|and|dum|dyr|fjærkre|fugl|gås|gasse|gjess|klukk|tute
+🐦‍🔥|dyr|fantasy|føniks|fugl|gjenopplive|gjenoppstå|ildfugl|reinkarnasjon|udødelig
 🐸|dyr|fjes|frosk
 🐊|dyr|krokodille
 🐢|dyr|skilpadde
@@ -646,35 +654,35 @@
 🐳|dyr|hval|sprutende hval|spruter
 🐋|dyr|hval
 🐬|delfin|dyr
-🦭|dyr|sel|sjøløve
+🦭|dyr|hav|sel|sjøløve
 🐟|dyr|fiskene|stjernebilde|stjernetegn
 🐠|dyr|fisk|tropisk
 🐡|dyr|fisk|kulefisk
 🦈|dyr|fisk|hai
 🐙|blekksprut|bløtdyr|dyr
 🐚|dyr|skjell|spiralskjell
-🪸|dyr|hav|korallrev
-🪼|au|brennmanet|glassmanet|havdyr|manet
+🪸|dyr|hav|klimaendringer|korallrev|rev
+🪼|au|brennmanet|dyr|glassmanet|havdyr|manet|plankton|sjø|tentakler
 🐌|dyr|snegle
 🦋|dyr|insekt|pen|sommerfugl
 🐛|åme|dyr|insekt|kryp|larve
 🐜|dyr|insekt|maur
 🐝|bie|dyr|honningbie|insekt
-🪲|bille|dyr|insekt
+🪲|bille|bug|dyr|insekt
 🐞|bille|dyr|insekt|marihøne
 🦗|dyr|gresshoppe|insekt
-🪳|dyr|insekt|kakerlakk|utøy
+🪳|dyr|ekkel|insekt|kakerlakk|skadedyr|utøy
 🕷️|dyr|edderkopp|insekt
 🕸️|dyr|edderkopp|nett|spindelvev
 🦂|dyr|skorpionen|stjernebilde|stjernetegn
 🦟|dyr|feber|insekt|malaria|mygg|sykdom|virus
-🪰|dyr|flue|forråtnelse|insekt|larver|råtne|sykdom
-🪱|dyr|leddorm|makk|mark|meitemakk|meitemark|parasitt
+🪰|dyr|ekkelt|flue|forråtnelse|insekt|larver|råtne|sykdom
+🪱|agn|dyr|leddorm|makk|mark|meitemakk|meitemark|parasitt
 🦠|amøbe|bakterie|mikrobe|virus
 💐|blomster|bukett|romantikk
 🌸|blomst|kirsebærblomst
 💮|blomsterstempel|hvit blomst|stempel
-🪷|blomst|buddhisme|hinduisme|india|lotusblomst|renhet|vietnam
+🪷|blomst|buddhisme|fred|hinduisme|lotusblomst|renhet|ro|sinnsro|skjønnhet
 🏵️|plante|rosett
 🌹|blomst|rose
 🥀|blomst|tørket|vissen
@@ -682,9 +690,9 @@
 🌻|blomst|solsikke
 🌼|blomst|plante
 🌷|blomst|tulipan
-🪻|blomst|hyasint|klokkeblåstjerne|lavendel|lupin|svibel
+🪻|blomst|hyasint|klokkeblåstjerne|lavendel|lilla|lupin|plante|svibel|vår
 🌱|plante|spire|ung
-🪴|dyrke|hus|kjedelig|plante|potteplante|ubrukelig|vanne
+🪴|dyrke|grønn|hus|kjedelig|plante|potteplante|pynt|ubrukelig|vanne
 🌲|barnåler|bartre|eviggrønt tre|gran|juletre|tre
 🌳|blader|løvtre|tre
 🌴|palmetre|tre
@@ -695,24 +703,25 @@
 🍁|blad|høstblad|lønneblad
 🍂|blad|fallende|høstblad|løv
 🍃|blader i vind|blåser|blåst|løv i vind|vind
-🪹|bygge rede|slå seg ned|tomt rede
-🪺|bygge rede|rede med egg|slå seg ned
+🪹|bygge|grein|gren|heim|hjem|rede|reir|tomt
+🪺|egg|fugl|grein|gren|heim|hjem|rede|reir|tomt
 🍄|fluesopp|sopp
 🍇|drueklase|druer|frukt
-🍈|frukt|honningmelon|melon
+🍈|cantaloupe|frukt|honningmelon|melon
 🍉|frukt|melon|vannmelon
-🍊|appelsin|frukt|klementin|mandarin
+🍊|appelsin|c|frukt|klementin|mandarin|sitrus|vitamin
 🍋|frukt|sitron|sitrus
+🍋‍🟩|cocktail|drink|frukt|grønn|juice|key lime pie|lime|margarita|mat|mojito|salsa|sitrus|sur|tequila|tropisk
 🍌|banan|frukt
 🍍|ananas|frukt
 🥭|frukt|mango|tropisk
-🍎|eple|frukt|rødt
+🍎|diett|eple|frukt|helse|modent|rødt
 🍏|eple|frukt|grønn|grønt
 🍐|frukt|pære
 🍑|fersken|frukt
 🍒|bær|kirsebær|moreller
 🍓|bær|jordbær
-🫐|bær|blåbær
+🫐|bær|blåbær|frukt|mat
 🥝|frukt|kiwi|mat
 🍅|frukt|grønnsak|tomat
 🫒|mat|oliven
@@ -722,24 +731,25 @@
 🥔|grønnsak|mat|potet
 🥕|grønnsak|gulrot|mat|rot
 🌽|maiskolbe
-🌶️|chili|plante|rød|sterk
+🌶️|chili|sterk
 🫑|capsicum|chili|grønnsak|paprika
 🥒|agurk|grønnsak|mat|sylteagurk
-🥬|bladgrønnsaker|bladsalat|grønnkål|kål|kinakål|pak choy
+🥬|bladgrønnsaker|bladsalat|grønnkål|kål|kinakål|pak choy|salat
 🥦|brokkoli|grønnsak
 🧄|hvitløk|smakstilsetning
-🧅|løk|smakstilsetning
+🧅|løk|smakstilsetning|tårer
 🥜|grønnsak|mat|nøtt|peanøtter
-🫘|belgfrukt|bønner|kidneybønner|mat
+🫘|belgfrukt|bønner|kidneybønner|mat|små
 🌰|kastanjenøtt|nøtt
-🫚|ingefærrot|krydder|øl|rot
-🫛|belg|bønner|ertebelg|erter|grønnsak
+🫚|helse|ingefærrot|krydder|naturlig|øl|rot|sunn|urt
+🫛|belg|bønner|ertebelg|erter|grønnsak|soyabønne|sukkerert
+🍄‍🟫|brun sopp|matsopp|natur|pizzafyll|portobello|sjampinjong|sopp|trøffel|vegetarianer
 🍞|brød|loff
 🥐|brød|croissant|fransk|mat
 🥖|bagett|baguette|brød|fransk|mat
-🫓|arepa|brød|lavash|nan|pitabrød
+🫓|arepa|brød|lavash|mat|nan|pitabrød
 🥨|saltkringle|saltstenger|snacks
-🥯|bagel|bakst|påsmurt
+🥯|bagel|bakst|frokost|påsmurt
 🥞|crêpe|mat|pannekaker
 🧇|belgisk vaffel|jern|vaffel
 🧀|ostestykke
@@ -754,24 +764,24 @@
 🥪|brødskive|sandwich|smørbrød
 🌮|meksikansk|taco
 🌯|burrito|meksikansk|wrap
-🫔|latinamerikansk|meksikansk|tamal|wrap
+🫔|latinamerikansk|mat|meksikansk|tamal|wrap
 🥙|falafel|fylt pitabrød|gyro|kebab|mat|pita
-🧆|falafel|kikerter|kjøttboller
+🧆|falafel|kebab|kikerter|kjøttboller
 🥚|egg|mat
 🍳|egg|matlaging|stekepanne
 🥘|lav gryte med mat|mat|paella|stekepanne
 🍲|gryterett|middagsmat|panne
-🫕|fondue|fondy|gryte|ost|sjokolade|smeltet|sveitsisk
+🫕|fondue|fondy|gryte|kos|mat|nam|ost|sjokolade|smeltet|sveitsisk
 🥣|bolle med skje|congee|frokostblanding|grøt
 🥗|grønn|mat|salat
 🍿|kino|popcorn|popkorn
-🧈|meieriprodukt|smør
+🧈|margarin|meieriprodukt|smør
 🧂|bøsse|krydder|salt
 🥫|boks|hermetikk|hermetisk mat
 🍱|bento-boks|boks|matboks
 🍘|kjeks|riskjeks
 🍙|japansk|onigiri|restaurant|risball
-🍚|kokt|restaurant|ris
+🍚|kokt|mat|ris
 🍛|curry|karriris|restaurant|ris
 🍜|matbolle som damper|nudelbolle|ramen|restaurant
 🍝|pasta|restaurant|spagetti
@@ -782,11 +792,11 @@
 🍥|fiskekake med mønster|restaurant
 🥮|festival|høst|månekake|yuebing
 🍡|dango|japansk|restaurant|riskonfekt
-🥟|dumpling|empanada|gyoza|jiaozi|pirog
+🥟|dumpling|empanada|gyoza|jiaozi|melbolle|pirog
 🥠|fortune cookie|lykkekake|spådom
-🥡|takeaway-boks|takeaway-eske
+🥡|bestille|boks|eske|hentemat|kinesisk|mat|spisepinner|takeaway
 🦀|dyr|krabbe|krepsen|stjernebilde|stjernetegn
-🦞|bisque|hummer|klør|sjømat|skalldyr
+🦞|bisque|hummer|klør|kreps|sjømat|skalldyr
 🦐|dyr|liten|mat|reke
 🦑|akkar|blekksprut|bløtdyr|dyr|sprut
 🦪|dykking|østers|perle
@@ -795,7 +805,7 @@
 🍨|dessert|iskrem|restaurant
 🍩|dessert|donut|restaurant|smultring
 🍪|cookie|dessert|kjeks|restaurant
-🎂|bursdagskake|dessert|feiring|fødselsdag|kake
+🎂|bløtkake|bursdag|dessert|feiring|fødselsdag|gebursdag|gratulerer|kake|nam|selskap
 🍰|dessert|formkake|kakestykke
 🧁|bakst|cupcake|søt
 🥧|butterdeig|fyll|pai
@@ -806,7 +816,7 @@
 🍯|honningkrukke|krukke
 🍼|babyflaske|drikke|melk|tåteflaske
 🥛|drikke|glass|melkeglass
-🫖|drikke|kanne|tekanne
+🫖|drikke|kanne|tekanne|teselskap
 🍵|drikke|suppe|tekopp
 🍶|drikke|flaske|karaffel|mugge og kopp|sake
 🍾|bar|drikke|flaske med sprettkork|kork|sprette
@@ -817,20 +827,20 @@
 🍻|bar|halvliter|ølglass|ølkrus som skåler|pils
 🥂|drink|feiring|glass som skåler|skål
 🥃|brennevin|glass|shot|sprit|whiskyglass
-🫗|drikke|glass|helle ut|helle væske|søle|tomt
+🫗|drikke|glass|helle ut væske|oops|søle|tømme ut væske|tomt|uhell|vann
 🥤|brus|juice|jus|kopp med sugerør
-🧋|boble-te|bobler|kuler|melk|perler|te
+🧋|boble-te|bobler|kuler|melk|perler|taiwan|te
 🧃|drikkekartong|juicekartong|juskartong
-🧉|drikke|mate
-🧊|isbit|isterning|kald
+🧉|drikke|krukke|mate
+🧊|chill|isbit|isterning|kald
 🥢|hashi|spisepinner
 🍽️|gaffel|kniv|matlaging|tallerken med kniv og gaffel
-🍴|gaffel|kniv og gaffel|matlaging
+🍴|bestikk|frokost|gaffel|kniv og gaffel|lunsj|matlaging|middag|namnam|restaurant|spise
 🥄|bestikk|skje
 🔪|kniv|kokkekniv|matlaging|våpen|verktøy
-🫙|beholder|krukke|mos|oppbevare|pålegg|syltetøy|tom
+🫙|beholder|ingenting|krukke|mos|oppbevare|pålegg|syltetøy|tom
 🏺|amfora|drikke|krukke|matlaging|stjernebilde|stjernetegn|vannmannen
-🌍|afrika|europa|jorden|jordklode med europa og afrika|verden
+🌍|afrika|europa|gaia|globus|jorda|jorden|klode|tellus|verden
 🌎|amerika|jorden|jordklode med amerika|usa|verden
 🌏|asia|australia|jorden|jordklode med asia og australia|verden
 🌐|jorden|jordklode med meridianer|lengde- og breddegrader|verden
@@ -849,10 +859,10 @@
 🏟️|arena|stadion
 🏛️|bygning|klassisk
 🏗️|byggearbeid|bygging|bygning under konstruksjon
-🧱|mørtel|murstein|sement|vegg
-🪨|blokk|steinblokk|tung
-🪵|stokk|tømmer|trelast
-🛖|bungalow|hus|hytte|jurte|rundhus
+🧱|mørtel|mursteiner|sement|vegg
+🪨|berg|blokk|hard|kampestein|steinblokk|steinrøys|tung|ur
+🪵|hoggestabbe|hogst|huggestabbe|kubbe|stokk|tømmer|trelast
+🛖|heim|hjem|hus|hytte|jurte|overnatting|rundhus
 🏘️|boliger|bygning|hus
 🏚️|bygning|falleferdig|forlatt|hus
 🏠|bygning|hjem|hus
@@ -890,7 +900,7 @@
 🌇|bygning|skumring|solnedgang over byhorisont
 🌉|bro om natten|natt
 🎠|fornøyelsespark|hest|karusellhest|tivoli
-🛝|fornøyelsespark|lekeplass|sklie
+🛝|fornøyelsespark|lekeplass|rutsjebane|sklie
 🎡|fornøyelsespark|pariserhjul|tivoli
 🎢|berg-og-dal-bane|fornøyelsespark|tivoli
 💈|barberersøyle|barberskilt|frisørsalong
@@ -901,12 +911,12 @@
 🚅|fremkomstmiddel|høyhastighetstog med kulenese|lyntog|shinkansen|tog
 🚆|fremkomstmiddel|jernbane|tog
 🚇|fremkomstmiddel|metro|t-bane|tunnelbane|undergrunnsbane
-🚈|fremkomstmiddel|jernbane|lokaltog
+🚈|fremkomstmiddel|jernbane|lokaltog|tog
 🚉|jernbane|stasjon|togstasjon
 🚊|fremkomstmiddel|trikk
 🚝|fremkomstmiddel|monorail
 🚞|bane|fjellbane|fremkomstmiddel
-🚋|fremkomstmiddel|trikkevogn|vogn
+🚋|fremkomstmiddel|lokaltog|trikkevogn|trolleybuss|vogn
 🚌|buss|fremkomstmiddel
 🚍|buss|fremkomstmiddel|motgående
 🚎|buss|fremkomstmiddel|trolleybuss
@@ -916,36 +926,36 @@
 🚓|bil|kjøretøy|politibil
 🚔|bil|kjøretøy|motgående politibil
 🚕|bil|kjøretøy|taxi
-🚖|bil|kjøretøy|motgående|taxi
+🚖|bil|drosje|kjøretøy|motgående|taxi
 🚗|bil|kjøretøy
 🚘|bil|kjøretøy|motgående
 🚙|bil|kjøretøy|suv
-🛻|lastebil|liten|pickup
+🛻|bil|frakt|lastebil|liten|pickup|transport|varetransport
 🚚|bil|kjøretøy|varebil
 🚛|bil|kjøretøy|lastebil|trailer|trekkvogn
 🚜|kjøretøy|traktor
 🏎️|billøp|motorsport|racerbil
 🏍️|motorsport|motorsykkel|motorsyklist
 🛵|motorsykkel|scooter
-🦽|manuell rullestol|tilgjengelighet
-🦼|motorisert rullestol|tilgjengelighet
+🦽|manuell|rullestol|tilgjengelighet
+🦼|motorisert|rullestol|tilgjengelighet
 🛺|autorickshaw|mototaxi|trehjuling|tuk-tuk
 🚲|kjøretøy|sykkel
 🛴|sparkesykkel|sykkel
 🛹|brett|rullebrett|skateboard
-🛼|rulleskøyter|skøyter
+🛼|gøy|hjul|rulle|skøyter|sport
 🚏|busstopp|holdeplass
 🛣️|motorvei|vei
 🛤️|jernbanespor|tog
 🛢️|fat|oljefat|tønne
 ⛽|bensinpumpe|bensinstasjon|diesel|stasjon
-🛞|bildekk|dreie|felg|hjul|rulle|sirkel
+🛞|bildekk|dekk|dreie|felg|hjul|kjøretøy|rulle|sirkel
 🚨|bil|kjøretøy|lys|politilys|roterende|signal
 🚥|horisontale lys|horisontale trafikklys|trafikk
 🚦|trafikk|vertikale lys|vertikale trafiklys
 🛑|åttekantet|skilt|stoppskilt
 🚧|anleggsarbeid|byggeplass|byggeskilt|skilt
-🛟|badering|flyte|livbøye|livbøyle|livredning|redningsbøye|redningsbøyle
+🛟|badering|flyte|livbøye|livredder|livredning|redde liv|redningsbøye|svømme
 ⛵|båt|seilbåt
 🛶|båt|kano
 🚤|båt|fartøy|speedbåt
@@ -964,7 +974,7 @@
 🚡|fremkomstmiddel|gondolbane|taubane
 🛰️|satellitt|verdensrommet
 🚀|fremkomstmiddel|rakett|verdensrommet
-🛸|flygende tallerken|ufo
+🛸|alien|flyende|flygende|marsboer|tallerken|ufo
 🛎️|hotell|klokke|pikkolo|resepsjonsklokke
 🧳|bagasje|pakking|reise
 ⌛|ferdig timeglass|sand|tidtaker
@@ -976,27 +986,27 @@
 🕰️|klokke|peisur
 🕛|0:00|12:00|24:00|klokka|klokken tolv|tolv
 🕧|0:30|12:30|halv ett|klokka|klokken halv ett
-🕐|1:00|13:00|ett|klokka|klokken
+🕐|1:00|13:00|ett|klokka|klokken|tretten
 🕜|1:30|13:30|halv to|klokka|klokken halv to
-🕑|14:00|2:00|klokka|klokken|to
+🕑|14:00|2:00|fjorten|klokka|klokken|to
 🕝|14:30|2:30|halv tre|klokka|klokken halv tre
-🕒|15:00|3:00|klokka|klokken|tre
+🕒|15:00|3:00|femten|klokka|klokken|tre
 🕞|15:30|3:30|halv fire|klokka|klokken halv fire
-🕓|16:00|4:00|fire|klokka|klokken
+🕓|16:00|4:00|fire|klokka|klokken|seksten
 🕟|16:30|4:30|halv fem|klokka|klokken halv fem
-🕔|17:00|5:00|fem|klokka|klokken
+🕔|17:00|5:00|fem|klokka|klokken|sytten
 🕠|17:30|5:30|halv seks|klokka|klokken halv seks
-🕕|18:00|6:00|klokka|klokken|seks
+🕕|18:00|6:00|atten|klokka|klokken|seks
 🕡|18:30|6:30|halv sju|halv syv|klokka|klokken halv sju
-🕖|19:00|7:00|klokka|klokken|sju|syv
+🕖|19:00|7:00|klokka|klokken|nitten|sju|syv
 🕢|19:30|7:30|halv åtte|klokka|klokken halv åtte
-🕗|20:00|8:00|åtte|klokka|klokken
+🕗|20:00|8:00|åtte|klokka|klokken|tjue
 🕣|20:30|8:30|halv ni|klokka|klokken halv ni
-🕘|21:00|9:00|klokka|klokken|ni
+🕘|21:00|9:00|klokka|klokken|ni|tjueen|tjueett
 🕤|09:30|21:30|halv ti|klokka|klokken halv ti
-🕙|10:00|22:00|klokka|klokken|ti
+🕙|10:00|22:00|klokka|klokken|ti|tjueto
 🕥|10:30|22:30|halv elleve|klokka|klokken halv elleve
-🕚|11:00|23:00|elleve|klokka|klokken
+🕚|11:00|23:00|elleve|klokka|klokken|tjuetre
 🕦|11:30|23:30|halv tolv|klokka|klokken halv tolv
 🌑|måne|mørk|nymåne
 🌒|månefase|ny|voksende nymåne
@@ -1005,7 +1015,7 @@
 🌕|fullmåne|hel måne|måne
 🌖|avtakende fullmåne|månefase|ne
 🌗|avtakende halvmåne|halvmåne|månefase|ne|siste kvarter
-🌘|avtakende nemåne|månefase|ne
+🌘|avtakende|månefase|nemåne
 🌙|månesigd
 🌚|ansikt|måne|nymåne med ansikt|nymåneansikt
 🌛|kvartmåne med ansikt|måneansikt|nymåne med ansikt
@@ -1034,10 +1044,10 @@
 🌂|lukket paraply|regnvær
 ⛱️|paraply|parasoll på bakken|regn|sol|vær
 ⚡|fare|høyspenning|høyspent|lyn|spenning
-⛄|snømann uten snø
+⛄|kald|mann|snømann
 🔥|flamme|ild
 💧|dråpe|drypp|tegneserie|vann
-🌊|bølge|hav|vann
+🌊|bølge|hav|kanagawa|natur|surfer|surfing|vann
 🎃|gresskarlykt|halloweenlykt
 🎄|høytid|julefeiring|juletre|tre
 🎆|feiring|fyrverkeri|nyttår
@@ -1045,7 +1055,7 @@
 🧨|dynamitt|eksplosiver|fyrverkeri|kinaputt
 🎈|ballong|feiring
 🎉|feiring|fest|serpentin|smell-bon-bon
-🎊|feiring|fest|konfettiball|konfettikule
+🎊|ball|feiring|fest|konfettiball|konfettikule|wohoo
 🎋|feiring|papirremser|stjernefestival|tanabatatre|tre
 🎍|feiring|furudekorasjon|japansk høytid|nyttår
 🎎|festival|japansk høytid|japanske dukker
@@ -1066,10 +1076,10 @@
 🥉|bronsemedalje|medalje|tredjeplass
 ⚽|ball|fotball
 ⚾|ball|baseball|sydd
-🥎|ball|hanske|softball|underarm
+🥎|ball|hanske|kasteball|softball|sport|underarm
 🏀|ball|basketball|kurv|sport
 🏐|ball|kamp|spill|volleyball
-🏈|amerikansk fotball|ball|sport
+🏈|amerikansk fotball|ball|oval|sport
 🏉|rugbyball|sport
 🎾|ball|racket|sport|tenninsball|tennis
 🥏|frisbee|ultimate
@@ -1093,20 +1103,20 @@
 🥌|curlingstein|sport|stein
 🎯|blink|dart|mål|midt i blinken|pilspill|treff
 🪀|jojo|leke|opp og ned|yo-yo|yoyo
-🪁|fly|papirdrage|sveve
-🔫|leketøysvåpen|pistol|vannpistol
+🪁|drage|fly|papirdrage|sveve
+🔫|leketøysvåpen|pistol|revolver|vannpistol|våpen
 🎱|8|åtterkule|biljard|spill
 🔮|krystallkule|spådommer
-🪄|heks|magi|trollmann|tryllestav
+🪄|heks|magiker|trollmann|tryllekunster|tryllekunstner|tryllestav
 🎮|konsoll|kontroller|spillkonsoll|spillkontroller|tv-spill|videospill
 🕹️|joystick|spill|styrespake|videospill
 🎰|spilleautomat
 🎲|spill|terningkast|terningspill
 🧩|bit|brikke|del|pekepinn|puslespillbrikke
 🧸|bamse|leke|teddybjørn
-🪅|feiring|fest|piñata
-🪩|dans|disco|diskokule|diskotek|fest|glitter|speilkule
-🪆|dukke|hul|matrjosjka|matruska|russisk|russland
+🪅|cinco|de|feiring|fest|godteri|mayo|meksikansk|pinada|pinata|piñata|sukkertøy
+🪩|dans|disco|diskokule|diskotek|fest|glitter|kule|speilkule
+🪆|babusjka|dukke|hul|matrjosjka|matroshka|matrosjka|matruska|russisk|russland|suvenir
 ♟️|bonde|brikke|sjakk
 🃏|jokerkort|kort|spillkort
 🀄|mahjongbrikke med rød drage|rød|spill
@@ -1115,11 +1125,11 @@
 🖼️|bilde|innrammet bilde|kunst|maleri|museum|ramme
 🎨|kunst|malerpalett|maling
 🧵|nål|snelle|sy|trådsnelle
-🪡|broderi|nål|skredder|sting|sutur|synål
+🪡|broderi|nål|skredder|sting|sutur|synål|tråd
 🧶|ball|garn|nøste
-🪢|knop|knute|knyte|rep|sammenflettet|tau|tvinne
+🪢|bånd|knop|knute|knyte|rep|sammenflettet|stikk|tau|tvinne
 👓|briller|klær|lesebriller
-🕶️|briller|mørkt|øye|solbriller
+🕶️|briller|mørkt|øye|øyne|solbriller
 🥽|beskyttelsesbriller|øyevern|sveising|svømming
 🥼|doktor|eksperiment|forsker|labfrakk|lege
 🦺|nødssituasjon|refleksvest|sikkerhet|vest
@@ -1138,13 +1148,13 @@
 🩳|badeshorts|badetøy|bukse|shorts|underbukse|undertøy
 👙|badedrakt|badetøy|bikini|klær
 👚|dameklær|klær
-🪭|avkjøling|blafre|blyg|dans|håndvifte|varmt|vifte
+🪭|avkjøle|avkjøling|blafre|blyg|dans|håndvifte|rød|varmt|vifte
 👛|klær|portemoné|pung
 👜|håndveske|klær|veske
 👝|clutch-veske|klær|liten veske
 🛍️|handleposer|hotell|pose|shopping
 🎒|ransel|ryggsekk|skolesekk
-🩴|flipflops|flippflopper|havaianas|sandaler|strandsandaler|zoori
+🩴|ferie|flipflops|flippflopper|sandaler|sommer|strandsandaler|syden
 👞|herresko|klær|sko
 👟|fritidssko|joggesko|klær|sko|tennissko
 🥾|fjelltur|gåtur|støvel|telttur|turstøvel
@@ -1153,13 +1163,13 @@
 👡|damesandal|klær|sandal|sko
 🩰|ballettsko|dans
 👢|damestøvlett|klær|sko|støvlett
-🪮|afrokam|hår|kam
+🪮|afrokam|hår|kam|stelle
 👑|dronning|klær|konge|krone
 👒|damehatt|hatt|klær
 🎩|flosshatt|hatt|klær
 🎓|feiring|hatt|klær|studentlue|uteksaminering
 🧢|caps|kaps|skyggelue
-🪖|hær|hjelm|kriger|militærhjelm|soldat
+🪖|forsvaret|hær|hjelm|kriger|militær|soldat
 ⛑️|fjes|hatt|hjelm med hvitt kors|hjelp|kors
 📿|bønnekrans|halssmykke|klær|perler|religion
 💄|kosmetikk|leppestift|sminke
@@ -1184,16 +1194,16 @@
 🎧|headset|hodetelefoner|øretelefoner|underholdning
 📻|radiosignaler|teknologi
 🎷|instrument|musikkinstrument|saksofon|sax
-🪗|accordeon|concertina|trekkspill
+🪗|accordeon|concertina|danseband|gammaldans|gammeldans|musikk|spell|spill|trekkspill
 🎸|gitar|instrument|musikkinstrument
 🎹|instrument|keyboard|musikkinstrument|piano|tangenter
 🎺|instrument|musikkinstrument|trompet
 🎻|fele|fiolin|instrument|musikkinstrument
-🪕|banjo|musikk|strenginstrument
+🪕|banjo|musikk|strengeinstrument
 🥁|musikk|trommestikker
-🪘|beat|conga|langtromme|rytme|tromme
-🪇|instrument|marakas|musikk|perkusjon|riste|rytmeinstrument
-🪈|blokkfløyte|fløyte|musikk|treblåser
+🪘|beat|conga|langtromme|musikk|perkusjon|rytme|tromme
+🪇|cha|dans|fest|instrument|maracas|marakas|musikk|perkusjon|riste|rytme
+🪈|band|blokkfløyte|fløyte|instrument|korps|musikk|orkester|treblåseinstrument|treblåser
 📱|mobiltelefon|telefon
 📲|anrop|mobiltelefon med pil|pil|ring|telefon
 ☎️|fasttelefon|ringe|telefon
@@ -1201,10 +1211,10 @@
 📟|kommunikasjon|personsøker|telefon
 📠|faksmaskin|kommunikasjon|telefon
 🔋|batteri|energilagring|strøm
-🪫|elektronikk|lavt batteri|lite batteri|lite energi
+🪫|batterinivå|elektronikk|ladenivå|lavt|lite energi|lite strøm|utladet
 🔌|elektrisitet|elektrisk|plugg|støpsel
 💻|bærbar datamaskin|datamaskin|maskin|pc
-🖥️|datamaskin|pc|stasjonær
+🖥️|datamaskin|monitor|pc|skjerm|stasjonær
 🖨️|datamaskin|printer|skriver
 🖱️|datamaskin|datamus|knapp|mus
 🖲️|datamaskin|styrekule
@@ -1230,11 +1240,11 @@
 🏮|bar|izakaya|lampe|lanterne|lykt|rød papirlykt
 🪔|åpen oljelampe|diya|lampe|olje
 📔|dekorert notatbok|notatbok|omslag
-📕|bok|lukket
-📖|åpen|bok
-📗|bok|grønn
-📘|blå|bok
-📙|bok|oransje
+📕|bok|lukket|utdannelse|utdanning
+📖|åpen|bibliotek|bok|fantasi|kunnskap|læring|lesing|romaner|utdannelse|utdanning
+📗|bibliotek|bok|fantasi|grønn|lesing|utdannelse|utdanning
+📘|bibliotek|blå|bok|fantasi|lesing|utdannelse|utdanning
+📙|bibliotek|bok|fantasi|lesing|oransje|utdannelse|utdanning
 📚|bok|bøker
 📓|kladdebok|kontorrekvisita|notatbok
 📒|kontorrekvisita|notatbok|spiralblokk
@@ -1247,7 +1257,7 @@
 🔖|bokmerke|merke
 🏷️|etikett|merke
 💰|dollar|penger|pengesekk|sekk
-🪙|gull|metall|mynt|penger|skatt|sølv
+🪙|dollar|euro|gull|kroner|metall|mynt|penger|rikdom|skatt|sølv
 💴|penger|seddel|yenseddel
 💵|dollarseddel|penger|seddel
 💶|euroseddel|penger|seddel
@@ -1257,7 +1267,7 @@
 🧾|arkiv|bilag|dokumentasjon|kvittering|regnskap
 💹|graf|marked|oppover|penger|stigende diagram med yen|trend|yen
 📧|brev|e-post|kommunikasjon|post
-📨|brev|e-post|epost|innkommende|konvolutt|motta
+📨|brev|e-post|epost|innkommende|konvolutt|levering|mail|motta|sendt
 📩|brev|e-post|epost|konvolutt med pil|sende|sendt|utgående
 📤|brev|e-post|kommunikasjon|sendt|skuff|utboks
 📥|brev|e-post|innboks|kommunikasjon|mottatt|skuff
@@ -1296,7 +1306,7 @@
 🗃️|arkiv|boks|fil|kartotekboks|kort
 🗄️|arkivskap|fil|kabinett|mapper
 🗑️|papirkurv|søppelkasse|søppelkurv
-🔒|låst
+🔒|hengelås|låst|privat
 🔓|åpen|hengelås|lås|ulåst
 🔏|låst med penn|penn|personvern
 🔐|lås med nøkkel|låst med nøkkel|sikker
@@ -1308,71 +1318,72 @@
 🛠️|hammer og fastnøkkel|skiftenøkkel|verktøy
 🗡️|dolk|kniv|våpen
 💣|bombe|følelse|tegneserie
-🪃|australia|boomerang|bumerang|retur|tilbake
+🪃|aboriginer|australia|boomerang|bumerang|retur|tilbake|våpen
 🏹|bueskytter|pil og bue|skytten|stjernebilde|stjernetegn|våpen
 🛡️|skjold|våpen
-🪚|håndsag|sag|snekker|tømrer|tre|verktøy
+🪚|bygge|håndsag|jobb|sag|snekkersag|tømrer|tre|verktøy
 🔧|fastnøkkel|skrunøkkel|verktøy
-🪛|skrue|skrujern|skrutrekker|verktøy
+🪛|håndverk|montering|reparasjon|reparere|skrue|skrujern|skrutrekker|verktøy
 🔩|mutter og skrue|skrue|verktøy
 🗜️|klemme|skruetvinge|skrustikke|skrutvinge|verktøy
 🦯|blindestokk|tilgjengelighet
 🔗|lenke|link|to ringer
+⛓️‍💥|brutt|lenke|ødelagt
 ⛓️|kjede|kjetting
-🪝|buet|fange|krok|løftekrok|salgspunkt
-🧰|kasse|skrin|verktøykasse
+🪝|buet|fange|krok|laste|lasting|løftekrok|lossing|salgspunkt
+🧰|kasse|rød boks|skrin|verktøykasse
 🧲|hestesko|magnetisk|tiltrekning
-🪜|klatre|leider|stige|trapp|trinn
+🪜|klatre|steg|stige|trinn
 🧪|eksperiment|forskning|kjemiker|lab|prøverør|reagensrør
 🧫|bakterie|biologi|kultur|lab|petriskål
-🧬|biolog|dna|evolusjon|gener|genetikk|liv
+🧬|biologi|dna|evolusjon|gener|genetikk|liv
 🔬|forskning|mikroskop|verktøy|vitenskap
 🔭|astronomi|forskning|teleskop|verktøy|vitenskap
 📡|antenne|kommunikasjon|parabolantenne|satellittantenne
 💉|medisin|nål|sprøyte|syk|vaksine
-🩸|bloddråpe|blodgiver|medisin|menstruasjon
+🩸|bloddråpe|blodgiver|dråpe|medisin|menstruasjon|skadet
 💊|lege|medisin|pille|tablett
 🩹|behandling|plaster|sår
-🩼|hjelpemiddel|krykke|pinne|skadet|stokk|ufør
+🩼|hjelpemiddel|kjepp|krykke|skadet|stokk|ufør
 🩺|hjerte|lege|medisin|stetoskop
 🩻|bein|doktor|lege|ribbein|ribben|røntgen|skjelett
-🚪|dør
-🛗|heis|tilgjengelighet
-🪞|refleksjon|speilbilde
-🪟|åpning|frisk luft|gjennomsiktig|ramme|utsikt|vindu
+🚪|bakdør|dør|inngangsdør|skapdør|ytterdør
+🛗|etasje|heis|ned|opp|tilgjengelighet
+🪞|badespeil|refleksjon|sminke|speilbilde|stell
+🪟|åpning|frisk luft|friskluft|gjennomsiktig|glass|ramme|utsikt|vinduskarm
 🛏️|hotell|seng|sove
 🛋️|hotell|lampe|sofa og lampe
 🪑|sete|sitteplass|stol
 🚽|dass|do|toalett|vannklosett|wc
-🪠|avløpsåpner|mekanisk|toalett|vask
+🪠|avløpsåpner|mekanisk|sugekopp|toalett|vask
 🚿|dusj|vann
 🛁|badekar|badestamp
-🪤|åte|felle|musefelle|snare
+🪤|åte|fange|felle|musefelle|ost|snare
 🪒|barbere|barbering|barberkniv|skarp
 🧴|fuktighetskrem|lotionflaske|shampoo|sjampo|solkrem
 🧷|bleie|punk|sikkerhetsnål
 🧹|feiekost|heks|rengjøre
 🧺|jordbruk|klesvask|kurv|piknik
 🧻|rull med papir|toalettpapir|tørkepapir|tørkerull
-🪣|beholder|bøtte|kar|spann
+🪣|beholder|bøtte|kar|spann|tømme
 🧼|bad|såpeskål|såpestykke|skum|vaske
-🫧|bobler|rap|rengjøre|rense|såpe|under vann|vaske
-🪥|baderom|børste|dental|hygiene|ren|tannbørste|tenner
+🫧|boble|perle|rengjøre|rense|såpe|skum|sveve|vaske
+🪥|baderom|børste|dental|hygiene|kost|pusse|tann|tenner
 🧽|absorberende|porøs|rengjøre|svamp|vaske
 🧯|brannslokkingsapparat|brannslukningsapparat|slokke|slukke
 🛒|handlevogn|innkjøp|tralle|vogn
 🚬|røyking tillatt|sigarett|skilt
 ⚰️|begravelse|død|kiste
-🪦|gravplass|gravstein|kirkegård
+🪦|død|gravlund|gravplass|gravsted|gravstein|kirkegård|rip
 ⚱️|begravelse|død|kremasjon|urne
 🧿|amulett|charm|nazar|ondt øye|talisman
-🪬|amulett|beskyttelse|fatima|hamsa|hånd|maria|miriam
+🪬|amulett|beskyttelse|fatima|guide|hamsa|håndflate|maria|miriam|rikdom
 🗿|ansiktsstatue|moai-statue|påskeøya|statue
-🪧|demonstrasjon|plakat|protest|skilt
-🪪|adgangskort|førerkort|id-kort|identifikasjon|legitimasjon|sikkerhet
+🪧|demonstrasjon|informasjon|plakat|protest|skilt|tekst
+🪪|adgangskort|dokument|førerkort|id-kort|identifikasjon|kort|legitimasjon|lisens|sikkerhet
 🏧|automatisk|bank|minibankskilt|penger
 🚮|avfallsskilt|skilt|søppel
-🚰|drikkevann|vann
+🚰|drikke|kran|spring|tappe|vann|vatn
 ♿|handikaptilgang|rullestolbruker|rullestolsymbol
 🚹|do|herrer|herretoalett|mannesymbol|toalett|wc
 🚺|damer|dametoalett|do|kvinnesymbol|toalett|wc
@@ -1388,10 +1399,10 @@
 ⛔|adgang forbudt|enveiskjøring|ingen adgang|skilt|stopp
 🚫|adgang forbudt|forbudt|ikke|nei|skilt
 🚳|ikke|ingen sykler|nei|sykkel ikke tillatt|sykler forbudt
-🚭|forbudt|ikke tillatt|nei|røyking|skilt
+🚭|forbudt|ikke tillatt|nei|røyking
 🚯|forsøpling ikke tillatt|ikke avfall|ingen kasting|skilt
 🚱|ikke drikkbart|ikke drikkevann|vann
-🚷|fotgjengere forbudt|gående|ikke tillatt|nei
+🚷|fotgjengere forbudt|gående|ikke tillatt|nei|skilt
 📵|forbudt|ikke tillatt|ingen telefonsamtaler|mobiltelefon ikke tillatt|nei|telefon
 🔞|18|aldersgrense 18 år|attenårsgrense|ingen under 18|under 18
 ⬆️|nord|oppoverpil|pil opp|retning
@@ -1410,13 +1421,13 @@
 🛐|religion|religiøst samlingssted|tilbedelse
 ⚛️|ateist|atomsymbol
 🕉️|hindu|om|religion
-☯️|religion|taoist|yang|yin
+☯️|balanse|helhet|liv|religion|taoist|total|vanskelig|yang|yinyang
 ✝️|kors|kristen|latinsk kors|religion
 ☪️|islam|muslim|religion|stjerne og halvmåne
 ☮️|fredssymbol
 🕎|lysestake|menora|religion
 🔯|magi|sekskantet|sekstagget stjerne med prikk|stjerne
-🪯|khanda|religion|sikh
+🪯|deg tegh fateh|khalsa|khanda|religion|sikhisme|tro
 ♊|stjernetegn|tvillingene|tvillinger
 ♋|krabbe|krepsen|stjernetegn
 ♌|løven|stjernetegn
@@ -1429,7 +1440,7 @@
 🔂|1 gang|én gang|gjenta ett spor-knapp|med klokken|piler
 ▶️|avspillingsknapp|høyre|pil|trekant
 ⏩|dobbel pil|høyre|spol framover-knapp|spoling
-⏭️|neste scene|neste spor-knapp|pil|trekant
+⏭️|knapp|neste|pil|scene|spor|trekant
 ⏯️|høyre|pause|pil|spill av/pause-knapp|trekant
 ◀️|bakover-knapp|pil|tilbake|trekant|venstre
 ⏪|dobbel pil|spol tilbake-knapp|spoling|venstre
@@ -1446,11 +1457,11 @@
 🔅|lav|lite lys-knapp|lysstyrke
 🔆|høy|lysstyrke|mye lys-knapp
 📶|antenne|mobilsignaler|signalstyrke|telefon
-🛜|datamaskin|internett|nettverk|trådløst
+🛜|bredbånd|datamaskin|hotspot|internett|nettverk|ruter|smarttelefon|tilkobling|trådløst|wi-fi|wifi
 📳|mobiltelefon|modus|vibrasjon|vibreringsmodus
 📴|av|mobiltelefon
 ⚧️|transperson-symbol
-🟰|fett likhetstegn|likhetstegn i fet skrift|matematikk
+🟰|er lik|fet skrift|likhetstegn|matematikk|svar
 ♾️|for alltid|grenseløs|uendelig|universal|universell
 ‼️|!!|bangbang|dobbelt utropstegn|tegnsetting|utropstegn
 💱|bank|penger|valutaveksling|veksling
@@ -1461,7 +1472,7 @@
 📛|navneskilt|skilt
 🔰|grønn og gul|grønt og gult blad|japansk tegn for nybegynner|nybegynner
 ⭕|o|rød|sirkel|stor|tykk rød sirkel
-❌|×|kryss|rødt kryss|x
+❌|×|avbryt|kryss|rødt kryss|x
 ❎|×|kryss i firkant|kvadrat|x
 ➰|løkketegn
 ➿|dobbel løkke-tegn
@@ -1487,45 +1498,45 @@
 🆘|hjelp-symbol|sos-knapp|sos-symbol
 🆙|opp-symbol|up!-knapp|up!-symbol
 🆚|versus|vs-knapp|vs-symbol
-🈁|«her» på japansk|«koko»|her|japansk|katakana|ココ
-🈂️|«gebyr» på japansk|«sa»|gebyr|japansk|katakana|サ
-🈷️|«månedlig beløp» på japansk|ideograf|japansk|månedlig beløp|月
-🈶|«ikke gratis» på japansk|ideograf|ikke gratis|japansk|有
-🈯|«reservert» på japansk|ideograf|japansk|reservert|指
-🉐|«spesialtilbud» på japansk|ideograf|japansk|spesialtilbud|得
-🈹|«rabatt» på japansk|ideograf|japansk|rabatt|割
-🈚|«gratis» på japansk|gratis|ideograf|japansk|無
-🈲|«forbudt» på japansk|forbudt|ideograf|japansk|禁
-🉑|«akseptabelt» på japansk|akseptabelt|ideograf|japansk|可
-🈸|«søknad» på japansk|ideograf|japansk|søknad|申
-🈴|«bestått» på japansk|bestått|ideograf|japansk|合
-🈳|«ledig» på japansk|ideograf|japansk|ledig|空
-🈺|«åpen for handel» på japansk|åpen for handel|ideograf|japansk|営
-🈵|«fullt» på japansk|fullt|ideograf|japansk|満
+🈁|her|japansk|katakana|knapp
+🈂️|gebyr|japansk|katakana|knapp|service|tjeneste
+🈷️|beløp|ideograf|japansk|knapp|månedlig|månedsbeløp
+🈶|betale|gratis|ideograf|ikke|japansk|knapp|kostnad
+🈯|ideograf|japansk|knapp|reservert
+🉐|ideograf|japansk|knapp|kupp|spesialtilbud
+🈹|ideograf|japansk|knapp|rabatt
+🈚|gratis|ideograf|japansk|knapp
+🈲|forbudt|ideograf|japansk|knapp
+🉑|akseptabelt|ideograf|japansk|knapp
+🈸|ideograf|japansk|knapp|søknad
+🈴|bestått|ideograf|japansk|knapp
+🈳|ideograf|knapp|ledig japansk
+🈺|åpen|bedrift|handel|ideograf|japansk|knapp
+🈵|fullt|ideograf|japansk|knapp
 🔴|geometrisk|rød|sirkel
-🟠|oransje|sirkel
-🟡|gul|sirkel
-🟢|grønn|sirkel
+🟠|geometrisk|oransje|sirkel
+🟡|geometrisk|gul|sirkel
+🟢|geometrisk|grønn|sirkel
 🔵|blå|geometrisk|sirkel
-🟣|lilla|sirkel
-🟤|brun|sirkel
-⚫|geometrisk|sirkel|svart sirkel
-⚪|geometrisk|hvit sirkel|sirkel
-🟥|kvadrat|rødt
+🟣|geometrisk|lilla|sirkel
+🟤|brun|geometrisk|sirkel
+⚫|geometrisk|sirkel|svart
+⚪|geometrisk|hvit|sirkel
+🟥|kort|kvadrat|rødt|utvisning
 🟧|kvadrat|oransje
-🟨|gult|kvadrat
+🟨|advarsel|gult|kort|kvadrat
 🟩|grønn|grønt|kvadrat
 🟦|blått|kvadrat
 🟪|kvadrat|lilla
 🟫|brunt|kvadrat
-⬛|firkant|geometrisk|kvadrat|stor svart firkant
-⬜|firkant|geometrisk|kvadrat|stor hvit firkant
-◼️|firkant|geometrisk|kvadrat|mellomstor svart firkant
-◻️|firkant|geometrisk|kvadrat|mellomstor hvit firkant
-◾|firkant|geometrisk|kvadrat|liten/mellomstor svart firkant
-◽|firkant|geometrisk|kvadrat|liten/mellomstor hvit firkant
-▪️|firkant|geometrisk|kvadrat|liten svart firkant
-▫️|firkant|geometrisk|kvadrat|liten hvit firkant
+⬛|firkant|geometrisk|kvadrat|stor|svart
+⬜|firkant|geometrisk|hvitt|kvadrat|stor
+◼️|firkant|geometrisk|kvadrat|mellomstort|svart
+◻️|firkant|geometrisk|hvitt|kvadrat|mellomstort
+◾|firkant|geometrisk|kvadrat|lite/mellomstort|liten/mellomstor|svart
+◽|firkant|geometrisk|hvitt|kvadrat|lite/mellomstort|liten/mellomstor
+▪️|firkant|geometrisk|kvadrat|liten|svart
+▫️|firkant|geometrisk|hvitt|kvadrat|liten
 🔶|geometrisk|oransje|ruter|stort oransje rutersymbol
 🔷|blå|geometrisk|ruter|stort blått rutersymbol
 🔸|geometrisk|lite oransje rutersymbol|oransje|ruter
@@ -1539,9 +1550,9 @@
 🏁|formel 1|mål|motorsport|racingflagg|rutete flagg
 🚩|golf|posisjon|trekantet|vimpel
 🎌|feiring|flagg|kryssede flagg|kryssede japanske flagg|krysset
-🏴|flagg|flagring|svart
-🏳️|flagg|flagring|hvitt
-🏳️‍🌈|flagg|regnbueflagg
+🏴|flagging|svart
+🏳️|flagging|hvitt
+🏳️‍🌈|bifil|flagg|homofil|lgbt|pride|regnbueflagg|trans
 🏳️‍⚧️|flagg|hvit|lyseblå|rosa|transpersonflagg
 🏴‍☠️|kaptein sabeltann|pirat|plyndre|sjørøverflagg|skatt
 🇦🇩|andorra
@@ -1578,7 +1589,7 @@
 🇧🇸|bahamas
 🇧🇹|bhutan
 🇧🇼|botswana
-🇧🇾|hviterussland
+🇧🇾|belarus
 🇧🇿|belize
 🇨🇦|canada
 🇨🇨|kokosøyene

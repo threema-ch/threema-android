@@ -113,17 +113,17 @@ public class ThreemaSafeMDMConfig {
 				booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__safe_enable));
 				if (booleanPreset == null) {
 					this.backupStatus = BACKUP_ENABLE;
-					if (!TestUtil.empty(serverName)) {
+					if (!TestUtil.isEmptyOrNull(serverName)) {
 						this.backupStatus |= SERVER_PRESET;
 					}
 				} else if (!booleanPreset) {
 					this.backupStatus = BACKUP_DISABLE;
 				} else { // true
 					this.backupStatus = BACKUP_FORCE;
-					if (!TestUtil.empty(this.password)) {
+					if (!TestUtil.isEmptyOrNull(this.password)) {
 						this.backupStatus |= PASSWORD_PRESET;
 					}
-					if (!TestUtil.empty(serverName)) {
+					if (!TestUtil.isEmptyOrNull(serverName)) {
 						this.backupStatus |= SERVER_PRESET;
 					}
 				}
@@ -132,17 +132,17 @@ public class ThreemaSafeMDMConfig {
 			booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__safe_restore_enable));
 			if (booleanPreset == null || booleanPreset) {
 				this.identity = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_restore_id));
-				if (TestUtil.empty(this.identity)) {
+				if (TestUtil.isEmptyOrNull(this.identity)) {
 					this.restoreStatus = RESTORE_ENABLE;
-					if (!TestUtil.empty(serverName)) {
+					if (!TestUtil.isEmptyOrNull(serverName)) {
 						this.restoreStatus |= SERVER_PRESET;
 					}
 				} else {
 					this.restoreStatus = RESTORE_FORCE;
-					if (!TestUtil.empty(password)) {
+					if (!TestUtil.isEmptyOrNull(password)) {
 						this.restoreStatus |= PASSWORD_PRESET;
 					}
-					if (!TestUtil.empty(serverName)) {
+					if (!TestUtil.isEmptyOrNull(serverName)) {
 						this.restoreStatus |= SERVER_PRESET;
 					}
 				}

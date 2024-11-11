@@ -71,7 +71,7 @@ public class ThreemaSafeServerInfo {
 	}
 
 	public void setCustomServerName(@Nullable String customServerName) {
-		if (!TestUtil.empty(customServerName)) {
+		if (!TestUtil.isEmptyOrNull(customServerName)) {
 			this.customServerName = customServerName.trim().replace(SAFE_URL_PREFIX, "");
 			if (defaultServerName.equals(this.customServerName) || LEGACY_DEFAULT_SERVER_NAME.equals(this.customServerName)) {
 				this.customServerName = null;
@@ -99,7 +99,7 @@ public class ThreemaSafeServerInfo {
 	}
 
 	public boolean isDefaultServer() {
-		return TestUtil.empty(customServerName);
+		return TestUtil.isEmptyOrNull(customServerName);
 	}
 
 	URL getBackupUrl(byte[] backupId) throws ThreemaException {
@@ -127,7 +127,7 @@ public class ThreemaSafeServerInfo {
 	void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
 		String username = serverUsername, password = serverPassword;
 
-		if ((TestUtil.empty(serverUsername) || TestUtil.empty(serverPassword)) && !TestUtil.empty(customServerName)) {
+		if ((TestUtil.isEmptyOrNull(serverUsername) || TestUtil.isEmptyOrNull(serverPassword)) && !TestUtil.isEmptyOrNull(customServerName)) {
 			int atPos = customServerName.indexOf("@");
 			if (atPos > 0) {
 				String userInfo = customServerName.substring(0, atPos);
@@ -140,7 +140,7 @@ public class ThreemaSafeServerInfo {
 			}
 		}
 
-		if (!TestUtil.empty(username) && !TestUtil.empty(password)) {
+		if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
 			String basicAuth = "Basic " + Base64.encodeBytes((username + ":" + password).getBytes());
 			urlConnection.setRequestProperty("Authorization", basicAuth);
 		} else if (ConfigUtils.isOnPremBuild()) {
@@ -149,7 +149,7 @@ public class ThreemaSafeServerInfo {
 	}
 
 	private String getCustomServerNameOrDefault() {
-		if (!TestUtil.empty(customServerName)) {
+		if (!TestUtil.isEmptyOrNull(customServerName)) {
 			return customServerName;
 		} else {
 			return defaultServerName;
