@@ -25,24 +25,24 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.IdListService;
 
-public class BlackListActivity extends IdentityListActivity {
+public class BlockedContactsActivity extends IdentityListActivity {
 	private IdListService listService;
 
 	@Override
 	protected IdListService getIdentityListService() {
 		if(this.listService == null) {
-			this.listService = ThreemaApplication.getServiceManager().getBlackListService();
+			this.listService = ThreemaApplication.getServiceManager().getBlockedContactsService();
 		}
 		return this.listService;
 	}
 
 	@Override
 	protected String getBlankListText() {
-		return this.getString(R.string.prefs_sum_black_list);
+		return this.getString(R.string.prefs_sum_blocked_contacts);
 	}
 
 	@Override
 	protected String getTitleText() {
-		return this.getString(R.string.prefs_title_black_list);
+		return this.getString(R.string.prefs_title_blocked_contacts);
 	}
 }

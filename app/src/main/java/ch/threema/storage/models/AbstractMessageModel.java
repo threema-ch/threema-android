@@ -22,11 +22,17 @@
 package ch.threema.storage.models;
 
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Date;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import ch.threema.app.R;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
@@ -647,6 +653,22 @@ public abstract class AbstractMessageModel {
 
     public boolean isStarred() {
         return (getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED;
+    }
+
+    /**
+     * @return The correct color-state-list to use when rendering contents of this message model.
+     */
+    @NonNull
+    public ColorStateList getUiContentColor(@NonNull Context context) {
+        if (isStatusMessage || this instanceof FirstUnreadMessageModel) {
+            return ColorStateList.valueOf(
+                ConfigUtils.getColorFromAttribute(context, R.attr.colorOnTertiaryContainer)
+            );
+        }
+        return AppCompatResources.getColorStateList(
+            context,
+            isOutbox() ? R.color.bubble_send_text_colorstatelist : R.color.bubble_receive_text_colorstatelist
+        );
     }
 
     /**

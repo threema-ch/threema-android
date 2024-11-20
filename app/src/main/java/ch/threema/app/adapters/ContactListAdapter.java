@@ -80,7 +80,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
     private final ContactService contactService;
     private final PreferenceService preferenceService;
-    private final IdListService blackListIdentityService;
+    private final IdListService blockedContactsService;
 
     public static final int VIEW_TYPE_NORMAL = 0;
     public static final int VIEW_TYPE_RECENTLY_ADDED = 1;
@@ -116,7 +116,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         @NonNull List<ContactModel> values,
         ContactService contactService,
         PreferenceService preferenceService,
-        IdListService blackListIdentityService,
+        IdListService blockedContactsService,
         AvatarListener avatarListener,
         @NonNull RequestManager requestManager
     ) {
@@ -126,7 +126,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         this.ovalues = this.values;
         this.contactService = contactService;
         this.preferenceService = preferenceService;
-        this.blackListIdentityService = blackListIdentityService;
+        this.blockedContactsService = blockedContactsService;
         this.avatarListener = avatarListener;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -404,7 +404,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
         ViewUtil.show(
             holder.blockedContactView,
-            blackListIdentityService != null && blackListIdentityService.has(contactModel.getIdentity())
+            blockedContactsService != null && blockedContactsService.has(contactModel.getIdentity())
         );
 
         if (viewType == VIEW_TYPE_RECENTLY_ADDED) {

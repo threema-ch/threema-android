@@ -89,8 +89,8 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 	                                MessageService messageService,
 	                                FileService fileService,
 	                                LifetimeService lifetimeService,
-	                                IdListService blackListService) {
-		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blackListService);
+	                                IdListService blockedContactsService) {
+		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blockedContactsService);
 
 		this.fileService = fileService;
 	}

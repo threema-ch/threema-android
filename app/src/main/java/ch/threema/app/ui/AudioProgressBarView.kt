@@ -93,7 +93,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     }
 
     fun init(attrs: AttributeSet?) {
-        barColor = ContextCompat.getColorStateList(context, R.color.bubble_text_colorstatelist)!!
+        barColor = ContextCompat.getColorStateList(context, R.color.bubble_send_text_colorstatelist)!!
         val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.AudioProgressBarView, 0, 0)
 
         with(typedArray) {

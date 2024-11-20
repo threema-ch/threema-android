@@ -327,8 +327,8 @@ Endatescha in pled-clav per tes backup da datas.</string>
     <string name="synchronize_contact">Contact dal cudesch d\'adressas collià</string>
     <string name="exclude_contact">Excluder da la sincronisaziun automatica</string>
     <string name="prefs_header_lists">Glistas</string>
-    <string name="prefs_title_black_list">Contacts bloccads</string>
-    <string name="prefs_sum_black_list">Messadis da las IDs ch\'èn enumeradas qua vegnan ignorads.</string>
+    <string name="prefs_title_blocked_contacts">Contacts bloccads</string>
+    <string name="prefs_sum_blocked_contacts">Messadis da las IDs ch\'èn enumeradas qua vegnan ignorads.</string>
     <string name="verified">Verifitgà</string>
     <string name="want_to_add_to_exclude_list">Quest contact è collià cun ina registraziun en tes cudesch d\'adressas dal telefon. Sche ti al stizzas, cumpara el puspè suenter che ti has sincronisà ils contacts.\nVuls ti en il futur excluder questa ID da las sincronisaziuns?</string>
     <string name="no">Na</string>

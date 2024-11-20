@@ -63,8 +63,8 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 	public TextMessageCreateHandler(MessageDispatcher dispatcher,
 	                                MessageService messageService,
 	                                LifetimeService lifetimeService,
-	                                IdListService blackListService) {
-		super(Protocol.SUB_TYPE_TEXT_MESSAGE, dispatcher, messageService, lifetimeService, blackListService);
+	                                IdListService blockedContactsService) {
+		super(Protocol.SUB_TYPE_TEXT_MESSAGE, dispatcher, messageService, lifetimeService, blockedContactsService);
 	}
 
 	@Override

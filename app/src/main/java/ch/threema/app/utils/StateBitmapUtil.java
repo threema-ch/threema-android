@@ -28,11 +28,11 @@ import android.widget.ImageView;
 import java.util.EnumMap;
 import java.util.Map;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -109,7 +109,19 @@ public class StateBitmapUtil {
             : null;
     }
 
-    public void setStateDrawable(Context context, AbstractMessageModel messageModel, @Nullable ImageView imageView, boolean useInverseColors) {
+    /**
+     * Sets the icon depending on the messages state property into the passed {@code imageView}. When drawing the icon on a chat bubble view,
+     * the tint should already be correct. Otherwise use the {@code tintOverride} to set a custom color.
+     *
+     * @param tintOverride If passed, it will be applied to any message state icon where the state is not either {@code SENDFAILED}, {@code FS_KEY_MISMATCH},
+     * {@code USERACK} or {@code USERDEC}.
+     */
+    public void setStateDrawable(
+        Context context,
+        AbstractMessageModel messageModel,
+        @Nullable ImageView imageView,
+        @Nullable @ColorInt Integer tintOverride
+    ) {
         if (imageView == null) {
             return;
         }
@@ -141,8 +153,13 @@ public class StateBitmapUtil {
                     imageView.setImageTintList(null);
                     imageView.setColorFilter(this.decColor);
                 } else {
-                    imageView.setColorFilter(null);
-                    imageView.setImageTintList(ContextCompat.getColorStateList(context, R.color.bubble_text_colorstatelist));
+                    if (tintOverride == null) {
+                        imageView.setColorFilter(null);
+                        imageView.setImageTintList(messageModel.getUiContentColor(context));
+                    } else {
+                        imageView.setImageTintList(null);
+                        imageView.setColorFilter(tintOverride);
+                    }
                 }
             }
         }

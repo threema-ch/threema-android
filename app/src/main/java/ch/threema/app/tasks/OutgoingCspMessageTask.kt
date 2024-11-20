@@ -69,7 +69,7 @@ sealed class OutgoingCspMessageTask(serviceManager: ServiceManager) :
     // It is important that the task creator is loaded lazily, as the task archiver may instantiate
     // this class before the connection is initialized (which is used for the task creator).
     private val taskCreator by lazy { serviceManager.taskCreator }
-    private val blackListService by lazy { serviceManager.blackListService }
+    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
 
     final override suspend fun invoke(handle: ActiveTaskCodec) {
         suspend {
@@ -140,7 +140,7 @@ sealed class OutgoingCspMessageTask(serviceManager: ServiceManager) :
                 identityStore,
                 contactStore,
                 nonceFactory,
-                blackListService,
+                blockedContactsService,
                 taskCreator
             )
         }.catchExceptNetworkException { e: BadDHStateException ->
@@ -211,7 +211,7 @@ sealed class OutgoingCspMessageTask(serviceManager: ServiceManager) :
                 contactStore,
                 nonceFactory,
                 groupService,
-                blackListService,
+                blockedContactsService,
                 taskCreator
             )
         }.catchExceptNetworkException { e: BadDHStateException ->

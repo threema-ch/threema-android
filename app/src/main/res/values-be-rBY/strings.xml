@@ -334,8 +334,7 @@
     <string name="synchronize_contact">Сінхр-я адраснай кнігі</string>
     <string name="exclude_contact">Выключыць з аўтаматычнай сінхран</string>
     <string name="prefs_header_lists">Спісы</string>
-    <string name="prefs_title_black_list">Чорны спіс</string>
-    <string name="prefs_sum_black_list">Паведамленні ад пералічаных тут ID, будуць праігнараваны.</string>
+    <string name="prefs_sum_blocked_contacts">Паведамленні ад пералічаных тут ID, будуць пра ігнараваны.</string>
     <string name="verified">Праверана</string>
     <string name="want_to_add_to_exclude_list">Гэты кантакт звязаны з запісам у тэлефоннай кнізе вашай прылады. Калі вы выдаліце ​​яго ў Threema, ён з\'явіцца зноў пасля сінхранізацыі кантактаў.\nВы хочаце выключыць яго з сінхранізацыі?</string>
     <string name="no">Не</string>
@@ -1301,7 +1300,7 @@
     <string name="enable_storage_access_for_media">Уключыце доступ да сховішча, каб праглядаць фатаграфіі і відэа на сваёй прыладзе</string>
     <string name="select_storage_access_for_media_is_granted">Вы падалі доступ да вызначанай колькасці фота і відэа.</string>
     <string name="take_me_there">Перайсці...</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Кіраваць</string>
+    <string name="manage">Кіраваць</string>
     <string name="notification_channel_group_join_request">Канал апавяшчэнняў аб атрыманых запытах ўступлення ў суполку</string>
     <string name="reset_default_group_link_title">Скінуць зв-кі аб прадвызн. спасылцы</string>
     <string name="reset_default_group_link_desc">Раней выкладзеная спасылка стане несапраўднай, а запыты праз старую спасылку будуць аўтаматычна адхіляцца з адказам \"Пратэрмінавана\".</string>
@@ -1569,11 +1568,11 @@
     <!-- accessibility -->
     <string name="cd_ack_icon">згода адпраўлена</string>
     <string name="cd_dec_icon">нязгода адпраўлена</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">ад %d удзельнікаў групы</string>
+    <string name="cd_ack_dec_group_count">ад %d удзельнікаў групы</string>
     <string name="cd_edited">паведамленне было адрэдагавана</string>
     <string name="cd_created_at">створана: %s</string>
     <string name="cd_edited_at">адрэдагавана: %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. рэдагаванне ў гісторыі</string>
+    <string name="cd_index_in_edit_history">%d. рэдагаванне ў гісторыі</string>
     <string name="cd_message_details_container">журнал паведамленняў</string>
     <string name="cd_enable_formatting">Уключыць фарматаванне</string>
     <string name="cd_message">паведамленне</string>

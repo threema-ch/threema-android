@@ -88,7 +88,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	private final ServiceManager serviceManager;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final IdentityStore identityStore;
-	private final IdListService blackListIdentityService;
+	private final IdListService blockedContactsService;
 	private final @NonNull TaskManager taskManager;
 
 	public ContactMessageReceiver(ContactModel contactModel,
@@ -96,13 +96,13 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	                              @NonNull ServiceManager serviceManager,
 	                              DatabaseServiceNew databaseServiceNew,
 	                              IdentityStore identityStore,
-	                              IdListService blackListIdentityService) {
+	                              IdListService blockedContactsService) {
 		this.contactModel = contactModel;
 		this.contactService = contactService;
 		this.serviceManager = serviceManager;
 		this.databaseServiceNew = databaseServiceNew;
 		this.identityStore = identityStore;
-		this.blackListIdentityService = blackListIdentityService;
+		this.blockedContactsService = blockedContactsService;
 		this.taskManager = serviceManager.getTaskManager();
 	}
 
@@ -113,7 +113,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 			contactMessageReceiver.serviceManager,
 			contactMessageReceiver.databaseServiceNew,
 			contactMessageReceiver.identityStore,
-			contactMessageReceiver.blackListIdentityService
+			contactMessageReceiver.blockedContactsService
 		);
 		avatar = contactMessageReceiver.avatar;
 	}
@@ -552,7 +552,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 	@Override
 	public SendingPermissionValidationResult validateSendingPermission() {
 		int cannotSendResId = 0;
-		if (blackListIdentityService.has(contactModel.getIdentity())) {
+		if (blockedContactsService.has(contactModel.getIdentity())) {
 			cannotSendResId = R.string.blocked_cannot_send;
 		} else {
 			if (contactModel.getState() != null) {

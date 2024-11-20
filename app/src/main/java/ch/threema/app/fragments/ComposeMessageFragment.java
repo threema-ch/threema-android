@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -415,7 +416,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ContactService contactService;
 	private MessageService messageService;
 	private NotificationService notificationService;
-	private IdListService blackListIdentityService;
+	private IdListService blockedContactsService;
 	private ConversationService conversationService;
 	private DeviceService deviceService;
 	private WallpaperService wallpaperService;
@@ -2040,9 +2041,11 @@ public class ComposeMessageFragment extends Fragment implements
 		if (TestUtil.isBlankOrNull(newMessageText) || newMessageText.equals(oldMessageText)) {
 			sendEditMessageButton.setEnabled(false);
 			sendEditMessageButton.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle_send_disabled));
+            sendEditMessageButton.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurfaceVariant));
 		} else {
 			sendEditMessageButton.setEnabled(true);
 			sendEditMessageButton.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.ic_circle_send));
+            sendEditMessageButton.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimaryContainer));
 		}
 	}
 
@@ -2620,7 +2623,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		// Exclude blocked contacts
-		if (blackListIdentityService.has(contactModel.getIdentity())) {
+		if (blockedContactsService.has(contactModel.getIdentity())) {
 			return false;
 		}
 
@@ -4118,7 +4121,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 		super.onCreateOptionsMenu(menu, inflater);
 
-		ConfigUtils.addIconsToOverflowMenu(getContext(), menu);
+		ConfigUtils.addIconsToOverflowMenu(menu);
 	}
 
 	@Override
@@ -4203,7 +4206,7 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 				Context context = getContext();
 				if (context != null) {
-					ConfigUtils.tintMenuItem(context, showOpenBallotWindowMenuItem, R.attr.colorOnSurface);
+					ConfigUtils.tintMenuIcon(context, showOpenBallotWindowMenuItem, R.attr.colorOnSurface);
 				}
 			}
 		}.execute();
@@ -4285,8 +4288,8 @@ public class ComposeMessageFragment extends Fragment implements
 			// do not update if no longer attached to activity
 			return;
 		}
-		if (TestUtil.required(this.blockMenuItem, this.blackListIdentityService, this.contactModel)) {
-			boolean state = this.blackListIdentityService.has(this.contactModel.getIdentity());
+		if (TestUtil.required(this.blockMenuItem, this.blockedContactsService, this.contactModel)) {
+			boolean state = this.blockedContactsService.has(this.contactModel.getIdentity());
 			this.blockMenuItem.setTitle(state ? getString(R.string.unblock_contact) : getString(R.string.block_contact));
 			this.blockMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
 			this.mutedMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -4304,7 +4307,7 @@ public class ComposeMessageFragment extends Fragment implements
 			if (isGroupChat) {
 				updateGroupCallMenuItem();
 			} else if (callItem != null) {
-				if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService) && ConfigUtils.isCallsEnabled()) {
+				if (ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService) && ConfigUtils.isCallsEnabled()) {
 					logger.debug("updateVoipMenu newState " + newState);
 					callItem.setIcon(R.drawable.ic_phone_locked_outline);
 					callItem.setTitle(R.string.threema_call);
@@ -4409,8 +4412,8 @@ public class ComposeMessageFragment extends Fragment implements
 				activity.startActivity(intent);
 			}
 		} else if (id == R.id.menu_block_contact) {
-			if (this.blackListIdentityService.has(contactModel.getIdentity())) {
-				this.blackListIdentityService.toggle(activity, contactModel);
+			if (this.blockedContactsService.has(contactModel.getIdentity())) {
+				this.blockedContactsService.toggle(activity, contactModel);
 				updateBlockMenu();
 			} else {
 				GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).setTargetFragment(this).show(getFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
@@ -4513,7 +4516,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private void createShortcut() {
 		if (!this.isGroupChat &&
 			!this.isDistributionListChat &&
-			ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService) &&
+			ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService) &&
 			ConfigUtils.isCallsEnabled()) {
 							ArrayList<SelectorDialogItem> items = new ArrayList<>();
 				items.add(new SelectorDialogItem(getString(R.string.prefs_header_chat), R.drawable.ic_outline_chat_bubble_outline));
@@ -4747,7 +4750,7 @@ public class ComposeMessageFragment extends Fragment implements
 				inflater.inflate(R.menu.action_compose_message, menu);
 			}
 
-			ConfigUtils.addIconsToOverflowMenu(null, menu);
+			ConfigUtils.addIconsToOverflowMenu(menu);
 
 			forwardItem = menu.findItem(R.id.menu_message_forward);
 			saveItem = menu.findItem(R.id.menu_message_save);
@@ -5336,7 +5339,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.notificationService,
 				this.distributionListService,
 				this.messagePlayerService,
-				this.blackListIdentityService,
+				this.blockedContactsService,
 				this.ballotService,
 				this.conversationService,
 				this.deviceService,
@@ -5361,7 +5364,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.notificationService = serviceManager.getNotificationService();
 				this.distributionListService = serviceManager.getDistributionListService();
 				this.messagePlayerService = serviceManager.getMessagePlayerService();
-				this.blackListIdentityService = serviceManager.getBlackListService();
+				this.blockedContactsService = serviceManager.getBlockedContactsService();
 				this.ballotService = serviceManager.getBallotService();
 				this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
 				this.conversationService = serviceManager.getConversationService();
@@ -5404,7 +5407,7 @@ public class ComposeMessageFragment extends Fragment implements
 				emptyChat();
 				break;
 			case DIALOG_TAG_CONFIRM_BLOCK:
-				blackListIdentityService.toggle(activity, contactModel);
+				blockedContactsService.toggle(activity, contactModel);
 				updateBlockMenu();
 				break;
 			case DIALOG_TAG_CONFIRM_LINK:
@@ -5599,7 +5602,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 				final String spammerIdentity = spammerContactModel.getIdentity();
 				if (block) {
-					blackListIdentityService.add(spammerIdentity);
+					blockedContactsService.add(spammerIdentity);
 					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
 
 					if (messageReceiver != null) {

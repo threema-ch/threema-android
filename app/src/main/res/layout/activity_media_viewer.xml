@@ -1,70 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/gallery_background">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gallery_background">
 
-	<ch.threema.app.ui.LockableViewPager
-		android:id="@+id/pager"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+    <ch.threema.app.ui.LockableViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-	<LinearLayout
-		android:id="@+id/session_loading"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="top|center_horizontal"
-		android:layout_marginTop="10dp"
-		android:orientation="horizontal"
-		android:visibility="gone">
+    <LinearLayout
+        android:id="@+id/session_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-		<com.google.android.material.progressindicator.CircularProgressIndicator
-			android:id="@+id/progress_bar"
-			android:indeterminate="true"
-			style="@style/Widget.Material3.CircularProgressIndicator.Small"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="2dp"/>
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress_bar"
+            style="@style/Widget.Material3.CircularProgressIndicator.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:indeterminate="true" />
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="10sp"
-			android:text="@string/decoding_message"
-			android:textColor="@android:color/white"/>
-	</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:text="@string/decoding_message"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.MediaViewerCaption"
-		android:id="@+id/caption_container"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom|center_horizontal"
-		app:contentPaddingTop="@dimen/mediaviewer_caption_container_padding_vertical"
-		app:contentPaddingBottom="@dimen/mediaviewer_caption_container_padding_vertical"
-		app:contentPaddingLeft="16dp"
-		app:contentPaddingRight="16dp"
-		android:visibility="gone">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/caption_container"
+        style="@style/Threema.CardView.MediaViewerCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:visibility="gone"
+        app:contentPaddingBottom="@dimen/mediaviewer_caption_container_padding_vertical"
+        app:contentPaddingLeft="16dp"
+        app:contentPaddingRight="16dp"
+        app:contentPaddingTop="@dimen/mediaviewer_caption_container_padding_vertical">
 
-		<ch.threema.app.emojis.EmojiTextView
-			android:id="@+id/caption"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:text=""
-			android:ellipsize="end"
-			android:textColor="@android:color/white"
-			android:textSize="@dimen/mediaviewer_caption_text_size"/>
+        <ch.threema.app.emojis.EmojiTextView
+            android:id="@+id/caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ellipsize="end"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/mediaviewer_caption_text_size" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-	<com.google.android.material.appbar.MaterialToolbar
-		android:id="@+id/toolbar"
-		android:layout_width="match_parent"
-		android:layout_height="?attr/actionBarSize"
-		android:background="#77000000"
-		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-		app:popupTheme="@style/ThemeOverlay.AppCompat"/>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#77000000"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/Threema.PopupMenuStyle.Overflow" />
 
 </FrameLayout>

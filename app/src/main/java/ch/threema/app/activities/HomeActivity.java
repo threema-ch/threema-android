@@ -55,6 +55,8 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -588,7 +590,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 						BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 						if (bottomNavigationView != null) {
 							BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.contacts);
-							badgeDrawable.setBackgroundColor(ConfigUtils.getAccentColor(HomeActivity.this));
+                            // the contacts tab item badge uses custom colors (normally badges are red)
+                            badgeDrawable.setBackgroundColor(
+                                getContactsTabBadgeColor(bottomNavigationView.getSelectedItemId())
+                            );
 							if (badgeDrawable.getVerticalOffset() == 0) {
 								badgeDrawable.setVerticalOffset(getResources().getDimensionPixelSize(R.dimen.bottom_nav_badge_offset_vertical));
 							}
@@ -1275,6 +1280,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		this.bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
 			showMainContent();
 
+            // the contacts tab item badge uses custom colors (normally badges are red)
+            final @Nullable BadgeDrawable badgeDrawableContacts = bottomNavigationView.getBadge(R.id.contacts);
+            if (badgeDrawableContacts != null) {
+                badgeDrawableContacts.setBackgroundColor(getContactsTabBadgeColor(item.getItemId()));
+            }
+
 			Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
 			if (currentFragment != null) {
 				if (item.getItemId() == R.id.contacts) {
@@ -1462,7 +1473,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.activity_home, menu);
 
-		ConfigUtils.addIconsToOverflowMenu(this, menu);
+		ConfigUtils.addIconsToOverflowMenu(menu);
 
 		return true;
 	}
@@ -1567,7 +1578,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 					privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
 					privateChatToggleMenuItem.setTitle(R.string.title_hide_private_chats);
 				}
-				ConfigUtils.tintMenuItem(this, privateChatToggleMenuItem, R.attr.colorOnSurface);
+				ConfigUtils.tintMenuIcon(this, privateChatToggleMenuItem, R.attr.colorOnSurface);
 			}
 
 			Boolean addDisabled;
@@ -2014,6 +2025,23 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			launchThreemaChannelChat();
 		}
 	}
+
+    /**
+     * @return The correct color to ensure contrast. If the navigation bar item is <strong>not</strong> selected, we use the {@code onSurfaceVariant}
+     * because the material library paints icons in {@code onSurfaceVariant}. So we match. If the item is selected, we have to use
+     * {@code onPrimaryContainer} since we customized our navigation bar active indicator to have the color of {@code primaryContainer}.
+     *
+     * @see "@style/Threema.BottomNavigationView"
+     */
+    @ColorInt
+    private int getContactsTabBadgeColor(@IdRes int currentlySelectedMenuItemId) {
+        return ConfigUtils.getColorFromAttribute(
+            HomeActivity.this,
+            currentlySelectedMenuItemId == R.id.contacts
+                ? R.attr.colorOnPrimaryContainer
+                : R.attr.colorOnSurfaceVariant
+        );
+    }
 
 	@Override
 	protected void onSaveInstanceState(@NonNull Bundle outState) {

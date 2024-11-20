@@ -391,7 +391,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 			SpannableString s = new SpannableString(highlightItem.getTitle());
 			s.setSpan(new ForegroundColorSpan(highlightColor), 0, s.length(), 0);
 			highlightItem.setTitle(s);
-			ConfigUtils.tintMenuItem(highlightItem, highlightColor);
+			ConfigUtils.tintMenuIcon(highlightItem, highlightColor);
 
 			menuBuilder.setCallback(new MenuBuilder.Callback() {
 				@Override

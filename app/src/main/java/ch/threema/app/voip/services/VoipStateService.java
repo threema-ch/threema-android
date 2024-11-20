@@ -732,16 +732,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
         final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
 
-        boolean isMuted = DNDUtil.getInstance().isMutedPrivate(messageReceiver, null);
-
         // Set state to RINGING
         this.setStateRinging(callId);
 
         // Show call notification
         final Notification notification = this.showNotification(contact, accept, reject, msg);
 
+        DNDUtil dndUtil = DNDUtil.getInstance();
+        boolean isReceiverMuted = dndUtil.isMutedPrivate(messageReceiver, null);
+        boolean isSystemMuted = dndUtil.isSystemMuted(
+            messageReceiver, notification, notificationManagerCompat
+        );
+        boolean isMuted = isReceiverMuted || isSystemMuted;
+
         // Play ringtone
-        this.playRingtone(notification, messageReceiver, isMuted);
+        this.playRingtone(messageReceiver, isMuted);
 
         // Vibrate if necessary
         this.startVibration(notification, isMuted);
@@ -1628,7 +1633,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         return notification;
     }
 
-    private void playRingtone(@Nullable Notification notification, MessageReceiver messageReceiver, boolean isMuted) {
+    private void playRingtone(MessageReceiver<?> messageReceiver, boolean isMuted) {
         final Uri ringtoneUri = this.ringtoneService.getVoiceCallRingtone(messageReceiver.getUniqueIdString());
 
         if (ringtoneUri != null) {
@@ -1637,9 +1642,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 stopRingtone();
             }
 
-            boolean isSystemMuted = DNDUtil.getInstance().isSystemMuted(messageReceiver, notification, notificationManagerCompat);
-
-            if (!isMuted && !isSystemMuted) {
+            if (!isMuted) {
                 audioManager.requestAudioFocus(this, AudioManager.STREAM_RING, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
                 ringtonePlayer = new MediaPlayerStateWrapper();
                 ringtonePlayer.setStateListener(new MediaPlayerStateWrapper.StateListener() {
@@ -1674,7 +1677,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                     stopRingtone();
                 }
             } else {
-                logger.info("Not playing ringtone. isMuted = {}, isSystemMuted = {}", isMuted, isSystemMuted);
+                logger.info("Not playing ringtone. isMuted = {}", isMuted);
             }
         } else {
             logger.info("No ringtone selected");

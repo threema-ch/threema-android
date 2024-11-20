@@ -336,8 +336,8 @@
     <string name="synchronize_contact">Sincronización de la libreta de direcciones</string>
     <string name="exclude_contact">Excluir de la sincronización automática</string>
     <string name="prefs_header_lists">Listas</string>
-    <string name="prefs_title_black_list">Contacto bloqueado</string>
-    <string name="prefs_sum_black_list">Los mensajes de los ID de esta lista se ignorarán al sincronizar.</string>
+    <string name="prefs_title_blocked_contacts">Contacto bloqueado</string>
+    <string name="prefs_sum_blocked_contacts">Los mensajes de los ID de esta lista se ignorarán al sincronizar.</string>
     <string name="verified">Verificado</string>
     <string name="want_to_add_to_exclude_list">Este contacto está vinculado a una entrada de la libreta de direcciones de su teléfono. Si lo elimina de Threema, reaparecerá después de una sincronización de contactos.\n¿Desea que este ID se excluya de la sincronización en el futuro?</string>
     <string name="no">No</string>
@@ -1308,7 +1308,7 @@ almacenado.</string>
     <string name="enable_storage_access_for_media">Active el acceso al almacenamiento para ver las fotos y los vídeos de su dispositivo</string>
     <string name="select_storage_access_for_media_is_granted">Has dado acceso a un número selecto de fotos y vídeos.</string>
     <string name="take_me_there">Llevarme...</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Administrar</string>
+    <string name="manage">Administrar</string>
     <string name="notification_channel_group_join_request">Canal de notificaciones para las solicitudes de grupo recibidas</string>
     <string name="reset_default_group_link_title">Restablecer la información del enlace predeterminado</string>
     <string name="reset_default_group_link_desc">El enlace compartido anteriormente no será válido y las solicitudes a través del enlace antiguo se rechazarán automáticamente con una respuesta de caducidad.</string>
@@ -1576,11 +1576,11 @@ almacenado.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">aceptar el envío</string>
     <string name="cd_dec_icon">no estoy de acuerdo enviado</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">por %d miembros del grupo</string>
+    <string name="cd_ack_dec_group_count">por %d miembros del grupo</string>
     <string name="cd_edited">Se editó el mensaje</string>
     <string name="cd_created_at">creado en %s</string>
     <string name="cd_edited_at">editado en %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. editar en el historial</string>
+    <string name="cd_index_in_edit_history">%d. editar en el historial</string>
     <string name="cd_message_details_container">detalles del mensaje</string>
     <string name="cd_enable_formatting">Habilitar el formato</string>
     <string name="cd_message">mensaje</string>

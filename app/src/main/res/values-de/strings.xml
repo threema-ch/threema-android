@@ -356,8 +356,8 @@
     <string name="synchronize_contact">Adressbuch-Synchronisation</string>
     <string name="exclude_contact">Von autom. Synchr. ausschliessen</string>
     <string name="prefs_header_lists">Listen</string>
-    <string name="prefs_title_black_list">Blockierte Kontakte</string>
-    <string name="prefs_sum_black_list">Nachrichten von IDs, die hier aufgelistet sind, werden ignoriert.</string>
+    <string name="prefs_title_blocked_contacts">Blockierte Kontakte</string>
+    <string name="prefs_sum_blocked_contacts">Nachrichten von IDs, die hier aufgelistet sind, werden ignoriert.</string>
     <string name="verified">Überprüft</string>
     <string name="want_to_add_to_exclude_list">Dieser Kontakt ist mit einem Eintrag in Ihrem Telefon-Adressbuch
         verknüpft. Wenn Sie ihn in Threema löschen, taucht er nach einer Kontaktsynchronisation wieder auf.\nMöchten sie
@@ -1350,7 +1350,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="enable_storage_access_for_media">Aktivieren Sie den Speicherzugriff, um Bilder und Videos auf Ihrem Gerät zu sehen</string>
     <string name="select_storage_access_for_media_is_granted">Sie haben den Zugriff auf eine Auswahl an Fotos und Videos gewährt.</string>
     <string name="take_me_there">Jetzt aktivieren…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Verwalten</string>
+    <string name="manage">Verwalten</string>
     <string name="notification_channel_group_join_request">Benachrichtigung für Gruppenanfragen</string>
     <string name="reset_default_group_link_title">Zurücksetzen Info</string>
     <string name="reset_default_group_link_desc">Der zuvor geteilte Link wird somit ungültig und Anfragen über den alten Link werden automatisch abgelehnt.</string>
@@ -1613,11 +1613,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abgelehnt</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">von %d Gruppenmitgliedern</string>
+    <string name="cd_ack_dec_group_count">von %d Gruppenmitgliedern</string>
     <string name="cd_edited">Nachricht wurde bearbeitet</string>
     <string name="cd_created_at">Erstellt um %s</string>
     <string name="cd_edited_at">bearbeitet am %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. Bearbeitung im Verlauf</string>
+    <string name="cd_index_in_edit_history">%d. Bearbeitung im Verlauf</string>
     <string name="cd_message_details_container">Nachrichtendetails</string>
     <string name="cd_enable_formatting">Formatierung aktivieren</string>
     <string name="cd_message">Nachricht</string>

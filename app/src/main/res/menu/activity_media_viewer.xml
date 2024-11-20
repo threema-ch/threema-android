@@ -1,48 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<item
-		android:id="@+id/menu_gallery"
-		app:showAsAction="always"
-		android:title="@string/media_gallery"
-		android:icon="@drawable/ic_outline_apps"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="5" />
+    <item
+        android:id="@+id/menu_gallery"
+        android:icon="@drawable/ic_outline_apps"
+        android:orderInCategory="1"
+        android:title="@string/media_gallery"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/menu_save"
-		app:showAsAction="never"
-		android:title="@string/save_message_action"
-		android:visible="false"
-		android:icon="@drawable/ic_save_outline"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="10" />
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share_outline"
+        android:orderInCategory="2"
+        android:title="@string/share_image"
+        android:visible="false"
+        app:iconTint="@android:color/white"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/menu_view"
-		app:showAsAction="never"
-		android:title="@string/view_in_gallery"
-		android:visible="false"
-		android:icon="@drawable/ic_collections"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="30" />
+    <item
+        android:id="@+id/menu_save"
+        android:icon="@drawable/ic_save_outline"
+        android:orderInCategory="10"
+        android:title="@string/save_message_action"
+        android:visible="false"
+        app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_share"
-		app:showAsAction="always"
-		android:visible="false"
-		android:icon="@drawable/ic_share_outline"
-		app:iconTint="@android:color/white"
-		android:title="@string/share_image"
-		android:orderInCategory="50" />
+    <item
+        android:id="@+id/menu_view"
+        android:icon="@drawable/ic_collections"
+        android:orderInCategory="20"
+        android:title="@string/view_in_gallery"
+        android:visible="false"
+        app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_show_in_chat"
-		app:showAsAction="never"
-		android:title="@string/show_in_chat"
-		android:icon="@drawable/ic_outline_chat_bubble_outline"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="60" />
+    <item
+        android:id="@+id/menu_show_in_chat"
+        android:icon="@drawable/ic_outline_chat_bubble_outline"
+        android:orderInCategory="30"
+        android:title="@string/show_in_chat"
+        app:showAsAction="never" />
 
 </menu>

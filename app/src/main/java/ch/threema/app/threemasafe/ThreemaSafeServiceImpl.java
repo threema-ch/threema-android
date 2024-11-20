@@ -238,7 +238,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private final GroupService groupService;
 	private final DistributionListService distributionListService;
 	private final FileService fileService;
-	private final IdListService blackListService;
+	private final IdListService blockedContactsService;
 	private final IdListService excludedSyncIdentitiesService;
 	private final IdListService profilePicRecipientsService;
 	private final DatabaseServiceNew databaseServiceNew;
@@ -257,7 +257,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		DistributionListService distributionListService,
 		LocaleService localeService,
 		FileService fileService,
-		IdListService blackListService,
+		IdListService blockedContactsService,
 		IdListService excludedSyncIdentitiesService,
 		IdListService profilePicRecipientsService,
 		DatabaseServiceNew databaseServiceNew,
@@ -280,7 +280,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		this.localeService = localeService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.fileService = fileService;
-		this.blackListService = blackListService;
+		this.blockedContactsService = blockedContactsService;
 		this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
 		this.profilePicRecipientsService = profilePicRecipientsService;
 		this.hiddenChatsListService = hiddenChatsListService;
@@ -1554,7 +1554,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private JSONArray getSettingsBlockedContacts() {
 		JSONArray blockedContactsArray = new JSONArray();
 
-		for (final String id : blackListService.getAll()) {
+		for (final String id : blockedContactsService.getAll()) {
 			blockedContactsArray.put(id);
 		}
 
@@ -1566,7 +1566,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		for (int i=0; i <blockedContacts.length(); i++) {
 			try {
-				blackListService.add(blockedContacts.getString(i));
+				blockedContactsService.add(blockedContacts.getString(i));
 			} catch (JSONException e) {
 				// ignore invalid entry
 			}

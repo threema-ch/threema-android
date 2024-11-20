@@ -1,3 +1,2 @@
-* Refactoring of notification channels: Individual notification settings need to be set again
-* Media can now be edited before forwarding
-* The edit history can now be viewed for edited messages
+* Improvements when “dynamic colors” are used
+* Fix of a bug, that could cause a vibrating notification even if “Do not disturb” is active

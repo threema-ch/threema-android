@@ -56,7 +56,7 @@ class OutgoingGroupSyncRequestTask(
     private val apiConnector by lazy { serviceManager.apiConnector }
     private val taskCreator by lazy { serviceManager.taskCreator }
     private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory }
-    private val blackListService by lazy { serviceManager.blackListService }
+    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
 
     override val type: String = "OutgoingGroupSyncRequestTask"
 
@@ -96,7 +96,7 @@ class OutgoingGroupSyncRequestTask(
             identityStore,
             contactStore,
             nonceFactory,
-            blackListService,
+            blockedContactsService,
             taskCreator
         )
 

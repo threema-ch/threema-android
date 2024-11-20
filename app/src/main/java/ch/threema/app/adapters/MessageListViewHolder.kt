@@ -370,9 +370,10 @@ class MessageListViewHolder(
         dateView.contentDescription = null
     }
 
-    private fun initializeDeliveryView(messageListAdapterItem: MessageListAdapterItem,
-                                       isHiddenChat: Boolean,
-                                       hasDraft: Boolean
+    private fun initializeDeliveryView(
+        messageListAdapterItem: MessageListAdapterItem,
+        isHiddenChat: Boolean,
+        hasDraft: Boolean
     ) {
         if (isHiddenChat || hasDraft) {
             deliveryView.visibility = GONE
@@ -399,7 +400,12 @@ class MessageListViewHolder(
                 if (messageListAdapterItem.latestMessage != null) {
                     // In case there is a latest message but no icon is set, we need to get the
                     // icon for the current message state
-                    params.stateBitmapUtil?.setStateDrawable(context, messageListAdapterItem.latestMessage, deliveryView, false)
+                    params.stateBitmapUtil?.setStateDrawable(
+                        context,
+                        messageListAdapterItem.latestMessage,
+                        deliveryView,
+                        ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface)
+                    )
                 } else {
                     deliveryView.visibility = GONE
                 }

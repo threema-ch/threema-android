@@ -178,7 +178,11 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.itemAnimator = DefaultItemAnimator()
         val emptyView = EmptyView(this, ConfigUtils.getActionBarSize(this))
-        emptyView.setup(R.string.global_search_empty_view_text, R.drawable.ic_search_outline)
+        emptyView.setup(
+            R.string.global_search_empty_view_text,
+            R.drawable.ic_search_outline,
+            ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground)
+        )
         (recyclerView.parent.parent as ViewGroup).addView(emptyView)
         recyclerView.emptyView = emptyView
         emptyView.setLoading(true)

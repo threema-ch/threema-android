@@ -1,53 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-	<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/icon"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:maxHeight="@dimen/avatar_size_small"
-			android:maxWidth="@dimen/avatar_size_small"
-			android:layout_gravity="center"
-			android:clickable="false"
-			android:scaleType="centerCrop"
-			android:importantForAccessibility="no"
-			android:background="?attr/colorTertiaryContainer"
-			android:visibility="gone" />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:importantForAccessibility="no"
+        android:maxWidth="@dimen/avatar_size_small"
+        android:maxHeight="@dimen/avatar_size_small"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        tools:background="?attr/colorTertiaryContainer"
+        tools:src="@drawable/ic_play"
+        tools:visibility="visible" />
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-			android:id="@+id/progress"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:indeterminate="true"
-			android:indeterminateOnly="true"
-			app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
-			app:trackColor="?attr/colorPrimaryContainer"
-			app:indicatorColor="?attr/colorPrimary"
-			app:indicatorSize="@dimen/conversation_controller_progress_size"
-			app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
-			app:indicatorDirectionCircular="clockwise"
-			app:showAnimationBehavior="inward"
-			app:hideAnimationBehavior="inward"
-			android:clickable="false"
-			android:layout_gravity="center"
-			android:visibility="gone"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:indeterminate="true"
+        android:indeterminateOnly="true"
+        android:visibility="gone"
+        app:hideAnimationBehavior="inward"
+        app:indicatorDirectionCircular="clockwise"
+        app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
+        app:indicatorSize="@dimen/conversation_controller_progress_size"
+        app:showAnimationBehavior="inward"
+        app:trackColor="@android:color/transparent"
+        app:trackThickness="@dimen/conversation_controller_progress_stroke_width" />
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-			android:id="@+id/progress_determinate"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
-			app:trackColor="?attr/colorPrimaryContainer"
-			app:indicatorColor="?attr/colorPrimary"
-			app:indicatorSize="@dimen/conversation_controller_progress_size"
-			app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
-			app:indicatorDirectionCircular="clockwise"
-			app:showAnimationBehavior="inward"
-			app:hideAnimationBehavior="inward"
-			android:max="100"
-			android:clickable="false"
-			android:layout_gravity="center"
-			android:visibility="gone"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_determinate"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:max="100"
+        android:visibility="gone"
+        app:hideAnimationBehavior="inward"
+        app:indicatorDirectionCircular="clockwise"
+        app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
+        app:indicatorSize="@dimen/conversation_controller_progress_size"
+        app:showAnimationBehavior="inward"
+        app:trackThickness="@dimen/conversation_controller_progress_stroke_width" />
 
 </merge>

@@ -137,7 +137,7 @@ public class VoipUtil {
 			return false;
 		}
 
-		if (serviceManager.getBlackListService().has(contactModel.getIdentity())) {
+		if (serviceManager.getBlockedContactsService().has(contactModel.getIdentity())) {
 			Toast.makeText(activity, R.string.blocked_cannot_send, Toast.LENGTH_LONG).show();
 			return false;
 		}

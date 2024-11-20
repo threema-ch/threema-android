@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	style="@style/Threema.CardView.Bubble.Status"
-	android:id="@+id/message_block"
-	app:cardBackgroundColor="@color/date_separator_bg_color">
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/message_block"
+    style="@style/Threema.CardView.Bubble.Status"
+    app:cardBackgroundColor="@color/date_separator_bg_color">
 
-	<TextView
-		android:id="@+id/text_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:autoLink="none"
-		android:gravity="center_horizontal"
-		android:maxLines="1"
-		android:textAppearance="@style/DateSeparatorText" />
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:autoLink="none"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        android:textAppearance="@style/DateSeparatorText"
+        tools:text="vor 3 Tagen" />
 
 </com.google.android.material.card.MaterialCardView>

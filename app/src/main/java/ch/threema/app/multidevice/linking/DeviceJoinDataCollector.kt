@@ -120,7 +120,7 @@ class DeviceJoinDataCollector(
     private val distributionListService by lazy { serviceManager.distributionListService }
     private val deviceCookieManager by lazy { serviceManager.deviceCookieManager }
     private val preferenceService by lazy { serviceManager.preferenceService }
-    private val blockedIdentitiesService by lazy { serviceManager.blackListService }
+    private val blockedIdentitiesService by lazy { serviceManager.blockedContactsService }
     private val excludeFromSyncService by lazy { serviceManager.excludedSyncIdentitiesService }
     private val fileService by lazy { serviceManager.fileService }
     private val hiddenChatsService by lazy { serviceManager.hiddenChatsListService }

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:id="@+id/group_sender_view"
-			  android:layout_height="wrap_content"
-			  android:layout_width="match_parent"
-			  android:minHeight="16sp"
-			  android:paddingLeft="@dimen/chat_bubble_margin_start"
-			  android:paddingRight="@dimen/chat_bubble_margin_end"
-			  android:layout_marginTop="-2dp"
-			  android:layout_marginBottom="3dp"
-			  android:layout_gravity="left|top"
-			  android:gravity="center_vertical"
-			  android:visibility="gone">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/group_sender_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="left|top"
+    android:layout_marginTop="-2dp"
+    android:layout_marginBottom="3dp"
+    android:gravity="center_vertical"
+    android:minHeight="16sp"
+    android:paddingLeft="@dimen/chat_bubble_margin_start"
+    android:paddingRight="@dimen/chat_bubble_margin_end"
+    android:visibility="gone"
+    tools:visibility="visible">
 
-	<ch.threema.app.emojis.EmojiTextView
-			style="@style/Threema.Bubble.Text.Footer"
-			android:id="@+id/group_sender_name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical"
-			android:textStyle="bold"
-			android:ellipsize="end"
-			android:maxLines="1"
-			/>
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/group_sender_name"
+        style="@style/Threema.Bubble.Text.Footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textStyle="bold"
+        tools:text="@tools:sample/full_names"/>
 
 </LinearLayout>

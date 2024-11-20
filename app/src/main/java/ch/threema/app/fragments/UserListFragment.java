@@ -102,7 +102,7 @@ public class UserListFragment extends RecipientListFragment {
 					null,
 					checkedItemPositions,
 					contactService,
-					blacklistService,
+					blockedContactsService,
 					hiddenChatsListService,
 					preferenceService,
 					UserListFragment.this,

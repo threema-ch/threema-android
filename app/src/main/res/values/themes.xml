@@ -12,6 +12,7 @@
 	-->
 
 	<style name="AppBaseTheme" parent="Theme.Material3.Light">
+
 		<item name="elevationOverlayEnabled">true</item>
 		<!-- disable forced dark mode as used by MIUI 12.x -->
 		<item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
@@ -43,6 +44,7 @@
 		<item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+
         <!-- tonal values -->
         <item name="colorSurfaceContainerLowest">@color/md_theme_light_surfaceContainerLowest</item>
         <item name="colorSurfaceContainerLow">@color/md_theme_light_surfaceContainerLow</item>
@@ -96,19 +98,28 @@
 		<item name="shapeAppearanceMediumComponent">@style/Threema.ShapeAppearance.MediumComponent</item>
 		<item name="shapeAppearanceLargeComponent">@style/Threema.ShapeAppearance.LargeComponent</item>
 		<item name="chipStyle">@style/Threema.ChipStyle</item>
-		<item name="actionModeCloseButtonStyle">@style/Threema.ActionMode.CloseButton.Style</item>
 		<item name="android:scrollViewStyle">@style/Threema.ScrollView</item>
-		<item name="actionModeStyle">@style/Threema.ActionMode</item>
-		<item name="android:windowAnimationStyle">@style/Threema.Animation.ActivityTransitions</item>
+        <item name="android:windowAnimationStyle">@style/Threema.Animation.ActivityTransitions</item>
 		<item name="tabStyle">@style/Threema.TabStyle</item>
 		<item name="snackbarStyle">@style/Threema.Snackbar.Style</item>
 		<item name="snackbarButtonStyle">@style/Threema.Snackbar.ButtonStyle</item>
 		<item name="snackbarTextViewStyle">@style/Threema.Snackbar.TextViewStyle</item>
 		<item name="materialSearchBarStyle">@style/Threema.SearchBar.Style</item>
-		<item name="actionOverflowButtonStyle">@style/Threema.ActionOverflowButtonStyle</item>
-        <item name="actionOverflowMenuStyle">@style/Threema.ActionOverflowMenuStyle.Light</item>
 
-		<!-- preferences -->
+        <!-- Action mode & Action bar -->
+        <item name="actionModeStyle">@style/Threema.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Threema.ActionMode.CloseButton.Style</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.MaterialComponents.Light.ActionBar.Solid</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
+        <item name="actionOverflowMenuStyle">@style/Threema.PopupMenuStyle.Overflow</item>
+        <item name="actionOverflowButtonStyle">@style/Threema.ActionOverflowButtonStyle</item>
+
+        <!-- Necessary when using menus with MenuInflater as the attr/popupMenuStyle will not work -->
+        <item name="textAppearanceLargePopupMenu">@style/Threema.TextAppearance.PopupMenu.Large</item>
+        <item name="textAppearanceSmallPopupMenu">@style/Threema.TextAppearance.PopupMenu.Small</item>
+
+        <!-- preferences -->
 		<item name="preferenceFragmentCompatStyle">@style/Threema.MaterialPreferencesFragment</item>
 		<item name="preferenceCategoryStyle">@style/Threema.MaterialPreferenceCategory</item>
 		<item name="preferenceStyle">@style/Threema.MaterialPreference</item>
@@ -148,7 +159,7 @@
 
 	<style name="Theme.Threema.TransparentStatusbar" parent="Theme.Threema.WithToolbar">
 		<item name="toolbarStyle">@style/Widget.Material3.Toolbar</item>
-		<item name="popup_menu_background">@color/md_theme_light_surface</item>
+        <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
 	</style>
 
 	<style name="Theme.Threema.TransparentStatusbar_Fullscreen" parent="Theme.Threema.TransparentStatusbar">
@@ -264,12 +275,25 @@
 		<item name="alertDialogStyle">@style/Threema.Dialog.Wizard</item>
 		<item name="materialAlertDialogTheme">@style/Threema.AlertDialogStyle</item>
 
-		<!-- Status bar and navigation bar color -->
+        <!-- Action mode & Action bar -->
+        <item name="actionModeStyle">@style/Threema.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Threema.ActionMode.CloseButton.Style</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.MaterialComponents.Light.ActionBar.Solid</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.MaterialComponents.Dark</item>
+        <item name="actionOverflowMenuStyle">@style/Threema.PopupMenuStyle.Overflow</item>
+        <item name="actionOverflowButtonStyle">@style/Threema.ActionOverflowButtonStyle</item>
+
+        <!-- Necessary when using menus with MenuInflater as the attr/popupMenuStyle will not work -->
+        <item name="textAppearanceLargePopupMenu">@style/Threema.TextAppearance.PopupMenu.Large</item>
+        <item name="textAppearanceSmallPopupMenu">@style/Threema.TextAppearance.PopupMenu.Small</item>
+
+        <!-- Status bar and navigation bar color -->
 		<item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
 		<item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 		<item name="android:statusBarColor">@color/md_theme_dark_background</item>
 		<item name="android:navigationBarColor">@color/md_theme_dark_background</item>
-	</style>
+    </style>
 
 	<!-- a theme that is always dark -->
 	<style name="Theme.Threema.MediaViewer" parent="Theme.Material3.Dark">
@@ -302,7 +326,14 @@
 		<item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
 		<item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
-		<!-- deprecated colors mapping -->
+        <!-- tonal values -->
+        <item name="colorSurfaceContainerLowest">@color/md_theme_dark_surfaceContainerLowest</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_dark_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_dark_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_dark_surfaceContainerHigh</item>
+        <item name="colorSurfaceContainerHighest">@color/md_theme_dark_surfaceContainerHighest</item>
+
+        <!-- deprecated colors mapping -->
 		<item name="colorPrimaryDark">@color/md_theme_dark_secondary</item> <!--   darker variant for the status bar and contextual app bars -->
 		<item name="colorAccent">@color/md_theme_dark_primary</item> <!--   theme UI controls like checkboxes and text fields -->
 		<item name="android:windowBackground">@color/md_theme_dark_background</item> <!-- action mode appears on top of tool bar -->
@@ -321,7 +352,20 @@
 		<item name="materialAlertDialogTheme">@style/Threema.AlertDialogStyle</item>
 		<item name="toolbarStyle">@style/Threema.ToolbarStyle</item>
 
-		<item name="windowActionBar">false</item>
+        <!-- Action mode & Action bar -->
+        <item name="actionModeStyle">@style/Threema.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Threema.ActionMode.CloseButton.Style</item>
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.MaterialComponents.Light.ActionBar.Solid</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.MaterialComponents.Dark</item>
+        <item name="actionOverflowMenuStyle">@style/Threema.PopupMenuStyle.Overflow</item>
+        <item name="actionOverflowButtonStyle">@style/Threema.ActionOverflowButtonStyle</item>
+
+        <!-- Necessary when using menus with MenuInflater as the attr/popupMenuStyle will not work -->
+        <item name="textAppearanceLargePopupMenu">@style/Threema.TextAppearance.PopupMenu.Large</item>
+        <item name="textAppearanceSmallPopupMenu">@style/Threema.TextAppearance.PopupMenu.Small</item>
+
+        <item name="windowActionBar">false</item>
 		<item name="windowNoTitle">true</item>
 
 		<item name="android:statusBarColor">@color/gallery_background</item>

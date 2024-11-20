@@ -39,4 +39,5 @@
     <string name="webclient_diagnostics_start">Başlat</string>
     <string name="webclient_diagnostics_intro">Testi çalıştırmak için «Başlat» tıklayın.</string>
     <string name="webclient_diagnostics_done">Tamamlandı. Masaüstü uygulamasına veya web istemcisine bağlantı kurmayla ilgili sorunlar yaşıyorsanız, lütfen bu günlüğü Threema desteğine gönderin.</string>
+    <string name="webclient_unsupported_desktop_beta_message">Şu anda, masaüstüne yönelik bu beta uygulama yalnızca bir iOS cihazına bağlanabilmektedir. Android cihazlar için lütfen normal masaüstü uygulamasını indirin.</string>
 </resources>

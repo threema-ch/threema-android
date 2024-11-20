@@ -67,6 +67,7 @@ import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
+import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -86,407 +87,456 @@ import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
-	private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
+    private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
 
-	private GroupService groupService;
-	private ContactService contactService;
-	private BallotService ballotService;
-	private DeadlineListService hiddenChatsListService;
+    private GroupService groupService;
+    private ContactService contactService;
+    private BallotService ballotService;
+    private DeadlineListService hiddenChatsListService;
 
-	private final Context context;
-	private OnClickItemListener onClickItemListener;
-	private final SparseBooleanArray checkedItems = new SparseBooleanArray();
-	private String queryString;
-	private final int snippetThreshold;
-	private List<AbstractMessageModel> messageModels; // Cached copy of AbstractMessageModels
-	private final @ColorInt int foregroundColor;
-	private final @LayoutRes int itemLayout;
-	private final ColorStateList colorStateListSend, colorStateListReceive;
-	private final @NonNull RequestManager requestManager;
+    private final Context context;
+    private OnClickItemListener onClickItemListener;
+    private final SparseBooleanArray checkedItems = new SparseBooleanArray();
+    private String queryString;
+    private final int snippetThreshold;
+    private List<AbstractMessageModel> messageModels; // Cached copy of AbstractMessageModels
+    private final @LayoutRes int itemLayout;
+    private final ColorStateList colorStateListSend, colorStateListReceive;
+    private final @NonNull RequestManager requestManager;
+    private final boolean appUsesDynamicColors;
 
-	private static class ItemHolder extends RecyclerView.ViewHolder {
-		private final TextView titleView;
-		private final TextView dateView;
-		private final TextView snippetView;
-		@Nullable private final TextView deletedPlaceholder; // will be null for layouts other than item_starred_messages
-		private final ImageView thumbnailView;
-		private final MaterialCardView messageBlock;
-		AvatarListItemHolder avatarListItemHolder;
+    private static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView titleView;
+        private final TextView dateView;
+        private final TextView snippetView;
+        @Nullable
+        private final TextView deletedPlaceholder; // will be null for layouts other than item_starred_messages
+        private final ImageView thumbnailView;
+        private final MaterialCardView messageBlock;
+        AvatarListItemHolder avatarListItemHolder;
 
-		private ItemHolder(final View itemView) {
-			super(itemView);
+        private ViewHolder(final View itemView) {
+            super(itemView);
 
-			titleView = itemView.findViewById(R.id.name);
-			dateView = itemView.findViewById(R.id.date);
-			snippetView = itemView.findViewById(R.id.snippet);
-			deletedPlaceholder = itemView.findViewById(R.id.deleted_placeholder);
-			AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
-			thumbnailView = itemView.findViewById(R.id.thumbnail_view);
-			messageBlock = itemView.findViewById(R.id.message_block);
+            titleView = itemView.findViewById(R.id.name);
+            dateView = itemView.findViewById(R.id.date);
+            snippetView = itemView.findViewById(R.id.snippet);
+            deletedPlaceholder = itemView.findViewById(R.id.deleted_placeholder);
+            AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
+            thumbnailView = itemView.findViewById(R.id.thumbnail_view);
+            messageBlock = itemView.findViewById(R.id.message_block);
 
-			avatarListItemHolder = new AvatarListItemHolder();
-			avatarListItemHolder.avatarView = avatarView;
-			avatarListItemHolder.avatarLoadingAsyncTask = null;
-		}
-	}
+            avatarListItemHolder = new AvatarListItemHolder();
+            avatarListItemHolder.avatarView = avatarView;
+            avatarListItemHolder.avatarLoadingAsyncTask = null;
+        }
 
-	public GlobalSearchAdapter(
-		Context context,
-		@NonNull RequestManager requestManager,
-		@LayoutRes int itemLayout,
-		int snippetThreshold
-	) {
-		this.context = context;
-		this.requestManager = requestManager;
-		this.itemLayout = itemLayout;
-		this.snippetThreshold = snippetThreshold;
+        protected boolean getHasBubbleBackground() {
+            return this.messageBlock != null;
+        }
+    }
 
-		try {
-			this.groupService = ThreemaApplication.getServiceManager().getGroupService();
-			this.contactService = ThreemaApplication.getServiceManager().getContactService();
-			this.ballotService = ThreemaApplication.getServiceManager().getBallotService();
-			this.hiddenChatsListService = ThreemaApplication.getServiceManager().getHiddenChatsListService();
-		} catch (Exception e) {
-			logger.error("Unable to get Services", e);
-		}
+    public GlobalSearchAdapter(
+        @NonNull Context context,
+        @NonNull RequestManager requestManager,
+        @LayoutRes int itemLayout,
+        int snippetThreshold
+    ) {
+        this.context = context;
+        this.requestManager = requestManager;
+        this.itemLayout = itemLayout;
+        this.snippetThreshold = snippetThreshold;
 
-		this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground);
-		this.colorStateListSend = ContextCompat.getColorStateList(context, R.color.bubble_send_colorstatelist);
-		this.colorStateListReceive = ContextCompat.getColorStateList(context, R.color.bubble_receive_colorstatelist);
-	}
+        try {
+            this.groupService = ThreemaApplication.requireServiceManager().getGroupService();
+            this.contactService = ThreemaApplication.requireServiceManager().getContactService();
+            this.ballotService = ThreemaApplication.requireServiceManager().getBallotService();
+            this.hiddenChatsListService = ThreemaApplication.requireServiceManager().getHiddenChatsListService();
+        } catch (Exception e) {
+            logger.error("Unable to get Services", e);
+        }
 
-	@NonNull
-	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View v = LayoutInflater.from(parent.getContext())
-			.inflate(itemLayout, parent, false);
+        this.colorStateListSend = ContextCompat.getColorStateList(context, R.color.bubble_send_colorstatelist);
+        this.colorStateListReceive = ContextCompat.getColorStateList(context, R.color.bubble_receive_colorstatelist);
 
-		return new ItemHolder(v);
-	}
+        this.appUsesDynamicColors = ColorUtil.areDynamicColorsCurrentlyApplied(context);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		ItemHolder itemHolder = (ItemHolder) holder;
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+            .inflate(itemLayout, parent, false);
+        return new ViewHolder(itemView);
+    }
 
-		if (messageModels != null) {
-			AbstractMessageModel current = getItem(position);
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        ViewHolder viewHolder = (ViewHolder) holder;
 
-			if (itemHolder.messageBlock != null) {
-				if (current.isOutbox()) {
-					itemHolder.messageBlock.setCardBackgroundColor(colorStateListSend);
-				} else {
-					itemHolder.messageBlock.setCardBackgroundColor(colorStateListReceive);
-				}
-			}
+        if (messageModels != null) {
+            AbstractMessageModel messageModel = getItem(position);
 
-			itemHolder.snippetView.setVisibility(View.VISIBLE);
-			if (itemHolder.deletedPlaceholder != null) {
-				itemHolder.deletedPlaceholder.setVisibility(View.GONE);
-			}
+            if (viewHolder.getHasBubbleBackground()) {
+                if (messageModel.isOutbox()) {
+                    viewHolder.messageBlock.setCardBackgroundColor(colorStateListSend);
+                } else {
+                    viewHolder.messageBlock.setCardBackgroundColor(colorStateListReceive);
+                }
 
-			if (hiddenChatsListService.has(
-				current instanceof GroupMessageModel ?
-					groupService.getUniqueIdString(
-						((GroupMessageModel) current).getGroupId()
-					) :
-					contactService.getUniqueIdString(
-						current.getIdentity()
-					)
-			)) {
-				itemHolder.dateView.setText("");
-				itemHolder.thumbnailView.setVisibility(View.GONE);
-				itemHolder.titleView.setText("");
-				itemHolder.snippetView.setText(R.string.private_chat_subject);
-				itemHolder.avatarListItemHolder.avatarView.setVisibility(View.INVISIBLE);
-				itemHolder.avatarListItemHolder.avatarView.setBadgeVisible(false);
-			} else if (current.isDeleted()) {
-				// deleted placeholder for starred items - global search will never find deleted items
-				initDeletedViewHolder(itemHolder, current);
-			} else {
-				if (current instanceof GroupMessageModel) {
-					final GroupModel groupModel = groupService.getById(((GroupMessageModel) current).getGroupId());
-					AvatarListItemUtil.loadAvatar(
-						groupModel,
-						groupService,
-						itemHolder.avatarListItemHolder,
-						requestManager
-					);
+                viewHolder.titleView.setTextColor(messageModel.getUiContentColor(context));
+                viewHolder.snippetView.setTextColor(messageModel.getUiContentColor(context));
+                viewHolder.dateView.setTextColor(messageModel.getUiContentColor(context));
+            }
 
-					itemHolder.titleView.setText(getTitle((GroupMessageModel) current, groupModel));
-				} else {
-					final ContactModel contactModel = this.contactService.getByIdentity(current.getIdentity());
-					AvatarListItemUtil.loadAvatar(
-						current.isOutbox() ? contactService.getMe() : contactModel,
-						contactService,
-						itemHolder.avatarListItemHolder,
-						requestManager
-					);
+            viewHolder.snippetView.setVisibility(View.VISIBLE);
+            if (viewHolder.deletedPlaceholder != null) {
+                viewHolder.deletedPlaceholder.setVisibility(View.GONE);
+            }
 
-					itemHolder.titleView.setText(getTitle(current, contactModel));
-				}
-				itemHolder.dateView.setText(LocaleUtil.formatDateRelative(current.getCreatedAt().getTime()));
+            final @NonNull String uid = messageModel instanceof GroupMessageModel
+                ? groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId())
+                : contactService.getUniqueIdString(messageModel.getIdentity());
+            if (hiddenChatsListService.has(uid)) {
+                viewHolder.dateView.setText("");
+                viewHolder.thumbnailView.setVisibility(View.GONE);
+                viewHolder.titleView.setText("");
+                viewHolder.snippetView.setText(R.string.private_chat_subject);
+                viewHolder.avatarListItemHolder.avatarView.setVisibility(View.INVISIBLE);
+                viewHolder.avatarListItemHolder.avatarView.setBadgeVisible(false);
+            } else if (messageModel.isDeleted()) {
+                // deleted placeholder for starred items - global search will never find deleted items
+                initDeletedViewHolder(viewHolder, messageModel);
+            } else {
+                if (messageModel instanceof GroupMessageModel) {
+                    final GroupModel groupModel = groupService.getById(((GroupMessageModel) messageModel).getGroupId());
+                    AvatarListItemUtil.loadAvatar(
+                        groupModel,
+                        groupService,
+                        viewHolder.avatarListItemHolder,
+                        requestManager
+                    );
 
-				if (current.getType() == MessageType.FILE && current.getFileData().isDownloaded()) {
-					loadThumbnail(current, itemHolder);
-					itemHolder.thumbnailView.setVisibility(View.VISIBLE);
-				} else if (current.getType() == MessageType.BALLOT) {
-					itemHolder.thumbnailView.setImageResource(R.drawable.ic_outline_rule);
-					itemHolder.thumbnailView.setVisibility(View.VISIBLE);
-					setupPlaceholder(itemHolder);
-				} else {
-					itemHolder.thumbnailView.setVisibility(View.GONE);
-				}
+                    viewHolder.titleView.setText(getTitle((GroupMessageModel) messageModel, groupModel));
+                } else {
+                    final ContactModel contactModel = this.contactService.getByIdentity(messageModel.getIdentity());
+                    AvatarListItemUtil.loadAvatar(
+                        messageModel.isOutbox() ? contactService.getMe() : contactModel,
+                        contactService,
+                        viewHolder.avatarListItemHolder,
+                        requestManager
+                    );
 
-				setSnippetToTextView(current, itemHolder);
+                    viewHolder.titleView.setText(getTitle(messageModel, contactModel));
+                }
+                viewHolder.dateView.setText(LocaleUtil.formatDateRelative(messageModel.getCreatedAt().getTime()));
 
-				if (itemHolder.snippetView.getText() == null || itemHolder.snippetView.getText().length() == 0) {
-					if (current.getType() == MessageType.FILE) {
-						String mimeString = current.getFileData().getMimeType();
-						if (!TestUtil.isEmptyOrNull(mimeString)) {
-							itemHolder.snippetView.setText(MimeUtil.getMimeDescription(context, current.getFileData().getMimeType()));
-						} else {
-							itemHolder.snippetView.setText("");
-						}
-					}
-				}
-			}
+                if (messageModel.getType() == MessageType.FILE && messageModel.getFileData().isDownloaded()) {
+                    loadThumbnail(messageModel, viewHolder);
+                    viewHolder.thumbnailView.setVisibility(View.VISIBLE);
+                } else if (messageModel.getType() == MessageType.BALLOT) {
+                    viewHolder.thumbnailView.setImageResource(R.drawable.ic_outline_rule);
+                    viewHolder.thumbnailView.setVisibility(View.VISIBLE);
+                    setupPlaceholder(viewHolder, messageModel);
+                } else {
+                    viewHolder.thumbnailView.setVisibility(View.GONE);
+                }
 
-			if (this.onClickItemListener != null) {
-				itemHolder.itemView.setOnClickListener(v -> onClickItemListener.onClick(current, itemHolder.itemView, position));
-				itemHolder.itemView.setOnLongClickListener(v -> onClickItemListener.onLongClick(current, itemHolder.itemView, position));
-			}
+                setSnippetToTextView(messageModel, viewHolder);
 
-			((CheckableRelativeLayout) holder.itemView).setChecked(checkedItems.get(position));
-		} else {
-			// Covers the case of data not being ready yet.
-			itemHolder.titleView.setText("No data");
-			itemHolder.dateView.setText("");
-			itemHolder.snippetView.setText("");
-		}
-	}
+                if (viewHolder.snippetView.getText() == null || viewHolder.snippetView.getText().length() == 0) {
+                    if (messageModel.getType() == MessageType.FILE) {
+                        String mimeString = messageModel.getFileData().getMimeType();
+                        if (!TestUtil.isEmptyOrNull(mimeString)) {
+                            viewHolder.snippetView.setText(MimeUtil.getMimeDescription(context, messageModel.getFileData().getMimeType()));
+                        } else {
+                            viewHolder.snippetView.setText("");
+                        }
+                    }
+                }
+            }
 
-	private void initDeletedViewHolder(ItemHolder holder, AbstractMessageModel message) {
-		holder.snippetView.setVisibility(View.INVISIBLE);
-		holder.snippetView.setText("");
+            if (this.onClickItemListener != null) {
+                viewHolder.itemView.setOnClickListener(v -> onClickItemListener.onClick(messageModel, viewHolder.itemView, position));
+                viewHolder.itemView.setOnLongClickListener(v -> onClickItemListener.onLongClick(messageModel, viewHolder.itemView, position));
+            }
 
-		if (holder.deletedPlaceholder != null) {
-			holder.deletedPlaceholder.setVisibility(View.VISIBLE);
-			holder.deletedPlaceholder.setText(R.string.message_was_deleted);
-		}
+            ((CheckableRelativeLayout) viewHolder.itemView).setChecked(checkedItems.get(position));
+        } else {
+            // Covers the case of data not being ready yet.
+            viewHolder.titleView.setText("No data");
+            viewHolder.dateView.setText("");
+            viewHolder.snippetView.setText("");
+        }
+    }
 
-		holder.dateView.setText(LocaleUtil.formatDateRelative(message.getCreatedAt().getTime()));
+    private void initDeletedViewHolder(@NonNull ViewHolder viewHolder, AbstractMessageModel message) {
+        viewHolder.snippetView.setVisibility(View.INVISIBLE);
+        viewHolder.snippetView.setText("");
 
-		if (message instanceof GroupMessageModel) {
-			final GroupModel groupModel = groupService.getById(((GroupMessageModel) message).getGroupId());
-			holder.titleView.setText(getTitle((GroupMessageModel) message, groupModel));
-		} else {
-			final ContactModel contactModel = this.contactService.getByIdentity(message.getIdentity());
-			holder.titleView.setText(getTitle(message, contactModel));
-		}
-	}
+        if (viewHolder.deletedPlaceholder != null) {
+            viewHolder.deletedPlaceholder.setVisibility(View.VISIBLE);
+            viewHolder.deletedPlaceholder.setText(R.string.message_was_deleted);
+            if (viewHolder.getHasBubbleBackground()) {
+                assert viewHolder.deletedPlaceholder != null;
+                viewHolder.deletedPlaceholder.setTextColor(message.getUiContentColor(viewHolder.deletedPlaceholder.getContext()));
+            }
+        }
 
-	private String getTitle(AbstractMessageModel messageModel, ContactModel contactModel) {
-		String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
-		return messageModel.isOutbox() ?
-			name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
-			name;
-	}
+        viewHolder.dateView.setText(LocaleUtil.formatDateRelative(message.getCreatedAt().getTime()));
 
-	private String getTitle(GroupMessageModel messageModel, GroupModel groupModel) {
-		final ContactModel contactModel = messageModel.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(messageModel.getIdentity());
-		String groupName = NameUtil.getDisplayName(groupModel, groupService);
-		return String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName);
-	}
+        if (message instanceof GroupMessageModel) {
+            final GroupModel groupModel = groupService.getById(((GroupMessageModel) message).getGroupId());
+            viewHolder.titleView.setText(getTitle((GroupMessageModel) message, groupModel));
+        } else {
+            final ContactModel contactModel = this.contactService.getByIdentity(message.getIdentity());
+            viewHolder.titleView.setText(getTitle(message, contactModel));
+        }
+    }
 
-	private void loadThumbnail(AbstractMessageModel messageModel, ItemHolder holder) {
-		@DrawableRes int placeholderIcon;
+    private String getTitle(AbstractMessageModel messageModel, ContactModel contactModel) {
+        String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
+        return messageModel.isOutbox() ?
+            name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
+            name;
+    }
 
-		if (messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
-			placeholderIcon = R.drawable.ic_keyboard_voice_outline;
-		} else if (messageModel.getType() == MessageType.FILE) {
-			placeholderIcon = IconUtil.getMimeIcon(messageModel.getFileData().getMimeType());
-		} else {
-			placeholderIcon = IconUtil.getMimeIcon("application/x-error");
-		}
+    @NonNull
+    private String getTitle(@NonNull GroupMessageModel messageModel, GroupModel groupModel) {
+        final ContactModel contactModel = messageModel.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(messageModel.getIdentity());
+        String groupName = NameUtil.getDisplayName(groupModel, groupService);
+        return String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName);
+    }
 
-		Glide.with(context)
-			.asBitmap()
-			.load(messageModel)
-			.transition(BitmapTransitionOptions.withCrossFade())
-			.centerCrop()
-			.error(placeholderIcon)
-			.addListener(new RequestListener<>() {
-				@Override
-				public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-					setupPlaceholder(holder);
-					return false;
-				}
+    private void loadThumbnail(@NonNull AbstractMessageModel messageModel, ViewHolder viewHolder) {
+        @DrawableRes int placeholderIcon;
 
-				@Override
-				public boolean onResourceReady(@NonNull Bitmap resource, @NonNull Object model, Target<Bitmap> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-					holder.thumbnailView.clearColorFilter();
-					holder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-					return false;
-				}
-			})
-            .into(holder.thumbnailView);
-	}
+        if (messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
+            placeholderIcon = R.drawable.ic_keyboard_voice_outline;
+        } else if (messageModel.getType() == MessageType.FILE) {
+            placeholderIcon = IconUtil.getMimeIcon(messageModel.getFileData().getMimeType());
+        } else {
+            placeholderIcon = IconUtil.getMimeIcon("application/x-error");
+        }
 
-	private void setupPlaceholder(ItemHolder holder) {
-		holder.thumbnailView.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
-		holder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER);
-	}
+        Glide.with(context)
+            .asBitmap()
+            .load(messageModel)
+            .transition(BitmapTransitionOptions.withCrossFade())
+            .centerCrop()
+            .error(placeholderIcon)
+            .addListener(new RequestListener<>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
+                    setupPlaceholder(viewHolder, messageModel);
+                    return false;
+                }
 
-	/**
-	 * Returns a snippet containing the first occurrence of needle in fullText
-	 * Splits text on emoji boundary
-	 * Note: the match is case-insensitive
-	 *
-	 * @param fullText Full text
-	 * @param needle   Text to search for
-	 * @param holder   ItemHolder containing a textview
-	 * @return Snippet containing the match with a trailing ellipsis if the match is located beyond the first snippetThreshold characters
-	 */
-	private CharSequence getSnippet(@NonNull String fullText, @Nullable String needle, ItemHolder holder) {
-		if (!TestUtil.isEmptyOrNull(needle)) {
-			int firstMatch = fullText.toLowerCase().indexOf(needle);
-			if (firstMatch > snippetThreshold) {
-				int snippetStart = firstMatch > (snippetThreshold + 3) ? firstMatch - (snippetThreshold + 3) : 0;
+                @Override
+                public boolean onResourceReady(@NonNull Bitmap resource, @NonNull Object model, Target<Bitmap> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                    viewHolder.thumbnailView.clearColorFilter();
+                    viewHolder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    return false;
+                }
+            })
+            .into(viewHolder.thumbnailView);
+    }
 
-				for (int i = snippetStart; i < firstMatch; i++) {
-					if (Character.isWhitespace(fullText.charAt(i))) {
-						return "…" + fullText.substring(i + 1);
-					}
-				}
+    private void setupPlaceholder(@NonNull ViewHolder viewHolder, @NonNull AbstractMessageModel messageModel) {
+        viewHolder.thumbnailView.setBackgroundColor(getThumbnailViewBackgroundColor(messageModel));
+        viewHolder.thumbnailView.setColorFilter(getThumbnailViewIconTintColor(messageModel), PorterDuff.Mode.SRC_IN);
+        viewHolder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER);
+    }
 
-				SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, holder.snippetView, true, false, false);
+    @ColorInt
+    private int getThumbnailViewBackgroundColor(@NonNull AbstractMessageModel messageModel) {
+        if (shouldApplyDynamicColorsToMessageItemView(messageModel)) {
+            return ConfigUtils.getColorFromAttribute(context, R.attr.colorPrimary);
+        } else {
+            return context.getResources().getColor(
+                ColorUtil.shouldUseDarkVariant(context)
+                    ? R.color.md_theme_dark_tertiaryContainer
+                    : R.color.md_theme_light_tertiaryContainer
+            );
+        }
+    }
 
-				int transitionStart = emojified.nextSpanTransition(firstMatch - snippetThreshold, firstMatch, EmojiImageSpan.class);
-				if (transitionStart == firstMatch) {
-					// there are no spans here
-					return "…" + emojified.subSequence(firstMatch - snippetThreshold, emojified.length());
-				} else {
-					return "…" + emojified.subSequence(transitionStart, emojified.length());
-				}
-			}
-		}
-		return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, holder.snippetView, false, false, false);
-	}
+    @ColorInt
+    private int getThumbnailViewIconTintColor(@NonNull AbstractMessageModel messageModel) {
+        if (shouldApplyDynamicColorsToMessageItemView(messageModel)) {
+            return ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary);
+        } else {
+            return context.getResources().getColor(
+                ColorUtil.shouldUseDarkVariant(context)
+                    ? R.color.md_theme_dark_onTertiaryContainer
+                    : R.color.md_theme_light_onTertiaryContainer
+            );
+        }
+    }
+
+    /**
+     * Returns a snippet containing the first occurrence of needle in fullText
+     * Splits text on emoji boundary
+     * Note: the match is case-insensitive
+     *
+     * @param fullText   Full text
+     * @param needle     Text to search for
+     * @param viewHolder ItemHolder containing a textview
+     * @return Snippet containing the match with a trailing ellipsis if the match is located beyond the first snippetThreshold characters
+     */
+    private CharSequence getSnippet(@NonNull String fullText, @Nullable String needle, ViewHolder viewHolder) {
+        if (!TestUtil.isEmptyOrNull(needle)) {
+            int firstMatch = fullText.toLowerCase().indexOf(needle);
+            if (firstMatch > snippetThreshold) {
+                int snippetStart = firstMatch > (snippetThreshold + 3) ? firstMatch - (snippetThreshold + 3) : 0;
+
+                for (int i = snippetStart; i < firstMatch; i++) {
+                    if (Character.isWhitespace(fullText.charAt(i))) {
+                        return "…" + fullText.substring(i + 1);
+                    }
+                }
+
+                SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, true, false, false);
+
+                int transitionStart = emojified.nextSpanTransition(firstMatch - snippetThreshold, firstMatch, EmojiImageSpan.class);
+                if (transitionStart == firstMatch) {
+                    // there are no spans here
+                    return "…" + emojified.subSequence(firstMatch - snippetThreshold, emojified.length());
+                } else {
+                    return "…" + emojified.subSequence(transitionStart, emojified.length());
+                }
+            }
+        }
+        return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, false, false, false);
+    }
 
 
-	public void setMessageModels(List<AbstractMessageModel> messageModels) {
-		this.messageModels = messageModels;
-		notifyDataSetChanged();
-	}
+    public void setMessageModels(List<AbstractMessageModel> messageModels) {
+        this.messageModels = messageModels;
+        notifyDataSetChanged();
+    }
 
-	private void setSnippetToTextView(AbstractMessageModel current, ItemHolder itemHolder) {
-		CharSequence snippetText = null;
-		switch (current.getType()) {
-			case FILE:
-				// fallthrough
-			case IMAGE:
-				if (!TestUtil.isEmptyOrNull(current.getCaption())) {
-					snippetText = getSnippet(current.getCaption(), this.queryString, itemHolder);
-				}
-				break;
-			case TEXT:
-				if (!TestUtil.isEmptyOrNull(current.getBody())) {
-					snippetText = getSnippet(current.getBody(), this.queryString, itemHolder);
-				}
-				break;
-			case BALLOT:
-				snippetText = context.getString(R.string.attach_ballot);
-				if (!TestUtil.isEmptyOrNull(current.getBody())) {
-					BallotDataModel ballotData = current.getBallotData();
-					final BallotModel ballotModel = ballotService.get(ballotData.getBallotId());
-					if (ballotModel != null) {
-						snippetText = getSnippet(ballotModel.getName(), this.queryString, itemHolder);
-					}
-				}
-				break;
-			case LOCATION:
-				final LocationDataModel location = current.getLocationData();
-				StringBuilder locationStringBuilder = new StringBuilder();
-				if (!TestUtil.isEmptyOrNull(location.getPoi())) {
-					locationStringBuilder.append(location.getPoi());
-				}
-				if (!TestUtil.isEmptyOrNull(location.getAddress())) {
-					if (locationStringBuilder.length() > 0) {
-						locationStringBuilder.append(" - ");
-					}
-					locationStringBuilder.append(location.getAddress());
-				}
-				if (locationStringBuilder.length() > 0) {
-					snippetText = getSnippet(locationStringBuilder.toString(), this.queryString, itemHolder);
-				}
-				break;
-			default:
-				// Audio and Video Messages don't have text or captions
-				break;
-		}
+    private void setSnippetToTextView(@NonNull AbstractMessageModel messageModel, ViewHolder viewHolder) {
+        CharSequence snippetText = null;
+        switch (messageModel.getType()) {
+            case FILE:
+                // fallthrough
+            case IMAGE:
+                if (!TestUtil.isEmptyOrNull(messageModel.getCaption())) {
+                    snippetText = getSnippet(messageModel.getCaption(), this.queryString, viewHolder);
+                }
+                break;
+            case TEXT:
+                if (!TestUtil.isEmptyOrNull(messageModel.getBody())) {
+                    snippetText = getSnippet(messageModel.getBody(), this.queryString, viewHolder);
+                }
+                break;
+            case BALLOT:
+                snippetText = context.getString(R.string.attach_ballot);
+                if (!TestUtil.isEmptyOrNull(messageModel.getBody())) {
+                    BallotDataModel ballotData = messageModel.getBallotData();
+                    final BallotModel ballotModel = ballotService.get(ballotData.getBallotId());
+                    if (ballotModel != null) {
+                        snippetText = getSnippet(ballotModel.getName(), this.queryString, viewHolder);
+                    }
+                }
+                break;
+            case LOCATION:
+                final LocationDataModel location = messageModel.getLocationData();
+                StringBuilder locationStringBuilder = new StringBuilder();
+                if (!TestUtil.isEmptyOrNull(location.getPoi())) {
+                    locationStringBuilder.append(location.getPoi());
+                }
+                if (!TestUtil.isEmptyOrNull(location.getAddress())) {
+                    if (locationStringBuilder.length() > 0) {
+                        locationStringBuilder.append(" - ");
+                    }
+                    locationStringBuilder.append(location.getAddress());
+                }
+                if (locationStringBuilder.length() > 0) {
+                    snippetText = getSnippet(locationStringBuilder.toString(), this.queryString, viewHolder);
+                }
+                break;
+            default:
+                // Audio and Video Messages don't have text or captions
+                break;
+        }
 
-		if (snippetText != null) {
-			itemHolder.snippetView.setText(TextUtil.highlightMatches(context, snippetText, this.queryString, true, false));
-		} else {
-			itemHolder.snippetView.setText(null);
-		}
-	}
+        if (snippetText != null) {
+            viewHolder.snippetView.setText(TextUtil.highlightMatches(context, snippetText, this.queryString, true, false));
+        } else {
+            viewHolder.snippetView.setText(null);
+        }
+    }
 
-	private AbstractMessageModel getItem(int position) {
-		return messageModels.get(position);
-	}
+    private AbstractMessageModel getItem(int position) {
+        return messageModels.get(position);
+    }
 
-	// getItemCount() is called many times, and when it is first called,
-	// messageModels has not been updated (means initially, it's null, and we can't return null).
-	@Override
-	public int getItemCount() {
-		if (messageModels != null) {
-			return messageModels.size();
-		} else {
-			return 0;
-		}
-	}
+    // getItemCount() is called many times, and when it is first called,
+    // messageModels has not been updated (means initially, it's null, and we can't return null).
+    @Override
+    public int getItemCount() {
+        if (messageModels != null) {
+            return messageModels.size();
+        } else {
+            return 0;
+        }
+    }
 
-	public void toggleChecked(int pos) {
-		if (checkedItems.get(pos, false)) {
-			checkedItems.delete(pos);
-		}
-		else {
-			checkedItems.put(pos, true);
-		}
-		notifyItemChanged(pos);
-	}
+    public void toggleChecked(int pos) {
+        if (checkedItems.get(pos, false)) {
+            checkedItems.delete(pos);
+        } else {
+            checkedItems.put(pos, true);
+        }
+        notifyItemChanged(pos);
+    }
 
-	public int getCheckedItemsCount() {
-		return checkedItems.size();
-	}
+    public int getCheckedItemsCount() {
+        return checkedItems.size();
+    }
 
-	public List<AbstractMessageModel> getCheckedItems() {
-		List<AbstractMessageModel> items = new ArrayList<>(checkedItems.size());
-		for (int i = 0; i < checkedItems.size(); i++) {
-			items.add(messageModels.get(checkedItems.keyAt(i)));
-		}
-		return items;
-	}
+    public List<AbstractMessageModel> getCheckedItems() {
+        List<AbstractMessageModel> items = new ArrayList<>(checkedItems.size());
+        for (int i = 0; i < checkedItems.size(); i++) {
+            items.add(messageModels.get(checkedItems.keyAt(i)));
+        }
+        return items;
+    }
 
-	public void clearCheckedItems() {
-		checkedItems.clear();
-		notifyDataSetChanged();
-	}
+    public void clearCheckedItems() {
+        checkedItems.clear();
+        notifyDataSetChanged();
+    }
 
-	public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
-		this.onClickItemListener = onClickItemListener;
-	}
+    public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
+        this.onClickItemListener = onClickItemListener;
+    }
 
-	public void onQueryChanged(String queryText) {
-		this.queryString = queryText;
-	}
+    public void onQueryChanged(String queryText) {
+        this.queryString = queryText;
+    }
 
-	public interface OnClickItemListener {
-		void onClick(AbstractMessageModel messageModel, View view, int position);
-		default boolean onLongClick(AbstractMessageModel messageModel, View view, int position) {
-			return false;
-		}
-	}
+    /**
+     * We only want to apply dynamic colors if the current item view is used to
+     * render an outbox message <strong>and</strong> they are enabled by the
+     * threema setting. This workaround is necessary because we actually use
+     * different color references when this returns true.
+     */
+    private boolean shouldApplyDynamicColorsToMessageItemView(@NonNull AbstractMessageModel messageModel) {
+        if (!appUsesDynamicColors) {
+            return false;
+        }
+        return messageModel.isOutbox();
+    }
+
+    public interface OnClickItemListener {
+        void onClick(AbstractMessageModel messageModel, View view, int position);
+
+        default boolean onLongClick(AbstractMessageModel messageModel, View view, int position) {
+            return false;
+        }
+    }
 }

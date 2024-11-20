@@ -61,7 +61,7 @@ public class ServicesContainer {
 	@NonNull public final MessageService message;
 	@NonNull public final NotificationService notification;
 	@NonNull public final DatabaseServiceNew database;
-	@NonNull public final IdListService blackList;
+	@NonNull public final IdListService blockedContactsService;
 	@NonNull public final PreferenceService preference;
 	@NonNull public final UserService user;
 	@NonNull public final DeadlineListService hiddenChat;
@@ -83,7 +83,7 @@ public class ServicesContainer {
 		@NonNull final MessageService message,
 		@NonNull final NotificationService notification,
 		@NonNull final DatabaseServiceNew database,
-		@NonNull final IdListService blackList,
+		@NonNull final IdListService blockedContactsService,
 		@NonNull final PreferenceService preference,
 		@NonNull final UserService user,
 		@NonNull final DeadlineListService hiddenChat,
@@ -101,7 +101,7 @@ public class ServicesContainer {
 		this.message = message;
 		this.notification = notification;
 		this.database = database;
-		this.blackList = blackList;
+		this.blockedContactsService = blockedContactsService;
 		this.preference = preference;
 		this.user = user;
 		this.hiddenChat = hiddenChat;

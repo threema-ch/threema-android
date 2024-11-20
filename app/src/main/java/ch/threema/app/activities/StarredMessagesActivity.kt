@@ -189,7 +189,11 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.itemAnimator = DefaultItemAnimator()
         val emptyView = EmptyView(this, ConfigUtils.getActionBarSize(this))
-        emptyView.setup(R.string.no_starred_messages, R.drawable.ic_star_golden_24dp)
+        emptyView.setup(
+            R.string.no_starred_messages,
+            R.drawable.ic_star_golden_24dp,
+            null
+        )
         (recyclerView.parent.parent as ViewGroup).addView(emptyView)
         recyclerView.emptyView = emptyView
         emptyView.setLoading(true)

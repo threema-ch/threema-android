@@ -334,8 +334,8 @@
     <string name="synchronize_contact">Synchronizace adresáře kontaktů</string>
     <string name="exclude_contact">Vyloučit z autom. synchronizace</string>
     <string name="prefs_header_lists">Seznamy</string>
-    <string name="prefs_title_black_list">Ignorovaná ID</string>
-    <string name="prefs_sum_black_list">Zprávy od zde uvedených ID budou ignorovány.</string>
+    <string name="prefs_title_blocked_contacts">Blokované kontakty</string>
+    <string name="prefs_sum_blocked_contacts">Zprávy od zde uvedených ID budou ignorovány.</string>
     <string name="verified">Ověřený</string>
     <string name="want_to_add_to_exclude_list">Tento kontakt je propojen s adresářem telefonu. Jestliže ho odstraníte, v aplikaci Threema se objeví znovu po synchronizaci kontaktů.\nPřejete si ho vyloučit ze synchronizace?</string>
     <string name="no">Ne</string>
@@ -1299,7 +1299,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="enable_storage_access_for_media">Povolte přístup k úložišti, abyste na vašem zařízení mohli prohlížet obrázky a videa</string>
     <string name="select_storage_access_for_media_is_granted">Udělili jste přístup k vybranému počtu fotografií a videí.</string>
     <string name="take_me_there">Doveďte mě tam…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Spravovat</string>
+    <string name="manage">Spravovat</string>
     <string name="notification_channel_group_join_request">Kanál oznámení pro přijaté požadavky o připojení do skupiny</string>
     <string name="reset_default_group_link_title">Obnovit informace o výchozím odkazu</string>
     <string name="reset_default_group_link_desc">Dříve sdílený odkaz bude neplatný a požadavky provedené pomocí starého odkazu budou automaticky zamítnuty s expirovanou odpovědí.</string>
@@ -1567,11 +1567,11 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <!-- accessibility -->
     <string name="cd_ack_icon">souhlas odeslán</string>
     <string name="cd_dec_icon">nesouhlas odeslán</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">od %d členů skupiny</string>
+    <string name="cd_ack_dec_group_count">od %d členů skupiny</string>
     <string name="cd_edited">zpráva byla upravena</string>
     <string name="cd_created_at">vytvořeno %s</string>
     <string name="cd_edited_at">upraveno %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. upravit v historii</string>
+    <string name="cd_index_in_edit_history">%d. upravit v historii</string>
     <string name="cd_message_details_container">podrobnosti zprávy</string>
     <string name="cd_enable_formatting">Povolit formátování</string>
     <string name="cd_message">zpráva</string>

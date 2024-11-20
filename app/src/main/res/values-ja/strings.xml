@@ -340,8 +340,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="synchronize_contact">接続する端末の連絡先</string>
     <string name="exclude_contact">自動同期から除外する</string>
     <string name="prefs_header_lists">リスト</string>
-    <string name="prefs_title_black_list">ブラックリスト</string>
-    <string name="prefs_sum_black_list">指定の ID からのメッセージを無視します</string>
+    <string name="prefs_sum_blocked_contacts">指定の ID からのメッセージを無視します</string>
     <string name="verified">認証済み</string>
     <string name="want_to_add_to_exclude_list">この連絡先は、携帯電話のアドレス帳に紐付けされています。Threemaで削除しても、連絡先の同期後に再び表示されます。</string>
     <string name="no">いいえ</string>

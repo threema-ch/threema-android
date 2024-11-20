@@ -150,7 +150,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	private GroupInviteService groupInviteService;
 	private DeviceService deviceService;
-	private IdListService blackListIdentityService;
+	private IdListService blockedContactsService;
 	private GroupCallManager groupCallManager;
 
 	private GroupModel groupModel;
@@ -324,7 +324,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		// services
 		try {
 			this.deviceService = serviceManager.getDeviceService();
-			this.blackListIdentityService = serviceManager.getBlackListService();
+			this.blockedContactsService = serviceManager.getBlockedContactsService();
 			this.groupInviteService = serviceManager.getGroupInviteService();
 			this.groupCallManager = serviceManager.getGroupCallManager();
 		} catch (ThreemaException e) {
@@ -333,7 +333,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			return;
 		}
 
-		if (this.deviceService == null || this.blackListIdentityService == null) {
+		if (this.deviceService == null || this.blockedContactsService == null) {
 			finish();
 			return;
 		}
@@ -1167,7 +1167,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			items.add(new SelectorDialogItem(String.format(getString(R.string.chat_with), shortName), R.drawable.ic_chat_bubble));
 			optionsMap.add(SELECTOR_OPTION_CHAT);
 
-			if (ContactUtil.canReceiveVoipMessages(contactModel, blackListIdentityService)
+			if (ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService)
 				&& ConfigUtils.isCallsEnabled()
 			) {
 				items.add(new SelectorDialogItem(String.format(getString(R.string.call_with), shortName), R.drawable.ic_phone_locked_outline));

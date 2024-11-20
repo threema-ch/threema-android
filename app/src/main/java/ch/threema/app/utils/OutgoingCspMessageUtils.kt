@@ -102,8 +102,8 @@ fun Collection<ContactModel>.filterValid() = filter { it.state != ContactModel.S
 /**
  * Only include non-blocked contacts. Note that only explicitly blocked identities are excluded.
  */
-fun Collection<ContactModel>.filterNotBlocked(blackListService: IdListService) =
-    filterNotBlockedIf(true, blackListService)
+fun Collection<ContactModel>.filterNotBlocked(blockedContactsService: IdListService) =
+    filterNotBlockedIf(true, blockedContactsService)
 
 /**
  * Only include non-blocked contacts if [applyFilter] is true. Note that only explicitly blocked
@@ -111,8 +111,8 @@ fun Collection<ContactModel>.filterNotBlocked(blackListService: IdListService) =
  */
 fun Collection<ContactModel>.filterNotBlockedIf(
     applyFilter: Boolean,
-    blackListService: IdListService,
-) = filterIf(applyFilter) { !blackListService.has(it.identity) }
+    blockedContactsService: IdListService,
+) = filterIf(applyFilter) { !blockedContactsService.has(it.identity) }
 
 /**
  * Filter the broadcast identity if no messages should be sent to it according to
@@ -300,7 +300,7 @@ suspend fun ActiveTaskCodec.sendContactMessage(
     identityStore: IdentityStoreInterface,
     contactStore: ContactStore,
     nonceFactory: NonceFactory,
-    blackListService: IdListService,
+    blockedContactsService: IdListService,
     taskCreator: TaskCreator,
 ): OutgoingMessageResult? = sendMessageToReceivers(
     messageCreator,
@@ -309,7 +309,7 @@ suspend fun ActiveTaskCodec.sendContactMessage(
     identityStore,
     contactStore,
     nonceFactory,
-    blackListService,
+    blockedContactsService,
     taskCreator
 ).firstOrNull()
 
@@ -332,7 +332,7 @@ suspend fun ActiveTaskCodec.sendGroupMessage(
     contactStore: ContactStore,
     nonceFactory: NonceFactory,
     groupService: GroupService,
-    blackListService: IdListService,
+    blockedContactsService: IdListService,
     taskCreator: TaskCreator,
 ): Set<OutgoingMessageResult>? {
     if (!groupService.isGroupMember(group)) {
@@ -349,7 +349,7 @@ suspend fun ActiveTaskCodec.sendGroupMessage(
         identityStore,
         contactStore,
         nonceFactory,
-        blackListService,
+        blockedContactsService,
         taskCreator
     )
 }
@@ -367,7 +367,7 @@ suspend fun ActiveTaskCodec.sendMessageToReceivers(
     identityStore: IdentityStoreInterface,
     contactStore: ContactStore,
     nonceFactory: NonceFactory,
-    blackListService: IdListService,
+    blockedContactsService: IdListService,
     taskCreator: TaskCreator,
 ): Set<OutgoingMessageResult> {
     val myIdentity = identityStore.identity
@@ -394,7 +394,7 @@ suspend fun ActiveTaskCodec.sendMessageToReceivers(
     // Create list of recipients that are not blocked (or exempted from blocking) with the messages
     val recipientMessageList = recipientList.zip(messageList).filter { (recipient, message) ->
         //Filter blocked recipients except message type is exempted from blocking
-        (message.exemptFromBlocking() || !blackListService.has(recipient.identity)).also {
+        (message.exemptFromBlocking() || !blockedContactsService.has(recipient.identity)).also {
             if (!it) {
                 message.logMessage("Skipping message because recipient $recipient is blocked:")
             }

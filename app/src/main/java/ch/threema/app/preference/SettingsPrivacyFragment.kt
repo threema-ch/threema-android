@@ -37,7 +37,7 @@ import androidx.preference.TwoStatePreference
 import androidx.work.WorkManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.activities.BlackListActivity
+import ch.threema.app.activities.BlockedContactsActivity
 import ch.threema.app.activities.ExcludedSyncIdentitiesActivity
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericProgressDialog
@@ -110,7 +110,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
         initExcludedSyncIdentitiesPref()
 
-        initBlackListPref()
+        initBlockedContactsPref()
 
         initResetReceiptsPref()
 
@@ -216,9 +216,9 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
         }
     }
 
-    private fun initBlackListPref() {
-        getPref<Preference>("pref_black_list").setOnPreferenceClickListener {
-            startActivity(Intent(activity, BlackListActivity::class.java))
+    private fun initBlockedContactsPref() {
+        getPref<Preference>("pref_blocked_contacts").setOnPreferenceClickListener {
+            startActivity(Intent(activity, BlockedContactsActivity::class.java))
             false
         }
     }

@@ -73,7 +73,6 @@ import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
@@ -131,7 +130,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	// Services
 	private ContactService contactService;
 	private GroupService groupService;
-	private IdListService blackListIdentityService, profilePicRecipientsService;
+	private IdListService blockedContactsService, profilePicRecipientsService;
 	private DeadlineListService hiddenChatsListService;
 	private VoipStateService voipStateService;
 
@@ -303,7 +302,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		try {
 			this.contactService = serviceManager.getContactService();
 			modelRepositories = serviceManager.getModelRepositories();
-			this.blackListIdentityService = serviceManager.getBlackListService();
+			this.blockedContactsService = serviceManager.getBlockedContactsService();
 			this.profilePicRecipientsService = serviceManager.getProfilePicRecipientsService();
 			this.groupService = serviceManager.getGroupService();
 			this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
@@ -670,7 +669,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	private void updateVoipCallMenuItem(final Boolean newState) {
 		if (callItem != null) {
 			if (
-				ContactUtil.canReceiveVoipMessages(contact, blackListIdentityService)
+				ContactUtil.canReceiveVoipMessages(contact, blockedContactsService)
 					&& ConfigUtils.isCallsEnabled()) {
 				logger.debug("updateVoipMenu newState " + newState);
 
@@ -702,7 +701,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 		} else if (id == R.id.menu_threema_call) {
 			VoipUtil.initiateCall(this, contact, false, null);
 		} else if (id == R.id.action_block_contact) {
-			if (this.blackListIdentityService != null && this.blackListIdentityService.has(this.identity)) {
+			if (this.blockedContactsService != null && this.blockedContactsService.has(this.identity)) {
 				blockContact();
 			} else {
 				GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
@@ -735,14 +734,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 	}
 
 	private void blockContact() {
-		if (this.blackListIdentityService != null) {
-			this.blackListIdentityService.toggle(this, this.contact);
+		if (this.blockedContactsService != null) {
+			this.blockedContactsService.toggle(this, this.contact);
 		}
 	}
 
 	private void updateBlockMenu() {
 		if (this.blockMenuItem != null) {
-			if (blackListIdentityService != null && blackListIdentityService.has(this.identity)) {
+			if (blockedContactsService != null && blockedContactsService.has(this.identity)) {
 				blockMenuItem.setTitle(R.string.unblock_contact);
 			} else {
 				blockMenuItem.setTitle(R.string.block_contact);

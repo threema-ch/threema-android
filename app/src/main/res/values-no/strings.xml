@@ -326,8 +326,7 @@ når den første meldingen mottas.</string>
     <string name="synchronize_contact">Synkronisere kontaktlisten</string>
     <string name="exclude_contact">Eksluder fra auto. sykronisering</string>
     <string name="prefs_header_lists">Lister</string>
-    <string name="prefs_title_black_list">Svarteliste</string>
-    <string name="prefs_sum_black_list">Meldinger fra IDer i denne listen blir ignorert.</string>
+    <string name="prefs_sum_blocked_contacts">Meldinger fra IDer i denne listen blir ignorert.</string>
     <string name="verified">Verifisert</string>
     <string name="want_to_add_to_exclude_list">Denne kontakten er koblet til en oppføring i enhetens kontakter. Om du sletter den i Threema, dukker den opp igjen etter en sykronisering av kontakter.\nVil du ekskludere den fra synkronisering?</string>
     <string name="no">Nei</string>

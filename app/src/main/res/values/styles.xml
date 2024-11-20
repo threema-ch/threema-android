@@ -20,6 +20,31 @@
 		<item name="height">88dp</item>
 	</style>
 
+    <style name="Threema.ActionOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:id">@id/action_overflow_button</item>
+    </style>
+
+    <style name="Threema.PopupMenuStyle.Overflow" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Threema.TextAppearance.PopupMenu.Large" parent="@style/Threema.TextAppearance.Dialog">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">18sp</item>
+        <item name="android:lineHeight">18sp</item>
+    </style>
+
+    <style name="Threema.TextAppearance.PopupMenu.Small" parent="@style/Threema.TextAppearance.Dialog">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">16sp</item>
+        <item name="android:lineHeight">16sp</item>
+    </style>
+
 	<style name="Threema.Animation.None" parent="@android:style/Animation">
 		<item name="android:windowEnterAnimation">@null</item>
 		<item name="android:windowExitAnimation">@null</item>
@@ -165,6 +190,7 @@
 	</style>
 
 	<style name="Threema.AlertDialogStyle" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorControlActivated">?attr/colorPrimary</item>
 	</style>
 
 	<style name="Threema.FingerprintAlertDialogStyle" parent="@style/Threema.AlertDialogStyle">
@@ -213,6 +239,7 @@
 	<style name="Threema.ToolbarStyle" parent="@style/Widget.Material3.Toolbar">
 		<item name="titleTextAppearance">@style/Threema.TextAppearance.Toolbar.Title</item>
 		<item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
+        <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
 	</style>
 
 	<style name="Threema.ToolbarStyle.LocationPicker" parent="@style/Widget.Material3.Toolbar">
@@ -220,11 +247,13 @@
 		<item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
 		<item name="titleTextColor">@color/md_theme_dark_onSurface</item>
 		<item name="subtitleTextColor">@color/md_theme_dark_onSurface</item>
+        <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
 	</style>
 
 	<style name="Threema.ThemeOverlay.TransparentToolbar" parent="@style/ThemeOverlay.Material3.ActionBar">
 		<item name="background">@android:color/transparent</item>
 		<item name="windowActionBarOverlay">true</item>
+        <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
 	</style>
 
 	<style name="Threema.Material.Header.Text" parent="@style/TextAppearance.MaterialComponents.Button">
@@ -248,7 +277,6 @@
 		<item name="fontFamily">sans-serif</item>
 		<item name="android:fontFamily">sans-serif</item>
 		<item name="android:textStyle">normal</item>
-		<item name="android:textColor">@color/bubble_text_colorstatelist</item>
 		<item name="android:textSize">16sp</item>
 		<item name="android:letterSpacing">0.0</item>
 		<item name="android:textAllCaps">false</item>
@@ -262,7 +290,6 @@
 	</style>
 
 	<style name="Threema.Bubble.Text.Footer" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:textColor">@color/bubble_text_colorstatelist</item>
 		<item name="android:textSize">?attr/font_medium</item>
 		<item name="android:letterSpacing">0.012</item>
 	</style>
@@ -600,15 +627,6 @@
 		<item name="android:textAllCaps">true</item>
 	</style>
 
-	<style name="Threema.ChipText" parent="@android:style/TextAppearance">
-		<item name="android:fontFamily">sans-serif</item>
-		<item name="android:textStyle">normal</item>
-		<item name="android:textColor">@color/date_separator_text_color</item>
-		<item name="android:textSize">13sp</item>
-		<item name="android:textAllCaps">true</item>
-		<item name="android:letterSpacing">0.09</item>
-	</style>
-
 	<style name="Threema.BadgeStyle" parent="@style/Widget.Material3.Badge">
 		<item name="backgroundColor">@color/messagelist_highlight_color</item>
 		<item name="badgeTextColor">@android:color/white</item>
@@ -640,18 +658,6 @@
 	<style name="Threema.BottomNavigationView.ActiveIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
 		<item name="android:color">?attr/colorPrimaryContainer</item>
 	</style>
-
-	<style name="Threema.ActionOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
-		<item name="android:id">@id/action_overflow_button</item>
-	</style>
-
-    <style name="Threema.ActionOverflowMenuStyle.Light" parent="@style/Widget.Material3.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/md_theme_light_surfaceContainerHigh</item>
-    </style>
-
-    <style name="Threema.ActionOverflowMenuStyle.Dark" parent="@style/Widget.Material3.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/md_theme_dark_surfaceContainerHigh</item>
-    </style>
 
 	<style name="Threema.BottomSheetStyle" parent="@style/Widget.Material3.BottomSheet.Modal">
 		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearanceOverlay.BottomSheetDialog</item>
@@ -824,10 +830,6 @@
 		<item name="android:minHeight">18dp</item>
 	</style>
 
-	<style name="Threema.PopupTheme.TransparentStatusbar" parent="@style/ThemeOverlay.Material3">
-		<item name="android:textColor">?attr/colorOnBackground</item>
-	</style>
-
 	<style name="Threema.SpinnerStyle" parent="@style/Widget.AppCompat.Spinner">
 		<item name="android:popupBackground">?attr/popupMenuBackground</item>
 		<item name="android:popupElevation">8dp</item>
@@ -888,7 +890,7 @@
 
 	<style name="Threema.Chip.AudioMessage" parent="@style/Widget.Material3.Chip.Assist">
 		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.AudioMessage</item>
-		<item name="android:textColor">@android:color/white</item>
+		<item name="android:textColor">?attr/colorOnPrimary</item>
 		<item name="chipBackgroundColor">?attr/colorPrimary</item>
 		<item name="chipCornerRadius">14dp</item>
 		<item name="chipMinTouchTargetSize">28dp</item>
@@ -1188,6 +1190,11 @@
 	<style name="Threema.ThemeOverlay.BottomNavigation" parent="">
 		<!-- item's active indicator animation duration -->
 		<item name="motionDurationLong2">200</item>
+
+        <!-- We have to use the value of our onPrimaryContainer here because
+             we use primaryContainer color to draw the selected item indicator. So the
+             icons have the correct contrast while selected -->
+		<item name="colorOnSecondaryContainer">?attr/colorOnPrimaryContainer</item>
 	</style>
 
     <style name="Threema_TextAppearance_StarredMessages_Count">
@@ -1196,5 +1203,4 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:fontFamily">sans-serif-condensed</item>
 	</style>
-
 </resources>

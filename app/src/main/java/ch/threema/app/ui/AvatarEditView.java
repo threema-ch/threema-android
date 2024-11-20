@@ -55,7 +55,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.core.app.ActivityCompat;
@@ -399,7 +398,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	@SuppressLint("RestrictedApi")
 	@Override
-	public void onClick(View v) {
+	public void onClick(View view) {
 		if (!isAvatarEditable()) {
 			return;
 		}
@@ -407,7 +406,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		MenuBuilder menuBuilder = new MenuBuilder(getContext());
 		new MenuInflater(getContext()).inflate(R.menu.view_avatar_edit, menuBuilder);
 
-		ConfigUtils.tintMenu(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
+		ConfigUtils.tintMenuIcons(menuBuilder, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface));
 
 		if (!hasAvatar()) {
 			menuBuilder.removeItem(R.id.menu_remove_picture);
@@ -436,11 +435,10 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			}
 		});
 
-		Context wrapper = new ContextThemeWrapper(getContext(), R.style.AppBaseTheme);
-		MenuPopupHelper optionsMenu = new MenuPopupHelper(wrapper, menuBuilder, avatarEditOverlay);
+		MenuPopupHelper optionsMenu = new MenuPopupHelper(getContext(), menuBuilder, avatarEditOverlay);
 		optionsMenu.setForceShowIcon(true);
-		optionsMenu.show();
-	}
+        optionsMenu.show();
+    }
 
 	@Override
 	public boolean onLongClick(View v) {

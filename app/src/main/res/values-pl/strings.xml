@@ -335,8 +335,7 @@
     <string name="synchronize_contact">Synchron. książki adresów</string>
     <string name="exclude_contact">Wyłącz z synchronizacji audio</string>
     <string name="prefs_header_lists">Listy</string>
-    <string name="prefs_title_black_list">Czarna lista</string>
-    <string name="prefs_sum_black_list">Wiadomości od identyfikatorów wypisanych tutaj będą ignorowane.</string>
+    <string name="prefs_sum_blocked_contacts">Wiadomości od identyfikatorów wypisanych tutaj będą ignorowane.</string>
     <string name="verified">Zweryfikowane</string>
     <string name="want_to_add_to_exclude_list">Ten kontakt jest powiązany z rekordem w Twojej telefonicznej książce adresowej. Jeżeli go skasujesz w Threemie, pojawi się ponownie po synchronizacji kontaktów.\nCzy chciałbyś wykluczyć go z synchronizacji?</string>
     <string name="no">Nie</string>
@@ -1315,7 +1314,7 @@ anonimowo?</string>
     <string name="enable_storage_access_for_media">Włącz dostęp do pamięci masowej, aby zobaczyć zdjęcia i filmy w urządzeniu</string>
     <string name="select_storage_access_for_media_is_granted">Udało Ci się przyznać dostęp do wybranej liczby zdjęć i filmów.</string>
     <string name="take_me_there">Zabierz mnie tam...</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Zarządzaj</string>
+    <string name="manage">Zarządzaj</string>
     <string name="notification_channel_group_join_request">Kanał powiadamiania o otrzymanych prośbach o dołączenie</string>
     <string name="reset_default_group_link_title">Przywróć domyślne informacje łącza</string>
     <string name="reset_default_group_link_desc">Poprzednio udostępnione łącze będzie nieważne, a prośby przez nie wysłane będą automatycznie odrzucane z odpowiedzią o wygaśnięciu.</string>
@@ -1583,11 +1582,11 @@ anonimowo?</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">zgoda została wysłana</string>
     <string name="cd_dec_icon">informacja o braku zgody została wysłana</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">przez %d członków grupy</string>
+    <string name="cd_ack_dec_group_count">przez %d członków grupy</string>
     <string name="cd_edited">wiadomość została edytowana</string>
     <string name="cd_created_at">utworzono o %s</string>
     <string name="cd_edited_at">edytowano o %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. zmiana w historii</string>
+    <string name="cd_index_in_edit_history">%d. zmiana w historii</string>
     <string name="cd_message_details_container">szczegóły wiadomości</string>
     <string name="cd_enable_formatting">Włącz formatowanie</string>
     <string name="cd_message">wiadomość</string>

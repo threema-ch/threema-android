@@ -100,7 +100,7 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
 			}, holder.messageBlockView);
 
 			if (holder.controller != null) {
-				holder.controller.setImageResource(R.drawable.ic_outline_rule);
+				holder.controller.setIconResource(R.drawable.ic_outline_rule);
 			}
 
 			RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));

@@ -229,7 +229,7 @@ public class ServiceManager {
 	private SystemScreenLockService systemScreenLockService;
 
 	@Nullable
-	private IdListService blackListService, excludedSyncIdentitiesService, profilePicRecipientsService;
+	private IdListService blockedContactsService, excludedSyncIdentitiesService, profilePicRecipientsService;
 	@Nullable
 	private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
 	@Nullable
@@ -451,7 +451,7 @@ public class ServiceManager {
 				this.getUserService(),
 				this.getIdentityStore(),
 				this.getPreferenceService(),
-				this.getBlackListService(),
+				this.getBlockedContactsService(),
 				this.getProfilePicRecipientsService(),
 				this.getRingtoneService(),
 				this.getMutedChatsListService(),
@@ -487,7 +487,7 @@ public class ServiceManager {
 					this.getApiService(),
 					this.getDownloadService(),
 					this.getHiddenChatsListService(),
-					this.getBlackListService(),
+					this.getBlockedContactsService(),
                     this.getModelRepositories().getEditHistory()
 			);
 		}
@@ -772,7 +772,7 @@ public class ServiceManager {
 				this.getDistributionListService(),
 				this.getMessageService(),
 				this.getHiddenChatsListService(),
-				this.getBlackListService(),
+				this.getBlockedContactsService(),
 				this.getConversationTagService()
 			);
 		}
@@ -818,8 +818,7 @@ public class ServiceManager {
 				this.getDeviceService(),
 				this.getFileService(),
 				this.getIdentityStore(),
-				this.getBlackListService(),
-				this.getLicenseService(),
+				this.getBlockedContactsService(),
 				this.getApiService()
 			);
 		}
@@ -828,11 +827,12 @@ public class ServiceManager {
 	}
 
 	@NonNull
-	public IdListService getBlackListService() {
-		if(this.blackListService == null) {
-			this.blackListService = new IdListServiceImpl("identity_list_blacklist", this.getPreferenceService());
+	public IdListService getBlockedContactsService() {
+		if(this.blockedContactsService == null) {
+            // Keep the uniqueListName `identity_list_blacklist` to avoid a migration of the key in the preferences
+			this.blockedContactsService = new IdListServiceImpl("identity_list_blacklist", this.getPreferenceService());
 		}
-		return this.blackListService;
+		return this.blockedContactsService;
 	}
 
 	@NonNull
@@ -937,7 +937,7 @@ public class ServiceManager {
 				this.getDistributionListService(),
 				this.getLocaleService(),
 				this.getFileService(),
-				this.getBlackListService(),
+				this.getBlockedContactsService(),
 				this.getExcludedSyncIdentitiesService(),
 				this.getProfilePicRecipientsService(),
 				this.getDatabaseServiceNew(),
@@ -1019,7 +1019,7 @@ public class ServiceManager {
 				this.getMessageService(),
 				this.getNotificationService(),
 				this.databaseServiceNew,
-				this.getBlackListService(),
+				this.getBlockedContactsService(),
 				this.getPreferenceService(),
 				this.getUserService(),
 				this.getHiddenChatsListService(),
@@ -1169,7 +1169,7 @@ public class ServiceManager {
 				getContactService(),
 				getContactStore(),
 				getIdentityStore(),
-				getBlackListService(),
+				getBlockedContactsService(),
 				getPreferenceService(),
 				this
 			);

@@ -66,7 +66,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModelData;
-import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -93,7 +92,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private GroupService groupService;
     private PreferenceService preferenceService;
     private IdListService excludeFromSyncListService;
-    private IdListService blackListIdentityService;
+    private IdListService blockedContactsService;
     @Deprecated
     private final ContactModel contactModel;
     private final @NonNull ContactModelData contactModelData;
@@ -229,7 +228,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             this.contactService = serviceManager.getContactService();
             this.groupService = serviceManager.getGroupService();
             this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
-            this.blackListIdentityService = serviceManager.getBlackListService();
+            this.blockedContactsService = serviceManager.getBlockedContactsService();
             this.preferenceService = serviceManager.getPreferenceService();
         } catch (Exception e) {
             logger.error("Failed to set up services", e);
@@ -284,7 +283,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             String identityAdditional = null;
             switch (this.contactModelData.activityState) {
                 case ACTIVE:
-                    if (blackListIdentityService.has(contactModelData.identity)) {
+                    if (blockedContactsService.has(contactModelData.identity)) {
                         identityAdditional = context.getString(R.string.blocked);
                     }
                     break;

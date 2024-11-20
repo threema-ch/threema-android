@@ -95,7 +95,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 	protected DistributionListService distributionListService;
 	protected ConversationService conversationService;
 	protected PreferenceService preferenceService;
-	protected IdListService blacklistService;
+	protected IdListService blockedContactsService;
 	protected DeadlineListService hiddenChatsListService;
 	protected FragmentActivity activity;
 	protected Parcelable listInstanceState;
@@ -119,7 +119,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 			contactService = serviceManager.getContactService();
 			groupService = serviceManager.getGroupService();
 			distributionListService = serviceManager.getDistributionListService();
-			blacklistService = serviceManager.getBlackListService();
+			blockedContactsService = serviceManager.getBlockedContactsService();
 			conversationService = serviceManager.getConversationService();
 			preferenceService = serviceManager.getPreferenceService();
 			hiddenChatsListService = serviceManager.getHiddenChatsListService();

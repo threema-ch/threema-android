@@ -56,8 +56,8 @@ public abstract class Converter {
 		return serviceManager;
 	}
 
-	protected static IdListService getBlackListService() {
-		return getServiceManager().getBlackListService();
+	protected static IdListService getBlockedContactsService() {
+		return getServiceManager().getBlockedContactsService();
 	}
 
 	protected static ContactService getContactService() throws ConversionException {

@@ -24,17 +24,24 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
+
+import org.slf4j.Logger;
+
 import androidx.core.app.NotificationCompat;
 
 import java.util.HashMap;
 
 import ch.threema.app.R;
+import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.utils.LoggingUtil;
 
 public class RingtoneServiceImpl implements RingtoneService {
+    private final static Logger logger = LoggingUtil.getThreemaLogger("RingtoneServiceImpl");
 	private final PreferenceService preferenceService;
 	private HashMap<String, String> ringtones;
+    private final boolean supportsNotificationChannels = ConfigUtils.supportsNotificationChannels();
 
 	public RingtoneServiceImpl(PreferenceService preferenceService) {
 		this.preferenceService = preferenceService;
@@ -44,11 +51,24 @@ public class RingtoneServiceImpl implements RingtoneService {
 
 	@Override
 	public void init() {
-		ringtones = preferenceService.getRingtones();
+        if (supportsNotificationChannels) {
+            // Set empty hash map as notification channels are supported and therefore ringtones
+            // won't be managed by us.
+            HashMap<String, String> emptyRingtones = new HashMap<>();
+            preferenceService.setRingtones(emptyRingtones);
+            ringtones = emptyRingtones;
+        } else {
+            ringtones = preferenceService.getRingtones();
+        }
 	}
 
 	@Override
 	public void setRingtone(String uniqueId, Uri ringtoneUri) {
+        if (supportsNotificationChannels) {
+            logger.error("Cannot set ringtone if notification channels are supported");
+            return;
+        }
+
 		String ringtone = null;
 
 		if (ringtoneUri != null) {
@@ -83,6 +103,10 @@ public class RingtoneServiceImpl implements RingtoneService {
 
 	@Override
 	public void removeCustomRingtone(String uniqueId) {
+        if (supportsNotificationChannels) {
+            logger.warn("No need to remove custom ringtone if notification channels are supported");
+        }
+
 		if (ringtones != null && ringtones.containsKey(uniqueId)) {
 			ringtones.remove(uniqueId);
 
@@ -127,21 +151,30 @@ public class RingtoneServiceImpl implements RingtoneService {
 
 	@Override
 	public Uri getDefaultContactRingtone() {
+        if (supportsNotificationChannels) {
+            return null;
+        }
+
 		return preferenceService.getNotificationSound();
 	}
 
 	@Override
 	public Uri getDefaultGroupRingtone() {
-		return preferenceService.getGroupNotificationSound();
-	}
+        if (supportsNotificationChannels) {
+            return null;
+        }
 
-	private boolean hasNoRingtone(String uniqueId) {
-		Uri ringtone = getRingtoneFromUniqueId(uniqueId);
-		return (ringtone == null || ringtone.toString().equals("null"));
+		return preferenceService.getGroupNotificationSound();
 	}
 
 	@Override
 	public boolean isSilent(String uniqueId, boolean isGroup) {
+        if (supportsNotificationChannels) {
+            // Note that we do not manage the sound of notifications if notification channels are
+            // supported. Therefore we always return false as we do not display this particularly.
+            return false;
+        }
+
 		if (!TestUtil.isEmptyOrNull(uniqueId)) {
 			Uri defaultRingtone, selectedRingtone;
 
@@ -156,4 +189,9 @@ public class RingtoneServiceImpl implements RingtoneService {
 		}
 		return false;
 	}
+
+    private boolean hasNoRingtone(String uniqueId) {
+        Uri ringtone = getRingtoneFromUniqueId(uniqueId);
+        return (ringtone == null || ringtone.toString().equals("null"));
+    }
 }

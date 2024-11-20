@@ -335,8 +335,8 @@
     <string name="synchronize_contact">Címjegyzék szinkronizálása</string>
     <string name="exclude_contact">Szinkronizálásból kizárás.</string>
     <string name="prefs_header_lists">Listák</string>
-    <string name="prefs_title_black_list">Blokkolt névjegyek</string>
-    <string name="prefs_sum_black_list">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
+    <string name="prefs_title_blocked_contacts">Blokkolt névjegyek</string>
+    <string name="prefs_sum_blocked_contacts">Az itt felsorolt ID-k üzeneteit a rendszer figyelmen kívül hagyja.</string>
     <string name="verified">Ellenőrizve</string>
     <string name="want_to_add_to_exclude_list">Ez a kapcsolat egy a telefonos címjegyzék bejegyzéséhez kapcsolódik.
 		Ha törli a Threema rendszerben, akkor kapcsolat szinkronizálás után újra megjelenik.\nKívánja a jövőben

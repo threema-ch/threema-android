@@ -3,14 +3,15 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/msg_list_item_status"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
-        style="@style/Threema.CardView.Bubble.Status"
         android:id="@+id/message_block"
+        style="@style/Threema.CardView.Bubble.Status"
         app:cardBackgroundColor="@color/bubble_status_colorstatelist">
 
         <ch.threema.app.emojis.EmojiConversationTextView
@@ -23,7 +24,7 @@
             android:ellipsize="end"
             android:gravity="center_horizontal"
             android:maxLines="6"
-            android:text="Text" />
+            tools:text="@tools:sample/lorem/random" />
 
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

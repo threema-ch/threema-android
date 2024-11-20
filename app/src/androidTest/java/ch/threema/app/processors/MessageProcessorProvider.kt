@@ -380,7 +380,7 @@ open class MessageProcessorProvider {
         )
 
         // Unblock contacts
-        serviceManager.blackListService.removeAll()
+        serviceManager.blockedContactsService.removeAll()
     }
 
     private fun setTaskManager(taskManager: TaskManager) {
@@ -487,7 +487,7 @@ open class MessageProcessorProvider {
                 it.contactService,
                 it.contactStore,
                 it.identityStore,
-                it.blackListService,
+                it.blockedContactsService,
                 it.preferenceService,
                 it
             )

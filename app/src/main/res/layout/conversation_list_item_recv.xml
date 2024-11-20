@@ -1,70 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
          avatar on left
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/msg_list_item_recv"
-	android:layout_width="wrap_content"
-	android:layout_height="match_parent"
-	android:minHeight="@dimen/chat_bubble_minheight"
-	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
-	android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/msg_list_item_recv"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:minHeight="@dimen/chat_bubble_minheight"
+    android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom">
 
-	<include layout="@layout/conversation_bubble_start_recv"/>
+    <include layout="@layout/conversation_bubble_start_recv" />
 
-	<com.google.android.material.card.MaterialCardView
-			style="@style/Threema.CardView.Bubble.Receive"
-			android:id="@+id/message_block">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/message_block"
+        style="@style/Threema.CardView.Bubble.Receive">
 
-		<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-		<include layout="@layout/conversation_bubble_header"/>
+            <include layout="@layout/conversation_bubble_header" />
 
-		<FrameLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingLeft="@dimen/chat_bubble_margin_start"
-				android:paddingRight="@dimen/chat_bubble_margin_end">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/chat_bubble_margin_start"
+                android:paddingRight="@dimen/chat_bubble_margin_end">
 
-			<ch.threema.app.emojis.EmojiConversationTextView
-					style="@style/Threema.Bubble.Text.Body"
-					android:id="@+id/text_view"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:linksClickable="true"
-					android:textSize="?attr/font_large"
-					android:ellipsize="end"
-					android:maxLength="@integer/max_bubble_text_length"/>
+                <ch.threema.app.emojis.EmojiConversationTextView
+                    android:id="@+id/text_view"
+                    style="@style/Threema.Bubble.Text.Body"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:linksClickable="true"
+                    android:maxLength="@integer/max_bubble_text_length"
+                    android:textSize="?attr/font_large" />
 
-			<FrameLayout
-				android:id="@+id/read_on_container"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingTop="36dp"
-				android:background="@drawable/bubble_fade_recv_selector"
-				android:layout_gravity="bottom"
-				android:visibility="gone">
+                <FrameLayout
+                    android:id="@+id/read_on_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/bubble_fade_recv_selector"
+                    android:paddingTop="36dp"
+                    android:visibility="gone">
 
-				<com.google.android.material.chip.Chip
-					android:id="@+id/read_on_button"
-					style="@style/Threema.Chip.VideoTranscoder"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_horizontal"
-					android:text="@string/read_on" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/read_on_button"
+                        style="@style/Threema.Chip.VideoTranscoder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/read_on" />
 
-			</FrameLayout>
+                </FrameLayout>
 
-		</FrameLayout>
+            </FrameLayout>
 
-		<include layout="@layout/conversation_bubble_footer_recv"/>
+            <include layout="@layout/conversation_bubble_footer_recv" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>

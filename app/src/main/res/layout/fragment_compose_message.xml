@@ -346,7 +346,7 @@
                 android:layout_height="@dimen/input_text_height"
                 android:layout_gravity="bottom|right"
                 android:scaleType="center"
-                app:tint="?attr/colorOnPrimaryContainer"
+                app:tint="?attr/colorOnPrimary"
                 android:visibility="gone"
                 android:contentDescription="@string/confirm_edit_desc" />
 

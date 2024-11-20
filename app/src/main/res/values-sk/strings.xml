@@ -337,8 +337,7 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="synchronize_contact">Synchronizácia kontaktov</string>
     <string name="exclude_contact">Vyňať z automatickej synchronizácie</string>
     <string name="prefs_header_lists">Zoznamy</string>
-    <string name="prefs_title_black_list">Blokované ID</string>
-    <string name="prefs_sum_black_list">Správy od tu uvedených ID budú ignorované.</string>
+    <string name="prefs_sum_blocked_contacts">Správy od tu uvedených ID budú ignorované.</string>
     <string name="verified">Overené</string>
     <string name="want_to_add_to_exclude_list">Tento kontakt je prepojený s adresárom telefónu. Ak ho zmažete, v aplikácii Threema sa objaví znovu po synchronizácii kontaktov.\nChcete ho vylúčiť zo synchronizácie?</string>
     <string name="no">Nie</string>
@@ -1301,7 +1300,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="enable_storage_access_for_media">Ak chcete vidieť obrázky a videá uložené na tomto zariadení, povoľte prístup k úložisku</string>
     <string name="select_storage_access_for_media_is_granted">Získali ste prístup k vybranému počtu fotografií a videí.</string>
     <string name="take_me_there">Chcem tam ísť…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Spravovať</string>
+    <string name="manage">Spravovať</string>
     <string name="notification_channel_group_join_request">Kanál oznámení pre prijaté skupinové požiadavky</string>
     <string name="reset_default_group_link_title">Obnoviť informácie o predvolenom odkaze</string>
     <string name="reset_default_group_link_desc">Predchádzajúci zdieľaný odkaz bude zneplatnený a pôvodné žiadosti poslané cez tento odkaz budú automaticky zamietnuté s odpoveďou o vypršaní jeho platnosti.</string>
@@ -1570,11 +1569,11 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">súhlas odoslaný</string>
     <string name="cd_dec_icon">nesúhlas odoslaný</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">od %d členov skupiny</string>
+    <string name="cd_ack_dec_group_count">od %d členov skupiny</string>
     <string name="cd_edited">správa bola upravená</string>
     <string name="cd_created_at">vytvorené %s</string>
     <string name="cd_edited_at">upravené %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. upraviť v histórii</string>
+    <string name="cd_index_in_edit_history">%d. upraviť v histórii</string>
     <string name="cd_message_details_container">detaily správy</string>
     <string name="cd_enable_formatting">Povoliť formátovanie</string>
     <string name="cd_message">správa</string>

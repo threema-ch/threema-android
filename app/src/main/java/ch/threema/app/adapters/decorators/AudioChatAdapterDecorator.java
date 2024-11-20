@@ -23,10 +23,12 @@ package ch.threema.app.adapters.decorators;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 
 import org.slf4j.Logger;
@@ -69,6 +71,15 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
     }
 
     @Override
+    protected void applyContentColor(
+        final @NonNull ComposeMessageHolder viewHolder,
+        final @NonNull ColorStateList contentColor
+    ) {
+        super.applyContentColor(viewHolder, contentColor);
+        viewHolder.audioMessageIcon.setImageTintList(getMessageModel().getUiContentColor(getContext()));
+    }
+
+    @Override
     protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 
         logger.info("configureChatMessage for {}", getMessageModel().getId());
@@ -108,7 +119,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
         holder.seekBar.setMessageModel(getMessageModel(), helper.getThumbnailCache());
         holder.seekBar.setEnabled(false);
         holder.readOnButton.setVisibility(View.GONE);
-        holder.messageTypeButton.setVisibility(View.VISIBLE);
+        holder.audioMessageIcon.setVisibility(View.VISIBLE);
         holder.controller.setOnClickListener(v -> {
             int status = holder.controller.getStatus();
 
@@ -379,7 +390,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
     private synchronized void changePlayingState(final ComposeMessageHolder holder, boolean isPlaying) {
         logger.debug("changePlayingState for {} to {}", getMessageModel().getId(), isPlaying);
         holder.readOnButton.setVisibility(isPlaying ? View.VISIBLE : View.GONE);
-        holder.messageTypeButton.setVisibility(isPlaying ? View.GONE : View.VISIBLE);
+        holder.audioMessageIcon.setVisibility(isPlaying ? View.GONE : View.VISIBLE);
     }
 
     @SuppressLint("DefaultLocale")

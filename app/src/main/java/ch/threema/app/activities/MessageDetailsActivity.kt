@@ -242,7 +242,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
             false
         }
         toolbar.setTitle(getString(R.string.message_log_title))
-        ConfigUtils.addIconsToOverflowMenu(this, toolbar.getMenu())
+        ConfigUtils.addIconsToOverflowMenu(toolbar.getMenu())
     }
 
     private fun onToggleFormattingClicked(item: MenuItem) {

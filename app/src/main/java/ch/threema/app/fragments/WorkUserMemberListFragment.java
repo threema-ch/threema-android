@@ -130,7 +130,7 @@ public class WorkUserMemberListFragment extends MemberListFragment {
 						preselectedIdentities,
 						checkedItemPositions,
 						contactService,
-						blacklistService,
+						blockedContactsService,
 						hiddenChatsListService,
 						preferenceService,
 						WorkUserMemberListFragment.this,

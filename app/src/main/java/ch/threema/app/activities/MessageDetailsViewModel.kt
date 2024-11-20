@@ -166,7 +166,10 @@ fun AbstractMessageModel.toUiModel(myIdentity: String) = MessageUiModel(
     messageDetailsUiModel = this.toMessageDetailsUiModel()
 )
 
-private fun AbstractMessageModel.getAckUiModel(myIdentity: String) = let {
+/**
+ *  @return Only returns an instance of [AckUiModel] if there is at least one ack/dec for this [AbstractMessageModel].
+ */
+private fun AbstractMessageModel.getAckUiModel(myIdentity: String): AckUiModel? = let {
     if (this is GroupMessageModel) {
         val ackStates = groupMessageStates?.filter { groupMessageState -> groupMessageState.value == MessageState.USERACK.name }
         val decStates = groupMessageStates?.filter { groupMessageState -> groupMessageState.value == MessageState.USERDEC.name }
@@ -181,18 +184,20 @@ private fun AbstractMessageModel.getAckUiModel(myIdentity: String) = let {
         } else {
             UserReaction.NONE
         }
-
-        GroupAckUiModel(
-            ackState = GroupAckDecState(ackStates?.size ?: 0, ackUserReaction),
-            decState = GroupAckDecState(decStates?.size ?: 0, decUserReaction),
-        )
+        return@let if (ackUserReaction != UserReaction.NONE || decUserReaction != UserReaction.NONE) {
+            GroupAckUiModel(
+                ackState = GroupAckDecState(ackStates?.size ?: 0, ackUserReaction),
+                decState = GroupAckDecState(decStates?.size ?: 0, decUserReaction),
+            )
+        } else {
+            null
+        }
     } else {
         val contactAckDecState = when (this.state) {
             MessageState.USERACK -> ContactAckDecState.ACK
             MessageState.USERDEC -> ContactAckDecState.DEC
-            else -> ContactAckDecState.NONE
+            else -> return@let null
         }
-
         ContactAckUiModel(contactAckDecState)
     }
 }

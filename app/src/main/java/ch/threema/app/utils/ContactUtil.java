@@ -120,10 +120,10 @@ public class ContactUtil {
 			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
 	}
 
-	public static boolean canReceiveVoipMessages(ContactModel contactModel, IdListService blackListIdentityService) {
+	public static boolean canReceiveVoipMessages(ContactModel contactModel, IdListService blockedContactsService) {
 		return contactModel != null
-				&& blackListIdentityService != null
-				&& !blackListIdentityService.has(contactModel.getIdentity())
+				&& blockedContactsService != null
+				&& !blockedContactsService.has(contactModel.getIdentity())
 				&& !isEchoEchoOrGatewayContact(contactModel);
 	}
 

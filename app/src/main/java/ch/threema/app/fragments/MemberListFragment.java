@@ -69,7 +69,7 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
 	protected DistributionListService distributionListService;
 	protected ConversationService conversationService;
 	protected PreferenceService preferenceService;
-	protected IdListService blacklistService;
+	protected IdListService blockedContactsService;
 	protected DeadlineListService hiddenChatsListService;
 	protected Activity activity;
 	protected Parcelable listInstanceState;
@@ -92,7 +92,7 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
 			contactService = serviceManager.getContactService();
 			groupService = serviceManager.getGroupService();
 			distributionListService = serviceManager.getDistributionListService();
-			blacklistService = serviceManager.getBlackListService();
+			blockedContactsService = serviceManager.getBlockedContactsService();
 			conversationService = serviceManager.getConversationService();
 			preferenceService = serviceManager.getPreferenceService();
 			hiddenChatsListService = serviceManager.getHiddenChatsListService();

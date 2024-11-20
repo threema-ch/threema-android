@@ -237,11 +237,11 @@
     <string name="push_reset_title">Сброс push-метки</string>
     <string name="push_reset_text">Push-метка сброшена.</string>
     <string name="emoji_recent">Последние</string>
-    <string name="emoji_smileys">Смайлики и люди</string>
-    <string name="emoji_people">Тело людей</string>
+    <string name="emoji_smileys">Смайлы и эмоции</string>
+    <string name="emoji_people">Люди и тело</string>
     <string name="emoji_nature">Животные и природа</string>
     <string name="emoji_food">Еда и напитки</string>
-    <string name="emoji_travel">Путешествия и местности</string>
+    <string name="emoji_travel">Путешествия и места</string>
     <string name="emoji_activity">Действия</string>
     <string name="emoji_objects">Предметы</string>
     <string name="emoji_symbols">Символы</string>
@@ -334,8 +334,8 @@
     <string name="synchronize_contact">Синхронизация адресной книги</string>
     <string name="exclude_contact">Исключить из автосинхронизации</string>
     <string name="prefs_header_lists">Списки</string>
-    <string name="prefs_title_black_list">Чёрный список</string>
-    <string name="prefs_sum_black_list">Сообщения от перечисленных здесь ID будут проигнорированы.</string>
+    <string name="prefs_title_blocked_contacts">Заблокированные контакты</string>
+    <string name="prefs_sum_blocked_contacts">Сообщения от контактов с перечисленными здесь ID будут игнорироваться.</string>
     <string name="verified">Проверено</string>
     <string name="want_to_add_to_exclude_list">Этот контакт связан с записью в телефонной книге вашего устройства. Если вы удалите его в Threema, он появится снова после синхронизации контактов.\nИсключить его из синхронизации?</string>
     <string name="no">Нет</string>
@@ -1298,7 +1298,7 @@
     <string name="enable_storage_access_for_media">Предоставьте доступ к памяти устройства для просмотра изображений и видео на нём.</string>
     <string name="select_storage_access_for_media_is_granted">Вы предоставили доступ к определённому количеству фото и видео.</string>
     <string name="take_me_there">Перейти…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Управление</string>
+    <string name="manage">Управление</string>
     <string name="notification_channel_group_join_request">Канал уведомлений о полученных запросах вступления в группу</string>
     <string name="reset_default_group_link_title">Сбросить сведения о ссылке по умолчанию</string>
     <string name="reset_default_group_link_desc">Ранее выложенная ссылка станет недействительной, а запросы через старую ссылку будут автоматически отклоняться с ответом «Просрочена».</string>
@@ -1566,11 +1566,11 @@
     <!-- accessibility -->
     <string name="cd_ack_icon">согласие отправлено</string>
     <string name="cd_dec_icon">несогласие отправлено</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">от %d участников группы</string>
+    <string name="cd_ack_dec_group_count">от %d участников группы</string>
     <string name="cd_edited">сообщение было изменено</string>
     <string name="cd_created_at">создано: %s</string>
     <string name="cd_edited_at">изменено: %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. изменение в истории</string>
+    <string name="cd_index_in_edit_history">%d. изменение в истории</string>
     <string name="cd_message_details_container">журнал сообщений</string>
     <string name="cd_enable_formatting">Включить форматирование</string>
     <string name="cd_message">сообщение</string>

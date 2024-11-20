@@ -24,23 +24,61 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.net.Uri;
 
+/**
+ * The ringtone service provides either default or custom ringtones for contacts and groups. Note
+ * that the ringtone manager only manages notification sounds until api 25. From api 26 on, the
+ * ringtone manager won't return any custom notification sounds.
+ */
 public interface RingtoneService {
 
-	void init();
-	void setRingtone(String uniqueId, Uri ringtoneUri);
+    void init();
 
-	Uri getRingtoneFromUniqueId(String uniqueId);
-	Uri getContactRingtone(String uniqueId);
-	Uri getGroupRingtone(String uniqueId);
-	Uri getVoiceCallRingtone(String uniqueId);
+    void setRingtone(String uniqueId, Uri ringtoneUri);
 
-	Uri getDefaultContactRingtone();
-	Uri getDefaultGroupRingtone();
+    /**
+     * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
+     * and newer.
+     */
+    Uri getRingtoneFromUniqueId(String uniqueId);
 
-	boolean isSilent(String uniqueId, boolean isGroup);
+    /**
+     * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
+     * and newer.
+     */
+    Uri getContactRingtone(String uniqueId);
 
-	boolean hasCustomRingtone(String uniqueId);
-	void removeCustomRingtone(String uniqueId);
+    /**
+     * Get the ringtone uri from the given unique id. Note that this method returns null on api 26
+     * and newer.
+     */
+    Uri getGroupRingtone(String uniqueId);
 
-	void resetRingtones(Context context);
+    /**
+     * Get the voice call ringtone. Note that this method returns null on api 26 and newer.
+     */
+    Uri getVoiceCallRingtone(String uniqueId);
+
+    /**
+     * Get the default ringtone for contacts. Note that this method returns null on api 26 and
+     * newer.
+     */
+    Uri getDefaultContactRingtone();
+
+    /**
+     * Get the default ringtone for groups. Note that this method returns null on api 26 and newer.
+     */
+    Uri getDefaultGroupRingtone();
+
+    /**
+     * Check whether the given conversation is silent or not. Note that starting from api 26, this
+     * method always returns false as the sound is managed by the system notification channel
+     * settings.
+     */
+    boolean isSilent(String uniqueId, boolean isGroup);
+
+    boolean hasCustomRingtone(String uniqueId);
+
+    void removeCustomRingtone(String uniqueId);
+
+    void resetRingtones(Context context);
 }

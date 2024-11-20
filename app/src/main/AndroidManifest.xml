@@ -498,7 +498,7 @@
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode" />
 		<activity
-			android:name=".activities.BlackListActivity"
+			android:name=".activities.BlockedContactsActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode" />
 		<activity

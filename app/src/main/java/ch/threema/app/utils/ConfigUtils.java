@@ -57,7 +57,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -480,20 +479,17 @@ public class ConfigUtils {
      * @param menu  The menu to tint
      * @param color The ColorInt to tint the icons
      */
-    public static void tintMenu(Menu menu, @ColorInt int color) {
+    public static void tintMenuIcons(@NonNull Menu menu, @ColorInt int color) {
         for (int i = 0, size = menu.size(); i < size; i++) {
             final MenuItem menuItem = menu.getItem(i);
-            tintMenuItem(menuItem, color);
-            if (menuItem.hasSubMenu()) {
-                final SubMenu subMenu = menuItem.getSubMenu();
-                for (int j = 0; j < subMenu.size(); j++) {
-                    tintMenuItem(subMenu.getItem(j), color);
-                }
+            tintMenuIcon(menuItem, color);
+            if (menuItem.hasSubMenu() && menuItem.getSubMenu() != null) {
+                tintMenuIcons(menuItem.getSubMenu(), color);
             }
         }
     }
 
-    public static void tintMenuItem(@Nullable final MenuItem menuItem, @ColorInt int color) {
+    public static void tintMenuIcon(@Nullable final MenuItem menuItem, @ColorInt int color) {
         if (menuItem != null) {
             final Drawable drawable = menuItem.getIcon();
             if (drawable != null) {
@@ -503,8 +499,8 @@ public class ConfigUtils {
         }
     }
 
-    public static void tintMenuItem(@NonNull Context context, @Nullable final MenuItem menuItem, @AttrRes int colorAttr) {
-        tintMenuItem(menuItem, getColorFromAttribute(context, colorAttr));
+    public static void tintMenuIcon(@NonNull Context context, @Nullable final MenuItem menuItem, @AttrRes int colorAttr) {
+        tintMenuIcon(menuItem, getColorFromAttribute(context, colorAttr));
     }
 
     public static void setEmojiStyle(Context context, int newStyle) {
@@ -1467,13 +1463,10 @@ public class ConfigUtils {
     }
 
     /**
-     * Configure menu to display icons and dividers. Call this in onCreateOptionsMenu()
-     *
-     * @param context Context - required for theming, set to null if you want the icon color not to be touched
-     * @param menu    Menu to configure
+     * Configure menu to display dividers. Call this in onCreateOptionsMenu()
      */
     @SuppressLint("RestrictedApi")
-    public static void addIconsToOverflowMenu(@Nullable Context context, @NonNull Menu menu) {
+    public static void addIconsToOverflowMenu(@NonNull Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
 
         try {
@@ -1481,10 +1474,6 @@ public class ConfigUtils {
             if (menu instanceof MenuBuilder) {
                 MenuBuilder menuBuilder = (MenuBuilder) menu;
                 menuBuilder.setOptionalIconsVisible(true);
-
-                if (context != null) {
-                    ConfigUtils.tintMenu(menu, ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface));
-                }
             }
         } catch (Exception ignored) {
         }

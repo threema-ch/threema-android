@@ -24,6 +24,7 @@ package ch.threema.app.compose.message
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import ch.threema.app.activities.AckUiModel
 import ch.threema.app.activities.ContactAckUiModel
 import ch.threema.app.activities.GroupAckUiModel
@@ -33,6 +34,7 @@ fun MessageStateIndicator(
     ackUiModel: AckUiModel? = null,
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
+    deliveryIndicatorTintColor: Color? = null
 ) {
     when (ackUiModel) {
         is ContactAckUiModel -> {
@@ -44,7 +46,11 @@ fun MessageStateIndicator(
 
         null -> {
             if (deliveryIconRes != null && deliveryIconContentDescriptionRes != null) {
-                DeliveryIndicator(deliveryIconRes = deliveryIconRes, deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes)
+                DeliveryIndicator(
+                    deliveryIconRes = deliveryIconRes,
+                    deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
+                    tintColor = deliveryIndicatorTintColor
+                )
             }
         }
     }

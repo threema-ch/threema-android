@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="hamlet">Mezra</string>
     <string name="village">Köy</string>
-    <string name="town">Kasaba</string>
+    <string name="town">Şehir</string>
     <string name="isolated_dwelling">İzole Konut</string>
     <string name="island">Ada</string>
     <string name="islet">Adacık</string>

@@ -348,8 +348,8 @@
     <string name="synchronize_contact">Синхр. з телефонною книгою</string>
     <string name="exclude_contact">Виключити з автосинхронізації</string>
     <string name="prefs_header_lists">Списки</string>
-    <string name="prefs_title_black_list">Список заблокованих</string>
-    <string name="prefs_sum_black_list">Повідомлення від ID із цього списку не надходитимуть</string>
+    <string name="prefs_title_blocked_contacts">Заблоковані контакти</string>
+    <string name="prefs_sum_blocked_contacts">Повідомлення від цих ID ігноруватимуться.</string>
     <string name="verified">Підтверджено</string>
     <string name="want_to_add_to_exclude_list">Цей контакт зв\'язаний із записом у вашій телефонній книзі. Якщо
 		ви видалите його в Threema, він з\'явиться знову після синхронізації контактів.\nДодати його до списку виключень?</string>
@@ -1342,7 +1342,7 @@
     <string name="enable_storage_access_for_media">Щоб бачити зображення та відео, збережені на пристрої, надайте доступ до сховища.</string>
     <string name="select_storage_access_for_media_is_granted">Ви надали доступ до окремих фото й відео.</string>
     <string name="take_me_there">Перейти…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Керувати</string>
+    <string name="manage">Керувати</string>
     <string name="notification_channel_group_join_request">Канал сповіщень для отриманих запитів на приєднання до груп</string>
     <string name="reset_default_group_link_title">Скинути дані посилання за умовчанням</string>
     <string name="reset_default_group_link_desc">Посилання, яке використовувалося раніше, стане недійсним, а запити за ним автоматично відхилятимуться. Користувачі бачитимуть повідомлення про те, що термін дії посилання завершився.</string>
@@ -1610,11 +1610,11 @@
     <!-- accessibility -->
     <string name="cd_ack_icon">\"погоджуюся\" надіслано</string>
     <string name="cd_dec_icon">\"не погоджуюся\" надіслано</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">стількома учасниками групи: %d</string>
+    <string name="cd_ack_dec_group_count">стількома учасниками групи: %d</string>
     <string name="cd_edited">повідомлення відредаговано</string>
     <string name="cd_created_at">створено о %s</string>
     <string name="cd_edited_at">відредаговано о %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d редагування в історії</string>
+    <string name="cd_index_in_edit_history">%d редагування в історії</string>
     <string name="cd_message_details_container">про повідомлення</string>
     <string name="cd_enable_formatting">Увімкнути форматування</string>
     <string name="cd_message">повідомлення</string>

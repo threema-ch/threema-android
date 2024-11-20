@@ -96,7 +96,7 @@ public class Contact extends Converter {
 			builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWork());
 			builder.put(PUBLIC_KEY, contact.getPublicKey());
 			builder.put(IDENTITY_TYPE, contact.getIdentityType() == IdentityType.WORK ? 1 : 0);
-			builder.put(IS_BLOCKED, getBlackListService().has(contact.getIdentity()));
+			builder.put(IS_BLOCKED, getBlockedContactsService().has(contact.getIdentity()));
 
 			final long featureMask = contact.getFeatureMask();
 			builder.put(FEATURE_MASK, featureMask);

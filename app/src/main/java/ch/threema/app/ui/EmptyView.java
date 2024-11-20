@@ -22,6 +22,7 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -36,6 +37,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -85,8 +87,11 @@ public class EmptyView extends LinearLayout {
 		this.emptyText.setText(label);
 	}
 
-	public void setup(@StringRes int labelRes, @DrawableRes int imageRes) {
+	public void setup(@StringRes int labelRes, @DrawableRes int imageRes, @Nullable @ColorInt Integer imageTint) {
 		this.emptyImageView.setImageResource(imageRes);
+        if (imageTint != null) {
+            this.emptyImageView.setColorFilter(imageTint, PorterDuff.Mode.SRC_IN);
+        }
 		this.emptyImageView.setVisibility(VISIBLE);
 		this.emptyText.setText(labelRes);
 	}

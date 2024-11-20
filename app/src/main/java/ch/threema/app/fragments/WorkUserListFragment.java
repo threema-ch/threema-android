@@ -173,7 +173,7 @@ public class WorkUserListFragment extends RecipientListFragment {
 					null,
 					checkedItemPositions,
 					contactService,
-					blacklistService,
+					blockedContactsService,
 					hiddenChatsListService,
 					preferenceService,
 					WorkUserListFragment.this,

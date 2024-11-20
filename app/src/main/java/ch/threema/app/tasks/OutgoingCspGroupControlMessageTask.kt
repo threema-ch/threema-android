@@ -35,7 +35,7 @@ import java.util.Date
 abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
     OutgoingCspMessageTask(serviceManager) {
     private val taskCreator by lazy { serviceManager.taskCreator }
-    private val blackListService by lazy { serviceManager.blackListService }
+    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
 
     protected abstract val messageId: MessageId
     protected abstract val creatorIdentity: String
@@ -65,7 +65,7 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
             identityStore,
             contactStore,
             nonceFactory,
-            blackListService,
+            blockedContactsService,
             taskCreator
         )
     }

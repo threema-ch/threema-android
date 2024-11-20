@@ -47,7 +47,6 @@ import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.stores.MatchTokenStore;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -74,12 +73,11 @@ public class SynchronizeContactsRoutine implements Runnable {
 	private final DeviceService deviceService;
 	private final PreferenceService preferenceService;
 	private final IdentityStoreInterface identityStore;
-	private final IdListService blackListIdentityService;
-	private final LicenseService<?> licenseService;
+	private final IdListService blockedContactsService;
 
 	private OnStatusUpdate onStatusUpdate;
-	private final List<OnFinished> onFinished = new ArrayList<OnFinished>();
-	private final List<OnStarted> onStarted = new ArrayList<OnStarted>();
+	private final List<OnFinished> onFinished = new ArrayList<>();
+	private final List<OnStarted> onStarted = new ArrayList<>();
 
 	private final List<String> processingIdentities = new ArrayList<>();
 	private boolean abort = false;
@@ -99,18 +97,19 @@ public class SynchronizeContactsRoutine implements Runnable {
 		void started(boolean fullSync);
 	}
 
-	public SynchronizeContactsRoutine(Context context,
-	                                  APIConnector apiConnector,
-	                                  ContactService contactService,
-	                                  UserService userService,
-	                                  LocaleService localeService,
-	                                  ContentResolver contentResolver,
-	                                  IdListService excludedSyncList,
-	                                  DeviceService deviceService,
-	                                  PreferenceService preferenceService,
-	                                  IdentityStoreInterface identityStore,
-	                                  IdListService blackListIdentityService,
-	                                  LicenseService<?> licenseService) {
+    public SynchronizeContactsRoutine(
+        Context context,
+        APIConnector apiConnector,
+        ContactService contactService,
+        UserService userService,
+        LocaleService localeService,
+        ContentResolver contentResolver,
+        IdListService excludedSyncList,
+        DeviceService deviceService,
+        PreferenceService preferenceService,
+        IdentityStoreInterface identityStore,
+        IdListService blockedContactsService
+    ) {
 		this.context = context;
 		this.apiConnector = apiConnector;
 		this.userService = userService;
@@ -121,8 +120,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		this.deviceService = deviceService;
 		this.preferenceService = preferenceService;
 		this.identityStore = identityStore;
-		this.licenseService = licenseService;
-		this.blackListIdentityService = blackListIdentityService;
+		this.blockedContactsService = blockedContactsService;
 	}
 
 	public SynchronizeContactsRoutine addProcessIdentity(String identity) {
@@ -141,7 +139,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 	}
 
 	public boolean fullSync() {
-		return this.processingIdentities.size() == 0;
+		return this.processingIdentities.isEmpty();
 	}
 
 	@Override
@@ -243,7 +241,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					continue;
 				}
 
-				if(this.processingIdentities.size() > 0 && !this.processingIdentities.contains(id.getKey())) {
+				if(!this.processingIdentities.isEmpty() && !this.processingIdentities.contains(id.getKey())) {
 					continue;
 				}
 
@@ -282,7 +280,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				contact.setAndroidContactLookupKey(lookupKey + "/" + contactId); // It can optionally also have a "/" and last known contact ID appended after that. This "complete" format is an important optimization and is highly recommended.
 
 				try {
-					boolean createNewRawContact = false;
+					boolean createNewRawContact;
 
 					AndroidContactUtil.getInstance().updateNameByAndroidContact(contact); // throws an exception if no name can be determined
 					AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
@@ -294,7 +292,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 					List<AndroidContactUtil.RawContactInfo> rawContactInfos = existingRawContacts.get(contact.getIdentity());
 
-					if (rawContactInfos == null || rawContactInfos.size() == 0) {
+					if (rawContactInfos.isEmpty()) {
 						// raw contact does not exist yet, create it
 						createNewRawContact = true;
 						newRawContactCount++;
@@ -315,7 +313,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					}
 
 					if (createNewRawContact) {
-						boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact, this.blackListIdentityService)
+						boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact, this.blockedContactsService)
 							&& ConfigUtils.isCallsEnabled();
 
 						// create a raw contact for our stuff and aggregate it
@@ -342,7 +340,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 				}
 			}
 
-			if (contentProviderOperations.size() > 0) {
+			if (!contentProviderOperations.isEmpty()) {
 				try {
 					ConfigUtils.applyToContentResolverInBatches(
 						ContactsContract.AUTHORITY,
@@ -355,12 +353,12 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 			if (this.fullSync()) {
 				// delete remaining / stray raw contacts
-				if (existingRawContacts.size() > 0) {
+				if (!existingRawContacts.isEmpty()) {
 					AndroidContactUtil.getInstance().deleteThreemaRawContacts(existingRawContacts);
 					logger.info("Deleted {} stray raw contacts", existingRawContacts.size());
 				}
 
-				if (preSynchronizedIdentities.size() > 0) {
+				if (!preSynchronizedIdentities.isEmpty()) {
 					logger.info("Found {} synchronized contacts that are no longer synchronized", preSynchronizedIdentities.size());
 
 					List<ContactModel> contactModels = this.contactService.getByIdentities(preSynchronizedIdentities);
@@ -449,9 +447,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 
 	private Map<String, ContactMatchKeyEmail> readEmails() {
 		Map<String, ContactMatchKeyEmail> emails = new HashMap<>();
-		String selection = null;
 
-		selection = ContactsContract.CommonDataKinds.Email.IN_DEFAULT_DIRECTORY + " = 1";
+        String selection = ContactsContract.CommonDataKinds.Email.IN_DEFAULT_DIRECTORY + " = 1";
 
 		try (Cursor emailsCursor = this.contentResolver.query(
 			ContactsContract.CommonDataKinds.Email.CONTENT_URI,

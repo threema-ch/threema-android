@@ -374,7 +374,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 		this.mediaAttachRecyclerView.addItemDecoration(new MediaGridItemDecoration(getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 		this.mediaAttachRecyclerView.setAdapter(mediaAttachAdapter);
 
-		ConfigUtils.addIconsToOverflowMenu(this, this.toolbar.getMenu());
+		ConfigUtils.addIconsToOverflowMenu(this.toolbar.getMenu());
 
 		this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 			@Override
@@ -413,7 +413,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 			return true;
 		});
 		topMenuItem.setIcon(R.drawable.ic_collections);
-		ConfigUtils.tintMenuItem(this, topMenuItem, R.attr.colorOnSurface);
+		ConfigUtils.tintMenuIcon(this, topMenuItem, R.attr.colorOnSurface);
 
 		// Fetch all media, add a unique menu item for each media storage bucket and media type group.
 		registerOnAllDataFetchedListener(new Observer<>() {
@@ -474,7 +474,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 								item.setIcon(R.drawable.ic_webp);
 								break;
 						}
-						ConfigUtils.tintMenuItem(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
+						ConfigUtils.tintMenuIcon(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
 					}
 
 					for (String bucket : buckets) {
@@ -484,7 +484,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
 								return true;
 							});
 							item.setIcon(R.drawable.ic_outline_folder_24);
-							ConfigUtils.tintMenuItem(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
+							ConfigUtils.tintMenuIcon(MediaSelectionBaseActivity.this, item, R.attr.colorOnSurface);
 						}
 					}
 

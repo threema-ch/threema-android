@@ -572,7 +572,7 @@ public class ContactModel extends Contact implements ReceiverModel {
         if (isWork && jobTitle != null && !jobTitle.isBlank()) {
             return jobTitle.trim();
         } else if (publicNickName != null && !publicNickName.isBlank()) {
-            return publicNickName.trim();
+            return TILDE + publicNickName.trim();
         } else {
             return "";
         }

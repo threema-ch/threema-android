@@ -662,7 +662,7 @@ public class ContactsSectionFragment
 							contactModels,
 							contactService,
 							serviceManager.getPreferenceService(),
-							serviceManager.getBlackListService(),
+							serviceManager.getBlockedContactsService(),
 							ContactsSectionFragment.this,
 							Glide.with(getContext())
 						);
@@ -846,7 +846,7 @@ public class ContactsSectionFragment
 					mode.getMenuInflater().inflate(R.menu.action_contacts_section, menu);
 					actionMode = mode;
 
-					ConfigUtils.tintMenu(menu, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
+					ConfigUtils.tintMenuIcons(menu, ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
 
 					return true;
 				}
@@ -1196,7 +1196,7 @@ public class ContactsSectionFragment
 				}
 			}
 
-			if (serviceManager.getBlackListService().has(contactModel.getIdentity())) {
+			if (serviceManager.getBlockedContactsService().has(contactModel.getIdentity())) {
 				items.add(new SelectorDialogItem(getString(R.string.unblock_contact), R.drawable.ic_block));
 			} else {
 				items.add(new SelectorDialogItem(getString(R.string.block_contact), R.drawable.ic_block));
@@ -1429,7 +1429,7 @@ public class ContactsSectionFragment
 				sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
 				break;
 			case SELECTOR_TAG_BLOCK:
-				serviceManager.getBlackListService().toggle(getActivity(), contactModel);
+				serviceManager.getBlockedContactsService().toggle(getActivity(), contactModel);
 				break;
 			case SELECTOR_TAG_DELETE:
 				deleteContacts(Set.of(contactModel));
@@ -1461,7 +1461,7 @@ public class ContactsSectionFragment
 
 						final String spammerIdentity = contactModel.getIdentity();
 						if (checked) {
-							ThreemaApplication.requireServiceManager().getBlackListService().add(spammerIdentity);
+							ThreemaApplication.requireServiceManager().getBlockedContactsService().add(spammerIdentity);
 							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
 
 							try {

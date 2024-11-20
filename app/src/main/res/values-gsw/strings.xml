@@ -334,8 +334,8 @@
     <string name="synchronize_contact">Adrässbuech-Synchronisation</string>
     <string name="exclude_contact">Vom autom. Synchr. usschlüsse</string>
     <string name="prefs_header_lists">Liste</string>
-    <string name="prefs_title_black_list">Blockierti Kontäkt</string>
-    <string name="prefs_sum_black_list">Nachrichte vo IDs, wo da ufglischted sind, werded ignoriert.</string>
+    <string name="prefs_title_blocked_contacts">Blockierti Kontäkt</string>
+    <string name="prefs_sum_blocked_contacts">Nachrichte vo IDs, wo da ufglischted sind, werded ignoriert.</string>
     <string name="verified">Überprüeft</string>
     <string name="want_to_add_to_exclude_list">De Kontakt isch miteme Iitrag i Ihrem Telefon-Adrässbuech verchnüpft. Wenn Sie ihn in Threema lösched, taucht er nachere Kontaktsynchronisation wieder uf.\nWänd Sie die ID künftig vode Synchronisation usschlüsse?</string>
     <string name="no">Nei</string>
@@ -1294,7 +1294,7 @@
     <string name="enable_storage_access_for_media">Aktiviered Sie de Speicherzuegriff, zum Bilder und Videos uf Ihrem Grät z’gseh</string>
     <string name="select_storage_access_for_media_is_granted">Sie händ Zuegriff uf e Uuswahl a Fotis und Videos geh.</string>
     <string name="take_me_there">Jetzt aktiviere…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Verwalte</string>
+    <string name="manage">Verwalte</string>
     <string name="notification_channel_group_join_request">Benachrichtigunge für Gruppeaafrage</string>
     <string name="reset_default_group_link_title">Zruggsetze Info</string>
     <string name="reset_default_group_link_desc">De vorher teilti Link isch somit ungültig, und Aafrage über de alt Link werded automatisch abglehnt.</string>
@@ -1560,11 +1560,11 @@
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abglehnt</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">vo %d Gruppemitglieder</string>
+    <string name="cd_ack_dec_group_count">vo %d Gruppemitglieder</string>
     <string name="cd_edited">d’Nachricht isch bearbeitet worde</string>
     <string name="cd_created_at">erstellt am %s</string>
     <string name="cd_edited_at">bearbeitet am %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. Bearbeitig im Verlauf</string>
+    <string name="cd_index_in_edit_history">%d. Bearbeitig im Verlauf</string>
     <string name="cd_message_details_container">Nachrichtedetails</string>
     <string name="cd_enable_formatting">Formatierig aktiviere</string>
     <string name="cd_message">Nachricht</string>

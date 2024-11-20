@@ -50,7 +50,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="@style/Threema.TextAppearance.BodySmall"
-                android:textColor="@color/bubble_text_colorstatelist"
+                android:textColor="@color/bubble_send_text_colorstatelist"
                 android:textStyle="bold" />
 
             <ch.threema.app.emojis.EmojiTextView
@@ -60,7 +60,7 @@
                 android:layout_below="@id/name"
                 android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/thumbnail_view"
-                android:textColor="@color/bubble_text_colorstatelist"
+                android:textColor="@color/bubble_send_text_colorstatelist"
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:textAppearance="@style/Threema.Bubble.Text.Body.Unscaled" />
@@ -90,7 +90,7 @@
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:textAppearance="@style/Threema.TextAppearance.BodySmall"
-                android:textColor="@color/bubble_text_colorstatelist" />
+                android:textColor="@color/bubble_send_text_colorstatelist" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/thumbnail_view"

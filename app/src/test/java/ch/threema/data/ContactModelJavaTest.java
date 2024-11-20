@@ -453,10 +453,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Android Dev", contactListItemTextTopLeft);
+        Assert.assertEquals("Android Dev", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -474,10 +474,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+        Assert.assertEquals( "~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -495,10 +495,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Android Dev", contactListItemTextTopLeft);
+        Assert.assertEquals("Android Dev", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -516,10 +516,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+        Assert.assertEquals("~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -537,10 +537,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+        Assert.assertEquals("~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -558,10 +558,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+        Assert.assertEquals("~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -579,10 +579,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName("  Nickname  ");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("Nickname", contactListItemTextTopLeft);
+        Assert.assertEquals("~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -600,10 +600,10 @@ public class ContactModelJavaTest {
         javaContactModel.setPublicNickName(null);
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomLeft();
+        final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals("", contactListItemTextTopLeft);
+        Assert.assertEquals("", contactListItemTextBottomLeft);
     }
 
     @Test
@@ -620,10 +620,10 @@ public class ContactModelJavaTest {
         javaContactModel.setDepartment("  Android  ");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+        final String contactListItemTextBottomRight = javaContactModel.getContactListItemTextBottomRight();
 
         // assert
-        Assert.assertEquals("Android", contactListItemTextTopLeft);
+        Assert.assertEquals("Android", contactListItemTextBottomRight);
     }
 
     @Test
@@ -640,10 +640,10 @@ public class ContactModelJavaTest {
         javaContactModel.setDepartment("Android");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+        final String contactListItemTextBottomRight = javaContactModel.getContactListItemTextBottomRight();
 
         // assert
-        Assert.assertEquals(identity, contactListItemTextTopLeft);
+        Assert.assertEquals(identity, contactListItemTextBottomRight);
     }
 
     @Test
@@ -660,10 +660,10 @@ public class ContactModelJavaTest {
         javaContactModel.setDepartment(null);
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+        final String contactListItemTextBottomRight = javaContactModel.getContactListItemTextBottomRight();
 
         // assert
-        Assert.assertEquals(identity, contactListItemTextTopLeft);
+        Assert.assertEquals(identity, contactListItemTextBottomRight);
     }
 
     @Test
@@ -680,10 +680,10 @@ public class ContactModelJavaTest {
         javaContactModel.setDepartment("");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+        final String contactListItemTextBottomRight = javaContactModel.getContactListItemTextBottomRight();
 
         // assert
-        Assert.assertEquals(identity, contactListItemTextTopLeft);
+        Assert.assertEquals(identity, contactListItemTextBottomRight);
     }
 
     @Test
@@ -700,9 +700,9 @@ public class ContactModelJavaTest {
         javaContactModel.setDepartment("  ");
 
         // act
-        final String contactListItemTextTopLeft = javaContactModel.getContactListItemTextBottomRight();
+        final String contactListItemTextBottomRight = javaContactModel.getContactListItemTextBottomRight();
 
         // assert
-        Assert.assertEquals(identity, contactListItemTextTopLeft);
+        Assert.assertEquals(identity, contactListItemTextBottomRight);
     }
 }

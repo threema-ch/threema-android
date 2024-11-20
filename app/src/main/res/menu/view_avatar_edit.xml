@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
-	<item
-		android:id="@+id/menu_take_photo"
-		android:orderInCategory="25"
-		android:title="@string/take_photo"
-		android:icon="@drawable/ic_camera_outline"
-		app:iconTint="?attr/colorOnSurface" />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_take_photo"
+        android:icon="@drawable/ic_camera_outline"
+        android:orderInCategory="25"
+        android:title="@string/take_photo"
+        app:iconTint="?attr/colorOnSurface" />
 
-	<item
-		android:id="@+id/menu_select_from_gallery"
-		android:orderInCategory="50"
-		android:title="@string/select_from_gallery"
-		android:icon="@drawable/ic_collections"
-		app:iconTint="?attr/colorOnSurface" />
+    <item
+        android:id="@+id/menu_select_from_gallery"
+        android:icon="@drawable/ic_collections"
+        android:orderInCategory="50"
+        android:title="@string/select_from_gallery"
+        app:iconTint="?attr/colorOnSurface" />
 
-	<item
-		android:id="@+id/menu_remove_picture"
-		android:orderInCategory="75"
-		android:title="@string/title_remove_picture"
-		android:icon="@drawable/ic_delete_outline"
-		app:iconTint="?attr/colorOnSurface" />
+    <item
+        android:id="@+id/menu_remove_picture"
+        android:icon="@drawable/ic_delete_outline"
+        android:orderInCategory="75"
+        android:title="@string/title_remove_picture"
+        app:iconTint="?attr/colorOnSurface" />
 </menu>

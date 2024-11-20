@@ -345,8 +345,7 @@
     <string name="synchronize_contact">通讯录同步</string>
     <string name="exclude_contact">排除自动同步</string>
     <string name="prefs_header_lists">清单</string>
-    <string name="prefs_title_black_list">黑名单</string>
-    <string name="prefs_sum_black_list">来自这里列出的ID的消息将被忽略。</string>
+    <string name="prefs_sum_blocked_contacts">来自这里列出的ID的消息将被忽略。</string>
     <string name="verified">已验证</string>
     <string name="want_to_add_to_exclude_list">此联系人已链接到手机通讯录中的记录。如果您
 在 Threema 中将其删除，在联系人同步之后他会重新出现。 \n是否要从同步中排除他？</string>
@@ -1331,7 +1330,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="enable_storage_access_for_media">启用存储访问权限以查看设备上的图片和视频</string>
     <string name="select_storage_access_for_media_is_granted">您已授予部分的照片和视频的访问权限。</string>
     <string name="take_me_there">带我到…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">管理</string>
+    <string name="manage">管理</string>
     <string name="notification_channel_group_join_request">收到群组加入请求的通知频道</string>
     <string name="reset_default_group_link_title">重置默认链接信息</string>
     <string name="reset_default_group_link_desc">之前分享的链接将失效，通过旧链接提出的请求将自动被拒绝，并给出过期的回应。</string>
@@ -1599,11 +1598,11 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <!-- accessibility -->
     <string name="cd_ack_icon">您对这条消息表示 “同意”。</string>
     <string name="cd_dec_icon">您对这条消息表示 “不同意”。</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">由%d个群组成员</string>
+    <string name="cd_ack_dec_group_count">由%d个群组成员</string>
     <string name="cd_edited">消息已编辑</string>
     <string name="cd_created_at">创建于%s</string>
     <string name="cd_edited_at">编辑于%s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d的编辑记录</string>
+    <string name="cd_index_in_edit_history">%d的编辑记录</string>
     <string name="cd_message_details_container">消息详情</string>
     <string name="cd_enable_formatting">启用格式化</string>
     <string name="cd_message">消息</string>

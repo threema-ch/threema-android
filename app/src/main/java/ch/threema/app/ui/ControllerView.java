@@ -37,200 +37,293 @@ import org.slf4j.Logger;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.widget.AppCompatImageView;
 
 import ch.threema.app.R;
+import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ControllerView extends MaterialCardView {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ControllerView");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ControllerView");
 
-	private CircularProgressIndicator progressBarIndeterminate, progressBarDeterminate;
-	private AppCompatImageView icon;
-	private @ColorInt int foregroundColor;
-	private int status, progressMax = 100;
+    private CircularProgressIndicator progressBarIndeterminate, progressBarDeterminate;
+    private AppCompatImageView iconImageView;
+    private int status, progressMax = 100;
 
-	public final static int STATUS_NONE = 0;
-	public final static int STATUS_PROGRESSING = 1;
-	public final static int STATUS_READY_TO_DOWNLOAD = 2;
-	public final static int STATUS_READY_TO_PLAY = 3;
-	public final static int STATUS_PLAYING = 4;
-	public final static int STATUS_READY_TO_RETRY = 5;
-	public final static int STATUS_PROGRESSING_NO_CANCEL = 6;
-	public final static int STATUS_TRANSCODING = 8;
+    private boolean hasBackgroundImage = false;
+    private boolean isUsedForOutboxMessage = false;
 
-	public ControllerView(Context context) {
-		super(context);
-		init(context);
-	}
+    public final static int STATUS_NONE = 0;
+    public final static int STATUS_PROGRESSING = 1;
+    public final static int STATUS_READY_TO_DOWNLOAD = 2;
+    public final static int STATUS_READY_TO_PLAY = 3;
+    public final static int STATUS_PLAYING = 4;
+    public final static int STATUS_READY_TO_RETRY = 5;
+    public final static int STATUS_PROGRESSING_NO_CANCEL = 6;
+    public final static int STATUS_TRANSCODING = 8;
 
-	public ControllerView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(context);
-	}
+    public ControllerView(Context context) {
+        super(context);
+        init(context);
+    }
 
-	public ControllerView(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		init(context);
-	}
+    public ControllerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
 
-	private void init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.conversation_list_item_controller_view, this);
+    public ControllerView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
 
-		this.setShapeAppearanceModel(ShapeAppearanceModel.builder(context, 0, R.style.ShapeAppearance_Material3_Corner_Medium).build());
-		this.setStrokeWidth(0);
-		this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground);
-	}
+    private void init(@NonNull Context context) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.conversation_list_item_controller_view, this);
 
-	@Override
-	protected void onFinishInflate() {
-		super.onFinishInflate();
+        this.setCardBackgroundColor(getResources().getColor(android.R.color.transparent));
+        this.setShapeAppearanceModel(ShapeAppearanceModel.builder(context, 0, R.style.ShapeAppearance_Material3_Corner_Medium).build());
+        this.setStrokeWidth(0);
+    }
 
-		progressBarIndeterminate = this.findViewById(R.id.progress);
-		progressBarDeterminate = this.findViewById(R.id.progress_determinate);
-		icon = this.findViewById(R.id.icon);
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
 
-		setBackgroundImage(null);
-	}
+        progressBarIndeterminate = this.findViewById(R.id.progress);
+        progressBarDeterminate = this.findViewById(R.id.progress_determinate);
+        iconImageView = this.findViewById(R.id.icon);
 
-	private void reset() {
-		if (getVisibility() != VISIBLE) {
-			setVisibility(VISIBLE);
-		}
-		if (progressBarIndeterminate.getVisibility() == VISIBLE) {
-			progressBarIndeterminate.setVisibility(INVISIBLE);
-		}
-		if (progressBarDeterminate.getVisibility() == VISIBLE) {
-			progressBarDeterminate.setVisibility(INVISIBLE);
-		}
-		if (icon.getVisibility() != VISIBLE) {
-			icon.setVisibility(VISIBLE);
-		}
-	}
+        setBackgroundImage(null);
+        initProgressBars();
+    }
 
-	public void setNeutral() {
-		logger.debug("setNeutral");
-		reset();
-		status = STATUS_NONE;
-	}
+    private void initProgressBars() {
+        progressBarIndeterminate.setIndicatorColor(getProgressTrackIndicatorColor());
+        progressBarDeterminate.setTrackColor(getProgressTrackColor());
+        progressBarDeterminate.setIndicatorColor(getProgressTrackIndicatorColor());
+    }
 
-	public void setHidden() {
-		logger.debug("setHidden");
-		setVisibility(INVISIBLE);
-		status = STATUS_NONE;
-	}
+    private void reset() {
+        if (getVisibility() != VISIBLE) {
+            setVisibility(VISIBLE);
+        }
+        if (progressBarIndeterminate.getVisibility() == VISIBLE) {
+            progressBarIndeterminate.setVisibility(INVISIBLE);
+        }
+        if (progressBarDeterminate.getVisibility() == VISIBLE) {
+            progressBarDeterminate.setVisibility(INVISIBLE);
+        }
+        if (iconImageView.getVisibility() != VISIBLE) {
+            iconImageView.setVisibility(VISIBLE);
+        }
+    }
 
-	@UiThread
-	public void setPlay() {
-		logger.debug("setPlay");
-		if (status != STATUS_READY_TO_PLAY) {
-			setImageResource(R.drawable.ic_play);
-			setContentDescription(getContext().getString(R.string.play));
-			status = STATUS_READY_TO_PLAY;
-		}
-	}
+    public void setNeutral() {
+        logger.debug("setNeutral");
+        reset();
+        status = STATUS_NONE;
+    }
 
-	@UiThread
-	public void setPause() {
-		logger.debug("setPause");
-		setImageResource(R.drawable.ic_pause);
-		setContentDescription(getContext().getString(R.string.pause));
-		status = STATUS_PLAYING;
-	}
+    public void setHidden() {
+        logger.debug("setHidden");
+        setVisibility(INVISIBLE);
+        status = STATUS_NONE;
+    }
 
-	public void setTranscoding() {
-		setHidden();
-		status = STATUS_TRANSCODING;
-	}
+    @UiThread
+    public void setPlay() {
+        logger.debug("setPlay");
+        if (status != STATUS_READY_TO_PLAY) {
+            setIconResource(R.drawable.ic_play);
+            setContentDescription(getContext().getString(R.string.play));
+            status = STATUS_READY_TO_PLAY;
+        }
+    }
 
-	public void setProgressing() {
-		setProgressing(true);
-	}
+    @UiThread
+    public void setPause() {
+        logger.debug("setPause");
+        setIconResource(R.drawable.ic_pause);
+        setContentDescription(getContext().getString(R.string.pause));
+        status = STATUS_PLAYING;
+    }
 
-	@UiThread
-	public void setProgressing(boolean cancelable) {
-		logger.debug("setProgressing cancelable = " + cancelable);
-		if (progressBarIndeterminate.getVisibility() != VISIBLE) {
-			reset();
-			if (cancelable) {
-				if (status != STATUS_PROGRESSING) {
-					setImageResource(R.drawable.ic_close);
-					status = STATUS_PROGRESSING;
-				}
-			} else {
-				if (status != STATUS_PROGRESSING_NO_CANCEL) {
-					icon.setVisibility(INVISIBLE);
-					status = STATUS_PROGRESSING_NO_CANCEL;
-				}
-			}
-			progressBarIndeterminate.setVisibility(VISIBLE);
-		} else {
-			setVisibility(VISIBLE);
-			if (cancelable) {
-				status = STATUS_PROGRESSING;
-			} else {
-				status = STATUS_PROGRESSING_NO_CANCEL;
-			}
-		}
-		requestLayout();
-	}
+    public void setTranscoding() {
+        setHidden();
+        status = STATUS_TRANSCODING;
+    }
 
-	public void setProgressingDeterminate(int max) {
-		logger.debug("setProgressingDeterminate max = " + max);
-		setBackgroundImage(null);
-		setImageResource(R.drawable.ic_close);
-		setContentDescription(getContext().getString(R.string.cancel));
-		progressBarDeterminate.setMax(max);
-		progressBarDeterminate.setProgress(0);
-		progressBarDeterminate.setVisibility(VISIBLE);
-		status = STATUS_PROGRESSING;
-		progressMax = max;
-	}
+    public void setProgressing() {
+        setProgressing(true);
+    }
 
-	public void setProgress(int progress) {
-		logger.debug("setProgress progress = " + progress);
-		if (progressBarDeterminate.getVisibility() != VISIBLE) {
-			setProgressingDeterminate(progressMax);
-		}
-		progressBarDeterminate.setProgress(progress);
-	}
+    @UiThread
+    public void setProgressing(boolean cancelable) {
+        logger.debug("setProgressing cancelable = {}", cancelable);
+        if (progressBarIndeterminate.getVisibility() != VISIBLE) {
+            reset();
+            if (cancelable) {
+                if (status != STATUS_PROGRESSING) {
+                    setIconResource(R.drawable.ic_close);
+                    status = STATUS_PROGRESSING;
+                }
+            } else {
+                if (status != STATUS_PROGRESSING_NO_CANCEL) {
+                    iconImageView.setVisibility(INVISIBLE);
+                    status = STATUS_PROGRESSING_NO_CANCEL;
+                }
+            }
+            progressBarIndeterminate.setVisibility(VISIBLE);
+        } else {
+            setVisibility(VISIBLE);
+            if (cancelable) {
+                status = STATUS_PROGRESSING;
+            } else {
+                status = STATUS_PROGRESSING_NO_CANCEL;
+            }
+        }
+        requestLayout();
+    }
 
-	public void setRetry() {
-		logger.debug("setRetry");
-		setImageResource(R.drawable.outline_refresh_24);
-		setContentDescription(getContext().getString(R.string.retry));
-		status = STATUS_READY_TO_RETRY;
-	}
+    public void setProgressingDeterminate(int max) {
+        logger.debug("setProgressingDeterminate max = {}", max);
+        setBackgroundImage(null);
+        setIconResource(R.drawable.ic_close);
+        setContentDescription(getContext().getString(R.string.cancel));
+        progressBarDeterminate.setMax(max);
+        progressBarDeterminate.setProgress(0);
+        progressBarDeterminate.setVisibility(VISIBLE);
+        status = STATUS_PROGRESSING;
+        progressMax = max;
+    }
 
-	public void setReadyToDownload() {
-		logger.debug("setReadyToDownload");
-		setImageResource(R.drawable.outline_file_download_24);
-		setContentDescription(getContext().getString(R.string.download));
-		status = STATUS_READY_TO_DOWNLOAD;
-	}
+    public void setProgress(int progress) {
+        logger.debug("setProgress progress = {}", progress);
+        if (progressBarDeterminate.getVisibility() != VISIBLE) {
+            setProgressingDeterminate(progressMax);
+        }
+        progressBarDeterminate.setProgress(progress);
+    }
 
-	public void setImageResource(@DrawableRes int resource) {
-		logger.debug("setImageResource");
-		reset();
-		icon.setColorFilter(foregroundColor, PorterDuff.Mode.SRC_IN);
-		icon.setScaleType(ImageView.ScaleType.CENTER);
-		icon.setImageResource(resource);
-	}
+    public void setRetry() {
+        logger.debug("setRetry");
+        setIconResource(R.drawable.outline_refresh_24);
+        setContentDescription(getContext().getString(R.string.retry));
+        status = STATUS_READY_TO_RETRY;
+    }
 
-	public void setBackgroundImage(Bitmap bitmap) {
-		logger.debug("setBackgroundImage");
-		if (bitmap != null) {
-			icon.clearColorFilter();
-			icon.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			icon.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
-		}
-	}
+    public void setReadyToDownload() {
+        logger.debug("setReadyToDownload");
+        setIconResource(R.drawable.outline_file_download_24);
+        setContentDescription(getContext().getString(R.string.download));
+        status = STATUS_READY_TO_DOWNLOAD;
+    }
 
-	public int getStatus() {
-		return status;
-	}
+    public void setIconResource(@DrawableRes int resource) {
+        logger.debug("setImageResource");
+        reset();
+        hasBackgroundImage = false;
+        iconImageView.setColorFilter(getIconTintColor(), PorterDuff.Mode.SRC_IN);
+        iconImageView.setScaleType(ImageView.ScaleType.CENTER);
+        iconImageView.setImageResource(resource);
+    }
+
+    public void setBackgroundImage(@Nullable Bitmap bitmap) {
+        logger.debug("setBackgroundImage");
+        hasBackgroundImage = bitmap != null;
+        if (bitmap != null) {
+            iconImageView.clearColorFilter();
+            iconImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iconImageView.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+        } else {
+            iconImageView.setBackgroundColor(getBackgroundDefaultColor());
+        }
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setIsUsedForOutboxMessage(boolean isOutboxMessage) {
+        if (this.isUsedForOutboxMessage != isOutboxMessage) {
+            this.isUsedForOutboxMessage = isOutboxMessage;
+            if (!hasBackgroundImage) {
+                iconImageView.setBackgroundColor(getBackgroundDefaultColor());
+                iconImageView.setColorFilter(getIconTintColor(), PorterDuff.Mode.SRC_IN);
+            }
+            initProgressBars();
+        }
+    }
+
+    /**
+     * We only want to apply dynamic colors if the current view is used to
+     * render an outbox message and they are enabled by the threema setting.
+     * This workaround is necessary because we actually use different color
+     * references when this returns true.
+     */
+    private boolean shouldUseDynamicColors() {
+        return isUsedForOutboxMessage && ColorUtil.areDynamicColorsCurrentlyApplied(getContext());
+    }
+
+    /**
+     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
+     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
+     */
+    private @ColorInt int getBackgroundDefaultColor() {
+        if (shouldUseDynamicColors()) {
+            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary);
+        } else {
+            return getResources().getColor(
+                ColorUtil.shouldUseDarkVariant(getContext())
+                    ? R.color.md_theme_dark_tertiaryContainer
+                    : R.color.md_theme_light_tertiaryContainer
+            );
+        }
+    }
+
+    /**
+     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
+     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
+     */
+    private @ColorInt int getProgressTrackColor() {
+        if (shouldUseDynamicColors()) {
+            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSurfaceBright);
+        } else {
+            return getResources().getColor(
+                ColorUtil.shouldUseDarkVariant(getContext())
+                    ? R.color.md_theme_dark_primaryContainer
+                    : R.color.md_theme_light_primaryContainer
+            );
+        }
+    }
+
+    /**
+     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
+     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
+     */
+    private @ColorInt int getProgressTrackIndicatorColor() {
+        if (shouldUseDynamicColors()) {
+            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimary);
+        } else {
+            return getResources().getColor(
+                ColorUtil.shouldUseDarkVariant(getContext())
+                    ? R.color.md_theme_dark_primary
+                    : R.color.md_theme_light_primary
+            );
+        }
+    }
+
+    private @ColorInt int getIconTintColor() {
+        return ConfigUtils.getColorFromAttribute(
+            getContext(),
+            shouldUseDynamicColors()
+                ? R.attr.colorOnPrimary
+                : R.attr.colorOnBackground
+        );
+    }
 }

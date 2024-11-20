@@ -220,7 +220,7 @@ public class MessageServiceImpl implements MessageService {
 	private final ApiService apiService;
 	private final DownloadService downloadService;
 	private final DeadlineListService hiddenChatsListService;
-	private final IdListService blackListService;
+	private final IdListService blockedContactsService;
 	private final SymmetricEncryptionService symmetricEncryptionService;
 
     // Repositories
@@ -248,7 +248,7 @@ public class MessageServiceImpl implements MessageService {
 	    ApiService apiService,
 	    DownloadService downloadService,
 	    DeadlineListService hiddenChatsListService,
-	    IdListService blackListService,
+	    IdListService blockedContactsService,
         EditHistoryRepository editHistoryRepository
 	) {
 		this.context = context;
@@ -264,7 +264,7 @@ public class MessageServiceImpl implements MessageService {
 		this.apiService = apiService;
 		this.downloadService = downloadService;
 		this.hiddenChatsListService = hiddenChatsListService;
-		this.blackListService = blackListService;
+		this.blockedContactsService = blockedContactsService;
 
 		contactMessageCache = cacheService.getMessageModelCache();
 		groupMessageCache = cacheService.getGroupMessageModelCache();
@@ -1482,7 +1482,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		// is the user blocked?
-		if (blackListService != null && blackListService.has(message.getFromIdentity())) {
+		if (blockedContactsService != null && blockedContactsService.has(message.getFromIdentity())) {
 			//set success to true (remove from server)
 			logger.info("GroupMessage {}: Sender is blocked, ignoring", message.getMessageId());
 			return true;

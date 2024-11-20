@@ -50,7 +50,7 @@
     <string name="voip_prefs_title_video_codec">ビデオコーデック</string>
     <string name="voip_prefs_video_aec_hw">ハードウェアの高速化</string>
     <string name="voip_prefs_video_codec_no_vp8">VP8の無効化</string>
-    <string name="voip_prefs_video_codec_no_h264hip">VP8の無効化</string>
+    <string name="voip_prefs_video_codec_no_h264hip">H264-Hipを無効化</string>
     <string name="voip_prefs_video_codec_sw">ソフトウェアコーデック</string>
     <string name="voip_connection_failed">接続を確立できませんでした</string>
     <string name="voip_connection_lost">接続切れ</string>

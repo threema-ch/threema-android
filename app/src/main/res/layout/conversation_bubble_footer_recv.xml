@@ -1,69 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-			  android:id="@+id/indicator_container"
-			  android:layout_width="match_parent"
-			  android:layout_height="wrap_content"
-			  android:minHeight="16sp"
-			  android:layout_marginTop="2dp"
-			  android:paddingLeft="@dimen/chat_bubble_margin_start"
-			  android:paddingRight="@dimen/chat_bubble_margin_end"
-			  android:orientation="horizontal"
-			  android:gravity="bottom"
-			  android:layout_gravity="bottom">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/indicator_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_marginTop="2dp"
+    android:gravity="bottom"
+    android:minHeight="16sp"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/chat_bubble_margin_start"
+    android:paddingRight="@dimen/chat_bubble_margin_end"
+    tools:background="@color/bubble_receive">
 
-	<TextView
-		style="@style/Threema.Bubble.Text.Footer"
-		android:id="@+id/edited_text"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:layout_gravity="bottom"
-		android:layout_weight="1.0"
-		android:layout_marginRight="4dp"
-		android:maxLines="1"
-		android:ellipsize="end"
-		android:text="@string/edited"
-		android:visibility="gone" />
+    <TextView
+        android:id="@+id/edited_text"
+        style="@style/Threema.Bubble.Text.Footer"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginRight="4dp"
+        android:layout_weight="1.0"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/edited"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-	<ImageView
-			android:id="@+id/delivered_indicator"
-			android:layout_width="18dp"
-			android:layout_height="18dp"
-			android:layout_gravity="center_vertical"
-			android:paddingRight="3dp"
-			android:visibility="gone"
-			app:tint="@color/bubble_text_colorstatelist" />
+    <ImageView
+        android:id="@+id/delivered_indicator"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:paddingRight="3dp"
+        android:visibility="gone"
+        app:tint="@color/bubble_receive_text_colorstatelist"
+        tools:src="@drawable/ic_baseline_hearing_24"
+        tools:visibility="visible" />
 
-	<include layout="@layout/conversation_bubble_footer_groupack_recv"/>
+    <include layout="@layout/conversation_bubble_footer_groupack_recv" />
 
-	<TextView
-			style="@style/Threema.Bubble.Text.Footer"
-			android:id="@+id/date_view"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_gravity="bottom"
-			android:singleLine="true"
-			android:ellipsize="none" />
+    <TextView
+        android:id="@+id/date_view"
+        style="@style/Threema.Bubble.Text.Footer"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:ellipsize="none"
+        android:singleLine="true"
+        tools:text="11.11.2024" />
 
-	<ImageView
-		android:id="@+id/date_prefix_icon"
-		app:srcCompat="@drawable/ic_av_timer_grey600_18dp"
-		app:tint="@color/bubble_text_colorstatelist"
-		android:layout_width="18dp"
-		android:layout_height="18dp"
-		android:padding="3dp"
-		android:layout_gravity="center_vertical"
-		android:visibility="gone"
-		android:importantForAccessibility="no" />
+    <ImageView
+        android:id="@+id/date_prefix_icon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:importantForAccessibility="no"
+        android:padding="3dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_av_timer_grey600_18dp"
+        app:tint="@color/bubble_receive_text_colorstatelist"
+        tools:visibility="visible" />
 
-	<ImageView
-		android:id="@+id/star_icon"
-		app:srcCompat="@drawable/ic_star_golden_24dp"
-		android:layout_width="18dp"
-		android:layout_height="18dp"
-		android:padding="3dp"
-		android:layout_gravity="center_vertical"
-		android:visibility="gone"
-		android:contentDescription="@string/starred_message" />
+    <ImageView
+        android:id="@+id/star_icon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/starred_message"
+        android:padding="3dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_star_golden_24dp"
+        tools:visibility="visible" />
 
 </LinearLayout>

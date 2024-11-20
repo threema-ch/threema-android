@@ -65,9 +65,9 @@
 
 		<Preference
 			android:enabled="true"
-			android:key="pref_black_list"
-			android:summary="@string/prefs_sum_black_list"
-			android:title="@string/prefs_title_black_list"/>
+			android:key="pref_blocked_contacts"
+			android:summary="@string/prefs_sum_blocked_contacts"
+			android:title="@string/prefs_title_blocked_contacts"/>
 
 	</PreferenceCategory>
 

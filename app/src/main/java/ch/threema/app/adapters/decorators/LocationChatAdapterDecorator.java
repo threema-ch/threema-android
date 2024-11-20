@@ -106,7 +106,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 
 		if (position == holder.position) {
 			holder.controller.setBackgroundImage(null);
-			holder.controller.setImageResource(R.drawable.ic_map_marker_outline);
+			holder.controller.setIconResource(R.drawable.ic_map_marker_outline);
 		}
 
 		RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));

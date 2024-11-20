@@ -334,8 +334,7 @@
     <string name="synchronize_contact">Sincronizar endereços</string>
     <string name="exclude_contact">Excluir da sincronização automática</string>
     <string name="prefs_header_lists">Listas</string>
-    <string name="prefs_title_black_list">Lista de exclusão</string>
-    <string name="prefs_sum_black_list">As mensagens das IDs listadas aqui serão ignoradas.</string>
+    <string name="prefs_sum_blocked_contacts">As mensagens das IDs listadas aqui serão ignoradas.</string>
     <string name="verified">Confirmado(s)</string>
     <string name="want_to_add_to_exclude_list">Este contato do Threema está vinculado a um contato do seu celular. Se você apagá-lo no Threema, ele irá reaparecer depois de uma sincronização de contatos.\nGostaria de excluí-lo da sincronização?</string>
     <string name="no">Não</string>
@@ -1300,7 +1299,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="enable_storage_access_for_media">Habilite o acesso ao armazenamento para ver fotos e vídeos no seu dispositivo</string>
     <string name="select_storage_access_for_media_is_granted">Você concedeu acesso para um número selecionado de fotos e vídeos.</string>
     <string name="take_me_there">Leve-me lá...</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Gerenciar</string>
+    <string name="manage">Gerenciar</string>
     <string name="notification_channel_group_join_request">Canal de notificação para pedidos recebidos para entrar em grupos</string>
     <string name="reset_default_group_link_title">Restaurar info de link padrão</string>
     <string name="reset_default_group_link_desc">O link compartilhado anteriormente será inválido e os pedidos através do link antigo serão rejeitados automaticamente com uma responsa de \"expirou\".</string>
@@ -1568,11 +1567,11 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">aceitação enviada</string>
     <string name="cd_dec_icon">recusa enviada</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">por %d membros do grupo</string>
+    <string name="cd_ack_dec_group_count">por %d membros do grupo</string>
     <string name="cd_edited">mensagem foi editada</string>
     <string name="cd_created_at">criado às %s</string>
     <string name="cd_edited_at">editado às %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. edição no histórico</string>
+    <string name="cd_index_in_edit_history">%d. edição no histórico</string>
     <string name="cd_message_details_container">detalhes da mensagem</string>
     <string name="cd_enable_formatting">Ativar formatação</string>
     <string name="cd_message">mensagem</string>

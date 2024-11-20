@@ -348,8 +348,8 @@
     <string name="synchronize_contact">Address book sync</string>
     <string name="exclude_contact">Exclude from auto sync</string>
     <string name="prefs_header_lists">Lists</string>
-    <string name="prefs_title_black_list">Blacklist</string>
-    <string name="prefs_sum_black_list">Messages from IDs listed here will be ignored.</string>
+    <string name="prefs_title_blocked_contacts">Blocked contacts</string>
+    <string name="prefs_sum_blocked_contacts">Messages from IDs listed here will be ignored.</string>
     <string name="verified">Verified</string>
     <string name="want_to_add_to_exclude_list">This contact is linked to a record in your phone’s addressbook. If you
         delete it in Threema it will reappear after a contact sync.\nWould you like to exclude it from synchronization?</string>

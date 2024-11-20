@@ -353,8 +353,8 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="synchronize_contact">Contatto rubrica sincronizzato</string>
     <string name="exclude_contact">Escludere dalla sincronizzazione automatica</string>
     <string name="prefs_header_lists">Liste</string>
-    <string name="prefs_title_black_list">Contatti bloccati</string>
-    <string name="prefs_sum_black_list">I messaggi degli ID qui elencati saranno ignorati.</string>
+    <string name="prefs_title_blocked_contacts">Contatti bloccati</string>
+    <string name="prefs_sum_blocked_contacts">I messaggi degli ID qui elencati saranno ignorati.</string>
     <string name="verified">Verificato</string>
     <string name="want_to_add_to_exclude_list">Questo contatto è collegato a una voce presente nella tua rubrica telefonica. Se lo cancelli in Threema, riapparirà dopo una sincronizzazione dei contatti. Desideri in futuro escludere questo ID dalla sincronizzazione?</string>
     <string name="no">No</string>
@@ -1317,7 +1317,7 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <string name="enable_storage_access_for_media">Attiva l\'accesso alla memoria per visualizzare immagini e video sul tuo dispositivo</string>
     <string name="select_storage_access_for_media_is_granted">Hai consentito l\'accesso a un numero selezionato di foto e video.</string>
     <string name="take_me_there">Attiva ora...</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Gestisci</string>
+    <string name="manage">Gestisci</string>
     <string name="notification_channel_group_join_request">Notifiche per le richieste di adesione</string>
     <string name="reset_default_group_link_title">Resettare info</string>
     <string name="reset_default_group_link_desc">Il link appena condiviso non è più valido e le richieste inviate tramite il vecchio link saranno automaticamente rifiutate.</string>
@@ -1585,11 +1585,11 @@ automaticamente in caso di inattività dopo un intervallo predefinito (solo cara
     <!-- accessibility -->
     <string name="cd_ack_icon">accordo inviato</string>
     <string name="cd_dec_icon">disaccordo inviato</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">da %d membri del gruppo</string>
+    <string name="cd_ack_dec_group_count">da %d membri del gruppo</string>
     <string name="cd_edited">il messaggio è stato modificato</string>
     <string name="cd_created_at">creato alle %s</string>
     <string name="cd_edited_at">modificato alle %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. modifica nella cronologia</string>
+    <string name="cd_index_in_edit_history">%d. modifica nella cronologia</string>
     <string name="cd_message_details_container">dettagli del messaggio</string>
     <string name="cd_enable_formatting">Abilita la formattazione</string>
     <string name="cd_message">messaggio</string>

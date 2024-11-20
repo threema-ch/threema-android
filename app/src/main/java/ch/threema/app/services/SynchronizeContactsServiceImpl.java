@@ -41,7 +41,6 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
-import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -68,8 +67,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final DeviceService deviceService;
 	private final Context context;
 	private final FileService fileService;
-	private final IdListService blackListIdentityService;
-	private final LicenseService licenseService;
+	private final IdListService blockedContactsService;
 	private final ApiService apiService;
 
 	private Date latestFullSync;
@@ -84,8 +82,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 										  DeviceService deviceService,
 										  FileService fileService,
 	                                      IdentityStoreInterface identityStore,
-	                                      IdListService blackListIdentityService,
-	                                      LicenseService<LicenseService.Credentials> licenseService,
+	                                      IdListService blockedContactsService,
 	                                      ApiService apiService) {
 		this.excludedIdentityListService = excludedIdentityListService;
 		this.preferenceService = preferenceService;
@@ -99,8 +96,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		this.userService = userService;
 		this.localeService = localeService;
 		this.identityStore = identityStore;
-		this.licenseService = licenseService;
-		this.blackListIdentityService = blackListIdentityService;
+		this.blockedContactsService = blockedContactsService;
 		this.apiService = apiService;
 	}
 
@@ -184,20 +180,19 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		logger.info("Running contact sync");
 		logger.debug("instantiateSynchronization with account {}", account);
 
-		final SynchronizeContactsRoutine routine =
-				new SynchronizeContactsRoutine(
-						this.context,
-						this.apiConnector,
-						this.contactService,
-						this.userService,
-						this.localeService,
-						this.contentResolver,
-						this.excludedIdentityListService,
-						this.deviceService,
-						this.preferenceService,
-						this.identityStore,
-						this.blackListIdentityService,
-						this.licenseService);
+        final SynchronizeContactsRoutine routine = new SynchronizeContactsRoutine(
+            this.context,
+            this.apiConnector,
+            this.contactService,
+            this.userService,
+            this.localeService,
+            this.contentResolver,
+            this.excludedIdentityListService,
+            this.deviceService,
+            this.preferenceService,
+            this.identityStore,
+            this.blockedContactsService
+        );
 
 		synchronized (this.pendingRoutines) {
 			this.pendingRoutines.add(routine);

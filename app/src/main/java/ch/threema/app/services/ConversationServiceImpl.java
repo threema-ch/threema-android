@@ -77,7 +77,7 @@ public class ConversationServiceImpl implements ConversationService {
     private final DistributionListService distributionListService;
     private final MessageService messageService;
     private final DeadlineListService hiddenChatsListService;
-    private final IdListService blackListService;
+    private final IdListService blockedContactsService;
     private boolean initAllLoaded = false;
     private final TagModel unreadTagModel;
     private final @NonNull String pinTag;
@@ -130,7 +130,7 @@ public class ConversationServiceImpl implements ConversationService {
         DistributionListService distributionListService,
         MessageService messageService,
         @NonNull DeadlineListService hiddenChatsListService,
-        @NonNull IdListService blackListService,
+        @NonNull IdListService blockedContactsService,
         ConversationTagService conversationTagService) {
         this.context = context;
         this.databaseServiceNew = databaseServiceNew;
@@ -139,7 +139,7 @@ public class ConversationServiceImpl implements ConversationService {
         this.distributionListService = distributionListService;
         this.messageService = messageService;
         this.hiddenChatsListService = hiddenChatsListService;
-        this.blackListService = blackListService;
+        this.blockedContactsService = blockedContactsService;
         this.conversationCache = cacheService.getConversationModelCache();
         this.conversationTagService = conversationTagService;
 
@@ -267,7 +267,7 @@ public class ConversationServiceImpl implements ConversationService {
                         public boolean apply(@NonNull ConversationModel conversationModel) {
                             if (conversationModel.isContactConversation()) {
                                 return !ContactUtil.isEchoEchoOrGatewayContact(conversationModel.getContact()) &&
-                                    !blackListService.has(conversationModel.getContact().getIdentity());
+                                    !blockedContactsService.has(conversationModel.getContact().getIdentity());
                             }
                             return true;
                         }

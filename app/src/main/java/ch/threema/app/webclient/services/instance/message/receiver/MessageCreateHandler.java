@@ -57,7 +57,7 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 	private final MessageDispatcher dispatcher;
 	protected final MessageService messageService;
 	private final LifetimeService lifetimeService;
-	private final IdListService blacklistService;
+	private final IdListService blockedContactsService;
 
 	/**
 	 * A validation error.
@@ -80,13 +80,13 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 		MessageDispatcher dispatcher,
 		MessageService messageService,
 		LifetimeService lifetimeService,
-		IdListService blacklistService
+		IdListService blockedContactsService
 	) {
 		super(subType);
 		this.dispatcher = dispatcher;
 		this.messageService = messageService;
 		this.lifetimeService = lifetimeService;
-		this.blacklistService = blacklistService;
+		this.blockedContactsService = blockedContactsService;
 
 	}
 
@@ -116,7 +116,7 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 			ch.threema.app.messagereceiver.MessageReceiver receiver = receiverModel.getReceiver();
 			if (receiver.getType() == receiver.Type_CONTACT) {
 				ContactModel receiverContact = ((ContactMessageReceiver) receiver).getContact();
-				if (receiverContact != null && this.blacklistService.has(receiverContact.getIdentity())) {
+				if (receiverContact != null && this.blockedContactsService.has(receiverContact.getIdentity())) {
 					throw new MessageCreateHandler.MessageValidationException("blocked", false);
 				}
 			}

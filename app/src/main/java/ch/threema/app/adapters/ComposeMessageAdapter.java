@@ -24,6 +24,7 @@ package ch.threema.app.adapters;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -508,15 +509,15 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.secondaryTextView = itemView.findViewById(R.id.secondary_text_view);
 					holder.seekBar = itemView.findViewById(R.id.seek);
 					holder.tertiaryTextView = itemView.findViewById(R.id.tertiaryTextView);
-					holder.size = itemView.findViewById(R.id.document_size_view);
-					holder.controller = itemView.findViewById(R.id.controller);
+                    holder.size = itemView.findViewById(R.id.document_size_view);
+                    holder.controller = itemView.findViewById(R.id.controller);
 					holder.quoteBar = itemView.findViewById(R.id.quote_bar);
 					holder.quoteThumbnail = itemView.findViewById(R.id.quote_thumbnail);
 					holder.quoteTypeImage = itemView.findViewById(R.id.quote_type_image);
 					holder.transcoderView = itemView.findViewById(R.id.transcoder_view);
 					holder.readOnContainer = itemView.findViewById(R.id.read_on_container);
 					holder.readOnButton = itemView.findViewById(R.id.read_on_button);
-					holder.messageTypeButton = itemView.findViewById(R.id.message_type_button);
+					holder.audioMessageIcon = itemView.findViewById(R.id.audio_message_icon);
 					holder.groupAckContainer = itemView.findViewById(R.id.groupack_container);
 					holder.groupAckThumbsUpCount = itemView.findViewById(R.id.groupack_thumbsup_count);
 					holder.groupAckThumbsDownCount = itemView.findViewById(R.id.groupack_thumbsdown_count);

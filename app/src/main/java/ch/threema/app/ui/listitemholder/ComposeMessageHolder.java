@@ -53,7 +53,7 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public TranscoderView transcoderView;
 	public FrameLayout readOnContainer;
 	public Chip readOnButton;
-	public View messageTypeButton;
+	public ImageView audioMessageIcon;
 	public View groupAckContainer;
 	public ImageView groupAckThumbsUpImage, groupAckThumbsDownImage;
 	public TextView groupAckThumbsUpCount, groupAckThumbsDownCount;

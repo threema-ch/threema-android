@@ -943,7 +943,7 @@ public class SessionsActivity extends ThreemaToolbarActivity
         super.onCreateOptionsMenu(menu);
         this.getMenuInflater().inflate(R.menu.activity_webclient_sessions, menu);
 
-        ConfigUtils.addIconsToOverflowMenu(this, menu);
+        ConfigUtils.addIconsToOverflowMenu(menu);
 
         return true;
     }

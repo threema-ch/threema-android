@@ -100,7 +100,7 @@ public class ThreemaSafeServiceTest {
     @Mock
     private IdListService profilePicRecipientsServiceMock;
     @Mock
-    private IdListService blackListServiceMock;
+    private IdListService blockedContactsServiceMock;
     @Mock
     private IdListService excludedSyncIdentitiesServiceMock;
     @Mock
@@ -129,7 +129,7 @@ public class ThreemaSafeServiceTest {
             contextMock, preferenceServiceMock, userServiceMock,
             contactServiceMock, groupServiceMock, distributionListServiceMock,
             localeServiceMock, fileServiceMock,
-            blackListServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
+            blockedContactsServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
             databaseServiceNewMock, identityStoreMock, apiService, apiConnectorMock,
             hiddenContactsListMock, serverAddressProviderMock, preferenceStoreMock
         );
@@ -145,7 +145,7 @@ public class ThreemaSafeServiceTest {
         Mockito.when(identityStoreMock.getPrivateKey()).thenReturn(TEST_PRIVATE_KEY_BYTES);
 
         // Identity lists
-        Mockito.when(blackListServiceMock.getAll()).thenReturn(new String[]{});
+        Mockito.when(blockedContactsServiceMock.getAll()).thenReturn(new String[]{});
         Mockito.when(excludedSyncIdentitiesServiceMock.getAll()).thenReturn(new String[]{});
     }
 
@@ -377,7 +377,7 @@ public class ThreemaSafeServiceTest {
 
     @Test
     public void testSafeJsonSettingBlockedContacts() throws Exception {
-        Mockito.when(blackListServiceMock.getAll()).thenReturn(new String[]{"NONONONO", "BLOCKED0"});
+        Mockito.when(blockedContactsServiceMock.getAll()).thenReturn(new String[]{"NONONONO", "BLOCKED0"});
 
         final JSONObject parsed = getParsedSafeJson(getServiceImpl());
         final JSONObject settings = parsed.getJSONObject("settings");

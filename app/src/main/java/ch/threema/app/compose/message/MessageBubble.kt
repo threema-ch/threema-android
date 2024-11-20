@@ -40,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -73,9 +74,18 @@ fun MessageBubble(
     isTextSelectable: Boolean = false,
     onClick: (() -> Unit)? = null,
     @SuppressLint("ComposableLambdaParameterNaming")
-    footerContent: @Composable (() -> Unit)? = null
+    footerContent: @Composable ((contentColor: Color) -> Unit)? = null
 ) {
-    val bubbleColor = if (isOutbox) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.customColorScheme.messageBubbleContainerReceive
+    val bubbleColor: Color = if (isOutbox) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
+        MaterialTheme.customColorScheme.messageBubbleContainerReceive
+    }
+    val contentColor = if (isOutbox) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else {
+        MaterialTheme.colorScheme.onBackground
+    }
     Column(
         modifier = modifier
             .background(
@@ -89,12 +99,13 @@ fun MessageBubble(
         InteropEmojiConversationTextView(
             text = text,
             textAppearanceRes = textAppearanceRes,
+            contentColor = contentColor,
             shouldMarkupText = shouldMarkupText,
             textSelectionCallback = textSelectionCallback,
             isTextSelectable = isTextSelectable,
         )
         Spacer(modifier = Modifier.size(4.dp))
-        footerContent?.invoke()
+        footerContent?.invoke(contentColor)
     }
 }
 
@@ -135,13 +146,14 @@ fun CompleteMessageBubble(
             } else {
                 R.style.Threema_Bubble_Text_Body
             },
-            footerContent = {
+            footerContent = { contentColor: Color ->
                 MessageBubbleFooter(
                     shouldShowEditedLabel = message.editedAt != null,
                     date = message.createdAt,
                     isOutbox = message.isOutbox,
                     deliveryIconRes = message.deliveryIconRes,
                     deliveryIconContentDescriptionRes = message.deliveryIconContentDescriptionRes,
+                    contentColor = contentColor,
                     ackUiModel = message.ackUiModel
                 )
             }
@@ -160,8 +172,13 @@ fun DeletedMessageBubble(
         textAppearanceRes = R.style.Threema_Bubble_Text_Body_Deleted,
         isOutbox = isOutbox,
         onClick = onClick,
-        footerContent = {
-            MessageBubbleFooter(shouldShowEditedLabel = false, isOutbox = isOutbox, date = date)
+        footerContent = { contentColor ->
+            MessageBubbleFooter(
+                shouldShowEditedLabel = false,
+                isOutbox = isOutbox,
+                date = date,
+                contentColor = contentColor
+            )
         }
     )
 }
@@ -173,6 +190,7 @@ fun MessageBubbleFooter(
     isOutbox: Boolean,
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
+    contentColor: Color,
     ackUiModel: AckUiModel? = null
 ) {
     Row(
@@ -185,13 +203,16 @@ fun MessageBubbleFooter(
             ThemedText(
                 modifier = stringResource(R.string.cd_edited).let { Modifier.semantics { contentDescription = it } },
                 text = stringResource(R.string.edited),
-                style = AppTypography.bodySmall
+                style = AppTypography.bodySmall,
+                color = contentColor
             )
         }
         Spacer(modifier = Modifier.weight(1f))
         if (ackUiModel != null && !isOutbox) {
             Spacer(modifier = Modifier.size(8.dp))
-            MessageStateIndicator(ackUiModel = ackUiModel)
+            MessageStateIndicator(
+                ackUiModel = ackUiModel,
+            )
         }
         date?.let {
             Spacer(modifier = Modifier.size(4.dp))
@@ -199,7 +220,8 @@ fun MessageBubbleFooter(
             ThemedText(
                 modifier = stringResource(R.string.cd_created_at).let { Modifier.semantics { contentDescription = it.format(formattedDate) } },
                 text = formattedDate,
-                style = AppTypography.bodySmall
+                style = AppTypography.bodySmall,
+                color = contentColor
             )
         }
         if ((ackUiModel != null || deliveryIconRes != null) && isOutbox) {
@@ -207,7 +229,8 @@ fun MessageBubbleFooter(
             MessageStateIndicator(
                 ackUiModel = ackUiModel,
                 deliveryIconRes = deliveryIconRes,
-                deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes
+                deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
+                deliveryIndicatorTintColor = contentColor
             )
         }
     }
@@ -220,12 +243,13 @@ private fun MessageBubblePreview() {
         text = "Lorem ipsum *dolor sit amet*, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam",
         isOutbox = true,
         shouldMarkupText = true,
-        footerContent = {
+        footerContent = { contentColor: Color ->
             MessageBubbleFooter(
                 shouldShowEditedLabel = true,
                 date = Date(),
                 isOutbox = true,
                 deliveryIconRes = R.drawable.ic_mark_read,
+                contentColor = contentColor,
                 ackUiModel = GroupAckUiModel(GroupAckDecState(2, UserReaction.REACTED), GroupAckDecState(1, UserReaction.NONE)),
             )
         }

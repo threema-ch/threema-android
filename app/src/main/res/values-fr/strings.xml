@@ -334,8 +334,7 @@
     <string name="synchronize_contact">Synchronisation du carnet d\'adresses</string>
     <string name="exclude_contact">Exclure de la synchro automatique</string>
     <string name="prefs_header_lists">Listes</string>
-    <string name="prefs_title_black_list">Liste noire</string>
-    <string name="prefs_sum_black_list">Les messages des ID indiqués ici seront ignorés.</string>
+    <string name="prefs_sum_blocked_contacts">Les messages des ID indiqués ici seront ignorés.</string>
     <string name="verified">Vérifié</string>
     <string name="want_to_add_to_exclude_list">Ce contact est lié à une entrée dans votre carnet d\'adresses. Si vous le supprimez dans Threema, il réapparaîtra après une synchro des contacts.\nVoulez-vous l\'exclure de la synchronisation ?</string>
     <string name="no">Non</string>
@@ -1299,7 +1298,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="enable_storage_access_for_media">Activez l\'accès au stockage pour voir les photos et vidéos de votre appareil</string>
     <string name="select_storage_access_for_media_is_granted">Vous avez accordé l’accès à un nombre limité de photos et de vidéos.</string>
     <string name="take_me_there">Emmenez-moi là-bas…</string>
-    <string name="manage" comment="Text is shown on a button which provides to &quot;manage&quot; certain configurations e.g. Access to media files on the device.">Gérer</string>
+    <string name="manage">Gérer</string>
     <string name="notification_channel_group_join_request">Canal de notifications pour les demandes d\'adhésion à un groupe reçues</string>
     <string name="reset_default_group_link_title">Réinitialiser les infos du lien par défaut</string>
     <string name="reset_default_group_link_desc">Le lien partagé auparavant ne sera plus valide et les demandes passant à travers l\'ancien lien seront automatiquement refusées avec une réponse expirée.</string>
@@ -1567,11 +1566,11 @@ Veuillez saisir une question pour votre enquête.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">accord envoyé</string>
     <string name="cd_dec_icon">désaccord envoyé</string>
-    <string name="cd_ack_dec_group_count" comment="Content description that states how many group members have reacted with a certain reaction.">par %d membres du groupe</string>
+    <string name="cd_ack_dec_group_count">par %d membres du groupe</string>
     <string name="cd_edited">message a été modifié</string>
     <string name="cd_created_at">créé à %s</string>
     <string name="cd_edited_at">modifié à %s</string>
-    <string name="cd_index_in_edit_history" comment="Content descripton for the %d th entry in the edit history">%d. modifier dans l’historique</string>
+    <string name="cd_index_in_edit_history">%d. modifier dans l’historique</string>
     <string name="cd_message_details_container">détails du message</string>
     <string name="cd_enable_formatting">Activer le formatage</string>
     <string name="cd_message">message</string>
@@ -1666,7 +1665,7 @@ Veuillez saisir une question pour votre enquête.</string>
             Vous ne pouvez pas répondre aux demandes une fois qu’elles ont été supprimées.</item>
     </plurals>
     <plurals name="really_delete_group_link">
-        <item quantity="one">Voulez-vous vraiment supprimer %d lien de group ?
+        <item quantity="one">Voulez-vous vraiment supprimer %d lien de groupe ?
             Les autres ne pourront plus envoyer de demandes par le biais de ce lien.
             Les demandes reçues antérieurement peuvent néanmoins être acceptées ou rejetées.</item>
         <item quantity="other">Voulez-vous vraiment supprimer %d liens de groupe ?

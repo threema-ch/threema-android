@@ -120,7 +120,7 @@ class IncomingMessageProcessorImpl(
     private val contactService: ContactService,
     private val contactStore: ContactStore,
     private val identityStore: IdentityStoreInterface,
-    private val blackListService: IdListService,
+    private val blockedContactsService: IdListService,
     private val preferenceService: PreferenceService,
     private val serviceManager: ServiceManager,
 ) : IncomingMessageProcessor {
@@ -459,7 +459,7 @@ class IncomingMessageProcessorImpl(
     }
 
     private fun isBlocked(identity: String): Boolean =
-        blackListService.has(identity) || contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown
+        blockedContactsService.has(identity) || contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown
 
     private class DiscardMessageException(
         val discardedMessage: AbstractMessage?,

@@ -49,7 +49,7 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
 		if (holder.controller != null) {
 			holder.controller.setClickable(false);
-			holder.controller.setImageResource(R.drawable.ic_phone_locked_outline);
+			holder.controller.setIconResource(R.drawable.ic_phone_locked_outline);
 		}
 
 		if(holder.bodyTextView != null) {

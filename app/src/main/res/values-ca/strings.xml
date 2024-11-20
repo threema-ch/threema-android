@@ -329,8 +329,7 @@ intentar.</string>
     <string name="synchronize_contact">Sincr. de llibreta d\'adreces</string>
     <string name="exclude_contact">Excloure de sincr. automàtica</string>
     <string name="prefs_header_lists">Llistes</string>
-    <string name="prefs_title_black_list">Llista negra</string>
-    <string name="prefs_sum_black_list">Els missatges de les ID llistades aquí s\'ignoraran.</string>
+    <string name="prefs_sum_blocked_contacts">Els missatges de les ID llistades aquí s\'ignoraran.</string>
     <string name="verified">Verificat</string>
     <string name="want_to_add_to_exclude_list">Aquest contacte està enllaçat amb una entrada de la llibreta d\'adreces del vostre telèfon.
 Si l\'elimineu de Threema tornarà a aparèixer després d\'una sincronització de contactes.\nVoleu excloure\'l de la sincronització?</string>

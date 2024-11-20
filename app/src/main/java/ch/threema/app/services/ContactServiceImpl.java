@@ -141,7 +141,7 @@ public class ContactServiceImpl implements ContactService {
     // NOTE: The contact model cache will become unnecessary once everything uses the new data
     // layer, since that data layer has caching built-in.
     private final Map<String, ContactModel> contactModelCache;
-    private final IdListService blackListIdentityService, profilePicRecipientsService;
+    private final IdListService blockedContactsService, profilePicRecipientsService;
     private final DeadlineListService mutedChatsListService;
     private final DeadlineListService hiddenChatsListService;
     private final RingtoneService ringtoneService;
@@ -185,7 +185,7 @@ public class ContactServiceImpl implements ContactService {
         UserService userService,
         IdentityStore identityStore,
         PreferenceService preferenceService,
-        IdListService blackListIdentityService,
+        IdListService blockedContactsService,
         IdListService profilePicRecipientsService,
         RingtoneService ringtoneService,
         DeadlineListService mutedChatsListService,
@@ -207,7 +207,7 @@ public class ContactServiceImpl implements ContactService {
         this.userService = userService;
         this.identityStore = identityStore;
         this.preferenceService = preferenceService;
-        this.blackListIdentityService = blackListIdentityService;
+        this.blockedContactsService = blockedContactsService;
         this.profilePicRecipientsService = profilePicRecipientsService;
         this.ringtoneService = ringtoneService;
         this.mutedChatsListService = mutedChatsListService;
@@ -1119,7 +1119,7 @@ public class ContactServiceImpl implements ContactService {
             serviceManager,
             this.databaseServiceNew,
             this.identityStore,
-            this.blackListIdentityService
+            this.blockedContactsService
         );
     }
 

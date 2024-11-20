@@ -62,7 +62,7 @@ public class TextUtilTest {
 	}
 
 	@Test
-	public void testCheckBadPasswordBlacklisted() {
+	public void testCheckBadPasswordWarnList() {
 		final Context context = ThreemaApplication.getAppContext();
 		assertTrue(TextUtil.checkBadPassword(context, "1Rainbow"));
 		assertTrue(TextUtil.checkBadPassword(context, "apples123"));

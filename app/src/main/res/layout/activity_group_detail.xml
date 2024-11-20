@@ -60,7 +60,6 @@
 					android:id="@+id/toolbar"
 					android:layout_width="match_parent"
 					android:layout_height="?attr/actionBarSize"
-					app:popupTheme="@style/Threema.PopupTheme.TransparentStatusbar"
 					app:layout_collapseMode="pin">
 
 			</com.google.android.material.appbar.MaterialToolbar>

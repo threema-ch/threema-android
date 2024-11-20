@@ -48,7 +48,7 @@ class IncomingGroupSetupTask(
     private val userService = serviceManager.userService
     private val contactService = serviceManager.contactService
     private val groupService = serviceManager.groupService
-    private val blackListService = serviceManager.blackListService
+    private val blockedContactsService = serviceManager.blockedContactsService
     private val groupCallManager = serviceManager.groupCallManager
     private val databaseService = serviceManager.databaseServiceNew
     private val contactStore = serviceManager.contactStore
@@ -184,7 +184,7 @@ class IncomingGroupSetupTask(
             identityStore,
             contactStore,
             nonceFactory,
-            blackListService,
+            blockedContactsService,
             taskCreator
         )
     }
@@ -226,6 +226,6 @@ class IncomingGroupSetupTask(
     }
 
     private fun isBlocked(identity: String): Boolean =
-        blackListService.has(identity) ||
+        blockedContactsService.has(identity) ||
                 (contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown)
 }

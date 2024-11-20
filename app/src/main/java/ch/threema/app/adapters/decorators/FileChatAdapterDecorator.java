@@ -309,7 +309,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 				}
 			} else {
 				if (holder.controller != null) {
-					holder.controller.setImageResource(IconUtil.getMimeIcon(fileData.getMimeType()));
+					holder.controller.setIconResource(IconUtil.getMimeIcon(fileData.getMimeType()));
 				}
 			}
 

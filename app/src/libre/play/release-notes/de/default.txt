@@ -1,3 +1,2 @@
-* Überarbeitung der Benachrichtigungskanäle: Individuelle Benachrichtigungseinstellungen müssen erneut vorgenommen werden
-* Medien lassen sich neu vor dem Weiterleiten bearbeiten
-* Bei bearbeiteten Nachrichten ist nun der Bearbeitungsverlauf einsehbar
+* Verbesserung bei der Verwendung von «dynamischen Farben»
+* Behebung eines Fehlers, dass auch bei aktivem «Bitte nicht stören» eine Benachrichtigung mit Vibration ausgelöst wurde
