@@ -1,2 +1,1 @@
-* Improvements when “dynamic colors” are used
-* Fix of a bug, that could cause a vibrating notification even if “Do not disturb” is active
+- Fixed a bug in relation to the automatic updates of the threema shop version

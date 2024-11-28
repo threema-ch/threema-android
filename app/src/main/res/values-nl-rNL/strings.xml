@@ -335,6 +335,7 @@
     <string name="synchronize_contact">Adresboek synchroniseren</string>
     <string name="exclude_contact">Uitsluiten van automatisch synchroniseren</string>
     <string name="prefs_header_lists">Lijsten</string>
+    <string name="prefs_title_blocked_contacts">Geblokkeerde contacten</string>
     <string name="prefs_sum_blocked_contacts">Berichten van hier weergegeven ID\'s worden genegeerd.</string>
     <string name="verified">Geverifieerd</string>
     <string name="want_to_add_to_exclude_list">Deze contactpersoon is gekoppeld aan een artikel in het adresboek van uw telefoon. Als u hem/haar in Threema verwijderd, verschijnt het opnieuw na een synchronisatie.\nWilt u de contactpersoon uitsluiten van synchronisatie?</string>

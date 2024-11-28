@@ -334,6 +334,7 @@
     <string name="synchronize_contact">Synchronisation du carnet d\'adresses</string>
     <string name="exclude_contact">Exclure de la synchro automatique</string>
     <string name="prefs_header_lists">Listes</string>
+    <string name="prefs_title_blocked_contacts">Contacts bloqués</string>
     <string name="prefs_sum_blocked_contacts">Les messages des ID indiqués ici seront ignorés.</string>
     <string name="verified">Vérifié</string>
     <string name="want_to_add_to_exclude_list">Ce contact est lié à une entrée dans votre carnet d\'adresses. Si vous le supprimez dans Threema, il réapparaîtra après une synchro des contacts.\nVoulez-vous l\'exclure de la synchronisation ?</string>

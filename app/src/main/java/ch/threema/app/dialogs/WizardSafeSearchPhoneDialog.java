@@ -35,9 +35,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.LocaleService;
@@ -158,15 +160,15 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 	}
 
 	private static class SearchIdTask extends AsyncTask<String, Void, ArrayList<String>> {
-		private WeakReference<WizardSafeSearchPhoneDialog> contextReference;
+		private final WeakReference<WizardSafeSearchPhoneDialog> dialogReference;
 
-		SearchIdTask(WizardSafeSearchPhoneDialog context) {
-			contextReference = new WeakReference<>(context);
+		SearchIdTask(WizardSafeSearchPhoneDialog dialog) {
+			dialogReference = new WeakReference<>(dialog);
 		}
 
 		@Override
 		protected void onPreExecute() {
-			WizardSafeSearchPhoneDialog dialog = contextReference.get();
+			WizardSafeSearchPhoneDialog dialog = dialogReference.get();
 			if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
 
 			GenericProgressDialog.newInstance(R.string.safe_id_lookup, R.string.please_wait).show(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS);
@@ -174,12 +176,12 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 
 		@Override
 		protected ArrayList<String> doInBackground(String... params) {
-			return contextReference.get().threemaSafeService.searchID(params[0], params[1]);
+			return dialogReference.get().threemaSafeService.searchID(params[0], params[1]);
 		}
 
 		@Override
 		protected void onPostExecute(ArrayList<String> ids) {
-			final WizardSafeSearchPhoneDialog dialog = contextReference.get();
+			final WizardSafeSearchPhoneDialog dialog = dialogReference.get();
 			if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
 
 			DialogUtil.dismissDialog(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS, true);
@@ -200,7 +202,9 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 					selectorDialog.show(dialog.getFragmentManager(), DIALOG_TAG_SELECT_ID);
 				}
 			} else {
-				Toast.makeText(dialog.getActivity(), R.string.safe_no_id_found, Toast.LENGTH_LONG).show();
+                Optional.ofNullable(dialog)
+                    .map(Fragment::getActivity)
+                    .ifPresent(activity -> Toast.makeText(activity, R.string.safe_no_id_found, Toast.LENGTH_LONG).show());
 			}
 		}
 	}
@@ -214,10 +218,4 @@ public class WizardSafeSearchPhoneDialog extends DialogFragment implements Selec
 		callback.onYes(getTag(), matchingIDs.get(which).getText());
 		dismiss();
 	}
-
-	@Override
-	public void onCancel(String tag) {}
-
-	@Override
-	public void onNo(String tag) {}
 }

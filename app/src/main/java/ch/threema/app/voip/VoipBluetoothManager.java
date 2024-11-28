@@ -583,7 +583,12 @@ public class VoipBluetoothManager {
 	}
 
 	protected void registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-		apprtcContext.registerReceiver(receiver, filter);
+        ContextCompat.registerReceiver(
+            apprtcContext,
+            receiver,
+            filter,
+            ContextCompat.RECEIVER_EXPORTED
+        );
 	}
 
 	protected void unregisterReceiver(BroadcastReceiver receiver) {

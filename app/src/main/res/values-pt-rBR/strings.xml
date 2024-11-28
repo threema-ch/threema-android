@@ -334,6 +334,7 @@
     <string name="synchronize_contact">Sincronizar endereços</string>
     <string name="exclude_contact">Excluir da sincronização automática</string>
     <string name="prefs_header_lists">Listas</string>
+    <string name="prefs_title_blocked_contacts">Contatos bloqueados</string>
     <string name="prefs_sum_blocked_contacts">As mensagens das IDs listadas aqui serão ignoradas.</string>
     <string name="verified">Confirmado(s)</string>
     <string name="want_to_add_to_exclude_list">Este contato do Threema está vinculado a um contato do seu celular. Se você apagá-lo no Threema, ele irá reaparecer depois de uma sincronização de contatos.\nGostaria de excluí-lo da sincronização?</string>

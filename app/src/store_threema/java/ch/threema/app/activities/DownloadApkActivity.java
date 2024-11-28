@@ -53,6 +53,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -214,8 +215,13 @@ public class DownloadApkActivity extends ThreemaActivity implements GenericAlert
 			dialog.setData(downloadUrl = IntentDataUtil.getUrl(intent));
 			getSupportFragmentManager().beginTransaction().add(dialog, DIALOG_TAG_DOWNLOAD_UPDATE).commitAllowingStateLoss();
 
-			this.registerReceiver(this.downloadApkFinishedReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-		} else {
+            ContextCompat.registerReceiver(
+                this,
+                this.downloadApkFinishedReceiver,
+                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                ContextCompat.RECEIVER_EXPORTED
+            );
+        } else {
 			finish();
 		}
 	}

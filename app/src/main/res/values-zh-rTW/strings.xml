@@ -245,7 +245,7 @@
     <string name="emoji_recent">常用項目</string>
     <string name="emoji_smileys">表情符號</string>
     <string name="emoji_people">人物</string>
-    <string name="emoji_nature">野生动物</string>
+    <string name="emoji_nature">野生動物</string>
     <string name="emoji_food">食物飲料</string>
     <string name="emoji_travel">旅行與地點</string>
     <string name="emoji_activity">活動</string>
@@ -345,6 +345,7 @@
     <string name="synchronize_contact">通訊錄同步</string>
     <string name="exclude_contact">排除自動同步</string>
     <string name="prefs_header_lists">清單</string>
+    <string name="prefs_title_blocked_contacts">被封鎖的聯絡人</string>
     <string name="prefs_sum_blocked_contacts">來自這裡列出的ID的訊息將被忽略。</string>
     <string name="verified">已驗證</string>
     <string name="want_to_add_to_exclude_list">此聯絡人已連結至電話通訊錄中的記錄。如果您

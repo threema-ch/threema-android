@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import androidx.core.content.ContextCompat;
 import ch.threema.app.utils.BatteryStatusUtil;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.base.utils.LoggingUtil;
@@ -95,7 +96,7 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
 	 * Subscribe to the battery status broadcast.
 	 */
 	public void acquire(WebClientSessionModel session) {
-		logger.debug("Acquire webclient battery status subscription for session " + session.getId());
+		logger.debug("Acquire webclient battery status subscription for session {}", session.getId());
 		if (!this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.add(session.getId());
 		}
@@ -106,7 +107,7 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
 	 * Unsubscribe from the battery status broadcast.
 	 */
 	public void release(WebClientSessionModel session) {
-		logger.debug("Release webclient battery status subscription for session " + session.getId());
+		logger.debug("Release webclient battery status subscription for session {}", session.getId());
 		if (this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.remove((Integer)session.getId());
 		}
@@ -114,12 +115,19 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
 	}
 
 	private void execute() {
-		if (this.acquiredSessionIds.size() > 0) {
+		if (!this.acquiredSessionIds.isEmpty()) {
 			if (this.subscribed) {
 				logger.debug("Already subscribed");
 			} else {
-				this.appContext.registerReceiver(this.batteryStatusReceiver, getBatteryStatusIntentFilter());
-				this.subscribed = true;
+                ContextCompat.registerReceiver(
+                    this.appContext,
+                    this.batteryStatusReceiver,
+                    getBatteryStatusIntentFilter(),
+                    // Note that for some system broadcasts like this one, the receiver does not
+                    // need to be exported.
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                );
+                this.subscribed = true;
 				logger.debug("Subscribed");
 			}
 		} else {

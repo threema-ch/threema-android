@@ -335,7 +335,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="synchronize_contact">Adres defteri eşitlemesi</string>
     <string name="exclude_contact">Otomatik eşitlemeden hariç tut</string>
     <string name="prefs_header_lists">Listeler</string>
-    <string name="prefs_sum_blocked_contacts">Burada listelenen kimliklerden gelen mesajlar yoksayılacak.</string>
+    <string name="prefs_title_blocked_contacts">Engellenmiş kişi</string>
+    <string name="prefs_sum_blocked_contacts">Burada listelenen kimliklerden gelen mesajlar yok sayılacak.</string>
     <string name="verified">Doğrulandı</string>
     <string name="want_to_add_to_exclude_list">Bu kişi, telefonunuzun adres defterindeki bir kayda bağlıdır. Eğer  uygulamadan silerseniz, eşitlemeden sonra yeniden görünüyor olacaktır. Eşitlemeden hariç tutmak ister misiniz?</string>
     <string name="no">Hayır</string>

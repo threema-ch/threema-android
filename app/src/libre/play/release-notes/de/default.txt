@@ -1,2 +1,1 @@
-* Verbesserung bei der Verwendung von «dynamischen Farben»
-* Behebung eines Fehlers, dass auch bei aktivem «Bitte nicht stören» eine Benachrichtigung mit Vibration ausgelöst wurde
+- Behebung eines Fehlers des Updaters der Shop Version

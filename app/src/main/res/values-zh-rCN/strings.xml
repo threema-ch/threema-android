@@ -345,6 +345,7 @@
     <string name="synchronize_contact">通讯录同步</string>
     <string name="exclude_contact">排除自动同步</string>
     <string name="prefs_header_lists">清单</string>
+    <string name="prefs_title_blocked_contacts">被屏蔽的联系人</string>
     <string name="prefs_sum_blocked_contacts">来自这里列出的ID的消息将被忽略。</string>
     <string name="verified">已验证</string>
     <string name="want_to_add_to_exclude_list">此联系人已链接到手机通讯录中的记录。如果您

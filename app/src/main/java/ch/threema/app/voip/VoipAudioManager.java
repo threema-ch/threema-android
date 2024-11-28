@@ -46,6 +46,7 @@ import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.notifications.BackgroundErrorNotification;
@@ -85,7 +86,7 @@ public class VoipAudioManager {
 
 	// Default audio device; speaker phone for devices without telephony features
 	// (e.g. tablets) or earpiece for devices with telephony features.
-	private AudioDevice defaultAudioDevice;
+	private final AudioDevice defaultAudioDevice;
 
 	// Contains the currently selected audio device.
 	// This device is changed automatically using a certain scheme where e.g.
@@ -106,7 +107,7 @@ public class VoipAudioManager {
 	@NonNull private HashSet<AudioDevice> audioDevices = new HashSet<>();
 
 	// Broadcast receiver for wired headset intent broadcasts.
-	private BroadcastReceiver wiredHeadsetReceiver;
+	private final BroadcastReceiver wiredHeadsetReceiver;
 
 	// Callback method for changes in audio focus.
 	private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener;
@@ -430,7 +431,14 @@ public class VoipAudioManager {
 	 * Helper method for receiver registration.
 	 */
 	private void registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-		apprtcContext.registerReceiver(receiver, filter);
+        ContextCompat.registerReceiver(
+            apprtcContext,
+            receiver,
+            filter,
+            // Note that for some system broadcasts like this one, the receiver does not need to be
+            // exported.
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        );
 	}
 
 	/**

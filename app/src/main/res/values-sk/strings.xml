@@ -337,6 +337,7 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="synchronize_contact">Synchronizácia kontaktov</string>
     <string name="exclude_contact">Vyňať z automatickej synchronizácie</string>
     <string name="prefs_header_lists">Zoznamy</string>
+    <string name="prefs_title_blocked_contacts">Blokované kontakty</string>
     <string name="prefs_sum_blocked_contacts">Správy od tu uvedených ID budú ignorované.</string>
     <string name="verified">Overené</string>
     <string name="want_to_add_to_exclude_list">Tento kontakt je prepojený s adresárom telefónu. Ak ho zmažete, v aplikácii Threema sa objaví znovu po synchronizácii kontaktov.\nChcete ho vylúčiť zo synchronizácie?</string>

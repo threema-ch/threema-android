@@ -335,6 +335,7 @@
     <string name="synchronize_contact">Synchron. książki adresów</string>
     <string name="exclude_contact">Wyłącz z synchronizacji audio</string>
     <string name="prefs_header_lists">Listy</string>
+    <string name="prefs_title_blocked_contacts">Zablokowane kontakty</string>
     <string name="prefs_sum_blocked_contacts">Wiadomości od identyfikatorów wypisanych tutaj będą ignorowane.</string>
     <string name="verified">Zweryfikowane</string>
     <string name="want_to_add_to_exclude_list">Ten kontakt jest powiązany z rekordem w Twojej telefonicznej książce adresowej. Jeżeli go skasujesz w Threemie, pojawi się ponownie po synchronizacji kontaktów.\nCzy chciałbyś wykluczyć go z synchronizacji?</string>
