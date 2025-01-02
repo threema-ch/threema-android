@@ -27,45 +27,11 @@ import java.io.Reader;
 public class CSVReader extends au.com.bytecode.opencsv.CSVReader {
 	private String[] headerRow;
 
-	public CSVReader(Reader reader) {
-		super(reader);
-	}
-
 	public CSVReader(Reader reader, boolean firstRowIsHeader) throws IOException{
 		super(reader);
-		this.headerRow = this.readNext();
-	}
-
-	public CSVReader(Reader reader, char c) {
-		super(reader, c);
-	}
-
-	public CSVReader(Reader reader, char c, char c2) {
-		super(reader, c, c2);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, boolean b) {
-		super(reader, c, c2, b);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, char c3) {
-		super(reader, c, c2, c3);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, int i) {
-		super(reader, c, c2, i);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, char c3, int i) {
-		super(reader, c, c2, c3, i);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, char c3, int i, boolean b) {
-		super(reader, c, c2, c3, i, b);
-	}
-
-	public CSVReader(Reader reader, char c, char c2, char c3, int i, boolean b, boolean b2) {
-		super(reader, c, c2, c3, i, b, b2);
+		if (firstRowIsHeader) {
+			this.headerRow = this.readNext();
+		}
 	}
 
 	public CSVRow readNextRow() throws IOException {

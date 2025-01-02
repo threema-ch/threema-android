@@ -227,14 +227,15 @@ public class GroupServiceImpl implements GroupService {
 		String[] identities = getGroupIdentities(groupModel);
 		scheduleEmptyGroupSetup(groupModel, Set.of(identities));
 
-		// Remove me from the group members
-		removeMemberFromGroup(groupModel, userService.getIdentity());
+		// Do not remove user from members: just set the user state of the group
+		groupModel.setUserState(GroupModel.UserState.LEFT);
+		save(groupModel);
 
 		// Update the rejected message states
 		runRejectedMessagesRefreshSteps(groupModel);
 
 		// Trigger listener
-		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, myIdentity, identities.length));
+		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, myIdentity));
 		ListenerManager.groupListeners.handle(listener -> listener.onLeave(groupModel));
 	}
 
@@ -245,14 +246,14 @@ public class GroupServiceImpl implements GroupService {
 			return;
 		}
 
-		String[] identities = this.getGroupIdentities(groupModel);
+		Set<String> identities = this.getMembersWithoutUser(groupModel);
 
 		// Send group leave to all members
-		scheduleGroupLeave(groupModel, Set.of(identities));
+		scheduleGroupLeave(groupModel, identities);
 
-		// Remove only me from the members
-		String myIdentity = userService.getIdentity();
-		removeMemberFromGroup(groupModel, myIdentity);
+		// Do not remove user from members: just set the user state of the group
+		groupModel.setUserState(GroupModel.UserState.LEFT);
+		save(groupModel);
 
 		// Update the rejected message states
 		runRejectedMessagesRefreshSteps(groupModel);
@@ -264,7 +265,7 @@ public class GroupServiceImpl implements GroupService {
 		this.resetIdentityCache(groupModel.getId());
 
 		// Fire group left listener
-		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, myIdentity, identities.length));
+		ListenerManager.groupListeners.handle(listener -> listener.onMemberLeave(groupModel, userService.getIdentity()));
 		ListenerManager.groupListeners.handle(listener -> listener.onLeave(groupModel));
 		updateAllowedCallParticipants(groupModel);
 	}
@@ -486,12 +487,12 @@ public class GroupServiceImpl implements GroupService {
 			.setCreatorIdentity(creatorIdentity)
 			.setCreatedAt(now)
 			.setLastUpdate(now)
-			.setSynchronizedAt(now);
+			.setSynchronizedAt(now)
+			.setUserState(GroupModel.UserState.MEMBER);
 		this.databaseServiceNew.getGroupModelFactory().create(groupModel);
 		this.cache(groupModel);
 
-		// Add members to group (including own identity)
-		this.addMemberToGroup(groupModel, creatorIdentity);
+		// Add members to group (do not include the user's identity)
 		for (String identity : groupMemberIdentities) {
 			this.addMemberToGroup(groupModel, identity);
 		}
@@ -499,7 +500,7 @@ public class GroupServiceImpl implements GroupService {
 		// Notify listeners
 		for (String memberIdentity : groupMemberIdentities) {
 			ListenerManager.groupListeners.handle(listener ->
-				listener.onNewMember(groupModel, memberIdentity, 0)
+				listener.onNewMember(groupModel, memberIdentity)
 			);
 		}
 		ListenerManager.groupListeners.handle(listener -> listener.onCreate(groupModel));
@@ -517,6 +518,11 @@ public class GroupServiceImpl implements GroupService {
 	@Override
 	public boolean addMemberToGroup(@NonNull final GroupModel groupModel, @NonNull final String identity) {
 		final GroupMemberModel memberModel = this.getGroupMember(groupModel, identity);
+
+		if (userService.getIdentity().equals(identity)) {
+			logger.warn("User should not be added to member list");
+			return false;
+		}
 
 		if (memberModel == null) {
 			// Do not add the member to the group if it is already in the group or there is no contact
@@ -660,15 +666,13 @@ public class GroupServiceImpl implements GroupService {
 		Set<String> kickedGroupMembers = new HashSet<>(existingMembers);
 		kickedGroupMembers.removeAll(updatedGroupMembers);
 
-		int previousMemberCount = countMembers(groupModel);
-
 		// Remove the kicked members from the database
 		for (final String kickedIdentity : kickedGroupMembers) {
 			logger.debug("Remove member {} from group", kickedIdentity);
 			removeMemberFromGroup(groupModel, kickedIdentity);
 
 			ListenerManager.groupListeners.handle(listener ->
-				listener.onMemberKicked(groupModel, kickedIdentity, previousMemberCount)
+				listener.onMemberKicked(groupModel, kickedIdentity)
 			);
 		}
 
@@ -725,6 +729,7 @@ public class GroupServiceImpl implements GroupService {
 				// If there was a change, then the method above already dealt with sending sync
 				// messages to all members (including new members).
 				sendPictureToNewMembers = false;
+                ShortcutUtil.updateShareTargetShortcut(createReceiver(groupModel));
 			}
 		}
 		if (sendPictureToNewMembers && hasNewMembers) {
@@ -742,7 +747,7 @@ public class GroupServiceImpl implements GroupService {
 		// members and must therefore be called *after* the group setup has been sent.
 		for (String newMember : newMembers) {
 			ListenerManager.groupListeners.handle(listener ->
-				listener.onNewMember(groupModel, newMember, previousMemberCount)
+				listener.onNewMember(groupModel, newMember)
 			);
 		}
 
@@ -960,7 +965,7 @@ public class GroupServiceImpl implements GroupService {
 
 	@NonNull
 	@Override
-	public Set<String> getOtherMembers(@NonNull GroupModel groupModel) {
+	public Set<String> getMembersWithoutUser(@NonNull GroupModel groupModel) {
 		Set<String> otherMembers = new HashSet<>(Arrays.asList(getGroupIdentities(groupModel)));
 		otherMembers.remove(userService.getIdentity());
 		return otherMembers;
@@ -976,9 +981,23 @@ public class GroupServiceImpl implements GroupService {
 			}
 
 			List<GroupMemberModel> memberModels = this.getGroupMemberModels(groupModel);
-			String[] res = new String[memberModels.size()];
+			boolean isGroupMember = isGroupMember(groupModel);
+
+			String[] res;
+			int arrayIndexOffset;
+			if (isGroupMember) {
+				res = new String[memberModels.size() + 1];
+				arrayIndexOffset = 1;
+				// Include the user in the array if it is a member. Note that this is required as the
+				// user is never stored as a group member.
+				res[0] = userService.getIdentity();
+			} else {
+				res = new String[memberModels.size()];
+				arrayIndexOffset = 0;
+			}
+
 			for (int i = 0; i < memberModels.size(); i++) {
-				res[i] = memberModels.get(i).getIdentity();
+				res[i + arrayIndexOffset] = memberModels.get(i).getIdentity();
 			}
 
 			this.groupIdentityCache.put(groupModel.getId(), res);
@@ -986,8 +1005,18 @@ public class GroupServiceImpl implements GroupService {
 		}
 	}
 
-	private boolean isGroupMember(@NonNull GroupModel groupModel, @Nullable String identity) {
+	@Override
+	public boolean isGroupMember(@NonNull GroupModel groupModel) {
+		return groupModel.getUserState() == GroupModel.UserState.MEMBER;
+	}
+
+	@Override
+	public boolean isGroupMember(@NonNull GroupModel groupModel, @Nullable String identity) {
 		if (!TestUtil.isEmptyOrNull(identity)) {
+			if (userService.getIdentity().equals(identity)) {
+				return isGroupMember(groupModel);
+			}
+
 			for (String existingIdentity : this.getGroupIdentities(groupModel)) {
 				if (TestUtil.compare(existingIdentity, identity)) {
 					return true;
@@ -998,20 +1027,28 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public boolean isGroupMember(@NonNull GroupModel groupModel) {
-		return isGroupMember(groupModel, userService.getIdentity());
-	}
-
-	@Override
 	public boolean isOrphanedGroup(@NonNull GroupModel groupModel) {
 		return !isGroupMember(groupModel, groupModel.getCreatorIdentity()) && !isGroupCreator(groupModel);
 	}
 
-	@Override
-	public List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel) {
-		return this.databaseServiceNew.getGroupMemberModelFactory().getByGroupId(
-			groupModel.getId()
-		);
+	/**
+	 * Get the group member models of the given group. Note that the user is not part of this list.
+	 */
+	private List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel) {
+		List<GroupMemberModel> groupMemberModels = databaseServiceNew
+			.getGroupMemberModelFactory()
+			.getByGroupId(groupModel.getId());
+
+		// Remove own identity. Note that the user's identity should never be stored as member.
+		// This is just a check to ensure correct behavior even if the member list is wrong.
+		String myIdentity = userService.getIdentity();
+		if (groupMemberModels.removeIf(
+			groupMemberModel -> myIdentity.equals(groupMemberModel.getIdentity())
+		)) {
+			logger.warn("User is contained as member in group");
+		}
+
+		return groupMemberModels;
 	}
 
 	/**
@@ -1095,11 +1132,6 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public void clearAvatarCache(@NonNull GroupModel model) {
-		avatarCacheService.reset(model);
-	}
-
-	@Override
 	public boolean isGroupCreator(GroupModel groupModel) {
 		return groupModel != null
 			&& this.userService.getIdentity() != null
@@ -1114,7 +1146,8 @@ public class GroupServiceImpl implements GroupService {
 				return existingIdentities.length;
 			}
 		}
-		return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembers(groupModel.getId());
+		int userMemberCount = groupModel.getUserState() == GroupModel.UserState.MEMBER ? 1 : 0;
+		return (int) this.databaseServiceNew.getGroupMemberModelFactory().countMembersWithoutUser(groupModel.getId()) + userMemberCount;
 	}
 
 	@Override
@@ -1125,15 +1158,10 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public int getOtherMemberCount(@NonNull GroupModel groupModel) {
-		int count = 0;
-		String[] identities = this.getGroupIdentities(groupModel);
-		for (String identity : identities) {
-			if (!this.userService.isMe(identity)) {
-				count++;
-			}
-		}
-		return count;
+	public int countMembersWithoutUser(@NonNull GroupModel groupModel) {
+		return (int) this.databaseServiceNew
+			.getGroupMemberModelFactory()
+			.countMembersWithoutUser(groupModel.getId());
 	}
 
 	@Override
@@ -1333,7 +1361,7 @@ public class GroupServiceImpl implements GroupService {
 					false,
 					R.string.you_are_not_a_member_of_this_group
 				));
-			} else if (getOtherMemberCount(groupModel) <= 0 && !allowEmpty) {
+			} else if (countMembersWithoutUser(groupModel) <= 0 && !allowEmpty) {
 				// Don't allow sending in empty groups (except allowEmpty is true)
 				groupAccessModel.setCanReceiveMessageAccess(new Access(
 					false,
@@ -1440,7 +1468,7 @@ public class GroupServiceImpl implements GroupService {
 		return new GroupFeatureSupport(
 			feature,
 			new ArrayList<>(
-				OutgoingCspMessageUtilsKt.filterBroadcastIdentity(getMembers(groupModel), groupModel)
+				OutgoingCspMessageUtilsKt.removeCreatorIfRequired(getMembers(groupModel), groupModel)
 					.stream().filter((member) -> !userService.isMe(member.getIdentity())).collect(Collectors.toList())
 			)
 		);

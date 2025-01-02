@@ -1,0 +1,314 @@
+# Meta information
+meta:
+  # Document name and ID
+  id: md-d2m
+  name: Device to Mediator Protocol
+
+  # References used by the structs
+  references:
+    # A reflect message identifier
+    reflect-id: &reflect-id u32-le
+    # A Unix-ish timestamp in milliseconds
+    timestamp: &timestamp u64-le
+
+# Virtual namespace, just containing the below docstring
+index: &index
+  _doc: |-
+    # Device to Mediator Protocol
+
+    This protocol describes the communication between Threema client and
+    mediator server.
+
+    As transport protocol, WebSocket is used. Over this WebSocket connection,
+    messages both between the device and the mediator server (D2M) and between
+    the device and the chat server (CSP) are multiplexed.
+
+    ## General Information
+
+    **Encryption cipher:** XSalsa20-Poly1305, unless otherwise specified.
+
+    All strings are UTF-8 encoded.
+
+    ## Payload Format
+
+    All messages are wrapped in the [`container`](ref:payload.container).
+
+    Most payload messages contained within the container are encoded with
+    protobuf, with a few exceptions for messages that are sent very frequently
+    (proxying and reflection) and which use a more compact representation.
+
+    ## Chat Server Proxying
+
+    The chat server uses a TCP stream based protocol (chat server protocol /
+    CSP). To be able to proxy this protocol over the message based WebSocket
+    protocol, we need framing. Framed messages from/to the chat server are sent
+    using [`proxy`](ref:payload.proxy) messages wrapped in
+    [`container`](ref:payload.container).
+
+    ## Size Limitations
+
+    The device to mediator protocol currently allows for up to 65536 bytes
+    within a single message. To elaborate this down to encrypted device to
+    device messages, the limitations are:
+
+    - 65536 bytes for a payload container struct,
+    - 65532 bytes for a payload struct, before wrapping it with a container,
+    - 65516 bytes for an encrypted `d2d.Envelope` in a
+      [`reflected`](ref:payload.reflected) struct.
+    - 65492 bytes for the plain `d2d.Envelope` to be sent within a
+      [`reflected`](ref:payload.reflected) struct.
+
+    Note that the header lengths of [`reflect`](ref:payload.reflect) and
+    [`reflected`](ref:payload.reflected) are dynamic, so the maximum size of a
+    `d2d.Envelope` may be reduced further in the future.
+
+    ## Version Negotiation
+
+    The server sends along the highest supported protocol version in the
+    `ServerHello` message. The client then chooses a `ClientHello.version` <=
+    `ServerHello.version`.
+
+    If the server version sent in `ServerHello` is unsupported by the client,
+    the client disconnects with a [close code](ref:index#close-codes) of 4110
+    (Unsupported Protocol Version).
+
+    If the client version sent in `ClientHello` is unsupported by the server,
+    the server disconnects with a [close code](ref:index#close-codes) of 4110
+    (Unsupported Protocol Version).
+
+    Otherwise, the version from `ClientHello.version` is used for further
+    communication.
+
+    ## Close Codes
+
+    WebSocket Internal Close Codes (1xxx):
+    - `1000`: Normal closure, connection successfully completed
+    - `1001`: Server is shutting down
+    - `1011`: Server terminated the connection due to an internal error
+
+    Chat Server Close Codes (400x and 410x):
+    - `4000`: Chat server connection closed
+    - `4001`: Chat server connection could not be established
+    - `4009`: Internal error related to chat server connection
+
+    Mediator Server Close Codes (40[1-9]x and 41[1-9]x):
+    - `4010`: Protocol error
+    - `4011`: Transaction TTL reached
+    - `4012`: Unknown message acked
+    - `4013`: Client idle timeout exceeded
+    - `4110`: Unsupported protocol version
+    - `4111`: Device limit reached
+    - `4112`: Duplicate connection (i.e. the same device reconnected,
+      terminating the previous connection)
+    - `4113`: Dropped by other device
+    - `4114`: Dropped by server because the reflection queue length limit was
+      reached
+    - `4115`: Device slot state mismatch
+
+    Reconnect policy:
+    - `1xxx` and `40xx` do allow for automatic reconnect.
+    - `41xx` does not allow for automatic reconnect and require user interaction
+      before a reconnect attempt may be made.
+    - Any other close code should result in a warning in the log, but automatic
+      reconnects are allowed.
+
+    Important: Whenever a `close-error` message is being received from the Chat
+    Server, the reconnect policy solely depends on the
+    `close-error.can-reconnect` field and the (following) Close Code must be
+    ignored.
+
+    When automatically reconnecting, linear backoff should be applied. In case
+    the connection fails repeatedly, user interaction should be required to
+    continue reconnecting.
+
+    ## Security
+
+    The client must pin the TLS certificate of the server, so that the server
+    can be authenticated. The client authenticates itself during the handshake
+    with the server that it is part of the device group by responding to a
+    challenge.
+
+    A malicious server can connect arbitrary devices with one another but this
+    would be detected eventually because decrypting reflected messages would
+    fail.
+
+# Payload structs
+payload: &payload
+  container:
+    _doc: |-
+      Contains a mediator message payload.
+
+      Direction: Client <-> Server
+    fields:
+      - _doc: |-
+          Identifies the payload type contained in the `payload` field.
+
+          Chat server proxying:
+            - `0x00`: [`proxy`](ref:payload.proxy)
+
+          Handshake:
+            - `0x10`: `d2m.ServerHello`
+            - `0x11`: `d2m.ClientHello`
+            - `0x12`: `d2m.ServerInfo`
+
+          States:
+            - `0x20`: `d2m.ReflectionQueueDry`
+            - `0x21`: `d2m.RolePromotedToLeader`
+
+          Device management:
+            - `0x30`: `d2m.GetDevicesInfo`
+            - `0x31`: `d2m.DevicesInfo`
+            - `0x32`: `d2m.DropDevice`
+            - `0x33`: `d2m.DropDeviceAck`
+            - `0x34`: `d2m.SetSharedDeviceData`
+
+          Transactions:
+            - `0x40`: `d2m.BeginTransaction`
+            - `0x41`: `d2m.BeginTransactionAck`
+            - `0x42`: `d2m.CommitTransaction`
+            - `0x43`: `d2m.CommitTransactionAck`
+            - `0x44`: `d2m.TransactionRejected`
+            - `0x45`: `d2m.TransactionEnded`
+
+          Reflection:
+            - `0x80`: [`reflect`](ref:payload.reflect)
+            - `0x81`: [`reflect-ack`](ref:payload.reflect-ack)
+            - `0x82`: [`reflected`](ref:payload.reflected)
+            - `0x83`: [`reflected-ack`](ref:payload.reflected-ack)
+        name: type
+        type: u8
+      - _doc: |-
+          Should be set to all `0`s and ignored by the receiver.
+        name: reserved
+        type: b3
+      - _doc: |-
+          Message payload. Needs to be parsed according to the `type` field.
+        name: payload
+        type: b*
+
+  proxy:
+    _doc: |-
+      Proxy a message to/from the chat server.
+    fields:
+      - _doc: |-
+          The data to be proxied to/from the chat server, encrypted by
+          following the Chat Server Protocol.
+        name: data
+        type: b*
+
+  reflect:
+    _doc: |-
+      Reflect a message into the reflection queue of all other devices.
+
+      Direction: Client --> Server
+    fields:
+      - _doc: |-
+          Contains the byte length of all fields prior to the `envelope` field
+          (`8` at the moment).
+        name: header-length
+        type: u8
+      - _doc: |-
+          Should be set to `0` and ignored by the receiver.
+        name: reserved
+        type: u8
+      - _doc: |-
+          Flags:
+
+          - `0x00_01`: Ephemeral marker. The server will forward the message only
+            to devices that are currently connected while still maintaining
+            the order of the reflection queue. If the receiving device
+            disconnects before the ephemeral message was forwarded to it, that
+            message should be discarded. An acknowledgement must not be sent.
+        name: flags
+        type: u16-le
+      - _doc: |-
+          Unique number (per connection) used for acknowledgement.
+        name: reflect-id
+        type: *reflect-id
+      - _doc: |-
+          The protobuf-encoded and encrypted data to be reflected, encrypted by
+          `DGRK.secret` and prefixed with a random nonce. See `d2d.proto` for
+          details on the `Envelope` contents.
+        name: envelope
+        type: b*
+
+  reflect-ack:
+    _doc: |-
+      Acknowledges that a message to be reflected to all other devices has been
+      stored in their respective reflection queues.
+
+      Direction: Client <-- Server
+    fields:
+      - _doc: |-
+          Should be set to all `0`s and ignored by the receiver.
+        name: reserved
+        type: b4
+      - _doc: |-
+          Refers to the `Reflect ID` as sent in the `Reflect` message.
+        name: reflect-id
+        type: *reflect-id
+      - _doc: |-
+          Unix-ish timestamp in milliseconds when the message has been stored
+          in the reflection queue of the mediator server.
+        name: timestamp
+        type: *timestamp
+
+  reflected:
+    _doc: |-
+      Deliver a message from the device's reflection queue.
+
+      Direction: Client <-- Server
+    fields:
+      - _doc: |-
+          Contains the byte length of all fields prior to the `envelope` field
+          (`16` at the moment).
+        name: header-length
+        type: u8
+      - _doc: |-
+          Should be set to `0` and ignored by the receiver.
+        name: reserved
+        type: u8
+      - _doc: |-
+          Flags:
+
+          - `0x00_01`: Ephemeral marker. The sending device requested this
+            message to only be reflected to devices that are currently online.
+            An acknowledgement must not be sent.
+        name: flags
+        type: u16-le
+      - _doc: |-
+          Monotonically increasing unique number (per device slot) used for
+          acknowledgement. May wrap.
+        name: reflected-id
+        type: *reflect-id
+      - _doc: |-
+          Unix-ish timestamp in milliseconds when the message has been stored
+          in the reflection queue of the mediator server.
+        name: timestamp
+        type: *timestamp
+      - _doc: |-
+          The protobuf-encoded and encrypted data to be reflected, encrypted by
+          `DGRK.secret` and prefixed with a random nonce. See `d2d.proto` for
+          details on the `Envelope` contents.
+        name: envelope
+        type: b*
+
+  reflected-ack:
+    _doc: |-
+      Acknowledges that a reflected message has been processed by the device.
+
+      Direction: Client --> Server
+    fields:
+      - _doc: |-
+          Should be set to all `0`s and ignored by the receiver.
+        name: reserved
+        type: b4
+      - _doc: |-
+          Refers to the `Reflected ID` as sent in the `Reflected` message.
+        name: reflect-id
+        type: *reflect-id
+
+# Parsed struct namespaces (mapped into separate files)
+namespaces:
+  index: *index
+  payload: *payload

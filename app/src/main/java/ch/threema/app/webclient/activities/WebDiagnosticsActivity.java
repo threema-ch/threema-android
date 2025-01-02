@@ -21,8 +21,6 @@
 
 package ch.threema.app.webclient.activities;
 
-import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
-
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -30,7 +28,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,12 +38,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.neovisionaries.ws.client.DualStackMode;
@@ -86,24 +77,35 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
+import ch.threema.app.asynctasks.SendToSupportResult;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WebRTCUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.utils.DefaultNoopPeerConnectionObserver;
 import ch.threema.app.webclient.utils.DefaultNoopWebSocketListener;
 import ch.threema.app.webclient.webrtc.PeerConnectionWrapper;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
 
 @SuppressWarnings("FieldCanBeLocal")
 @UiThread
@@ -152,6 +154,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 	// Executor service that should be used for running creation / destruction
 	// of the peer connection and related objects.
 	@Nullable private ScheduledExecutorService webrtcExecutor;
+	@Nullable private BackgroundExecutor backgroundExecutor;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -303,23 +306,27 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 			return;
 		}
 
-		if (this.contactService == null || messageService == null) {
+		if (this.contactService == null) {
 			return;
 		}
 
-		new AsyncTask<Void, Void, ContactMessageReceiver>() {
-			@Override
-			protected ContactMessageReceiver doInBackground(Void... voids) {
-				try {
-					final ContactModel contactModel = contactService.getOrCreateByIdentity(THREEMA_SUPPORT_IDENTITY, true);
-					return contactService.createReceiver(contactModel);
-				} catch (Exception e) {
-					return null;
-				}
-			}
+		final UserService userService = serviceManager.getUserService();
+		final APIConnector apiConnector = serviceManager.getAPIConnector();
+		final ContactModelRepository contactModelRepository = serviceManager.getModelRepositories().getContacts();
+		if (backgroundExecutor == null) {
+			this.backgroundExecutor = new BackgroundExecutor();
+		}
 
+		backgroundExecutor.execute(new SendToSupportBackgroundTask(
+			userService.getIdentity(),
+			apiConnector,
+			contactModelRepository,
+			this
+		) {
 			@Override
-			protected void onPostExecute(ContactMessageReceiver messageReceiver) {
+			@NonNull
+			public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
+				MessageReceiver<?> messageReceiver = contactService.createReceiver(contactModel);
 				try {
 					messageService.sendText(clipboardString +
 						"\n---\n" +
@@ -328,15 +335,23 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 						ConfigUtils.getSupportDeviceInfo() + "\n" +
 						"Threema " + ConfigUtils.getAppVersion() + "\n" +
 						getMyIdentity(), messageReceiver);
-					Toast.makeText(getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
 					finish();
-					return;
-				} catch (Exception e1) {
-					logger.error("Exception", e1);
+					return SendToSupportResult.SUCCESS;
+				} catch (Exception e) {
+					logger.error("Exception", e);
 				}
-				Toast.makeText(getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+				return SendToSupportResult.FAILED;
 			}
-		}.execute();
+
+			@Override
+			public void onFinished(SendToSupportResult result) {
+				if (result == SendToSupportResult.SUCCESS) {
+					Toast.makeText(WebDiagnosticsActivity.this, R.string.message_sent, Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(WebDiagnosticsActivity.this, R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+				}
+			}
+		});
 	}
 
 	@UiThread

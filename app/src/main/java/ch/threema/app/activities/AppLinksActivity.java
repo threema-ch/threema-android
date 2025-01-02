@@ -28,20 +28,32 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.asynctasks.AddContactAsyncTask;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactAvailable;
+import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.services.LockAppService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
+import ch.threema.app.utils.LazyProperty;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.storage.models.ContactModel;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
+	private final static Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
+	@NonNull
+	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,40 +103,23 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
         finish();
     }
 
-    private void handleContactUrl(String appLinkAction, Uri appLinkData) {
-        logger.info("Handle contact url");
-        final String threemaId = appLinkData.getLastPathSegment();
-        if (threemaId != null) {
-            if (threemaId.equalsIgnoreCase("compose")) {
-                Intent intent = new Intent(this, RecipientListActivity.class);
-                intent.setAction(appLinkAction);
-                intent.setData(appLinkData);
-                startActivity(intent);
-            } else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
-                new AddContactAsyncTask(null, null, threemaId, false, () -> {
-                    String text = appLinkData.getQueryParameter("text");
-
-                    Intent intent = new Intent(this, text != null ?
-                        ComposeMessageActivity.class :
-                        ContactDetailActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, threemaId);
-                    intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
-
-                    if (text != null) {
-                        text = text.trim();
-                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
-                    }
-
-                    startActivity(intent);
-                }).execute();
-            } else {
-                Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
-            }
-        } else {
-            Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
-        }
-    }
+	private void handleContactUrl(String appLinkAction, Uri appLinkData) {
+		final String threemaId = appLinkData.getLastPathSegment();
+		if (threemaId != null) {
+			if (threemaId.equalsIgnoreCase("compose")) {
+				Intent intent = new Intent(this, RecipientListActivity.class);
+				intent.setAction(appLinkAction);
+				intent.setData(appLinkData);
+				startActivity(intent);
+			} else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
+				addNewContactAndOpenChat(threemaId, appLinkData);
+			} else {
+				Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+			}
+		} else {
+			Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+		}
+	}
 
     private void handleGroupLinkUrl(Uri appLinkData) {
         logger.info("Handle group link url");
@@ -139,27 +134,70 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
         overridePendingTransition(0, 0);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-                if (resultCode == RESULT_OK) {
-                    lockAppService.unlock(null);
-                    handleIntent();
-                } else {
-                    Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-                if (ThreemaApplication.getMasterKey().isLocked()) {
-                    finish();
-                } else {
-                    ConfigUtils.recreateActivity(this, AppLinksActivity.class, getIntent().getExtras());
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
+				if (resultCode == RESULT_OK) {
+					lockAppService.unlock(null);
+					handleIntent();
+				} else {
+					Toast.makeText(this, getString(R.string.pin_locked_cannot_send), Toast.LENGTH_LONG).show();
+					finish();
+				}
+				break;
+			case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
+				if (ThreemaApplication.getMasterKey().isLocked()) {
+					finish();
+				} else {
+					ConfigUtils.recreateActivity(this, AppLinksActivity.class, getIntent().getExtras());
+				}
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
+	}
+
+	private void addNewContactAndOpenChat(@NonNull String identity, @NonNull Uri appLinkData) {
+		UserService userService = serviceManager.getUserService();
+		APIConnector apiConnector = serviceManager.getAPIConnector();
+		ContactModelRepository contactModelRepository = serviceManager.getModelRepositories().getContacts();
+
+		backgroundExecutor.get().execute(
+			new BasicAddOrUpdateContactBackgroundTask(
+				identity,
+				ContactModel.AcquaintanceLevel.DIRECT,
+				userService.getIdentity(),
+				apiConnector,
+				contactModelRepository,
+				AddContactRestrictionPolicy.CHECK,
+				AppLinksActivity.this,
+				null
+			) {
+				@Override
+				public void onFinished(ContactResult result) {
+					if (!(result instanceof ContactAvailable)) {
+						logger.error("Could not add contact");
+						return;
+					}
+
+					String text = appLinkData.getQueryParameter("text");
+
+					Intent intent = new Intent(AppLinksActivity.this, text != null ?
+						ComposeMessageActivity.class :
+						ContactDetailActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_CONTACT, identity);
+					intent.putExtra(ThreemaApplication.INTENT_DATA_EDITFOCUS, Boolean.TRUE);
+
+					if (text != null) {
+						text = text.trim();
+						intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, text);
+					}
+
+					startActivity(intent);
+				}
+			}
+		);
+	}
 }

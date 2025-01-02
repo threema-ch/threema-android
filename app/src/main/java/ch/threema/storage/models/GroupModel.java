@@ -59,6 +59,7 @@ public class GroupModel implements ReceiverModel {
 	public static final String COLUMN_GROUP_DESC = "groupDesc";
 	public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
 	public static final String COLUMN_COLOR_INDEX = "colorIndex";
+	public static final String COLUMN_USER_STATE = "userState";
 
 	private String groupDesc;
 	private Date changedGroupDescTimestamp;
@@ -73,6 +74,37 @@ public class GroupModel implements ReceiverModel {
 	private boolean deleted;
 	private boolean isArchived;
 	private int colorIndex = -1;
+	private @Nullable UserState userState;
+
+	/**
+	 * The user's state within the group.
+	 */
+	public enum UserState {
+
+		MEMBER(0),
+
+		KICKED(1),
+
+		LEFT(2);
+
+		public final int value;
+
+		UserState(int value) {
+			this.value = value;
+		}
+
+		@Nullable
+		public static UserState valueOf(int value) {
+			for (UserState userState : values()) {
+				if (userState.value == value) {
+					return userState;
+				}
+			}
+
+			return null;
+		}
+
+	}
 
 	// dummy class
 	@Nullable
@@ -220,6 +252,17 @@ public class GroupModel implements ReceiverModel {
 			computeColorIndex();
 		}
 		return ColorUtil.getInstance().getIDColorDark(colorIndex);
+	}
+
+	@NonNull
+	public GroupModel setUserState(@Nullable UserState userState) {
+		this.userState = userState;
+		return this;
+	}
+
+	@Nullable
+	public UserState getUserState() {
+		return userState;
 	}
 
 	private void computeColorIndex() {

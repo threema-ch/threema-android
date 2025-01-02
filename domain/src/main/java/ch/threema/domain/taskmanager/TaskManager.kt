@@ -56,13 +56,6 @@ interface TaskManager {
      */
     fun hasPendingTasks(): Boolean
 
-    // This is only used for the migration phase until we fully use the task manager
-    @Deprecated(
-        "We should only be able to send and receive messages from within tasks.",
-        ReplaceWith("TaskManager#schedule")
-    )
-    fun getMigrationTaskHandle(): ActiveTaskCodec
-
     /**
      * Add a queue send complete listener.
      */
@@ -125,12 +118,6 @@ internal class TaskManagerImpl(
     private val taskRunner: Lazy<TaskRunner> = lazy {
         TaskRunner(dispatchers, taskQueue)
     }
-
-    @Deprecated(
-        "We should only be able to send and receive messages from within tasks.",
-        replaceWith = ReplaceWith("TaskManager#schedule")
-    )
-    override fun getMigrationTaskHandle(): ActiveTaskCodec = taskRunner.value.getTaskCodec()
 
     override suspend fun startRunningTasks(
         layer5Codec: Layer5Codec,

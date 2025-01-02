@@ -28,7 +28,6 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
 import kotlinx.serialization.Serializable
-import java.util.Arrays
 
 private val logger = LoggingUtil.getThreemaLogger("SendProfilePictureTask")
 
@@ -43,13 +42,13 @@ class SendProfilePictureTask(private val toIdentity: String, serviceManager: Ser
     override val type: String = "SendProfilePictureTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
-        val data = contactService.updatedProfilePictureUploadData
+        val data = userService.uploadUserProfilePictureOrGetPreviousUploadData()
         if (data.blobId == null) {
             logger.warn("Blob ID is null; cannot send profile picture")
             return
         }
 
-        return if (Arrays.equals(data.blobId, ContactModel.NO_PROFILE_PICTURE_BLOB_ID)) {
+        return if (data.blobId.contentEquals(ContactModel.NO_PROFILE_PICTURE_BLOB_ID)) {
             sendDeleteProfilePictureMessage(toIdentity, handle)
         } else {
             sendSetProfilePictureMessage(data, toIdentity, handle)

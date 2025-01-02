@@ -23,85 +23,60 @@ package ch.threema.app.routines;
 
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.utils.TestUtil;
+import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ModelDeletedException;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.data.models.ContactModel;
 
 public class UpdateFeatureLevelRoutine implements Runnable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateFeatureLevelRoutine");
 
 	private static final Map<String, Long> checkedIdentities = new HashMap<>();
 
-	public static void removeTimeCache(String identity) {
+	public static void removeTimeCache(@Nullable String identity) {
 		synchronized (checkedIdentities) {
 			checkedIdentities.remove(identity);
 		}
 	}
 
-	public static void removeTimeCache(ContactModel contactModel) {
-		if (contactModel != null) {
-			removeTimeCache(contactModel.getIdentity());
-		}
-	}
-	public interface StatusResult {
-		void onFinished(List<ContactModel> handledContacts);
-		void onAbort();
-		void onError(Exception x);
-	}
-
-	public interface Request {
-		boolean requestToServer(long featureLevel);
-	}
-
-	private final ContactService contactService;
+	@NonNull
+	private final UserService userService;
+	@NonNull
 	private final APIConnector apiConnector;
-	private String[] identities = null;
-	private List<ContactModel> contactModels = null;
-	private Request request = null;
-	private final List<StatusResult> statusResults = new ArrayList<StatusResult>();
-	private boolean abortOnCheckIdentitiesFailed = true;
+	@NonNull
+	private List<ContactModel> contactModels;
 
-	public UpdateFeatureLevelRoutine(@NonNull ContactService contactService,
-									 @NonNull APIConnector apiConnector,
-									 String[] identities,
-									 Request request) {
-		this.contactService = contactService;
+	public UpdateFeatureLevelRoutine(
+		@NonNull ContactModelRepository contactModelRepository,
+		@NonNull UserService userService,
+		@NonNull APIConnector apiConnector,
+		@Nullable List<String> identities
+	) {
+		this.userService = userService;
 		this.apiConnector = apiConnector;
-		this.identities = identities;
-		this.request = request;
-	}
-
-
-	public UpdateFeatureLevelRoutine(@NonNull ContactService contactService,
-									 @NonNull APIConnector apiConnector,
-									 @Nullable List<ContactModel> contactModels) {
-		this.contactService = contactService;
-		this.apiConnector = apiConnector;
-		this.contactModels = contactModels;
-	}
-
-	public UpdateFeatureLevelRoutine abortOnCheckIdentitiesFailed(boolean abort) {
-		this.abortOnCheckIdentitiesFailed = abort;
-		return this;
-	}
-
-	public UpdateFeatureLevelRoutine addStatusResult(StatusResult result) {
-		this.statusResults.add(result);
-		return this;
+		if (identities != null) {
+			this.contactModels = identities
+				.stream()
+				.map(contactModelRepository::getByIdentity)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+		} else {
+			contactModels = Collections.emptyList();
+		}
 	}
 
 	@Override
@@ -110,28 +85,10 @@ public class UpdateFeatureLevelRoutine implements Runnable {
 		logger.info("Running...");
 
 		try {
-			//get all identities
-			if(this.contactModels == null) {
-				if(this.request != null ) {
-					this.contactModels = Functional.filter(this.contactService.getByIdentities(this.identities), new IPredicateNonNull<ContactModel>() {
-						@Override
-						public boolean apply(@NonNull ContactModel type) {
-							return request.requestToServer(type.getFeatureMask());
-						}
-					});
-				}
-				else {
-					this.contactModels = this.contactService.getByIdentities(identities);
-				}
-			}
-
 			//remove "me" from list
-			this.contactModels = Functional.filter(this.contactModels, new IPredicateNonNull<ContactModel>() {
-				@Override
-				public boolean apply(@NonNull ContactModel c) {
-					return !TestUtil.compare(c, contactService.getMe());
-				}
-			});
+			this.contactModels = this.contactModels.stream()
+				.filter(c -> !userService.getIdentity().equals(c.getIdentity()))
+				.collect(Collectors.toList());
 
 			//remove already checked identities
 			final Calendar calendar = Calendar.getInstance();
@@ -142,22 +99,17 @@ public class UpdateFeatureLevelRoutine implements Runnable {
 			final long validTimestamp = calendar.getTimeInMillis();
 
 			synchronized (checkedIdentities) {
-				//leave only identities that have not been checked in the last hour
-
-				List<ContactModel> filteredList = Functional.filter(this.contactModels, new IPredicateNonNull<ContactModel>() {
-					@Override
-					public boolean apply(@NonNull ContactModel contactModel) {
-						if(checkedIdentities.containsKey(contactModel.getIdentity())
-								&& checkedIdentities.get(contactModel.getIdentity()) >= validTimestamp) {
-							return false;
+				// Leave only identities that have not been checked in the last hour
+				List<ContactModel> filteredList = this.contactModels.stream()
+					.filter(contactModel -> {
+							Long checkedAt = checkedIdentities.get(contactModel.getIdentity());
+							return checkedAt == null || checkedAt < validTimestamp;
 						}
-						return true;
-					}
-				});
+					).collect(Collectors.toList());
 
 				logger.info("Running for {} entries", filteredList.size());
 
-				if(filteredList.size() > 0) {
+				if (!filteredList.isEmpty()) {
 					String[] identities = new String[filteredList.size()];
 
 					for (int n = 0; n < filteredList.size(); n++) {
@@ -175,43 +127,21 @@ public class UpdateFeatureLevelRoutine implements Runnable {
 							}
 
 							ContactModel model = filteredList.get(n);
-							if (model != null && model.getFeatureMask() != featureMask) {
-								final String identity = model.getIdentity();
-
-								model.setFeatureMask(featureMask);
-								this.contactService.save(model);
-
-								//update checked identities cache
-								checkedIdentities.put(identity, nowTimestamp);
-							}
+							model.setFeatureMaskFromLocal(featureMask);
+							// Update checked identities cache
+							checkedIdentities.put(model.getIdentity(), nowTimestamp);
 						}
+					} catch (ModelDeletedException e) {
+						logger.warn("Model has been deleted", e);
 					} catch (Exception x) {
-						//connection error
-						if(this.abortOnCheckIdentitiesFailed) {
-							for (StatusResult result : statusResults) {
-								result.onAbort();
-							}
-						}
+						// Connection error
 						logger.error("Error while setting feature mask", x);
-					}
-
-					for (StatusResult result : statusResults) {
-						result.onFinished(this.contactModels);
-					}
-				}
-				else {
-					for (StatusResult result : statusResults) {
-						result.onFinished(this.contactModels);
 					}
 				}
 			}
 
 		} catch (Exception e) {
 			logger.error("Error in run()", e);
-
-			for(StatusResult result: statusResults) {
-				result.onError(e);
-			}
 		}
 
 		logger.info("Done");

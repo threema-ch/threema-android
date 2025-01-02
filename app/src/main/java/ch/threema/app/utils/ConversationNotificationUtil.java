@@ -25,18 +25,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.Date;
 import java.util.HashMap;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.Person;
 import androidx.core.graphics.drawable.IconCompat;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -106,19 +103,21 @@ public class ConversationNotificationUtil {
             return null;
         }
 
-        Person.Builder builder = new Person.Builder()
-            .setKey(contactService.getUniqueIdString(contactModel))
-            .setName(name);
-        Bitmap avatar = contactService.getAvatar(contactModel, false);
-        if (avatar != null) {
-            IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
-            builder.setIcon(iconCompat);
-        }
-        if (contactModel != null && contactModel.isLinkedToAndroidContact()) {
-            builder.setUri(contactService.getAndroidContactLookupUriString(contactModel));
-        }
-        return builder.build();
-    }
+		String identity = contactModel != null ? contactModel.getIdentity() : null;
+
+		Person.Builder builder = new Person.Builder()
+			.setKey(ContactUtil.getUniqueIdString(identity))
+			.setName(name);
+		Bitmap avatar = contactService.getAvatar(contactModel, false);
+		if (avatar != null) {
+			IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
+			builder.setIcon(iconCompat);
+		}
+		if (contactModel != null && contactModel.isLinkedToAndroidContact()) {
+			builder.setUri(contactService.getAndroidContactLookupUriString(contactModel));
+		}
+		return builder.build();
+	}
 
     private static MessageType getMessageType(AbstractMessageModel messageModel) {
         return messageModel.getType();
@@ -128,40 +127,44 @@ public class ConversationNotificationUtil {
         return messageModel.getCreatedAt();
     }
 
-    private static NotificationService.ConversationNotification create(
-        final Context context,
-        final MessageModel messageModel,
-        final @NonNull ContactService contactService,
-        final DeadlineListService hiddenChatsListService
-    ) {
-        final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
-        String groupUid = "i" + messageModel.getIdentity();
-        synchronized (notificationGroupHashMap) {
-            @Nullable ConversationNotificationGroup group = notificationGroupHashMap.get(groupUid);
-            final @NotNull String longName = hiddenChatsListService.has(contactService.getUniqueIdString(contactModel))
-                ? context.getString(R.string.private_chat_subject)
-                : NameUtil.getDisplayNameOrNickname(contactModel, true);
-            final @Nullable String shortName = hiddenChatsListService.has(contactService.getUniqueIdString(contactModel))
-                ? context.getString(R.string.private_chat_subject)
-                : NameUtil.getShortName(contactModel);
+	private static NotificationService.ConversationNotification create(final Context context, final MessageModel messageModel,
+	                                                                   final ContactService contactService, final DeadlineListService hiddenChatsListService) {
+		final ContactModel contactModel = contactService.getByIdentity(messageModel.getIdentity());
+		String groupUid = "i" + messageModel.getIdentity();
+		synchronized (notificationGroupHashMap) {
+			ConversationNotificationGroup group = notificationGroupHashMap.get(groupUid);
+			boolean isPrivateChat = hiddenChatsListService.has(
+				ContactUtil.getUniqueIdString(messageModel.getIdentity())
+			);
+			String longName, shortName;
+			if (isPrivateChat) {
+				longName = shortName = context.getString(R.string.private_chat_subject);
+			} else {
+				longName = NameUtil.getDisplayNameOrNickname(contactModel, true);
+				shortName = NameUtil.getShortName(contactModel);
+			}
 
-            if (group == null) {
-                group = new ConversationNotificationGroup(
-                    groupUid,
-                    longName,
-                    shortName,
-                    contactService.createReceiver(contactModel),
-                    () -> contactService.getAvatar(
-                        hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)) ? null : contactModel,
-                        false
-                    )
-                );
-                notificationGroupHashMap.put(groupUid, group);
-            } else {
-                // contact name may change between notifications - set it again
-                group.name = longName;
-                group.shortName = shortName;
-            }
+			if (group == null) {
+				group = new ConversationNotificationGroup(
+						groupUid,
+						longName,
+						shortName,
+						contactService.createReceiver(contactModel),
+                        () -> {
+                            if (contactModel != null) {
+                                return contactService.getAvatar(
+                                        isPrivateChat ? null : contactModel,
+                                        false
+                                );
+                            }
+                            return null;
+                        });
+				notificationGroupHashMap.put(groupUid, group);
+			} else {
+				// contact name may change between notifications - set it again
+				group.name = longName;
+				group.shortName = shortName;
+			}
 
             return new NotificationService.ConversationNotification(
                 getMessage(messageModel),

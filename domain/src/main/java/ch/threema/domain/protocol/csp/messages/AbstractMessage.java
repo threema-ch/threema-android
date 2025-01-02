@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.csp.messages;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.MessageId;
@@ -30,6 +31,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.protobuf.csp.e2e.fs.Version;
+import ch.threema.protobuf.d2d.MdD2D;
 
 /**
  * Abstract base class for messages that can be sent via the Threema server interface,
@@ -68,10 +70,13 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
 	public abstract Version getMinimumRequiredForwardSecurityVersion();
 
 	/**
-	 * Return the body of this message in network format (i.e. formatted as a byte array).
+	 * Return the body of this message in network format (i.e. formatted as a byte array). Note that
+     * a valid message should not return null. If null is returned, this is an indication that the
+     * message hasn't been initialized properly.
 	 *
 	 * @return message body
 	 */
+    @Nullable
 	public abstract byte[] getBody() throws ThreemaException;
 
 	/* Getters/Setters */
@@ -163,5 +168,26 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
 
 	public void setForwardSecurityMode(ForwardSecurityMode forwardSecurityMode) {
 		this.forwardSecurityMode = forwardSecurityMode;
+	}
+
+	/**
+	 * Initialize common properties from a reflected incoming message.
+	 *
+	 * @param message the incoming MdD2D message
+	 */
+	protected void initializeCommonProperties(@NonNull MdD2D.IncomingMessage message) {
+		this.fromIdentity = message.getSenderIdentity();
+		this.messageId = new MessageId(message.getMessageId());
+		this.date = new Date(message.getCreatedAt());
+	}
+
+    /**
+     * Initialize common properties for an outgoing message.
+     *
+     * @param message the outgoing MdD2D message
+     */
+	protected void initializeCommonProperties(@NonNull MdD2D.OutgoingMessage message) {
+		this.messageId = new MessageId((message.getMessageId()));
+		this.date = new Date(message.getCreatedAt());
 	}
 }

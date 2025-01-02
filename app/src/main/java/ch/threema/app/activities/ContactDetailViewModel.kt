@@ -29,7 +29,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import ch.threema.app.ThreemaApplication
 import ch.threema.data.models.ContactModel
 
-class ContactDetailViewModel(private val contactModel: ContactModel) : ViewModel() {
+class ContactDetailViewModel(val contactModel: ContactModel) : ViewModel() {
     val contact = contactModel.liveData()
 
     /**

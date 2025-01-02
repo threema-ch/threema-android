@@ -40,12 +40,12 @@ class GroupCallStartData(
             try {
                 val protobufMessage = GroupCallStart.parseFrom(rawProtobufMessage)
                 return GroupCallStartData(
-                        protobufMessage.protocolVersion.toUInt(),
-                        protobufMessage.gck.toByteArray(),
-                        protobufMessage.sfuBaseUrl
+                    protobufMessage.protocolVersion.toUInt(),
+                    protobufMessage.gck.toByteArray(),
+                    protobufMessage.sfuBaseUrl
                 )
             } catch (e: InvalidProtocolBufferException) {
-                throw BadMessageException("Invalid group call start protobuf data")
+                throw BadMessageException("Invalid group call start protobuf data", e)
             } catch (e: IllegalArgumentException) {
                 throw BadMessageException("Could not create group call start data", e)
             }
@@ -53,17 +53,17 @@ class GroupCallStartData(
     }
 
     init {
-    	if (gck.size != GCK_LENGTH) {
+        if (gck.size != GCK_LENGTH) {
             throw IllegalArgumentException("Invalid length of gck")
         }
     }
 
     override fun toProtobufMessage(): GroupCallStart {
         return GroupCallStart.newBuilder()
-                .setProtocolVersion(protocolVersion.toInt())
-                .setGck(ByteString.copyFrom(gck))
-                .setSfuBaseUrl(sfuBaseUrl)
-                .build()
+            .setProtocolVersion(protocolVersion.toInt())
+            .setGck(ByteString.copyFrom(gck))
+            .setSfuBaseUrl(sfuBaseUrl)
+            .build()
     }
 
     override fun equals(other: Any?): Boolean {

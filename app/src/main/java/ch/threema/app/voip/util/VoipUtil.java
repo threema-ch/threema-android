@@ -31,6 +31,10 @@ import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import org.slf4j.Logger;
+
+import java.util.Collections;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -38,11 +42,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import org.slf4j.Logger;
-
-import java.util.Collections;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -176,15 +175,14 @@ public class VoipUtil {
 				protected Exception doInBackground(Void... params) {
 					try {
 						// Reset the cache (only for Beta?)
-						UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
+						UpdateFeatureLevelRoutine.removeTimeCache(contactModel.getIdentity());
 
-						(new UpdateFeatureLevelRoutine
-								(
-										serviceManager.getContactService(),
-										// Bad code
-										serviceManager.getAPIConnector(),
-										Collections.singletonList(contactModel)
-								)).run();
+						new UpdateFeatureLevelRoutine(
+							serviceManager.getModelRepositories().getContacts(),
+							serviceManager.getUserService(),
+							serviceManager.getAPIConnector(),
+							Collections.singletonList(contactModel.getIdentity())
+						).run();
 					} catch (Exception e) {
 						return e;
 					}

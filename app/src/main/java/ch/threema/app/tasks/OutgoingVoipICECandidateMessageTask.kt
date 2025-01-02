@@ -26,6 +26,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 class OutgoingVoipICECandidateMessageTask(
     private val voipICECandidatesData: VoipICECandidatesData,
@@ -37,10 +38,8 @@ class OutgoingVoipICECandidateMessageTask(
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipICECandidatesMessage()
         message.data = voipICECandidatesData
-        message.toIdentity = toIdentity
-        message.messageId = MessageId()
 
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     // We do not need to persist this message

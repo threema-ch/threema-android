@@ -24,14 +24,17 @@ package ch.threema.app.managers
 import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.ServerMessageServiceImpl
+import ch.threema.app.stores.IdentityStore
 import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.TaskArchiverImpl
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DeviceCookieManagerImpl
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
+import ch.threema.storage.DatabaseNonceStore
 import ch.threema.storage.DatabaseServiceNew
 
 /**
@@ -43,6 +46,8 @@ class CoreServiceManagerImpl(
     override val version: AppVersion,
     override val databaseService: DatabaseServiceNew,
     override val preferenceStore: PreferenceStoreInterface,
+    override val identityStore: IdentityStore,
+    private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,
 ) : CoreServiceManager {
 
     /**
@@ -94,4 +99,8 @@ class CoreServiceManagerImpl(
         )
     }
 
+    /**
+     * The nonce factory.
+     */
+    override val nonceFactory: NonceFactory by lazy { NonceFactory(nonceDatabaseStoreProvider()) }
 }

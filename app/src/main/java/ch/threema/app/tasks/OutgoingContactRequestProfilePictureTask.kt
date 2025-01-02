@@ -44,8 +44,8 @@ class OutgoingContactRequestProfilePictureTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Get contact and check that sending a profile picture request is necessary
-        val contact = contactService.getByIdentity(toIdentity)
-        if (contact == null) {
+        val contactModel = contactModelRepository.getByIdentity(toIdentity)
+        if (contactModel == null) {
             logger.warn(
                 "Contact {} is unknown, even though a profile picture request should be sent",
                 toIdentity
@@ -53,7 +53,16 @@ class OutgoingContactRequestProfilePictureTask(
             return
         }
 
-        if (!contact.isRestored) {
+        val contactModelData = contactModel.data.value
+        if (contactModelData == null) {
+            logger.warn(
+                "Contact model data for identity {} is null, even though a profile picture request should be sent",
+                toIdentity,
+            )
+            return
+        }
+
+        if (!contactModelData.isRestored) {
             logger.warn(
                 "Contact {} is not restored; sending profile picture request is skipped",
                 toIdentity
@@ -64,8 +73,7 @@ class OutgoingContactRequestProfilePictureTask(
         // Send the profile picture request message
         sendRequestProfilePictureMessage(toIdentity, handle)
 
-        contact.setIsRestored(false)
-        contactService.save(contact)
+        contactModel.setIsRestored(false)
     }
 
     override fun serialize() = OutgoingContactRequestProfilePictureData(toIdentity)

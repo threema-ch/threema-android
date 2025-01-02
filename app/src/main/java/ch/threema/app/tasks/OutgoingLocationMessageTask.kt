@@ -68,12 +68,16 @@ class OutgoingLocationMessageTask(
             accuracy = locationDataModel.accuracy.toDouble()
             poiName = locationDataModel.poi
             poiAddress = locationDataModel.address
-
-            toIdentity = messageModel.identity
-            messageId = ensureMessageId(messageModel)
         }
 
-        sendContactMessage(message, messageModel, handle)
+        sendContactMessage(
+            message,
+            messageModel,
+            messageModel.identity,
+            ensureMessageId(messageModel),
+            messageModel.createdAt,
+            handle
+        )
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
@@ -88,6 +92,7 @@ class OutgoingLocationMessageTask(
             group,
             recipientIdentities,
             messageModel,
+            messageModel.createdAt,
             ensureMessageId(messageModel),
             {
                 GroupLocationMessage().apply {

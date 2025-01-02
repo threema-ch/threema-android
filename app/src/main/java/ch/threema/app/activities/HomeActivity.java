@@ -21,8 +21,6 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -52,21 +50,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.AnyThread;
-import androidx.annotation.ColorInt;
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.ExperimentalBadgeUtils;
@@ -87,12 +70,31 @@ import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.AnyThread;
+import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.activities.wizard.WizardStartActivity;
 import ch.threema.app.archive.ArchiveActivity;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactAvailable;
+import ch.threema.app.asynctasks.ContactCreated;
+import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -100,7 +102,6 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SMSVerificationDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.fragments.ContactsSectionFragment;
 import ch.threema.app.fragments.MessageSectionFragment;
@@ -124,19 +125,20 @@ import ch.threema.app.push.PushService;
 import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ContactServiceImpl;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.tasks.ApplicationUpdateStepsTask;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
@@ -150,9 +152,11 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallObserver;
@@ -160,10 +164,12 @@ import ch.threema.app.voip.groupcall.sfu.GroupCallController;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
-import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
+import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.localcrypto.MasterKey;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -171,6 +177,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.TagModel;
+
+import static ch.threema.app.services.ConversationTagServiceImpl.FIXED_TAG_UNREAD;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
 	SMSVerificationDialog.SMSVerificationDialogCallback,
@@ -218,12 +226,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private NotificationService notificationService;
 	private UserService userService;
 	private ContactService contactService;
+	private ContactModelRepository contactModelRepository;
+	private APIConnector apiConnector;
 	private LockAppService lockAppService;
 	private PreferenceService preferenceService;
 	private ConversationService conversationService;
 	private GroupCallManager groupCallManager;
 
     private @Nullable IdentityPopup identityPopup = null;
+
+	@NonNull
+	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
 	private enum UnsentMessageAction {
 		ADD,
@@ -778,7 +791,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	}
 
 	private void showWhatsNew() {
-		final boolean skipWhatsNew = false; // set this to false if you want to show a What's New screen
+		final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
 
 		if (preferenceService != null) {
 			if (!preferenceService.isLatestVersion(this)) {
@@ -1058,6 +1071,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			} catch (Exception e) {
 				//
 			}
+			this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+			this.apiConnector = serviceManager.getAPIConnector();
 
 			if (preferenceService == null || notificationService == null || userService == null) {
 				finish();
@@ -1949,56 +1964,66 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 			return;
 		}
 
-		new AsyncTask<Void, Void, Exception>() {
-			ContactModel newContactModel;
-
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.threema_channel, R.string.please_wait).show(getSupportFragmentManager(), THREEMA_CHANNEL_IDENTITY);
-			}
-
-			@Override
-			protected Exception doInBackground(Void... params) {
-				try {
-					newContactModel = contactService.createContactByIdentity(THREEMA_CHANNEL_IDENTITY, true);
-				} catch (Exception e) {
-					return e;
+		backgroundExecutor.get().execute(
+			new BasicAddOrUpdateContactBackgroundTask(
+				THREEMA_CHANNEL_IDENTITY,
+				ContactModel.AcquaintanceLevel.DIRECT,
+				userService.getIdentity(),
+				apiConnector,
+				contactModelRepository,
+				AddContactRestrictionPolicy.IGNORE,
+				this,
+				ContactServiceImpl.THREEMA_PUBLIC_KEY
+			) {
+				@Override
+				public void onBefore() {
+					GenericProgressDialog.newInstance(R.string.threema_channel, R.string.please_wait).show(getSupportFragmentManager(), THREEMA_CHANNEL_IDENTITY);
 				}
-				return null;
-			}
 
-			@Override
-			protected void onPostExecute(Exception exception) {
-				DialogUtil.dismissDialog(getSupportFragmentManager(), THREEMA_CHANNEL_IDENTITY, true);
+				@Override
+				public void onFinished(@NonNull ContactResult result) {
+					DialogUtil.dismissDialog(getSupportFragmentManager(), THREEMA_CHANNEL_IDENTITY, true);
 
-				if (exception == null || exception instanceof EntryAlreadyExistsException) {
-					launchThreemaChannelChat();
+					if (result instanceof ContactAvailable) {
+						// In case the contact has been successfully created or it has been
+						// modified, already verified, or already exists, the threema channel chat
+						// is launched.
+						launchThreemaChannelChat();
 
-					if (exception == null) {
-						new Thread(() -> {
-							try {
-								MessageReceiver receiver = contactService.createReceiver(newContactModel);
-								if (!getResources().getConfiguration().locale.getLanguage().startsWith("de") && !getResources().getConfiguration().locale.getLanguage().startsWith("gsw")) {
+						// Send initial messages to threema channel only if the threema channel has
+						// been newly created as a contact and did not exist before.
+						if (result instanceof ContactCreated) {
+							new Thread(() -> {
+								try {
+									ContactModel threemaChannelModel = contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY);
+									if (threemaChannelModel == null) {
+										logger.error("Threema channel model is null after adding it");
+										return;
+									}
+
+									MessageReceiver<?> receiver = contactService.createReceiver(threemaChannelModel);
+									if (!getResources().getConfiguration().locale.getLanguage().startsWith("de") && !getResources().getConfiguration().locale.getLanguage().startsWith("gsw")) {
+										Thread.sleep(1000);
+										messageService.sendText("en", receiver);
+										Thread.sleep(500);
+									}
 									Thread.sleep(1000);
-									messageService.sendText("en", receiver);
-									Thread.sleep(500);
+									messageService.sendText(THREEMA_CHANNEL_START_NEWS_COMMAND, receiver);
+									Thread.sleep(1500);
+									messageService.sendText(ConfigUtils.isWorkBuild() ? THREEMA_CHANNEL_WORK_COMMAND : THREEMA_CHANNEL_START_ANDROID_COMMAND, receiver);
+									Thread.sleep(1500);
+									messageService.sendText(THREEMA_CHANNEL_INFO_COMMAND, receiver);
+								} catch (Exception e) {
+									//
 								}
-								Thread.sleep(1000);
-								messageService.sendText(THREEMA_CHANNEL_START_NEWS_COMMAND, receiver);
-								Thread.sleep(1500);
-								messageService.sendText(ConfigUtils.isWorkBuild() ? THREEMA_CHANNEL_WORK_COMMAND : THREEMA_CHANNEL_START_ANDROID_COMMAND, receiver);
-								Thread.sleep(1500);
-								messageService.sendText(THREEMA_CHANNEL_INFO_COMMAND, receiver);
-							} catch (Exception e) {
-								//
-							}
-						}).start();
+							}).start();
+						}
+					} else {
+						Toast.makeText(HomeActivity.this, R.string.internet_connection_required, Toast.LENGTH_LONG).show();
 					}
-				} else {
-					Toast.makeText(HomeActivity.this, R.string.internet_connection_required, Toast.LENGTH_LONG).show();
 				}
 			}
-		}.execute();
+		);
 	}
 
 	private void launchThreemaChannelChat() {

@@ -31,6 +31,10 @@
 -dontnote org.apache.commons.codec.**
 -dontnote org.apache.http.**
 
+# JNA library classes are needed for Uniffi Bindings
+-keep class com.sun.jna.** { *; }
+-keep class * implements com.sun.jna.** { *; }
+
 # For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
 -keepclasseswithmembernames class * {
     native <methods>;

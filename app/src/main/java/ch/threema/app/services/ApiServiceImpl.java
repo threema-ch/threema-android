@@ -28,70 +28,132 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.AppVersion;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.blob.BlobLoader;
+import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.domain.protocol.blob.BlobUploader;
-import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.stores.TokenStoreInterface;
+import okhttp3.OkHttpClient;
 
 public class ApiServiceImpl implements ApiService {
-	private final AppVersion appVersion;
-	private final boolean ipv6;
-	private final APIConnector apiConnector;
-	private final TokenStoreInterface authTokenStore;
-	private final ServerAddressProvider serverAddressProvider;
+    private final AppVersion appVersion;
+    private final boolean useIpv6;
+    private final APIConnector apiConnector;
+    private final TokenStoreInterface authTokenStore;
+    private final ServerAddressProvider serverAddressProvider;
+    private final MultiDeviceManager multiDeviceManager;
+    private final OkHttpClient baseOkHttpClient;
 
-	public ApiServiceImpl(AppVersion appVersion, boolean ipv6, APIConnector apiConnector, TokenStoreInterface authTokenStore, ServerAddressProvider serverAddressProvider) {
-		this.appVersion = appVersion;
-		this.ipv6 = ipv6;
-		this.apiConnector = apiConnector;
-		this.authTokenStore = authTokenStore;
-		this.serverAddressProvider = serverAddressProvider;
-	}
+    public ApiServiceImpl(
+        AppVersion appVersion,
+        boolean useIpv6,
+        APIConnector apiConnector,
+        TokenStoreInterface authTokenStore,
+        ServerAddressProvider serverAddressProvider,
+        MultiDeviceManager multiDeviceManager,
+        OkHttpClient baseOkHttpClient
+    ) {
+        this.appVersion = appVersion;
+        this.useIpv6 = useIpv6;
+        this.apiConnector = apiConnector;
+        this.authTokenStore = authTokenStore;
+        this.serverAddressProvider = serverAddressProvider;
+        this.multiDeviceManager = multiDeviceManager;
+        this.baseOkHttpClient = baseOkHttpClient;
+    }
 
-	@Override
-	public BlobUploader createUploader(byte[] data) throws ThreemaException {
-		BlobUploader uploader = new BlobUploader(ConfigUtils::getSSLSocketFactory, data, ipv6, serverAddressProvider, null);
-		uploader.setVersion(this.appVersion);
-		if (ConfigUtils.isOnPremBuild()) {
-			uploader.setAuthToken(getAuthToken());
-		}
-		return uploader;
-	}
+    @NonNull
+    @Override
+    public BlobUploader createUploader(
+        @NonNull byte[] blobData,
+        boolean shouldPersist,
+        @NonNull BlobScope blobScope
+    ) throws ThreemaException {
+        final BlobUploader blobUploader;
+        if (multiDeviceManager.isMultiDeviceActive()) {
+            blobUploader = BlobUploader.mirror(
+                baseOkHttpClient,
+                ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
+                blobData,
+                appVersion,
+                ConfigUtils.isDevBuild(),
+                serverAddressProvider,
+                null,
+                multiDeviceManager.getPropertiesProvider(),
+                blobScope
+            );
+        } else {
+            blobUploader = BlobUploader.usual(
+                baseOkHttpClient,
+                ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
+                blobData,
+                appVersion,
+                ConfigUtils.isDevBuild(),
+                serverAddressProvider,
+                null,
+                useIpv6,
+                shouldPersist
+            );
+        }
+        return blobUploader;
+    }
 
-	@Override
-	public BlobLoader createLoader(byte[] blobId) {
-		BlobLoader loader = new BlobLoader(ConfigUtils::getSSLSocketFactory, blobId, ipv6, serverAddressProvider, null);
-		loader.setVersion(this.appVersion);
-		return loader;
-	}
+    @NonNull
+    @Override
+    public BlobLoader createLoader(@NonNull byte[] blobId) {
+        BlobLoader loader;
+        if (multiDeviceManager.isMultiDeviceActive()) {
+            loader = BlobLoader.mirror(
+                baseOkHttpClient,
+                blobId,
+                appVersion,
+                ConfigUtils.isDevBuild(),
+                serverAddressProvider,
+                null,
+                multiDeviceManager.getPropertiesProvider()
+            );
+        } else {
+            loader = BlobLoader.usual(
+                baseOkHttpClient,
+                blobId,
+                appVersion,
+                ConfigUtils.isDevBuild(),
+                serverAddressProvider,
+                null,
+                useIpv6
+            );
+        }
+        return loader;
+    }
 
-	@Override
-	public String getAuthToken() throws ThreemaException {
-		try {
-			return apiConnector.obtainAuthToken(authTokenStore, false);
-		} catch (IOException | JSONException e) {
-			throw new ThreemaException("Cannot obtain authentication token", e);
-		}
-	}
+    @Override
+    public String getAuthToken() throws ThreemaException {
+        try {
+            return apiConnector.obtainAuthToken(authTokenStore, false);
+        } catch (IOException | JSONException e) {
+            throw new ThreemaException("Cannot obtain authentication token", e);
+        }
+    }
 
-	@Override
-	public void invalidateAuthToken() {
-		this.authTokenStore.storeToken(null);
-	}
+    @Override
+    public void invalidateAuthToken() {
+        this.authTokenStore.storeToken(null);
+    }
 
-	@Override
-	public HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException {
-		URL url = new URL(serverAddressProvider.getAvatarServerUrl(false) + identity);
-		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-		connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
-		if (ConfigUtils.isOnPremBuild()) {
-			connection.setRequestProperty("Authorization", "Token " + getAuthToken());
-		}
-		return connection;
-	}
+    @Override
+    public HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException {
+        URL url = new URL(serverAddressProvider.getAvatarServerUrl(false) + identity);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
+        if (ConfigUtils.isOnPremBuild()) {
+            connection.setRequestProperty("Authorization", "Token " + getAuthToken());
+        }
+        return connection;
+    }
 }

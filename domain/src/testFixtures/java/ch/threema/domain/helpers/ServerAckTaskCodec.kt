@@ -21,12 +21,14 @@
 
 package ch.threema.domain.helpers
 
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
+import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.MessageFilterInstruction
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.coroutines.runBlocking
@@ -39,7 +41,6 @@ open class ServerAckTaskCodec : TaskCodec {
     val inboundMessages = mutableListOf<InboundMessage>()
     val outboundMessages = mutableListOf<OutboundMessage>()
     val ackedIncomingMessages = mutableListOf<MessageId>()
-    val reflectedMessages = mutableListOf<OutboundMessage>()
 
     override suspend fun read(preProcess: (InboundMessage) -> MessageFilterInstruction): InboundMessage {
         for (inboundMessage in inboundMessages) {
@@ -81,9 +82,13 @@ open class ServerAckTaskCodec : TaskCodec {
         }
     }
 
-    override suspend fun reflect(message: OutboundMessage) {
-        reflectedMessages.add(message)
-    }
+    override suspend fun reflectAndAwaitAck(
+        encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
+        storeD2dNonce: Boolean,
+        nonceFactory: NonceFactory
+    ): ULong = 0U
+
+    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt = 0U
 
     /**
      * The server ack task codec creates the server ack here. Other tasks may perform additional

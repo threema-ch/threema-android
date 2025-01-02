@@ -22,6 +22,10 @@
 package ch.threema.domain.protocol.multidevice
 
 import ch.threema.base.utils.Utils
+import ch.threema.domain.protocol.connection.data.D2dMessage
+import ch.threema.protobuf.d2d.MdD2D.TransactionScope
+import ch.threema.protobuf.d2d.transactionScope
+import com.neilalexander.jnacl.NaCl
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -51,7 +55,6 @@ class MultiDeviceKeysTest {
         private val DGSDDK3 = Utils.hexStringToByteArray("86fa7962c7d85e01876de9a90cad95cf83b4605d40b83b6580b80618f56fa4d4")
         private val DGTSK3 = Utils.hexStringToByteArray("7ab0a7c3239323e1b9f697eb59196d888747f027df356a305f58f55ebb8c23aa")
     }
-
 
     @Test
     fun testKeyDerivationDgk1() {
@@ -84,5 +87,69 @@ class MultiDeviceKeysTest {
         assertArrayEquals(DGDIK3, keys.dgdik)
         assertArrayEquals(DGSDDK3, keys.dgsddk)
         assertArrayEquals(DGTSK3, keys.dgtsk)
+    }
+
+    @Test
+    fun testEncryptDecryptDeviceInfo() {
+        val keys = MultiDeviceKeys(DGK1)
+        val deviceInfo = D2dMessage.DeviceInfo(
+            D2dMessage.DeviceInfo.Platform.ANDROID,
+            "Unit Test",
+            "1.2.3",
+            "Test Client"
+        )
+
+        val encrypted = keys.encryptDeviceInfo(deviceInfo)
+        val decrypted = keys.decryptDeviceInfo(encrypted)
+        assertEquals(deviceInfo, decrypted)
+    }
+
+    @Test
+    fun testEncryptTransactionScope() {
+        val keys = MultiDeviceKeys(DGK1)
+
+        listOf(
+            // TODO(ANDR-2699): This leads to an empty array which can not be encrypted at the moment
+            // TransactionScope.Scope.USER_PROFILE_SYNC,
+            TransactionScope.Scope.CONTACT_SYNC,
+            TransactionScope.Scope.GROUP_SYNC,
+            TransactionScope.Scope.DISTRIBUTION_LIST_SYNC,
+            TransactionScope.Scope.SETTINGS_SYNC,
+            TransactionScope.Scope.MDM_PARAMETER_SYNC,
+            TransactionScope.Scope.NEW_DEVICE_SYNC
+        ).forEach {
+            val expected = transactionScope {
+                scope = it
+            }
+            val encrypted = keys.encryptTransactionScope(it)
+            val nonce = encrypted.copyOfRange(0, NaCl.NONCEBYTES)
+            val data = encrypted.copyOfRange(NaCl.NONCEBYTES, encrypted.size)
+            val decrypted = NaCl.symmetricDecryptData(data, keys.dgtsk, nonce)
+            assertEquals(expected, TransactionScope.parseFrom(decrypted))
+        }
+    }
+
+    @Test
+    fun testDecryptTransactionScope() {
+        val keys = MultiDeviceKeys(DGK1)
+
+        listOf(
+            // TODO(ANDR-2699): This leads to an empty array which can not be encrypted at the moment
+            // TransactionScope.Scope.USER_PROFILE_SYNC,
+            TransactionScope.Scope.CONTACT_SYNC,
+            TransactionScope.Scope.GROUP_SYNC,
+            TransactionScope.Scope.DISTRIBUTION_LIST_SYNC,
+            TransactionScope.Scope.SETTINGS_SYNC,
+            TransactionScope.Scope.MDM_PARAMETER_SYNC,
+            TransactionScope.Scope.NEW_DEVICE_SYNC
+        ).forEach { expectedScope ->
+            val bytes = transactionScope {
+                scope = expectedScope
+            }.toByteArray()
+            val nonce = ByteArray(24) { it.toByte() }
+            val encrypted = nonce + NaCl.symmetricEncryptData(bytes, keys.dgtsk, nonce)
+            val decrypted = keys.decryptTransactionScope(encrypted)
+            assertEquals(expectedScope, decrypted)
+        }
     }
 }

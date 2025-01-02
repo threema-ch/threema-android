@@ -1564,8 +1564,24 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="group_orphaned_notice">Diese Gruppe ist verwaist, weil der Gruppen-Ersteller die Gruppe verlassen hat. Bitte klonen Sie die Gruppe, um der neue Administrator zu werden.</string>
     <string name="group_not_a_member_notice">Sie sind nicht mehr Mitglied dieser Gruppe und können sie nicht mehr verwenden.</string>
     <string name="group_dissolved_notice">Diese Gruppe wurde aufgelöst und kann nicht mehr verwendet werden.</string>
+    <string name="md_linked_devices">Verknüpfte Geräte</string>
+    <string name="md_link_device">Neues Gerät verknüpfen</string>
+    <string name="md_enable">Verknüpfte Geräte aktivieren</string>
+    <string name="md_linked_devices_empty">Laden Sie den tollen Desktop-Client von irgendwo herunter und legen Sie los 🚀</string>
+    <string name="md_link_device_qr_scan_message">Bitte scannen Sie den QR-Code</string>
     <string name="directory_request_failed">Verzeichnis-Abfrage fehlgeschlagen. Versuchen Sie es nochmals.</string>
     <string name="add_shortcut_exists">Eine Verknüpfung für dieses Ziel existiert bereits.</string>
+    <string name="scan_qr_code">QR-Code scannen</string>
+    <string name="scan_qr_code_explain">Scannen Sie den QR-Code, der in der Beta-Version von %s Desktop auf dem Gerät angezeigt wird, das Sie verknüpfen möchten.</string>
+    <string name="connecting">Wird verbunden…</string>
+    <string name="trust_new_device">Neuem Gerät vertrauen</string>
+    <string name="trust_new_device_explain">Wählen Sie dieselben Bilder aus, die auf dem neuen Gerät angezeigt werden, um zu bestätigen, dass Sie ihm vertrauen.</string>
+    <string name="trust_new_device_info">Das neue Gerät speichert eine unabhängige Kopie Ihres %s-Profils, und die Nachrichten werden in Ihrem Namen gesendet und empfangen.</string>
+    <string name="no_match_question">Keine Übereinstimmung?</string>
+    <string name="sending_data">Daten werden gesendet…</string>
+    <string name="continue_on_new_device">Bitte auf dem neuem Gerät fortfahren</string>
+    <string name="device_linked_successfully">Gerät erfolgreich verknüpft</string>
+    <string name="device_linked_successfully_explain">%s kann nun auf dem Gerät verwendet werden, das Sie gerade verknüpft haben (auch wenn dieses Gerät ausgeschaltet oder nicht mit dem Internet verbunden ist).</string>
     <string name="resend_message_dialog_title">Gruppennachricht erneut senden?</string>
     <string name="resend_message_dialog_message">Diese Nachricht konnte nicht an alle Mitglieder versendet werden. Wollen Sie die Nachricht erneut an %1$s senden?</string>
     <string name="work_lost_credentials_help">Zugangsdaten vergessen? – Melden Sie sich bei Ihrem %1$s-Administrator.</string>
@@ -1610,6 +1626,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="incoming_calls">Eingehende Anrufe</string>
     <string name="group_chats">Gruppenchats</string>
     <string name="edit_history_file_no_caption">Keine Beschriftung</string>
+    <string name="device_linking_failed">Verknüpfung fehlgeschlagen</string>
+    <string name="device_linking_failed_explain">Das Gerät konnte nicht verknüpft werden. Bitte versuchen Sie es erneut.\nGrund: %s.</string>
+    <string name="qr_code_scan_error">Beim Scannen des QR-Codes ist ein Fehler aufgetreten</string>
+    <string name="verification_failed">Verifizierung fehlgeschlagen</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abgelehnt</string>

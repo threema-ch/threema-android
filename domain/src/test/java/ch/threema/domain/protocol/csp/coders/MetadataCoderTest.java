@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.csp.coders;
 
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.testhelpers.TestHelpers;
@@ -47,7 +48,7 @@ public class MetadataCoderTest {
 	@Test
 	public void testEncodeDecode() throws ThreemaException, InvalidProtocolBufferException {
 
-		byte[] nonce = TestHelpers.getNoopNonceFactory().next();
+		byte[] nonce = TestHelpers.getNoopNonceFactory().nextNonce(NonceScope.CSP);
 		MessageId messageId = new MessageId();
 
 		Date createdAt = new Date();

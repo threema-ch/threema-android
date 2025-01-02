@@ -161,7 +161,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         if (messageModel.getType() == MessageType.VOICEMESSAGE) {
             messageModel.setAudioData((AudioDataModel) data);
         } else {
-            messageModel.setFileData((FileDataModel) data);
+            messageModel.setFileDataModel((FileDataModel) data);
         }
         return messageModel;
     }

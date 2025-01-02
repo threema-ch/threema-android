@@ -1521,6 +1521,17 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="md_link_device_qr_scan_message">Escaneie o código QR</string>
     <string name="directory_request_failed">A solicitação de diretório falhou. Tente novamente.</string>
     <string name="add_shortcut_exists">Já existe um atalho para esta opção.</string>
+    <string name="scan_qr_code">Digitalize o código QR</string>
+    <string name="scan_qr_code_explain">Digitalize o código QR exibido na versão beta do Desktop %s no dispositivo que você deseja vincular.</string>
+    <string name="connecting">Conectando...</string>
+    <string name="trust_new_device">Confiar no novo dispositivo</string>
+    <string name="trust_new_device_explain">Selecione as mesmas imagens mostradas no novo dispositivo para confirmar que você confia nele.</string>
+    <string name="trust_new_device_info">O novo dispositivo armazenará uma cópia independente do seu perfil %s e as mensagens serão enviadas e recebidas em seu nome.</string>
+    <string name="no_match_question">Sem correspondência?</string>
+    <string name="sending_data">Enviando dados...</string>
+    <string name="continue_on_new_device">Continuar no novo dispositivo</string>
+    <string name="device_linked_successfully">Dispositivo vinculado com sucesso</string>
+    <string name="device_linked_successfully_explain">%s agora pode ser usado no dispositivo que você acabou de vincular (mesmo quando esse dispositivo está desligado ou não está conectado à Internet).</string>
     <string name="resend_message_dialog_title">Reenviar a mensagem de grupo?</string>
     <string name="resend_message_dialog_message">Esta mensagem não pôde ser enviada a todos os membros. Reenviar a mensagem para %1$s?</string>
     <string name="work_lost_credentials_help">Esqueceu das suas credenciais? Entre em contato com o seu administrador do %1$s.</string>
@@ -1565,6 +1576,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="incoming_calls">Chamadas recebidas</string>
     <string name="group_chats">Conversas em grupo</string>
     <string name="edit_history_file_no_caption">Sem legenda</string>
+    <string name="device_linking_failed">Falha na vinculação do dispositivo</string>
+    <string name="device_linking_failed_explain">Não foi possível vincular o dispositivo. Tente novamente. \nMotivo: %s.</string>
+    <string name="qr_code_scan_error">Ocorreu um erro ao digitalizar o código QR</string>
+    <string name="verification_failed">Falha na verificação</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">aceitação enviada</string>
     <string name="cd_dec_icon">recusa enviada</string>

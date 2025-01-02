@@ -29,8 +29,32 @@ import ch.threema.app.adapters.ContactsSyncAdapter;
 
 public class ContactsSyncAdapterService extends Service {
 
-	private ContactsSyncAdapter contactsSyncAdapter = null;
+	private static ContactsSyncAdapter contactsSyncAdapter = null;
 	private static final Object syncAdapterLock = new Object();
+
+	private static boolean isSyncEnabled = true;
+
+	public static void enableSync() {
+		synchronized (syncAdapterLock) {
+			isSyncEnabled = true;
+			setAdapterSyncEnabled();
+		}
+	}
+
+	public static void disableSync() {
+		synchronized (syncAdapterLock) {
+			isSyncEnabled = false;
+			setAdapterSyncEnabled();
+		}
+	}
+
+	private static void setAdapterSyncEnabled() {
+		synchronized (syncAdapterLock) {
+			if (contactsSyncAdapter != null) {
+				contactsSyncAdapter.setSyncEnabled(isSyncEnabled);
+			}
+		}
+	}
 
 	@Override
 	public void onCreate() {
@@ -39,6 +63,7 @@ public class ContactsSyncAdapterService extends Service {
 		synchronized (syncAdapterLock) {
 			if (contactsSyncAdapter == null) {
 				contactsSyncAdapter = new ContactsSyncAdapter(getApplicationContext(), true);
+				contactsSyncAdapter.setSyncEnabled(isSyncEnabled);
 			}
 		}
 	}

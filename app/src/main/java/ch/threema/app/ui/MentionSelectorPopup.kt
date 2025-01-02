@@ -52,6 +52,7 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.TestUtil
+import ch.threema.domain.models.IdentityState
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import com.google.android.material.card.MaterialCardView
@@ -143,7 +144,7 @@ class MentionSelectorPopup(
         height = 1
 
         allContactModel.setName(context.getString(R.string.all), "")
-        allContactModel.state = ContactModel.State.ACTIVE
+        allContactModel.state = IdentityState.ACTIVE
         filterText = ""
         filterStart = 0
 

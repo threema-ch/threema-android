@@ -21,8 +21,10 @@
 
 package ch.threema.domain.helpers
 
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
+import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.MessageFilterInstruction
 import ch.threema.domain.taskmanager.TaskCodec
 
@@ -39,7 +41,15 @@ class UnusedTaskCodec : TaskCodec {
         throw IllegalStateException("This task codec should not be used.")
     }
 
-    override suspend fun reflect(message: OutboundMessage) {
+    override suspend fun reflectAndAwaitAck(
+        encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
+        storeD2dNonce: Boolean,
+        nonceFactory: NonceFactory
+    ): ULong {
+        throw IllegalStateException("This task codec should not be used.")
+    }
+
+    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt {
         throw IllegalStateException("This task codec should not be used.")
     }
 }

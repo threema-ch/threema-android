@@ -51,6 +51,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import ch.threema.app.R;
@@ -73,11 +74,15 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.CheckIdentityRoutine;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.ContactService.ProfilePictureSharePolicy;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
+import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask;
+import ch.threema.app.tasks.ReflectUserProfileShareWithPolicySyncTask;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.utils.AppRestrictionUtil;
@@ -93,6 +98,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.taskmanager.TaskManager;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 /**
@@ -117,6 +124,9 @@ public class MyIDFragment extends MainFragment
 	private LocaleService localeService;
 	private ContactService contactService;
 	private FileService fileService;
+    private IdListService profilePicRecipientsService;
+	private TaskManager taskManager;
+
 	private AvatarEditView avatarView;
 	private EmojiTextView nicknameTextView;
 	private boolean hidden = false;
@@ -237,7 +247,7 @@ public class MyIDFragment extends MainFragment
 
 			final MaterialButton picReleaseConfImageView = fragmentView.findViewById(R.id.picrelease_config);
 			picReleaseConfImageView.setOnClickListener(this);
-			picReleaseConfImageView.setVisibility(preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
+			picReleaseConfImageView.setVisibility(preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST ? View.VISIBLE : View.GONE);
 
 			configureEditWithButton(fragmentView.findViewById(R.id.linked_email_layout), fragmentView.findViewById(R.id.change_email), isReadonlyProfile);
 			configureEditWithButton(fragmentView.findViewById(R.id.linked_mobile_layout), fragmentView.findViewById(R.id.change_mobile), isReadonlyProfile);
@@ -300,20 +310,56 @@ public class MyIDFragment extends MainFragment
 		if (fragmentView != null && preferenceService != null) {
 			MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
 			if (spinner != null) {
-				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.picrelease_choices, android.R.layout.simple_spinner_dropdown_item);
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                    requireContext(),
+                    R.array.picrelease_choices,
+                    android.R.layout.simple_spinner_dropdown_item
+                );
 				spinner.setAdapter(adapter);
 				spinner.setText(adapter.getItem(preferenceService.getProfilePicRelease()), false);
-				spinner.setOnItemClickListener((parent, view, position, id) -> {
-					int oldPosition = preferenceService.getProfilePicRelease();
-					preferenceService.setProfilePicRelease(position);
-					fragmentView.findViewById(R.id.picrelease_config).setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_SOME ? View.VISIBLE : View.GONE);
-					if (position == PreferenceService.PROFILEPIC_RELEASE_SOME && position != oldPosition) {
-						launchProfilePictureRecipientsSelector(view);
-					}
-				});
+				spinner.setOnItemClickListener((parent, view, position, id) -> onPicReleaseSpinnerItemClicked(view, position));
 			}
 		}
 	}
+
+    private void onPicReleaseSpinnerItemClicked(View view, int position){
+
+        final @Nullable ProfilePictureSharePolicy.Policy sharePolicy = ProfilePictureSharePolicy.Policy.fromIntOrNull(position);
+        if (sharePolicy == null) {
+            logger.error("Failed to get concrete enum value of type ProfilePictureSharePolicy.Policy for ordinal value {}", position);
+            return;
+        }
+
+        final int oldPosition = preferenceService.getProfilePicRelease();
+        preferenceService.setProfilePicRelease(position);
+
+        fragmentView.findViewById(R.id.picrelease_config)
+            .setVisibility(position == PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST ? View.VISIBLE : View.GONE);
+
+        // Only continue of the value actually changes from before
+        if (position == oldPosition) {
+            return;
+        }
+
+        if (sharePolicy == ProfilePictureSharePolicy.Policy.ALLOW_LIST) {
+            launchProfilePictureRecipientsSelector(view);
+            // sync new policy setting with currently set allow list values into device group (if md is active)
+            taskManager.schedule(
+                new ReflectUserProfileShareWithAllowListSyncTask(
+                    Arrays.asList(profilePicRecipientsService.getAll()),
+                    this.serviceManager
+                )
+            );
+        } else {
+            // sync new policy setting to device group (if md is active)
+            taskManager.schedule(
+                new ReflectUserProfileShareWithPolicySyncTask(
+                    sharePolicy,
+                    this.serviceManager
+                )
+            );
+        }
+    }
 
 	@Override
 	public void onStart() {
@@ -737,7 +783,7 @@ public class MyIDFragment extends MainFragment
 				// Update public nickname
 				String newNickname = text.trim();
 				if (!newNickname.equals(userService.getPublicNickname())) {
-					userService.setPublicNickname(newNickname);
+					userService.setPublicNickname(newNickname, TriggerSource.LOCAL);
 				}
 				reloadNickname();
 				break;
@@ -805,6 +851,8 @@ public class MyIDFragment extends MainFragment
 				this.fileService = this.serviceManager.getFileService();
 				this.preferenceService = this.serviceManager.getPreferenceService();
 				this.localeService = this.serviceManager.getLocaleService();
+				this.taskManager = this.serviceManager.getTaskManager();
+				this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
 			} catch (MasterKeyLockedException e) {
 				logger.debug("Master Key locked!");
 			} catch (ThreemaException e) {

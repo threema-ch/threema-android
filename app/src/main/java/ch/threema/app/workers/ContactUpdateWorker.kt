@@ -22,21 +22,33 @@
 package ch.threema.app.workers
 
 import android.content.Context
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.Operation
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.ThreemaApplication.WORKER_CONTACT_UPDATE_PERIODIC_NAME
+import ch.threema.app.ThreemaApplication.WORKER_IDENTITY_STATES_PERIODIC_NAME
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.PollingHelper
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.api.APIConnector
-import ch.threema.storage.models.ContactModel
+import ch.threema.data.models.ContactModel
+import ch.threema.data.models.ModelDeletedException
+import ch.threema.data.repositories.ContactModelRepository
+import java.util.concurrent.TimeUnit
 
 private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
 
@@ -53,12 +65,12 @@ class ContactUpdateWorker(
         val serviceManager = ThreemaApplication.getServiceManager()
 
         val success = sendFeatureMaskAndUpdateContacts(
+            serviceManager?.modelRepositories?.contacts,
             serviceManager?.contactService,
             serviceManager?.apiConnector,
             serviceManager?.userService,
             serviceManager?.preferenceService,
             PollingHelper(context, "contactUpdateWorker"),
-            applicationContext
         )
 
         return if (success) {
@@ -69,27 +81,77 @@ class ContactUpdateWorker(
     }
 
     companion object {
-        fun sendFeatureMaskAndUpdateContacts(serviceManager: ServiceManager, context: Context) =
+        @JvmStatic
+        fun schedulePeriodicSync(context: Context, preferenceService: PreferenceService) {
+            // We use the sync interval from the previously named IdentityStatesWorker
+            val schedulePeriodMs = WorkManagerUtil.normalizeSchedulePeriod(preferenceService.identityStateSyncIntervalS)
+
+            logger.info("Initializing contact update sync. Requested schedule period: {} ms", schedulePeriodMs)
+
+            try {
+                val workManager = WorkManager.getInstance(context)
+
+                if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
+                    workManager,
+                    WORKER_CONTACT_UPDATE_PERIODIC_NAME,
+                    schedulePeriodMs
+                )) {
+                    logger.debug("Scheduling new job")
+
+                    // Cancel the work with the old name as the IdentityStatesWorker class does not
+                    // exist anymore.
+                    workManager.cancelUniqueWork(WORKER_IDENTITY_STATES_PERIODIC_NAME)
+
+                    // Schedule the start of the service according to schedule period
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+
+                    val workRequest = PeriodicWorkRequest.Builder(ContactUpdateWorker::class.java, schedulePeriodMs, TimeUnit.MILLISECONDS)
+                        .setConstraints(constraints)
+                        .addTag(schedulePeriodMs.toString())
+                        .setInitialDelay(1000, TimeUnit.MILLISECONDS)
+                        .build()
+
+                    workManager.enqueueUniquePeriodicWork(WORKER_CONTACT_UPDATE_PERIODIC_NAME, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
+                }
+            } catch (e: IllegalStateException) {
+                logger.error("Unable to schedule ContactUpdateWorker", e)
+            }
+        }
+
+        @JvmStatic
+        fun performOneTimeSync(context: Context) {
+            val workRequest = OneTimeWorkRequest.Builder(ContactUpdateWorker::class.java)
+                .build()
+            WorkManager.getInstance(context).enqueue(workRequest)
+        }
+
+        fun cancelPeriodicSync(context: Context): Operation {
+            return WorkManagerUtil.cancelUniqueWork(context, WORKER_CONTACT_UPDATE_PERIODIC_NAME)
+        }
+
+        fun sendFeatureMaskAndUpdateContacts(serviceManager: ServiceManager) =
             sendFeatureMaskAndUpdateContacts(
+                serviceManager.modelRepositories.contacts,
                 serviceManager.contactService,
                 serviceManager.apiConnector,
                 serviceManager.userService,
                 serviceManager.preferenceService,
                 null,
-                context,
             )
 
         private fun sendFeatureMaskAndUpdateContacts(
+            contactModelRepository: ContactModelRepository?,
             contactService: ContactService?,
             apiConnector: APIConnector?,
             userService: UserService?,
             preferenceService: PreferenceService?,
             pollingHelper: PollingHelper?,
-            context: Context,
         ): Boolean {
             logger.info("Starting contact update")
 
-            if (contactService == null || apiConnector == null || userService == null || preferenceService == null) {
+            if (contactService == null || apiConnector == null || userService == null || preferenceService == null || contactModelRepository == null) {
                 logger.warn("Services not available while updating contact states")
                 return false
             }
@@ -106,9 +168,10 @@ class ContactUpdateWorker(
                 return false
             }
 
+            // TODO(ANDR-3172): Fetch all contacts using the contact model repository
             val contactModels = contactService.find(object : ContactService.Filter {
-                override fun states(): Array<ContactModel.State> =
-                    arrayOf(ContactModel.State.ACTIVE, ContactModel.State.INACTIVE)
+                override fun states(): Array<IdentityState> =
+                    arrayOf(IdentityState.ACTIVE, IdentityState.INACTIVE)
 
                 override fun requiredFeature() = null
 
@@ -119,15 +182,13 @@ class ContactUpdateWorker(
                 override fun includeHidden() = true
 
                 override fun onlyWithReceiptSettings() = false
-            })
+            }).mapNotNull { contactModelRepository.getByIdentity(it.identity) }
 
             val success = if (contactModels.isNotEmpty()) {
                 fetchAndUpdateContactModels(
                     contactModels,
                     apiConnector,
-                    contactService,
                     preferenceService,
-                    context,
                 )
             } else {
                 true
@@ -144,9 +205,7 @@ class ContactUpdateWorker(
         fun fetchAndUpdateContactModels(
             contactModels: List<ContactModel>,
             apiConnector: APIConnector,
-            contactService: ContactService,
             preferenceService: PreferenceService,
-            context: Context,
         ): Boolean {
             val identities = contactModels.map { it.identity }.toTypedArray()
             val contactModelMap = contactModels.associateBy { it.identity }
@@ -158,9 +217,9 @@ class ContactUpdateWorker(
                     val contactModel = contactModelMap[identity] ?: continue
 
                     val newState = when (result.states[i]) {
-                        IdentityState.ACTIVE -> ContactModel.State.ACTIVE
-                        IdentityState.INACTIVE -> ContactModel.State.INACTIVE
-                        IdentityState.INVALID -> ContactModel.State.INVALID
+                        IdentityState.ACTIVE.value -> IdentityState.ACTIVE
+                        IdentityState.INACTIVE.value -> IdentityState.INACTIVE
+                        IdentityState.INVALID.value -> IdentityState.INVALID
 
                         // In case we receive an unexpected value from the server, we set the new
                         // state to null. We should not abort these steps as this contact update
@@ -179,7 +238,7 @@ class ContactUpdateWorker(
                         0 -> IdentityType.NORMAL
                         1 -> IdentityType.WORK
                         else -> {
-                            logger.warn("Received invalid type {} for identity {}", result.types[i], identity);
+                            logger.warn("Received invalid type {} for identity {}", result.types[i], identity)
                             IdentityType.NORMAL
                         }
                     }
@@ -191,15 +250,11 @@ class ContactUpdateWorker(
                         newState,
                         newIdentityType,
                         newFeatureMask,
-                        contactService
                     )
 
                     if (result.checkInterval > 0) {
                         // Save new interval duration
-                        preferenceService.setRoutineInterval(
-                            context.getString(R.string.preferences__identity_states_check_interval),
-                            result.checkInterval
-                        )
+                        preferenceService.setIdentityStateSyncInterval(result.checkInterval)
                     }
                 }
 
@@ -212,34 +267,29 @@ class ContactUpdateWorker(
 
         private fun updateContactModel(
             contactModel: ContactModel,
-            newState: ContactModel.State?,
+            newState: IdentityState?,
             newIdentityType: IdentityType,
             newFeatureMask: Long?,
-            contactService: ContactService,
         ) {
-            var updated = false
+            try {
+                val data = contactModel.data.value ?: return
 
-            // Only update the state if it is a valid state change. Note that changing to null is
-            // not allowed and will not result in any change.
-            if (ContactUtil.allowedChangeToState(contactModel, newState)) {
-                contactModel.state = newState
-                updated = true
-            }
+                // Only update the state if it is a valid state change. Note that changing to null is
+                // not allowed and will not result in any change.
+                if (newState != null && ContactUtil.allowedChangeToState(data.activityState, newState)) {
+                    contactModel.setActivityStateFromLocal(newState)
+                }
 
-            if (contactModel.identityType != newIdentityType) {
-                contactModel.identityType = newIdentityType
-                updated = true
-            }
+                contactModel.setIdentityTypeFromLocal(newIdentityType)
 
-            if (newFeatureMask == null) {
-                logger.warn("Feature mask for contact {} is null", contactModel.identity)
-            } else if (newFeatureMask != contactModel.featureMask) {
-                contactModel.featureMask = newFeatureMask
-                updated = true
-            }
+                if (newFeatureMask == null) {
+                    logger.warn("Feature mask for contact {} is null", contactModel.identity)
+                } else {
+                    contactModel.setFeatureMaskFromLocal(newFeatureMask)
+                }
 
-            if (updated) {
-                contactService.save(contactModel)
+            } catch (e: ModelDeletedException) {
+                logger.warn("Could not update contact {} because the model has been deleted", contactModel.identity, e)
             }
         }
     }

@@ -51,7 +51,7 @@ class ModelCache {
  * Internally, it uses a [WeakValueMap], so the values are not prevented from being
  * garbage collected by the cache.
  */
-class ModelTypeCache<TIdentifier, TModel : BaseModel<*>> {
+class ModelTypeCache<TIdentifier, TModel : BaseModel<*, *>> {
     private val map = WeakValueMap<TIdentifier, TModel>()
 
     /**

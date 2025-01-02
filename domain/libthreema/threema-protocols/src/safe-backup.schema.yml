@@ -1,0 +1,401 @@
+$schema: 'http://json-schema.org/draft-07/schema#'
+$id: 'https://safe.threema.ch/schema/1.json'
+description: Threema Safe backup format
+type: object
+properties:
+  info:
+    type: object
+    properties:
+      version:
+        type: integer
+        description: Current version
+        anyOf:
+          - title: Version 1
+            const: 1
+          - {}
+      device:
+        type: string
+        description: A string with device information
+        examples:
+          - 1.2.3/de_DE
+    required:
+      - version
+  user:
+    type: object
+    properties:
+      privatekey:
+        type: string
+        description: The private key, 32 bytes base64 encoded
+        examples:
+          - ZWNob2VjaG9lY2hvZWNob2VjaG9lY2hvZWNob2VjaG8=
+      nickname:
+        type: string
+        description: The public nickname
+        examples:
+          - julia
+      profilePic:
+        type: string
+        description: |-
+          Base64 encoded byte array. Image format: JPEG, q=60, maxsize=400x400,
+          no metadata.
+      profilePicRelease:
+        type: array
+        description: |-
+          Array of Threema IDs. If profile picture distribution is disabled, the
+          array should contain a single `null` value. If the profile picture
+          should be distributed to everyone, the array should contain a single
+          `"*"` value.
+        items:
+          type:
+            - string
+            - 'null'
+          minLength: 1
+          maxLength: 8
+          pattern: '^([0-9A-Z\*][0-9A-Z]{7}|\*)$'
+          examples:
+            - ECHOECHO
+            - '*'
+            - null
+        minItems: 1
+      links:
+        type: array
+        description: Linked contact details (e.g. phone number or email)
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+              description: The link type
+              anyOf:
+                - title: Phone number
+                  const: mobile
+                - title: Email
+                  const: email
+                - {}
+            name:
+              type: string
+              description: A link description, e.g. "private" or "office".
+            value:
+              type: string
+              description: |-
+                The email or phone number (in E.164 format without leading +).
+              examples:
+                - '41704567890'
+                - hello@example.com
+          required:
+            - type
+            - value
+    required:
+      - privatekey
+  contacts:
+    type: array
+    description: Contacts
+    items:
+      type: object
+      properties:
+        identity:
+          type: string
+          description: Threema ID
+          minLength: 8
+          maxLength: 8
+          pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+          examples:
+            - ECHOECHO
+        publickey:
+          type: string
+          description: |-
+            Base64 encoded public key. Required for contacts with a verification
+            level 2 and for revoked contacts.
+          examples:
+            - ZWNob2VjaG9lY2hvZWNob2VjaG9lY2hvZWNob2VjaG8=
+        createdAt:
+          type: integer
+          description: |-
+            When this contact was added, unix-ish timestamp in milliseconds.
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1524489122916
+        verification:
+          type: integer
+          description: The verification level
+          anyOf:
+            - title: Unverified
+              const: 0
+            - title: Server verified
+              const: 1
+            - title: Fully verified
+              const: 2
+            - {}
+        workVerified:
+          type: boolean
+          description:
+            Whether this contact was verified by the Threema Work admin
+          default: false
+        hidden:
+          type: boolean
+          description: |-
+            Whether the contact is directly acquainted and should be visible
+            (false) or the contact was introduced by a group and should be
+            hidden until a direct conversation has been initiated (true)
+          default: false
+        firstname:
+          type: string
+          description: First name
+          default: ''
+          examples:
+            - Peter
+        lastname:
+          type: string
+          description: Last name
+          default: ''
+          examples:
+            - Muster
+        nickname:
+          type: string
+          description: Nickname without ~ prefix
+          default: ''
+          examples:
+            - pete
+        lastUpdate:
+          type:
+            - integer
+            - 'null'
+          description: |-
+            When the conversation with this contact was last updated, unix-ish
+            timestamp in milliseconds (or null)
+          default: null
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1524489122916
+            - null
+        private:
+          type: boolean
+          description: |-
+            Whether the conversation with this contact should be protected
+            (_private chat_)
+          default: 'false'
+        readReceipts:
+          type: integer
+          description: Whether to send read receipts
+          anyOf:
+            - title: Apply default
+              const: 0
+            - title: Send
+              const: 1
+            - title: Don't send
+              const: 2
+            - {}
+        typingIndicators:
+          type: integer
+          description: Whether to send typing indicators
+          anyOf:
+            - title: Apply default
+              const: 0
+            - title: Send
+              const: 1
+            - title: Don't send
+              const: 2
+            - {}
+      required:
+        - identity
+        - verification
+  groups:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Unique group identity (8 bytes represented as a lowercase hex
+            string)
+          examples:
+            - 0123456789abcdef
+        creator:
+          type: string
+          description: The group creator's Threema ID
+          minLength: 8
+          maxLength: 8
+          pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+          examples:
+            - ECHOECHO
+        groupname:
+          type: string
+          description: Group name
+          examples:
+            - Foodies
+        createdAt:
+          type: integer
+          description: |-
+            When the group has been created locally, unix-ish timestamp in
+            milliseconds
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1459269133488
+        members:
+          type: array
+          description: |-
+            Group members. If the list does not include the user itself, the
+            group is marked as _left_. Should be empty if `deleted=true`.
+          items:
+            type: string
+            description: Threema ID
+            minLength: 8
+            maxLength: 8
+            pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+            examples:
+              - ECHOECHO
+        deleted:
+          type: boolean
+          description: |-
+            Whether the group has been deleted. In case this is set to `true`,
+            the list of members must be ignored.
+        lastUpdate:
+          type:
+            - integer
+            - 'null'
+          description: |-
+            When the conversation with this group was last updated, unix-ish
+            timestamp in milliseconds (or null)
+          default: null
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1524489122916
+            - null
+        private:
+          type: boolean
+          description: |-
+            Whether the conversation with this group should be protected
+            (_private chat_)
+          default: 'false'
+      required:
+        - id
+        - creator
+        - members
+        - deleted
+  distributionlists:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: |-
+            Unique ID of the distribution list (8 bytes represented as a
+            lowercase hex string)
+          examples:
+            - 0102030405060708
+        name:
+          type: string
+          description: Distribution list name
+          examples:
+            - Friends
+        createdAt:
+          type: integer
+          description: |-
+            When the distribution list has been created locally, unix-ish
+            timestamp in milliseconds
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1459269133488
+        members:
+          type: array
+          description: Distribution list members
+          items:
+            type: string
+            description: Threema ID
+            minLength: 8
+            maxLength: 8
+            pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+            examples:
+              - ECHOECHO
+        lastUpdate:
+          type:
+            - integer
+            - 'null'
+          description: |-
+            When the conversation with this distribution list was last updated,
+            unix-ish timestamp in milliseconds (or null)
+          default: null
+          minimum: 0
+          maximum: 18446744073709552000
+          examples:
+            - 1524489122916
+            - null
+        private:
+          type: boolean
+          description: |-
+            Whether the conversation of this distribution list should be
+            protected (_private chat_)
+          default: 'false'
+      required:
+        - name
+        - members
+  settings:
+    type: object
+    properties:
+      syncContacts:
+        type: boolean
+        default: false
+      blockUnknown:
+        type: boolean
+        default: false
+      readReceipts:
+        type: boolean
+        default: true
+      sendTyping:
+        type: boolean
+        default: true
+      threemaCalls:
+        type: boolean
+        default: true
+      relayThreemaCalls:
+        type: boolean
+        default: false
+      disableScreenshots:
+        type: boolean
+        default: false
+      incognitoKeyboard:
+        type: boolean
+        default: false
+      blockedContacts:
+        type: array
+        description: Array of blocked Threema IDs
+        items:
+          type: string
+          description: Threema ID
+          minLength: 8
+          maxLength: 8
+          pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+          examples:
+            - ECHOECHO
+      syncExcludedIds:
+        type: array
+        description: Array of Threema IDs excluded from synchronization
+        items:
+          type: string
+          description: Threema ID
+          minLength: 8
+          maxLength: 8
+          pattern: '[0-9A-Z\*][0-9A-Z]{7}'
+          examples:
+            - ECHOECHO
+      recentEmojis:
+        type: array
+        description: Array of recently used emoji (UTF8 encoded)
+        items:
+          type: string
+          description: Emoji bytes
+          examples:
+            - 🐱
+    required:
+      - syncContacts
+required:
+  - info
+  - user
+  - settings

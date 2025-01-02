@@ -21,6 +21,10 @@
 
 package ch.threema.data.models
 
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.domain.taskmanager.Task
+import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -47,7 +51,7 @@ class ModelDeletedException(modelName: String, methodName: String)
  *
  * It handles reactivity and provides common APIs shared by all models.
  */
-abstract class BaseModel<TData>(
+abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
     /**
      * Mutable state flow that holds the model data.
      *
@@ -65,6 +69,16 @@ abstract class BaseModel<TData>(
      * The name of this model. Used for debugging purposes.
      */
     protected val modelName: String,
+
+    /**
+     * The multi device manager is needed to determine whether to reflect a change or not.
+     */
+    protected val multiDeviceManager: MultiDeviceManager,
+
+    /**
+     * The task manager is needed to schedule a task that reflects the changes.
+     */
+    protected val taskManager: TaskManager,
 ) {
     /**
      * State flow that holds
@@ -89,6 +103,8 @@ abstract class BaseModel<TData>(
      * @param updateData A function that receives the original data and returns the updated data.
      * @param updateDatabase A function that updates the database with the updated data.
      * @param onUpdated An optional function that is invoked at the end if data was updated.
+     * @param reflectUpdateTask The task that should be executed after the fields have been updated.
+     * Note that the [reflectUpdateTask] is only executed when MD is active.
      */
     protected fun updateFields(
         methodName: String,
@@ -96,6 +112,7 @@ abstract class BaseModel<TData>(
         updateData: (originalData: TData) -> TData,
         updateDatabase: (updatedData: TData) -> Unit,
         onUpdated: ((updatedData: TData) -> Unit)?,
+        reflectUpdateTask: TReflectionTask? = null,
     ) {
         val updatedData = synchronized(this) {
             val originalData = ensureNotDeleted(mutableData.value, methodName)
@@ -104,6 +121,9 @@ abstract class BaseModel<TData>(
                 val updatedData = updateData(originalData)
                 mutableData.value = updatedData
                 updateDatabase(updatedData)
+                if (reflectUpdateTask != null && multiDeviceManager.isMultiDeviceActive) {
+                    taskManager.schedule(reflectUpdateTask)
+                }
                 updatedData
             } else {
                 null

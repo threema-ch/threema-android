@@ -51,8 +51,9 @@ import ch.threema.storage.models.AbstractMessageModel
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+private val logger = LoggingUtil.getThreemaLogger("AudioProgressBarView")
+
 class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWaveformGeneratorTask.AudioWaveformGeneratorListener {
-    private val logger = LoggingUtil.getThreemaLogger("AudioProgressBarView")
 
     private var barHeight = 20
     private var barWidth = 5
@@ -62,7 +63,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     private var state = 0
 
     private lateinit var barColor: ColorStateList
-    var barColorActivated = Color.TRANSPARENT
+    private var barColorActivated = Color.TRANSPARENT
     private lateinit var barPaint: Paint
     private lateinit var barPaintChecked: Paint
     private lateinit var barPaintActivated: Paint
@@ -76,8 +77,7 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     private var messageModel: AbstractMessageModel? = null
     private var changeBounds: Transition = ChangeClipBounds()
 
-    // we calculate a sufficiently large number of samples upfront so we don't need to wait for onLayout
-    private val numPreCalculatedSamples = 30
+    private var numPreCalculatedSamples: Int = 0
 
     // radius of bar edges in px
     private val radius = 2F
@@ -106,6 +106,8 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             barColorActivated = getColor(R.styleable.AudioProgressBarView_barColorActivated, barColorActivated)
             recycle()
         }
+
+        numPreCalculatedSamples = guessSuitableAmountOfSamples(context)
 
         barPaint = Paint().apply {
             isAntiAlias = true
@@ -194,7 +196,16 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         super.onDraw(canvas)
     }
 
-    private fun createEmptyBitmap() : Bitmap {
+    /**
+     *  We calculate a sufficiently large number of samples upfront so we don't need to wait for onLayout
+     *  to tell us the width of our view.
+     *  The number will adapt based on the devices screen width. Because on tablets we want to present more samples.
+     */
+    private fun guessSuitableAmountOfSamples(context: Context): Int {
+        return (30f + (context.resources.displayMetrics.widthPixels / 40f)).roundToInt()
+    }
+
+    private fun createEmptyBitmap(): Bitmap {
         val tmpBitmap = Bitmap.createBitmap(viewWidth, barHeight, Bitmap.Config.ARGB_8888)
         val unusedHeight: Float = (barHeight / 2F) - halfBarMinHeight
         val halfSpace = spaceWidth.toFloat() / 2F
@@ -202,23 +213,27 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         for (i: Int in 0 until numSamples) {
             tmpBitmap.applyCanvas {
                 drawRoundRect(
-                        RectF(
-                                halfSpace + (i * (barWidth + spaceWidth)),
-                                unusedHeight,
-                                halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
-                                barHeight - unusedHeight
-                        ),
-                        radius,
-                        radius,
-                        barPaint
+                    RectF(
+                        halfSpace + (i * (barWidth + spaceWidth)),
+                        unusedHeight,
+                        halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
+                        barHeight - unusedHeight
+                    ),
+                    radius,
+                    radius,
+                    barPaint
                 )
             }
         }
         return tmpBitmap
     }
 
-    private fun createWaveformBitmap(samplesData: List<Float>) : Bitmap {
+    private fun createWaveformBitmap(samplesData: List<Float>): Bitmap {
         val tmpBitmap = Bitmap.createBitmap(viewWidth, barHeight, Bitmap.Config.ARGB_8888)
+        if (samplesData.size < numSamples) {
+            logger.warn("Insufficient amount of calculated samples: {} < {}", samplesData.size, numSamples)
+            return tmpBitmap
+        }
         val factor: Float = samplesData.size.toFloat() / numSamples.toFloat()
         val halfSpace = spaceWidth.toFloat() / 2F
         val halfBarHeight = barHeight / 2F
@@ -229,15 +244,15 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
 
             tmpBitmap.applyCanvas {
                 drawRoundRect(
-                        RectF(
-                                halfSpace + (i * (barWidth + spaceWidth)),
-                                unusedHeight,
-                                halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
-                                barHeight - unusedHeight
-                        ),
-                        radius,
-                        radius,
-                        barPaint
+                    RectF(
+                        halfSpace + (i * (barWidth + spaceWidth)),
+                        unusedHeight,
+                        halfSpace + (i * (barWidth + spaceWidth)) + barWidth,
+                        barHeight - unusedHeight
+                    ),
+                    radius,
+                    radius,
+                    barPaint
                 )
             }
         }
@@ -302,11 +317,11 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
 
         if (messageModel?.id != newMessageModel.id) {
             // recycled view
-            waveFormTask?.let {
-                if (it.getMessageId() == newMessageModel.id) {
+            waveFormTask?.let { task ->
+                if (task.getMessageId() == newMessageModel.id) {
                     return
                 } else {
-                    it.cancel()
+                    task.cancel()
                 }
             }
         }
@@ -319,17 +334,19 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
             postInvalidate()
             visibility = VISIBLE
         } else {
-            waveFormTask?.let {
-                if (it.getMessageId() == newMessageModel.id) {
+            waveFormTask?.let { task ->
+                if (task.getMessageId() == newMessageModel.id) {
                     return
                 }
             }
 
             waveBitmap = null
             messageModel = newMessageModel
-            waveFormTask = AudioWaveformGeneratorTask(newMessageModel,
-                    numPreCalculatedSamples,
-                    this@AudioProgressBarView)
+            waveFormTask = AudioWaveformGeneratorTask(
+                newMessageModel,
+                numPreCalculatedSamples,
+                this@AudioProgressBarView
+            )
 
             ThreemaApplication.voiceMessageThumbnailExecutorService.execute(Thread(waveFormTask, "WaveformGenerator"))
         }

@@ -1,0 +1,270 @@
+// # Common Types
+
+syntax = "proto3";
+
+package common;
+
+option java_package = "ch.threema.protobuf";
+
+// A unit that may be used in a `oneof` option without any values.
+// Note: We're using this to simulate tagged unions.
+message Unit {}
+
+// Threema Blob to be uploaded/downloaded from the Blob server.
+message Blob {
+  // Blob ID as given by the Blob server
+  bytes id = 1;
+
+  // Nonce used for encrypting/decrypting the Blob.
+  // Note: May be omitted if unambigously defined by the context.
+  bytes nonce = 2;
+
+  // Secret (or public) key used for encrypting/decrypting the Blob.
+  // Note: May be omitted if unambigously defined by the context.
+  bytes key = 3;
+
+  // Unix-ish timestamp in milliseconds when the blob has been uploaded
+  uint64 uploaded_at = 4;
+}
+
+// Inline Blob data.
+message BlobData {
+  // Associated Blob ID
+  bytes id = 1;
+
+  // The Blob's data
+  bytes data = 2;
+}
+
+// Generic image.
+message Image {
+  // Format type of the image
+  enum Type {
+    JPEG = 0;
+  }
+  Type type = 1;
+
+  // The image's associated blob.
+  Blob blob = 2;
+}
+
+// Unique group identity.
+message GroupIdentity {
+  // Group id as chosen by the group's creator
+  fixed64 group_id = 1;
+
+  // Threema ID of the group's creator
+  string creator_identity = 2;
+}
+
+// Generic image allowing delta updates
+//
+// Note: Lack of presence generally means that the image should remain
+//       unchanged.
+message DeltaImage {
+  oneof image {
+    // The image is empty or was explicitly removed
+    Unit removed = 1;
+    // The new updated image
+    Image updated = 2;
+  }
+}
+
+// Timespan (year 1970+) with milliseconds accuracy.
+//
+// Note: This message is invalid if `to` is smaller than `from`.
+message Timespan {
+  // Start of the timespan (Unix-ish timestamp in milliseconds, inclusive)
+  uint64 from = 1;
+  // End of the timespan (Unix-ish timestamp in miliseconds, inclusive)
+  uint64 to = 2;
+}
+
+// Container for a list of identities.
+message Identities {
+  // List of identities
+  repeated string identities = 1;
+}
+
+// Generic 2D resolution
+message Resolution {
+  uint32 width = 1;
+  uint32 height = 2;
+}
+
+// CSP features supported by a device or available for a contact (64 bit mask).
+//
+// IMPORTANT: The flags determine what a device/contact is capable of, not
+// whether the settings allow for it. For example, group calls may be supported
+// but ignored if disabled in the settings.
+enum CspFeatureMaskFlag {
+  // No features available
+  NONE = 0x0000;
+  // Supports voice messages.
+  VOICE_MESSAGE_SUPPORT = 0x0001;
+  // Supports groups.
+  GROUP_SUPPORT = 0x0002;
+  // Supports polls.
+  POLL_SUPPORT = 0x0004;
+  // Supports file messages.
+  FILE_MESSAGE_SUPPORT = 0x0008;
+  // Supports 1:1 audio calls.
+  O2O_AUDIO_CALL_SUPPORT = 0x0010;
+  // Supports 1:1 video calls.
+  O2O_VIDEO_CALL_SUPPORT = 0x0020;
+  // Supports forward security.
+  FORWARD_SECURITY_SUPPORT = 0x0040;
+  // Supports group calls.
+  GROUP_CALL_SUPPORT = 0x0080;
+  // Supports editing messages.
+  EDIT_MESSAGE_SUPPORT = 0x0100;
+  // Supports deleting messages.
+  DELETE_MESSAGE_SUPPORT = 0x0200;
+}
+
+// E2E message type as defined by the Chat Server Protocol.
+enum CspE2eMessageType {
+  // Invalid message type
+  _INVALID_TYPE = 0x00;
+
+  // [`empty`](ref:e2e.empty)
+  EMPTY = 0xfc;
+
+  // 1:1 messages
+  // ------------
+
+  // [`text`](ref:e2e.text)
+  TEXT = 0x01;
+  // [`deprecated-image`](ref:e2e.deprecated-image)
+  DEPRECATED_IMAGE = 0x02;
+  // [`location`](ref:e2e.location)
+  LOCATION = 0x10;
+  // [`deprecated-audio`](ref:e2e.deprecated-audio)
+  DEPRECATED_AUDIO = 0x14;
+  // [`deprecated-video`](ref:e2e.deprecated-video)
+  DEPRECATED_VIDEO = 0x13;
+  // [`file`](ref:e2e.file)
+  FILE = 0x17;
+  // [`poll-setup`](ref:e2e.poll-setup)
+  POLL_SETUP = 0x15;
+  // [`poll-vote`](ref:e2e.poll-vote)
+  POLL_VOTE = 0x16;
+  // [`call-offer`](ref:e2e.call-offer)
+  CALL_OFFER = 0x60;
+  // [`call-answer`](ref:e2e.call-answer)
+  CALL_ANSWER = 0x61;
+  // [`call-ice-candidate`](ref:e2e.call-ice-candidate)
+  CALL_ICE_CANDIDATE = 0x62;
+  // [`call-hangup`](ref:e2e.call-hangup)
+  CALL_HANGUP = 0x63;
+  // [`call-ringing`](ref:e2e.call-ringing)
+  CALL_RINGING = 0x64;
+
+  // 1:1 message updates
+  // -------------------
+
+  // [`delivery-receipt`](ref:e2e.delivery-receipt)
+  DELIVERY_RECEIPT = 0x80;
+  // [`typing-indicator`](ref:e2e.typing-indicator)
+  TYPING_INDICATOR = 0x90;
+  // `csp-e2e.EditMessage`
+  EDIT_MESSAGE = 0x91;
+  // `csp-e2e.DeleteMessage`
+  DELETE_MESSAGE = 0x92;
+
+  // 1:1 contact control
+  // -------------------
+
+  // [`set-profile-picture`](ref:e2e.set-profile-picture) of a contact
+  CONTACT_SET_PROFILE_PICTURE = 0x18;
+  // [`delete-profile-picture`](ref:e2e.delete-profile-picture) of a contact
+  CONTACT_DELETE_PROFILE_PICTURE = 0x19;
+  // [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
+  CONTACT_REQUEST_PROFILE_PICTURE = 0x1a;
+
+  // Group invitations
+  // -----------------
+
+  // `csp-e2e.GroupJoinRequest`
+  GROUP_JOIN_REQUEST = 0x4d;
+  // `csp-e2e.GroupJoinResponse`
+  GROUP_JOIN_RESPONSE = 0x4e;
+
+  // Group control
+  // -------------
+
+  // [`group-setup`](ref:e2e.group-setup) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SETUP = 0x4a;
+  // [`group-name`](ref:e2e.group-name) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_NAME = 0x4b;
+  // [`group-leave`](ref:e2e.group-leave) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_LEAVE = 0x4c;
+  // [`set-profile-picture`](ref:e2e.set-profile-picture) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SET_PROFILE_PICTURE = 0x50;
+  // [`delete-profile-picture`](ref:e2e.delete-profile-picture) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_DELETE_PROFILE_PICTURE = 0x54;
+  // [`group-sync-request`](ref:e2e.group-sync-request) wrapped by
+  // [`group-creator-container`](ref:e2e.group-creator-container)
+  GROUP_SYNC_REQUEST = 0x51;
+  // `csp-e2e.GroupCallStart` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_CALL_START = 0x4f;
+
+  // Group messages
+  // --------------
+
+  // `0x41`: [`text`](ref:e2e.text) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_TEXT = 0x41;
+  // [`location`](ref:e2e.location) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_LOCATION = 0x42;
+  // [`deprecated-group-image`](ref:e2e.deprecated-group-image) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_IMAGE = 0x43;
+  // [`deprecated-audio`](ref:e2e.deprecated-audio) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_AUDIO = 0x45;
+  // [`deprecated-video`](ref:e2e.deprecated-video) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_VIDEO = 0x44;
+  // [`file`](ref:e2e.file) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_FILE = 0x46;
+  // [`poll-setup`](ref:e2e.poll-setup) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_POLL_SETUP = 0x52;
+  // [`poll-vote`](ref:e2e.poll-vote) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_POLL_VOTE = 0x53;
+
+  // Group message updates
+  // ---------------------
+
+  // [`delivery-receipt`](ref:e2e.delivery-receipt) wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_DELIVERY_RECEIPT = 0x81;
+  // `csp-e2e.EditMessage` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_EDIT_MESSAGE = 0x93;
+  // `csp-e2e.DeleteMessage` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_DELETE_MESSAGE = 0x94;
+
+  // Forward security
+  // ----------------
+
+  // `csp-e2e-fs.Envelope`
+  FORWARD_SECURITY_ENVELOPE = 0xa0;
+
+  // Push control
+  // ------------
+
+  // [`web-session-resume`](ref:e2e.web-session-resume)
+  WEB_SESSION_RESUME = 0xfe;
+}

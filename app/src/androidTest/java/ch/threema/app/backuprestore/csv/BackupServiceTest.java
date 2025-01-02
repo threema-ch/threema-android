@@ -48,15 +48,18 @@ import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.GrantPermissionRule;
 import ch.threema.app.DangerousTest;
-import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.DeleteAllContactsBackgroundTask;
+import ch.threema.app.asynctasks.DeleteContactServices;
 import ch.threema.app.backuprestore.BackupRestoreDataConfig;
-import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
@@ -65,9 +68,14 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.ballot.BallotService;
+import ch.threema.app.testutils.TestHelpers;
 import ch.threema.app.utils.CSVReader;
 import ch.threema.app.utils.CSVRow;
+import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.base.ThreemaException;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.identitybackup.IdentityBackupDecoder;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 import java8.util.stream.StreamSupport;
@@ -86,6 +94,7 @@ public class BackupServiceTest {
 	private static @NonNull String TEST_IDENTITY;
 
 	// Services
+	private @NonNull ServiceManager serviceManager;
 	private @NonNull FileService fileService;
     private @NonNull MessageService messageService;
     private @NonNull ConversationService conversationService;
@@ -93,6 +102,10 @@ public class BackupServiceTest {
     private @NonNull ContactService contactService;
     private @NonNull DistributionListService distributionListService;
     private @NonNull BallotService ballotService;
+	private @NonNull APIConnector apiConnector;
+	private @NonNull ContactModelRepository contactModelRepository;
+
+	private final @NonNull BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
 	@Rule
 	public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
@@ -112,7 +125,7 @@ public class BackupServiceTest {
 	 */
 	@Before
 	public void loadServices() throws Exception {
-		final ServiceManager serviceManager = Objects.requireNonNull(ThreemaApplication.getServiceManager());
+		this.serviceManager = Objects.requireNonNull(ThreemaApplication.getServiceManager());
 		this.fileService = serviceManager.getFileService();
 		this.messageService = serviceManager.getMessageService();
 		this.conversationService = serviceManager.getConversationService();
@@ -120,12 +133,14 @@ public class BackupServiceTest {
 		this.contactService = serviceManager.getContactService();
 		this.distributionListService = serviceManager.getDistributionListService();
 		this.ballotService = serviceManager.getBallotService();
+		this.apiConnector = serviceManager.getAPIConnector();
+		this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
 	}
 
 	/**
 	 * Return the list of backups for the TEST_IDENTITY identity.
 	 */
-	private @NonNull List<File> getUserBackups(@NonNull File backupPath) throws FileSystemNotPresentException {
+	private @NonNull List<File> getUserBackups(@NonNull File backupPath) {
 		if (backupPath.exists() && backupPath.isDirectory()) {
 			final File[] files = backupPath.listFiles(
 				(dir, name) -> name.startsWith("threema-backup_" + TEST_IDENTITY)
@@ -139,7 +154,7 @@ public class BackupServiceTest {
 	/**
 	 * Helper method: Create a backup with the specified config, return backup file.
 	 */
-	private @NonNull File doBackup(BackupRestoreDataConfig config) throws Exception {
+	private @NonNull File doBackup(BackupRestoreDataConfig config) {
 		// List old backups
 		final File backupPath = this.fileService.getBackupPath();
 		final List<File> initialBackupFiles = this.getUserBackups(backupPath);
@@ -250,18 +265,18 @@ public class BackupServiceTest {
         this.messageService.removeAll();
         this.conversationService.reset();
         this.groupService.removeAll();
-        this.contactService.removeAll();
+        this.backgroundExecutor.execute(getContactDeleteTask());
         this.distributionListService.removeAll();
         this.ballotService.removeAll();
 
         // Insert test data:
 	    // Contacts
-	    final ContactModel contact1 = this.contactService.createContactByIdentity("CDXVZ5E4", true);
+	    final ContactModel contact1 = createContact("CDXVZ5E4");
 	    contact1.setFirstName("Fritzli");
 	    contact1.setLastName("Bühler");
 	    this.contactService.save(contact1);
-	    final ContactModel contact2 = this.contactService.createContactByIdentity("DRMWZP3H", true);
-	    this.contactService.createContactByIdentity("ECHOECHO", true);
+	    final ContactModel contact2 = createContact("DRMWZP3H");
+	    createContact("ECHOECHO");
 	    // Messages contact 1
 	    this.messageService.sendText("Bonjour!", this.contactService.createReceiver(contact1));
 	    this.messageService.sendText("Phở?", this.contactService.createReceiver(contact1));
@@ -330,5 +345,47 @@ public class BackupServiceTest {
         }
     }
 
+	@NonNull
+	@WorkerThread
+	private ContactModel createContact(@NonNull String identity) {
+		new BasicAddOrUpdateContactBackgroundTask(
+			identity,
+			ContactModel.AcquaintanceLevel.DIRECT,
+			TEST_IDENTITY,
+			apiConnector,
+			contactModelRepository,
+			AddContactRestrictionPolicy.CHECK,
+			ApplicationProvider.getApplicationContext(),
+			null
+		).runSynchronously();
+
+		ContactModel contactModel = contactService.getByIdentity(identity);
+		if (contactModel == null) {
+			throw new IllegalStateException("Contact is null after creating it");
+		}
+		return contactModel;
+	}
+
+	@NonNull
+	private DeleteAllContactsBackgroundTask getContactDeleteTask() throws ThreemaException {
+		return new DeleteAllContactsBackgroundTask(
+			serviceManager.getModelRepositories().getContacts(),
+			new DeleteContactServices(
+				serviceManager.getUserService(),
+				serviceManager.getContactService(),
+				serviceManager.getConversationService(),
+				serviceManager.getRingtoneService(),
+				serviceManager.getMutedChatsListService(),
+				serviceManager.getHiddenChatsListService(),
+				serviceManager.getProfilePicRecipientsService(),
+				serviceManager.getWallpaperService(),
+				serviceManager.getFileService(),
+				serviceManager.getExcludedSyncIdentitiesService(),
+				serviceManager.getDHSessionStore(),
+				serviceManager.getNotificationService(),
+				serviceManager.getDatabaseServiceNew()
+			)
+		);
+	}
 
 }

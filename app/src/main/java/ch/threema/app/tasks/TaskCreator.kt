@@ -23,6 +23,8 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.Contact
+import ch.threema.domain.protocol.connection.data.DeviceId
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
@@ -33,10 +35,6 @@ class TaskCreator(private val serviceManager: ServiceManager) {
         scheduleTaskAsync {
             SendProfilePictureTask(toIdentity, serviceManager)
         }
-
-    fun scheduleProfilePictureExecution(toIdentity: String): Deferred<Unit> = scheduleTaskAsync {
-        ProfilePictureDistributionTask(toIdentity, serviceManager)
-    }
 
     fun scheduleDeleteAndTerminateFSSessionsTaskAsync(
         contact: Contact,
@@ -52,6 +50,47 @@ class TaskCreator(private val serviceManager: ServiceManager) {
 
     fun scheduleSendPushTokenTask(token: String, type: Int): Deferred<Unit> =
         scheduleTaskAsync { SendPushTokenTask(token, type, serviceManager) }
+
+    fun scheduleDeviceLinkingTask(
+        deviceJoinOfferUri: String,
+        cancelSignal: Deferred<Unit>
+    ): Pair<DeviceLinkingController, Deferred<Result<Unit>>> {
+        return DeviceLinkingTask(deviceJoinOfferUri, serviceManager, cancelSignal).let {
+            it.deviceLinkingController to scheduleTaskAsync { it }
+        }
+    }
+
+    fun scheduleGetDevicesInfoTask(): Deferred<InboundD2mMessage.DevicesInfo> = scheduleTaskAsync {
+        GetDevicesInfoTask()
+    }
+
+    fun scheduleDropDeviceTask(deviceId: DeviceId): Deferred<Unit> = scheduleTaskAsync {
+        DropDeviceTask(deviceId)
+    }
+
+    fun scheduleDeleteDeviceGroupTask(): Deferred<Unit> = scheduleTaskAsync {
+        DeleteDeviceGroupTask(serviceManager)
+    }
+
+    fun scheduleUserDefinedProfilePictureUpdate(identity: String) = scheduleTaskAsync {
+        ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate(
+            identity = identity,
+            contactModelRepository = serviceManager.modelRepositories.contacts,
+            multiDeviceManager = serviceManager.multiDeviceManager,
+            nonceFactory = serviceManager.nonceFactory,
+            fileService = serviceManager.fileService,
+            symmetricEncryptionService = serviceManager.symmetricEncryptionService,
+            apiService = serviceManager.apiService,
+        )
+    }
+
+    fun scheduleReflectUserProfilePictureTask() = scheduleTaskAsync {
+        ReflectUserProfilePictureSyncTask(
+            serviceManager.userService,
+            serviceManager.nonceFactory,
+            serviceManager.multiDeviceManager,
+        )
+    }
 
     private fun <R> scheduleTaskAsync(createTask: () -> Task<R, TaskCodec>): Deferred<R> {
         return serviceManager.taskManager.schedule(createTask())

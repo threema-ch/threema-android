@@ -25,11 +25,15 @@ public class Version {
 
 	private static final String VERSION = "0.2";
 
-	public String getVersion() {
+	public String getVersionNumber() {
+		return VERSION;
+	}
+
+	public String getVersionString() {
 		return VERSION + "J";
 	}
 
-	public String getFullVersion() {
+	public String getFullVersionString() {
 		return VERSION + ";J;;;" + System.getProperty("java.version");
 	}
 

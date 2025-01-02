@@ -150,6 +150,7 @@
 	<string name="preferences__license_status" translatable="false">pref_license_status</string>
 	<string name="preferences__developer_menu" translatable="false">pref_developer_menu</string>
 	<string name="preferences__generate_voip_messages" translatable="false">pref_key_generate_voip_messages</string>
+	<string name="preferences__open_pattern_library" translatable="false">pref_key_open_pattern_library</string>
 	<string name="preferences__remove_menu" translatable="false">pref_key_remove_menu</string>
 	<string name="preferences__rate" translatable="false">pref_key_rate</string>
 	<string name="preferences__data_backup_uri" translatable="false">pref_data_backup_uri</string>

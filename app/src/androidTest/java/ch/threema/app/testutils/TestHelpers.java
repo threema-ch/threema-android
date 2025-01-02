@@ -45,8 +45,12 @@ import ch.threema.app.services.UserService;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.helpers.InMemoryIdentityStore;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -103,6 +107,28 @@ public class TestHelpers {
 				null
 			);
 		}
+
+		@NonNull
+		public BasicContact toBasicContact() {
+			return BasicContact.javaCreate(
+				identity,
+				publicKey,
+				new ThreemaFeature.Builder()
+					.audio(true)
+					.group(true)
+					.ballot(true)
+					.file(true)
+					.voip(true)
+					.videocalls(true)
+					.forwardSecurity(true)
+					.groupCalls(true)
+					.editMessages(true)
+					.deleteMessages(true)
+					.build(),
+				IdentityState.ACTIVE,
+				IdentityType.NORMAL
+			);
+		}
 	}
 
 	public static final class TestGroup {
@@ -123,13 +149,20 @@ public class TestHelpers {
 		@Nullable
 		public final byte[] profilePicture;
 
+		/**
+		 * Note that the user identity is used to set the correct group user state.
+		 */
+		@NonNull
+		public final String userIdentity;
+
 		public TestGroup(
 			@NonNull GroupId apiGroupId,
 			@NonNull TestContact groupCreator,
 			@NonNull List<TestContact> members,
-			@NonNull String groupName
+			@NonNull String groupName,
+			@NonNull String userIdentity
 		) {
-			this(apiGroupId, groupCreator, members, groupName, null);
+			this(apiGroupId, groupCreator, members, groupName, null, userIdentity);
 		}
 
 		public TestGroup(
@@ -137,23 +170,38 @@ public class TestHelpers {
 			@NonNull TestContact groupCreator,
 			@NonNull List<TestContact> members,
 			@NonNull String groupName,
-			@Nullable byte[] profilePicture
+			@Nullable byte[] profilePicture,
+			@NonNull String userIdentity
 		) {
 			this.apiGroupId = apiGroupId;
 			this.groupCreator = groupCreator;
 			this.members = members;
 			this.groupName = groupName;
 			this.profilePicture = profilePicture;
+			this.userIdentity = userIdentity;
 		}
 
 		@NonNull
 		public GroupModel getGroupModel() {
+			boolean isMember = false;
+			for (TestContact member : members) {
+				if (member.identity.equals(userIdentity)) {
+					isMember = true;
+					break;
+				}
+			}
+			return getGroupModel(isMember ? GroupModel.UserState.MEMBER : GroupModel.UserState.LEFT);
+		}
+
+		@NonNull
+		private GroupModel getGroupModel(@NonNull GroupModel.UserState userState) {
 			return new GroupModel()
 				.setApiGroupId(apiGroupId)
 				.setCreatedAt(new Date())
 				.setName(this.groupName)
 				.setCreatorIdentity(this.groupCreator.identity)
-				.setId(localGroupId);
+				.setId(localGroupId)
+				.setUserState(userState);
 		}
 
 		public void setLocalGroupId(int localGroupId) {

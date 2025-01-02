@@ -1,0 +1,324 @@
+// ## Device Join Protocol
+//
+// This protocol specifies how to add a new device to an existing device group.
+//
+// ### Terminology
+//
+// - `ED`: Existing device
+// - `ND`: New device to be added
+//
+// ### Blobs
+//
+// For binary data, the usual Blob scheme is being used by ED. However, instead
+// of transferring Blob data via the Blob server, the data is transmitted in
+// form of a `common.BlobData` message ahead of a message referencing that Blob
+// by the associated Blob ID.
+//
+// ND is supposed to cache received `common.BlobData` until it can associate the
+// data to a Blob referencing its ID. Once the rendezvous connection has been
+// closed, any remaining cached `common.BlobData` can be discarded.
+//
+// ### Protocol Kickoff Flow
+//
+// ND or ED may choose to start the protocol. If ND starts the protocol it is
+// _requesting to join the device group_. If ED starts the protocol it is
+// _offering to join the device group_.
+//
+// If ED started the protocol:
+//
+// - `variant` must be set to _offer to join the device group_.
+// - ED takes the role of RID
+// - ND takes the role of RRD
+//
+// If ND started the protocol:
+//
+// - `variant` must be set to _request to join the device group_.
+// - ND takes the role of RID
+// - ED takes the role of RRD
+//
+// #### Connection Setup
+//
+// RID creates a `rendezvous.RendezvousInit` by following the Connection
+// Rendezvous Protocol. It wraps it in a `url.DeviceGroupJoinRequestOrOffer` and
+// offers it in form of a URL or a QR code.
+//
+// RRD scans the QR code or decodes the URL and then parses the
+// `url.DeviceGroupJoinRequestOrOffer`. It will then receive the data over a
+// sufficiently secure channel (e.g. a QR code). Once decoded, the enclosed
+// `rendezvous.RendezvousInit` must be handled according to the Connection
+// Rendezvous Protocol.
+//
+// Once the Connection Rendezvous Protocol has established at least one
+// connection path, ED waits another 3s or until all connection paths have been
+// established. Nomination is then done by ED following the Connection
+// Rendezvous Protocol.
+//
+// Note that all messages on the nominated connection path must be end-to-end
+// encrypted as defined by the Connection Rendezvous Protocol. All transmitted
+// messages are to be wrapped in:
+//
+// - `NdToEd` when sending from ND to ED, and
+// - `EdToNd` when sending from ED to ND.
+//
+// #### Device Join Flow
+//
+// As soon as one of the connection paths has been nominated by ED, both devices
+// must calculate the Rendezvous Path Hash (RPH) as defined by the Rendezvous
+// Protocol and display it to the user.
+//
+// ED must ask the user for confirmation that RPH is equal on both devices. The
+// exact comparison mechanism is an implementation detail. If the user does not
+// confirm that RPH is equal on both devices, the process must be aborted.
+//
+// After confirmation, ED must stop displaying RPH and send a `Begin` message to
+// start the device join process.
+//
+//     ED ------- Begin ------> ND   [1]
+//
+// ND can now stop displaying RPH.
+//
+//     ED -- common.BlobData -> ND   [0..N]
+//     ED --- EssentialData --> ND   [1]
+//
+// Once ND successfully registered itself on the Mediator server, it sends a
+// `Registered` message.
+//
+//     ED <---- Registered ---- ND   [1]
+//
+// ND may now either close the connection or leave it open to transition to the
+// History Exchange Protocol. Any further messages ED receives from ND will
+// transition into the History Exchange Protocol.
+//
+// ### Security
+//
+// The `url.DeviceGroupJoinRequestOrOffer` must be exchanged over a sufficiently
+// secure channel. A QR code is considered sufficiently secure in a _safe
+// space_. If this can be ensured by the user, ensuring that the Rendezvous Path
+// Hash (RPH) is equal on both devices is not strictly necessary.
+//
+// If an attacker is however able to capture the
+// `url.DeviceGroupJoinRequestOrOffer`, the security of the protocol relies on
+// the user ensuring that RPH is equal on both devices to ensure authentication
+// and mitigate the following attacks:
+//
+// - If ED started the protocol (offers to join the device group), comparing RPH
+//   is critical as otherwise the Client Key would become compromised if an
+//   attacker were able to make a connection faster than the victim's other
+//   device.
+// - If ND started the protocol (requests to join the device group), comparing
+//   RPH is not as critical yet still vital to mitigate a more sophisticated
+//   attack where the attacker makes it look as if the victim is connected to
+//   its device group. Until the victim finds out that it isn't its device group
+//   (because the process is stuck on ED), the victim may potentially leak
+//   sensitive information by adding a contact or sending a message, etc.
+// - An attacker who also controls the relay server used for connection between
+//   the victim's two devices could run a full MITM attack. Comparing RPH here
+//   is critical to ensure that the victim's two devices have established an
+//   end-to-end encrypted communication channel between each other.
+//
+// Letting ND start the protocol is considered more secure because of the above
+// implications.
+//
+// ED is always required to let the user confirm the equality of RPH on both
+// devices because it is ED who is to transmit the highly sensitive information.
+//
+// To prevent phishing attacks of a malicious web app claiming to be a Threema
+// App (typo squatting), the CORS `Access-Control-Allow-Origin` of any WebSocket
+// rendezvous relay server must be set to the bare minimum required by the use
+// case, so that a connection cannot be established. However, phishing
+// protection against a malicious non-web app claiming to be a Threema App is
+// not possible.
+
+syntax = "proto3";
+
+package join;
+
+option java_package = "ch.threema.protobuf.d2d.join";
+
+import "common.proto";
+import "md-d2d-sync.proto";
+
+// Root message envelope for messages from the new device (ND) to the existing
+// device (ED).
+message NdToEd {
+  // The enveloped message
+  oneof content {
+    Registered registered = 1;
+  }
+}
+
+// Root message envelope for messages from the existing device (ED) to the new
+// device (ND).
+message EdToNd {
+  // The enveloped message
+  oneof content {
+    Begin begin = 1;
+
+    // A Blob that is referenced as part of `EssentialData`.
+    //
+    // When receiving this variant:
+    //
+    // 1. If `EssentialData` has been received before, close the connection and
+    //    abort these steps.
+    // 2. Store the Blob data temporarily or permanently and store its
+    //    associated Blob ID in the device's database.
+    common.BlobData blob_data = 2;
+
+    EssentialData essential_data = 3;
+  }
+}
+
+// Initial message sent by ED after nomination and user confirmation that RPH is
+// identical on both devices.
+//
+// When creating this message, after confirmation by the user:
+//
+// 1. Stop displaying RPH and notify the user that the device join process is in
+//    progress.
+// 2. Begin a transaction (scope `NEW_DEVICE_SYNC`, precondition: none) on the
+//    D2M connection. This transaction is to be held until the connection to ND
+//    drops or until a `Registered` message was received. While the transaction
+//    is being held, no `Reflected` and no end-to-end encrypted message coming
+//    from the chat server is allowed to be processed! If the D2M connection is
+//    lost, the established connection must also be closed, aborting any running
+//    steps of this protocol.
+// 3. Send the `Begin` message and continue with the steps for creating
+//    `EssentialData`.
+//
+// When receiving this message:
+//
+// 1. If `Begin` has been received before, close the connection and abort these
+//    steps.
+// 2. Stop displaying RPH and notify the user that the device join process is in
+//    progress.
+message Begin {}
+
+// Essential data ND needs to be able to participate in the device group.
+//
+// Note: The transmitted used nonces are hashed with HMAC-SHA256 using the
+// identity as _key_.
+//
+// When creating this message:
+//
+// 1. Gather all blobs referenced for the user's profile picture, contact
+//    profile pictures, etc. and send them as `common.BlobData` before this
+//    message.
+// 2. Send the gathered `EssentialData`.
+//
+// When receiving this message:
+//
+// 1. If `EssentialData` has been received before, close the connection and
+//    abort these steps.
+// 2. If any Blob ID is missing from the previously received set of
+//    `common.BlobData`, close the connection and abort these steps.
+// 3. Store the data in the device's database.
+// 4. Generate a random D2M Device ID and a random CSP Device ID and store both
+//    in the device's database.
+// 5. Establish a D2M connection by connecting to the provided mediator server.
+// 6. Wait until the `ServerInfo` has been received on the D2M connection.
+//    Validate that the provided `DeviceSlotState` is `NEW`. Otherwise, close
+//    both the D2M connection (normally) and the connection to ED and abort
+//    these steps.
+// 7. Send a `Registered` message to ED.
+// 8. Ask the user whether conversation history data should be requested from
+//    ND:
+//    1. If the user does not want to request conversation history data, wait
+//       until all buffered data on the connection has been written. Then, close
+//       the connection and abort these steps.
+//    2. If the user wants to request conversation history data from ED, leave
+//       the connection running and start the History Exchange Protocol.
+message EssentialData {
+  reserved 1; // Reserved for mediator server
+
+  // User's identity data
+  message IdentityData {
+    // The user's Threema ID
+    string identity = 1;
+
+    // The permanent client key associated to the Threema ID (32 bytes)
+    bytes ck = 2;
+
+    // The device cookie used by the device group for the Threema ID (16 bytes)
+    bytes csp_device_cookie = 3;
+
+    // The CSP server group associated to the Threema ID (1 byte)
+    string csp_server_group = 4;
+  }
+  IdentityData identity_data = 2;
+
+  // Threema Work credentials
+  //
+  // Required for a Threema Work app. Must not be present in a Threema consumer
+  // app.
+  sync.ThreemaWorkCredentials work_credentials = 12;
+
+  // Device group data
+  message DeviceGroupData {
+    // The device group key (32 bytes)
+    bytes dgk = 1;
+  }
+  DeviceGroupData device_group_data = 3;
+
+  // User's profile
+  sync.UserProfile user_profile = 4;
+
+  // Shared settings
+  sync.Settings settings = 5;
+
+  // MDM parameters
+  sync.MdmParameters mdm_parameters = 6;
+
+  // Contacts
+  message AugmentedContact {
+    // The contact's data.
+    sync.Contact contact = 1;
+
+    // Unix-ish timestamp in milliseconds when the conversation with this
+    // contact was last updated.
+    //
+    // Optional if no conversation exists for this contact.
+    optional uint64 last_update_at = 2;
+  }
+  repeated AugmentedContact contacts = 7;
+
+  // Groups
+  message AugmentedGroup {
+    // The group's data.
+    sync.Group group = 1;
+
+    // Unix-ish timestamp in milliseconds when the conversation with this
+    // group was last updated.
+    uint64 last_update_at = 2;
+  }
+  repeated AugmentedGroup groups = 8;
+
+  // Distribution lists
+  message AugmentedDistributionList {
+    // The distribution list's data.
+    sync.DistributionList distribution_list = 1;
+
+    // Unix-ish timestamp in milliseconds when the conversation of this
+    // distribution list was last updated.
+    uint64 last_update_at = 2;
+  }
+  repeated AugmentedDistributionList distribution_lists = 9;
+
+  // Hashed nonces that were used for CSP messages.
+  repeated bytes csp_hashed_nonces = 10;
+
+  // Hashed nonces thate were used for D2D messages.
+  repeated bytes d2d_hashed_nonces = 11;
+}
+
+// Lets ED know that ND has received all essential data and successfully
+// registered itself on the mediator server.
+//
+// When receiving this message:
+//
+// 1. Commit the transaction on the D2M connection. From this point on,
+//    processing `Reflected` and end-to-end encrypted message coming from the
+//    chat server is allowed again.
+// 2. Wait for ND to either close the connection or for ND to request
+//    conversation history data. Any further messages from ND will move into
+//    the History Exchange Protocol.
+message Registered {}

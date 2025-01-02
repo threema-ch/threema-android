@@ -34,6 +34,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
@@ -114,7 +115,11 @@ public class ConversationUpdateHandler extends MessageUpdater {
 		if (model.isGroupConversation()) {
 			uniqueId = this.groupService.getUniqueIdString(model.getGroup());
 		} else if (model.isContactConversation()) {
-			uniqueId = this.contactService.getUniqueIdString(model.getContact());
+			String identity = null;
+			if (model.getContact() != null) {
+				identity = model.getContact().getIdentity();
+			}
+			uniqueId = ContactUtil.getUniqueIdString(identity);
 		} else if (model.isDistributionListConversation()) {
 			uniqueId = this.distributionListService.getUniqueIdString(model.getDistributionList());
 		}

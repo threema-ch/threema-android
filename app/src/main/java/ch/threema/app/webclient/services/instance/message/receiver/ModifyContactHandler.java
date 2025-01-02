@@ -46,6 +46,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
@@ -96,6 +97,7 @@ public class ModifyContactHandler extends MessageReceiver {
 		final String identity = args.get(Protocol.ARGUMENT_IDENTITY).asStringValue().toString();
 		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
+		// TODO(ANDR-3139): Use new contact model
 		// Validate identity
 		final ContactModel contactModel = this.contactService.getByIdentity(identity);
 		if (contactModel == null) {
@@ -139,7 +141,7 @@ public class ModifyContactHandler extends MessageReceiver {
 					final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
 					if (avatarValue == null || avatarValue.isNilValue()) {
 						// Clear avatar
-						this.contactService.removeAvatar(contactModel);
+						this.contactService.removeUserDefinedProfilePicture(contactModel, TriggerSource.LOCAL);
 					} else {
 						// Set avatar
 						final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
@@ -149,11 +151,13 @@ public class ModifyContactHandler extends MessageReceiver {
 							avatar = BitmapUtil.resizeBitmap(avatar,
 									ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
 									ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
-							this.contactService.setAvatar(
-									contactModel,
-									// Without quality loss
-									BitmapUtil.bitmapToByteArray(avatar, Bitmap.CompressFormat.PNG, 100)
-							);
+                            this.contactService.setUserDefinedProfilePicture(
+                                contactModel,
+                                // Without quality loss
+                                BitmapUtil.bitmapToByteArray(avatar, Bitmap.CompressFormat.PNG,
+                                    100),
+                                TriggerSource.LOCAL
+                            );
 						}
 					}
 				} catch (Exception e) {

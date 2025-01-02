@@ -83,6 +83,11 @@ public class GroupDeleteProfilePictureMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return false;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}
@@ -93,6 +98,7 @@ public class GroupDeleteProfilePictureMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+    @Nullable
 	public byte[] getBody() {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

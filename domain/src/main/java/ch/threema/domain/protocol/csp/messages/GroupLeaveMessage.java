@@ -79,6 +79,11 @@ public class GroupLeaveMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return false;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}

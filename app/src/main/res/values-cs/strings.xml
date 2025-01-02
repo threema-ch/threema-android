@@ -1520,6 +1520,17 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="md_link_device_qr_scan_message">Naskenujte prosím QR kód</string>
     <string name="directory_request_failed">Požadavek složky selhal. Zkuste to znovu.</string>
     <string name="add_shortcut_exists">Zástupce pro tento cíl již existuje.</string>
+    <string name="scan_qr_code">Naskenovat QR kód</string>
+    <string name="scan_qr_code_explain">Naskenujte QR kód zobrazený v beta verzi %s na zařízení, které chcete propojit.</string>
+    <string name="connecting">Spojování…</string>
+    <string name="trust_new_device">Důvěřovat novému zařízení</string>
+    <string name="trust_new_device_explain">Vyberte tytéž obrázky, jež jsou zobrazeny na novém zařízení, a potvrďte tak, že mu důvěřujete.</string>
+    <string name="trust_new_device_info">Na novém zařízení se uloží nezávislá kopie vašeho profilu %s a zprávy budou odesílány a přijímány vaším jménem.</string>
+    <string name="no_match_question">Žádná shoda?</string>
+    <string name="sending_data">Odesílání dat…</string>
+    <string name="continue_on_new_device">Pokračujte prosím na novém zařízení</string>
+    <string name="device_linked_successfully">Zařízení bylo úspěšně propojeno</string>
+    <string name="device_linked_successfully_explain">%s nyní můžete používat na právě propojeném zařízení (a to i v případě, není-li toto zařízení zapnuté nebo připojené k internetu).</string>
     <string name="resend_message_dialog_title">Znovu odeslat skupinovou zprávu?</string>
     <string name="resend_message_dialog_message">Tuto zprávu se nezdařilo odeslat všem členům. Znovu odeslat zprávu kontaktu %1$s?</string>
     <string name="work_lost_credentials_help">Zapomněli jste své přihlašovací údaje? Obraťte se na svého správce %1$s.</string>
@@ -1564,6 +1575,10 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="incoming_calls">Příchozí hovory</string>
     <string name="group_chats">Skupinové konverzace</string>
     <string name="edit_history_file_no_caption">Bez titulku</string>
+    <string name="device_linking_failed">Propojování zařízení selhalo</string>
+    <string name="device_linking_failed_explain">Zařízení se nepodařilo propojit. Zkuste to prosím znovu.\nDůvod: %s.</string>
+    <string name="qr_code_scan_error">Během skenování QR kódu došlo k chybě</string>
+    <string name="verification_failed">Ověření selhalo</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">souhlas odeslán</string>
     <string name="cd_dec_icon">nesouhlas odeslán</string>

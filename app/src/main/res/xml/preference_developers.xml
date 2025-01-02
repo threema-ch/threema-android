@@ -1,67 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:key="pref_key_developers"
-                  android:persistent="true"
-                  android:title="Developer Settings">
-	<PreferenceCategory
-		android:key="pref_key_multi_device"
-		android:title="Multi-Device">
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:key="@string/preferences__md_unlocked"
-			android:title="Unlock multi device"
-			android:summary="If enabled the multi device entry is shown in the main menu and multidevice can be 'activated' (this does not mean it will work...)." />
-	</PreferenceCategory>
+    android:key="pref_key_developers"
+    android:persistent="true"
+    android:title="Developer Settings">
 
-	<PreferenceCategory
-		android:key="pref_key_conversation"
-		android:title="Conversations">
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:key="@string/preferences__show_last_update_prefix"
-			android:title="Show Last Update"
-			android:summary="Show the lastUpdate timestamp as prefix in the conversation name. Requires app restart."/>
-	</PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_multi_device"
+        android:title="Multi-Device">
+        <CheckBoxPreference
+            android:key="@string/preferences__md_unlocked"
+            android:summary="If enabled the multi device entry is shown in the main menu and multidevice can be 'activated' (this does not mean it will work...)."
+            android:title="Unlock multi device"
+            android:widgetLayout="@layout/preference_switch_layout" />
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_generate"
-		android:title="Generate Data">
-		<Preference
-			android:key="@string/preferences__generate_voip_messages"
-			android:title="Generate VoIP Messages"/>
-		<Preference
-			android:key="@string/preferences__generate_test_quotes"
-			android:title="Generate Test Quotes"/>
-	</PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_conversation"
+        android:title="Conversations">
+        <CheckBoxPreference
+            android:key="@string/preferences__show_last_update_prefix"
+            android:summary="Show the lastUpdate timestamp as prefix in the conversation name. Requires app restart."
+            android:title="Show Last Update"
+            android:widgetLayout="@layout/preference_switch_layout" />
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_poi"
-		android:title="POI">
-		<EditTextPreference
-			android:key="@string/preferences__poi_host"
-			android:title="POI Host Override"
-			android:summary="Will default to 'poi.threema.ch' if not set."/>
-	</PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_generate"
+        android:title="Generate Data">
+        <Preference
+            android:key="@string/preferences__generate_voip_messages"
+            android:title="Generate VoIP Messages" />
+        <Preference
+            android:key="@string/preferences__generate_test_quotes"
+            android:title="Generate Test Quotes" />
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_group_calls"
-		android:title="Group Calls">
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:key="@string/preferences__group_call_send_init"
-			android:title="Send group call init"
-			android:summary="If enabled, a text message containing encoded call info will be sent in the group when a call is started." />
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:key="@string/preferences__group_call_skip_delay"
-			android:title="Skip group call start delay"
-			android:summary="If enabled the artificial delay for group call creation will be skiped and the call created immediately" />
-	</PreferenceCategory>
-	<PreferenceCategory
-		android:key="pref_key_various"
-		android:title="Various">
-		<Preference
-			android:key="@string/preferences__remove_menu"
-			android:title="Remove Developer Menu"/>
-	</PreferenceCategory>
+    <PreferenceCategory
+        android:key="pref_key_poi"
+        android:title="POI">
+        <EditTextPreference
+            android:key="@string/preferences__poi_host"
+            android:summary="Will default to 'poi.threema.ch' if not set."
+            android:title="POI Host Override" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_group_calls"
+        android:title="Group Calls">
+        <CheckBoxPreference
+            android:key="@string/preferences__group_call_send_init"
+            android:summary="If enabled, a text message containing encoded call info will be sent in the group when a call is started."
+            android:title="Send group call init"
+            android:widgetLayout="@layout/preference_switch_layout" />
+        <CheckBoxPreference
+            android:key="@string/preferences__group_call_skip_delay"
+            android:summary="If enabled the artificial delay for group call creation will be skiped and the call created immediately"
+            android:title="Skip group call start delay"
+            android:widgetLayout="@layout/preference_switch_layout" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_theming"
+        android:title="Theming">
+        <Preference
+            android:key="@string/preferences__open_pattern_library"
+            android:title="Open Pattern Library"
+            android:summary="View apps dynamic color and typography theme values"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_various"
+        android:title="Various">
+        <Preference
+            android:key="@string/preferences__remove_menu"
+            android:title="Remove Developer Menu" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

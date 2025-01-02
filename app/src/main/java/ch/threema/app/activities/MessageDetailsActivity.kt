@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.preference.PreferenceManager
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -171,16 +170,12 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     }
 
     private fun initScreenContent() {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
-        val shouldUseDynamicColors = sharedPreferences.getBoolean("pref_dynamic_color", false)
 
         val editHistoryComposeView = findViewById<ComposeView>(R.id.message_details_compose_view)
         editHistoryComposeView.setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
 
         editHistoryComposeView.setContent {
-            ThreemaTheme(
-                dynamicColor = shouldUseDynamicColors
-            ) {
+            ThreemaTheme {
                 val uiState: ChatMessageDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
                 val messageModel: MessageUiModel = uiState.message
                 val editHistoryViewModel: EditHistoryViewModel = viewModel(

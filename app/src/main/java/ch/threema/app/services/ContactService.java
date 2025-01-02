@@ -21,34 +21,28 @@
 
 package ch.threema.app.services;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-
-import java.io.File;
-import java.util.List;
-
-import ch.threema.app.exceptions.EntryAlreadyExistsException;
-import ch.threema.app.exceptions.InvalidEntryException;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.protocol.api.work.WorkContact;
-import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
+import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
 
 public interface ContactService extends AvatarService<ContactModel> {
-
-	int ContactVerificationResult_NO_MATCH = 0;
-	int ContactVerificationResult_ALREADY_VERIFIED = 1;
-	int ContactVerificationResult_VERIFIED = 2;
 
 	String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
 
@@ -65,10 +59,31 @@ public interface ContactService extends AvatarService<ContactModel> {
 	}
 
 	class ProfilePictureSharePolicy {
-		public enum Policy { NOBODY, EVERYONE, SOME }
+
+        // Do NOT change the order of these values, as features rely on the `ordinal` value to stay the same
+		public enum Policy {
+            NOBODY,
+            EVERYONE,
+            ALLOW_LIST;
+
+            @Nullable
+            public static Policy fromIntOrNull(final int value) {
+                switch (value) {
+                    case PreferenceService.PROFILEPIC_RELEASE_NOBODY:
+                        return Policy.NOBODY;
+                    case PreferenceService.PROFILEPIC_RELEASE_EVERYONE:
+                        return Policy.EVERYONE;
+                    case PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST:
+                        return Policy.ALLOW_LIST;
+                    default:
+                        return null;
+                }
+            }
+        }
 
 		@NonNull
 		private final Policy policy;
+
 		@NonNull
 		private final List<String> allowedIdentities;
 
@@ -166,7 +181,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 		/**
 		 * States filter
 		 */
-		ContactModel.State[] states();
+		IdentityState[] states();
 
 		/**
 		 * @return feature int
@@ -197,6 +212,7 @@ public interface ContactService extends AvatarService<ContactModel> {
 		Boolean onlyWithReceiptSettings();
 	}
 
+	@NonNull
 	ContactModel getMe();
 
 	/**
@@ -260,14 +276,6 @@ public interface ContactService extends AvatarService<ContactModel> {
 	@Nullable
 	ContactModel getByIdentity(@Nullable String identity);
 
-	/**
-	 * Return the contact model for the specified identity. If the contact does not exist yet, create it.
-	 *
-	 * @param identity The identity string
-	 * @param force Force the creation of the contact, even if adding new contacts has been disabled
-	 */
-	@NonNull
-	ContactModel getOrCreateByIdentity(String identity, boolean force) throws EntryAlreadyExistsException, InvalidEntryException, PolicyViolationException;
 	List<ContactModel> getByIdentities(String[] identities);
 	List<ContactModel> getByIdentities(List<String> identities);
 
@@ -308,8 +316,16 @@ public interface ContactService extends AvatarService<ContactModel> {
 	@Nullable
 	ContactModel getByPublicKey(byte[] publicKey);
 
-	void setIsHidden(String identity, boolean hidden);
-	boolean getIsHidden(String identity);
+	/**
+	 * Update the acquaintance level of the given identity if it exists as a contact.
+	 *
+	 * @param identity the identity of the contact
+	 * @param acquaintanceLevel the new acquaintance level
+	 */
+	void setAcquaintanceLevel(
+		@NonNull String identity,
+		@NonNull ContactModel.AcquaintanceLevel acquaintanceLevel
+	);
 
 	void setIsArchived(String identity, boolean archived);
 
@@ -329,16 +345,17 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	void clearLastUpdate(@NonNull String identity);
 
+    /**
+     * Save the given contact model.
+     *
+     * @deprecated This method should not be used anymore as it may override the database with old
+     * data from the model. To perform changes on a contact, the contact model repository should be
+     * used.
+     */
+    @Deprecated
 	void save(@NonNull ContactModel model);
 
-	/**
-	 * save contacts after processing and returning true
-	 */
-	int save(List<ContactModel> contactModels, ContactProcessor contactProcessor);
-
-	boolean remove(ContactModel model);
-	boolean remove(ContactModel model, boolean removeLink);
-	AccessModel getAccess(ContactModel model);
+	AccessModel getAccess(@Nullable String identity);
 
 	void setIsTyping(String identity, boolean isTyping) ;
 	boolean isTyping(String identity);
@@ -351,106 +368,91 @@ public interface ContactService extends AvatarService<ContactModel> {
 	 */
 	void sendTypingIndicator(String toIdentity, boolean isTyping);
 
-	void setActive(@Nullable String identity);
-
-	int updateContactVerification(String identity, byte[] publicKey);
-
-	/**
-	 * Create a contact with the specified identity.
-	 *
-	 * @param identity The identity string
-	 * @param force Force the creation of the contact, even if adding new contacts has been disabled
-	 */
-	@NonNull
-	ContactModel createContactByIdentity(@NonNull String identity, boolean force) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
-
-	/**
-	 * Create a contact with the specified identity.
-	 *
-	 * @param identity The identity string
-	 * @param force Force the creation of the contact, even if adding new contacts has been disabled
-	 * @param acquaintanceLevel The acquaintance level of the new contact
-	 */
-	@NonNull ContactModel createContactByIdentity(@NonNull String identity, boolean force, @NonNull ContactModel.AcquaintanceLevel acquaintanceLevel) throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException;
-
-	/**
-	 * Create (optionally hidden) contacts for all provided identities. Note that contacts are also created when block
-	 * unknown is active or th_disable_add_contact is set to true.
-	 * Contacts are added with acquaintance level 'group'.
-	 * There is no contact created for an identity if
-	 *  - it is the user's identity
-	 *  - there is already a contact for that identity
-	 *  - the identity public key cannot be fetched (404)
-	 */
-	void createGroupContactsByIdentities(@NonNull List<String> identities);
-
-	VerificationLevel getInitialVerificationLevel(ContactModel contactModel);
-
-	void removeAll();
-
 	/**
 	 * Create a new message receiver for the specified contact model.
 	 */
 	@NonNull ContactMessageReceiver createReceiver(ContactModel contact);
 
 	/**
-	 * @param msg latest message with the "newest" public nickname
+	 * Create a new message receiver for the specified contact model. Note that the return value is
+	 * null, if the old contact model does not exist with the identity of the given model.
 	 */
-	void updatePublicNickName(@NonNull AbstractMessage msg);
+	@Nullable ContactMessageReceiver createReceiver(@NonNull ch.threema.data.models.ContactModel contact);
+
+    /**
+     * Create a new message receiver for the given identity. Note that the return value is null if
+     * there is no contact with the provided identity.
+     */
+    @Nullable ContactMessageReceiver createReceiver(@NonNull String identity);
 
 	boolean updateAllContactNamesFromAndroidContacts();
 
 	void removeAllSystemContactLinks();
 
-	@Deprecated
-	int getUniqueId(@Nullable ContactModel contactModel);
-	@Deprecated
-	int getUniqueId(@NonNull String identity);
-	String getUniqueIdString(ContactModel contactModel);
+    /**
+     * Set the user defined profile picture. Depending on the trigger source, the change is also
+     * reflected.
+     *
+     * @return true if storing the profile picture succeeded
+     */
+    boolean setUserDefinedProfilePicture(
+        @Nullable ContactModel contactModel,
+        @Nullable File temporaryAvatarFile,
+        @NonNull TriggerSource triggerSource
+    );
 
-	String getUniqueIdString(String identity);
+    /**
+     * Set the user defined profile picture. Depending on the trigger source, the change is also
+     * reflected.
+     *
+     * @return true if storing the profile picture succeeded
+     */
+    boolean setUserDefinedProfilePicture(
+        @NonNull String identity,
+        @Nullable File temporaryAvatarFile,
+        @NonNull TriggerSource triggerSource
+    );
 
-	boolean setAvatar(@Nullable ContactModel contactModel, @Nullable File temporaryAvatarFile) throws Exception;
-	boolean setAvatar(@NonNull String identity, @Nullable File temporaryAvatarFile) throws Exception;
-	boolean setAvatar(ContactModel contactModel, byte[] avatar) throws Exception;
-	boolean removeAvatar(ContactModel contactModel);
-	void clearAvatarCache(@NonNull String identity);
+    /**
+     * Set the user defined profile picture. Depending on the trigger source, the change is also
+     * reflected.
+     *
+     * @return true if storing the profile picture succeeded
+     * @throws IOException when the byte array cannot be written to the file
+     * @throws MasterKeyLockedException when the master key is locked
+     */
+    boolean setUserDefinedProfilePicture(
+        @Nullable ContactModel contactModel,
+        @Nullable byte[] avatar,
+        @NonNull TriggerSource triggerSource
+    ) throws IOException, MasterKeyLockedException;
+
+    /**
+     * Remove the user defined profile picture. Depending on the trigger source, the change is also
+     * reflected.
+     *
+     * @return true if the removal succeeded
+     */
+    boolean removeUserDefinedProfilePicture(
+        @Nullable ContactModel contactModel,
+        @NonNull TriggerSource triggerSource
+    );
 
 	@NonNull
 	ProfilePictureSharePolicy getProfilePictureSharePolicy();
 
 	/**
-	 * Check whether the app settings allow the profile picture to be sent to the contact. Note that
+	 * Check whether the app settings allow the profile picture to be sent to the identity. Note that
 	 * this method does <b>not</b> check whether the contact is a gateway ID or ECHOECHO.
 	 *
 	 * @return {@code true} if the profile picture could be sent, {@code false} otherwise
 	 */
-	boolean isContactAllowedToReceiveProfilePicture(@NonNull ContactModel contactModel);
-
-	/**
-	 * Upload the current profile picture if it hasn't been uploaded recently and get the most
-	 * recent contact profile picture upload data.
-	 *
-	 * @return the most recent profile picture upload data. If the upload failed or the last stored
-	 * data could not be read, the returned data contains null as blob ID. If there is no profile
-	 * picture set, the blob ID is {@link ContactModel#NO_PROFILE_PICTURE_BLOB_ID}.
-	 */
-	@NonNull
-	@WorkerThread
-	ProfilePictureUploadData getUpdatedProfilePictureUploadData();
-
-	/**
-	 * Reset the date of the last profile picture distribution date of the given contact.
-	 */
-	void resetContactPhotoSentState(@NonNull ContactModel contactModel);
-
-	ContactModel createContactModelByIdentity(String identity) throws InvalidEntryException;
+	boolean isContactAllowedToReceiveProfilePicture(@NonNull String identity);
 
 	boolean showBadge(@Nullable ContactModel contactModel);
 	boolean showBadge(@NonNull ContactModelData contactModelData);
 
 	String getAndroidContactLookupUriString(ContactModel contactModel);
-	@Nullable ContactModel addWorkContact(@NonNull WorkContact workContact, @Nullable List<ContactModel> existingWorkContacts);
 
 	/**
 	 * Remove the specified contact from the contact cache.
@@ -484,8 +486,8 @@ public interface ContactService extends AvatarService<ContactModel> {
 	void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException;
 
 	@WorkerThread
-	boolean resetReceiptsSettings();
-	void reportSpam(@NonNull ContactModel spammerContactModel, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
+	void resetReceiptsSettings();
+	void reportSpam(@NonNull String identity, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
 
 	/**
 	 * Get the forward security state of a given contact.

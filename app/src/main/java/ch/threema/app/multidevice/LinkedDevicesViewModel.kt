@@ -25,10 +25,12 @@ import androidx.annotation.AnyThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.ThreemaApplication.requireServiceManager
-import ch.threema.app.multidevice.linking.DeviceJoinDataCollector
+import ch.threema.app.tasks.TaskCreator
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +38,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesViewModel")
 
 class LinkedDevicesViewModel : ViewModel() {
 
@@ -51,15 +55,24 @@ class LinkedDevicesViewModel : ViewModel() {
 
     private val mdManager: MultiDeviceManager by lazy { requireServiceManager().multiDeviceManager }
 
+    private val taskCreator: TaskCreator by lazy { requireServiceManager().taskCreator }
+
     init {
         emitStates()
         collectLatestCloseReason()
     }
 
-    @AnyThread
-    fun linkDevice(deviceJoinOfferUri: String, deviceJoinDataCollector: DeviceJoinDataCollector) {
+    fun refreshLinkedDevices() {
+        logger.info("Refresh linked devices")
+        emitLinkedDevices()
+    }
+
+    // TODO(ANDR-2717): Remove, as this is only used for development purposes
+    fun dropOtherDevices() {
+        logger.warn("Drop all other devices")
         CoroutineScope(Dispatchers.Default).launch {
-            mdManager.linkDevice(deviceJoinOfferUri, deviceJoinDataCollector)
+            mdManager.purge(taskCreator)
+            delay(500)
             emitStates()
         }
     }
@@ -75,14 +88,15 @@ class LinkedDevicesViewModel : ViewModel() {
 
     @AnyThread
     private fun activateMultiDevice() {
+        logger.info("Activate multi device")
         CoroutineScope(Dispatchers.Default).launch {
             val serviceManager = requireServiceManager()
             mdManager.activate(
                 "Android Client", // TODO(ANDR-2487): Should be userselectable (and updateable)
-                serviceManager.taskManager,
                 serviceManager.contactService,
                 serviceManager.userService,
-                serviceManager.forwardSecurityMessageProcessor
+                serviceManager.forwardSecurityMessageProcessor,
+                taskCreator,
             )
             emitStates()
         }
@@ -92,11 +106,10 @@ class LinkedDevicesViewModel : ViewModel() {
     private fun deactivateMultiDevice() {
         CoroutineScope(Dispatchers.Default).launch {
             val serviceManager = requireServiceManager()
-            // TODO(ANDR-2603): Maybe show a spinner while we are waiting for deactivation to complete
             mdManager.deactivate(
-                serviceManager.taskManager,
                 serviceManager.userService,
-                serviceManager.forwardSecurityMessageProcessor
+                serviceManager.forwardSecurityMessageProcessor,
+                taskCreator,
             )
             emitStates()
         }
@@ -118,7 +131,7 @@ class LinkedDevicesViewModel : ViewModel() {
     @AnyThread
     private fun emitLinkedDevices() {
         viewModelScope.launch {
-            _linkedDevices.emit(withContext(Dispatchers.Default) { mdManager.linkedDevices })
+            _linkedDevices.emit(mdManager.loadLinkedDevicesInfo(taskCreator))
         }
     }
 

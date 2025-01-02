@@ -88,6 +88,11 @@ public class GroupSetProfilePictureMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return false;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}

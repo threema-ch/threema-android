@@ -13,7 +13,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.2'
         classpath 'org.owasp:dependency-check-gradle:10.0.4'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         // Huawei agconnect plugin

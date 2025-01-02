@@ -21,12 +21,9 @@
 
 package ch.threema.app.voip.activities;
 
-import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
-
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -36,12 +33,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
@@ -56,24 +47,35 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
+import ch.threema.app.asynctasks.SendToSupportResult;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WebRTCUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.O2OCall;
-import ch.threema.storage.models.ContactModel;
 
 /**
  * An activity to debug problems with WebRTC (in the context of Threema Calls).
@@ -83,8 +85,13 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 	private static final String DIALOG_TAG_SEND_WEBRTC_DEBUG = "swd";
 
 	// Threema services
-	@NonNull private MessageService messageService;
-	@NonNull private ContactService contactService;
+	@Nullable private MessageService messageService;
+	@Nullable private ContactService contactService;
+	@Nullable private APIConnector apiConnector;
+	@Nullable private ContactModelRepository contactModelRepository;
+	@Nullable private UserService userService;
+
+	@Nullable private BackgroundExecutor backgroundExecutor;
 
 	// Views
 	@NonNull private CircularProgressIndicator progressBar;
@@ -126,6 +133,9 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 			finish();
 			return;
 		}
+		this.apiConnector = serviceManager.getAPIConnector();
+		this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+		this.userService = serviceManager.getUserService();
 
 		final ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null) {
@@ -428,17 +438,30 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 
 	@SuppressLint("StaticFieldLeak")
 	private void sendToSupport(@NonNull String caption) {
-		if (this.contactService == null || messageService == null) {
+		if (
+			contactService == null
+				|| messageService == null
+				|| userService == null
+				|| apiConnector == null
+				|| contactModelRepository == null
+		) {
 			logger.error("Cannot send to support, some services are null");
 			return;
 		}
 
-		new AsyncTask<Void, Void, Boolean>() {
+		SendToSupportBackgroundTask sendToSupportTask = new SendToSupportBackgroundTask(
+			userService.getIdentity(),
+			apiConnector,
+			contactModelRepository,
+			this
+		) {
+			@NonNull
 			@Override
-			protected Boolean doInBackground(Void... voids) {
+			public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
 				try {
-					final ContactModel contactModel = contactService.getOrCreateByIdentity(THREEMA_SUPPORT_IDENTITY, true);
-					final ContactMessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+					final ContactMessageReceiver messageReceiver = contactService.createReceiver(
+						contactModel
+					);
 
 					messageService.sendText(clipboardString +
 						"\n---\n" +
@@ -448,23 +471,28 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 						"Threema " + ConfigUtils.getAppVersion() + "\n" +
 						getMyIdentity(), messageReceiver);
 
-					return true;
+					return SendToSupportResult.SUCCESS;
 				} catch (Exception e) {
 					logger.error("Exception while sending information to support", e);
-					return false;
+					return SendToSupportResult.FAILED;
 				}
 			}
 
 			@Override
-			protected void onPostExecute(Boolean success) {
+			public void onFinished(SendToSupportResult result) {
 				Toast.makeText(
 					getApplicationContext(),
-					Boolean.TRUE.equals(success) ? R.string.message_sent : R.string.an_error_occurred,
+					result == SendToSupportResult.SUCCESS ? R.string.message_sent : R.string.an_error_occurred,
 					Toast.LENGTH_LONG
 				).show();
 				finish();
 			}
-		}.execute();
+		};
+
+		if (backgroundExecutor == null) {
+			backgroundExecutor = new BackgroundExecutor();
+		}
+		backgroundExecutor.execute(sendToSupportTask);
 	}
 
 	@AnyThread

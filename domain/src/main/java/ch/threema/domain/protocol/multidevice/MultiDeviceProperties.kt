@@ -55,6 +55,4 @@ data class MultiDeviceProperties(
     override fun toString(): String {
         return "MultiDeviceProperties(registrationTime=$registrationTime, mediatorDeviceId=$mediatorDeviceId, cspDeviceId=$cspDeviceId, keys=********, deviceInfo=$deviceInfo, protocolVersion=$protocolVersion, serverInfoListener=$serverInfoListener, deviceSlotState=$deviceSlotState)"
     }
-
-
 }

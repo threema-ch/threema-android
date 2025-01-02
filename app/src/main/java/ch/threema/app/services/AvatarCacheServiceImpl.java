@@ -169,12 +169,17 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 	@AnyThread
 	@Override
 	public void reset(@NonNull ContactModel contactModel) {
-		synchronized (this.contactAvatarStates) {
-			this.contactAvatarStates.put(contactModel.getIdentity(), System.currentTimeMillis());
-		}
+        reset(contactModel.getIdentity());
 	}
 
-	@AnyThread
+    @Override
+    public void reset(@NonNull String identity) {
+        synchronized (this.contactAvatarStates) {
+            this.contactAvatarStates.put(identity, System.currentTimeMillis());
+        }
+    }
+
+    @AnyThread
 	@Override
 	public void reset(@NonNull GroupModel groupModel) {
 		synchronized (this.groupAvatarStates) {

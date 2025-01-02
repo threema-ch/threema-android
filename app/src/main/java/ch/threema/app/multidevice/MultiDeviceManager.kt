@@ -24,14 +24,15 @@ package ch.threema.app.multidevice
 
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
-import ch.threema.app.multidevice.linking.DeviceJoinDataCollector
+import ch.threema.app.multidevice.linking.DeviceLinkingDataCollector
+import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
+import ch.threema.app.tasks.TaskCreator
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
-import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.flow.Flow
 
 interface MultiDeviceManager {
@@ -39,8 +40,6 @@ interface MultiDeviceManager {
     val isMdDisabledOrSupportsFs: Boolean
 
     val isMultiDeviceActive: Boolean
-
-    val linkedDevices: List<String>
 
     val propertiesProvider: MultiDevicePropertyProvider
 
@@ -52,25 +51,50 @@ interface MultiDeviceManager {
     @WorkerThread
     suspend fun activate(
         deviceLabel: String,
-        taskManager: TaskManager, // TODO(ANDR-2519): Remove
         contactService: ContactService, // TODO(ANDR-2519): remove
         userService: UserService, // TODO(ANDR-2519): remove
         fsMessageProcessor: ForwardSecurityMessageProcessor, // TODO(ANDR-2519): remove
+        taskCreator: TaskCreator,
     )
 
+    /**
+     * Deactivate multi device:
+     * - drop all (including own) devices from device group
+     * - delete dgk
+     * - reconnect to chat server
+     * - reactivate fs TODO(ANDR-2519): Remove fs part
+     *
+     * NOTE: This method should not be invoked from within a task as the mediator will close the
+     * connection when the own device is dropped. This might lead to unexpected behaviour.
+     */
     @WorkerThread
     suspend fun deactivate(
-        taskManager: TaskManager,
         userService: UserService, // TODO(ANDR-2519): remove
-        fsMessageProcessor: ForwardSecurityMessageProcessor // TODO(ANDR-2519): remove
+        fsMessageProcessor: ForwardSecurityMessageProcessor, // TODO(ANDR-2519): remove
+        taskCreator: TaskCreator,
     )
 
     @WorkerThread
     suspend fun setDeviceLabel(deviceLabel: String)
 
-    @AnyThread
+    /**
+     * Start linking of a new device with a device join offer uri.
+     * The returned flow emits the current status of the linking process.
+     * To abort the linking process, the coroutine performing the linking
+     * should be cancelled.
+     */
+    @WorkerThread
     suspend fun linkDevice(
         deviceJoinOfferUri: String,
-        deviceJoinDataCollector: DeviceJoinDataCollector,
-    )
+        taskCreator: TaskCreator,
+    ): Flow<DeviceLinkingStatus>
+
+    /**
+     * Remove all _other_ devices from the device group
+     * TODO(ANDR-2717): Remove, as it is only used for development
+     */
+    suspend fun purge(taskCreator: TaskCreator)
+
+    @AnyThread
+    suspend fun loadLinkedDevicesInfo(taskCreator: TaskCreator): List<String>
 }

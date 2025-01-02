@@ -22,75 +22,79 @@
 package ch.threema.domain.protocol.csp.messages.ballot;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BallotVoteTest {
-	class BallotVotString extends BallotVote {
-		@Override
-		public String toString() {
-			try {
-				return this.generateString();
-			} catch (BadMessageException e) {
-				return "ERROR " + e.getMessage();
-			}
-		}
-	}
 
-	@Test
-	public void parseValidString() {
-		String correct = "[10,1]";
+    static class BallotVoteString extends BallotVote {
 
-		try {
-			Assert.assertNotNull(BallotVote.parse(new JSONArray(correct)));
-		} catch (Exception e) {
-			Assert.fail(e.getMessage());
-		}
-	}
+        public BallotVoteString(int id, int value) {
+            super(id, value);
+        }
 
-	@Test
-	public void parseInvalidType() {
-		String correct = "[\"a\",\"b\"]";
+        @Override
+        public String toString() {
+            try {
+                return this.generateString();
+            } catch (BadMessageException e) {
+                return "ERROR " + e.getMessage();
+            }
+        }
+    }
 
-		try {
-			try {
-				BallotVote.parse(new JSONArray(correct));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			Assert.fail("wrong type parsed");
-		} catch (BadMessageException e) {
-			//cool!
-		}
-	}
+    @Test
+    public void parseValidString() {
+        String correct = "[10,1]";
 
-	@Test
-	public void parseInvalidString() {
-		try {
-			BallotDataChoice.parse("i want to be a hippie");
-			Assert.fail("invalid string parsed");
-		} catch (BadMessageException e) {
-			//ok! exception received
-		}
-	}
+        try {
+            Assert.assertNotNull(BallotVote.parse(new JSONArray(correct)));
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 
-	@Test
-	public void toStringTest() {
-		BallotVote v = new BallotVotString();
-		v.setId(100);
-		v.setValue(1);
+    @Test
+    public void parseInvalidType() {
+        String correct = "[\"a\",\"b\"]";
 
-		try {
-			JSONArray o = new JSONArray("[100, 1]");
-			Assert.assertEquals(
-					o.toString(),
-					v.toString()
-			);
-		} catch (JSONException e) {
-			Assert.fail("internal error");
-		}
+        try {
+            try {
+                BallotVote.parse(new JSONArray(correct));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Assert.fail("wrong type parsed");
+        } catch (BadMessageException e) {
+            //cool!
+        }
+    }
 
-	}
+    @Test
+    public void parseInvalidString() {
+        try {
+            BallotDataChoice.parse("i want to be a hippie");
+            Assert.fail("invalid string parsed");
+        } catch (BadMessageException e) {
+            //ok! exception received
+        }
+    }
+
+    @Test
+    public void toStringTest() {
+        BallotVote v = new BallotVoteString(100, 1);
+
+        try {
+            JSONArray o = new JSONArray("[100, 1]");
+            Assert.assertEquals(
+                o.toString(),
+                v.toString()
+            );
+        } catch (JSONException e) {
+            Assert.fail("internal error");
+        }
+    }
 }

@@ -398,9 +398,12 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         );
         AdapterUtil.styleContact(holder.contactTextBottomRight, contactModel);
 
-        if (holder.verificationLevelView != null) {
-            holder.verificationLevelView.setContactModel(contactModel);
-        }
+		if (holder.verificationLevelView != null) {
+			holder.verificationLevelView.setVerificationLevel(
+				contactModel.verificationLevel,
+				contactModel.getWorkVerificationLevel()
+			);
+		}
 
         ViewUtil.show(
             holder.blockedContactView,

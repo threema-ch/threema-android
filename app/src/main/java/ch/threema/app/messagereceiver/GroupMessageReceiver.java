@@ -36,8 +36,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.tasks.OutboundIncomingGroupMessageUpdateReadTask;
 import ch.threema.app.tasks.OutgoingFileMessageTask;
 import ch.threema.app.tasks.OutgoingGroupDeleteMessageTask;
 import ch.threema.app.tasks.OutgoingGroupEditMessageTask;
@@ -71,10 +73,10 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	private final GroupModel group;
 	private final GroupService groupService;
-	private Bitmap avatar = null;
 	private final DatabaseServiceNew databaseServiceNew;
 	private final @NonNull ServiceManager serviceManager;
 	private final TaskManager taskManager;
+	private final MultiDeviceManager multiDeviceManager;
 
 	public GroupMessageReceiver(
 		GroupModel group,
@@ -87,6 +89,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 		this.databaseServiceNew = databaseServiceNew;
 		this.serviceManager = serviceManager;
 		this.taskManager = serviceManager.getTaskManager();
+		this.multiDeviceManager = serviceManager.getMultiDeviceManager();
 	}
 
 	@Override
@@ -126,7 +129,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public void createAndSendTextMessage(@NonNull GroupMessageModel messageModel) {
-		Set<String> otherMembers = groupService.getOtherMembers(group);
+		Set<String> otherMembers = groupService.getMembersWithoutUser(group);
 
 		if (otherMembers.isEmpty()) {
 			// In case the recipients set is empty, we are sending the message in a notes group. In
@@ -161,7 +164,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public void createAndSendLocationMessage(@NonNull GroupMessageModel messageModel) {
-		Set<String> otherMembers = groupService.getOtherMembers(group);
+		Set<String> otherMembers = groupService.getMembersWithoutUser(group);
 
 		if (otherMembers.isEmpty()) {
 			// In case the recipients set is empty, we are sending the message in a notes group. In
@@ -216,7 +219,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 		// Set file data model again explicitly to enforce that the body of the message is rewritten
 		// and therefore updated.
-		messageModel.setFileData(modelFileData);
+		messageModel.setFileDataModel(modelFileData);
 
 		// Create a new message id if the given message id is null
 		messageModel.setApiMessageId(messageId != null ? messageId.toString() : new MessageId().toString());
@@ -280,6 +283,24 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 			group.getCreatorIdentity(),
 			serviceManager
 		));
+	}
+
+	/**
+	 * Send an incoming message update to mark the message as read. This method only schedules the
+	 * outgoing group message update if multi device is activated.
+	 */
+	public void sendIncomingMessageUpdateRead(@NonNull Set<MessageId> messageIds, long timestamp) {
+		if (multiDeviceManager.isMultiDeviceActive()) {
+			taskManager.schedule(
+				new OutboundIncomingGroupMessageUpdateReadTask(
+					messageIds,
+					timestamp,
+					group.getApiGroupId(),
+					group.getCreatorIdentity(),
+					serviceManager
+				)
+			);
+		}
 	}
 
 	public void sendEditMessage(int messageModelId, @NonNull String body, @NonNull Date editedAt) {
@@ -362,18 +383,12 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public Bitmap getNotificationAvatar() {
-		if (avatar == null && groupService != null) {
-			avatar = groupService.getAvatar(group, false);
-		}
-		return avatar;
+		return groupService.getAvatar(group, false);
 	}
 
 	@Override
 	public Bitmap getAvatar() {
-		if (avatar == null && groupService != null) {
-			avatar = groupService.getAvatar(group, true, true);
-		}
-		return avatar;
+		return groupService.getAvatar(group, true, true);
 	}
 
 	@Override
@@ -401,6 +416,12 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
 	@Override
 	public boolean sendMediaData() {
+        if (multiDeviceManager.isMultiDeviceActive()) {
+            // We need to upload the media in any case (also for notes groups) if multi device is
+            // active. In this case the upload is needed as the message is reflected.
+            return true;
+        }
+
 		// don't really send off group media if user is the only group member left - keep it local
 		String[] groupIdentities = groupService.getGroupIdentities(group);
 		return groupIdentities.length != 1 || !groupService.isGroupMember(group);

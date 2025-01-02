@@ -164,7 +164,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 			boolean isOrphanedGroup = groupService.isOrphanedGroup(groupModel);
 			boolean isCreator = groupService.isGroupCreator(groupModel);
 			boolean isMember = groupService.isGroupMember(groupModel);
-			boolean hasOtherMembers = groupService.getOtherMemberCount(groupModel) > 0;
+			boolean hasOtherMembers = groupService.countMembersWithoutUser(groupModel) > 0;
 
 			if (isOrphanedGroup) {
 				// Show orphaned group notice

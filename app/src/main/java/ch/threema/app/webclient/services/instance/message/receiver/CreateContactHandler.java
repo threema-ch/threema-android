@@ -21,10 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.StringDef;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -33,17 +29,32 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
+import androidx.annotation.WorkerThread;
+import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactResult;
+import ch.threema.app.asynctasks.ContactAvailable;
+import ch.threema.app.asynctasks.ContactCreated;
+import ch.threema.app.asynctasks.PolicyViolation;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
+import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Contact;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 
@@ -53,6 +64,9 @@ public class CreateContactHandler extends MessageReceiver {
 
 	private final MessageDispatcher dispatcher;
 	private final ContactService contactService;
+	private final UserService userService;
+	private final APIConnector apiConnector;
+	private final ContactModelRepository contactModelRepository;
 
 	@Retention(RetentionPolicy.SOURCE)
 	@StringDef({
@@ -63,11 +77,19 @@ public class CreateContactHandler extends MessageReceiver {
 	private @interface ErrorCode {}
 
 	@AnyThread
-	public CreateContactHandler(MessageDispatcher dispatcher,
-	                            ContactService contactService) {
+	public CreateContactHandler(
+		MessageDispatcher dispatcher,
+		ContactService contactService,
+		@NonNull UserService userService,
+		@NonNull APIConnector apiConnector,
+		@NonNull ContactModelRepository contactModelRepository
+	) {
 		super(Protocol.SUB_TYPE_CONTACT);
 		this.dispatcher = dispatcher;
 		this.contactService = contactService;
+		this.userService = userService;
+		this.apiConnector = apiConnector;
+		this.contactModelRepository = contactModelRepository;
 	}
 
 	@Override
@@ -102,7 +124,7 @@ public class CreateContactHandler extends MessageReceiver {
 
 		// Otherwise try to create the contact
 		try {
-			contactModel = this.contactService.createContactByIdentity(threemaId, false);
+			contactModel = createContact(threemaId);
 			this.success(threemaId, temporaryId, contactModel);
 		} catch (InvalidEntryException e) {
 			this.failed(threemaId, temporaryId, Protocol.ERROR_INVALID_IDENTITY);
@@ -144,5 +166,35 @@ public class CreateContactHandler extends MessageReceiver {
 	@Override
 	protected boolean maybeNeedsConnection() {
 		return false;
+	}
+
+	@NonNull
+	@WorkerThread
+	private ContactModel createContact(@NonNull String identity)
+		throws InvalidEntryException, EntryAlreadyExistsException, PolicyViolationException {
+		ContactResult result = new BasicAddOrUpdateContactBackgroundTask(
+			identity,
+			ContactModel.AcquaintanceLevel.DIRECT,
+			userService.getIdentity(),
+			apiConnector,
+			contactModelRepository,
+			AddContactRestrictionPolicy.CHECK,
+			ThreemaApplication.getAppContext(),
+			null
+		).runSynchronously();
+
+		if (result instanceof ContactCreated) {
+			ContactModel contactModel = contactService.getByIdentity(identity);
+			if (contactModel == null) {
+				throw new IllegalStateException("Contact model is null after adding it");
+			}
+			return contactModel;
+		} else if (result instanceof ContactAvailable) {
+			throw new EntryAlreadyExistsException(R.string.identity_already_exists);
+		} else if (result instanceof PolicyViolation) {
+			throw new PolicyViolationException();
+		} else {
+			throw new InvalidEntryException(R.string.invalid_threema_id);
+		}
 	}
 }

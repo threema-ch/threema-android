@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
@@ -42,7 +43,7 @@ public class ProtocolTest {
 	@Test
 	public void groupTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
 		//create a new ballot
-		final String myIdentity = "TESTTST";
+		final String myIdentity = "TESTTEST";
 		final String toIdentity = "ABCDEFGH";
 
 		BallotId ballotId = new BallotId(new byte[ProtocolDefines.BALLOT_ID_LEN]);
@@ -57,7 +58,7 @@ public class ProtocolTest {
 		b.setApiGroupId(groupId);
 		b.setGroupCreator(groupCreator);
 		b.setBallotId(ballotId);
-		b.setBallotCreator(ballotCreator);
+		b.setBallotCreatorIdentity(ballotCreator);
 		BallotData data = new BallotData();
 		data.setDescription("Test Ballot");
 		data.setType(BallotData.Type.RESULT_ON_CLOSE);
@@ -75,14 +76,14 @@ public class ProtocolTest {
 			c.setTotalVotes(2);
 			data.getChoiceList().add(c);
 		}
-		b.setData(data);
+		b.setBallotData(data);
 
 		ContactStore contactStore = TestHelpers.getNoopContactStore();
 		IdentityStoreInterface identityStore = TestHelpers.getNoopIdentityStore();
 		NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		MessageBox boxmsg = messageCoder.encode(b, nonceFactory.next(false), nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(b, nonceFactory.nextNonce(NonceScope.CSP));
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
@@ -92,34 +93,33 @@ public class ProtocolTest {
 
 		GroupPollSetupMessage db = (GroupPollSetupMessage) decodedBoxMessage;
 
-		BallotData d = db.getData();
+		BallotData d = db.getBallotData();
 		Assert.assertNotNull(d);
 
 		Assert.assertEquals(BallotData.State.OPEN,  d.getState());
 		Assert.assertEquals(BallotData.AssessmentType.SINGLE, d.getAssessmentType());
 		Assert.assertEquals(BallotData.Type.RESULT_ON_CLOSE, d.getType());
-		Assert.assertEquals(10, b.getData().getChoiceList().size());
-		Assert.assertEquals("Choice 7", b.getData().getChoiceList().get(6).getName());
-		Assert.assertEquals(1, (int) b.getData().getChoiceList().get(2).getResult(0));
-		Assert.assertEquals(0, (int) b.getData().getChoiceList().get(2).getResult(1));
+		Assert.assertEquals(10, b.getBallotData().getChoiceList().size());
+		Assert.assertEquals("Choice 7", b.getBallotData().getChoiceList().get(6).getName());
+		Assert.assertEquals(1, (int) b.getBallotData().getChoiceList().get(2).getResult(0));
+		Assert.assertEquals(0, (int) b.getBallotData().getChoiceList().get(2).getResult(1));
 	}
 
 
 	@Test
 	public void identityTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
 		//create a new ballot
-		final String myIdentity = "TESTTST";
+		final String myIdentity = "TESTTEST";
 		final String toIdentity = "ABCDEFGH";
 
 		BallotId ballotId = new BallotId(new byte[ProtocolDefines.BALLOT_ID_LEN]);
 		String ballotCreator = toIdentity;
 
-
-		PollSetupMessage b = new PollSetupMessage();
-		b.setFromIdentity(ballotCreator);
-		b.setToIdentity(myIdentity);
-		b.setBallotId(ballotId);
-		b.setBallotCreator(ballotCreator);
+		PollSetupMessage pollSetupMessage = new PollSetupMessage();
+		pollSetupMessage.setFromIdentity(ballotCreator);
+		pollSetupMessage.setToIdentity(myIdentity);
+		pollSetupMessage.setBallotId(ballotId);
+		pollSetupMessage.setBallotCreatorIdentity(ballotCreator);
 		BallotData data = new BallotData();
 		data.setDescription("Test Ballot");
 		data.setType(BallotData.Type.RESULT_ON_CLOSE);
@@ -135,7 +135,7 @@ public class ProtocolTest {
 			c.addResult(0, 1).addResult(1,0);
 			data.getChoiceList().add(c);
 		}
-		b.setData(data);
+		pollSetupMessage.setBallotData(data);
 
 		ContactStore contactStore = TestHelpers.getNoopContactStore();
 		IdentityStoreInterface identityStore = TestHelpers.getNoopIdentityStore();
@@ -143,7 +143,7 @@ public class ProtocolTest {
 
 		NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
-		MessageBox boxmsg = messageCoder.encode(b, nonceFactory.next(false), nonceFactory);
+		MessageBox boxmsg = messageCoder.encode(pollSetupMessage, nonceFactory.nextNonce(NonceScope.CSP));
 		Assert.assertNotNull("BoxMessage failed", boxmsg);
 
 		//now decode again
@@ -153,15 +153,15 @@ public class ProtocolTest {
 
 		PollSetupMessage db = (PollSetupMessage) decodedBoxMessage;
 
-		BallotData d = db.getData();
-		Assert.assertNotNull(d);
+		BallotData ballotData = db.getBallotData();
+		Assert.assertNotNull(ballotData);
 
-		Assert.assertEquals(BallotData.State.OPEN,  d.getState());
-		Assert.assertEquals(BallotData.AssessmentType.SINGLE, d.getAssessmentType());
-		Assert.assertEquals(BallotData.Type.RESULT_ON_CLOSE, d.getType());
-		Assert.assertEquals(10, b.getData().getChoiceList().size());
-		Assert.assertEquals("Choice 7", b.getData().getChoiceList().get(6).getName());
-		Assert.assertEquals(1, (int) b.getData().getChoiceList().get(2).getResult(0));
-		Assert.assertEquals(0, (int) b.getData().getChoiceList().get(2).getResult(1));
+		Assert.assertEquals(BallotData.State.OPEN,  ballotData.getState());
+		Assert.assertEquals(BallotData.AssessmentType.SINGLE, ballotData.getAssessmentType());
+		Assert.assertEquals(BallotData.Type.RESULT_ON_CLOSE, ballotData.getType());
+		Assert.assertEquals(10, pollSetupMessage.getBallotData().getChoiceList().size());
+		Assert.assertEquals("Choice 7", pollSetupMessage.getBallotData().getChoiceList().get(6).getName());
+		Assert.assertEquals(1, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(0));
+		Assert.assertEquals(0, (int) pollSetupMessage.getBallotData().getChoiceList().get(2).getResult(1));
 	}
 }

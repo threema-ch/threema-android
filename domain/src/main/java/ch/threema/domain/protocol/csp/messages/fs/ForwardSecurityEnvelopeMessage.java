@@ -133,6 +133,14 @@ public class ForwardSecurityEnvelopeMessage extends AbstractProtobufMessage<Forw
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		if (innerMessage == null) {
+			throw new IllegalStateException("Cannot check sent update reflection of incoming fs envelopes");
+		}
+		return innerMessage.reflectSentUpdate();
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		throw new IllegalStateException("Cannot check for sending automatic delivery receipt on fs envelopes");
 	}

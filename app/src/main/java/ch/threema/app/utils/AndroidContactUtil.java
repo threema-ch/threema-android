@@ -27,7 +27,6 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -70,6 +69,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.ContactModel;
 
 public class AndroidContactUtil {
@@ -170,7 +170,7 @@ public class AndroidContactUtil {
 					try {
 						contactLookupUri = ContactsContract.Contacts.lookupContact(contentResolver, contactLookupUri);
 					} catch (Exception e) {
-						logger.error("Exception", e);
+						logger.error("Could not lookup the contact with identity {}", contactModel.getIdentity(), e);
 						return null;
 					}
 				}
@@ -181,14 +181,49 @@ public class AndroidContactUtil {
 	}
 
 	/**
-	 * Update the avatar for the specified contact from Android's contact database, if any
-	 * If there's no avatar for this Android contact, any current avatar on file will be deleted
+	 * Return a valid uri to the given contact that can be used to build an intent for the contact app
+	 * It is safe to call this method if permission to access contacts is not granted - null will be returned in that case
+	 *
+	 * @param contactModel ContactModel for which to get the Android contact URI
+	 * @return a valid uri pointing to the android contact or null if permission was not granted, no android contact is linked or android contact could not be looked up
+	 */
+	@Nullable
+	public Uri getAndroidContactUri(@NonNull ch.threema.data.models.ContactModel contactModel) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+			ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+			return null;
+		}
+
+		ContactModelData data = contactModel.getData().getValue();
+
+		if (data != null) {
+			final String androidContactLookupKey = data.androidContactLookupKey;
+			if (androidContactLookupKey != null) {
+				Uri contactLookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
+				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+					try {
+						contactLookupUri = ContactsContract.Contacts.lookupContact(contentResolver, contactLookupUri);
+					} catch (Exception e) {
+						logger.error("Could not lookup the contact with identity {}", contactModel.getIdentity(), e);
+						return null;
+					}
+				}
+				return contactLookupUri;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Update the avatar for the specified contact from Android's contact database, if any.
+	 * If there's no avatar for this Android contact, any current avatar file will be deleted.
 	 *
 	 * It is safe to call this method even if permission to read contacts is not given
 	 *
 	 * @param contactModel ContactModel
 	 * @return true if setting or deleting the avatar was successful, false otherwise
 	 */
+	@RequiresPermission(Manifest.permission.READ_CONTACTS)
 	public boolean updateAvatarByAndroidContact(@NonNull ContactModel contactModel) {
 		if (fileService == null) {
 			logger.info("FileService not available");
@@ -203,19 +238,19 @@ public class AndroidContactUtil {
 		// contactUri will be null if permission is not granted
 		Uri contactUri = getAndroidContactUri(contactModel);
 		if (contactUri != null) {
-			@SuppressLint("MissingPermission") Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
+			Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
 
 			if (bitmap != null) {
 				try {
-					fileService.writeAndroidContactAvatar(contactModel.getIdentity(), BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
+					fileService.writeAndroidDefinedProfilePicture(contactModel.getIdentity(), BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
 					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
 					return true;
 				} catch (Exception e) {
-					logger.error("Exception", e);
+					logger.error("Could not write android contact avatar of contact {}", contactModel.getIdentity(), e);
 				}
 			} else {
 				// delete old avatar
-				boolean success = fileService.removeAndroidContactAvatar(contactModel.getIdentity());
+				boolean success = fileService.removeAndroidDefinedProfilePicture(contactModel.getIdentity());
 				if (success) {
 					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
 					return true;
@@ -228,37 +263,85 @@ public class AndroidContactUtil {
 	}
 
 	/**
-	 * Update the name of this contact according to the name of the Android contact
-	 * Note that the ContactModel needs to be saved to the ContactStore to apply the changes!
+	 * Update the avatar for the specified contact from Android's contact database, if any.
+	 * If there's no avatar for this Android contact, any current avatar file will be deleted.
+	 *
+	 * It is safe to call this method even if permission to read contacts is not given
 	 *
 	 * @param contactModel ContactModel
-	 * @return true if the name has changed, false otherwise
+	 * @return true if setting or deleting the avatar was successful, false otherwise
 	 */
 	@RequiresPermission(Manifest.permission.READ_CONTACTS)
-	public boolean updateNameByAndroidContact(@NonNull ContactModel contactModel) throws ThreemaException {
+	public void updateAvatarByAndroidContact(@NonNull ch.threema.data.models.ContactModel contactModel) {
+		if (fileService == null) {
+			logger.info("FileService not available");
+			return;
+		}
+
+		ContactModelData data = contactModel.getData().getValue();
+		if (data == null) {
+			logger.warn("Contact model data is null");
+			return;
+		}
+
+		final String androidContactLookupKey = data.androidContactLookupKey;
+		if (androidContactLookupKey == null) {
+			return;
+		}
+
+		// contactUri will be null if permission is not granted
+		Uri contactUri = getAndroidContactUri(contactModel);
+		if (contactUri != null) {
+			Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
+
+			if (bitmap != null) {
+				try {
+					fileService.writeAndroidDefinedProfilePicture(contactModel.getIdentity(), BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
+					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					return;
+				} catch (Exception e) {
+					logger.error("Exception", e);
+				}
+			} else {
+				// delete old avatar
+				boolean success = fileService.removeAndroidDefinedProfilePicture(contactModel.getIdentity());
+				if (success) {
+					contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+					return;
+				}
+			}
+		}
+
+		logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), androidContactLookupKey, contactUri);
+	}
+
+	/**
+	 * Update the name of this contact according to the name of the Android contact
+	 *
+	 * @param contactModel ContactModel
+	 */
+	@RequiresPermission(Manifest.permission.READ_CONTACTS)
+	public void updateNameByAndroidContact(@NonNull ch.threema.data.models.ContactModel contactModel) throws ThreemaException {
+		ContactModelData data = contactModel.getData().getValue();
+		if (data == null) {
+			logger.warn("Contact model data is null");
+			return;
+		}
 		Uri namedContactUri = getAndroidContactUri(contactModel);
-		if(TestUtil.required(contactModel, namedContactUri)) {
-			ContactName contactName = this.getContactName(namedContactUri);
+		if (namedContactUri != null) {
+			ContactName contactName = getContactName(namedContactUri);
 
 			if (contactName == null) {
-				logger.info("Unable to get contact name for {} lookupKey = {} namedUri = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey(), namedContactUri);
+				logger.info("Unable to get contact name for {} lookupKey = {} namedUri = {}", contactModel.getIdentity(), data.androidContactLookupKey, namedContactUri);
 				// remove contact link to unresolvable contact
-				contactModel.setAndroidContactLookupKey(null);
+				contactModel.removeAndroidContactLink();
 				throw new ThreemaException("Unable to get contact name");
 			}
 
-			if(!TestUtil.compare(contactModel.getFirstName(), contactName.firstName)
-					|| !TestUtil.compare(contactModel.getLastName(), contactName.lastName)) {
-				contactModel.setFirstName(contactName.firstName);
-				contactModel.setLastName(contactName.lastName);
-				return true;
-			}
+			contactModel.setNameFromLocal(contactName.firstName, contactName.lastName);
 		} else {
-			if (contactModel != null) {
-				logger.info("Unable to get android contact uri for {} lookupkey = {}", contactModel.getIdentity(), contactModel.getAndroidContactLookupKey());
-			}
+			logger.info("Unable to get android contact uri for {} lookupKey = {}", contactModel.getIdentity(), data.androidContactLookupKey);
 		}
-		return false;
 	}
 
 	/**
@@ -415,12 +498,11 @@ public class AndroidContactUtil {
 	 *
 	 * @param contentProviderOperations List of ContentProviderOperations to add this operation to
 	 * @param systemRawContactId The raw contact that matched the criteria for aggregation (i.e. email or phone number)
-	 * @param contactModel ContactModel to create a raw contact for
+	 * @param identity the identity of the contact to create a raw contact for
 	 * @param supportsVoiceCalls Whether the user has voice calls enabled
 	 */
 	@RequiresPermission(allOf = {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
-	public void createThreemaRawContact(@NonNull List<ContentProviderOperation> contentProviderOperations, long systemRawContactId, @NonNull ContactModel contactModel, boolean supportsVoiceCalls) {
-		String identity = contactModel.getIdentity();
+	public void createThreemaRawContact(@NonNull List<ContentProviderOperation> contentProviderOperations, long systemRawContactId, @NonNull String identity, boolean supportsVoiceCalls) {
 		Context context = ThreemaApplication.getAppContext();
 		Account account = this.getAccount();
 		if (!TestUtil.required(account, identity)) {
@@ -487,10 +569,10 @@ public class AndroidContactUtil {
 	 * Delete all raw contacts where the given identity matches the entry in the contact's SYNC1 column
 	 * It's safe to call this method without contacts permission
 	 *
-	 * @param contactModel ContactModel whose raw contact we want to be deleted
+	 * @param identity the identity of the contact whose raw contact we want to be deleted
 	 * @return number of raw contacts deleted
 	 */
-	public int deleteThreemaRawContact(@NonNull ContactModel contactModel) {
+	public int deleteThreemaRawContact(@NonNull String identity) {
 		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
 			return 0;
 		}
@@ -503,7 +585,7 @@ public class AndroidContactUtil {
 		Uri rawContactUri = ContactsContract.RawContacts.CONTENT_URI
 			.buildUpon()
 			.appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true")
-			.appendQueryParameter(ContactsContract.RawContacts.SYNC1, contactModel.getIdentity())
+			.appendQueryParameter(ContactsContract.RawContacts.SYNC1, identity)
 			.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, account.name)
 			.appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, account.type).build();
 
@@ -684,7 +766,7 @@ public class AndroidContactUtil {
 	@RequiresPermission(allOf = {Manifest.permission.READ_CONTACTS, Manifest.permission.GET_ACCOUNTS})
 	@Nullable
 	@WorkerThread
-	public Drawable getAccountIcon(@NonNull ContactModel contactModel) {
+	public Drawable getAccountIcon(@Nullable String androidContactLookupKey) {
 		final PackageManager pm = ThreemaApplication.getAppContext().getPackageManager();
 
 		Account myAccount = this.getAccount();
@@ -692,7 +774,6 @@ public class AndroidContactUtil {
 			return null;
 		}
 
-		final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
 		if (androidContactLookupKey == null) {
 			return null;
 		}

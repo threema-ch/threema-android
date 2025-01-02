@@ -217,6 +217,9 @@ public class ConfigUtils {
     public static boolean isSamsungDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("Samsung"));
     }
+    public static boolean isMotorolaDevice() {
+        return (Build.MANUFACTURER.equalsIgnoreCase("motorola"));
+    }
 
     public static boolean isSonyDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("Sony"));
@@ -337,9 +340,10 @@ public class ConfigUtils {
      */
     public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
         return new TLSUpgradeSocketFactoryWrapper(
-            ConfigUtils.isOnPremBuild() ?
-                HttpsURLConnection.getDefaultSSLSocketFactory() :
-                TrustKit.getInstance().getSSLSocketFactory(host));
+            ConfigUtils.isOnPremBuild()
+                ? HttpsURLConnection.getDefaultSSLSocketFactory()
+                : TrustKit.getInstance().getSSLSocketFactory(host)
+        );
     }
 
     public static boolean isXiaomiDevice() {

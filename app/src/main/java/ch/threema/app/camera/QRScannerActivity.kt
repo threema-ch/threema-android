@@ -33,7 +33,12 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -42,7 +47,6 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.services.QRCodeServiceImpl.QRCodeColor
 import ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.SoundUtil
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.ExecutorService
@@ -98,11 +102,19 @@ class QRScannerActivity : ThreemaActivity() {
                 getString(R.string.msg_default_status)
             }
         }
-        findViewById<TextView>(R.id.hint_view).text = hint
-        if (qrColor == QR_TYPE_ANY) {
-            findViewById<ImageView>(R.id.camera_viewfinder).visibility = View.GONE
-        } else {
-            findViewById<ImageView>(R.id.camera_viewfinder).setColorFilter(qrColor)
+
+        // set hint text
+        findViewById<TextView>(R.id.hint_view)?.let {
+            it.text = hint
+        }
+
+        // set viewfinder color
+        findViewById<ImageView>(R.id.camera_viewfinder)?.let {
+            if (qrColor == QR_TYPE_ANY) {
+                it.visibility = View.GONE
+            } else {
+                it.setColorFilter(qrColor)
+            }
         }
 
         // Wait for the views to be properly laid out

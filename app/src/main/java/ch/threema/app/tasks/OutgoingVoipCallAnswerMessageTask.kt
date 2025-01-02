@@ -26,6 +26,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 class OutgoingVoipCallAnswerMessageTask(
     private val voipCallAnswerData: VoipCallAnswerData,
@@ -39,12 +40,10 @@ class OutgoingVoipCallAnswerMessageTask(
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipCallAnswerMessage()
         message.data = voipCallAnswerData
-        message.toIdentity = toIdentity
-        message.messageId = MessageId()
 
         voipStateService.addRequiredMessageId(voipCallAnswerData.callId ?: 0, message.messageId)
 
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     // We do not need to persist this message

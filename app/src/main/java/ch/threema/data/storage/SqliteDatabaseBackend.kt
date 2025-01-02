@@ -34,11 +34,13 @@ import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.CursorHelper
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
@@ -307,16 +309,16 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             }
         }
         val activityState = when (activityStateRaw) {
-            "INACTIVE" -> ContactModel.State.INACTIVE
-            "INVALID" -> ContactModel.State.INVALID
-            "ACTIVE" -> ContactModel.State.ACTIVE
-            "TEMPORARY" -> ContactModel.State.ACTIVE // Legacy state, see !276
+            "INACTIVE" -> IdentityState.INACTIVE
+            "INVALID" -> IdentityState.INVALID
+            "ACTIVE" -> IdentityState.ACTIVE
+            "TEMPORARY" -> IdentityState.ACTIVE // Legacy state, see !276
             else -> {
                 logger.warn(
                     "activityState value out of range: {}. Falling back to ACTIVE.",
                     activityStateRaw
                 )
-                ContactModel.State.ACTIVE
+                IdentityState.ACTIVE
             }
         }
         val syncState = when (syncStateRaw) {
@@ -426,9 +428,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         )
         put(
             ContactModel.COLUMN_STATE, when (contact.activityState) {
-                ContactModel.State.ACTIVE -> "ACTIVE"
-                ContactModel.State.INACTIVE -> "INACTIVE"
-                ContactModel.State.INVALID -> "INVALID"
+                IdentityState.ACTIVE -> "ACTIVE"
+                IdentityState.INACTIVE -> "INACTIVE"
+                IdentityState.INVALID -> "INVALID"
             }
         )
         put(
@@ -467,6 +469,20 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
             whereArgs = arrayOf(identity),
         ) > 0
+    }
+
+    override fun isContactInGroup(identity: String): Boolean {
+        sqlite.readableDatabase.query(
+            DatabaseUtil.IS_GROUP_MEMBER_QUERY,
+            arrayOf(identity)
+        ).use {
+            return if (it.moveToFirst()) {
+                it.getInt(0) == 1
+            } else {
+                logger.error("Could not execute query to check whether contact is group member")
+                false
+            }
+        }
     }
 
     /**
@@ -534,6 +550,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                         GroupModel.COLUMN_COLOR_INDEX,
                         GroupModel.COLUMN_GROUP_DESC,
                         GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+                        GroupModel.COLUMN_USER_STATE,
                     )
                 )
                 .apply(addSelection)
@@ -543,44 +560,41 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                 return null
             }
 
-            val localDbId = cursor.getLong(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_ID))
-            val creatorIdentity = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATOR_IDENTITY))
-            val groupId = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_API_GROUP_ID))
-            val name = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_NAME))
-            val createdAt = cursor.getDateByString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATED_AT))
-            val synchronizedAt = cursor.getDateOrNull(
-                getColumnIndexOrThrow(
-                    cursor,
-                    GroupModel.COLUMN_SYNCHRONIZED_AT
-                )
-            )
-            val lastUpdate = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_LAST_UPDATE))
-            val deleted = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_DELETED))
-            val isArchived = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_IS_ARCHIVED))
-            val colorIndex = cursor.getUByte(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_COLOR_INDEX))
-            val groupDesc = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC))
-            val groupDescChangedAt = cursor.getDateByStringOrNull(
-                getColumnIndexOrThrow(
-                    cursor,
-                    GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP
-                )
-            )
-            val members = getGroupMembers(localDbId)
+             val localDbId = cursor.getLong(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_ID))
+             val creatorIdentity = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATOR_IDENTITY))
+             val groupId = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_API_GROUP_ID))
+             val name = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_NAME))
+             val createdAt = cursor.getDateByString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATED_AT))
+             val synchronizedAt = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_SYNCHRONIZED_AT))
+             val lastUpdate = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_LAST_UPDATE))
+             val deleted = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_DELETED))
+             val isArchived = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_IS_ARCHIVED))
+             val colorIndex = cursor.getUByte(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_COLOR_INDEX))
+             val groupDesc = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC))
+             val groupDescChangedAt = cursor.getDateByStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
+             val members = getGroupMembers(localDbId)
+             val userStateValue = cursor.getInt(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_USER_STATE))
+             val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
+                 logger.error("Invalid group user state: {}", userStateValue)
+                 // We use member as fallback to not accidentally remove the user from the group
+                 GroupModel.UserState.MEMBER
+             }
 
-            return DbGroup(
-                creatorIdentity = creatorIdentity,
-                groupId = groupId,
-                name = name,
-                createdAt = createdAt,
-                synchronizedAt = synchronizedAt,
-                lastUpdate = lastUpdate,
-                deleted = deleted,
-                isArchived = isArchived,
-                colorIndex = colorIndex,
-                groupDescription = groupDesc,
-                groupDescriptionChangedAt = groupDescChangedAt,
-                members = members,
-            )
+             return DbGroup(
+                 creatorIdentity = creatorIdentity,
+                 groupId = groupId,
+                 name = name,
+                 createdAt = createdAt,
+                 synchronizedAt = synchronizedAt,
+                 lastUpdate = lastUpdate,
+                 deleted = deleted,
+                 isArchived = isArchived,
+                 colorIndex = colorIndex,
+                 groupDescription = groupDesc,
+                 groupDescriptionChangedAt = groupDescChangedAt,
+                 members = members,
+                 userState = userState,
+             )
         }
     }
 
@@ -611,10 +625,8 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(GroupModel.COLUMN_IS_ARCHIVED, group.isArchived)
         put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex.toInt())
         put(GroupModel.COLUMN_GROUP_DESC, group.groupDescription)
-        put(
-            GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
-            group.groupDescriptionChangedAt?.toDateStringOrNull()
-        )
+        put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, group.groupDescriptionChangedAt?.toDateStringOrNull())
+        put(GroupModel.COLUMN_USER_STATE, group.userState.value)
     }
 
     private fun getLocalGroupDbId(group: DbGroup): Long {

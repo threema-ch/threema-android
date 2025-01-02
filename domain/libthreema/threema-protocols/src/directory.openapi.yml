@@ -1,0 +1,634 @@
+.references:
+  work-servers: &work-servers
+    - url: https://ds-apip-work.threema.ch
+      description: Production server
+    - url: https://ds-apip-work.test.threema.ch
+      description: Sandbox server
+
+  base64: &base64
+    type: string
+    format: byte
+
+  u64: &u64
+    type: integer
+    minimum: 0
+    maximum: 18446744073709551615
+
+  identity: &identity
+    description: A Threema ID.
+    type: string
+    minLength: 8
+    maxLength: 8
+    pattern: ^([0-9A-Z\\*][0-9A-Z]{7}|\\*)$
+    example: ECHOECHO
+
+  public-key: &public-key
+    <<: *base64
+    description: Public Key (32 bytes, base64) associated to a Threema ID.
+    example: ZWNob2VjaG9lY2hvZWNob2VjaG9lY2hvZWNob2VjaG8=
+
+  app-version: &app-version
+    description: |-
+      App version. This is the CSP `client-info` but with the following special postfix:
+
+      1. If at least one Threema-MDM parameter and at least one external MDM parameter is active, append `;me`
+      2. If at least one Threema-MDM parameter is active, append `;m`
+      3. If at least one external MDM parameter is active, append `;e`
+      4. If no MDM parameter is active, don't append. (A lone `;` is also acceptable.)
+    type: string
+    minLength: 1
+    example: 1.2.3;Q;de/DE;...
+
+  work-username: &work-username
+    description: Work license username.
+    type: string
+    minLength: 1
+    example: echoecho@threema.ch
+
+  work-password: &work-password
+    description: Work license password.
+    type: string
+    minLength: 1
+    example: super-secret-password
+
+  work-nickname: &work-nickname
+    description: |-
+      User's nickname sourced from the MDM parameter `th_nickname`. Empty is
+      equivalent to unset.
+    type: string
+    example: personal-🦜
+
+  work-first-name: &work-first-name
+    description: |-
+      User's first name sourced from the MDM parameter `th_firstname`. Empty is
+      equivalent to unset.
+    type: string
+    example: Aria
+
+  work-last-name: &work-last-name
+    description: |-
+      User's last name sourced from the MDM parameter `th_lastname`. Empty is
+      equivalent to unset.
+    type: string
+    example: Reverb
+
+  work-user-identifier: &work-user-identifier
+    description: |-
+      Custom unique identifier of the user (e.g. employee number), sourced from
+      the MDM parameter `th_csi`. Also known as _Customer Specific Identifier_.
+      Empty is equivalent to unset.
+    type: string
+
+  work-user-categories-delimited: &work-user-categories-delimited
+    description: |-
+      Custom categories of the user (e.g. building name, room number), sourced
+      from the MDM parameter `th_category`. Empty is equivalent to unset.
+
+      Note: For compatibility with the app configuration parameter
+      `th_category`, this is the delimited variant with the category name
+      separated by the category delimiter (`,` by default).
+    type: string
+    example: Building 1, Room 337
+
+  work-user-category-id: &work-user-category-id
+    description: A custom category ID.
+    type: string
+    minLength: 1
+    example: 'jNekOWhQ8B'
+
+  work-user-category-ids: &work-user-category-ids
+    description: |-
+      Custom category IDs of the user (e.g. mapping to the building name, room
+      number), chosen by the Work subscription administrator.
+    type: array
+    items: *work-user-category-id
+    example:
+      - '1'
+      - 'jNekOWhQ8B'
+
+  work-contacts-match: &work-contacts-match
+    type: array
+    items: *identity
+    example:
+      - ECHOECHO
+      - '*SUPPORT'
+
+  work-contact: &work-contact
+    type: object
+    required:
+      - id
+      - pk
+    properties:
+      id: *identity
+      pk: *public-key
+      first:
+        <<: *work-first-name
+        type:
+          - string
+          - 'null'
+      last:
+        <<: *work-last-name
+        type:
+          - string
+          - 'null'
+
+  work-organisation: &work-organisation
+    type: object
+    required:
+      - name
+    properties:
+      name:
+        description: |-
+          Optional name of the organisation, translated by the `Accept-Language`
+          header (if provided).
+        type:
+          - string
+          - 'null'
+
+  work-directory-page-index: &work-directory-page-index
+    description: Page index.
+    type: integer
+    minimum: 0
+
+  work-directory-sort: &work-directory-sort
+    type: object
+    properties:
+      by:
+        description: The sort key applied to the resulting contacts.
+        type: string
+        anyOf:
+          - title: First name
+            const: firstName
+          - title: Last name
+            const: lastName
+          - {}
+        default: firstName
+      asc:
+        description: |-
+          Sort contacts ascending by `by` if `true`, sort descending if `false`.
+        type: boolean
+        default: true
+
+  auth-challenge-request: &auth-challenge-request
+    description: Authentication required.
+    type: object
+    required:
+      - token
+      - tokenRespKeyPub
+    properties:
+      token:
+        <<: *base64
+        description: An arbitrary challenge token (base64) to be _signed_.
+      tokenRespKeyPub:
+        <<: *base64
+        description: |-
+          The ephemeral public key (EPK, 32 bytes, base64) to derive a shared
+          secret for solving the challenge.
+
+  auth-challenge-response: &auth-challenge-response
+    type: object
+    required:
+      - token
+      - response
+    properties:
+      token:
+        <<: *base64
+        description: The token of the challenge request (base64).
+      response:
+        <<: *base64
+        description: |-
+          The token of the challenge request, _signed_ in the following way:
+
+          ```text
+          base64(
+            BLAKE2b(
+              key=BLAKE2b(
+                key=X25519HSalsa20(CK.secret, EPK.public),
+                salt='dir',
+                personal='3ma-csp',
+              ),
+              input=<token>
+            )
+          )
+          ```
+
+  update-work-data-request: &update-work-data-request
+    type: object
+    required:
+      - identity
+      - licenseUsername
+      - licensePassword
+      - version
+    properties:
+      identity: *identity
+      licenseUsername: *work-username
+      licensePassword: *work-password
+      version: *app-version
+      publicNickname: *work-nickname
+      firstName: *work-first-name
+      lastName: *work-last-name
+      csi: *work-user-identifier
+      category: *work-user-categories-delimited
+
+  update-work-data-response:
+    ok: &update-work-data-response-ok
+      description: Work data updated successfully.
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: true
+    error: &update-work-data-response-error
+      description: Updating Work data failed.
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: string
+      example:
+        sucess: false
+        error: 'Missing parameters'
+
+  work-auth: &work-auth
+    type: object
+    required:
+      - username
+      - password
+    properties:
+      username: *work-username
+      password: *work-password
+
+  sync-work-data-request: &sync-work-data-request
+    type: object
+    required:
+      - contacts
+    properties:
+      contacts:
+        <<: *work-contacts-match
+        description: |-
+          A list of all existing contacts of the user to match against the Work
+          subscription.
+
+          Note: This is necessary to determine whether a contact is part of the
+          user's Work subscription and, in that case, get additional
+          information.
+
+          Note 2: Explicitly providing all of the user's contacts also prevents
+          having to configure **all** Work contacts of the same subscription.
+
+  sync-work-data-response: &sync-work-data-response
+    type: object
+    required:
+      - checkInterval
+      - org
+      - logo
+      - support
+      - directory
+      - mdm
+      - contacts
+    properties:
+      checkInterval:
+        <<: *u64
+        description: |-
+          Target amount of seconds until a subsequent Work sync should be
+          initiated.
+      org: *work-organisation
+      logo:
+        description: Logo to be displayed in the app.
+        type: object
+        required:
+          - light
+          - dark
+        properties:
+          light: &work-logo-url
+            description: |-
+              Optional URL to a logo to be displayed in the app. The logo must
+              be provided in PNG format.
+            type:
+              - string
+              - 'null'
+          dark: *work-logo-url
+      support:
+        description: Optional custom in-app support base URL.
+        type:
+          - string
+          - 'null'
+      directory:
+        oneOf:
+          - description: Disabled Work directory.
+            type: object
+            required:
+              - enabled
+            properties:
+              enabled:
+                type: boolean
+                const: false
+          - description: Enabled Work directory.
+            type: object
+            required:
+              - enabled
+              - cat
+            properties:
+              enabled:
+                type: boolean
+                const: true
+              cat:
+                description: |-
+                  Map of contact category IDs to their respective (display) name.
+                type: object
+                additionalProperties: *work-user-category-id
+      mdm:
+        description: App configuration to be applied.
+        type: object
+        required:
+          - override
+          - params
+        properties:
+          override:
+            description: |-
+              Whether the app configuration parameters provided here take
+              precedence over the the externally configured MDM parameters.
+            type: boolean
+          params:
+            description: |-
+              A key/value map of app configuration / MDM parameters as defined
+              by the protocol.
+            type: object
+            additionalProperties:
+              oneOf:
+                - type: string
+                - *u64
+                - type: boolean
+      contacts:
+        description: |-
+          A list of contacts from the same Work subscription to be configured
+          on the user's device.
+        type: array
+        items:
+          <<: *work-contact
+          description: A configured Work contact.
+
+  work-contacts-request: &work-contacts-request
+    type: object
+    required:
+      - contacts
+    properties:
+      contacts:
+        <<: *work-contacts-match
+        description: |-
+          A list of contacts (Threema IDs) to get additional Work properties for.
+
+          Note: This is necessary to determine whether a contact is part of the
+          user's Work subscription and, in that case, get additional
+          information.
+
+  work-contacts-response: &work-contacts-response
+    type: object
+    required:
+      - contacts
+    properties:
+      contacts:
+        description: |-
+          A subset of the provided contacts that are part of the same Work
+          subscription with the associated additional Work properties.
+        type: array
+        items:
+          <<: *work-contact
+          description: A Work contact.
+
+  work-directory-request-wildcard: &work-directory-request-wildcard
+    type: object
+    required:
+      - query
+      - page
+      - cateogries
+    properties:
+      identity:
+        <<: *identity
+        description: The user's Threema ID.
+      page: *work-directory-page-index
+      query:
+        description: Wildcard search query.
+        type: string
+        const: '*'
+      categories:
+        <<: *work-user-category-ids
+        description: At least one category ID to narrow down the search with.
+        minLength: 1
+      sort: *work-directory-sort
+
+  work-directory-request-specific: &work-directory-request-specific
+    type: object
+    required:
+      - query
+      - page
+    properties:
+      identity:
+        <<: *identity
+        description: The user's Threema ID.
+      page: *work-directory-page-index
+      query:
+        description: |-
+          Search query. Matches any of Threema ID, first name, or last name.
+        type: string
+        minLength: 3
+        example: Bob
+      categories:
+        <<: *work-user-category-ids
+        description: Optional category IDs to narrow down the search with.
+      sort: *work-directory-sort
+
+  work-directory-response: &work-directory-response
+    type: object
+    required:
+      - contacts
+      - paging
+    properties:
+      paging:
+        description: Page information.
+        type: object
+        required:
+          - size
+          - total
+        properties:
+          size:
+            description: Maximum amount of results present in a single page.
+            type: integer
+            minimum: 0
+          total:
+            description: Total amount of results (spread across pages).
+            type: integer
+            minimum: 0
+          prev:
+            description: Previous page index, if any is available.
+            type: integer
+            minimum: 0
+          next:
+            description: Next page index, if any is available.
+            type: integer
+            minimum: 1
+      contacts:
+        description: |-
+          A Work contact of the same subcription that matches the search query.
+        type: array
+        items: !merge-objects
+          - *work-contact
+          - type: object
+            required:
+              - org
+            properties:
+              csi: *work-user-identifier
+              cat: *work-user-category-ids
+              org: *work-organisation
+
+openapi: 3.1.0
+
+info:
+  title: Directory and Work Sync Server API
+  description: |-
+    Maintains the directory of allocated Threema IDs and all associated
+    properties.
+  version: 1.0.0
+
+servers:
+  - url: https://ds-apip.threema.ch
+    description: Production server
+  - url: https://ds-apip.test.threema.ch
+    description: Sandbox server
+
+paths:
+  /identity/update_work_info:
+    post:
+      summary: Work Properties
+      description: |-
+        Update Work properties associated to the currently used Threema ID. Only
+        used by the _Work_ flavour of Threema.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+
+        Note that all data of the request must be sourced **exclusively** from
+        MDM parameters. For example, the data source for `nickname` must be
+        `th_nickname` and not the custom nickname chosen by the user.
+
+        TODO(SE-368): When sending/receiving steps.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *update-work-data-request
+                - !merge-objects
+                  - *auth-challenge-response
+                  - *update-work-data-request
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *update-work-data-response-ok
+                  - *update-work-data-response-error
+        '429':
+          description: Rate limit exceeded.
+
+  /fetch2:
+    post:
+      summary: Work Sync
+      description: |-
+        Full sync of all data associated to the Work subscription. Only used by
+        the _Work_ flavour of Threema.
+
+        TODO(SE-368): When sending/receiving steps.
+      servers: *work-servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: !merge-objects
+              - *work-auth
+              - *sync-work-data-request
+      responses:
+        '200':
+          description: Work subscription data.
+          content:
+            application/json:
+              schema: *sync-work-data-response
+        '400':
+          description: Invalid request.
+        '401':
+          description: Invalid username or password.
+        '429':
+          description: Rate limit exceeded.
+
+  /identities:
+    post:
+      summary: Work Contacts
+      description: |-
+        Request properties associated to a contact of the same Work subscription.
+
+        TODO(SE-368): When sending/receiving steps. Send before adding a new
+        contact.
+      servers: *work-servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: !merge-objects
+              - *work-auth
+              - *work-contacts-request
+      responses:
+        '200':
+          description: Matching Work contacts in the same Work subscription.
+          content:
+            application/json:
+              schema: *work-contacts-response
+        '400':
+          description: Invalid request.
+        '401':
+          description: Invalid username or password.
+        '429':
+          description: Rate limit exceeded.
+
+  /directory:
+    post:
+      summary: Work Directory
+      description: |-
+        Search for contacts in the same Work subscription as the user.
+
+        TODO(SE-368): When sending/receiving steps.
+      servers: *work-servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - !merge-objects
+                  - *work-auth
+                  - *work-directory-request-wildcard
+                - !merge-objects
+                  - *work-auth
+                  - *work-directory-request-specific
+      responses:
+        '200':
+          description: Queried Work contacts of the same Work subscription.
+          content:
+            application/json:
+              schema: *work-directory-response
+        '400':
+          description: Invalid request.
+        '401':
+          description: Invalid username or password.
+        '429':
+          description: Rate limit exceeded.

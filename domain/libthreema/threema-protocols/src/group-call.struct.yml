@@ -1,0 +1,168 @@
+# Meta information
+meta:
+  # Document name and ID
+  id: group-call
+  name: Group Call Protocol
+
+# Virtual namespace, just containing the below docstring
+index: &index
+  _doc: |-
+    # Group Call Protocol (Supplementary)
+
+    This is a supplementary section to the corresponding protobuf section with
+    messages that use structbuf instead of protobuf. All defined messages here
+    follow the same logic.
+
+# Real-Time media end-to-end encryption
+e2e: &e2e
+  frame:
+    _doc: |-
+      And end-to-end encrypted audio/video frame.
+
+      Steps to extract the unencrypted header from frame data (encrypted or
+      unencrypted):
+
+      1. Let `data` be the given encrypted or unencrypted frame data.
+      2. Let `offset` be `0`.
+      3. If the codec for this frame is Opus, there is no unencrypted header.
+         Leave `offset` at `0`.
+      4. If the codec for this frame is VP8:
+         1. If the LSB of the first byte is `1`, set `offset` to `10` and abort
+            these sub-steps.
+         2. Set `offset` to 3.
+      5. Return a tuple of:
+         - unencrypted-header: A view of all bytes until `offset`
+           (i.e. `data[0..offset]`).
+         - payload: A view of all bytes from `offset` (i.e. `data[offset..]`).
+
+      When creating a media frame:
+
+      1. Let `data` be the given frame data.
+      2. If `data` is greater than `65536 - 16 - 6` bytes, log a warning and
+         abort these steps.
+      3. Let `unencrypted-header` and `payload` be the result of the above
+         described header extraction steps by applying it on `data.
+      4. Let `frame-mfsn` be a copy of the current MFSN. Then, immediately
+         increase MFSN by 1.
+
+         IMPORTANT: The MFSN **must** be guarded by a mutex if multithreading
+         is involved. It is critical to prevent nonce reuse!
+      5. Let `nonce` be the byte concatenation of the following items in this
+         order:
+         - `u32-le(frame-mfsn)`
+         - 8 zero bytes
+      6. Let `pcmk` be the current PCMK with the associated context.
+      7. Let `ad` be the byte concatenation of the following items in this
+         order:
+         - `u8(pcmk.epoch)`
+         - `u8(pcmk.ratchet-counter)`
+         - `u32-le(frame-mfsn)`
+         - `unencrypted-header`
+      8. Encrypt the media frame and let `encrypted-payload` be the result:
+
+             AES-256-GCM(
+               key=pcmk.pcmfk,
+               nonce=nonce,
+               auth-tag-length=16 (bytes),
+               auth-tag-position=append,
+               data=payload,
+               additional-data=ad,
+             )
+      9. Encode the `frame` struct:
+         - `data`: The byte concatenation of `unencrypted-header`,
+           `encrypted-payload` (including the AES GCM authentication tag).
+         - `footer.key-epoch`: `pcmk.epoch`
+         - `footer.key-ratchet-counter`: `pcmk-ratchet-counter`
+         - `footer.mfsn`: `frame-mfsn`
+      10. Increase MFSN by `1`.
+      11. Send the encoded `frame` struct.
+
+      When receiving a media frame:
+
+      1. Let `frame` be the received struct.
+      2. If `frame.data` is greater than `65536` bytes, log a warning and abort
+         these steps.
+      3. Let `unencrypted-header` and `payload` be the result of the above
+         described header extraction steps by applying it on `frame.data`.
+      4. Let `pcmk` be the current PCMK with the associated context for the
+         participant that sent this frame.
+      5. If `frame.epoch` is greater than `pcmk.epoch` or wrapped back to `0`,
+         seek through all successors until a media key with the same `epoch`
+         could be determined.
+         1. If no key could be determined, discard the media frame and abort
+            these steps.
+         2. Replace `pcmk` with the succeeding media key that matched `epoch`.
+            Note: An implementation **must** ensure that only succeeding keys
+            are being used. Rolling back to a preceeding media key is
+            forbidden.
+      6. If `frame.ratchet-counter` is less than `pcmk.ratchet-counter`, discard
+         the media frame and abort these steps.
+      7. If `frame.ratchet-counter` is greater than `pcmk.ratchet-counter`,
+         apply the necessary amount of ratchet rounds to `pcmk` so the counters
+         are equal.
+      8. Let `nonce` be the byte concatenation of the following items in this
+         order:
+         - `u32-le(frame.footer.mfsn)`
+         - 8 zero bytes
+      9. Let `ad` be the byte concatenation of the following items in this
+         order:
+         - `u8(pcmk.epoch)`
+         - `u8(pcmk.ratchet-counter)`
+         - `u32-le(frame.footer.mfsn)`
+         - `unencrypted-header`
+      10. Decrypt the media frame and let `decrypted-payload` be the result:
+
+              AES-256-GCM(
+                key=pcmk.pcmfk,
+                nonce=nonce,
+                auth-tag-length=16 (bytes),
+                auth-tag-position=append,
+                data=payload,
+                additional-data=ad,
+              )
+      11. If decryption failed, discard the media frame and abort these steps.
+      12. Let `data` be the byte concatenation of `unencrypted-header` and
+          `decrypted-payload`.
+      13. Forward `data` to the media pipeline.
+
+      Note: There is limited replay mitigation. The SFU is able to replay old
+      frames that were recorded in this media key epoch and ratchet iteration.
+
+    fields:
+      - _doc: |-
+          This contains the following data (in this order):
+
+          - Unencrypted frame header (if any, 0 to 10 bytes)
+          - Encrypted audio/video frame
+          - AES GCM authentication tag (16 bytes)
+          - The `footer` struct
+        name: data
+        type: b*
+
+  footer:
+    _doc: |-
+      Footer of an end-to-end encrypted audio/video frame.
+
+    fields:
+      - _doc: |-
+          Media key epoch. This is the same value as in
+          `group-call.MediaKey.epoch`.
+        name: key-epoch
+        type: u8
+      - _doc: |-
+          Media key ratchet counter. This is the same value as in
+          `MediaKey.ratchet_counter`.
+        name: key-ratchet-counter
+        type: u8
+      - _doc: |-
+          Sequence number of the media frame (MFSN).
+
+          Note: Like the epoch and the ratchet counter, the MFSN is shared
+          across different media types.
+        name: mfsn
+        type: u32-le
+
+# Parsed struct namespaces (mapped into separate files)
+namespaces:
+  index: *index
+  e2e: *e2e

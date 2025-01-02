@@ -31,12 +31,13 @@ private val logger = LoggingUtil.getThreemaLogger("AbstractProtobufGroupMessage"
 
 /**
  * @param type Protocol type of the message as defined in [ch.threema.domain.protocol.csp.ProtocolDefines]
- * @param protobufData Parsed protobuf data
+ * @param data Parsed protobuf data
  */
 abstract class AbstractProtobufGroupMessage<D : ProtobufDataInterface<*>?>(
     private val type: Int,
     val data: D
 ) : AbstractGroupMessage() {
+
     override fun getBody(): ByteArray? {
         return try {
             val bos = ByteArrayOutputStream()
@@ -46,11 +47,9 @@ abstract class AbstractProtobufGroupMessage<D : ProtobufDataInterface<*>?>(
             bos.toByteArray()
         } catch (e: Exception) {
             logger.error(e.message)
-            byteArrayOf()
+            null
         }
     }
 
-    override fun getType(): Int {
-        return type
-    }
+    override fun getType(): Int = type
 }

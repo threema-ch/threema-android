@@ -74,6 +74,36 @@ open class Contact(
     }
 }
 
+/**
+ * This represents a contact with reduced properties. Note that this is mainly used for caching. A
+ * basic contact may be a contact that is not present in the database. The existence of a
+ * [BasicContact] does therefore not mean that it is a known contact.
+ */
+open class BasicContact(
+    identity: String,
+    publicKey: ByteArray,
+    val featureMask: ULong,
+    val identityState: IdentityState,
+    val identityType: IdentityType,
+) : Contact(identity, publicKey) {
+    companion object {
+        @JvmStatic
+        fun javaCreate(
+            identity: String,
+            publicKey: ByteArray,
+            featureMask: Long,
+            identityState: IdentityState,
+            identityType: IdentityType,
+        ): BasicContact = BasicContact(
+            identity,
+            publicKey,
+            featureMask.toULong(),
+            identityState,
+            identityType,
+        )
+    }
+}
+
 enum class IdentityType {
     /**
      * A normal Threema identity.
@@ -84,6 +114,27 @@ enum class IdentityType {
      * An identity using Threema Work.
      */
     WORK,
+}
+
+/**
+ * This represents the identity state. Note that the variants must not be renamed as they are stored
+ * as string in the database.
+ */
+enum class IdentityState(val value: Int) {
+    /**
+     * Contact is active.
+     */
+    ACTIVE(0),
+
+    /**
+     * Contact is inactive.
+     */
+    INACTIVE(1),
+
+    /**
+     * Contact does not have a valid Threema-ID, or the ID was revoked.
+     */
+    INVALID(2)
 }
 
 enum class WorkVerificationLevel {

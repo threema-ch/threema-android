@@ -615,8 +615,10 @@ class GroupCallManagerImpl(
 			return
 		}
 
-		logger.debug("Show group call notification")
-		notificationService.addGroupCallNotification(group, callerContactModel)
+        if (callerContactModel.identity != contactService.me.identity) {
+		    logger.debug("Show group call notification")
+            notificationService.addGroupCallNotification(group, callerContactModel)
+        }
 	}
 
 	/**
@@ -812,8 +814,7 @@ class GroupCallManagerImpl(
 			groupJson.put("id", Base64.encodeBytes(group.apiGroupId.groupId))
 
 			val membersJson = JSONArray()
-			groupService.getGroupIdentities(group)
-				.mapNotNull { contactService.getByIdentity(it) }
+			groupService.getMembers(group)
 				.forEach {
 					val member = JSONObject()
 					member.put("identity", it.identity)

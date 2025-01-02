@@ -42,6 +42,7 @@ import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.AutoDeleteUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -71,7 +72,11 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
         const val EXTRA_GRACE_DAYS = "grace_days"
         private const val schedulePeriodMs = DateUtils.DAY_IN_MILLIS / 2
 
-        fun scheduleAutoDelete(context: Context) : Boolean {
+        /**
+         * Schedule the auto delete worker to run periodically. If auto delete is not configured
+         * and a worker is already scheduled, it will be cancelled.
+         */
+        fun scheduleAutoDelete(context: Context) {
             val graceDays = getGraceDays(context)
             if (graceDays != null && graceDays > ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE) {
                 logger.info("Scheduling auto delete")
@@ -90,11 +95,10 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                         logger.error("Exception scheduling auto delete", e)
                     }
                 }
-                return true
             } else {
                 logger.info("No auto delete configured")
+                cancelAutoDelete(context)
             }
-            return false
         }
 
         private fun buildPeriodicWorkRequest(graceDays: Int): PeriodicWorkRequest {
@@ -124,15 +128,13 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
         }
 
         fun cancelAutoDelete(context: Context) {
-            logger.info("Canceling auto delete")
             CoroutineScope(Dispatchers.IO).launch {
-                val operation = WorkManager.getInstance(context)
-                    .cancelUniqueWork(ThreemaApplication.WORKER_AUTO_DELETE)
-                logger.info("Cancel result = {}",
-                    withContext(Dispatchers.IO) {
-                        operation.result.get()
-                    })
+                cancelAutoDeleteAwait(context)
             }
+        }
+
+        suspend fun cancelAutoDeleteAwait(context: Context) {
+            WorkManagerUtil.cancelUniqueWorkAwait(context, ThreemaApplication.WORKER_AUTO_DELETE)
         }
     }
 
@@ -230,7 +232,7 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                     }
                 } else {
                     logger.info("Removing message {}", messageModel.apiMessageId ?: messageModel.id)
-                    fileService.removeMessageFiles(messageModel, true);
+                    fileService.removeMessageFiles(messageModel, true)
                     messageService.remove(messageModel, false)
                     numDeletedMessages++
                 }

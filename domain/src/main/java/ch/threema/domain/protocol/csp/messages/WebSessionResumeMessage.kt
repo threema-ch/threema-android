@@ -41,6 +41,8 @@ class WebSessionResumeMessage(private val data: Map<String, String>) : AbstractM
 
     override fun reflectOutgoing() = false
 
+    override fun reflectSentUpdate() = false
+
     override fun sendAutomaticDeliveryReceipt() = false
 
     override fun bumpLastUpdate(): Boolean = false

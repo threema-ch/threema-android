@@ -46,6 +46,8 @@ class EmptyMessage : AbstractMessage() {
 
     override fun reflectOutgoing() = false
 
+    override fun reflectSentUpdate() = false
+
     override fun sendAutomaticDeliveryReceipt() = false
 
     override fun bumpLastUpdate() = false

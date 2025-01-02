@@ -21,9 +21,6 @@
 
 package ch.threema.app.preference;
 
-import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_AUTOSTART;
-import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_POWERMANAGER;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,28 +31,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.IntentCompat;
-import androidx.core.content.PackageManagerCompat;
-import androidx.core.content.UnusedAppRestrictionsConstants;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.DropDownPreference;
-import androidx.preference.Preference;
-import androidx.preference.Preference.SummaryProvider;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
-import androidx.preference.TwoStatePreference;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -68,11 +49,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.IntentCompat;
+import androidx.core.content.PackageManagerCompat;
+import androidx.core.content.UnusedAppRestrictionsConstants;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.DropDownPreference;
+import androidx.preference.Preference;
+import androidx.preference.Preference.SummaryProvider;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.TwoStatePreference;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
+import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
+import ch.threema.app.asynctasks.SendToSupportResult;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -81,7 +79,7 @@ import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
@@ -105,11 +103,17 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.activities.WebRTCDebugActivity;
 import ch.threema.app.webclient.activities.WebDiagnosticsActivity;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.backend.DebugLogFileBackend;
-import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_AUTOSTART;
+import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_POWERMANAGER;
 
 public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, SharedPreferences.OnSharedPreferenceChangeListener, TextEntryDialog.TextEntryDialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsAdvancedOptionsFragment");
@@ -135,22 +139,26 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     private TwoStatePreference threemaPushTwoStatePreference;
     private TwoStatePreference messageLogPreference, ipv6Preferences;
 
-    private WallpaperService wallpaperService;
-    private SharedPreferences sharedPreferences;
-    private PreferenceService preferenceService;
-    private RingtoneService ringtoneService;
-    private NotificationService notificationService;
-    private FileService fileService;
-    private UserService userService;
-    private LifetimeService lifetimeService;
-    private DeadlineListService mutedChatsListService, mentionOnlyChatsListService;
-    private MessageService messageService;
-    private ContactService contactService;
-    private View fragmentView;
+	private WallpaperService wallpaperService;
+	private SharedPreferences sharedPreferences;
+	private PreferenceService preferenceService;
+	private RingtoneService ringtoneService;
+	private NotificationService notificationService;
+	private FileService fileService;
+	private UserService userService;
+	private LifetimeService lifetimeService;
+	private DeadlineListService mutedChatsListService, mentionOnlyChatsListService;
+	private MessageService messageService;
+	private ContactService contactService;
+	private APIConnector apiConnector;
+	private ContactModelRepository contactModelRepository;
+	private View fragmentView;
 
     private BroadcastReceiver pushTokenResetBroadcastReceiver;
 
-    private boolean pushServicesInstalled;
+	private @Nullable BackgroundExecutor backgroundExecutor;
+
+	private boolean pushServicesInstalled;
 
     /**
      * This activity result launcher is needed to open the settings to disable hibernation.
@@ -566,40 +574,44 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
         return this.checkInstances();
     }
 
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.wallpaperService,
-            this.lifetimeService,
-            this.preferenceService,
-            this.fileService,
-            this.userService,
-            this.ringtoneService,
-            this.mutedChatsListService,
-            this.messageService,
-            this.contactService
-        );
-    }
+	protected boolean checkInstances() {
+		return TestUtil.required(
+			this.wallpaperService,
+			this.lifetimeService,
+			this.preferenceService,
+			this.fileService,
+			this.userService,
+			this.ringtoneService,
+			this.mutedChatsListService,
+			this.messageService,
+			this.contactService,
+			this.apiConnector,
+			this.contactModelRepository
+		);
+	}
 
-    protected void instantiate() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager != null) {
-            try {
-                this.wallpaperService = serviceManager.getWallpaperService();
-                this.lifetimeService = serviceManager.getLifetimeService();
-                this.preferenceService = serviceManager.getPreferenceService();
-                this.fileService = serviceManager.getFileService();
-                this.userService = serviceManager.getUserService();
-                this.ringtoneService = serviceManager.getRingtoneService();
-                this.mutedChatsListService = serviceManager.getMutedChatsListService();
-                this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
-                this.messageService = serviceManager.getMessageService();
-                this.contactService = serviceManager.getContactService();
-                this.notificationService = serviceManager.getNotificationService();
-            } catch (Exception e) {
-                logger.error("Exception", e);
-            }
-        }
-    }
+	protected void instantiate() {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager != null) {
+			try {
+				this.wallpaperService = serviceManager.getWallpaperService();
+				this.lifetimeService = serviceManager.getLifetimeService();
+				this.preferenceService = serviceManager.getPreferenceService();
+				this.fileService = serviceManager.getFileService();
+				this.userService = serviceManager.getUserService();
+				this.ringtoneService = serviceManager.getRingtoneService();
+				this.mutedChatsListService = serviceManager.getMutedChatsListService();
+				this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
+				this.messageService = serviceManager.getMessageService();
+				this.contactService = serviceManager.getContactService();
+				this.notificationService = serviceManager.getNotificationService();
+				this.apiConnector = serviceManager.getAPIConnector();
+				this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+			} catch (Exception e) {
+				logger.error("Exception", e);
+			}
+		}
+	}
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -723,24 +735,32 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     }
 
 
-    @SuppressLint("StaticFieldLeak")
-    public void sendLogFileToSupport(final String caption) {
-        new AsyncTask<Void, Void, Exception>() {
+	@SuppressLint("StaticFieldLeak")
+	public void sendLogFileToSupport(final String caption) {
+		final Context context = getContext();
+		if (context == null) {
+			logger.warn("Cannot send logfile as the context is null");
+			return;
+		}
 
-            @Override
-            protected void onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
-            }
+		SendToSupportBackgroundTask sendLogFileTask = new SendToSupportBackgroundTask(
+			userService.getIdentity(),
+			apiConnector,
+			contactModelRepository,
+			context
+		) {
+			@Override
+			public void onBefore() {
+				GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
+			}
 
-            @Override
-            protected Exception doInBackground(Void... params) {
-                File zipFile = DebugLogFileBackend.getZipFile(fileService);
+			@NonNull
+			@Override
+			public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
+				File zipFile = DebugLogFileBackend.getZipFile(fileService);
 
-                try {
-                    final ContactModel contactModel = contactService.getOrCreateByIdentity(
-                        THREEMA_SUPPORT_IDENTITY, true);
-
-                    MessageReceiver receiver = contactService.createReceiver(contactModel);
+				try {
+					ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
 
                     messageService.sendText(caption +
                         "\n-- \n" +
@@ -759,31 +779,39 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                                 RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.an_error_occurred_during_send, Toast.LENGTH_LONG).show());
                             }
 
-                            @Override
-                            public void onCompleted() {
-                                RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.message_sent, Toast.LENGTH_LONG).show());
-                            }
-                        });
-                } catch (Exception e) {
-                    return e;
-                }
-                return null;
-            }
+							@Override
+							public void onCompleted() {
+								RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.message_sent, Toast.LENGTH_LONG).show());
+							}
+						});
+				} catch (Exception e) {
+					logger.error("Could not send log file");
+					return SendToSupportResult.FAILED;
+				}
 
-            @Override
-            protected void onPostExecute(Exception exception) {
-                if (isAdded()) {
-                    DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_SENDLOG, true);
+				return SendToSupportResult.SUCCESS;
+			}
 
-                    if (exception != null) {
-                        Toast.makeText(requireActivity().getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(requireActivity().getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        }.execute();
-    }
+			@Override
+			public void onFinished(@NonNull SendToSupportResult result) {
+				if (isAdded()) {
+					DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_SENDLOG, true);
+
+					if (result == SendToSupportResult.SUCCESS) {
+						Toast.makeText(requireActivity().getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(requireActivity().getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+					}
+				}
+			}
+		};
+
+		if (backgroundExecutor == null) {
+			backgroundExecutor = new BackgroundExecutor();
+		}
+
+		backgroundExecutor.execute(sendLogFileTask);
+	}
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

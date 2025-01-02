@@ -285,11 +285,6 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 	}
 
 	@Override
-	public <T> T getRealObject(String key, boolean crypt) {
-		return null;
-	}
-
-	@Override
 	public void clear() {
 
 	}
@@ -301,7 +296,7 @@ public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInter
 
 	@Override
 	public Set<String> getStringSet(String key, int defaultRes) {
-		return new HashSet<String>();
+		return new HashSet<>();
 	}
 
 	@Override

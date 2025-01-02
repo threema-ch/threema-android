@@ -50,28 +50,25 @@ class OutgoingGroupEditMessageTask(
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")
 
-        val editedMessageId = MessageId.fromString(message.apiMessageId).messageIdLong
+        val editedMessageIdLong = MessageId.fromString(message.apiMessageId).messageIdLong
 
         sendGroupMessage(
-                group,
-                groupService.getGroupIdentities(group).toSet(),
-                null,
-                messageId,
-                createAbstractMessage =  { createEditMessage(editedMessageId, editedAt) },
-                handle
+            group,
+            groupService.getGroupIdentities(group).toSet(),
+            null,
+            editedAt,
+            messageId,
+            createAbstractMessage = { createEditMessage(editedMessageIdLong) },
+            handle
         )
     }
 
-    private fun createEditMessage(messageId: Long, date: Date): GroupEditMessage {
-        val editMessage = GroupEditMessage(
-            EditMessageData(
-                messageId = messageId,
-                text = editedText
-            )
+    private fun createEditMessage(messageId: Long) = GroupEditMessage(
+        EditMessageData(
+            messageId = messageId,
+            text = editedText
         )
-        editMessage.date = date
-        return editMessage
-    }
+    )
 
     override fun serialize(): SerializableTaskData = OutgoingGroupEditMessageData(
         messageModelId,
@@ -87,7 +84,7 @@ class OutgoingGroupEditMessageTask(
         private val messageId: ByteArray,
         private val editedText: String,
         private val editedAt: Long,
-        private val recipientIdentities: Set<String>
+        private val recipientIdentities: Set<String>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupEditMessageTask(

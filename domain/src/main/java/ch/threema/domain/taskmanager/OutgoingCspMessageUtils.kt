@@ -21,7 +21,7 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.Nonce
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.csp.MessageTooLongException
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -30,11 +30,11 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStoreInterface
 
+@JvmName("toCspMessageJava")
 fun AbstractMessage.toCspMessage(
     identityStore: IdentityStoreInterface,
     contactStore: ContactStore,
-    nonceFactory: NonceFactory,
-    nonce: ByteArray,
+    nonce: Nonce,
 ): CspMessage {
     // Add missing attributes, if necessary
     if (fromIdentity == null) {
@@ -43,7 +43,7 @@ fun AbstractMessage.toCspMessage(
 
     // Make box
     val messageCoder = MessageCoder(contactStore, identityStore)
-    val messageBox = messageCoder.encode(this, nonce, nonceFactory)
+    val messageBox = messageCoder.encode(this, nonce.bytes)
 
     // For the sake of efficiency: simply deduct overhead size
     val overhead = (ProtocolDefines.OVERHEAD_MSG_HDR

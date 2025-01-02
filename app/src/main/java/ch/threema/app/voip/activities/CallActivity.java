@@ -125,6 +125,7 @@ import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SensorService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AnimatedEllipsisTextView;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.DebouncedOnClickListener;
@@ -151,6 +152,7 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -284,6 +286,10 @@ public class CallActivity extends ThreemaActivity implements
 	private NotificationManagerCompat notificationManagerCompat;
 	private AudioManager audioManager;
 
+	@Nullable
+	private ContactModelRepository contactModelRepository;
+	@Nullable
+	private UserService userService;
 	private ContactService contactService;
 	private SensorService sensorService;
 	private PreferenceService preferenceService;
@@ -639,8 +645,8 @@ public class CallActivity extends ThreemaActivity implements
 		}
 
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
-			this.handleUpdate(contactModel.getIdentity());
+		public void onAvatarChanged(@NonNull String identity) {
+			this.handleUpdate(identity);
 		}
 
 		private void handleUpdate(String identity) {
@@ -733,7 +739,14 @@ public class CallActivity extends ThreemaActivity implements
 		// Threema services
 		try {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+			if (serviceManager == null) {
+				logger.error("Service manager is null");
+				finish();
+				return;
+			}
+			this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
 			this.contactService = serviceManager.getContactService();
+			this.userService = serviceManager.getUserService();
 			this.sensorService = serviceManager.getSensorService();
 			this.preferenceService = serviceManager.getPreferenceService();
 			this.voipStateService = serviceManager.getVoipStateService();
@@ -1203,7 +1216,11 @@ public class CallActivity extends ThreemaActivity implements
 			}.execute();
 
 			this.commonViews.contactName.setText(NameUtil.getDisplayNameOrNickname(contact, true));
-			this.commonViews.contactDots.setImageDrawable(ContactUtil.getVerificationDrawable(this, contact));
+			this.commonViews.contactDots.setImageDrawable(ContactUtil.getVerificationDrawable(
+				this,
+				contact.verificationLevel,
+				contact.getWorkVerificationLevel()
+			));
 		}
 	}
 
@@ -1267,11 +1284,17 @@ public class CallActivity extends ThreemaActivity implements
 					setEnabled(this.commonViews.toggleOutgoingVideoButton, true);
 				} else {
 					try {
+						if (contactModelRepository == null || userService == null) {
+							logger.warn("Could not refresh feature mask due to unavailable services");
+							return;
+						}
+
 						CompletableFuture
 							.runAsync(new UpdateFeatureLevelRoutine(
-								contactService,
+								contactModelRepository,
+								userService,
 								apiConnector,
-								Collections.singletonList(contact)
+								Collections.singletonList(contact.getIdentity())
 							))
 							.thenRun(() -> RuntimeUtil.runOnUiThread(() -> {
 								if (!isDestroyed()) {

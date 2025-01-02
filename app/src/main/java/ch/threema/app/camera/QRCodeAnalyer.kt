@@ -80,7 +80,7 @@ class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCod
                     try {
                         decode(imageProxy, data)
                     } catch (e: Exception) {
-                        logger.info("Decode error for inverted QR Code")
+                        logger.debug("Decode error for inverted QR Code")
                     }
                 } catch (e: Exception) {
                     logger.error("Scanning error", e)

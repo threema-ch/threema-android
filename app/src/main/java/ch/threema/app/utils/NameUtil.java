@@ -36,6 +36,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.stores.PreferenceStore;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -65,7 +66,7 @@ public class NameUtil {
 	 * Return the display name for a group.
 	 */
 	public static String getDisplayName(GroupModel groupModel, GroupService groupService) {
-		if (groupModel.getName() != null && groupModel.getName().length() > 0) {
+		if (groupModel.getName() != null && !groupModel.getName().isEmpty()) {
 			return groupModel.getName();
 		}
 
@@ -175,9 +176,7 @@ public class NameUtil {
 	 * Return the display name for a contact.
 	 */
 	@NonNull
-	public static String getDisplayName(ContactModel contactModel) {
-		String c = "";
-
+	public static String getDisplayName(@Nullable ContactModel contactModel) {
 		if (contactModel == null) {
 			return "undefined";
 		}
@@ -186,37 +185,63 @@ public class NameUtil {
 			return "invalid contact";
 		}
 
-		String f = contactModel.getFirstName();
-		String l = contactModel.getLastName();
+		String firstName = contactModel.getFirstName();
+		String lastName = contactModel.getLastName();
 
-		if (TestUtil.isEmptyOrNull(f, l)) {
-			return contactModel.getIdentity();
+		return getDisplayName(contactModel.getIdentity(), firstName, lastName);
+	}
+
+	@NonNull
+	public static String getDisplayName(@Nullable ch.threema.data.models.ContactModel contactModel) {
+		if (contactModel == null) {
+			return "undefined";
 		}
+
+		if (contactModel.getIdentity().isEmpty()) {
+			return "invalid contact";
+		}
+
+		ContactModelData data = contactModel.getData().getValue();
+		if (data == null) {
+			return "undefined";
+		}
+
+		return getDisplayName(data.identity, data.firstName, data.lastName);
+	}
+
+	public static String getDisplayName(@NonNull String identity, @Nullable String firstName, @Nullable String lastName) {
+		if (TestUtil.isEmptyOrNull(firstName, lastName)) {
+			return identity;
+		}
+
+		String c = "";
 
 		PreferenceService preferenceService = NameUtil.getPreferenceService();
 		if (preferenceService == null || preferenceService.isContactFormatFirstNameLastName()) {
-			if (f != null) {
-				c += f + " ";
+			if (firstName != null) {
+				c += firstName + " ";
 			}
 
-			if (l != null) {
-				c += l;
+			if (lastName != null) {
+				c += lastName;
 			}
 		} else {
-			if (l != null) {
-				c += l + " ";
+			if (lastName != null) {
+				c += lastName + " ";
 			}
 
-			if (f != null) {
-				c += f;
+			if (firstName != null) {
+				c += firstName;
 			}
 		}
+
+		c = c.trim();
 
 		if (TestUtil.isEmptyOrNull(c)) {
-			c = contactModel.getIdentity();
+			c = identity.trim();
 		}
 
-		return c.trim();
+		return c;
 	}
 
 	/**

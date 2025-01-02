@@ -69,6 +69,7 @@ import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
@@ -197,7 +198,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             final @NonNull String uid = messageModel instanceof GroupMessageModel
                 ? groupService.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId())
-                : contactService.getUniqueIdString(messageModel.getIdentity());
+                : ContactUtil.getUniqueIdString(messageModel.getIdentity());
             if (hiddenChatsListService.has(uid)) {
                 viewHolder.dateView.setText("");
                 viewHolder.thumbnailView.setVisibility(View.GONE);

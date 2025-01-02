@@ -28,7 +28,7 @@ import ch.threema.domain.models.GroupId;
 public class GroupDeleteProfilePictureMessageTest {
 
 	@Test
-	public void testGetBody() throws Exception {
+	public void testGetBody() {
 		final GroupDeleteProfilePictureMessage msg = new GroupDeleteProfilePictureMessage();
 		msg.setGroupCreator("GRCREATE");
 		GroupId groupId = new GroupId();

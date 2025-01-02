@@ -43,8 +43,8 @@ import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.logging.LoggerManager;
 import ch.threema.logging.backend.DebugLogFileBackend;
-import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseNonceStore;
+import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.BallotModelFactory;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -61,7 +61,8 @@ import static ch.threema.architecture.ArchitectureDefinitions.getLayeredArchitec
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameMatching;
 
 @RunWith(ArchUnitRunner.class)
-@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
+@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions =
+    {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
 public class LayerDependenciesTest {
     @ArchTest
     public static final ArchRule appLayerAccess = getLayeredArchitecture()
@@ -75,7 +76,7 @@ public class LayerDependenciesTest {
             nameMatching("ch\\.threema\\.storage\\..*"),
             nameMatching("ch\\.threema\\.app\\.utils\\..*")
         )
-        // Data layer may access listeners and utils
+        // Data layer may access listeners, utils, multi-device, and reflection tasks
         .ignoreDependency(
             nameMatching("ch\\.threema\\.data\\..*"),
             nameMatching("ch\\.threema\\.app\\.managers\\..*")
@@ -87,6 +88,14 @@ public class LayerDependenciesTest {
         .ignoreDependency(
             nameMatching("ch\\.threema\\.data\\..*"),
             nameMatching("ch\\.threema\\.app\\.utils\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.multidevice\\..*")
+        )
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.tasks\\..*")
         )
         .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
         .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
@@ -125,6 +134,7 @@ public class LayerDependenciesTest {
 
     @ArchTest
     public static final ArchRule baseLayerAccess = getLayeredArchitecture()
-        .whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO, DOMAIN, LOGGING);
+        .whereLayer(BASE).mayOnlyBeAccessedByLayers(APP, DATA, STORAGE, LOCALCRYPTO, DOMAIN,
+            LOGGING);
 
 }

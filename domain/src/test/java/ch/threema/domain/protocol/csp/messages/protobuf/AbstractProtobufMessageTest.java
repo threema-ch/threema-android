@@ -80,6 +80,11 @@ public class AbstractProtobufMessageTest {
 				}
 
 				@Override
+				public boolean reflectSentUpdate() {
+					return false;
+				}
+
+				@Override
 				public boolean sendAutomaticDeliveryReceipt() {
 					return false;
 				}

@@ -23,14 +23,16 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
+import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 /**
- * This class provides methods to send set-profile-picture, request-profile-picture, and
- * delete-profile-picture messages.
+ * This class provides methods to send the csp messages set-profile-picture,
+ * request-profile-picture, and delete-profile-picture messages.
  */
 sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
     OutgoingCspMessageTask(serviceManager), PersistableTask {
@@ -42,11 +44,10 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
         handle: ActiveTaskCodec,
     ) {
         // Create the message
-        val innerMsg = ContactRequestProfilePictureMessage()
-        innerMsg.toIdentity = toIdentity
+        val message = ContactRequestProfilePictureMessage()
 
         // Encapsulate and send the message
-        sendContactMessage(innerMsg, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     /**
@@ -60,14 +61,13 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
         handle: ActiveTaskCodec,
     ) {
         // Create the message
-        val innerMsg =
-            SetProfilePictureMessage()
-        innerMsg.blobId = data.blobId
-        innerMsg.encryptionKey = data.encryptionKey
-        innerMsg.size = data.size
-        innerMsg.toIdentity = toIdentity
+        val message = SetProfilePictureMessage(
+            blobId = data.blobId,
+            size = data.size,
+            encryptionKey = data.encryptionKey,
+        )
 
-        sendContactMessage(innerMsg, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     /**
@@ -78,10 +78,8 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
         handle: ActiveTaskCodec,
     ) {
         // Create the message
-        val innerMsg =
-            DeleteProfilePictureMessage()
-        innerMsg.toIdentity = toIdentity
+        val message = DeleteProfilePictureMessage()
 
-        sendContactMessage(innerMsg, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 }

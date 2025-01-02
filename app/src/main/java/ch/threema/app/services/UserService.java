@@ -24,10 +24,15 @@ package ch.threema.app.services;
 import android.accounts.Account;
 import android.accounts.AccountManagerCallback;
 
+import java.io.File;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.services.license.LicenseService;
+import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.storage.models.ContactModel;
 
 /**
  * Method and actions for the current Threema-User!
@@ -103,7 +108,44 @@ public interface UserService {
 	 *
 	 * @return converted and truncated string or null if an error happens.
 	 */
-	@Nullable String setPublicNickname(String publicNickname);
+	@Nullable String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Get the user profile picture. If no profile picture is set, then null is returned.
+     */
+    @Nullable
+    byte[] getUserProfilePicture();
+
+    /**
+     * Set the user profile picture. Note that this will trigger a user profile sync if multi device
+     * is active.
+     */
+    boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Set the user profile picture. Note that this will trigger a user profile sync if multi device
+     * is active.
+     */
+    boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Remove the user profile picture. Note that this will trigger a user profile sync if multi
+     * device is active.
+     */
+    void removeUserProfilePicture(@NonNull TriggerSource triggerSource);
+
+    /**
+     * Upload the current profile picture if it hasn't been uploaded recently and get the most
+     * recent contact profile picture upload data.
+     *
+     * @return the most recent profile picture upload data. If the upload failed or the last stored
+     * data could not be read, the returned data contains null as blob ID. If there is no profile
+     * picture set, the blob ID is {@link ContactModel#NO_PROFILE_PICTURE_BLOB_ID}.
+     */
+    @NonNull
+    @WorkerThread
+    ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData();
+
 
 	boolean restoreIdentity(String backupString, String password) throws Exception;
 

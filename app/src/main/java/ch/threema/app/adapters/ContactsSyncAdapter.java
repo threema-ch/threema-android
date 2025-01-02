@@ -30,12 +30,9 @@ import android.os.Bundle;
 
 import org.slf4j.Logger;
 
-import java.util.List;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
-import ch.threema.app.listeners.NewSyncedContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
@@ -43,18 +40,33 @@ import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
+
+	private boolean isSyncEnabled = true;
 
 	public ContactsSyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
 	}
 
+	public void setSyncEnabled(boolean enabled) {
+		isSyncEnabled = enabled;
+	}
+
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
 		logger.info("onPerformSync");
+
+		if (!isSyncEnabled) {
+			logger.info("Contact sync is disabled; retry later.");
+			// Workaround to trigger a soft error to retry the sync at a later moment
+			// See
+			//  - https://developer.android.com/reference/android/content/SyncResult#hasSoftError()
+			//  - https://developer.android.com/reference/android/content/SyncResult#SyncResult()
+			syncResult.stats.numIoExceptions++;
+			return;
+		}
 
 		try {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
@@ -66,10 +78,7 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 			if (serviceManager.getPreferenceService().isSyncContacts()) {
 				logger.info("Start sync adapter run");
 				SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
-				if (synchronizeContactsService == null) {
-					return;
 
-				}
 				if (synchronizeContactsService.isFullSyncInProgress()) {
 					logger.info("A full sync is already running");
 					syncResult.stats.numUpdates = 0;
@@ -82,29 +91,21 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 				SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization(account);
 				//update stats on finished to resolve the "every minute sync" bug
 
-				routine.addOnFinished(new SynchronizeContactsRoutine.OnFinished() {
-					@Override
-					public void finished(boolean success, long modifiedAccounts, List<ContactModel> createdContacts, long deletedAccounts) {
-						// let user know that contact was added
-						ListenerManager.newSyncedContactListener.handle(new ListenerManager.HandleListener<NewSyncedContactsListener>() {
-							@Override
-							public void handle(NewSyncedContactsListener listener) {
-								listener.onNew(createdContacts);
-							}
-						});
+				routine.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) -> {
+					// let user know that contact was added
+					ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts));
 
-						//hack to not schedule the next sync!
-						syncResult.stats.numUpdates = 0;//modifiedAccounts;
-						syncResult.stats.numInserts = 0;//createdAccounts;
-						syncResult.stats.numDeletes = 0;//deletedAccounts;
-						syncResult.stats.numEntries = 0;//createdAccounts;
+					//hack to not schedule the next sync!
+					syncResult.stats.numUpdates = 0;//modifiedAccounts;
+					syncResult.stats.numInserts = 0;//createdAccounts;
+					syncResult.stats.numDeletes = 0;//deletedAccounts;
+					syncResult.stats.numEntries = 0;//createdAccounts;
 
-						//send a broadcast to let others know that the list has changed
-						LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).sendBroadcast(IntentDataUtil.createActionIntentContactsChanged());
-					}
+					//send a broadcast to let others know that the list has changed
+					LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).sendBroadcast(IntentDataUtil.createActionIntentContactsChanged());
 				});
 
-				//not in a thread!
+				// not in a thread: `onPerformSync` is already called in a background thread
 				routine.run();
 			}
 		}
@@ -115,10 +116,13 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
 			logger.debug("MasterKeyLockedException [" + e.getMessage() + "]");
 
 		}finally{
-			logger.debug("sync finished Sync [numEntries=" + String.valueOf(syncResult.stats.numEntries) +
-				", updates=" + String.valueOf(syncResult.stats.numUpdates) +
-				", inserts=" + String.valueOf(syncResult.stats.numInserts) +
-				", deletes=" + String.valueOf(syncResult.stats.numDeletes) + "]");
+			logger.debug(
+				"sync finished Sync [numEntries={}, updates={}, inserts={}, deletes={}",
+				syncResult.stats.numEntries,
+				syncResult.stats.numUpdates,
+				syncResult.stats.numInserts,
+				syncResult.stats.numDeletes
+			);
 		}
 	}
 

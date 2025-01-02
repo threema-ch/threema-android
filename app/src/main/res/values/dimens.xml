@@ -176,6 +176,7 @@
 	<dimen name="bottomsheet_gridview_width">80dp</dimen>
 	<dimen name="bottomsheet_gridview_height">121dp</dimen>
     <dimen name="bottomsheet_corner_size">16dp</dimen>
+    <dimen name="bottomsheet_elevation">2dp</dimen>
     <dimen name="imagepaint_highlighter_stroke_width">18dp</dimen>
 	<dimen name="imagepaint_brush_stroke_width">6dp</dimen>
 	<dimen name="imagepaint_pencil_stroke_width">3dp</dimen>

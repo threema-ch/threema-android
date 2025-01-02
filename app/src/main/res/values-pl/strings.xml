@@ -1536,6 +1536,17 @@ anonimowo?</string>
     <string name="md_link_device_qr_scan_message">Zeskanuj kod QR</string>
     <string name="directory_request_failed">Żądanie katalogu nie powiodło się. Spróbuj ponownie.</string>
     <string name="add_shortcut_exists">Skrót tego obiektu docelowego już istnieje.</string>
+    <string name="scan_qr_code">Zeskanuj kod QR</string>
+    <string name="scan_qr_code_explain">Zeskanuj kod QR wyświetlony w wersji beta desktopowej aplikacji %s na urządzeniu, które chcesz powiązać.</string>
+    <string name="connecting">Łączenie…</string>
+    <string name="trust_new_device">Dodaj nowe urządzenie do zaufanych</string>
+    <string name="trust_new_device_explain">Aby potwierdzić, że nowe urządzenie jest zaufane, wybierz te same obrazy, które są na nim wyświetlone.</string>
+    <string name="trust_new_device_info">Nowe urządzenie będzie przechowywało niezależną kopię Twojego profilu %s. Natomiast wiadomości będą wysyłane i odbierane w Twoim imieniu.</string>
+    <string name="no_match_question">Brak zgodności?</string>
+    <string name="sending_data">Wysyłanie danych...</string>
+    <string name="continue_on_new_device">Kontynuuj na nowym urządzeniu</string>
+    <string name="device_linked_successfully">Pomyślnie powiązano urządzenie</string>
+    <string name="device_linked_successfully_explain">Aplikacja %s może być obecnie używana na powiązanym przed chwilą urządzeniu (nawet wtedy, gdy to urządzenie jest wyłączone lub niepołączone z Internetem).</string>
     <string name="resend_message_dialog_title">Ponownie wysłać wiadomość grupową?</string>
     <string name="resend_message_dialog_message">Nie można było wysłać tej wiadomości do wszystkich członków. Wysłać ponownie do %1$s?</string>
     <string name="work_lost_credentials_help">Nie pamiętasz swoich referencji? Skontakuj się ze swoim administratorem %1$s.</string>
@@ -1580,6 +1591,10 @@ anonimowo?</string>
     <string name="incoming_calls">Połączenia przychodzące</string>
     <string name="group_chats">Czaty grupowe</string>
     <string name="edit_history_file_no_caption">Brak napisu</string>
+    <string name="device_linking_failed">Nie udało się powiązać urządzenia</string>
+    <string name="device_linking_failed_explain">Nie można było powiązać urządzenia. Spróbuj ponownie.\nPowód: %s.</string>
+    <string name="qr_code_scan_error">Podczas skanowania kodu QR wystąpił błąd</string>
+    <string name="verification_failed">Nie udało się dokonać weryfikacji</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">zgoda została wysłana</string>
     <string name="cd_dec_icon">informacja o braku zgody została wysłana</string>

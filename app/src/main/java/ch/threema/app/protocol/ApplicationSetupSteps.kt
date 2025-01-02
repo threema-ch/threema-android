@@ -21,14 +21,13 @@
 
 package ch.threema.app.protocol
 
-import android.content.Context
 import androidx.annotation.WorkerThread
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.OutgoingContactRequestProfilePictureTask
 import ch.threema.app.workers.ContactUpdateWorker
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.models.IdentityState
 
 private val logger = LoggingUtil.getThreemaLogger("ApplicationSetupSteps")
 
@@ -36,14 +35,14 @@ private val logger = LoggingUtil.getThreemaLogger("ApplicationSetupSteps")
  * Run the _Application Setup Steps_ as defined in the protocol.
  */
 @WorkerThread
-fun runApplicationSetupSteps(serviceManager: ServiceManager, context: Context): Boolean {
+fun runApplicationSetupSteps(serviceManager: ServiceManager): Boolean {
     logger.info("Running application setup steps")
 
     val groupService = serviceManager.groupService
 
     // Send the feature mask to the server and update the contacts. It is important that the feature
     // masks of the contacts are updated to check whether the contacts support FS or not.
-    if (!ContactUpdateWorker.sendFeatureMaskAndUpdateContacts(serviceManager, context)) {
+    if (!ContactUpdateWorker.sendFeatureMaskAndUpdateContacts(serviceManager)) {
         logger.warn("Aborting application setup steps as identity state update did not work")
         return false
     }
@@ -65,7 +64,7 @@ fun runApplicationSetupSteps(serviceManager: ServiceManager, context: Context): 
     // Determine the solicited contacts defined by group contacts and conversation contacts and
     // remove invalid contacts
     val solicitedContacts = (groupContacts + contactsWithConversation)
-        .filter { it.state != ContactModel.State.INVALID }
+        .filter { it.state != IdentityState.INVALID }
         .filter { it.identity != myIdentity }
         .toSet()
 

@@ -38,6 +38,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -200,6 +201,12 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         // Assert initial group conversations
         assertGroupConversations(scenario, initialGroups)
 
+        // Assert that the user is a member of groupAB
+        val beforeKicked = serviceManager.groupService.getById(groupAB.groupModel.id)
+        assertNotNull(beforeKicked)
+        assertEquals(GroupModel.UserState.MEMBER, beforeKicked!!.userState)
+        assertTrue(serviceManager.groupService.isGroupMember(beforeKicked))
+
         val setupTracker = GroupSetupTracker(
             groupAB,
             myContact.identity,
@@ -216,6 +223,12 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         message.members = arrayOf(contactB.identity)
         // Create message box from contact A (group creator)
         processMessage(message, groupAB.groupCreator.identityStore)
+
+        // Assert that the user state has been changed to 'kicked'
+        val afterKicked = serviceManager.groupService.getById(groupAB.groupModel.id)
+        assertNotNull(afterKicked)
+        assertEquals(GroupModel.UserState.KICKED, afterKicked!!.userState)
+        assertFalse(serviceManager.groupService.isGroupMember(afterKicked))
 
         // Assert that group conversations did not appear, disappear, or change their name
         assertGroupConversations(scenario, initialGroups)
@@ -287,7 +300,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             newAGroup.members,
             // Note that this will be the group name because we only test the group setup message
             // that is not followed by a group rename
-            "12345678, Me, ABCDEFGH",
+            "Me, 12345678, ABCDEFGH",
+            myContact.identity,
         )
 
         val setupTracker = GroupSetupTracker(
@@ -316,6 +330,22 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         setupTracker.assertAllKickedMembersRemoved()
         setupTracker.assertCreateLeave()
         setupTracker.stop()
+
+        // Assert that the group has the correct members
+        val group = serviceManager.groupService.getByApiGroupIdAndCreator(newGroup.apiGroupId, newGroup.groupCreator.identity)
+        assertNotNull(group!!)
+        val expectedMemberCount = newGroup.members.size
+        // Assert that there is one more member than member models (as the user is not stored into
+        // the database).
+        assertEquals(expectedMemberCount, serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1)
+        assertEquals(expectedMemberCount, serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id).toInt() + 1)
+
+        // Assert that the group service returns the member lists including the user
+        assertEquals(expectedMemberCount, serviceManager.groupService.getMembers(group).size)
+        assertEquals(expectedMemberCount, serviceManager.groupService.getGroupIdentities(group).size)
+        assertEquals(expectedMemberCount, serviceManager.groupService.getMembersWithoutUser(group).size + 1)
+        assertEquals(expectedMemberCount, serviceManager.groupService.countMembers(group))
+        assertEquals(expectedMemberCount, serviceManager.groupService.countMembersWithoutUser(group) + 1)
     }
 
     /**
@@ -380,7 +410,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             newAGroup.members + TestContact(invalidMemberId), // Note that this ID is not valid
             // Note that this will be the group name because we only test the group setup message
             // that is not followed by a group rename
-            "12345678, Me, ABCDEFGH",
+            "Me, 12345678, ABCDEFGH",
+            myContact.identity,
         )
 
         val setupTracker = GroupSetupTracker(
@@ -459,7 +490,6 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             override fun onNewMember(
                 group: GroupModel?,
                 newIdentity: String?,
-                previousMemberCount: Int
             ) {
                 assertTrue("Did not expect member $newIdentity", newMembers.contains(newIdentity))
                 newMembersAdded.add(newIdentity!!)
@@ -468,13 +498,11 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             override fun onMemberLeave(
                 group: GroupModel?,
                 identity: String?,
-                previousMemberCount: Int
             ) = fail()
 
             override fun onMemberKicked(
                 group: GroupModel?,
                 identity: String?,
-                previousMemberCount: Int
             ) {
                 assertTrue(kickedMembers.contains(identity))
                 kickedMembersRemoved.add(identity!!)

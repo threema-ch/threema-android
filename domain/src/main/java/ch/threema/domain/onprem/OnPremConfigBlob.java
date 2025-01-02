@@ -22,6 +22,9 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigBlob {
+
+    public static final String PLACEHOLDER_BLOB_ID = "{blobId}";
+
 	// Note: these are Strings instead of URLs so that they can include placeholders
 	private final String uploadUrl;
 	private final String downloadUrl;

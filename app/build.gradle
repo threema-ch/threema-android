@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KaptGenerateStubs
 plugins {
     id 'org.sonarqube'
     id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlin_version"
+    id 'org.mozilla.rust-android-gradle.rust-android' version "0.9.3"
 }
 
 apply plugin: 'com.android.application'
@@ -18,14 +19,14 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 // version codes
 
 // Only use the scheme "<major>.<minor>.<patch>" for the app_version
-def app_version = "5.6.2"
+def app_version = "5.7.0"
 
 // beta_suffix with leading dash (e.g. `-beta1`)
 // should be one of (alpha|beta|rc) and an increasing number or empty for a regular release.
 // Note: in nightly builds this will be overwritten with a nightly version "-n12345"
 def beta_suffix = ""
 
-def defaultVersionCode = 1014
+def defaultVersionCode = 1033
 
 /**
  * Return the git hash, if git is installed.
@@ -40,7 +41,8 @@ def getGitHash = { ->
             errorOutput = stderr
             ignoreExitValue true
         }
-    } catch (ignored) { /* If git binary is not found, carry on */ }
+    } catch (ignored) { /* If git binary is not found, carry on */
+    }
     def hash = stdout.toString().trim()
     return (hash.isEmpty()) ? "?" : hash
 }
@@ -61,17 +63,17 @@ def findKeystore = { name ->
             Properties props = new Properties()
             propertiesFile.withInputStream { props.load(it) }
             return [
-                storeFile: storePath,
+                storeFile    : storePath,
                 storePassword: props.storePassword,
-                keyAlias: props.keyAlias,
-                keyPassword: props.keyPassword,
+                keyAlias     : props.keyAlias,
+                keyPassword  : props.keyPassword,
             ]
         } else {
             return [
-                storeFile: storePath,
+                storeFile    : storePath,
                 storePassword: null,
-                keyAlias: null,
-                keyPassword: null,
+                keyAlias     : null,
+                keyPassword  : null,
             ]
         }
     }
@@ -81,11 +83,11 @@ def findKeystore = { name ->
  * Map with keystore paths (if found).
  */
 def keystores = [
-    debug: findKeystore("debug"),
-    release: findKeystore("threema"),
-    hms_release: findKeystore("threema_hms"),
+    debug         : findKeystore("debug"),
+    release       : findKeystore("threema"),
+    hms_release   : findKeystore("threema_hms"),
     onprem_release: findKeystore("onprem"),
-    blue_release: findKeystore("threema_blue"),
+    blue_release  : findKeystore("threema_blue"),
 ]
 
 android {
@@ -121,6 +123,7 @@ android {
         buildConfigField "boolean", "CHAT_SERVER_GROUPS", "true"
         buildConfigField "boolean", "DISABLE_CERT_PINNING", "false"
         buildConfigField "boolean", "VIDEO_CALLS_ENABLED", "true"
+        // This public key is pinned for the chat server protocol.
         buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x45, (byte) 0x0b, (byte) 0x97, (byte) 0x57, (byte) 0x35, (byte) 0x27, (byte) 0x9f, (byte) 0xde, (byte) 0xcb, (byte) 0x33, (byte) 0x13, (byte) 0x64, (byte) 0x8f, (byte) 0x5f, (byte) 0xc6, (byte) 0xee, (byte) 0x9f, (byte) 0xf4, (byte) 0x36, (byte) 0x0e, (byte) 0xa9, (byte) 0x2a, (byte) 0x8c, (byte) 0x17, (byte) 0x51, (byte) 0xc6, (byte) 0x61, (byte) 0xe4, (byte) 0xc0, (byte) 0xd8, (byte) 0xc9, (byte) 0x09 }"
         buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0xda, (byte) 0x7c, (byte) 0x73, (byte) 0x79, (byte) 0x8f, (byte) 0x97, (byte) 0xd5, (byte) 0x87, (byte) 0xc3, (byte) 0xa2, (byte) 0x5e, (byte) 0xbe, (byte) 0x0a, (byte) 0x91, (byte) 0x41, (byte) 0x7f, (byte) 0x76, (byte) 0xdb, (byte) 0xcc, (byte) 0xcd, (byte) 0xda, (byte) 0x29, (byte) 0x30, (byte) 0xe6, (byte) 0xa9, (byte) 0x09, (byte) 0x0a, (byte) 0xf6, (byte) 0x2e, (byte) 0xba, (byte) 0x6f, (byte) 0x15 }"
         buildConfigField "String", "GIT_HASH", "\"${getGitHash()}\""
@@ -129,12 +132,18 @@ android {
         buildConfigField "String", "WORK_SERVER_URL", "null"
         buildConfigField "String", "WORK_SERVER_IPV6_URL", "null"
         buildConfigField "String", "MEDIATOR_SERVER_URL", "\"wss://mediator-{deviceGroupIdPrefix4}.threema.ch/{deviceGroupIdPrefix8}\""
-        buildConfigField "String", "BLOB_SERVER_DOWNLOAD_URL", "\"https://blobp-{blobIdPrefix}.threema.ch/{blobId}\""
-        buildConfigField "String", "BLOB_SERVER_DOWNLOAD_IPV6_URL", "\"https://ds-blobp-{blobIdPrefix}.threema.ch/{blobId}\""
-        buildConfigField "String", "BLOB_SERVER_DONE_URL", "\"https://blobp-{blobIdPrefix}.threema.ch/{blobId}/done\""
-        buildConfigField "String", "BLOB_SERVER_DONE_IPV6_URL", "\"https://ds-blobp-{blobIdPrefix}.threema.ch/{blobId}/done\""
-        buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "\"https://blobp-upload.threema.ch/upload\""
-        buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "\"https://ds-blobp-upload.threema.ch/upload\""
+
+        // Base blob url used for "download" and "done" calls
+        buildConfigField "String", "BLOB_SERVER_URL", "\"https://blobp-{blobIdPrefix8}.threema.ch\""
+        buildConfigField "String", "BLOB_SERVER_IPV6_URL", "\"https://ds-blobp-{blobIdPrefix8}.threema.ch\""
+
+        // Specific blob url used for "upload" calls
+        buildConfigField "String", "BLOB_SERVER_URL_UPLOAD", "\"https://blobp-upload.threema.ch/upload\""
+        buildConfigField "String", "BLOB_SERVER_IPV6_URL_UPLOAD", "\"https://ds-blobp-upload.threema.ch/upload\""
+
+        // Base blob mirror url used for "download", "upload", "done"
+        buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.threema.ch/{deviceGroupIdPrefix8}\""
+
         buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.threema.ch/\""
         buildConfigField "String", "SAFE_SERVER_URL", "\"https://safe-{backupIdPrefix8}.threema.ch/\""
         buildConfigField "String", "WEB_SERVER_URL", "\"https://web.threema.ch/\""
@@ -146,6 +155,7 @@ android {
 
         buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "null"
         buildConfigField "boolean", "MD_ENABLED", "false"
+        buildConfigField "boolean", "MD_SYNC_DISTRIBUTION_LISTS", "false"
         buildConfigField "boolean", "EDIT_MESSAGES_ENABLED", "true"
         buildConfigField "boolean", "DELETE_MESSAGES_ENABLED", "true"
         buildConfigField "boolean", "SHOW_TIMESTAMPS_AND_TECHNICAL_INFO_IN_MESSAGE_DETAILS", "false"
@@ -158,11 +168,11 @@ android {
 
         // duplicated for manifest
         manifestPlaceholders = [
-            uriScheme: "threema",
-            contactActionUrl: "threema.id",
+            uriScheme         : "threema",
+            contactActionUrl  : "threema.id",
             groupLinkActionUrl: "threema.group",
-            actionUrl: "go.threema.ch",
-            callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.call",
+            actionUrl         : "go.threema.ch",
+            callMimeType      : "vnd.android.cursor.item/vnd.ch.threema.app.call",
         ]
 
         testInstrumentationRunner 'ch.threema.app.ThreemaTestRunner'
@@ -210,15 +220,15 @@ android {
         variant.outputs.each { output ->
             def abi = output.getFilter("ABI")
             output.versionCodeOverride =
-                    abiVersionCodes.get(abi, 0) * 1000000 + defaultVersionCode
+                abiVersionCodes.get(abi, 0) * 1000000 + defaultVersionCode
         }
     }
 
     namespace 'ch.threema.app'
     flavorDimensions = ["default"]
     productFlavors {
-        none { }
-        store_google { }
+        none {}
+        store_google {}
         store_threema {
             resValue "string", "shop_download_filename", "Threema-update.apk"
         }
@@ -244,8 +254,8 @@ android {
             buildConfigField "String", "actionUrl", "\"work.threema.ch\""
 
             manifestPlaceholders = [
-                uriScheme: "threemawork",
-                actionUrl: "work.threema.ch",
+                uriScheme   : "threemawork",
+                actionUrl   : "work.threema.ch",
                 callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.work.call",
             ]
         }
@@ -259,6 +269,7 @@ android {
             resValue "string", "call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.sandbox.call"
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaGreen\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
+            // This public key is pinned for the chat server protocol.
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.test.threema.ch/\""
@@ -267,6 +278,8 @@ android {
             buildConfigField "String", "AVATAR_FETCH_URL", "\"https://avatar.test.threema.ch/\""
             buildConfigField "String", "APP_RATING_URL", "\"https://test.threema.ch/app-rating/android/{rating}\""
             buildConfigField "boolean", "MD_ENABLED", "true"
+
+            buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}\""
         }
         sandbox_work {
             versionName "${app_version}k${beta_suffix}"
@@ -280,6 +293,7 @@ android {
             buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaWorkSandbox\""
+            // This public key is pinned for the chat server protocol.
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
 
@@ -293,6 +307,7 @@ android {
             buildConfigField "String", "LOG_TAG", "\"3mawrk\""
             buildConfigField "String", "DEFAULT_APP_THEME", "\"2\""
 
+            buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}\""
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemawork\""
@@ -300,10 +315,9 @@ android {
 
             buildConfigField "boolean", "MD_ENABLED", "true"
 
-
             manifestPlaceholders = [
-                uriScheme       : "threemawork",
-                actionUrl       : "work.test.threema.ch",
+                uriScheme: "threemawork",
+                actionUrl: "work.test.threema.ch",
             ]
         }
         onprem {
@@ -325,12 +339,13 @@ android {
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "null"
             buildConfigField "String", "DIRECTORY_SERVER_URL", "null"
             buildConfigField "String", "DIRECTORY_SERVER_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DOWNLOAD_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DONE_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_DONE_IPV6_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_UPLOAD_URL", "null"
-            buildConfigField "String", "BLOB_SERVER_UPLOAD_IPV6_URL", "null"
+
+            buildConfigField "String", "BLOB_SERVER_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_IPV6_URL", "null"
+            buildConfigField "String", "BLOB_SERVER_URL_UPLOAD", "null"
+            buildConfigField "String", "BLOB_SERVER_IPV6_URL_UPLOAD", "null"
+            buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "null"
+
             buildConfigField "String[]", "ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", "new String[] {\"ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=\", \"Hrk8aCjwKkXySubI7CZ3y9Sx+oToEHjNkGw98WSRneU=\", \"5pEn1T/5bhecNWrp9NgUQweRfgVtu/I8gRb3VxGP7k4=\"}"
             buildConfigField "String", "LOG_TAG", "\"3maop\""
 
@@ -339,12 +354,13 @@ android {
             buildConfigField "String", "actionUrl", "\"onprem.threema.ch\""
 
             manifestPlaceholders = [
-                uriScheme: "threemaonprem",
-                actionUrl: "onprem.threema.ch",
+                uriScheme   : "threemaonprem",
+                actionUrl   : "onprem.threema.ch",
                 callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.onprem.call",
             ]
         }
-        blue { // Essentially like sandbox work, but with a different icon and application id, used for internal testing
+        blue {
+            // Essentially like sandbox work, but with a different icon and application id, used for internal testing
             versionName "${app_version}b${beta_suffix}"
             // The app was previously named `red`. The app id remains unchanged to still be able to install updates.
             applicationId "ch.threema.app.red"
@@ -358,6 +374,7 @@ android {
             buildConfigField "String", "CHAT_SERVER_IPV6_PREFIX", "\"ds.w-\""
             buildConfigField "String", "CHAT_SERVER_SUFFIX", "\".0.test.threema.ch\""
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaBlue\""
+            // This public key is pinned for the chat server protocol.
             buildConfigField "byte[]", "SERVER_PUBKEY", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "byte[]", "SERVER_PUBKEY_ALT", "new byte[] {(byte) 0x5a, (byte) 0x98, (byte) 0xf2, (byte) 0x3d, (byte) 0xe6, (byte) 0x56, (byte) 0x05, (byte) 0xd0, (byte) 0x50, (byte) 0xdc, (byte) 0x00, (byte) 0x64, (byte) 0xbe, (byte) 0x07, (byte) 0xdd, (byte) 0xdd, (byte) 0x81, (byte) 0x1d, (byte) 0xa1, (byte) 0x16, (byte) 0xa5, (byte) 0x43, (byte) 0xce, (byte) 0x43, (byte) 0xaa, (byte) 0x26, (byte) 0x87, (byte) 0xd1, (byte) 0x9f, (byte) 0x20, (byte) 0xaf, (byte) 0x3c }"
             buildConfigField "String", "DIRECTORY_SERVER_URL", "\"https://apip.test.threema.ch/\""
@@ -369,13 +386,15 @@ android {
             buildConfigField "String", "APP_RATING_URL", "\"https://test.threema.ch/app-rating/android-work/{rating}\""
             buildConfigField "String", "LOG_TAG", "\"3mablue\""
 
+            buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}\""
+
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemablue\""
             buildConfigField "String", "actionUrl", "\"blue.threema.ch\""
 
             manifestPlaceholders = [
-                uriScheme: "threemablue",
-                actionUrl: "blue.threema.ch",
+                uriScheme   : "threemablue",
+                actionUrl   : "blue.threema.ch",
                 callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.blue.call",
             ]
         }
@@ -404,8 +423,8 @@ android {
             buildConfigField "String", "actionUrl", "\"work.threema.ch\""
 
             manifestPlaceholders = [
-                uriScheme: "threemawork",
-                actionUrl: "work.threema.ch",
+                uriScheme   : "threemawork",
+                actionUrl   : "work.threema.ch",
                 callMimeType: "vnd.android.cursor.item/vnd.ch.threema.app.work.call",
             ]
         }
@@ -413,7 +432,7 @@ android {
             versionName "${app_version}l${beta_suffix}"
             applicationId "ch.threema.app.libre"
             testApplicationId 'ch.threema.app.libre.test'
-            resValue "string", "package_name",  applicationId
+            resValue "string", "package_name", applicationId
             resValue "string", "app_name", "Threema Libre"
             buildConfigField "String", "MEDIA_PATH", "\"ThreemaLibre\""
         }
@@ -484,6 +503,7 @@ android {
         main {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
+            res.srcDir 'src/main/res-rendezvous'
         }
 
         // Based on Google services
@@ -645,6 +665,7 @@ android {
                 jvmArgs = jvmArgs + ['--add-opens=java.base/java.util=ALL-UNNAMED']
                 jvmArgs = jvmArgs + ['--add-opens=java.base/java.util.stream=ALL-UNNAMED']
                 jvmArgs = jvmArgs + ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+                jvmArgs = jvmArgs + ['-Xmx4096m']
             }
             // By default, local unit tests throw an exception any time the code you are testing tries to access
             // Android platform APIs (unless you mock Android dependencies yourself or with a testing
@@ -799,7 +820,8 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'com.google.zxing:core:3.3.3' // zxing 3.4 crashes on API < 24
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.39' // make sure to update this in domain's build.gradle as well
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.39'
+    // make sure to update this in domain's build.gradle as well
 
     // webclient dependencies
     implementation 'org.msgpack:msgpack-core:0.8.24!!'
@@ -893,7 +915,7 @@ dependencies {
         'com.google.android.gms:play-services-base:18.0.1': [],
 
         // Firebase push
-        'com.google.firebase:firebase-messaging:23.1.2': [
+        'com.google.firebase:firebase-messaging:23.1.2'   : [
             [group: 'com.google.firebase', module: 'firebase-core'],
             [group: 'com.google.firebase', module: 'firebase-analytics'],
             [group: 'com.google.firebase', module: 'firebase-measurement-connector'],
@@ -957,6 +979,34 @@ dependencies {
 tasks.withType(KaptGenerateStubs).configureEach {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+}
+
+// Define the cargo attributes. These will be used by the rust-android plugin that will create the
+// 'cargoBuild' task that builds native libraries that will be added to the apk. Note that the
+// kotlin bindings are created in the domain module. Building native libraries with rust-android
+// cannot be done in any other module than 'app'.
+cargo {
+    prebuiltToolchains = true
+    targetDirectory = "$projectDir/build/generated/source/libthreema"
+    module = "$projectDir/../domain/libthreema" // must contain Cargo.toml
+    libname = "libthreema" // must match the Cargo.toml's package name
+    profile = 'release'
+    pythonCommand = 'python3'
+    targets = ["x86_64", "arm64", "arm", "x86"]
+    features {
+        defaultAnd("uniffi")
+    }
+    extraCargoBuildArguments = ["--lib", "--target-dir", "$projectDir/build/generated/source/libthreema"]
+    verbose = false
+}
+
+afterEvaluate {
+    // The `cargoBuild` task isn't available until after evaluation.
+    android.applicationVariants.configureEach { variant ->
+        def variantName = "${variant.name.capitalize()}"
+        // Set the dependency so that cargoBuild is executed before the native libs are merged
+        tasks["merge${variantName}NativeLibs"].dependsOn(tasks["cargoBuild"])
     }
 }
 

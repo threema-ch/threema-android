@@ -21,8 +21,6 @@
 
 package ch.threema.app.tasks
 
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.workers.ContactUpdateWorker
@@ -41,8 +39,7 @@ class ApplicationUpdateStepsTask(serviceManager: ServiceManager) : ActiveTask<Un
     override val type = "ApplicationUpdateStepsTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val workRequest = OneTimeWorkRequest.Builder(ContactUpdateWorker::class.java).build()
-        WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueue(workRequest)
+        ContactUpdateWorker.performOneTimeSync(ThreemaApplication.getAppContext())
 
         // Remove all sessions with contacts where the version is not known
         contactService.all.forEach {

@@ -22,15 +22,25 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.ThreemaApplication
-import ch.threema.domain.models.Contact
+import ch.threema.data.models.ContactModelData
+import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
+import ch.threema.domain.models.ReadReceiptPolicy
+import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.VerificationLevel
+import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.storage.models.ContactModel
 import com.neilalexander.jnacl.NaCl
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.fail
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.junit.Test
+import java.util.Date
 
 /**
  * These tests are useful to detect when a task cannot be created out of a persisted representation
@@ -187,8 +197,8 @@ class PersistableTasksTest {
 
     @Test
     fun testDeleteAndTerminateFSSessionsTask() {
-        // Add the contact '01234567' so that restoring the tasks works
-        serviceManager.contactStore.addCachedContact(Contact("01234567", ByteArray(NaCl.PUBLICKEYBYTES)))
+        // Add the contact '01234567' so that creating the tasks works
+        addTestIdentity()
 
         assertValidEncoding(
             DeleteAndTerminateFSSessionsTask::class.java,
@@ -225,10 +235,18 @@ class PersistableTasksTest {
     }
 
     @Test
-    fun testOutgoingDropDeviceTask() {
+    fun testOutboundIncomingContactMessageUpdateReadTask() {
         assertValidEncoding(
-            OutgoingDropDeviceTask::class.java,
-            "{\"type\":\"ch.threema.app.tasks.OutgoingDropDeviceTask.OutgoingDropDeviceData\",\"deviceId\":0}"
+            OutboundIncomingContactMessageUpdateReadTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutboundIncomingContactMessageUpdateReadTask.OutboundIncomingContactMessageUpdateReadData\",\"messageIds\":[[0,-1,2,3,4,5,6,7]],\"timestamp\":1704067200000,\"recipientIdentity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testOutboundIncomingGroupMessageUpdateReadTask() {
+        assertValidEncoding(
+            OutboundIncomingGroupMessageUpdateReadTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OutboundIncomingGroupMessageUpdateReadTask.OutboundIncomingGroupMessageUpdateReadData\",\"messageIds\":[[0,-1,2,3,4,5,6,7]],\"timestamp\":1704067200000,\"groupId\":[0,0,0,0,0,0,0,0],\"creatorIdentity\":\"01234567\"}"
         )
     }
 
@@ -261,6 +279,215 @@ class PersistableTasksTest {
         assertValidEncoding(
             OutgoingGroupDeleteMessageTask::class.java,
             "{\"type\":\"ch.threema.app.tasks.OutgoingGroupDeleteMessageTask.OutgoingGroupDeleteMessageData\",\"messageModelId\":0,\"messageId\":[0,0,0,0,0,0,0,0],\"deletedAt\":0,\"recipientIdentities\":[\"01234567\",\"01234567\"]}"
+        )
+    }
+
+    @Test
+    fun testReflectUserProfileNicknameSyncTask() {
+        assertValidEncoding(
+            ReflectUserProfileNicknameSyncTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectUserProfileNicknameSyncTask.ReflectUserProfileNicknameSyncTaskData\",\"newNickname\":\"nick\"}"
+        )
+    }
+
+    @Test
+    fun testReflectUserProfilePictureSyncTask() {
+        assertValidEncoding(
+            ReflectUserProfilePictureSyncTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectUserProfilePictureSyncTask.ReflectUserProfilePictureSyncTaskData\"}"
+        )
+    }
+
+    @Test
+    fun testReflectUserProfileShareWithPolicySyncTask() {
+        assertValidEncoding(
+            ReflectUserProfileShareWithPolicySyncTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectUserProfileShareWithPolicySyncTask.ReflectUserProfileShareWithPolicySyncTaskData\",\"newPolicy\":\"NOBODY\"}"
+        )
+    }
+
+    @Test
+    fun testReflectUserProfileShareWithAllowListSyncTask() {
+        assertValidEncoding(
+            ReflectUserProfileShareWithAllowListSyncTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask.ReflectUserProfileShareWithAllowListSyncTaskData\",\"allowedIdentities\":[\"01234567\", \"01234568\"]}"
+        )
+    }
+
+    @Test
+    fun testReflectNameUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData\",\"firstName\":\"A\",\"lastName\":\"B\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData\",\"firstName\":\"A\",\"lastName\":\"\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData\",\"firstName\":\"\",\"lastName\":\"B\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testReflectReadReceiptPolicyUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData\",\"readReceiptPolicy\":\"DEFAULT\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData\",\"readReceiptPolicy\":\"SEND\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData\",\"readReceiptPolicy\":\"DONT_SEND\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testReflectTypingIndicatorPolicyUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.ReflectTypingIndicatorPolicyUpdateData\",\"typingIndicatorPolicy\":\"DEFAULT\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.ReflectTypingIndicatorPolicyUpdateData\",\"typingIndicatorPolicy\":\"SEND\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.ReflectTypingIndicatorPolicyUpdateData\",\"typingIndicatorPolicy\":\"DONT_SEND\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testReflectActivityStateUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData\",\"identityState\":\"ACTIVE\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData\",\"identityState\":\"INACTIVE\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData\",\"identityState\":\"INVALID\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testReflectFeatureMaskUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate.ReflectFeatureMaskUpdateData\",\"featureMask\":12345,\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testVerificationLevelUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData\",\"verificationLevel\":\"UNVERIFIED\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData\",\"verificationLevel\":\"SERVER_VERIFIED\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData\",\"verificationLevel\":\"FULLY_VERIFIED\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testWorkVerificationLevelUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate.ReflectWorkVerificationLevelUpdateData\",\"workVerificationLevel\":\"NONE\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate.ReflectWorkVerificationLevelUpdateData\",\"workVerificationLevel\":\"WORK_SUBSCRIPTION_VERIFIED\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testIdentityTypeUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate.ReflectIdentityTypeUpdateData\",\"identityType\":\"NORMAL\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate.ReflectIdentityTypeUpdateData\",\"identityType\":\"WORK\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testAcquaintanceLevelUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate.ReflectAcquaintanceLevelUpdateData\",\"acquaintanceLevel\":\"DIRECT\",\"identity\":\"01234567\"}"
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate.ReflectAcquaintanceLevelUpdateData\",\"acquaintanceLevel\":\"GROUP\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    @Test
+    fun testUserDefinedProfilePictureUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate.ReflectUserDefinedProfilePictureUpdateData\",\"identity\":\"0BZYE2H9\"}"
+        )
+    }
+
+    @Test
+    fun testOnFSFeatureMaskDowngradedTask() {
+        // Add the contact '01234567' so that creating the tasks works
+        addTestIdentity()
+
+        assertValidEncoding(
+            OnFSFeatureMaskDowngradedTask::class.java,
+            "{\"type\":\"ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask.OnFSFeatureMaskDowngradedData\",\"identity\":\"01234567\"}"
+        )
+    }
+
+    private fun addTestIdentity() = runBlocking {
+        val identity = "01234567"
+        if (serviceManager.modelRepositories.contacts.getByIdentity(identity) != null) {
+            // If the contact already exists, we do not add it again
+            return@runBlocking
+        }
+
+        serviceManager.modelRepositories.contacts.createFromLocal(
+            ContactModelData(
+                identity = identity,
+                publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
+                createdAt = Date(42),
+                firstName = "0123",
+                lastName = "4567",
+                nickname = "01",
+                verificationLevel = VerificationLevel.SERVER_VERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
+                activityState = IdentityState.ACTIVE,
+                syncState = ContactSyncState.INITIAL,
+                featureMask = 0u,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                androidContactLookupKey = null,
+                localAvatarExpires = null,
+                isRestored = false,
+                profilePictureBlobId = null,
+                jobTitle = null,
+                department = null,
+            )
         )
     }
 

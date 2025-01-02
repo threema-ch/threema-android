@@ -47,6 +47,8 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
 
     override fun reflectOutgoing() = true
 
+    override fun reflectSentUpdate() = false
+
     override fun sendAutomaticDeliveryReceipt() = false
 
     override fun bumpLastUpdate() = false

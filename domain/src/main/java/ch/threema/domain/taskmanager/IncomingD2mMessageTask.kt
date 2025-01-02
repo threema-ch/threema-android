@@ -22,21 +22,30 @@
 package ch.threema.domain.taskmanager
 
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
-import ch.threema.domain.protocol.connection.data.toHex
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingD2mMessageTask")
 
 class IncomingD2mMessageTask(
-    private val message: InboundD2mMessage
+    private val message: InboundD2mMessage,
+    private val incomingMessageProcessor: IncomingMessageProcessor,
 ) : ActiveTask<Unit> {
     override val type: String = "IncomingD2mMessageTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        logger.warn(
-            "Ignore incoming d2m message with type={} and payloadType={}",
-            message.type,
-            message.payloadType.toHex()
-        )
+        when (message.payloadType) {
+            D2mPayloadType.REFLECTED ->
+                handleReflected(message as InboundD2mMessage.Reflected, handle)
+
+            else -> logger.warn("Unexpected d2m message of type {} received", message.payloadType)
+        }
+    }
+
+    private suspend fun handleReflected(
+        message: InboundD2mMessage.Reflected,
+        handle: ActiveTaskCodec,
+    ) {
+        incomingMessageProcessor.processIncomingD2mMessage(message, handle)
     }
 }

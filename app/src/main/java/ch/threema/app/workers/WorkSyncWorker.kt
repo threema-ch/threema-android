@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat
 import androidx.preference.PreferenceManager
 import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
@@ -44,8 +45,9 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.notifications.NotificationChannels
+import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
 import ch.threema.app.services.AppRestrictionService
@@ -61,11 +63,15 @@ import ch.threema.app.utils.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.TestUtil
+import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.ContactModel
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.VerificationLevel
+import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkData
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.taskmanager.TriggerSource
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 import java.net.HttpURLConnection
@@ -83,12 +89,41 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     private val notificationService: NotificationService? = serviceManager?.notificationService
     private val userService: UserService? = serviceManager?.userService
     private val identityStore: IdentityStore? = serviceManager?.identityStore
+    private val contactModelRepository: ContactModelRepository? = serviceManager?.modelRepositories?.contacts
 
     companion object {
         private const val EXTRA_REFRESH_RESTRICTIONS_ONLY = "RESTRICTIONS_ONLY"
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
 
-        fun buildOneTimeWorkRequest(refreshRestrictionsOnly: Boolean, forceUpdate: Boolean, tag: String?): OneTimeWorkRequest {
+        fun schedulePeriodicWorkSync(context: Context, preferenceService: PreferenceService) {
+            if (!ConfigUtils.isWorkBuild()) {
+                logger.debug("Do not start work sync worker in non-work build")
+                return
+            }
+
+            val schedulePeriodMs = WorkManagerUtil.normalizeSchedulePeriod(preferenceService.workSyncCheckInterval)
+            logger.info("Scheduling periodic work sync. Schedule period: {} ms", schedulePeriodMs)
+
+            try {
+                val workManager = WorkManager.getInstance(context)
+                val policy = if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs)) {
+                    ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
+                } else {
+                    ExistingPeriodicWorkPolicy.KEEP
+                }
+                logger.info("{}: {} existing periodic work", ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, policy)
+                val workRequest = buildPeriodicWorkRequest(schedulePeriodMs)
+                workManager.enqueueUniquePeriodicWork(ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, policy, workRequest)
+            } catch (e: IllegalStateException) {
+                logger.error("Unable to schedule periodic work sync work", e)
+            }
+        }
+
+        suspend fun cancelPeriodicWorkSyncAwait(context: Context) {
+            WorkManagerUtil.cancelUniqueWorkAwait(context, ThreemaApplication.WORKER_PERIODIC_WORK_SYNC)
+        }
+
+        private fun buildOneTimeWorkRequest(refreshRestrictionsOnly: Boolean, forceUpdate: Boolean, tag: String?): OneTimeWorkRequest {
             val data = Data.Builder()
                     .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, refreshRestrictionsOnly)
                     .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
@@ -105,7 +140,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             return builder.build()
         }
 
-        fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
+        private fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
             val data = Data.Builder()
                 .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
                 .putBoolean(EXTRA_FORCE_UPDATE, false)
@@ -119,6 +154,22 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 .addTag(schedulePeriodMs.toString())
                 .apply { setInputData(data) }
                 .build()
+        }
+
+        /**
+         * Start a one time work sync request. Existing work will be [ExistingWorkPolicy.REPLACE]d.
+         *
+         * If it is required to run a callback when the request was successful or failed, use
+         * `performOneTimeWorkSync(Activity, Runnable, Runnable)`.
+         */
+        fun performOneTimeWorkSync(
+            context: Context,
+            refreshRestrictionsOnly: Boolean,
+            forceUpdate: Boolean,
+            tag: String?
+        ) {
+            val workRequest = buildOneTimeWorkRequest(refreshRestrictionsOnly, forceUpdate, tag)
+            WorkManager.getInstance(context).enqueueUniqueWork(ThreemaApplication.WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest)
         }
 
         /**
@@ -166,7 +217,14 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
         logger.info("Refreshing work data. Restrictions only = {}, force = {}", updateRestrictionsOnly, forceUpdate)
 
-        if (licenseService == null || notificationService == null || contactService == null || apiConnector == null || preferenceService == null) {
+        if (licenseService == null
+            || notificationService == null
+            || contactService == null
+            || apiConnector == null
+            || preferenceService == null
+            || userService == null
+            || contactModelRepository == null
+        ) {
             logger.info("Services not available")
             return Result.failure()
         }
@@ -181,7 +239,8 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         if (!updateRestrictionsOnly) {
             val workData: WorkData?
             try {
-                val allContacts: List<ContactModel> = contactService.all
+                // TODO(ANDR-3172): Get all contacts via contact model repository
+                val allContacts: List<ch.threema.storage.models.ContactModel> = contactService.all
                 val identities = arrayOfNulls<String>(allContacts.size)
                 for (n in allContacts.indices) {
                     identities[n] = allContacts[n].identity
@@ -208,24 +267,34 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 return Result.failure()
             }
 
-            val existingWorkContacts: List<ContactModel> = contactService.allWork
-            val immutableExistingWorkContacts = existingWorkContacts.toList()
-            for (workContact in workData.workContacts) {
-                val newContact = contactService.addWorkContact(workContact, existingWorkContacts)
-                if (immutableExistingWorkContacts.none { it == newContact }) {
-                    newContact?.let { newWorkContacts.add(it) }
-                }
-            }
+            val existingWorkIdentities = contactService.allWork.map { it.identity }.toSet()
+            val fetchedWorkIdentities = workData.workContacts.map { it.threemaId }.toSet()
 
-            //downgrade work contacts
-            for (x in existingWorkContacts.indices) {
-                //remove isWork flag
-                val c = existingWorkContacts[x]
-                c.setIsWork(false)
-                if (c.verificationLevel != VerificationLevel.FULLY_VERIFIED) {
-                    c.verificationLevel = VerificationLevel.UNVERIFIED
+            // Create or update work contacts
+            val refreshedWorkIdentities = workData.workContacts.mapNotNull { workContact ->
+                AddOrUpdateWorkContactBackgroundTask(
+                    workContact,
+                    userService.identity,
+                    contactModelRepository,
+                ).runSynchronously()
+            }.map { it.identity }
+
+            val newWorkIdentities = refreshedWorkIdentities - existingWorkIdentities
+            newWorkContacts.addAll(
+                newWorkIdentities.mapNotNull { contactModelRepository.getByIdentity(it) }
+            )
+
+            // Downgrade work contacts
+            val downgradedIdentities = existingWorkIdentities - fetchedWorkIdentities
+            downgradedIdentities.mapNotNull { contactModelRepository.getByIdentity(it) }.forEach {
+                // The contact is no longer a work contact, so set work verification level to none
+                it.setWorkVerificationLevelFromLocal(WorkVerificationLevel.NONE)
+
+                // Additionally, the contact may not be server verified anymore (except it has been
+                // fully verified before)
+                if (it.data.value?.verificationLevel == VerificationLevel.SERVER_VERIFIED) {
+                    it.setVerificationLevelFromLocal(VerificationLevel.UNVERIFIED)
                 }
-                this.contactService.save(c)
             }
 
             // update applogos
@@ -273,9 +342,7 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             if (newWorkContacts.isEmpty() || ContactUpdateWorker.fetchAndUpdateContactModels(
                 contactModels = newWorkContacts,
                 apiConnector = apiConnector,
-                contactService = contactService,
                 preferenceService = preferenceService,
-                context = context
             )) {
                 return Result.success()
             } else {
@@ -341,9 +408,9 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     }
 
     private fun applyNicknameRestriction() {
-        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))?.let {
-            if (userService != null && !TestUtil.compare(userService.publicNickname, it)) {
-                userService.publicNickname = it
+        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))?.let { nickname ->
+            if (userService != null && !TestUtil.compare(userService.publicNickname, nickname)) {
+                userService.setPublicNickname(nickname, TriggerSource.LOCAL)
             }
         }
     }

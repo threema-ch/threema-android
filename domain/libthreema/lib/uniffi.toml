@@ -1,0 +1,8 @@
+[bindings.kotlin]
+package_name = "ch.threema.libthreema"
+generate_immutable_records = true
+android = false # TODO(ANDR-3230): Set to true again
+
+[bindings.swift]
+module_name = "libthreema"
+generate_immutable_records = true

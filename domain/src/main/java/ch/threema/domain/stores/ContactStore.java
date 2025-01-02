@@ -24,6 +24,7 @@ package ch.threema.domain.stores;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.BasicContact;
 
 /**
  * A contact store stores {@link Contact} instances.
@@ -44,7 +45,15 @@ public interface ContactStore {
 	 *
  	 * @param contact the contact that is temporarily saved
 	 */
-	void addCachedContact(@NonNull Contact contact);
+	void addCachedContact(@NonNull BasicContact contact);
+
+	/**
+	 * Get the cached contact for the given identity. If there is no cached contact, null is
+	 * returned. Note that if the contact with the given identity exists but is not in cache, null
+	 * is returned.
+	 */
+	@Nullable
+	BasicContact getCachedContact(@NonNull String identity);
 
 	/**
 	 * Get the cached or stored contact for the given identity. This method first checks if the
@@ -65,7 +74,8 @@ public interface ContactStore {
 	void addContact(@NonNull Contact contact);
 
 	/**
-	 * Remove a contact from the contact store.
+	 * Check whether the identity belongs to a special contact or not.
 	 */
-	void removeContact(@NonNull Contact contact);
+	boolean isSpecialContact(@NonNull String identity);
+
 }

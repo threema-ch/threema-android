@@ -1520,6 +1520,17 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="md_link_device_qr_scan_message">Veuillez scanner le code QR</string>
     <string name="directory_request_failed">Échec de demande de répertoire. Réessayez.</string>
     <string name="add_shortcut_exists">Un raccourci pour cette cible existe déjà.</string>
+    <string name="scan_qr_code">Scanner le code QR</string>
+    <string name="scan_qr_code_explain">Scannez le code QR affiché dans la version bêta de %s Desktop sur l’appareil que vous souhaitez associer.</string>
+    <string name="connecting">Connexion...</string>
+    <string name="trust_new_device">Faire confiance au nouvel appareil</string>
+    <string name="trust_new_device_explain">Sélectionnez les mêmes images que celles affichées sur le nouvel appareil pour confirmer que vous lui faites confiance.</string>
+    <string name="trust_new_device_info">Le nouvel appareil stockera une copie indépendante de votre profil %s, et les messages seront envoyés et reçus en votre nom.</string>
+    <string name="no_match_question">Aucune correspondance ?</string>
+    <string name="sending_data">Envoi de données...</string>
+    <string name="continue_on_new_device">Veuillez continuer sur le nouvel appareil</string>
+    <string name="device_linked_successfully">L’appareil a été associé</string>
+    <string name="device_linked_successfully_explain">Vous pouvez maintenant utiliser %s sur l’appareil que vous venez d’associer (même si ce dernier est éteint ou n’est pas connecté à Internet).</string>
     <string name="resend_message_dialog_title">Renvoyer le message de groupe ?</string>
     <string name="resend_message_dialog_message">Impossible d\'envoyer ce message à tous les membres. Renvoyer le message à %1$s ?</string>
     <string name="work_lost_credentials_help">Vous avez oublié vos identifiants ? Veuillez contacter votre administrateur %1$s.</string>
@@ -1564,6 +1575,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="incoming_calls">Appels entrants</string>
     <string name="group_chats">Discussions de groupe</string>
     <string name="edit_history_file_no_caption">Pas de légende</string>
+    <string name="device_linking_failed">L’association des appareils a échoué</string>
+    <string name="device_linking_failed_explain">L’appareil n’a pas pu être associé. Veuillez réessayer.\nMotif : %s.</string>
+    <string name="qr_code_scan_error">Une erreur s’est produite lors de la lecture du code QR</string>
+    <string name="verification_failed">La vérification a échoué</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">accord envoyé</string>
     <string name="cd_dec_icon">désaccord envoyé</string>

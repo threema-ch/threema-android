@@ -23,12 +23,17 @@ package ch.threema.app.grouplinks;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -38,17 +43,14 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactResult;
+import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
@@ -62,16 +64,21 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.protobuf.url_payloads.GroupInvite;
 import ch.threema.storage.DatabaseServiceNew;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.GroupInviteModel;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
@@ -98,6 +105,11 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 	private GroupService groupService;
 	private ContactService contactService;
 	private DatabaseServiceNew databaseService;
+	private APIConnector apiConnector;
+	private ContactModelRepository contactModelRepository;
+
+	@NonNull
+	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
 	private OutgoingGroupRequestViewModel viewModel;
 	private GroupInviteData groupInvite;
@@ -169,6 +181,8 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			this.userService = serviceManager.getUserService();
 			this.groupService = serviceManager.getGroupService();
 			this.databaseService = serviceManager.getDatabaseServiceNew();
+			this.apiConnector = serviceManager.getAPIConnector();
+			this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
 		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
 			logger.error("Exception, services not available... finishing");
 			finish();
@@ -412,36 +426,32 @@ public class OutgoingGroupRequestActivity extends ThreemaToolbarActivity impleme
 			if (this.resendRequestReference == null) {
 				// first add contact and fetch public key to be able to send a request
 				if (contactService.getByIdentity(groupInvite.getAdminIdentity()) == null) {
-					new AsyncTask<Void, Void, Exception>() {
-						@Override
-						protected void onPreExecute() {
-							// no preparation steps needed
-						}
-
-						@Override
-						protected Exception doInBackground(Void... params) {
-							try {
-								contactService.createContactByIdentity(groupInvite.getAdminIdentity(), true);
-								return null;
-							} catch (Exception e) {
-								return e;
+					backgroundExecutor.get().execute(
+						new BasicAddOrUpdateContactBackgroundTask(
+							groupInvite.getAdminIdentity(),
+							ContactModel.AcquaintanceLevel.DIRECT,
+							userService.getIdentity(),
+							apiConnector,
+							contactModelRepository,
+							AddContactRestrictionPolicy.CHECK,
+							this,
+							null
+						) {
+							@Override
+							public void onFinished(ContactResult result) {
+								if (result instanceof ContactAvailable) {
+									if (isDestroyed()) {
+										return;
+									}
+									try {
+										outgoingGroupJoinRequestService.send(groupInvite, message);
+									} catch (Exception e) {
+										logger.error("Sending request after adding contact failed", e);
+									}
+								}
 							}
 						}
-
-						@Override
-						protected void onPostExecute(Exception exception) {
-							if (isDestroyed()) {
-								return;
-							}
-							try {
-								outgoingGroupJoinRequestService.send(
-									groupInvite,
-									message);
-							} catch (Exception e) {
-								LogUtil.error("Exception, sending request after adding contact failed" + e, OutgoingGroupRequestActivity.this);
-							}
-						}
-					}.execute();
+					);
 				} else {
 					outgoingGroupJoinRequestService.send(
 						groupInvite,

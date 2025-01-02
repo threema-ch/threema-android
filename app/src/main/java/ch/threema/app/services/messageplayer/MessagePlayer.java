@@ -29,6 +29,7 @@ import android.os.AsyncTask;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
@@ -51,6 +52,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 

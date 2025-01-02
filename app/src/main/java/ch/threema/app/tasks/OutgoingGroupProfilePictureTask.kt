@@ -46,7 +46,6 @@ class OutgoingGroupProfilePictureTask(
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     private val messageId by lazy { messageId ?: MessageId() }
-    private val userService by lazy { serviceManager.userService }
     private val receiverIdentities by lazy { receiverIdentities - userService.identity }
     private val fileService by lazy { serviceManager.fileService }
 

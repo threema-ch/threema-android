@@ -21,10 +21,17 @@
 
 package ch.threema.data.repositories
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.threema.app.TestCoreServiceManager
+import ch.threema.app.TestMultiDeviceManager
+import ch.threema.app.TestTaskManager
+import ch.threema.app.ThreemaApplication
 import ch.threema.data.TestDatabaseService
-import ch.threema.data.models.ModelDeletedException
+import ch.threema.data.models.ContactModelData
+import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
+import ch.threema.domain.helpers.TransactionAckTaskCodec
+import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
@@ -32,84 +39,186 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import ch.threema.storage.models.ContactModel.State
 import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.testhelpers.randomIdentity
 import com.neilalexander.jnacl.NaCl
-import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
-@RunWith(AndroidJUnit4::class)
-class ContactModelRepositoryTest {
+@RunWith(value = Parameterized::class)
+class ContactModelRepositoryTest(private val contactModelData: ContactModelData) {
+    // Services where MD is disabled
     private lateinit var databaseService: TestDatabaseService
+    private lateinit var coreServiceManager: TestCoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
+
+    // Services where MD is enabled
+    private lateinit var databaseServiceMd: TestDatabaseService
+    private lateinit var taskCodecMd: TransactionAckTaskCodec
+    private lateinit var coreServiceManagerMd: TestCoreServiceManager
+    private lateinit var contactModelRepositoryMd: ContactModelRepository
 
     private enum class TestTriggerSource {
         FROM_LOCAL,
         FROM_REMOTE,
     }
 
-    private val initialValuesSet = setOf(
-        InitialValues(),
-        InitialValues(publicKey = ByteArray(NaCl.PUBLICKEYBYTES) { it.toByte() }),
-        InitialValues(date = Date(42)),
-        InitialValues(identityType = IdentityType.WORK),
-        InitialValues(acquaintanceLevel = AcquaintanceLevel.GROUP),
-        InitialValues(activityState = State.INACTIVE),
-        InitialValues(featureMask = 64.toULong()),
-    )
+    companion object {
+        @JvmStatic
+        @Parameterized.Parameters()
+        fun initialValuesSet() = setOf(
+            getInitialContactModelData(),
+            getInitialContactModelData(publicKey = ByteArray(NaCl.PUBLICKEYBYTES) { it.toByte() }),
+            getInitialContactModelData(createdAt = Date(42)),
+            getInitialContactModelData(identityType = IdentityType.WORK),
+            getInitialContactModelData(acquaintanceLevel = AcquaintanceLevel.GROUP),
+            getInitialContactModelData(activityState = IdentityState.INACTIVE),
+            getInitialContactModelData(featureMask = 64.toULong()),
+        )
+
+        private fun getInitialContactModelData(
+            identity: String = "ABCDEFGH",
+            publicKey: ByteArray = ByteArray(NaCl.PUBLICKEYBYTES),
+            createdAt: Date = Date(),
+            firstName: String = "",
+            lastName: String = "",
+            nickname: String? = null,
+            verificationLevel: VerificationLevel = VerificationLevel.UNVERIFIED,
+            workVerificationLevel: WorkVerificationLevel = WorkVerificationLevel.NONE,
+            identityType: IdentityType = IdentityType.NORMAL,
+            acquaintanceLevel: AcquaintanceLevel = AcquaintanceLevel.DIRECT,
+            activityState: IdentityState = IdentityState.ACTIVE,
+            syncState: ContactSyncState = ContactSyncState.INITIAL,
+            featureMask: ULong = 0u,
+            readReceiptPolicy: ReadReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+            typingIndicatorPolicy: TypingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+            androidContactLookupKey: String? = null,
+            localAvatarExpires: Date? = null,
+            isRestored: Boolean = false,
+            profilePictureBlobId: ByteArray? = null,
+            jobTitle: String? = null,
+            department: String? = null,
+        ) = ContactModelData(
+            identity = identity,
+            publicKey = publicKey,
+            createdAt = createdAt,
+            firstName = firstName,
+            lastName = lastName,
+            nickname = nickname,
+            colorIndex = getIdColorIndex(identity),
+            verificationLevel = verificationLevel,
+            workVerificationLevel = workVerificationLevel,
+            identityType = identityType,
+            acquaintanceLevel = acquaintanceLevel,
+            activityState = activityState,
+            syncState = syncState,
+            featureMask = featureMask,
+            readReceiptPolicy = readReceiptPolicy,
+            typingIndicatorPolicy = typingIndicatorPolicy,
+            androidContactLookupKey = androidContactLookupKey,
+            localAvatarExpires = localAvatarExpires,
+            isRestored = isRestored,
+            profilePictureBlobId = profilePictureBlobId,
+            jobTitle = jobTitle,
+            department = department,
+        )
+    }
 
     @Before
     fun before() {
+        // Instantiate services where MD is disabled
         this.databaseService = TestDatabaseService()
-        this.contactModelRepository = ModelRepositories(databaseService).contacts
+        this.coreServiceManager = TestCoreServiceManager(
+            version = ThreemaApplication.getAppVersion(),
+            databaseService = databaseService,
+            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            taskManager = TestTaskManager(UnusedTaskCodec())
+        )
+        this.contactModelRepository = ModelRepositories(coreServiceManager).contacts
+
+        // Instantiate services where MD is enabled
+        this.databaseServiceMd = TestDatabaseService()
+        this.taskCodecMd = TransactionAckTaskCodec()
+        this.coreServiceManagerMd = TestCoreServiceManager(
+            version = ThreemaApplication.getAppVersion(),
+            databaseService = databaseServiceMd,
+            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            multiDeviceManager = TestMultiDeviceManager(
+                isMultiDeviceActive = true,
+                isMdDisabledOrSupportsFs = false,
+            ),
+            taskManager = TestTaskManager(taskCodecMd)
+        )
+        this.contactModelRepositoryMd = ModelRepositories(coreServiceManagerMd).contacts
     }
 
+    /**
+     * Test creation of a new contact from local.
+     */
     @Test
     fun createFromLocal() {
-        initialValuesSet.forEach { testCreateFromLocalOrRemote(it, TestTriggerSource.FROM_LOCAL) }
+        testCreateFromLocalOrRemote(contactModelData, TestTriggerSource.FROM_LOCAL)
     }
 
+    /**
+     * Test creation of a new contact from remote.
+     */
     @Test
     fun createFromRemote() {
-        initialValuesSet.forEach { testCreateFromLocalOrRemote(it, TestTriggerSource.FROM_REMOTE) }
+        testCreateFromLocalOrRemote(contactModelData, TestTriggerSource.FROM_REMOTE)
     }
 
-    @Test
-    fun createFromLocalTwice() {
-        initialValuesSet.forEach {
-            testCreateFromLocalOrRemoteTwice(it, TestTriggerSource.FROM_LOCAL)
-        }
-    }
-
-    @Test
-    fun createFromRemoteTwice() {
-        initialValuesSet.forEach {
-            testCreateFromLocalOrRemoteTwice(it, TestTriggerSource.FROM_REMOTE)
-        }
-    }
-
+    /**
+     * Test creation of a new contact from sync.
+     */
     @Test
     fun createFromSync() {
-        // TODO(ANDR-2835): Create contact from sync
+        testCreateFromSync(contactModelData)
+    }
+
+    /**
+     * Test creation of a new contact from local twice. The first time a new contact should be
+     * created. The second time a [ContactStoreException] should be thrown.
+     */
+    @Test
+    fun createFromLocalTwice() {
+        testCreateFromLocalOrRemoteTwice(contactModelData, TestTriggerSource.FROM_LOCAL)
+    }
+
+    /**
+     * Test creation of a new contact from remote twice. The first time a new contact should be
+     * created. The second time a [ContactStoreException] should be thrown.
+     */
+    @Test
+    fun createFromRemoteTwice() {
+        testCreateFromLocalOrRemoteTwice(contactModelData, TestTriggerSource.FROM_REMOTE)
+    }
+
+    /**
+     * Test creation of a new contact from sync twice. The first time a new contact should be
+     * created. The second time a [ContactStoreException] should be thrown.
+     */
+    @Test
+    fun createFromSyncTwice() {
+        testCreateFromSyncTwice(contactModelData)
     }
 
     @Test
     fun getByIdentityNotFound() {
         val model = contactModelRepository.getByIdentity("ABCDEFGH")
         assertNull(model)
+        val modelMd = contactModelRepositoryMd.getByIdentity("ABCDEFGH")
+        assertNull(modelMd)
     }
 
     @Test
@@ -119,219 +228,219 @@ class ContactModelRepositoryTest {
 
         // Create contact using "old model"
         databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, publicKey))
+        databaseServiceMd.contactModelFactory.createOrUpdate(ContactModel(identity, publicKey))
 
         // Fetch contact using "new model"
-        val model = contactModelRepository.getByIdentity(identity)
-        assertNotNull(model!!)
+        val model = contactModelRepository.getByIdentity(identity)!!
+        val modelMd = contactModelRepositoryMd.getByIdentity(identity)!!
+        assertEquals(model.identity, modelMd.identity)
+        assertContentEquals(model.data.value, modelMd.data.value)
         assertTrue { model.identity == identity }
         assertTrue { model.data.value?.identity == identity }
         assertContentEquals(publicKey, model.data.value?.publicKey)
     }
 
-    @Test
-    fun deleteByIdentityNonExisting() {
-        // If model does not exist, no exception is thrown
-        contactModelRepository.deleteByIdentity("ABCDEFGH")
-        contactModelRepository.deleteByIdentity("ABCDEFGH")
-    }
-
-    @Test
-    fun deleteByIdentityExistingNotCached() {
-        // Create contact using "old model"
-        val identity = randomIdentity()
-        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, nonSecureRandomArray(32)))
-
-        // Delete through repository
-        contactModelRepository.deleteByIdentity(identity)
-
-        // Ensure that contact is gone
-        val model = contactModelRepository.getByIdentity(identity)
-        assertNull(model)
-    }
-
-    @Test
-    fun deleteByIdentityExistingCached() {
-        // Create contact using "old model"
-        val identity = randomIdentity()
-        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, nonSecureRandomArray(32)))
-
-        // Fetch model to ensure it's cached
-        val modelBeforeDeletion = contactModelRepository.getByIdentity(identity)
-        assertNotNull(modelBeforeDeletion)
-
-        // Delete through repository
-        contactModelRepository.deleteByIdentity(identity)
-
-        // Ensure that contact is gone
-        val modelAfterDeletion = contactModelRepository.getByIdentity(identity)
-        assertNull(modelAfterDeletion)
-    }
-
-    @Test
-    fun deleteExisting() {
-        // Create contact using "old model"
-        val identity = randomIdentity()
-        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, nonSecureRandomArray(32)))
-
-        // Fetch model
-        val model = contactModelRepository.getByIdentity(identity)
-        assertNotNull(model!!)
-
-        // Data is present, mutating model is possible
-        assertNotNull(model.data.value)
-        model.setNicknameFromSync("testnick")
-
-        // Delete through repository
-        contactModelRepository.delete(model)
-
-        // Data is gone, mutating model throws exception
-        assertNull(model.data.value)
-        assertFailsWith(ModelDeletedException::class) {
-            model.setNicknameFromSync("testnick")
-        }
-
-        // Ensure that contact is not cached anymore
-        val modelAfterDeletion = contactModelRepository.getByIdentity(identity)
-        assertNull(modelAfterDeletion)
-    }
-
     private fun testCreateFromLocalOrRemote(
-        initialValues: InitialValues,
+        contactModelData: ContactModelData,
         triggerSource: TestTriggerSource,
     ) {
-        assertNull(contactModelRepository.getByIdentity(initialValues.identity))
+        assertNull(contactModelRepository.getByIdentity(contactModelData.identity))
+        assertNull(contactModelRepositoryMd.getByIdentity(contactModelData.identity))
 
-        val newModel = runBlocking {
+        val (newModel, newModelMd) = runBlocking {
             when (triggerSource) {
-                TestTriggerSource.FROM_LOCAL -> contactModelRepository.createFromLocal(
-                    initialValues.identity,
-                    initialValues.publicKey,
-                    initialValues.date,
-                    initialValues.identityType,
-                    initialValues.acquaintanceLevel,
-                    initialValues.activityState,
-                    initialValues.featureMask,
-                )
+                TestTriggerSource.FROM_LOCAL -> {
+                    contactModelRepository.createFromLocal(contactModelData) to
+                        contactModelRepositoryMd.createFromLocal(contactModelData)
+                }
 
-                TestTriggerSource.FROM_REMOTE -> contactModelRepository.createFromRemote(
-                    initialValues.identity,
-                    initialValues.publicKey,
-                    initialValues.date,
-                    initialValues.identityType,
-                    initialValues.acquaintanceLevel,
-                    initialValues.activityState,
-                    initialValues.featureMask,
-                )
-
+                TestTriggerSource.FROM_REMOTE -> {
+                    contactModelRepository.createFromRemote(
+                        contactModelData = contactModelData,
+                        handle = UnusedTaskCodec(),
+                    ) to
+                        contactModelRepositoryMd.createFromRemote(
+                            contactModelData = contactModelData,
+                            handle = taskCodecMd,
+                        )
+                }
             }
         }
 
-        // TODO(ANDR-3003): Test that transaction has been executed
+        // Assert that a transaction has been executed in the MD context
+        assertEquals(1, taskCodecMd.transactionBeginCount)
+        assertEquals(1, taskCodecMd.transactionCommitCount)
 
-        val queriedModel = contactModelRepository.getByIdentity(initialValues.identity)
+        val queriedModel = contactModelRepository.getByIdentity(contactModelData.identity)
         assertEquals(newModel, queriedModel)
 
-        assertDefaultValues(newModel, initialValues)
+        val queriedModelMd = contactModelRepositoryMd.getByIdentity(contactModelData.identity)
+        assertEquals(newModelMd, queriedModelMd)
 
-        contactModelRepository.deleteByIdentity(initialValues.identity)
+        assertContentEquals(contactModelData, newModel.data.value)
+        assertContentEquals(contactModelData, newModelMd.data.value)
 
-        assertNull(contactModelRepository.getByIdentity(initialValues.identity))
+        // Reset transaction count in case this test is run several times
+        taskCodecMd.transactionBeginCount = 0
+        taskCodecMd.transactionCommitCount = 0
     }
 
+    /**
+     * Insert the given [contactModelData] twice (from local or remote; depending on the given
+     * [triggerSource]): The first time this should create a new contact, the second time it should
+     * throw a [ContactStoreException].
+     */
     private fun testCreateFromLocalOrRemoteTwice(
-        initialValues: InitialValues,
+        contactModelData: ContactModelData,
         triggerSource: TestTriggerSource,
     ) {
-        assertNull(contactModelRepository.getByIdentity(initialValues.identity))
+        assertNull(contactModelRepository.getByIdentity(contactModelData.identity))
+        assertNull(contactModelRepositoryMd.getByIdentity(contactModelData.identity))
 
-        val runCreation = when (triggerSource) {
-            TestTriggerSource.FROM_LOCAL -> suspend {
-                contactModelRepository.createFromLocal(
-                    initialValues.identity,
-                    initialValues.publicKey,
-                    initialValues.date,
-                    initialValues.identityType,
-                    initialValues.acquaintanceLevel,
-                    initialValues.activityState,
-                    initialValues.featureMask,
-                )
+        val (runCreation, runCreationMd) = when (triggerSource) {
+            TestTriggerSource.FROM_LOCAL -> {
+                suspend {
+                    contactModelRepository.createFromLocal(contactModelData)
+                } to
+                    suspend {
+                        contactModelRepositoryMd.createFromLocal(contactModelData)
+                    }
             }
 
-            TestTriggerSource.FROM_REMOTE -> suspend {
-                contactModelRepository.createFromRemote(
-                    initialValues.identity,
-                    initialValues.publicKey,
-                    initialValues.date,
-                    initialValues.identityType,
-                    initialValues.acquaintanceLevel,
-                    initialValues.activityState,
-                    initialValues.featureMask,
-                )
+            TestTriggerSource.FROM_REMOTE -> {
+                suspend {
+                    contactModelRepository.createFromRemote(
+                        contactModelData = contactModelData,
+                        handle = UnusedTaskCodec(),
+                    )
+                } to
+                    suspend {
+                        contactModelRepositoryMd.createFromRemote(
+                            contactModelData = contactModelData,
+                            handle = taskCodecMd,
+                        )
+                    }
             }
 
         }
 
         // Insert it for the first time
-        val newModel = runBlocking {
-            runCreation()
+        val (newModel, newModelMd) = runBlocking {
+            runCreation() to runCreationMd()
         }
 
-        // TODO(ANDR-3003): Test that transaction has been executed
+        // Assert that a transaction has been executed in the MD context
+        assertEquals(1, taskCodecMd.transactionBeginCount)
+        assertEquals(1, taskCodecMd.transactionCommitCount)
 
-        val queriedModel = contactModelRepository.getByIdentity(initialValues.identity)
+        val queriedModel = contactModelRepository.getByIdentity(contactModelData.identity)
         assertEquals(newModel, queriedModel)
 
-        assertDefaultValues(newModel, initialValues)
+        val queriedModelMd = contactModelRepositoryMd.getByIdentity(contactModelData.identity)
+        assertEquals(newModelMd, queriedModelMd)
+
+        assertContentEquals(contactModelData, newModel.data.value)
+        assertContentEquals(contactModelData, newModelMd.data.value)
 
         // Insert for the second time and assert that an exception is thrown
-        assertThrows(ContactCreateException::class.java) { runBlocking { runCreation() } }
+        assertThrows(ContactStoreException::class.java) { runBlocking { runCreation() } }
+        assertThrows(ContactReflectException::class.java) { runBlocking { runCreationMd() } }
 
-        contactModelRepository.deleteByIdentity(initialValues.identity)
+        // Assert that there is still only one transaction and therefore the transaction has not
+        // been executed again (due to precondition failure)
+        assertEquals(1, taskCodecMd.transactionBeginCount)
+        assertEquals(1, taskCodecMd.transactionCommitCount)
 
-        assertNull(contactModelRepository.getByIdentity(initialValues.identity))
+        // Reset transaction count in case this test is run several times
+        taskCodecMd.transactionBeginCount = 0
+        taskCodecMd.transactionCommitCount = 0
     }
 
-    private data class InitialValues(
-        val identity: String = "ABCDEFGH",
-        val publicKey: ByteArray = ByteArray(NaCl.PUBLICKEYBYTES),
-        val date: Date = Date(),
-        val identityType: IdentityType = IdentityType.NORMAL,
-        val acquaintanceLevel: AcquaintanceLevel = AcquaintanceLevel.DIRECT,
-        val activityState: State = State.ACTIVE,
-        val featureMask: ULong = 4.toULong(),
-    )
+    private fun testCreateFromSync(contactModelData: ContactModelData) {
+        // Assert that the contact does not exist yet
+        assertNull(contactModelRepositoryMd.getByIdentity(contactModelData.identity))
 
-    private fun assertDefaultValues(
-        contactModel: ch.threema.data.models.ContactModel,
-        initialValues: InitialValues,
-    ) {
-        assertEquals(initialValues.identity, contactModel.identity)
-        val data = contactModel.data.value!!
+        // Create the contact
+        val contactModel = contactModelRepositoryMd.createFromSync(contactModelData)
 
-        // Assert that the given properties match
-        assertArrayEquals(initialValues.publicKey, data.publicKey)
-        assertEquals(initialValues.date.time, data.createdAt.time)
-        assertEquals(initialValues.identityType, data.identityType)
-        assertEquals(initialValues.acquaintanceLevel, data.acquaintanceLevel)
-        assertEquals(initialValues.activityState, data.activityState)
-        assertEquals(initialValues.featureMask, data.featureMask)
+        // Assert that no transactions were created and no messages were sent
+        assertEquals(0, taskCodecMd.transactionBeginCount)
+        assertEquals(0, taskCodecMd.transactionCommitCount)
+        assertTrue(taskCodecMd.outboundMessages.isEmpty())
 
-        // Assert that the rest is set to the default values
-        assertEquals("", data.firstName)
-        assertEquals("", data.lastName)
-        assertNull(data.nickname)
-        assertEquals(VerificationLevel.UNVERIFIED, data.verificationLevel)
-        assertEquals(WorkVerificationLevel.NONE, data.workVerificationLevel)
-        assertEquals(ContactSyncState.INITIAL, data.syncState)
-        assertEquals(ReadReceiptPolicy.DEFAULT, data.readReceiptPolicy)
-        assertEquals(TypingIndicatorPolicy.DEFAULT, data.typingIndicatorPolicy)
-        assertNull(data.androidContactLookupKey)
-        assertNull(data.localAvatarExpires)
-        assertFalse(data.isRestored)
-        assertNull(data.profilePictureBlobId)
-        assertEquals(
-            ContactModel(data.identity, data.publicKey).idColorIndex.toUByte(),
-            data.colorIndex
-        )
+        // Assert that the contact data has been inserted correctly
+        val addedData = contactModel.data.value!!
+        assertContentEquals(contactModelData, addedData)
+
+        // Reset transaction count in case this test is run several times
+        taskCodecMd.transactionBeginCount = 0
+        taskCodecMd.transactionCommitCount = 0
+    }
+
+    /**
+     * Insert the given [contactModelData] twice from sync: The first time this should create a new
+     * contact, the second time it should throw a [ContactStoreException].
+     */
+    private fun testCreateFromSyncTwice(contactModelData: ContactModelData) {
+        // Assert that the contact does not exist yet
+        assertNull(contactModelRepositoryMd.getByIdentity(contactModelData.identity))
+
+        // Create the contact
+        val contactModel = contactModelRepositoryMd.createFromSync(contactModelData)
+
+        // Assert that no transactions were created and no messages were sent
+        assertEquals(0, taskCodecMd.transactionBeginCount)
+        assertEquals(0, taskCodecMd.transactionCommitCount)
+        assertTrue(taskCodecMd.outboundMessages.isEmpty())
+
+        // Assert that the contact data has been inserted correctly
+        val addedData = contactModel.data.value!!
+        assertContentEquals(contactModelData, addedData)
+
+        // Assert that the contact data cannot be inserted again (as it already exists)
+        assertThrows(ContactStoreException::class.java) {
+            contactModelRepositoryMd.createFromSync(contactModelData)
+        }
+
+        // Reset transaction count in case this test is run several times
+        taskCodecMd.transactionBeginCount = 0
+        taskCodecMd.transactionCommitCount = 0
+    }
+
+    private fun assertContentEquals(expected: ContactModelData?, actual: ContactModelData?) {
+        if (expected == null && actual == null) {
+            return
+        }
+
+        if (expected == null) {
+            fail("Actual data expected to be null")
+        }
+
+        if (actual == null) {
+            fail("Actual data expected to be non null")
+        }
+
+        assertEquals(expected.identity, actual.identity)
+        assertContentEquals(expected.publicKey, actual.publicKey)
+        assertEquals(expected.createdAt, actual.createdAt)
+        assertEquals(expected.firstName, actual.firstName)
+        assertEquals(expected.lastName, actual.lastName)
+        assertEquals(expected.nickname, actual.nickname)
+        assertEquals(expected.colorIndex, actual.colorIndex)
+        assertEquals(expected.verificationLevel, actual.verificationLevel)
+        assertEquals(expected.workVerificationLevel, actual.workVerificationLevel)
+        assertEquals(expected.identityType, actual.identityType)
+        assertEquals(expected.acquaintanceLevel, actual.acquaintanceLevel)
+        assertEquals(expected.activityState, actual.activityState)
+        assertEquals(expected.syncState, actual.syncState)
+        assertEquals(expected.featureMask, actual.featureMask)
+        assertEquals(expected.readReceiptPolicy, actual.readReceiptPolicy)
+        assertEquals(expected.typingIndicatorPolicy, actual.typingIndicatorPolicy)
+        // TODO(ANDR-2998): Assert that notification trigger and sound policy override are set
+        //  correctly
+        assertEquals(expected.androidContactLookupKey, actual.androidContactLookupKey)
+
+        // Just in case there are new fields added that are not explicitly compared here
+        assertEquals(expected, actual)
     }
 }

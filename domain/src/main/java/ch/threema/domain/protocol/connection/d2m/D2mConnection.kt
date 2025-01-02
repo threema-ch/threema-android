@@ -53,6 +53,7 @@ internal class D2mConnectionImpl(
 fun interface MultiDevicePropertyProvider {
     fun get(): MultiDeviceProperties
 }
+
 data class D2mConnectionConfiguration(
     override val identityStore: IdentityStoreInterface,
     override val serverAddressProvider: ServerAddressProvider,

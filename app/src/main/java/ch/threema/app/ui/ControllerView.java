@@ -104,7 +104,6 @@ public class ControllerView extends MaterialCardView {
 
     private void initProgressBars() {
         progressBarIndeterminate.setIndicatorColor(getProgressTrackIndicatorColor());
-        progressBarDeterminate.setTrackColor(getProgressTrackColor());
         progressBarDeterminate.setIndicatorColor(getProgressTrackIndicatorColor());
     }
 
@@ -260,68 +259,28 @@ public class ControllerView extends MaterialCardView {
         }
     }
 
-    /**
-     * We only want to apply dynamic colors if the current view is used to
-     * render an outbox message and they are enabled by the threema setting.
-     * This workaround is necessary because we actually use different color
-     * references when this returns true.
-     */
-    private boolean shouldUseDynamicColors() {
-        return isUsedForOutboxMessage && ColorUtil.areDynamicColorsCurrentlyApplied(getContext());
-    }
-
-    /**
-     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
-     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
-     */
     private @ColorInt int getBackgroundDefaultColor() {
-        if (shouldUseDynamicColors()) {
-            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary);
-        } else {
-            return getResources().getColor(
-                ColorUtil.shouldUseDarkVariant(getContext())
-                    ? R.color.md_theme_dark_tertiaryContainer
-                    : R.color.md_theme_light_tertiaryContainer
-            );
-        }
+        return ConfigUtils.getColorFromAttribute(
+            getContext(),
+            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
+                ? R.attr.colorPrimary
+                : R.attr.colorTertiaryContainer
+        );
     }
 
-    /**
-     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
-     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
-     */
-    private @ColorInt int getProgressTrackColor() {
-        if (shouldUseDynamicColors()) {
-            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSurfaceBright);
-        } else {
-            return getResources().getColor(
-                ColorUtil.shouldUseDarkVariant(getContext())
-                    ? R.color.md_theme_dark_primaryContainer
-                    : R.color.md_theme_light_primaryContainer
-            );
-        }
-    }
-
-    /**
-     *  We do this color workaround to render this view on the left side of the chat in its fixed colors (old way)
-     *  and on the right side with the <strong>possibility</strong> to show itself in dynamic colors.
-     */
     private @ColorInt int getProgressTrackIndicatorColor() {
-        if (shouldUseDynamicColors()) {
-            return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnPrimary);
-        } else {
-            return getResources().getColor(
-                ColorUtil.shouldUseDarkVariant(getContext())
-                    ? R.color.md_theme_dark_primary
-                    : R.color.md_theme_light_primary
-            );
-        }
+        return ConfigUtils.getColorFromAttribute(
+            getContext(),
+            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
+                ? R.attr.colorOnPrimary
+                : R.attr.colorPrimary
+        );
     }
 
     private @ColorInt int getIconTintColor() {
         return ConfigUtils.getColorFromAttribute(
             getContext(),
-            shouldUseDynamicColors()
+            ColorUtil.areDynamicColorsCurrentlyApplied(getContext())
                 ? R.attr.colorOnPrimary
                 : R.attr.colorOnBackground
         );

@@ -38,7 +38,8 @@ public class VoipCallHangupData extends VoipCallData<VoipCallHangupData> {
 
 	//region Serialization
 
-	public static @NonNull VoipCallHangupData parse(@NonNull String jsonObjectString) throws BadMessageException {
+    @NonNull
+    public static VoipCallHangupData parse(@NonNull String jsonObjectString) throws BadMessageException {
 		final JSONObject o;
 		if (jsonObjectString.trim().isEmpty()) {
 			// Historically, hangup messages may be empty
@@ -71,7 +72,8 @@ public class VoipCallHangupData extends VoipCallData<VoipCallHangupData> {
 		bos.write(this.generateString().getBytes(UTF_8));
 	}
 
-	private @NonNull String generateString() {
+    @NonNull
+    private String generateString() {
 		final JSONObject o = this.buildJsonObject();
 		return o.toString();
 	}

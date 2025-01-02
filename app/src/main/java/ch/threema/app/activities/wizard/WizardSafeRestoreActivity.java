@@ -297,7 +297,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
 			@Override
 			public Boolean runInBackground() {
-				return runApplicationSetupSteps(serviceManager, WizardSafeRestoreActivity.this);
+				return runApplicationSetupSteps(serviceManager);
 			}
 
 			@Override

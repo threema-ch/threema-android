@@ -28,6 +28,7 @@ import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UpdateSystemService;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
@@ -60,7 +61,7 @@ public class SystemUpdateToVersion39 implements UpdateSystemService.SystemUpdate
 			// call find with fetchMissingFeatureLevel = true to fetch all contacts without current feature level
 			contactService.find(new ContactService.Filter() {
 				@Override
-				public ContactModel.State[] states() {
+				public IdentityState[] states() {
 					return null;
 				}
 

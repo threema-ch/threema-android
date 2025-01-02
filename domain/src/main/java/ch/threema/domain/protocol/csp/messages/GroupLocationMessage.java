@@ -98,6 +98,11 @@ public class GroupLocationMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return true;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}

@@ -1,0 +1,3451 @@
+# Meta information
+meta:
+  # Document name and ID
+  id: csp
+  name: Chat Server Protocol
+
+  # References used by the structs
+  references:
+    # A public or secret key
+    key: &key b32
+    # A random cookie
+    cookie: &cookie b16
+    # A random nonce
+    nonce: &nonce b24
+    # A Threema ID
+    identity: &identity b8
+    # Multiple Threema IDs
+    identities: &identities b8[]
+    # A message ID
+    message-id: &message-id u64-le
+    # Multiple message IDs
+    message-ids: &message-ids u64-le[]
+    # A blob ID
+    blob-id: &blob-id b16
+    # A poll ID
+    poll-id: &poll-id u64-le
+    # A group ID
+    group-id: &group-id u64-le
+
+# Virtual namespace, just containing the below docstring
+index: &index
+  _doc: |-
+    # Chat Server Protocol
+
+    The Chat Server Protocol is a custom transport encrypted frame-based
+    protocol, originally designed to operate on top of TCP. it uses the NaCl
+    cryptography library to provide authentication, integrity and encryption.
+
+    The login [**handshake**](ref:handshake) takes two round trips and
+    establishes ephemeral encryption keys along the way. Authentication is
+    solely based on the secret key associated to a Threema ID.
+
+    After the handshake process, [**payloads**](ref:payload) can be exchanged
+    bidirectionally although some payload structs may only be used in one
+    direction. A client may now send and receive end-to-end encrypted
+    [**messages**](ref:e2e) (wrapped in [message payload
+    structs](ref:payload.container)).
+
+    ## Terminology
+
+    - `CK`: Client Key (permanent secret key associated to the Threema ID)
+    - `SK`: Permanent Server Key
+    - `TCK`: Temporary Client Key
+    - `TSK`: Temporary Server Key
+    - `CCK`: Client Connection Cookie
+    - `SCK`: Server Connection Cookie
+    - `CSN`: Client Sequence Number
+    - `SSN`: Server Sequence Number
+    - `ID`: The client's Threema ID
+
+    ## General Information
+
+    **Endianness:** All integers use little-endian encoding.
+
+    **Encryption cipher:** XSalsa20-Poly1305, unless otherwise specified.
+
+    **Nonce format:**
+
+    - a 16 byte cookie (CCK/SCK), followed by
+    - a monotonically increasing sequence number (CSN/SSN, u64-le).
+
+    **Sequence number:** The sequence number starts with `1` and is counted
+    separately for each direction (i.e. there is one sequence number counter for
+    the client and one for the server). We will use `CSN+` and `SSN+` in this
+    document to denote that the counter should be increased **after** the value
+    has been inserted (i.e. semantically equivalent to `x++` in many languages).
+
+    ## Size Limitations
+
+    The chat server protocol currently allows for up to 8192 bytes within a
+    single frame. To elaborate this down to end-to-end encrypted messages,
+    the limitations are:
+
+    - 8192 bytes for frames in total,
+    - 8176 bytes for a payload container struct, before applying transport
+      encryption,
+    - 8172 bytes for a payload struct, before wrapping it with a container,
+    - 8084 bytes for a message payload struct's box, after encryption of a
+      message struct,
+    - 7812 bytes minimum and 8066 bytes maximum (due to the random padding of
+      1 to 255 bytes) for an end-to-end encrypted message struct.
+
+# Handshake structs
+handshake: &handshake
+  _doc: |-
+    ## Handshake
+
+    To perform authentication handshake, the following handshake structs have to
+    be exchanged in this order:
+
+        C -- client-hello -> S
+        C <- server-hello -- S
+        C ---- login ---- -> S
+        C <-- login-ack ---- S
+
+    Note that handshake structs have no wrapping frame container struct.
+
+  client-hello:
+    _doc: |-
+      Initial message from the client, containing a server authentication
+      challenge in order to establish transport layer encryption.
+
+      Direction: Client --> Server
+    fields:
+      - _doc: |-
+          32 byte temporary public key (`TCK.public`).
+        name: tck
+        type: *key
+      - _doc: |-
+          16 byte random cookie used for nonces (also acting as server
+          authentication challenge).
+        name: cck
+        type: *cookie
+
+  server-hello:
+    _doc: |-
+      Initial message from the server, containing the server's authentication
+      challenge response. This concludes establishing transport layer
+      encryption based on `TCK` and `TSK`.
+
+      Direction: Client <-- Server
+
+      When creating this message:
+
+      1. Ensure that CCK and SCK are not equal.
+
+      When receiving this message:
+
+      1. If CCK and SCK are equal, abort the connection and these steps.
+      2. If the repeated random cookie of the client does not equal CCK,
+         abort the connection and these steps.
+    fields:
+      - _doc: |-
+          16 byte random cookie used for nonces (also acting as client
+          authentication challenge)
+        name: sck
+        type: *cookie
+      - _doc: |-
+          The server's challenge response (`server-challenge-response`),
+          encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(SK.secret, TCK.public),
+                nonce=SCK || u64-le(SSN+),
+              )
+        name: server-challenge-response-box
+        type: b64
+
+  server-challenge-response:
+    _doc: |-
+      Authentication challenge response from the server.
+    fields:
+      - _doc: |-
+          32 byte temporary public key (`TSK.public`)
+        name: tsk
+        type: *key
+      - _doc: |-
+          16 byte repeated random cookie of the client (acting as the server's
+          challenge response)
+        name: cck
+        type: *cookie
+
+  login:
+    _doc: |-
+      Login request from the client.
+
+      IMPORTANT: `CSN` is used and increased for `box` and then for
+      `extension-box`. It must follow this exact order.
+
+      Direction: Client --> Server
+    fields:
+      - _doc: |-
+          The [`login-data`](ref:handshake.login-data), encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(TCK.secret, TSK.public),
+                nonce=CCK || u64-le(CSN+),
+              )
+        name: box
+        type: b144
+      - _doc: |-
+          An optional arbitrary amount of
+          [`extension`](ref:handshake.extension)s, encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(TCK.secret, TSK.public),
+                nonce=CCK || u64-le(CSN+),
+              )
+
+          These fields are only present if the
+          [`extension-indicator`](ref:handshake.extension-indicator) of the
+          [`login-data`](ref:handshake.login-data) field is present. If so,
+          extensions should be consumed until the extension indicator `length`
+          field is zero.
+        name: extensions-box
+        type: b*
+
+  login-data:
+    _doc: |-
+      Login data of the client.
+    fields:
+      - _doc: |-
+          Threema ID of the client.
+        name: identity
+        type: *identity
+      - _doc: |-
+          This is either the old client info field or an extension indicator.
+
+          If the first 30 bytes of the field start with the string
+          `threema-clever-extension-field`, then parse this field as an
+          [`extension-indicator`](ref:handshake.extension-indicator) and parse
+          `extensions-box` appropriately.
+
+          Otherwise, this represents an old client info and the content is
+          identical to the content of
+          [`client-info`](ref:handshake.client-info). Since the field has a
+          fixed size, the string is zero-padded.
+        name: client-info-or-extension-indicator
+        type: b32
+      - _doc: |-
+          16 byte repeated random cookie of the server (acting as the client's
+          challenge response)
+        name: sck
+        type: *cookie
+      - _doc: |-
+          24 zero bytes (previously used as vouch nonce, now set to zero
+          indicating that the new vouch format is being used)
+        name: reserved1
+        type: b24
+      - _doc: |-
+          The vouch value, calculated as follows:
+
+              SS1 = X25519HSalsa20(CK.secret, SK.public)
+              SS2 = X25519HSalsa20(CK.secret, TSK.public)
+              VouchKey = BLAKE2b(key=SS1 || SS2, salt='v2', personal='3ma-csp')
+              vouch = BLAKE2b(
+                out-length=32,
+                key=VouchKey,
+                input=SCK || TCK.public,
+              )
+
+        name: vouch
+        type: b32
+      - _doc: |-
+          16 zero bytes (previously part of the vouch box, now set to zero for
+          compatibility)
+        name: reserved2
+        type: b16
+
+  extension-indicator:
+    _doc: |-
+      Indicates that extensions are present
+    fields:
+      - _doc: |-
+          Magic string: `threema-clever-extension-field`
+        name: magic
+        type: b30
+      - _doc: |-
+          Amount of encrypted bytes present for extensions. Extension fields
+          need to be consumed until `length` is zero.
+        name: length
+        type: u16-le
+
+  extension:
+    _doc: |-
+      An extension field.
+    fields:
+      - _doc: |-
+          Type of the extension. Must correspond to the encoded extension struct
+          of the `payload` field:
+
+          - `0x00`: `client-info`
+          - `0x01`: `csp-device-id`
+          - `0x02`: `message-payload-version`
+          - `0x03`: `device-cookie`
+        name: type
+        type: u8
+      - _doc: |-
+          Length of the extension's `payload` field.
+        name: length
+        type: u16-le
+      - _doc: |-
+          Extension payload. Needs to be parsed according to the `type` field.
+        name: payload
+        type: b{length}
+
+  client-info:
+    _doc: |-
+      Client info extension payload.
+    fields:
+      - _doc: |-
+          Client info string in the following format (without line breaks):
+
+              <app-version>;
+              <platform>;
+              <lang>/<country-code>;
+              <rest>
+
+          The `<rest>` looks like this for mobile clients (A/I/W):
+
+              <device-model>;
+              <os-version>
+
+          The `<rest>` looks like this for web/desktop clients (Q):
+
+              <renderer>;
+              <renderer-version>;
+              <os-name>;
+              <os-architecture>
+
+          The `<rest>` looks like this for Bots (B):
+
+              <os-name>;
+              <os-architecture>
+
+          The fields may contain the following values:
+
+          - `app-version`: Arbitrary version string, depending on the platform
+          - `platform`:
+            * `A`: Android
+            * `I`: iOS
+            * `Q`: Desktop/Web
+            * `W`: Windows Phone
+            * `B`: Bot
+          - `lang`: ISO 639-1:2002-ish language code
+          - `country-code`: ISO 3166-1-ish country code
+          - `device-model`: Arbitrary smartphone model
+          - `os-version`: Arbitrary OS version string
+          - `renderer`: Renderer name for Desktop/Web (e.g. `Firefox` or
+            `Electron`)
+          - `renderer-version`: Renderer major version (e.g. `107`)
+          - `os-name`: Name of the operating system (e.g. `Linux` or `Windows`)
+          - `os-architecture`: Architecture of the operating system (e.g. `x64`)
+        name: client-info
+        type: b*
+
+  csp-device-id:
+    _doc: |-
+      CSP device ID extension payload.
+    fields:
+      - _doc: |-
+          CSP device ID, randomly generated **once** when the device got the
+          Mediator device ID.
+        name: csp-device-id
+        type: u64-le
+
+  message-payload-version:
+    _doc: |-
+      Message payload struct version to be used.
+
+      In case this extension is not present, the server must assume that
+      version `0x00` has been selected.
+
+      In case the server receives an unknown or unsupported protocol version,
+      it shall complete the handshake and then immediately send a `close-error`
+      payload.
+    fields:
+      - _doc: |-
+          Indicates the payload struct version the client will send and expects
+          to receive when exchanging message payload structs with the server:
+
+          - `0x00`: `legacy-message`
+          - `0x01`: `message-with-metadata-box`
+        name: version
+        type: u8
+
+  device-cookie:
+    _doc: |-
+      A 16 byte random value chosen by the client and stored in a secure,
+      device-specific location (not included in any backups etc., not
+      viewable/exportable).
+
+      Its purpose is to allow detection when a different (rogue) device has
+      connected to the chat server, e.g. because an attacker has obtained
+      the secret key of a user.
+
+      The server will store the device cookie of the last connection, and if a
+      different cookie is sent by the client, it will set a flag on the identity
+      and send a
+      [`device-cookie-change-indication`](ref:payload.device-cookie-change-indication)
+      payload to the client every time it connects. The client should then show
+      a warning in form of a notification or a dialog to the user. Note that the
+      normal protocol flow should continue regardless of whether the user has
+      acknowledged the warning or not.
+
+      If this extension is not sent by the client, then the server's behavior
+      depends on whether it has already stored a device cookie for this
+      identity or not. If not, then nothing will happen. If yes, then it will
+      act as if the client had sent an all-zero device cookie.
+    fields:
+      - _doc: |-
+          Device cookie, randomly generated **once** per device.
+        name: device-cookie
+        type: b16
+
+  login-ack:
+    _doc: |-
+      Login acknowledgement from the server.
+
+      Direction: Client <-- Server
+    fields:
+      - _doc: |-
+          Reserved (16 zero bytes), encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(TSK.secret, TCK.public),
+                nonce=SCK || u64-le(SSN+),
+              )
+        name: reserved-box
+        type: b32
+
+# Payload structs
+payload: &payload
+  _doc: |-
+    ## Payload
+
+    After the handshake process, payloads may be sent and received without any
+    strictly defined order.
+
+    Note that payload structs are mandatory to encrypt and frame. To achieve
+    this, first wrap the payload struct in a
+    [`container`](ref:payload.container) struct, encrypt it and wrap the
+    encrypted bytes in a [`frame`](ref:payload.frame) struct.
+
+  frame:
+    _group: Header
+    _doc: |-
+      Contains an encrypted [payload](ref:payload#payload) wrapped in a
+      [container](ref:payload.container).
+
+      Direction: Client <-> Server
+    fields:
+      - _doc: |-
+          Length of the `box` field.
+        name: length
+        type: u16-le
+      - _doc: |-
+          The encrypted [payload](ref:payload#payload).
+
+          For messages from the server to the client, encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(TSK.secret, TCK.public),
+                nonce=SCK || u64-le(SSN+),
+              )
+
+          For messages from the  client to the server, encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(TSK.secret, TCK.public),
+                nonce=CCK || u64-le(CSN+),
+              )
+        name: box
+        type: b{length}
+
+  container:
+    _group: Header
+    _doc: |-
+      Contains an inner [payload](ref:payload#payload) struct.
+
+      Direction: Client <-> Server
+    fields:
+      - _doc: |-
+          Type of the payload. Must correspond to the encoded payload struct
+          of the `data` field:
+
+          - `0x00`: [`echo-request`](ref:payload.echo-request)
+          - `0x80`: [`echo-response`](ref:payload.echo-response)
+          - `0x01`: outgoing [`legacy-message`](ref:payload.legacy-message) or
+            [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
+          - `0x81`: outgoing [`message-ack`](ref:payload.message-ack)
+          - `0x02`: incoming [`legacy-message`](ref:payload.legacy-message) or
+            [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
+          - `0x82`: incoming [`message-ack`](ref:payload.message-ack)
+          - `0x03`: [`unblock-incoming-messages`](ref:payload.unblock-incoming-messages)
+          - `0x20`: [`set-push-notification-token`](ref:payload.set-push-notification-token)
+          - `0x21`: (obsolete, formerly used by iOS to set a push filter)
+          - `0x22`: (obsolete, formerly used by iOS to set a push sound for contacts)
+          - `0x23`: (obsolete, formerly used by iOS to set a push sound for groups)
+          - `0x24`: high-priority token for notifications that require
+            immediate delivery (e.g. for calls) using the same struct as
+            [`set-push-notification-token`](ref:payload.set-push-notification-token)
+          - `0x25`: [`delete-push-notification-token`](ref:payload.delete-push-notification-token)
+          - `0x30`: [`set-connection-idle-timeout`](ref:payload.set-connection-idle-timeout)
+          - `0x31`: (obsolete, formerly used to ensure that a push message is
+             sent for all messages, regardless of the flag)
+          - `0xd0`: [`queue-send-complete`](ref:payload.queue-send-complete)
+          - `0xd1`: (obsolete, formerly used for a function similar to the
+             device cookie)
+          - `0xd2`: [`device-cookie-change-indication`](ref:payload.device-cookie-change-indication)
+          - `0xd3`: [`clear-device-cookie-change-indication`](ref:payload.clear-device-cookie-change-indication)
+          - `0xe0`: [`close-error`](ref:payload.close-error)
+          - `0xe1`: [`alert`](ref:payload.alert)
+        name: type
+        type: u8
+      - _doc: |-
+          Reserved, currently all zeroes.
+        name: reserved
+        type: b3
+      - _doc: |-
+          Inner payload. Needs to be parsed according to the `type` field.
+        name: data
+        type: b*
+
+  echo-request:
+    _group: Payloads
+    _doc: |-
+      An echo request to be answered by a corresponding echo response.
+
+      Can be used for connection keep-alive or RTT estimation.
+
+      Direction: Client <-> Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Data to be echoed back in the echo response.
+        name: data
+        type: b*
+
+  echo-response:
+    _group: Payloads
+    _doc: |-
+      An echo response corresponding to an echo request.
+
+      Direction: Client <-> Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Data echoed back from the echo request.
+        name: data
+        type: b*
+
+  legacy-message:
+    _group: Payloads
+    _doc: |-
+      An end-to-end encrypted Threema message.
+
+      Direction: Client <-> Server
+
+      Note: This payload is deprecated and may be phased out eventually. It
+            will only be used in case the
+            [`message-payload-version`](ref:handshake.message-payload-version)
+            was not present during login or was explicitly set to the version
+            `0x00`.
+
+      Conversion to [`message-with-metadata-box`](ref:payload.message-with-metadata-box):
+
+      - Copy `legacy-message.sender-nickname` to
+        `message-with-metadata-box.legacy-sender-nickname`
+      - Copy all other fields of `legacy-message` to their respective
+        counterparts in `message-with-metadata-box`
+      - Set `message-with-metadata-box.metadata-length` to `0`
+      - Omit `message-with-metadata-box.metadata-container` (i.e. set it to
+        contain 0 bytes)
+      - Copy `legacy-message.message-nonce` to
+        `message-with-metadata-box.message-and-metadata-nonce`.
+
+      When sending or receiving this payload, convert it to a
+      `message-with-metadata-box` and handle it as defined by that struct.
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - &message-sender-identity
+        _doc: |-
+          The sender's Threema ID.
+        name: sender-identity
+        type: *identity
+      - &message-receiver-identity
+        _doc: |-
+          The receiver's Threema ID.
+        name: receiver-identity
+        type: *identity
+      - &message-message-id
+        _doc: |-
+          Unique message ID for each sender/receiver pair.
+
+          Used for duplicate detection and for quotes.
+
+          Messages sent in a group must have the same message ID for each group
+          member.
+        name: message-id
+        type: *message-id
+      - &message-created-at
+        _doc: |-
+          Unix timestamp in seconds for when the message has been created.
+
+          Messages sent in a group must have the same timestamp for each group
+          member.
+
+          However, the server overrides this timestamp with the current time if
+
+          - the declared timestamp is in the future, or
+          - the _short-lived server queuing_ flag was set (`0x20`).
+
+          Note: The original timestamp is still available in an attached
+                `csp-e2e.MessageMetadata`.
+        name: created-at
+        type: u32-le
+      - &message-flags
+        _doc: |-
+          Flags:
+
+          - `0x01`: Send push notification. The server will send a push message
+            to the receiver of the message. Only use this for messages that
+            require a notification. For example, do not set this for delivery
+            receipts.
+          - `0x02`: No server queuing. Use this for messages that can be
+            discarded by the chat server in case the receiver is not connected
+            to the chat server, e.g. the _typing_ indicator.
+          - `0x04`: No server acknowledgement. Use this for messages where reliable
+            delivery and acknowledgement is not essential, e.g. the _typing_
+            indicator. Will not be acknowledged by the chat server when sending.
+            No acknowledgement should be sent by the receiver to the chat
+            server.
+          - `0x10`: Reserved (formerly _group message marker_).
+          - `0x20`: Short-lived server queuing. Messages with this flag will
+            only be queued for 60 seconds.
+          - `0x80`: No automatic delivery receipts. A receiver of a message with this
+            flag must not send automatic delivery receipt of type _received_
+            (`0x01`) or _read_ (`0x02`). This is not used by the apps but can be
+            used by Threema Gateway IDs which do not necessarily want a delivery
+            receipt for a message.
+        name: flags
+        type: u8
+      - &message-reserved
+        _doc: |-
+          Reserved, must be set to zero.
+        name: reserved
+        type: u8
+      - _doc: |-
+          Reserved for header compatibility with metadata message.
+          Must be set to zero by legacy clients.
+        name: reserved-metadata-length
+        type: b2
+      - _doc: |-
+          The sender's public nickname, padded with zeroes if needed.
+        name: sender-nickname
+        type: b32
+      - _doc: |-
+          Nonce used for the message box.
+        name: message-nonce
+        type: *nonce
+      - &message-message-box
+        _doc: |-
+          The message, end-to-end encrypted by:
+
+              XSalsa20-Poly1305(
+                key=X25519HSalsa20(<sender.CK>.secret, <receiver.CK>.public),
+                nonce=<message-nonce>,
+              )
+        name: message-box
+        type: b*
+
+  message-with-metadata-box:
+    _group: Payloads
+    _doc: |-
+      An end-to-end encrypted Threema message with additional end-to-end
+      encrypted metadata.
+
+      Direction: Client <-> Server
+
+      Note: This payload will only be used in case the
+            [`message-payload-version`](ref:handshake.message-payload-version)
+            was set to version `0x01`.
+
+      Conversion to [`legacy-message`](ref:payload.legacy-message):
+
+      - Discard `message-with-metadata-box.metadata-length` and
+        `message-with-metadata-box.metadata-container`
+      - Copy `message-with-metadata-box.legacy-sender-nickname` to
+        `legacy-message.sender-nickname`
+      - Copy `message-with-metadata-box.message-and-metadata-nonce` to
+        `legacy-message.message-nonce`.
+      - Copy all other fields of `message-with-metadata-box` to their
+        respective counterparts in `legacy-message`
+
+      Creating this payload is only allowed as part of the _Common Send Steps_.
+
+      When receiving this payload:
+
+      1. (MD) If the device is currently not declared _leader_, exceptionally
+         abort these steps and the connection.
+      2. If the nonce of `message-and-metadata-nonce` has been used before, log
+         a warning, _Acknowledge_ and discard the message and abort these steps.
+      3. If `receiver-identity` does not equal the user's Threema ID, log a
+         warning, _Acknowledge_ and discard the message and abort these steps.
+      4. If `sender-identity` equals the user's Threema ID, log a warning,
+         _Acknowledge_ and discard the message and abort these steps.
+      5. If `sender-identity` is a _Special Contact_, let `contact-or-init` be
+         that special contact. Otherwise, lookup the contact associated to
+         `sender-identity` and let `contact-or-init` be the result.
+      6. If no contact could be found, lookup the Threema ID on the Directory
+         Server:
+         1. If the server could not be reached or the status code is not `200`
+            or not `404`, exceptionally abort these steps and the connection.
+         2. If the status code is `404` or the contact is marked as _invalid_
+            (never existed or has been revoked), log a warning, _Acknowledge_
+            and discard the message and abort these steps.
+         3. Assign `contact-or-init` all necessary information to create a new
+            contact.
+      7. If `contact-or-init` contains an existing contact and the associated
+         Threema ID is marked as _invalid_ (has been revoked), log a warning,
+         _Acknowledge_ and discard the message and abort these steps.
+      8. If `metadata-length` is greater zero, decrypt the `metadata-container`
+         and let `outer-metadata` be the result. If this fails, log a warning,
+         _Acknowledge_ and discard the message and abort these steps.
+      9. Decrypt the `message-box`, decode it to a
+         [`container`](ref:payload.container) struct and let `outer` be the
+         result. If this fails, log a warning, _Acknowledge_ and discard the
+         message and abort these steps.
+      10. If `outer.type` is `0xff`, log a warning, _Acknowledge_ and
+          discard the message and abort these steps. (Legacy logic, may be
+          removed in the future.)
+      11. If `outer.type` is unknown, log a notice, _Acknowledge_ and
+          discard the message and abort these steps.
+      12. Decode `outer.padded-data` into the message type associated to
+          `outer.type` and let `outer-message` be the result. If this fails, log
+          a warning, _Acknowledge_ and discard the message and abort these
+          steps.
+      13. If `outer.type` is not `0xa0`, let `inner-metadata` be
+          `outer-metadata`, let `inner-type` be `outer.type` and let
+          `inner-message` be `outer-message`.
+      14. If `outer.type` is `0xa0`:
+          1. Run the receive steps associated to
+             `csp-e2e-fs.Envelope` with the decoded `outer-message` and let
+             `inner-metadata`, `inner-type`, `inner-message` and `fs-commit-fn`
+             be the result. If this fails, exceptionally abort these steps and
+             the connection. If the message has been discarded, _Acknowledge_
+             and abort these steps.
+          2. If `inner-metadata` is not defined, set `inner-metadata` to
+             `outer-metadata`.
+      15. If `message-id` does not equal `inner-metadata.message_id`, log a
+          warning, _Acknowledge_ and discard the message and abort these steps.
+      16. If `message-id` refers to a message that has been received previously
+          from `sender-identity` (including group messages), log a warning,
+          _Acknowledge_ and discard the message and abort these steps.
+      17. If `inner-type` is not defined (i.e. handling an FS control message),
+          log a notice, _Acknowledge_ and discard the message and abort these
+          steps.
+      18. If `inner-type` is unknown, log a notice, _Acknowledge_ and
+          discard the message and abort these steps.
+      19. If `inner-type` is `0xa0` (i.e. FS encapsulation within FS
+          encapsulation), log a warning, _Acknowledge_ and discard the message
+          and abort these steps.
+      20. If `sender-identity` is blocked¹ and `inner-type` is not exempted
+          from blocking, _Acknowledge_ and  discard the message and abort these
+          steps.
+      21. If `sender-identity` equals `*3MAPUSH`:
+          1. If `inner-type` is not `0xfe`, log a warning,
+             _Acknowledge_ and discard the message and abort these steps.
+          2. Run the receive steps associated to `inner-type` with
+             `inner-message`. If this fails, exceptionally abort these steps and
+             the connection. If the message has been discarded, _Acknowledge_
+             the message and abort these steps.
+      22. If `sender-identity` is not a _Special Contact_:
+          1. If `inner-metadata.nickname` is defined, let `nickname` be the
+             value of `inner-metadata.nickname`.²
+          2. If `inner-metadata` is not defined and _User Profile Distribution_
+             was expected for `inner-type`, let `nickname` be the result of
+             decoding the plaintext `legacy-sender-nickname`.²
+          3. If `nickname` is present, trim any excess whitespaces from the
+             beginning and the end of `nickname`.
+          4. If `nickname` is present and `contact-or-init` contains an existing
+             contact:
+             1. Update the contact's nickname with `nickname`. Remove the
+                contact's nickname if `nickname` is empty.
+             2. (MD) If the contact's nickname has been changed, reflect the
+                contact in a transaction (scope: `CONTACT_SYNC`, precondition: a
+                contact for `sender-identity` exists). If this fails,
+                exceptionally abort these steps and the connection.
+             3. (MD) If a contact for `sender-identity` no longer exists, log a
+                warning, _Acknowledge_ and discard the message and abort these
+                steps.³
+          5. If `contact-or-init` does not contain an existing contact:
+             1. If `inner-type` does not require to create an implicit
+                _direct_ contact, log a notice, _Acknowledge_ and discard the
+                message and abort these steps.
+             2. Create a new contact with acquaintance level based on the
+                information provided in `contact-or-init` and the provided
+                `nickname`. If this fails, exceptionally abort these steps and
+                the connection.
+             3. (MD) Reflect the contact in a transaction (precondition: a
+                contact for `sender-identity` does not exist). If this fails,
+                exceptionally abort these steps and the connection.
+          6. Run the receive steps associated to `inner-type` with
+             `inner-message`. If this fails, exceptionally abort these steps and
+             the connection. If the message has been discarded, _Acknowledge_
+             the message and abort these steps.
+      23. (MD) If the properties associated to `inner-type` require
+          reflecting incoming messages, reflect `outer-type` and `outer-message`
+          to other devices and wait for reflection acknowledgement.⁴ If this
+          fails, exceptionally abort these steps and the connection.
+      24. _Acknowledge_ the message.⁵
+      25. If the properties associated to `type` do not require sending
+          automatic delivery receipts or `flags` contains the _no
+          automatic delivery receipts_ (`0x80`) flag, abort these steps.
+      26. Let `delivery-receipt` be a
+          [`delivery-receipt`](ref:e2e.delivery-receipt) message towards
+          `sender-identity` with status _received_ (`0x01`) and the
+          respective `message-id`.
+      27. (MD) Reflect `delivery-receipt` to other devices and
+          wait for reflection acknowledgement. If this fails, exceptionally
+          abort these sub-steps and the connection.
+      28. Send a `delivery-receipt` to `sender-identity` with status
+          _received_ (`0x01`) and the respective `message-id`.
+
+      ¹: A sender can be blocked implicitly or explicitly, see
+      [Blocking](#Blocking).
+
+      ²: Note that the `nickname` of `MessageMetadata` may be undefined (leading
+      to no changes) or defined but explicitly empty (leading to the nickname of
+      the contact being removed) which is an important semantic difference.
+      Unlike the legacy nickname field which always contains a value and
+      therefore cannot represent this semantic difference without having to
+      check whether _User Profile Distribution_ was required for the type.
+
+      ³: This a bailout mechanism that handles the extremely unlikely case that
+      another device removed the contact associated to `sender-identity` while
+      we are still processing the message sent from that contact. It is
+      intentionally handled crudely because of its unlikelyness.
+
+      ⁴: We reflect the **outer** message container depending on the unwrapped
+      **inner** message type, so the forward security properties are untouched
+      and all other devices need to go through the same process.
+
+      ⁵: Because the message is already acknowledged towards the server here,
+      the following steps may not get executed at all if the connection drops
+      or the execution fails.
+
+      The following steps are defined as _Acknowledge_ steps for an incoming
+      message:
+
+      1. If the steps for this message have already been invoked once, abort
+         these steps.
+      2. If `flags` does not contain the _no server acknowledgement_ (`0x04`)
+         flag, send a [`message-ack`](ref:payload.message-ack) payload to the
+         chat server with the respective `message-id`.
+      3. If the properties associated to `inner-type` require protection against
+         replay, mark the nonce of `message-and-metadata-nonce` as used.
+      4. If `fs-commit-fn` is defined, run it.
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - *message-sender-identity
+      - *message-receiver-identity
+      - *message-message-id
+      - *message-created-at
+      - *message-flags
+      - *message-reserved
+      - _doc: |-
+          Length of the metadata box. In case it is zero, no metadata is
+          present (for compatibility with clients using
+          [`legacy-message`](ref:payload.legacy-message)).
+
+          Note: For outgoing messages, a metadata box should always be present.
+        name: metadata-length
+        type: u16-le
+      - _doc: |-
+          Backwards compatibility field for the sender's public nickname.
+          Padded with zeroes if needed.
+
+          When sending a message towards a Threema Gateway ID (starts with a
+          `*`), add the same nickname as included in the encrypted metadata box.
+          Otherwise, set it to all zeroes.
+
+          Note: The backwards compatibility for Threema Gateway IDs will be
+          removed eventually!
+        name: legacy-sender-nickname
+        type: b32
+      - _doc: |-
+          Metadata associated to the message. Must be ignored in case
+          `metadata-length` is zero.
+
+          Message Metadata Key (`MMK`) derivation:
+
+              S = X25519HSalsa20(<sender.CK>.secret, <receiver.CK>.public)
+              MMK = BLAKE2b(key=S, salt='mm', personal='3ma-csp')
+
+          The encoded `csp-e2e.MessageMetadata` is then encrypted in the
+          following way:
+
+              XSalsa20-Poly1305(
+                key=MMK,
+                nonce=<message-with-metadata-box.message-and-metadata-nonce>,
+              )
+        name: metadata-container
+        type: b{metadata-length}
+      - _doc: |-
+          Nonce used for the message and the metadata box.
+        name: message-and-metadata-nonce
+        type: *nonce
+      - *message-message-box
+
+  message-ack:
+    _group: Payloads
+    _doc: |-
+      Acknowledges that a message has been received.
+
+      Direction: Client <-> Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Identity of the sender for an incoming (`0x82`) message / of the
+          receiver for an outgoing (`0x81`) message.
+        name: identity
+        type: *identity
+      - _doc: |-
+          Refers to the `message-id` of the acknowledged message.
+        name: message-id
+        type: *message-id
+
+  unblock-incoming-messages:
+    _group: Payloads
+    _doc: |-
+      Unblock incoming messages from the server. Sent by a multi-device capable
+      client once it is nominated to receive incoming messages.
+
+      Direction: Client --> Server
+
+      [//]: # "TODO(SE-128)"
+
+  set-push-notification-token:
+    _group: Payloads
+    _doc: |-
+      Sets the push notification token to be used when sending a push message.
+
+      Direction: Client --> Server
+    fields:
+      - _doc: |-
+          Type of the push token:
+
+          - `0x00`: No push
+          - `0x01`: APNs Production
+          - `0x02`: APNs Development
+          - `0x03`: APNs Production with `content-available` key
+          - `0x04`: APNs Development with `content-available` key
+          - `0x05`: APNs Production with `mutable-content` key
+          - `0x06`: APNs Development with `mutable-content` key
+          - `0x11`: FCM with empty payload
+          - `0x13`: HMS with empty payload
+        name: type
+        type: u8
+      - _doc: |-
+          Push token, maximum 255 bytes.
+        name: token
+        type: b*
+
+  delete-push-notification-token:
+    _group: Payloads
+    _doc: |-
+      Deletes push tokens for a Threema ID. Can be used when self-removing or
+      removing another device from a device group.
+
+      Direction: Client --> Server
+
+      When receiving this payload:
+
+      1. If `csp-device-ids` is empty, delete all tokens for all devices except
+         the device sending the payload and abort these steps.
+      2. Delete all tokens for the devices specified in `csp-device-ids`.
+    fields:
+      - _doc: |-
+          Delete tokens belonging to a
+          [`csp-device-id`](ref:handshake.csp-device-id) in the same device
+          group.
+        name: csp-device-ids
+        type: u64-le[]
+
+  set-connection-idle-timeout:
+    _group: Payloads
+    _doc: |-
+      Request a different idle timeout than the default one of 5 minutes. The
+      new setting is valid for the connection only.
+
+      The client must ensure that it sends echo requests or other traffic
+      frequently to keep the connection alive.
+
+      Direction: Client --> Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Idle timeout in seconds. Minium 30s, maximum 600s.
+        name: timeout
+        type: u16-le
+
+  queue-send-complete:
+    _group: Payloads
+    _doc: |-
+      Indicates that the incoming message queue on the server has been fully
+      transmitted to the client. A client should not disconnect prior to
+      having received this payload.
+
+      Direction: Client <-- Server
+
+      [//]: # "TODO(SE-128)"
+
+  device-cookie-change-indication:
+    _group: Payloads
+    _doc: |-
+      Indicates to the client that a device cookie mismatch has been detected
+      since the last time that the device cookie change indication has been
+      cleared (using the
+      [`clear-device-cookie-change-indication`](ref:clear-device-cookie-change-indication)
+      payload).
+
+      The client should display a warning in form of a notification and/or
+      dialog to the user, informing them that a new and potentially unauthorized
+      device has accessed the account. When the user confirms, the client should
+      send a
+      [`clear-device-cookie-change-indication`](ref:clear-device-cookie-change-indication)
+      payload to clear the indication.
+
+      Direction: Client <-- Server
+
+  clear-device-cookie-change-indication:
+    _group: Payloads
+    _doc: |-
+      Causes the server to clear the flag that triggers sending the
+      [`device-cookie-change-indication`](ref:device-cookie-change-indication)
+      on each connection.
+
+      The flag will be set again by the server if another device cookie
+      mismatch is detected.
+
+      Direction: Client --> Server
+
+  close-error:
+    _group: Payloads
+    _doc: |-
+      Indicates that the connection has experienced an unrecoverable error and
+      must be closed.
+
+      Direction: Client <-- Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Indicates whether the client is allowed to reconnect automatically
+          after the connection has been severed. This allows the server to
+          prevent infinite loops in case of a recurring error.
+
+          Set to `0` in case the client may not reconnect automatically or any
+          other value otherwise.
+        name: can-reconnect
+        type: u8
+      - _doc: |-
+          Error message (UTF-8 encoded)
+        name: message
+        type: b*
+
+  alert:
+    _group: Payloads
+    _doc: |-
+      Generic alert that should be displayed in the client's user interface.
+
+      Direction: Client <-- Server
+
+      [//]: # "TODO(SE-128)"
+    fields:
+      - _doc: |-
+          Alert message (UTF-8 encoded)
+        name: message
+        type: b*
+
+# End-to-end encrypted structs
+e2e: &e2e
+  _doc: |-
+    ## End-to-End Encrypted Messages
+
+    An end-to-end encrypted message can be sent or received once the handshake
+    was successful. Every end-to-end encrypted message is wrapped inside of a
+    [`container`](ref:payload.container) struct that is then encrypted and
+    wrapped by a payload [`legacy-message`](ref:payload.legacy-message) or
+    [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
+    struct.
+
+    ### Special Contacts
+
+    The following contacts are preprovisioned special contacts with its
+    respective public key¹ in hex:
+
+    - `*3MAPUSH`:
+      `fd711e1a0db0e2f03fcaab6c43da2575b9513664a62a12bd0728d87f7125cc24`
+      (live/sandbox)
+
+    Even though these contacts should not normally appear in the contact list,
+    to keep it simple, they are handled like normal contacts. This means that
+    they may appear in the contact list when the user explicitly sends a message
+    to it. They could also technically be added to a group. Once they appear,
+    they may be synchronised as part of the D2D protocol and even land in the
+    Threema Safe Backup. This is considered acceptable.
+
+    ¹: OnPrem provisions these public keys in the associated OPPF file.
+
+    ### Mitigating Replay
+
+    To prevent replay attacks, a client must permanently store used nonces for
+    incoming and outgoing end-to-end encrypted messages. Messages reusing
+    previously used nonces must not be processed and discarded. One nonce
+    store for all end-to-end encrypted messages across different contacts is
+    sufficient.
+
+    Note that it is still possible for the chat server to replay old messages to
+    a device whose database has been erased (e.g. when restoring a backup).
+    However, this is not applicable to forward security encrypted messages.
+
+    ### Message ID
+
+    Each message has an associated message ID. It is crucial to understand
+    that this is not a unique identifier across multiple conversations.
+    Unique identification of a message is determined by:
+
+    - 1:1 Chats: The message ID in combination with the contact's Threema ID.
+    - Group Chats: The message ID in combination with the group creator's
+      Threema ID and the group ID.
+    - Distribution Lists: The message ID with an artificial distribution list
+      ID.
+
+    When a message is being quoted, it may only be looked up within the
+    associated conversation.
+
+    ### Flags
+
+    For each message, we will define _mandatory_ and _optional_ flags
+    referring to the `flags` field of the payload
+    [`legacy-message`](ref:payload.legacy-message) or
+    [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
+    struct. A flag must be considered _mandatory_ unless it has been explicitly
+    marked _optional_.
+
+    ### Delivery Receipts
+
+    There are two types of delivery receipts (sent using the
+    [`delivery-receipt`](ref:e2e.delivery-receipt) message):
+
+    - Automatic: "received" and "read"
+    - Manual: "acknowledged" and "declined"
+
+    For each message, we will define whether automatic delivery receipts should
+    be sent and whether it is eligible for sending manual delivery receipts
+    (e.g. acknowledge/decline). However, two general exceptions apply:
+
+    1. Automatic delivery receipts are not sent to group members (i.e. when
+       any message struct is wrapped in a `group` message struct).
+    2. Messages whose flags include `0x80` must not trigger any automatic
+       delivery receipts.
+
+    ### Blocking
+
+    The sender Threema ID may be blocked explicitly (i.e. blocking a specific
+    Threema ID) or implicitly (blocking all unknown Threema IDs). This does not
+    require special handling on the server but instead is done entirely by the
+    clients.
+
+    Note that the protocol does not distinguish between implicitly and
+    explicitly blocked Threema IDs. An implicitly blocked Threema ID (i.e.
+    blocking unknown contacts) must be treated the same as an explicitly blocked
+    Threema ID (i.e. blocking specific contacts).
+
+    The UI must prevent users from composing or submitting messages towards a
+    blocked contact. In practise, this is only relevant for explicitly blocked
+    contacts as implicitly blocked contacts are already part of the contact list
+    when the conversation is being opened.
+
+    ### Groups
+
+    Groups are handled in a decentralised manner. Messages are sent to each
+    group member individually. On a technical level, a group is identified by
+    **both** the Threema ID of the creator and the random group ID the creator
+    chose. A group **must never** be identified by the group ID alone.
+
+    Group messages are special containers wrapped around normal messages (it is
+    actually just a common header):
+
+    - [`group-member-container`](ref:e2e.group-member-container): For group
+      message communication between members, including the creator.
+    - [`group-creator-container`](ref:e2e.group-creator-container): For special
+      messages that may only be sent from the creator to normal group members
+      and vice versa.
+
+    Group messages have special types in order to separate them from other
+    messages. These types also define which container must be used.
+
+    The group members are determined by the
+    [`group-setup`](ref:e2e.group-setup) message and continuously updated by
+    any following [`group-leave`](ref:e2e.group-leave) messages. Any following
+    [`group-setup`](ref:e2e.group-setup) overrides the previous member state.
+
+    ### Implicit Contact Creation
+
+    When the user is added to a group, every unknown member of the group must be
+    added to the contact list with acquaintance level _group_. Messages from a
+    contact with any acquaintance level will not be implicitly blocked by a
+    _block unknown_ setting.
+
+    The contact remains at the acquaintance level _group_ until a 1:1
+    conversation with that contact is being started by either side in which
+    case the acquaintance level should be changed to _direct_.
+
+    A contact with acquaintance level _group_ should be removed automatically
+    once the last group the contact appears in is being removed, but only if
+    the associated group chat history is also being removed.
+
+    ### Notes Group
+
+    A group is identified as a _notes_ group if all of the following criteria
+    are met:
+
+    1. The user is the creator of the group.
+    2. The group currently has no members beyond the user itself.
+    3. The group is not marked as _left_.
+
+    Messages in a _notes_ group are synchronised across devices but are not
+    sent to the chat server (since there are no other members). Therefore,
+    it is ideal for "notes to self", hence the name.
+
+    A group seamlessly transforms into a _notes_ group and out of it given the
+    above criteria. Right now this can happen in three scenarios:
+
+    - A _notes_ group is created explicitly (i.e. a group with only the user
+      is being created).
+    - The user is the creator of a group and one or more members are being
+      added in which case the _notes_ group transforms into a regular group.
+    - The user is the creator of a group whose members have just been removed
+      (but the group has not been disbanded) in which case the group
+      transforms into a _notes_ group.
+
+    The UI should signal the _notes_ status of a group to the user.
+
+    ### Sending
+
+    The following steps are defined as the _Common Send Steps_ and must always
+    be invoked as part of a persistent task:
+
+    1. Let `message` be the message to be sent. Note: `message` must contain
+       all information to construct a message and must be assigned a stable
+       message ID via `message.id`.¹
+    2. Let `receivers` be the provided list of receivers for `message`.
+    3. If `message` is part of a group conversation, run the _Common Group Send
+       Steps_ with `receivers` and update `receivers` with the result. If the
+       message has been discarded, abort these steps.
+    4. If `message` is not exempted from blocking, remove all receivers from
+       `receivers` who are blocked.
+    5. (MD) If the properties associated to `message` require
+       reflecting outgoing messages, create a `d2d.OutgoingMessage` for
+       `message` and reflect it. Wait for the corresponding `reflect-ack`.²
+    6. Let `pending` be an ordered map with `receivers` as key and the tuple
+       `pending-acks` and `fs-commit-fn` as value.
+    7. For each `receiver` of `receivers`:
+       1. Let `pending-acks` be an empty list.
+       2. If `message` is not of type `0xa0` and both client and `receiver`
+          support FS, run the _FS Encapsulation Steps_ with `message` and let
+          `outgoing-messages` and `fs-commit-fn` be the result.³
+       3. If `outgoing-messages` is not defined, let `outgoing-messages` be a
+          list including only `message`.
+       4. For each `outgoing-message` of `outgoing-messages`:
+          1. Create a `payload.message-with-metadata-box` for `outgoing-message`
+             and let `payload` be the result.
+          2. If `payload.flags` does not contain the _no server acknowledgement_ (`0x04`)
+             flag, add `payload.message-id` to `pending-acks`.
+          3. Send `payload` to the `receiver`
+       5. Add an entry in `pending` for `receiver` with `pending-acks` and
+          `fs-commit-fn`.
+    8. For each value `pending-acks` and `fs-commit-fn` in `pending`:
+       1. Await all `pending-acks`.
+       2. If `fs-commit-fn` is defined, run it.
+    9. (MD) If `message` is eligible for reflecting
+       `OutgoingMessageUpdate.Sent`, reflect an `OutgoingMessageUpdate.Sent` for
+       `message.id`.
+
+    The following steps are defined as the _Common Group Send Steps_:
+
+    1. Let `receivers` be the provided list of receivers for the message to be
+       sent.
+    2. If the user is no longer part of the group, discard the message and abort
+       these steps.
+    3. Remove all group members from `receivers` who are not part of the group.
+    4. Return the updated `receivers`.
+
+    ¹: Note that, in groups, this implicitly assigns the same message ID towards
+    each group member which in fact is a requirement of the protocol.
+
+    ²: Reflecting with `receivers` empty is a legitimate case that occurs when
+    sending a message in a notes group.
+
+    ³: Always invoking the _FS Encapsulation Steps_ ensures that an FS session
+    is being initiated as soon as possible, so that messages can be protected by
+    FS. Moreover, it ensures that the announced FS session version is up to date
+    (a newer version potentially increasing security or making more messages
+    eligible for FS protection).
+
+    ### Receiving
+
+    The following steps are defined as _Common Group Receive Steps_ and will
+    be applied in most cases for group messages:
+
+    1. Look up the group.
+    2. If the group could not be found:
+        1. If the user is the creator of the group (as alleged by the message),
+           discard the message and abort these steps.
+        2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
+           group creator, discard the message and abort these steps.
+    3. If the group is marked as _left_:
+        1. If the user is the creator of the group, send a
+           [`group-setup`](ref:e2e.group-setup) with an empty members list back
+           to the sender, discard the message and abort these steps.
+        2. Send a [`group-leave`](ref:e2e.group-leave) back to the sender,
+           discard the message and abort these steps.
+    4. If the sender is not a member of the group:
+       1. If the user is the creator of the group, send a
+          [`group-setup`](ref:e2e.group-setup) with an empty members list back
+          to the sender, discard the message and abort these steps.
+       2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
+          group creator, discard the message and abort these steps.
+
+    This rule and any exceptions will be referenced/defined explicitly for each
+    message.
+
+    Note that steps are not allowed to discard messages from blocked contacts
+    prior to running these steps if the message alters group state (group
+    control messages), or is stateful (i.e. introduces a poll, poll vote, or a
+    group call).
+
+    ### Periodic Group Sync
+
+    When the creator of a group...
+
+    - is about to send a group conversation message, or
+    - did just receive a group conversation message,
+
+    it must trigger a _group sync_ for this group if the last time the
+    _group sync_ was triggered is more than seven days ago.
+
+    When a _group sync_ is triggered, the creator assumes it has received a
+    [`group-sync-request`](ref:e2e.group-sync-request) from every group member
+    and must now respond accordingly to each member of the group.
+
+    A newly created group counts as an initial _group sync_ trigger. In other
+    words, the first group sync of a newly created group triggers seven days
+    in the future when one of the above described conditions is met.
+
+    This provides a form of self-healing in case a device lost its group state
+    (e.g. due to a backup restore) and was unable to correct this mischief.
+
+    [//]: # "TODO(SE-40): Group states"
+
+    ### Blobs
+
+    Since messages have a strict maximum size limitation, large binary blobs
+    are uploaded to the blob server. Blobs currently have a maximum size of
+    50 MiB.
+
+    When Multi-Device is activated, all Blobs must be downloaded via the
+    respective Blob Mirror unless explicitly stated otherwise.
+
+    ### Image, Audio, Video vs. File
+
+    Images, as well as audio and video sources can be either send as special
+    media messages or as files. When sending as a file, i.e. a
+    [`file`](ref:e2e.file) message struct with rendering type `0x00` (file), no
+    transcoding is necessary and no media type restrictions apply.
+
+    Clients should intelligently choose between a media message and a file
+    message but always leave the final choice to the user.
+
+    The following sections describe what restrictions apply and modifications
+    need to be made in case the source is sent as a media message, i.e. one
+    of the specialised (deprecated) media structs or a [`file`](ref:e2e.file)
+    message struct with rendering type `0x01` (media) or `0x02` (sticker).
+
+    ### Images
+
+    Images must be in JPEG format for the legacy
+    [`deprecated-image`](ref:e2e.deprecated-image) message and for profile
+    pictures.
+
+    When using the [`file`](ref:e2e.file) message struct, the following media
+    types are explicitly supported:
+
+    - image/gif
+    - image/jpeg
+    - image/png
+    - image/webp
+
+    The following media types are explicitly not supported:
+
+    - image/svg+xml
+
+    Other media types _may_ be supported.
+
+    Keep the format when resizing images or creating thumbnails, if possible
+    (e.g. if the source is a JPEG, make the thumbnail a JPEG). When the format
+    cannot be kept, use PNG for source images with transparency or
+    lossless encoding (e.g. screenshots) and JPEG for images without
+    transparency or lossy encoding (e.g. photos).
+
+    Recommended maximum dimensions:
+
+    - Small: 640x640
+    - Medium: 1024x1024
+    - Large: 1600x1600
+    - Extra Large: 2592x2592
+    - Original: As is
+
+    ### Thumbnails
+
+    Apply the logic described for images to all thumbnails with recommended
+    maximum dimensions of 512x512.
+
+    ### User Profile Distribution
+
+    The shareable part of the user profile consists of the user's public
+    nickname and the profile picture:
+
+    - The nickname is sent along with outgoing messages as `sender-nickname`
+      inside the [`legacy-message`](ref:payload.legacy-message) or as part of
+      the metadata in
+      [`message-with-metadata-box`](ref:payload.message-with-metadata-box).
+    - The profile picture is distributed as described in
+      [Profile Picture Distribution](ref:e2e#profile-picture-distribution).
+
+    Whether user profile distribution should be triggered by an outgoing message
+    is specified in the description of every message type below.
+
+    ### Profile Pictures
+
+    Apply the logic described for images to all profile pictures with
+    recommended maximum dimensions of 512x512 with a square aspect ratio.
+
+    #### Profile Picture Distribution
+
+    Every time a message is being sent to a specific contact or a group of
+    contacts, the sender needs to evaluate whether the profile picture needs to
+    be sent. If the receiver of the message is a group, the evaluation needs to
+    be done for each contact of that group:
+
+    1. If the message [does not allow user profile
+       distribution](ref:e2e#user-profile-distribution), abort these steps.
+    2. If the contact's Threema ID is `ECHOECHO` or a Threema Gateway ID
+       (starts with a `*`), abort these steps.
+    3. Ensure the app settings require the profile picture to be distributed to
+       all contacts or to that contact specifically. Otherwise, abort these
+       steps.
+    4. If no cached profile picture blob exists or the cache expired, encrypt
+       the profile picture with a random symmetric key and upload it to the blob
+       server. Cache both the blob ID and the key with an expiration date
+       of seven days.
+    5. If the currently cached blob ID equals the blob ID that was most
+       recently distributed to the contact, abort these steps.
+    6. Send a [`set-profile-picture`](ref:e2e.set-profile-picture) message to
+       the contact using the cached blob ID and key.
+    7. Store the cached blob ID as the most recently used blob ID for that
+       contact.
+
+    When the user changes the profile picture, remove the cached profile picture
+    (i.e. any associated blob ID and key).
+
+    #### Profile Picture Sharing Settings
+
+    In the client settings, there are three profile picture sharing options that
+    the user can choose from:
+
+    - Share with nobody
+    - Share with everybody you write to
+    - Share with selected contacts only
+
+    The default is to share the profile picture with everyone.
+
+    #### Contact Profile Picture Precedence
+
+    There are three different sources of profile pictures, ordered by
+    precedence:
+
+    1. _contact-defined_: Set by the contact, distributed through a
+       [`set-profile-picture`](ref:e2e.set-profile-picture) message.
+    2. _gateway-defined_: Set by the creator in the Threema Gateway (or Threema
+       Broadcast) control panel and distributed through `avatar.threema.ch`.
+       Only applicable to Threema Gateway IDs (starting with a `*`).
+    3. _user-defined_: Set by the app user for this contact or imported from
+       the address book. Applicable to all Threema IDs which are not Threema
+       Gateway IDs.
+
+    The following steps are defined as _Contact Profile Picture Selection Steps_
+    and will be applied to determine the contact's profile picture that should
+    be displayed:
+
+    1. Let `id` be the Threema ID of the contact.
+    2. If the _contact-defined_ picture is set for the contact, apply it and
+       abort these steps.
+    3. If `id` starts with a `*` (is a Threema Gateway ID) and the
+       _gateway-defined_ picture is set for the contact, apply it and abort
+       these steps.
+    4. If `id` does not start with `*` and the _user-defined_ picture is set
+       for the contact, apply it and abort these steps.
+    5. Apply a fallback picture.
+
+    #### Recurring Gateway Contact Profile Picture Refresh
+
+    For contacts with a Threema Gateway ID (starting with a `*`), the profile
+    picture needs to be fetched recurringly:
+
+    1. Fetch the profile picture for the ID from `avatar.threema.ch`.
+    2. If no profile picture could be found, schedule the next refresh in 24h
+       and abort these steps.
+    3. Store the profile picture as the _gateway-defined_ picture.
+    4. Schedule the next refresh according to the `expires` header of the HTTP
+       response.
+    5. Run the _Contact Profile Picture Selection Steps_ for this contact.
+
+    ### Audio
+
+    Audio must be in AAC format.
+
+    If the source is already in AAC, no transcoding is necessary. Otherwise,
+    the recommended transcoding settings are: Bitrate 128 kbit/s, 2 channels.
+
+    When recording audio (i.e. a voice message), the recommended recording
+    settings are: Sample rate 44.1 kHz, bitrate 32 kbit/s, 1 channel.
+
+    ### Video
+
+    Videos must be encoded in H.264 and the MP4 container format.
+
+    Recommended encoding settings for all videos:
+
+    - Low: 480x480, scale by maintaining aspect ratio to nearest multiple
+      of 16px. Video bitrate 384 kbit/s, audio bitrate 32 kbit/s (2
+      channels). Baseline Profile, Level 3.1.
+    - High: 848x848, scale by maintaining aspect ratio to nearest multiple
+      of 16px. Video bitrate 1500 kbit/s, audio bitrate 64 kbit/s (2
+      channels). Baseline Profile, Level 3.1.
+    - Original: As is. Still needs transcoding in case a different codec has
+      been used.
+
+    When recording a video, the following recording settings are recommended
+    to avoid post-reencoding: 1280x720 / 720x1280. Video bitrate 2000 kbit/s
+    at 30 fps, audio bitrate 128 kbit/s (2 channels).
+
+    ### Call Features
+
+    Call features are transmitted within either a
+    [`call-offer`](ref:e2e.call-offer) or a [`call-answer`](ref:e2e.call-answer)
+    message. It is an optional object containing the below defined fields. If
+    the object is not provided, assume an empty features object.
+
+    - Video Support (`'video'`): Set this field to `null` or an empty object if
+      video calls are enabled. If either side omits this field, video support
+      is disabled for the upcoming call.
+
+    ### Application Setup
+
+    The following steps are defined as _Application Setup Steps_ and must be run
+    when a new Threema ID has been created or when application state has been
+    restored from a backup:
+
+    1. [...]
+    2. If application state has not been set up by the _Device Join Protocol_
+       (meaning that multi-device is deactivated):
+       1.  [...]
+       2.  Update the user's feature mask on the directory server.
+       3.  Let `contacts` be the list of all contacts, including those with an
+           acquaintance level different than `DIRECT`.
+       4.  Refresh the state, type and feature mask of all `contacts` from the
+           directory server and make any changes persistent.
+       5.  Let `solicited-contacts` be a copy of `contacts` filtered in the
+           following way. For each `contact`:
+           1. If the `contact`'s activity state is _invalid_ (i.e. it does not
+              exist or has been revoked), remove `contact` from the list.
+           2. If `contact` is part of a group that is not marked as _left_, add
+              `contact` to the list and abort these sub-steps.
+           3. Lookup the 1:1 conversation with `contact` and let `last-update`
+              be the associated _last update_ timestamp.
+           4. If `last-update` is defined, add `contact` to the list and abort
+              these sub-steps.
+           5. Remove `contact` from the list.
+       6.  If FS is supported by the client, run the _FS Refresh Steps_ with
+           `solicited-contacts`.
+       7.  Send a `contact-request-profile-picture` message to each
+           contact of `solicited-contacts`.
+       8.  For each group not marked as _left_:
+           1. If the user is the creator of the group, trigger a _group sync_
+              for that group.
+           2. If the user is not the creator of the group, send a
+              [`group-sync-request`](ref:e2e.group-sync-request) message to the
+              creator of the group.
+       9. [...]
+    3. Commit the application state and exit the setup phase.
+
+    ### Application Update
+
+    The following steps are defined as _Application Update Steps_ and must be
+    run as a persistent task when the application has just been updated to a new
+    version or downgraded to a previous version:
+
+    1. [...]
+    2. Update the user's feature mask on the directory server.
+    3. Let `contacts` be the list of all contacts (regardless of the acquaintance level).
+    4. Refresh the state, type and feature mask of all `contacts` from the
+       directory server and make any changes persistent.
+    5. For each `contact` of `contacts`:
+       1. If an associated FS session with `contact` exists and any of the FS
+          states is unknown or any of the stored FS versions (local or remote)
+          is unknown, terminate the FS session by sending a
+          `csp-e2e-fs.Terminate` message with cause `RESET`.
+    6. [...]
+
+    Note: Reactivation of FS due to disabling multi-device should run the
+    _Application Setup Steps_ step 2.2. through 2.6. TODO(SE-199): This note
+    will be removed once multi-device supports FS.
+
+  container:
+    _group: Header
+    _doc: |-
+      Contains an end-to-end encrypted message.
+    fields:
+      - _doc: |-
+          Type of the message (`common.CspE2eMessageType`).
+        name: type
+        type: u8
+      - _doc: |-
+          Inner message. Needs to be parsed according to the `type` field.
+          Padded with a random amount from 1 to 255 bytes in [PKCS#7
+          format](https://datatracker.ietf.org/doc/html/rfc5652#section-6.3).
+
+          Additionally, for security reasons, the total size of `padded-data`
+          should be at least 32 bytes, to avoid leaking information about the
+          contents.
+
+          Example padding (hex representation):
+
+          - 1 byte: `01`
+          - 3 bytes: `030303`
+          - 10 bytes: `0A0A0A0A0A0A0A0A0A0A`
+
+          To add padding without information leaks, run the following steps:
+
+          1. Let `data` be the data to be padded.
+          2. Let `pad-length` be a random number between (inclusive) 1 and 255.
+          3. If the sum of the byte length of `data` and `pad-length` is less
+             than 32, update `pad-length` so the sum is precisely 32.
+          4. Let `pad-byte` be the encoded unsigned 8-bit integer
+             representation of `pad-length`.
+          5. Let `padded-data` be the padded data by adding `pad-length`
+             trailing `pad-byte` bytes to `data`.
+
+          To remove padding:
+
+          1. Let `pad-length` be the decoded unsigned 8-bit integer
+             representation of the last byte of `padded-data`.
+          2. Let `data` be the unpadded data by ignoring the trailing
+             `pad-length` bytes of `padded-data`.
+        name: padded-data
+        type: b*
+
+  group-creator-container:
+    _group: Header
+    _doc: |-
+      Container that is wrapped around some special group messages sent by the
+      creator to normal group members and vice versa.
+    fields:
+      - _doc: |-
+          8 byte random group ID. Uniquely identifies the group when combined
+          with the creator's Threema ID.
+        name: group-id
+        type: *group-id
+      - _doc: |-
+          Inner message struct.
+        name: inner-data
+        type: b*
+
+  group-member-container:
+    _group: Header
+    _doc: |-
+      Container that is wrapped around most messages sent by group members to
+      other group members.
+    fields:
+      - _doc: |-
+          The group creator's Threema ID.
+        name: creator-identity
+        type: *identity
+      - _doc: |-
+          8 byte random group ID assigned to the group by the creator.
+        name: group-id
+        type: *group-id
+      - _doc: |-
+          Inner message struct.
+        name: inner-data
+        type: b*
+
+  empty:
+    _doc: |-
+      An empty message (duh).
+
+      Only used when encapsulated by an `csp_e2e_fs.Envelope` to announce a new
+      FS version without explicit renegotiation.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: No
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: No
+        - Outgoing: No
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Send to Threema Gateway ID group creator: N/A
+
+      When receiving this message, a mechanical finger must be unlatched from
+      the device and boop the receiving user on the nose.
+
+  text:
+    _group: Conversation Messages
+    _doc: |-
+      A text message.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: Text
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: Text
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Add the message to the associated group conversation.
+    fields:
+      - _doc: |-
+          UTF-8 encoded text.
+        name: text
+        type: b*
+
+  deprecated-image:
+    _group: Conversation Messages
+    _doc: |-
+      An image message.
+
+      Note: This message is deprecated and may be phased out eventually. When
+            sending images, use the [`file`](ref:e2e.file) message with the
+            rendering type `0x01` (media).
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      The image must be in JPEG format, is uploaded to the blob server and
+      encrypted by:
+
+          XSalsa20-Poly1305(
+            key=X25519HSalsa20(<sender.CK>.secret, <receiver.CK>.public),
+            nonce=<deprecated-image.nonce>,
+          )
+
+      When receiving this message:
+
+      1. If desired, download the image data from the blob server and request
+         the blob to be removed.
+      2. Add the message to the associated 1:1 conversation.
+    fields:
+      - _doc: |-
+          Blob ID to obtain the image data.
+        name: image-blob-id
+        type: *blob-id
+      - _doc: |-
+          Image size in bytes.
+        name: image-size
+        type: u32-le
+      - _doc: |-
+          Random nonce used to encrypt the image data.
+        name: nonce
+        type: *nonce
+
+  deprecated-group-image:
+    _group: Conversation Messages
+    _doc: |-
+      An image message (only used by groups).
+
+      Note: This message is deprecated and may be phased out eventually. When
+            sending images, use the [`file`](ref:e2e.file) message with the
+            rendering type `0x01` (media).
+
+      **Properties**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      The image must be in JPEG format, is uploaded to the blob server and
+      encrypted by:
+
+          XSalsa20-Poly1305(key=<deprecated-group-image.key>, nonce=00..01)
+
+      When receiving this message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Download thumbnail and file (if desired) data from the blob server. Do
+         not request the blobs to be removed.
+      3. Add the message to the associated group conversation.
+    fields:
+      - _doc: |-
+          Blob ID to obtain the image data.
+        name: image-blob-id
+        type: *blob-id
+      - _doc: |-
+          Image size in bytes.
+        name: image-size
+        type: u32-le
+      - _doc: |-
+          Random symmetric key used to encrypt the image data.
+        name: key
+        type: *key
+
+  location:
+    _group: Conversation Messages
+    _doc: |-
+      A location message.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Add the message to the associated group conversation.
+    fields:
+      - _doc: |-
+          Location coordinates and meta information encoded in comma- and
+          line-separated UTF-8:
+
+              <latitude>,<longitude>[,<accuracy>]
+
+          or
+
+              <latitude>,<longitude>[,<accuracy>]
+              <address>
+
+          or
+
+              <latitude>,<longitude>[,<accuracy>]
+              <name>
+              <address>
+
+          Values:
+
+          - `latitude` and `longitude` are the geographic coordinates
+            represented in a WGS-84 string.
+          - `accuracy` is the accuracy in meters represented by a floating
+            point number formatted as a string.
+          - `address` is a full address. If it contains multiple lines, each
+            line feed must be escaped (literal `\n`).
+          - `name` is the name of a point of interest.
+
+          _Latitude_ and _longitude_ must always be present while _accuracy_
+          is optional and should only be provided when the current location of
+          the device is being sent. These values are comma-separated.
+
+          Following values are optional and separated by line feeds (`\n`).
+          This may be either:
+
+          - a single line containing the _address_ representing the closest
+            address matching the coordinates, or
+          - two lines containing a point of interest _name_ and _address_
+            (which means that the coordinates refer to the point of interest).
+        name: location
+        type: b*
+
+  deprecated-audio:
+    _group: Conversation Messages
+    _doc: |-
+      An audio message.
+
+      Note: This message is deprecated and may be phased out eventually. When
+            sending audio, use the [`file`](ref:e2e.file) message with the
+            rendering type `0x01` (media).
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      The audio is uploaded to the blob server and encrypted by:
+
+          XSalsa20-Poly1305(key=<deprecated-audio.key>, nonce=00..01)
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. If desired, download the audio data from the blob server and request
+         the blob to be removed.
+      2. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. If desired, download the audio data from the blob server. Do not
+         request the blob to be removed.
+      3. Add the message to the associated group conversation.
+    fields:
+      - _doc: |-
+          Audio duration in seconds.
+        name: duration
+        type: u16-le
+      - _doc: |-
+          Blob ID to obtain the audio data.
+        name: audio-blob-id
+        type: *blob-id
+      - _doc: |-
+          Audio size in bytes.
+        name: audio-size
+        type: u32-le
+      - _doc: |-
+          Random symmetric key used to encrypt the audio data.
+        name: key
+        type: *key
+
+  deprecated-video:
+    _group: Conversation Messages
+    _doc: |-
+      A video message.
+
+      Note: This message is deprecated and may be phased out eventually. When
+            sending video, use the [`file`](ref:e2e.file) message with the
+            rendering type `0x01` (media).
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: N/A (deprecated message is not being sent)
+      - Edit applies to: N/A
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      The video is uploaded to the blob server and encrypted by:
+
+          XSalsa20-Poly1305(key=<deprecated-video.key>, nonce=00..01)
+
+      The thumbnail must be in JPEG format, is uploaded to the blob server
+      and encrypted by:
+
+          XSalsa20-Poly1305(key=<deprecated-video.key>, nonce=00..02)
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. Download thumbnail and video (if desired) data from the blob server and
+         request the blobs to be removed.
+      2. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Download thumbnail and video (if desired) data from the blob server. Do
+         not request the blobs to be removed.
+      3. Add the message to the associated group conversation.
+    fields:
+      - _doc: |-
+          Video duration in seconds.
+        name: duration
+        type: u16-le
+      - _doc: |-
+          Blob ID to obtain the video data.
+        name: video-blob-id
+        type: *blob-id
+      - _doc: |-
+          Video size in bytes.
+        name: video-size
+        type: u32-le
+      - _doc: |-
+          Blob ID to obtain the thumbnail in JPEG format.
+        name: thumbnail-blob-id
+        type: *blob-id
+      - _doc: |-
+          Thumbnail size in bytes.
+        name: thumbnail-size
+        type: u32-le
+      - _doc: |-
+          Random symmetric key used to encrypt the video and thumbnail data.
+        name: key
+        type: *key
+
+  file:
+    _group: Conversation Messages
+    _doc: |-
+      A file or media message.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: Caption
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: Caption
+      - Deletable by: User and sender
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      The file is uploaded to the blob server and encrypted by:
+
+          XSalsa20-Poly1305(key=<file.key>, nonce=00..01)
+
+      The thumbnail is uploaded to the blob server and encrypted by:
+
+          XSalsa20-Poly1305(key=<file.key>, nonce=00..02)
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. Download thumbnail and file (if desired) data from the blob server and
+         request the blobs to be removed.
+      2. Add the message to the associated 1:1 conversation.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Download thumbnail and file (if desired) data from the blob server. Do
+         not request the blobs to be removed.
+      3. Add the message to the associated group conversation.
+
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Rendering type (`'j'`):
+            - `0`: Render as a file.
+            - `1`: Render as media (e.g. an image, audio or video).
+            - `2`: Render as a sticker (for transparent images).
+
+            If this field is not set, fall back to the value of `'i'`. If no
+            value could be determined or the rendering type is unassigned,
+            assume `0`.
+          - Deprecated (`'i'`): Set this to the integer `1` if the rendering
+            type is `1` or `2`, otherwise set this to the integer `0`.
+          - Encryption key (`'k'`): Random symmetric key used to encrypt the
+            blobs (file and thumbnail data) in lowercase hex string.
+          - File blob ID (`'b'`): Blob ID in lowercase hex string
+            representation to obtain the file data.
+          - File media type (`'m'`): The media type of the file.
+          - File name (`'n'`): Optional filename of the file.
+          - File size (`'s'`): File size in bytes.
+          - Thumbnail Blob ID (`'t'`): Optional blob containing the thumbnail
+            file data.
+          - Thumbnail media type (`'p'`): Media type of the thumbnail.
+            If not set, assume `image/jpeg`.
+          - Caption (`'d'`): Optional caption text.
+          - Correlation ID (`'c'`): Optional random 32 byte ASCII string to
+            collocate multiple media files.
+          - Metadata (`'x'`): An optional metadata object as defined below.
+
+          Metadata object fields depend on the media type of the file. All
+          fields are optional but recommended to set in order to determine the
+          layout logic while the file is being downloaded. Once the file has
+          been parsed, the parsed data supersedes this object.
+
+          For images:
+
+          - Width (`'w'`): The width as an integer in px.
+          - Height (`'h'`): The height as an integer in px.
+          - Animated (`'a'`): Set this to the boolean `true` if the image is
+            animated (e.g. an animated GIF).
+
+          For audio:
+
+          - Duration (`'d'`): The duration as a float in seconds.
+
+          For video:
+
+          - Width (`'w'`): The width as an integer in px.
+          - Height (`'h'`): The height as an integer in px.
+          - Duration (`'d'`): The duration as a float in seconds.
+
+          Note that the rendering logic depends on three key fields which
+          should be set accordingly:
+
+          - Media type,
+          - Rendering type,
+          - Animated flag in the metadata object.
+        name: file
+        type: b*
+
+  poll-setup:
+    _group: Conversation Messages
+    _doc: |-
+      Creates a new poll or finalises an existing poll.
+
+      During the lifecycle of a poll, this message will be used exactly twice:
+      Once to create the poll, and once to close it.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: Yes
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-383))
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: Yes
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: Yes
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: Yes
+      - When rejected: Re-send after confirmation
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-383))
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. Run the _Common Poll Setup Receive Steps_.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Run the _Common Poll Setup Receive Steps_.
+
+      The following steps are defined as the _Common Poll Setup Receive Steps_:
+
+      1. Let `state` be the _State_ field of the message. Let `participants` be
+         the _Participants_ field of the message.
+      2. Look up the poll with the given ID within the conversation.
+      3. If no associated poll could be found:
+          1. If `state` is `1` (closed), discard the message and abort these steps.
+          2. Add the poll to the associated conversation with the provided
+             fields of the message and abort these steps.
+      4. If the associated poll is closed, discard the message and abort these steps.
+      5. If `state` is `0` (open), discard the message and abort these steps.
+      6. Close the poll with the given `participants`, ignore any other fields
+         of the message.
+    fields:
+      - _doc: |-
+          Random unique (per creator within this conversation) ID of the poll.
+        name: id
+        type: *poll-id
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Description (`'d'`): A short description/topic string for the poll.
+          - State (`'s'`):
+            - `0`: Poll is _open_ for votes.
+            - `1`: Poll has been _closed_.
+
+            A state transition from _closed_ to _open_ is illegal and must be
+            ignored by the receiving client.
+          - Answer type (`'a'`):
+            - `0`: Single choice poll.
+            - `1`: Multiple choice poll.
+
+            Any transition from one of the types to another is illegal and
+            must be ignored by the receiving client.
+          - Announce type (`'t'`):
+            - `0`: Announce votes in form of the `poll-vote` message
+              only to the creator of the ballot. Results are invisible until
+              the creator closes the vote and reports the final results.
+            - `1`: Announce votes in form of the `poll-vote` message to
+              everyone in the conversation. Interim results are therefore
+              visible to everyone.
+
+            Any transition from one of the types to another is illegal and
+            must be ignored by the receiving client.
+          - Display mode (`'u'`):
+            - `0`: List mode. List choices of all participants as presented
+              by this message.
+            - `1`: Summary mode. Only display the total amount of votes per
+              choice and the user's vote (if any).
+
+            If the field is not present, assume _list_ mode (`0`). Any
+            transition from one of the modes to another is illegal and must be
+            ignored by the receiving client.
+          - Choices type (`'o'`, DEPRECATED): Always set this to the integer `0`.
+          - Participants (`'p'`): A list of Threema IDs that participated in
+            the poll (i.e. they cast a vote). This field must only be
+            present if the poll is being _closed_. In display mode _summary_,
+            this field should be an empty list and must be ignored by the
+            receiver.
+          - Choices (`'c'`): A list of choice objects as defined below.
+
+          Choice object fields:
+
+          - Choice ID (`'i'`): A per-poll unique ID of the choice in form of
+            an integer. Used when casting a vote.
+          - Description (`'n'`): Choice description in form of a string.
+          - Sort key (`'o'`, DEPRECATED): Set this to the index of the choice
+            object within the _choices_ list.
+          - Participant votes (`'r'`): A list of indices referring to the
+            index of the participant (as defined in the _participants_ list)
+            that cast a vote for this choice. This field must only be present
+            if the poll is being _closed_. In display mode _summary_ this
+            should be an empty list and must be ignored by the receiver.
+          - Total amount of votes (`'t'`): The total amount of votes for this
+            choice. This field must only be present if the poll is being
+            _closed_. In display mode _normal_ this field should not be
+            present and must be ignored by the receiver.
+        name: poll
+        type: b*
+
+  poll-vote:
+    _group: Conversation Messages
+    _doc: |-
+      Cast a vote on a poll.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `poll-vote`)
+      - Deletable by: User only (TODO(SE-383))
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: Yes
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `poll-vote`)
+      - Deletable by: User only (TODO(SE-383))
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      When receiving this message as a 1:1 conversation message:
+
+      1. Run the _Common Poll Vote Receive Steps_.
+
+      When receiving this message as a group message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Run the _Common Poll Vote Receive Steps_.
+
+      The following steps are defined as the _Common Poll Vote Receive Steps_.
+
+      1. Look up the poll with the given ID within the conversation.
+      2. If no associated poll could be found or if the associated poll is
+         closed, discard the message and abort these steps.
+      3. Update the poll with the provided choices of the sender.
+    fields:
+      - _doc: |-
+          ID of the associated poll.
+        name: poll-id
+        type: *poll-id
+      - _doc: |-
+          The Threema ID of the creator of the poll.
+        name: creator-identity
+        type: *identity
+      - _doc: |-
+          UTF-8, JSON-encoded list containing one or more choice tuples. Each
+          choice tuple contains the following two integer values:
+
+          - Choice ID, referring to the Choice ID defined in the
+            `poll-setup` message.
+          - Selected:
+            - `0`: The choice has not been selected.
+            - `1`: The choice has been selected.
+
+          Note: For protocol simplicity, a vote must always include all possible
+          choices, whether or not they have been selected.
+        name: choices
+        type: b*
+
+  call-offer:
+    _group: Conversation Messages
+    _doc: |-
+      Initiates a call.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+        - `0x20`: Short-lived server queuing.
+      - User profile distribution: Yes
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
+      - Send to Threema Gateway ID group creator: N/A
+
+      [//]: # "When sending: TODO(SE-102)"
+      [//]: # "When receiving: TODO(SE-102)"
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Call ID (`'callId'`): Random 32 bit unsigned integer greater than 0
+            that uniquely identifies a call throughout its lifetime. Assume
+            `0` if not set.
+          - WebRTC Offer (`'offer'`): An offer object.
+          - Feature negotiation (`'features'`): Optional Call Features object.
+
+          Offer object fields:
+
+          - WebRTC Offer SDP type (`'sdpType'`): Set this to `'offer'` and ignore
+            offers with other types.
+          - WebRTC Offer SDP (`'sdp'`): Opaque string containing the SDP.
+        name: offer
+        type: b*
+
+  call-answer:
+    _group: Conversation Messages
+    _doc: |-
+      Answer or reject a call.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+        - `0x20`: Short-lived server queuing.
+      - User profile distribution: Only if accepting (`action`: `1`)
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
+      - Send to Threema Gateway ID group creator: N/A
+
+      [//]: # "When sending: TODO(SE-102)"
+      [//]: # "When receiving: TODO(SE-102)"
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Call ID (`'callId'`): Random 32 bit unsigned integer greater than 0
+            that uniquely identifies a call throughout its lifetime. Assume
+            `0` if not set.
+          - Required action (`'action'`):
+            - `0`: The call has been rejected and needs to be aborted.
+            - `1`: The call has been accepted and a connection needs to be
+              established.
+          - Rejection reason (`'rejectReason'`): If the call has been rejected,
+            this field contains a reject reason:
+            - `0`: Generic or unspecified rejection.
+            - `1`: The callee is busy (another call is active).
+            - `2`: The callee did not accept the call in time.
+            - `3`: The callee explicitly rejected the call.
+            - `4`: The callee disabled calls.
+            - `5`: The callee was called during an off-hour period.
+          - WebRTC Answer (`'answer'`): An answer object.
+          - Feature negotiation (`'features'`): Optional Call Features object.
+
+          Answer object fields:
+
+          - WebRTC Answer SDP type (`'sdpType'`): Set this to `'answer'` and ignore
+            answers with other types.
+          - WebRTC Answer SDP (`'sdp'`): Opaque string containing the SDP.
+        name: answer
+        type: b*
+
+  call-ice-candidate:
+    _group: Conversation Messages
+    _doc: |-
+      An ICE candidate for an ongoing call.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+        - `0x20`: Short-lived server queuing.
+      - User profile distribution: No
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: No¹
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: No
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: This message does not trigger any kind of reaction and adding ICE
+      candidates again has no ill-effect.
+
+      [//]: # "When sending: TODO(SE-102)"
+      [//]: # "When receiving: TODO(SE-102)"
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Call ID (`'callId'`): Random 32 bit unsigned integer greater than 0
+            that uniquely identifies a call throughout its lifetime. Assume
+            `0` if not set.
+          - Deprecated (`'removed'`): Always set this to `false` and ignore
+            messages with this field set to `true`.
+          - WebRTC Candidates (`'candidates'`): An array of candidate objects.
+
+          Candidate object fields:
+          - WebRTC Candidate SDP (`'candidate'`): Opaque string containing the
+            ICE candidate SDP.
+          - WebRTC MID (`'sdpMid'`): Media stream identification string or
+            `null`.
+          - WebRTC Media Line Index (`'sdpMLineIndex'`): Media description
+            line index integer or `null`.
+          - WebRTC Username Fragment (`'ufrag'`): ICE username fragment or
+            `null`.
+        name: candidates
+        type: b*
+
+  call-hangup:
+    _group: Conversation Messages
+    _doc: |-
+      Hang up a call.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+      - User profile distribution: No
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: User only (TODO(SE-384))
+      - Send to Threema Gateway ID group creator: N/A
+
+      [//]: # "When sending: TODO(SE-102)"
+      [//]: # "When receiving: TODO(SE-102)"
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object. If this field contains zero bytes, assume
+          an empty object. Contains the following fields:
+
+          - Call ID (`'callId'`): Random 32 bit unsigned integer greater than 0
+            that uniquely identifies a call throughout its lifetime. Assume
+            `0` if not set.
+        name: hangup
+        type: b*
+
+  call-ringing:
+    _group: Conversation Messages
+    _doc: |-
+      Sent by the callee to indicate that the call is ringing.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x01`: Send push notification.
+        - `0x20`: Short-lived server queuing.
+      - User profile distribution: No
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: Abort call
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      [//]: # "When sending: TODO(SE-102)"
+      [//]: # "When receiving: TODO(SE-102)"
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object. If this field contains zero bytes, assume
+          an empty object. Contains the following fields:
+
+          - Call ID (`'callId'`): Random 32 bit unsigned integer greater than 0
+            that uniquely identifies a call throughout its lifetime. Assume
+            `0` if not set.
+        name: hangup
+        type: b*
+
+  delivery-receipt:
+    _group: Status Updates
+    _doc: |-
+      Confirms reception or delivers detailed status updates of a message.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: Only for reactions
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Only for reactions¹
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes²
+        - _Sent_ update: No
+      - Delivery receipts: No, that would be silly!
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delivery-receipt`)
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
+
+      ²: When the message is being _read_ and _read_ receipts are disabled, an
+      `IncomingMessageUpdate` will be reflected instead.
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: Only for reactions
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Only for reactions¹
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes. When the message is being _read_ and _read_ receipts
+          are disabled, reflect an `IncomingMessageUpdate` (since no
+          `delivery-receipt` is sent in this case).
+        - _Sent_ update: No
+      - Delivery receipts: No, that would be silly!
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delivery-receipt`)
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: If capture is enabled
+
+      ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
+
+      When receiving this message as a 1:1 conversation status update message:
+
+      1. For each message id of `message-ids`, look up the associated message
+         in the conversation and let `messages` be the result. Ignore message
+         ids where an associated message could not be found.
+      2. For each `message` of `messages`, apply and replace the status or
+         reaction of the sender to `message` by following the replacement logic
+         outlied in the `status` field.
+
+      When receiving this message as a group status update message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container):
+
+      1. If `status` is not `0x03` or `0x04`, discard the message and abort
+         these steps.
+      2. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      3. For each message id of `message-ids`, look up the associated message
+         in the group conversation and let `messages` be the result. Ignore
+         message ids where an associated message could not be found.
+      4. For each `message` of `messages`, apply and replace the reaction of the
+         sender to `message`.
+    fields:
+      - _doc: |-
+          Message status:
+
+          - `0x01`: Message was received.
+          - `0x02`: Message was read.
+          - `0x03`: Message has been explicitly acknowledged.
+          - `0x04`: Message has been explicitly declined.
+
+          The following replacement logic is to be applied on a message's
+          status when displayed:
+
+          1. `0x03` or `0x04` replace each other and groups listed below,
+          2. `0x02` replaces groups listed below,
+          3. `0x01` replaces the unlisted _created_ status.
+        name: status
+        type: u8
+      - _doc: |-
+          One or more `message-id`s whose status should be updated.
+        name: message-ids
+        type: *message-ids
+
+  typing-indicator:
+    _group: Status Updates
+    _doc: |-
+      Indicates whether a contact is currently typing.
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags:
+        - `0x02`: No server queuing.
+        - `0x04`: No server acknowledgement.
+      - User profile distribution: No
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: No¹
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: No
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: It is deemed acceptable if the _typing_ indicator in the UI is replayed
+      since there is no further consequence.
+
+      When the user is currently _typing_ while composing a **new**¹ message in
+      an associated conversation:
+
+      1. Send this message with `is-typing` set to `1`.
+      2. Start a _user is typing_ timer in the conversation to rerun these
+         steps in 10s.
+
+      When the user stopped _typing_ while composing a message in an associated
+      conversation, or when the user left the conversation view:
+
+      1. If no _user is typing_ timer is running for the conversation, abort
+         these steps.
+      2. Stop the _user is typing_ timer of the conversation.
+      3. Send this message with `is-typing` set to `0`.
+
+      When receiving this message:
+
+      1. If `is-typing` is `1`, start a timer to display that the sender is
+         typing in the associated conversation for the next 15s.
+      2. If `is-typing` is `0`, cancel any running timer displaying that the
+         sender is typing in the associated conversation.
+
+      ¹: Editing a message may not trigger _typing_.
+    fields:
+      - _doc: |-
+          Set to `1` in case the contact is currently typing or `0` in
+          case the contact stopped typing. Other values are invalid.
+        name: is-typing
+        type: u8
+
+  set-profile-picture:
+    _group: Contact and Group Control
+    _doc: |-
+      Set the profile picture of a contact or a group.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: No (obviously)
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes (unused)
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `set-profile-picture`)
+      - Deletable by: N/A (can just send a `delete-profile-picture`)
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: No (obviously)
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `set-profile-picture`)
+      - Deletable by: N/A (can just send a `delete-profile-picture`)
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: For the group creator it will be handled as if `group-sync-request` was
+      received, re-sending the group profile picture state, implicitly triggered
+      by FS `Reject` receive steps.
+
+      The profile picture must be in JPEG format, is uploaded to the blob
+      server and encrypted by:
+
+          XSalsa20-Poly1305(key=<set-profile-picture.key>, nonce=00..01)
+
+      When reflected from another device as an outgoing contact control message:
+
+      1. Store the enclosed blob ID as the most recently used blob ID for that
+         contact.
+
+      When receiving this message as a contact control message:
+
+      1. Download the picture from the blob server but do not request the blob
+         to be removed. Store the profile picture.
+      2. Store the picture as the _contact-defined_ profile picture and run the
+         _Contact Profile Picture Selection Steps_.
+
+      When receiving this message as a group control message (wrapped by
+      [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Download the picture from the blob server but do not request the blob
+         to be removed.
+      3. Store the profile picture and and apply it to the group.
+    fields:
+      - _doc: |-
+          Blob ID to obtain the image data.
+        name: picture-blob-id
+        type: *blob-id
+      - _doc: |-
+          Profile picture size in bytes.
+        name: picture-size
+        type: u32-le
+      - _doc: |-
+          Random symmetric key used to encrypt the image data.
+        name: key
+        type: *key
+
+  delete-profile-picture:
+    _group: Contact and Group Control
+    _doc: |-
+      Delete the profile picture of a contact.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: No (obviously)
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes (unused)
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A (can just send another `delete-profile-picture`)
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      **Properties (Group)**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: No (obviously)
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `delete-profile-picture`)
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: For the group creator it will be handled as if `group-sync-request` was
+      received, re-sending the group profile picture state, implicitly triggered
+      by FS `Reject` receive steps.
+
+      When receiving this message as a contact control message:
+
+      1. Remove the _contact-defined_ profile picture and run the _Contact
+         Profile Picture Selection Steps_.
+
+      When receiving this message as a group control message (wrapped by
+      [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Remove the profile picture of the group.
+
+  contact-request-profile-picture:
+    _group: Contact and Group Control
+    _doc: |-
+      Request a contact's profile picture.
+
+      Note that this message does not result in the profile picture being sent
+      immediately in reply to this message. Instead, it will be sent the next
+      time that contact sends a message to the user (if one is set, and if the
+      user is eligible for receiving the profile picture).
+
+      **Properties**:
+      - Kind: 1:1
+      - Flags: None
+      - User profile distribution: No
+      - Exempt from blocking: No
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: No
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (ignored)
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      When receiving this message via CSP or reflection:
+
+      1. Look up the sender contact. If the contact could not be found, abort
+         these steps.
+      2. If the sender is not eligible for reception of the profile picture,
+         abort these steps.
+      3. Clear the cached profile picture blob ID for the sender.
+
+  group-setup:
+    _group: Contact and Group Control
+    _doc: |-
+      Announces the group setup to all participants. The group creator is
+      always a member of the group and must not be included in the member
+      list.
+
+      This is sent by the creator to create a new group, as well as update and
+      disband an existing group. The group creator sends this message to all
+      current (including those to be removed) and newly added group members.
+      The group creator may also send this to a single receiver in special
+      cases.
+
+      Since the group creator is not allowed to leave the group, the only way
+      for it to stop being a member is by sending a `group-setup` with an
+      empty members list and thereby disbanding the group.
+
+      **Properties**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: Yes
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: Yes
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `group-setup`)
+      - Deletable by: N/A (can just send another `group-setup`)
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: For the group creator it will be handled as if `group-sync-request` was
+      received, re-sending the group state, implicitly triggered by FS `Reject`
+      receive steps.
+
+      When sending this message as a response to a single receiver, see the
+      handling logic that triggered this message for details. No further
+      steps are required.
+
+      When sending this message to all group members:
+
+      1.  If the user is not the creator of the group, abort these steps.
+      2.  Create a `group-setup` message with an empty members list and send it
+          to the group members that are to be removed from the group.
+      3.  Let `members` be the current member list of the group. Remove all
+          members from this list that are to be removed from the group. Add all
+          members to this list that are to be added to the group. (i.e. this
+          list represents the updated member set with all removed and added
+          members.)
+      4.  For each member of `members`, create a contact with acquaintance level
+          _group_ if not already present in the contact list.
+      5.  Create a `group-setup` message with the members present in
+          `members`. Send this message to all group members present in
+          `members`.
+      6.  For each newly added `member` in `members`,
+          additionally:
+          1. If the group has a profile picture, send a
+             [`set-profile-picture`](ref:e2e.set-profile-picture) group control
+             message to the newly added `member`.
+          2. If the group has no profile picture, send a
+             [`delete-profile-picture`](ref:e2e.delete-profile-picture) group
+             control message to the newly added `member`.
+          3. If a group call is currently considered running within this group,
+             run the _Group Call Refresh Steps_ and let `chosen-call` be the
+             result. If `chosen-call` is defined, repeat
+             `csp-e2e.GroupCallStart` that is associated to `chosen-call` with
+             the _created_ timestamp set to the `started_at` value associated to
+             `chosen-call`.
+      7.  If the action of the user triggering these steps was to disband or
+          delete the group (and consequently `members` is empty):
+          1. If the user is currently participating in a group call of this
+             group, trigger leaving the call.
+          2. Mark the group as _left_ and abort these steps. Persist this
+             mark even if the group and its history is being removed by the
+             user. When disbanding but not deleting, the client should persist
+             the previous member setup, ignoring the content of `member` to give
+             the user the possibility to view the message history and the member
+             setup prior to the user being removed. The user must not be able to
+             send any more messages to the group but may be allowed to _reopen_
+             the group with the previous member setup, when desired.
+      8.  Update the group with the given `members`.
+      9.  If the group was previously marked as _left_, remove the _left_ mark.
+      10. Run the _Rejected Messages Refresh Steps_ for the group.
+
+      When receiving this message as a group control message (wrapped by
+      [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Let `members` be the given member list. Remove all duplicate entries
+         from `members`. Remove the sender from `members` if present.
+      2. Look up the group.
+      3. If the group could not be found:
+         1. If the user is not present in `members`, abort these steps.
+      4. If the group could be found and `members` is empty or does not include
+         the user:
+         1. If the user is currently participating in a group call of this
+            group, trigger leaving the call.
+         2. Mark the group as _left_ and abort these steps.
+            Persist this mark even if the group and its history is being removed
+            by the user. The client should persist the previous member setup,
+            ignoring the content of `members` to give the user the possibility
+            to view the message history and the member setup prior to the user
+            being removed. The user must not be able to send any more messages
+            to the group but should be able to clone the group with the previous
+            member setup, when desired.
+      5. For each member of `members`, create a contact with acquaintance
+         level _group_ if not already present in the contact list. (Do not add
+         the user's own identity as a contact.)
+      6. Create or update the group with the given `members` plus the sender
+         (creator).
+      7. If the group was previously marked as _left_, remove the _left_ mark.
+      8. Run the _Rejected Messages Refresh Steps_ for the group.
+      9. If the user is currently participating in a group call of this group
+         and there are group call participants which are no longer members of
+         the group, remove these participants from the group call (handle them
+         as if they left the call).
+    fields:
+      - _doc: |-
+          A set of Threema IDs defining group membership. The creator's
+          Threema ID is always inferred and must not be included in this set.
+        name: members
+        type: *identities
+
+  group-name:
+    _group: Contact and Group Control
+    _doc: |-
+      Name (or rename) a group. Sent to all group members when the group is
+      being created for the first time or the group is being renamed. May also
+      be sent to a single receiver as a response to a
+      [`group-sync-request`](ref:e2e.group-sync-request) message.
+
+      **Properties**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: No
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A (can just send another `group-name`)
+      - Deletable by: N/A (can just send an empty name)
+      - Send to Threema Gateway ID group creator: N/A
+
+      ¹: For the group creator it will be handled as if `group-sync-request` was
+      received, re-sending the group name, implicitly triggered by FS `Reject`
+      receive steps.
+
+      When receiving this message as a group control message (wrapped by
+      [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Run the [_Common Group Receive Steps_](ref:e2e#receiving). If the
+         message has been discarded, abort these steps.
+      2. Update the group with the given name.
+    fields:
+      - _doc: |-
+          UTF-8 encoded string containing the group's name.
+        name: name
+        type: b*
+
+  group-leave:
+    _group: Contact and Group Control
+    _doc: |-
+      Sent by a group member...
+
+      * that is leaving the group. The message is sent to all other group
+        members and the creator.
+      * in direct reply to a group message for a group that it has marked as
+        left.
+
+      Note: The group creator is not allowed to leave the group.
+
+      **Properties**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: No
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes
+        - Outgoing: Yes
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: Yes
+
+      ¹: Re-send of `group-leave` implicitly triggered by FS `Reject` receive
+      steps due to _Common Group Receive Steps_ invocation.
+
+      When sending this message:
+
+      1. If the user is participating in a group call of this group, trigger
+         leaving the call.
+      2. Mark the group as _left_. Persist this mark
+         even if the group and its history is being removed by the user. The
+         client should persist the previous member setup of the group to give
+         the user the possibility to view the message history and the member
+         setup prior to the user leaving the group. The user must not be able to
+         send any more messages to the group but should be able to clone the
+         group with the previous member setup, when desired.
+      3. Run the _Rejected Messages Refresh Steps_ for the group.
+
+      When receiving this message as a group control message (wrapped by
+      [`group-member-container`](ref:e2e.group-member-container)):
+
+      1. If the sender is the creator of the group, discard the message and
+         abort these steps.
+      2. Look up the group.
+      3. If the group could not be found or is marked as _left_:
+          1. If the user is the creator of the group (as alleged by the
+             message), discard the message and abort these steps.
+          2. Send a [`group-sync-request`](ref:e2e.group-sync-request) to the
+             group creator, discard the message and abort these steps.
+      4. Remove the member from the local group.
+      5. Run the _Rejected Messages Refresh Steps_ for the group.
+      6. If the user and the sender are participating in a group call of this
+         group, remove the sender from the group call (handle it as if the
+         sender left the call).
+
+  group-sync-request:
+    _group: Contact and Group Control
+    _doc: |-
+      Sent by a group member (or a device assuming to be part of the group) to
+      the group creator.
+
+      **Properties**:
+      - Kind: Group
+      - Flags: None
+      - User profile distribution: No
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: No
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: Yes (unused)
+        - Outgoing: Yes (unused)
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: N/A
+        - Manual: No
+      - When rejected: N/A¹
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: Yes
+
+      ¹: Implicitly ignored by FS `Reject` receive steps.
+
+      When creating this message:
+
+      1. If the last `group-sync-request` towards the receiver for this
+         particular group (uniquely identified by group id and creator) is less
+         than 1h ago, log a notice and abort these steps.¹
+
+      When receiving this message as a group control message (wrapped by
+      [`group-creator-container`](ref:e2e.group-creator-container)):
+
+      1. Look up the group. If the group could not be found, discard the message
+         and abort these steps.
+      2. If the last `group-sync-request` from the sender for this particular
+         group (uniquely identified by group id and creator) is less than 1h
+         ago, log a notice, discard the message and abort these steps.¹
+      3. If the group is marked as _left_ or the sender is not a member of the
+         group, send a [`group-setup`](ref:e2e.group-setup) with an empty
+         members list back to the sender and abort these steps.
+      4. Send a [`group-setup`](ref:e2e.group-setup) message with the current
+         group members, followed by a [`group-name`](ref:e2e.group-name)
+         message to the sender.
+      5. If the group has a profile picture, send a
+         [`set-profile-picture`](ref:e2e.set-profile-picture) group control
+         message to the sender.
+      6. If the group has no profile picture, send a
+         [`delete-profile-picture`](ref:e2e.delete-profile-picture) group
+         control message to the sender.
+      7. If a group call is currently considered running within this group,
+         run the _Group Call Refresh Steps_ and let `chosen-call` be the result.
+         If `chosen-call` is defined, repeat `csp-e2e.GroupCallStart` that is
+         associated to `chosen-call` with the _created_ timestamp set to the
+         `started_at` value associated to `chosen-call`.
+
+      ¹: This is a precaution since a `group-sync-request` is automatically
+      triggered and creates an automatic response. This can easily lead to
+      message loops. Limiting `group-sync-request`s to once an hour per group
+      per sender/receiver breaks a potential infinite loop.
+
+  web-session-resume:
+    _group: Push Control
+    _doc: |-
+      A control message from Threema Web, requesting a session to be resumed.
+
+      **Properties (1:1)**:
+      - Kind: 1:1
+      - Flags:
+        - `0x20`: Short-lived server queuing.
+      - User profile distribution: N/A (not sent by apps)
+      - Exempt from blocking: Yes
+      - Implicit _direct_ contact creation: N/A (blocking is circumvented)
+      - Protect against replay: Yes
+      - Reflect:
+        - Incoming: No
+        - Outgoing: No
+        - _Sent_ update: No
+      - Delivery receipts:
+        - Automatic: No
+        - Manual: No
+      - When rejected: N/A (not sent by clients)
+      - Edit applies to: N/A
+      - Deletable by: N/A
+      - Send to Threema Gateway ID group creator: N/A
+
+      When receiving this message:
+
+      1. If the sender is not `*3MAPUSH`, discard the message and abort these
+         steps.
+      2. Lookup the web client session associated to `wcs` and attempt to resume
+         it.
+    fields:
+      - _doc: |-
+          UTF-8, JSON-encoded object with the following fields:
+
+          - Webclient session (`'wcs'`): SHA256 hash (hex encoded) of the
+            public permanent key of the session initiator, string.
+          - Affiliation ID (`'wca'`): An optional identifier for affiliating
+            consecutive pushes, `string` or `null`.
+          - Affiliation ID (`'wct'`): Unix epoch timestamp of the request in
+            seconds, `i64`.
+          - Protocol version (`'wcv'`): Version of the Threema Web protocol,
+            `u16`.
+
+          All fields must be part of the JSON object, even if their values are
+          nullable.
+        name: push-payload
+        type: b*
+
+# Parsed struct namespaces (mapped into separate files)
+namespaces:
+  index: *index
+  handshake: *handshake
+  payload: *payload
+  e2e: *e2e

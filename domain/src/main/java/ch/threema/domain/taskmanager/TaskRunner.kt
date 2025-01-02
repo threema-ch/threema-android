@@ -21,10 +21,14 @@
 
 package ch.threema.domain.taskmanager
 
+import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.data.InboundMessage
+import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
+import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -66,11 +70,13 @@ internal class TaskRunner(
      * The task handle that allows tasks to receive and send messages.
      */
     private val taskCodec = object : TaskCodec {
+        private val reflectIdManager = ReflectIdManager()
+
         override suspend fun read(
             preProcess: (InboundMessage) -> MessageFilterInstruction,
         ): InboundMessage {
             val (bypassMessages, inboundMessage) = taskQueue.readMessage(preProcess)
-            // TODO(ANDR-2475): Carefully handle exceptions here. Note that these should be logged.
+            // TODO(ANDR-2706): Carefully handle exceptions here. Note that these should be logged.
             bypassMessages.forEach { it.run(this) }
             return inboundMessage
         }
@@ -79,8 +85,41 @@ internal class TaskRunner(
             layer5Codec?.sendOutbound(message) ?: awaitCancellation()
         }
 
-        override suspend fun reflect(message: OutboundMessage) {
-            // TODO(ANDR-2475)
+        override suspend fun reflectAndAwaitAck(
+            encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult,
+            storeD2dNonce: Boolean,
+            nonceFactory: NonceFactory
+        ): ULong {
+            val reflectId: UInt = reflect(encryptedEnvelopeResult)
+            return awaitReflectAck(reflectId).also {
+                if (storeD2dNonce) {
+                    nonceFactory.store(NonceScope.D2D, encryptedEnvelopeResult.nonce)
+                }
+            }
+        }
+
+        override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt {
+            val flags: UShort = 0u
+            val reflectId: UInt = reflectIdManager.next()
+            val reflect: OutboundD2mMessage.Reflect = OutboundD2mMessage.Reflect(flags, reflectId, encryptedEnvelopeResult.encryptedEnvelope)
+            logReflect(debugInfo = encryptedEnvelopeResult.debugInfo, reflectId = reflectId, flags = flags)
+            write(reflect)
+            return reflectId
+        }
+
+        private fun logReflect(
+            debugInfo: MultiDeviceKeys.EncryptedEnvelopeResult.DebugInfo,
+            reflectId: UInt,
+            flags: UShort
+        ) {
+            logger.run {
+                info("--> SENDING outbound D2D reflect message ${debugInfo.protoContentCaseName}")
+                debug("--> SEND outbound D2D reflect message")
+                debug("Id: {}", reflectId)
+                debug("Flags: {}", flags)
+                debug("Envelope: {}", debugInfo.rawEnvelopeContent)
+                debug("--> END SEND")
+            }
         }
     }
 
@@ -171,9 +210,6 @@ internal class TaskRunner(
         logger.info("Task runner started")
         executorSemaphore.release()
     }
-
-    @Deprecated("Do not use the task codec outside of a task")
-    internal fun getTaskCodec(): TaskCodec = taskCodec
 
     /**
      * Send an outbound message immediately. This method must only be used by the task manager to
@@ -347,7 +383,11 @@ enum class MessageFilterInstruction {
     ACCEPT,
 
     /**
-     * Reject the message. TODO(ANDR-2475): handle this correctly
+     * Reject the message. TODO(ANDR-2868): handle this correctly
+     *
+     * This instruction is used when a message is received which is not expected at this moment and
+     * violates the protocol. The message must be dropped and an exception should be raised in the
+     * task manager and trigger a reconnect.
      */
     REJECT,
 }

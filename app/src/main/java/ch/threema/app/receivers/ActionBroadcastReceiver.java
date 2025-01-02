@@ -25,6 +25,7 @@ import android.content.BroadcastReceiver;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
@@ -34,7 +35,10 @@ import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 
 public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
 	protected static final String TAG = "ActionBroadcastReceiver";
@@ -48,6 +52,11 @@ public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
 	protected ContactService contactService;
 	protected DistributionListService distributionListService;
 	protected GroupService groupService;
+	protected ContactModelRepository contactModelRepository;
+	protected APIConnector apiConnector;
+
+	@NonNull
+	protected BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
 	public ActionBroadcastReceiver() {
 		this.instantiate();
@@ -81,6 +90,8 @@ public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
 				this.contactService = serviceManager.getContactService();
 				this.distributionListService = serviceManager.getDistributionListService();
 				this.groupService = serviceManager.getGroupService();
+				this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+				this.apiConnector = serviceManager.getAPIConnector();
 			} catch (Exception e) {
 				logger.error("Exception", e);
 			}

@@ -23,10 +23,6 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -36,6 +32,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
@@ -353,6 +352,7 @@ public class MessageUtil {
 
 	/**
 	 * Check if a MessageState change from fromState to toState is allowed
+	 *
 	 * @param fromState State from which a state change is requested
 	 * @param toState State to which a state change is requested
 	 * @param isGroupMessage true, if it's a group message
@@ -465,11 +465,12 @@ public class MessageUtil {
 	}
 
 	/**
-	 * Check if the provided MessageState is acceptable as a group message state and should be saved to the database
-	 * @param state MessageState
-	 * @return true if MessageState is acceptable, false otherwise
+	 * Check if the provided MessageState is a user reaction.
+	 *
+	 * @param state the message state
+	 * @return true if it is a user reaction, false otherwise
 	 */
-	public static boolean isAllowedGroupMessageState(MessageState state) {
+	public static boolean isReaction(MessageState state) {
 		return state == MessageState.USERACK || state == MessageState.USERDEC;
 	}
 
@@ -929,5 +930,21 @@ public class MessageUtil {
 			&& (message instanceof MessageModel || message instanceof GroupMessageModel)
 			&& (message.getPostedAt() != null && message.getState() != MessageState.SENDFAILED)
 			&& !message.isDeleted();
+	}
+
+	@Nullable
+	public static MessageState receiptTypeToMessageState(int receiptType) {
+		switch (receiptType) {
+			case ProtocolDefines.DELIVERYRECEIPT_MSGRECEIVED:
+				return MessageState.DELIVERED;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGREAD:
+				return MessageState.READ;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK:
+				return MessageState.USERACK;
+			case ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC:
+				return MessageState.USERDEC;
+			default:
+				return null;
+		}
 	}
 }

@@ -87,13 +87,14 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -105,6 +106,7 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.GroupModel.UserState;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
@@ -120,6 +122,8 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.storage.models.GroupModel.UserState.LEFT;
+import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 public class RestoreService extends Service {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
@@ -145,7 +149,7 @@ public class RestoreService extends Service {
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManagerCompat notificationManagerCompat;
-	private DatabaseNonceStore databaseNonceStore;
+	private NonceFactory nonceFactory;
 
 	private NotificationCompat.Builder notificationBuilder;
 
@@ -174,6 +178,7 @@ public class RestoreService extends Service {
 	private static final int STEP_SIZE_GROUP_AVATARS = 50;
 	private static final int STEP_SIZE_MEDIA = 25; // per media file
 	private static final int NONCES_PER_STEP = 50;
+	private static final int NONCES_CHUNK_SIZE = 10_000;
 
 	private long stepSizeTotal = (long) STEP_SIZE_PREPARE + STEP_SIZE_IDENTITY + STEP_SIZE_MAIN_FILES + STEP_SIZE_GROUP_AVATARS;
 
@@ -295,7 +300,7 @@ public class RestoreService extends Service {
 			conversationService = serviceManager.getConversationService();
 			userService = serviceManager.getUserService();
 			preferenceService = serviceManager.getPreferenceService();
-			databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
+			nonceFactory = serviceManager.getNonceFactory();
 		} catch (Exception e) {
 			logger.error("Could not instantiate all required services", e);
 			stopSelf();
@@ -504,10 +509,6 @@ public class RestoreService extends Service {
 				// Restore nonces
 				logger.info("Restoring nonces");
 				int nonceCount = restoreNonces(fileHeaders);
-				if (nonceCount < 0) {
-					logger.error("Restoring nonces failed ({})", nonceCount);
-					//continue anyway!
-				}
 
 				//contacts, groups and distribution lists
 				logger.info("Restoring main files (contacts, groups, distribution lists)");
@@ -602,7 +603,7 @@ public class RestoreService extends Service {
 		try (
 			InputStream is = zipFile.getInputStream(settingsHeader);
 			InputStreamReader inputStreamReader = new InputStreamReader(is);
-			CSVReader csvReader = new CSVReader(inputStreamReader)
+			CSVReader csvReader = new CSVReader(inputStreamReader, false)
 		) {
 			RestoreSettings settings = new RestoreSettings();
 			settings.parse(csvReader.readAll());
@@ -659,28 +660,112 @@ public class RestoreService extends Service {
 		return true;
 	}
 
+	/**
+	 * Attempt to restore the nonces. If restoring of nonces fails for some reason 0 is returned.
+	 * Since we continue anyway, there is no need to distinguish between zero restored nonces and
+	 * a failure.
+	 */
 	private int restoreNonces(List<FileHeader> fileHeaders) throws IOException, RestoreCanceledException {
-		FileHeader nonceFileHeader = null;
-		for (FileHeader fileHeader : fileHeaders) {
-			String fileName = fileHeader.getFileName();
-			if (fileName != null && fileName.startsWith(Tags.NONCE_FILE_NAME)) {
-				nonceFileHeader = fileHeader;
-				break;
+		if (!writeToDb) {
+			// If not writing to the database only the count of nonces is required.
+			// Try to read optional nonces count file if present in backup.
+			logger.info("Get nonce counts");
+			int nonceCount = readNonceCounts(fileHeaders);
+			if (nonceCount >= 0) {
+				// If the nonce count is available return it and skip reading the whole nonces file.
+				logger.info("{} nonces in backup", nonceCount);
+				return nonceCount;
+			} else {
+				logger.info("Count nonces in backup.");
 			}
 		}
+
+		int nonceCountCsp = restoreNonces(
+			NonceScope.CSP,
+			Tags.NONCE_FILE_NAME_CSP + Tags.CSV_FILE_POSTFIX,
+			fileHeaders
+		);
+
+		int nonceCountD2d = restoreNonces(
+			NonceScope.D2D,
+			Tags.NONCE_FILE_NAME_D2D + Tags.CSV_FILE_POSTFIX,
+			fileHeaders
+		);
+
+		int remainingCsp = BackupUtils.calcRemainingNoncesProgress(NONCES_CHUNK_SIZE, NONCES_PER_STEP, nonceCountCsp);
+		int remainingD2d = BackupUtils.calcRemainingNoncesProgress(NONCES_CHUNK_SIZE, NONCES_PER_STEP, nonceCountD2d);
+		int remainingNonceProgress = remainingCsp + remainingD2d;
+		logger.debug("Remaining nonce progress: {}", remainingNonceProgress);
+		updateProgress((long) Math.ceil((double) remainingNonceProgress / NONCES_PER_STEP));
+
+		return nonceCountCsp + nonceCountD2d;
+	}
+
+	/**
+	 * Read the counts from the nonce counts file if available.
+	 *
+	 * @return the count, or -1 if the count could not be read from some reason.
+	 */
+	private int readNonceCounts(List<FileHeader> fileHeaders) throws IOException {
+		FileHeader nonceCountFileHeader = getFileHeader(Tags.NONCE_COUNTS_FILE + Tags.CSV_FILE_POSTFIX, fileHeaders);
+		if (nonceCountFileHeader == null) {
+			logger.info("No nonce count file available in backup");
+			return -1;
+		}
+		try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceCountFileHeader);
+		     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+		     CSVReader csvReader = new CSVReader(inputStreamReader, true)
+		) {
+			CSVRow row = csvReader.readNextRow();
+			if (row == null) {
+				logger.warn("Could not read nonce count. File is empty.");
+				return -1;
+			}
+			return row.getInteger(Tags.TAG_NONCE_COUNT_CSP) + row.getInteger(Tags.TAG_NONCE_COUNT_D2D);
+		} catch (ThreemaException | NumberFormatException e) {
+			logger.warn("Could not read nonce count", e);
+			return -1;
+		}
+	}
+
+	/**
+	 * Get the file header where the file name matches the provided exactFileName.
+	 *
+	 * @param exactFileName The file name that is matched against
+	 * @param fileHeaders The file headers that are scanned
+	 * @return The first matching file header or null if none matches
+	 */
+	@Nullable
+	private FileHeader getFileHeader(@NonNull String exactFileName, List<FileHeader> fileHeaders) {
+		for (FileHeader fileHeader : fileHeaders) {
+			if (exactFileName.equals(fileHeader.getFileName())) {
+				return fileHeader;
+			}
+		}
+		logger.info("No file header for '{}' found", exactFileName);
+		return null;
+	}
+
+	private int restoreNonces(
+		@NonNull NonceScope scope,
+		@NonNull String nonceBackupFile,
+		@NonNull List<FileHeader> fileHeaders
+	) throws IOException, RestoreCanceledException {
+		logger.info("Restore {} nonces", scope);
+		final FileHeader nonceFileHeader = getFileHeader(nonceBackupFile, fileHeaders);
 		if (nonceFileHeader == null) {
 			logger.info("Nonce file header is null");
-			return -1;
+			return 0;
 		}
 
 		try (ZipInputStream inputStream = this.zipFile.getInputStream(nonceFileHeader);
 		     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-		     CSVReader csvReader = new CSVReader(inputStreamReader, false)
+		     CSVReader csvReader = new CSVReader(inputStreamReader, true)
 		) {
-			int nonceProgressCount = 0;
 			int nonceCount = 0;
 			boolean success = true;
 			CSVRow row;
+			List<byte[]> nonceBytes = new ArrayList<>(NONCES_CHUNK_SIZE);
 			while ((row = csvReader.readNextRow()) != null) {
 				try {
 					// Note that currently there is only one nonce per row, and therefore we do
@@ -689,25 +774,40 @@ public class RestoreService extends Service {
 					String[] nonces = row.getStrings(Tags.TAG_NONCES);
 					nonceCount += nonces.length;
 					if (writeToDb) {
-						success &= databaseNonceStore.insertHashedNonces(nonces);
-						nonceProgressCount += nonces.length;
-						if (nonceProgressCount >= NONCES_PER_STEP) {
-							long increment = nonceProgressCount / NONCES_PER_STEP;
-							updateProgress(increment);
-							nonceProgressCount -= increment * NONCES_PER_STEP;
+						for (String nonce : nonces) {
+							nonceBytes.add(Utils.hexStringToByteArray(nonce));
+							if (nonceBytes.size() >= NONCES_CHUNK_SIZE) {
+								success &= insertNonces(scope, nonceBytes);
+								nonceBytes.clear();
+							}
 						}
 					}
 				} catch (ThreemaException e) {
-					logger.error("Could not insert nonces");
-					return -1;
+					logger.error("Could not insert nonces", e);
+					return 0;
 				}
 			}
+			if (!nonceBytes.isEmpty()) {
+				success &= insertNonces(scope, nonceBytes);
+			}
 			if (success) {
+				logger.info("Restored {} {} nonces", nonceCount, scope);
 				return nonceCount;
 			} else {
-				return -1;
+				logger.warn("Restoring {} nonces was not successfull", scope);
+				return 0;
 			}
 		}
+	}
+
+	private boolean insertNonces(
+		@NonNull NonceScope scope,
+		@NonNull List<byte[]> nonces
+	) throws RestoreCanceledException {
+		logger.debug("Write {} nonces to database", nonces.size());
+		boolean success = nonceFactory.insertHashedNoncesJava(scope, nonces);
+		updateProgress(nonces.size() / NONCES_PER_STEP);
+		return success;
 	}
 
 	/**
@@ -972,7 +1072,7 @@ public class RestoreService extends Service {
 
 		// Set contact avatar
 		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-			return fileService.writeContactAvatar(
+			return fileService.writeUserDefinedProfilePicture(
 				contactModel.getIdentity(),
 				IOUtils.toByteArray(inputStream)
 			);
@@ -1001,7 +1101,7 @@ public class RestoreService extends Service {
 
 		// Set contact profile picture
 		try (ZipInputStream inputStream = zipFile.getInputStream(fileHeader)) {
-			return fileService.writeContactPhoto(
+			return fileService.writeContactDefinedProfilePicture(
 				contactModel.getIdentity(),
 				IOUtils.toByteArray(inputStream));
 		} catch (Exception e) {
@@ -1029,10 +1129,24 @@ public class RestoreService extends Service {
 					restoreResult.incContactSuccess();
 				}
 
-				List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
 				if (writeToDb) {
+					String myIdentity = userService.getIdentity();
+					boolean isInMemberList = false;
+
+					List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
+
 					for (GroupMemberModel groupMemberModel : groupMemberModels) {
-						databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
+						if (!myIdentity.equals(groupMemberModel.getIdentity())) {
+							databaseServiceNew.getGroupMemberModelFactory().create(groupMemberModel);
+						} else {
+							isInMemberList = true;
+						}
+					}
+					if (restoreSettings.getVersion() < 25) {
+						// In this case the group user state is not included in the backup and we
+						// need to determine the state based on the group member list.
+						groupModel.setUserState(isInMemberList ? MEMBER : LEFT);
+						databaseServiceNew.getGroupModelFactory().update(groupModel);
 					}
 				}
 			} catch (Exception x) {
@@ -1177,6 +1291,10 @@ public class RestoreService extends Service {
 
 		if (restoreSettings.getVersion() >= 22) {
 			groupModel.setLastUpdate(row.getDate(Tags.TAG_GROUP_LAST_UPDATE));
+		}
+
+		if (restoreSettings.getVersion() >= 25) {
+			groupModel.setUserState(UserState.valueOf(row.getInteger(Tags.TAG_GROUP_USER_STATE)));
 		}
 
 		return groupModel;

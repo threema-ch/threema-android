@@ -30,6 +30,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.serialization.Serializable
+import java.util.Date
 
 class OutgoingPollVoteContactMessageTask(
     private val messageId: MessageId,
@@ -43,19 +44,16 @@ class OutgoingPollVoteContactMessageTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Create the message
-        val message = PollVoteMessage()
-            .also {
-                it.ballotCreator = ballotCreator
-                it.ballotId = ballotId
-                it.toIdentity = toIdentity
-                it.messageId = messageId
-            }
+        val message = PollVoteMessage().also {
+            it.ballotCreatorIdentity = ballotCreator
+            it.ballotId = ballotId
+        }
 
         // Add all ballot votes
         message.addVotes(ballotVotes.toList())
 
         // Send the message
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, messageId, Date(), handle)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingPollVoteContactMessageData(
@@ -80,10 +78,7 @@ class OutgoingPollVoteContactMessageTask(
                 BallotId(ballotId),
                 ballotCreator,
                 ballotVotes.map {
-                    BallotVote().apply {
-                        id = it.first
-                        value = it.second
-                    }
+                    BallotVote(it.first, it.second)
                 }.toTypedArray(),
                 toIdentity,
                 serviceManager

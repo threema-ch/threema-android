@@ -24,6 +24,7 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Pair;
 
 import org.slf4j.Logger;
 
@@ -201,31 +202,53 @@ public class QuoteUtil {
 	}
 
 	/**
+	 * Get the body and quoted message id based on the text of a text message. Note that the message
+	 * id is null, if the text does not contain a quote. If parsing the text fails, the passed text
+	 * is returned as body and the message id is null.
+	 *
+	 * @param text the text of a text message
+	 * @return a pair of the body and the quoted message id
+	 */
+	@NonNull
+	public static Pair<String, String> getBodyAndQuotedMessageId(@Nullable String text) {
+		String body = text;
+		String quotedMessageId = null;
+
+		if (!TestUtil.isEmptyOrNull(text)) {
+			Matcher match = quoteV2MatchPattern.matcher(text);
+			try {
+				if (match.find()) {
+					if (match.groupCount() == 2) {
+						quotedMessageId = match.group(1);
+						body = match.group(2);
+						if (body == null) {
+							body = "";
+						}
+					}
+				}
+			} catch (Exception e) {
+				logger.error("Could not extract quote from text");
+			}
+		}
+
+		return new Pair<>(body, quotedMessageId);
+	}
+
+
+	/**
 	 * Extract body text and quoted message reference from text string containing a quote v2 signature and add to MessageModel
 	 * If no valid quote v2 signature is found, add full input text to body
 	 * @param messageModel where to add extracted information
 	 * @param text source text containing a quote v2 signature
 	 */
 	public static void addBodyAndQuotedMessageId(@NonNull AbstractMessageModel messageModel, @Nullable String text) {
-		if (!TestUtil.isEmptyOrNull(text)) {
-			Matcher match = quoteV2MatchPattern.matcher(text);
-			try {
-				if (match.find()) {
-					if (match.groupCount() == 2) {
-						messageModel.setQuotedMessageId(match.group(1));
-						if (!TestUtil.isEmptyOrNull(match.group(2))) {
-							messageModel.setBody(match.group(2).trim());
-						} else {
-							messageModel.setBody("");
-						}
-						return;
-					}
-				}
-			} catch (Exception e) {
-				//
-			}
-		}
-		messageModel.setBody(text);
+		Pair<String, String> quoteContent = getBodyAndQuotedMessageId(text);
+
+		// The first string contains the body
+		messageModel.setBody(quoteContent.first);
+
+		// The second string contains the message id (as string)
+		messageModel.setQuotedMessageId(quoteContent.second);
 	}
 
 	/**

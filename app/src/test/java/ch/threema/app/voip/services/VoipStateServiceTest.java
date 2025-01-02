@@ -140,7 +140,8 @@ public class VoipStateServiceTest {
 		);
 	}
 
-	@Test
+	/** @noinspection deprecation*/
+    @Test
 	public void callCounterIncrement() {
 		// Initially at 0
 		assertEquals(0, service.getCallState().getIncomingCallCounter());
@@ -240,7 +241,7 @@ public class VoipStateServiceTest {
 
 		// Handling should not change the state
 		assertTrue(service.getCallState().isIdle());
-		assertTrue(service.handleCallOffer(msg));
+		assertFalse(service.handleCallOffer(msg));
 		assertTrue(service.getCallState().isIdle());
 	}
 
@@ -255,7 +256,7 @@ public class VoipStateServiceTest {
 
 		// Handling should not change the state
 		assertTrue(service.getCallState().isIdle());
-		assertTrue(service.handleCallOffer(msg));
+		assertFalse(service.handleCallOffer(msg));
 		assertTrue(service.getCallState().isIdle());
 	}
 
@@ -335,7 +336,6 @@ public class VoipStateServiceTest {
 
 	/**
 	 * Reject a call while another call is active.
-	 *
 	 * The call ID in the reject message should correspond to the incoming call,
 	 * not to the current call.
 	 */

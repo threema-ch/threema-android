@@ -1529,6 +1529,17 @@ almacenado.</string>
     <string name="md_link_device_qr_scan_message">Escanee el código QR</string>
     <string name="directory_request_failed">Error en la solicitud de directorio. Inténtelo de nuevo.</string>
     <string name="add_shortcut_exists">Ya existe un acceso directo para este objetivo.</string>
+    <string name="scan_qr_code">Escanea el código QR</string>
+    <string name="scan_qr_code_explain">Escanea el código QR que se muestra en la versión beta de %s Desktop en el dispositivo que deseas vincular.</string>
+    <string name="connecting">Conectando...</string>
+    <string name="trust_new_device">Confía en el nuevo dispositivo</string>
+    <string name="trust_new_device_explain">Selecciona las mismas imágenes que se muestran en el nuevo dispositivo para confirmar que confías en él.</string>
+    <string name="trust_new_device_info">El nuevo dispositivo almacenará una copia independiente de tu perfil %s y los mensajes se enviarán y recibirán en tu nombre.</string>
+    <string name="no_match_question">¿No coincide?</string>
+    <string name="sending_data">Enviando datos...</string>
+    <string name="continue_on_new_device">Continúa en un dispositivo nuevo</string>
+    <string name="device_linked_successfully">Dispositivo vinculado correctamente</string>
+    <string name="device_linked_successfully_explain">%s ahora se puede usar en el dispositivo que acabas de vincular (incluso cuando este dispositivo esté apagado o no esté conectado a Internet).</string>
     <string name="resend_message_dialog_title">¿Reenviar mensaje grupal?</string>
     <string name="resend_message_dialog_message">Este mensaje no se ha podido enviar a todos los miembros. ¿Reenviar mensaje a %1$s?</string>
     <string name="work_lost_credentials_help">¿Ha olvidado sus credenciales? Póngase en contacto con su administrador de %1$s.</string>
@@ -1573,6 +1584,10 @@ almacenado.</string>
     <string name="incoming_calls">Llamadas entrantes</string>
     <string name="group_chats">Chats grupales</string>
     <string name="edit_history_file_no_caption">Sin subtítulo</string>
+    <string name="device_linking_failed">Fallo al vincular el dispositivo</string>
+    <string name="device_linking_failed_explain">No se pudo vincular el dispositivo. Por favor, inténtalo de nuevo. \nMotivo: %s.</string>
+    <string name="qr_code_scan_error">Se ha producido un error al escanear el código QR</string>
+    <string name="verification_failed">Fallo en la verificación</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">aceptar el envío</string>
     <string name="cd_dec_icon">no estoy de acuerdo enviado</string>

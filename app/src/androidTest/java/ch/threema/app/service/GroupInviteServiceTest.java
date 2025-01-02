@@ -29,13 +29,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.group.GroupInviteService;
@@ -43,6 +46,7 @@ import ch.threema.app.services.group.GroupInviteServiceImpl;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.protobuf.url_payloads.GroupInvite;
 import ch.threema.storage.DatabaseServiceNew;
@@ -96,7 +100,34 @@ public class GroupInviteServiceTest {
 
 			}
 
-			@Override
+            @Nullable
+            @Override
+            public byte[] getUserProfilePicture() {
+                return null;
+            }
+
+            @Override
+            public boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource) {
+                return false;
+            }
+
+            @Override
+            public boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource) {
+                return false;
+            }
+
+            @Override
+            public void removeUserProfilePicture(@NonNull TriggerSource triggerSource) {
+
+            }
+
+            @NonNull
+            @Override
+            public ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData() {
+                return null;
+            }
+
+            @Override
 			public Account getAccount() {
 				return null;
 			}
@@ -228,7 +259,7 @@ public class GroupInviteServiceTest {
 
 			@Nullable
 			@Override
-			public String setPublicNickname(String publicNickname) {
+			public String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource) {
 				return null;
 			}
 

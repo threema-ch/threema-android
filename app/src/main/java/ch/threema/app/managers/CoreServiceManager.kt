@@ -21,11 +21,13 @@
 
 package ch.threema.app.managers
 
-import ch.threema.app.multidevice.MultiDeviceManagerImpl
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.stores.IdentityStore
 import ch.threema.app.stores.PreferenceStoreInterface
-import ch.threema.app.tasks.TaskArchiverImpl
-import ch.threema.app.utils.DeviceCookieManagerImpl
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
+import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
+import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.DatabaseServiceNew
 
@@ -55,13 +57,13 @@ interface CoreServiceManager {
      * The task archiver. Note that this must only be used to load the persisted tasks when the
      * service manager has been set.
      */
-    val taskArchiver: TaskArchiverImpl
+    val taskArchiver: TaskArchiver
 
     /**
      * The device cookie manager. Note that this must only be used when the notification service is
      * passed to it.
      */
-    val deviceCookieManager: DeviceCookieManagerImpl
+    val deviceCookieManager: DeviceCookieManager
 
     /**
      * The task manager. Note that this must only be used to schedule tasks when the task archiver
@@ -72,6 +74,16 @@ interface CoreServiceManager {
     /**
      * The multi device manager.
      */
-    val multiDeviceManager: MultiDeviceManagerImpl
+    val multiDeviceManager: MultiDeviceManager
+
+    /**
+     * The identity store.
+     */
+    val identityStore: IdentityStore
+
+    /**
+     * The nonce factory.
+     */
+    val nonceFactory: NonceFactory
 
 }

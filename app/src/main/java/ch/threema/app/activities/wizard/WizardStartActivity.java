@@ -42,7 +42,7 @@ import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION
 
 public class WizardStartActivity extends WizardBackgroundActivity {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
-	boolean doFinish = false;
+	boolean nextActivityLaunched = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +98,12 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 		return frameAnimation;
 	}
 
-	private void launchNextActivity(ActivityOptionsCompat options) {
+	private synchronized void launchNextActivity(ActivityOptionsCompat options) {
+        if (nextActivityLaunched) {
+            // If the next activity already has been launched, we can just return here.
+            return;
+        }
+
 		Intent intent;
 
 		if (userService != null && userService.hasIdentity()) {
@@ -122,13 +127,14 @@ public class WizardStartActivity extends WizardBackgroundActivity {
 			startActivity(intent);
 			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 		}
-		doFinish = true;
+		nextActivityLaunched = true;
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		if (doFinish)
-			finish();
+		if (nextActivityLaunched) {
+            finish();
+        }
 	}
 }

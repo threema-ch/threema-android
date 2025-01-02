@@ -24,10 +24,12 @@ package ch.threema.domain.protocol.connection
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.csp.socket.ChatServerAddressProvider
+import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import com.neilalexander.jnacl.NaCl
 import java.io.InputStream
 import java.io.OutputStream
@@ -79,6 +81,7 @@ internal class TestIdentityStore : IdentityStoreInterface {
         MUST_NOT_BE_CALLED()
     }
 }
+
 internal class TestServerAddressProvider(
     private val skPublic: ByteArray,
     private val skPublicAlt: ByteArray,
@@ -116,9 +119,14 @@ internal class TestServerAddressProvider(
     // The following methods should not be used by the connection
     override fun getDirectoryServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
     override fun getWorkServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerDownloadUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerDoneUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerUploadUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobBaseUrlMirrorServer(multiDevicePropertyProvider: MultiDevicePropertyProvider): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobServerDownloadUrl(useIpV6: Boolean, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobServerUploadUrl(useIpV6: Boolean): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobServerDoneUrl(useIpV6: Boolean, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobMirrorServerDownloadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobMirrorServerUploadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): String { MUST_NOT_BE_CALLED() }
+    override fun getBlobMirrorServerDoneUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
+
     override fun getAvatarServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
     override fun getSafeServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
     override fun getWebServerUrl(): String { MUST_NOT_BE_CALLED() }
@@ -187,11 +195,6 @@ internal class TestNoopDeviceCookieManager : DeviceCookieManager {
     override fun obtainDeviceCookie() = ByteArray(16)
     override fun changeIndicationReceived() { MUST_NOT_BE_CALLED() }
     override fun deleteDeviceCookie() { MUST_NOT_BE_CALLED() }
-}
-
-@Suppress("TestFunctionName")
-internal fun MUST_NOT_BE_CALLED(): Nothing {
-    throw UnsupportedOperationException("This method must not be called")
 }
 
 fun getFromOutboundMessage(message: OutboundMessage): MessageBox? {

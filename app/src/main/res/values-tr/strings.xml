@@ -1516,6 +1516,17 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="md_link_device_qr_scan_message">Lütfen qr kodunu tarayın</string>
     <string name="directory_request_failed">Dizin isteği başarısız oldu. Tekrar deneyin.</string>
     <string name="add_shortcut_exists">Bu hedef için bir kısayol zaten mevcut.</string>
+    <string name="scan_qr_code">Kare kodu tara</string>
+    <string name="scan_qr_code_explain">Bağlamak istediğiniz cihazda %s beta sürümünde görüntülenen QR kodunu tarayın.</string>
+    <string name="connecting">Bağlanıyor…</string>
+    <string name="trust_new_device">Yeni Cihaza Güven</string>
+    <string name="trust_new_device_explain">Güvendiğinizi onaylamak için yeni cihazda gösterilen resimlerin aynısını seçin.</string>
+    <string name="trust_new_device_info">Yeni cihaz %s profilinizin bağımsız bir kopyasını saklayacak ve sizin adınıza mesajlar gönderip alacaktır.</string>
+    <string name="no_match_question">Eşleşme Yok mu?</string>
+    <string name="sending_data">Veri gönderiliyor…</string>
+    <string name="continue_on_new_device">Lütfen yeni cihazda devam edin</string>
+    <string name="device_linked_successfully">Cihaz Başarıyla Bağlandı</string>
+    <string name="device_linked_successfully_explain">%s artık az önce bağladığınız cihazda kullanılabilir (bu cihaz kapalı olsa veya İnternet\'e bağlı olmasa bile).</string>
     <string name="resend_message_dialog_title">Grup mesajı yeniden gönderilsin mi?</string>
     <string name="resend_message_dialog_message">Bu mesaj tüm üyelere gönderilemedi. Mesaj %1$s yeniden gönderilsin mi?</string>
     <string name="work_lost_credentials_help">Kimlik bilgilerinizi mi unuttunuz? Lütfen %1$s yöneticinizle iletişime geçin.</string>
@@ -1560,6 +1571,10 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="incoming_calls">Gelen arama</string>
     <string name="group_chats">Grup sohbeti</string>
     <string name="edit_history_file_no_caption">Altyazı Yok</string>
+    <string name="device_linking_failed">Cihaz bağlantısı başarısız oldu</string>
+    <string name="device_linking_failed_explain">Cihaz bağlanamadı. Lütfen tekrar deneyin.\nNedeni: %s.</string>
+    <string name="qr_code_scan_error">QR kodu taranırken bir hata oluştu</string>
+    <string name="verification_failed">Doğrulama başarısız oldu</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">\"kabul\" gönderildi</string>
     <string name="cd_dec_icon">\"katılmıyorum\" gönderildi</string>

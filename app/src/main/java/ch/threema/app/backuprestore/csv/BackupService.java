@@ -97,10 +97,12 @@ import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ZipUtil;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.crypto.HashedNonce;
+import ch.threema.base.crypto.NonceFactory;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.identitybackup.IdentityBackupGenerator;
-import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -133,6 +135,7 @@ public class BackupService extends Service {
 	private static final int MEDIA_STEP_FACTOR_VIDEOS_AND_FILES = 12;
 	private static final int MEDIA_STEP_FACTOR_THUMBNAILS = 3;
 	private static final int NONCES_PER_STEP = 50;
+	private static final int NONCES_CHUNK_SIZE = 2500;
 
 	private static final String EXTRA_ID_CANCEL = "cnc";
 	public static final String EXTRA_BACKUP_RESTORE_DATA_CONFIG = "ebrdc";
@@ -163,7 +166,7 @@ public class BackupService extends Service {
 	private PreferenceService preferenceService;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManagerCompat notificationManagerCompat;
-	private DatabaseNonceStore databaseNonceStore;
+	private NonceFactory nonceFactory;
 
 	private NotificationCompat.Builder notificationBuilder;
 
@@ -310,6 +313,7 @@ public class BackupService extends Service {
 			userService = serviceManager.getUserService();
 			ballotService = serviceManager.getBallotService();
 			preferenceService = serviceManager.getPreferenceService();
+			nonceFactory = serviceManager.getNonceFactory();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			safeStopSelf();
@@ -317,7 +321,6 @@ public class BackupService extends Service {
 		}
 
 		notificationManagerCompat = NotificationManagerCompat.from(this);
-		databaseNonceStore = new DatabaseNonceStore(this, serviceManager.getIdentityStore());
 	}
 
 	@Override
@@ -411,7 +414,7 @@ public class BackupService extends Service {
 
 			if (this.config.backupNonces()) {
 				progress += 1;
-				long nonceCount = this.databaseNonceStore.getCount();
+				long nonceCount = nonceFactory.getCount(NonceScope.CSP) + nonceFactory.getCount(NonceScope.D2D);
 				long nonceProgress = (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
 				progress += nonceProgress;
 			}
@@ -484,8 +487,9 @@ public class BackupService extends Service {
 		return this.next(subject, 1);
 	}
 
-	private boolean next(String subject, int factor) {
-		this.currentProgressStep += (this.currentProgressStep < this.processSteps ? factor : 0);
+	private boolean next(String subject, int increment) {
+		logger.debug("step [{}]", subject);
+		this.currentProgressStep += (this.currentProgressStep < this.processSteps ? increment : 0);
 		this.handleProgress();
 		return !isCanceled;
 	}
@@ -545,7 +549,7 @@ public class BackupService extends Service {
 			try {
 				ZipUtil.addZipStream(
 					zipOutputStream,
-					this.fileService.getContactAvatarStream(contactService.getMe().getIdentity()),
+					this.fileService.getUserDefinedProfilePictureStream(contactService.getMe().getIdentity()),
 					Tags.CONTACT_AVATAR_FILE_PREFIX + Tags.CONTACT_AVATAR_FILE_SUFFIX_ME,
 					false
 				);
@@ -621,7 +625,7 @@ public class BackupService extends Service {
 							if (!userService.getIdentity().equals(contactModel.getIdentity())) {
 								ZipUtil.addZipStream(
 									zipOutputStream,
-									this.fileService.getContactAvatarStream(contactModel.getIdentity()),
+									this.fileService.getUserDefinedProfilePictureStream(contactModel.getIdentity()),
 									Tags.CONTACT_AVATAR_FILE_PREFIX + identityId,
 									false
 								);
@@ -634,7 +638,7 @@ public class BackupService extends Service {
 						try {
 							ZipUtil.addZipStream(
 								zipOutputStream,
-								this.fileService.getContactPhotoStream(contactModel.getIdentity()),
+								this.fileService.getContactDefinedProfilePictureStream(contactModel.getIdentity()),
 								Tags.CONTACT_PROFILE_PIC_FILE_PREFIX + identityId,
 								false
 							);
@@ -732,6 +736,7 @@ public class BackupService extends Service {
 			Tags.TAG_GROUP_DESC,
 			Tags.TAG_GROUP_DESC_TIMESTAMP,
 			Tags.TAG_GROUP_UID,
+			Tags.TAG_GROUP_USER_STATE,
 		};
 		final String[] groupMessageCsvHeader = {
 			Tags.TAG_MESSAGE_API_MESSAGE_ID,
@@ -807,6 +812,7 @@ public class BackupService extends Service {
 						.write(Tags.TAG_GROUP_DESC, groupModel.getGroupDesc())
 						.write(Tags.TAG_GROUP_DESC_TIMESTAMP, groupModel.getGroupDescTimestamp())
 						.write(Tags.TAG_GROUP_UID, groupUid)
+						.write(Tags.TAG_GROUP_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : 0)
 						.write();
 
 					//check if the group have a photo
@@ -1091,15 +1097,24 @@ public class BackupService extends Service {
 			return false;
 		}
 
-		try (ByteArrayOutputStream outputStreamBuffer = new ByteArrayOutputStream()) {
-			writeNonces(outputStreamBuffer);
-			// Write nonces to zip *after* the CSVWriter has been closed (and therefore flushed)
-			ZipUtil.addZipStream(
-				zipOutputStream,
-				new ByteArrayInputStream(outputStreamBuffer.toByteArray()),
-				Tags.NONCE_FILE_NAME + Tags.CSV_FILE_POSTFIX,
-				true
+		try {
+			int nonceCountCsp = writeNoncesToBackup(
+				NonceScope.CSP,
+				Tags.NONCE_FILE_NAME_CSP + Tags.CSV_FILE_POSTFIX,
+				zipOutputStream
 			);
+
+			int nonceCountD2d = writeNoncesToBackup(
+				NonceScope.D2D,
+				Tags.NONCE_FILE_NAME_D2D + Tags.CSV_FILE_POSTFIX,
+				zipOutputStream
+			);
+
+			writeNonceCounts(nonceCountCsp, nonceCountD2d, zipOutputStream);
+
+			int remainingCsp = BackupUtils.calcRemainingNoncesProgress(NONCES_CHUNK_SIZE, NONCES_PER_STEP, nonceCountCsp);
+			int remainingD2d = BackupUtils.calcRemainingNoncesProgress(NONCES_CHUNK_SIZE, NONCES_PER_STEP, nonceCountD2d);
+			next("Backup nonce", (int) Math.ceil(((double) remainingCsp + remainingD2d) / NONCES_PER_STEP));
 			logger.info("Nonce backup completed");
 		} catch (IOException | ThreemaException e) {
 			logger.error("Error with byte array output stream", e);
@@ -1109,36 +1124,91 @@ public class BackupService extends Service {
 		return true;
 	}
 
-	private void writeNonces(
+	private void writeNonceCounts(
+		int nonceCountCsp,
+		int nonceCountD2d,
+		@NonNull ZipOutputStream zipOutputStream
+	) throws IOException, ThreemaException {
+		logger.info("Write nonce counts to backup (CSP: {}, D2D: {})", nonceCountCsp, nonceCountD2d);
+		final String[] nonceCountHeader = new String[]{ Tags.TAG_NONCE_COUNT_CSP, Tags.TAG_NONCE_COUNT_D2D };
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			try (
+				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+				CSVWriter csvWriter = new CSVWriter(outputStreamWriter, nonceCountHeader)
+			) {
+				csvWriter.createRow()
+					.write(Tags.TAG_NONCE_COUNT_CSP, nonceCountCsp)
+					.write(Tags.TAG_NONCE_COUNT_D2D, nonceCountD2d)
+					.write();
+			}
+			ZipUtil.addZipStream(
+				zipOutputStream,
+				new ByteArrayInputStream(outputStream.toByteArray()),
+				Tags.NONCE_COUNTS_FILE + Tags.CSV_FILE_POSTFIX,
+				false
+			);
+		}
+	}
+
+	private int writeNoncesToBackup(
+		@NonNull NonceScope scope,
+		@NonNull String fileName,
+		@NonNull ZipOutputStream zipOutputStream
+	) throws ThreemaException, IOException {
+		try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			int count = writeNonces(scope, outputStream);
+			// Write nonces to zip *after* the CSVWriter has been closed (and therefore flushed)
+			ZipUtil.addZipStream(
+				zipOutputStream,
+				new ByteArrayInputStream(outputStream.toByteArray()),
+				fileName,
+				true
+			);
+			return count;
+		}
+	}
+
+	private int writeNonces(
+		@NonNull NonceScope scope,
 		@NonNull ByteArrayOutputStream outputStream
 	) throws ThreemaException, IOException {
+		logger.info("Backup {} nonces", scope);
 		final String[] nonceHeader = new String[]{Tags.TAG_NONCES};
+		int backedUpNonceCount = 0;
 		try (
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
 			CSVWriter csvWriter = new CSVWriter(outputStreamWriter, nonceHeader)
 		) {
 			long start = System.currentTimeMillis();
-			long nonceCount = databaseNonceStore.getCount();
-			long numChunks = (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
-			List<byte[]> nonces = new ArrayList<>(NONCES_PER_STEP);
+			long nonceCount = nonceFactory.getCount(scope);
+			long numChunks = (long) Math.ceil((double) nonceCount / NONCES_CHUNK_SIZE);
+			List<HashedNonce> nonces = new ArrayList<>(NONCES_CHUNK_SIZE);
 			for (int i = 0; i < numChunks; i++) {
-				databaseNonceStore.addHashedNonceChunk(NONCES_PER_STEP, NONCES_PER_STEP * i, nonces);
-				for (byte[] nonceBytes : nonces) {
-					String nonce = Utils.byteArrayToHexString(nonceBytes);
+				nonceFactory.addHashedNoncesChunk(
+					scope,
+					NONCES_CHUNK_SIZE,
+					NONCES_CHUNK_SIZE * i,
+					nonces
+				);
+				for (HashedNonce hashedNonce : nonces) {
+					String nonce = Utils.byteArrayToHexString(hashedNonce.getBytes());
 					csvWriter.createRow().write(Tags.TAG_NONCES, nonce).write();
 				}
+				int increment = nonces.size() / NONCES_PER_STEP;
+				backedUpNonceCount += nonces.size();
 				nonces.clear();
-				if (!next("Backup nonce")) {
-					return;
+				if (!next("Backup nonce", increment)) {
+					return backedUpNonceCount;
 				}
 				// Periodically log nonce backup progress for debugging purposes
-				if ((i & 2047) == 0) {
+				if ((i % 10) == 0 || i == numChunks) {
 					logger.info("Nonce backup progress: {} of {} chunks backed up", i, numChunks);
 				}
 			}
 			long end = System.currentTimeMillis();
-			logger.info("Created row for all nonces in {} ms", end - start);
+			logger.info("Created backup for all {} nonces in {} ms", scope, end - start);
 		}
+		return backedUpNonceCount;
 	}
 
 	/**

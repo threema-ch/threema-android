@@ -22,11 +22,11 @@
 package ch.threema.app.processors
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.processors.fs.IncomingForwardSecurityAcceptTask
-import ch.threema.app.processors.fs.IncomingForwardSecurityInitTask
-import ch.threema.app.processors.fs.IncomingForwardSecurityMessageTask
-import ch.threema.app.processors.fs.IncomingForwardSecurityRejectTask
-import ch.threema.app.processors.fs.IncomingForwardSecurityTerminateTask
+import ch.threema.app.processors.incomingcspmessage.fs.IncomingForwardSecurityAcceptTask
+import ch.threema.app.processors.incomingcspmessage.fs.IncomingForwardSecurityInitTask
+import ch.threema.app.processors.incomingcspmessage.fs.IncomingForwardSecurityMessageTask
+import ch.threema.app.processors.incomingcspmessage.fs.IncomingForwardSecurityRejectTask
+import ch.threema.app.processors.incomingcspmessage.fs.IncomingForwardSecurityTerminateTask
 import ch.threema.base.ThreemaException
 import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult

@@ -43,12 +43,9 @@ class OutgoingContactDeliveryReceiptMessageTask(
         val message = DeliveryReceiptMessage().also {
             it.receiptType = receiptType
             it.receiptMessageIds = messageIds
-            it.toIdentity = toIdentity
-            it.messageId = MessageId()
-            it.date = Date(date)
         }
 
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(date), handle)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingDeliveryReceiptMessageData(

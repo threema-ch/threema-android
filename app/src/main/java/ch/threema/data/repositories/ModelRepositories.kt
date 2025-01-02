@@ -21,22 +21,24 @@
 
 package ch.threema.data.repositories
 
+import ch.threema.app.managers.CoreServiceManager
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelCache
 import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.data.storage.SqliteDatabaseBackend
-import ch.threema.storage.DatabaseServiceNew
 
-class ModelRepositories(databaseService: DatabaseServiceNew) {
+class ModelRepositories(
+    coreServiceManager: CoreServiceManager,
+) {
     private val logger = LoggingUtil.getThreemaLogger("data.ModelRepositories")
 
     private val cache = ModelCache()
-    private val databaseBackend = SqliteDatabaseBackend(databaseService)
-    private val editHistoryDao = EditHistoryDaoImpl(databaseService)
+    private val databaseBackend = SqliteDatabaseBackend(coreServiceManager.databaseService)
+    private val editHistoryDao = EditHistoryDaoImpl(coreServiceManager.databaseService)
 
-    val contacts = ContactModelRepository(cache.contacts, databaseBackend)
-    val groups = GroupModelRepository(cache.groups, databaseBackend)
-    val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao)
+    val contacts = ContactModelRepository(cache.contacts, databaseBackend, coreServiceManager)
+    val groups = GroupModelRepository(cache.groups, databaseBackend, coreServiceManager)
+    val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao, coreServiceManager)
 
     init {
         logger.debug("Created")

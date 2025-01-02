@@ -21,16 +21,17 @@
 
 package ch.threema.domain.protocol.connection.data
 
+import ch.threema.base.utils.Utils
 import ch.threema.base.utils.toHexString
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.ServerConnectionException
 import ch.threema.protobuf.d2m.MdD2M
 import com.google.protobuf.ByteString
+import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class D2mContainer(val payloadType: UByte, val payload: ByteArray)
-    : InboundL1Message,
+class D2mContainer(val payloadType: UByte, val payload: ByteArray) : InboundL1Message,
     OutboundL2Message {
     override val type: String = "D2mContainer"
 
@@ -103,7 +104,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
             DROP_LEAST_RECENT(1);
         }
 
-        override val type: String = "D2mClientHello"
+        override val type: String = "ClientHello"
 
         override fun toContainer(): D2mContainer {
             val hello = MdD2M.ClientHello.newBuilder()
@@ -122,14 +123,18 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         }
 
         override fun toString(): String {
-            return "ClientHello(version=$version, response=${response.toHexString(4)}, deviceId=$deviceId, deviceSlotsExhaustedPolicy=$deviceSlotsExhaustedPolicy, deviceSlotExpirationPolicy=$deviceSlotExpirationPolicy, expectedDeviceSlotState=$expectedDeviceSlotState, encryptedDeviceInfo=${encryptedDeviceInfo.toHexString(4)}, type='$type')"
+            return "ClientHello(version=$version, response=${response.toHexString(4)}, deviceId=$deviceId, deviceSlotsExhaustedPolicy=$deviceSlotsExhaustedPolicy, deviceSlotExpirationPolicy=$deviceSlotExpirationPolicy, expectedDeviceSlotState=$expectedDeviceSlotState, encryptedDeviceInfo=${
+                encryptedDeviceInfo.toHexString(
+                    4
+                )
+            }, type='$type')"
         }
 
 
     }
 
     class GetDevicesInfo : OutboundD2mMessage(D2mPayloadType.GET_DEVICES_INFO) {
-        override val type: String = "D2mGetDevicesInfo"
+        override val type: String = "GetDevicesInfo"
 
         override fun toContainer(): D2mContainer {
             val getDevicesInfo = MdD2M.GetDevicesInfo.newBuilder().build()
@@ -138,7 +143,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
     }
 
     class DropDevice(val deviceId: DeviceId) : OutboundD2mMessage(D2mPayloadType.DROP_DEVICE), OutboundMessage {
-        override val type: String = "D2mDropDevice"
+        override val type: String = "DropDevice"
 
         override fun toContainer(): D2mContainer {
             val dropDevice = MdD2M.DropDevice.newBuilder()
@@ -152,7 +157,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         private val encryptedScope: ByteArray,
         private val ttl: UInt
     ) : OutboundD2mMessage(D2mPayloadType.BEGIN_TRANSACTION) {
-        override val type: String = "D2mBeginTransaction"
+        override val type: String = "BeginTransaction"
 
         override fun toContainer(): D2mContainer {
             val beginTransaction = MdD2M.BeginTransaction.newBuilder()
@@ -164,7 +169,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
     }
 
     class SetSharedDeviceData(private val encryptedSharedDeviceData: ByteArray) : OutboundD2mMessage(D2mPayloadType.SET_SHARED_DEVICE_DATA) {
-        override val type: String = "D2mSetSharedDeviceData"
+        override val type: String = "SetSharedDeviceData"
 
         override fun toContainer(): D2mContainer {
             val data = MdD2M.SetSharedDeviceData.newBuilder()
@@ -175,12 +180,43 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
     }
 
     class CommitTransaction : OutboundD2mMessage(D2mPayloadType.COMMIT_TRANSACTION) {
-        override val type: String = "D2mCommitTransaction"
+        override val type: String = "CommitTransaction"
 
         override fun toContainer(): D2mContainer {
             val commitTransaction = MdD2M.CommitTransaction.newBuilder()
                 .build()
             return D2mContainer(payloadType, commitTransaction.toByteArray())
+        }
+    }
+
+    class Reflect(
+        private val flags: UShort,
+        private val reflectId: UInt,
+        private val encryptedEnvelope: ByteArray,
+    ) : OutboundD2mMessage(D2mPayloadType.REFLECT) {
+        override val type: String = "Reflect"
+
+        override fun toContainer(): D2mContainer {
+            val outputStream = ByteArrayOutputStream()
+            outputStream.write(8)
+            outputStream.write(0)
+            outputStream.write(Utils.shortToByteArrayLittleEndian(flags.toShort()))
+            outputStream.write(Utils.intToByteArrayLittleEndian(reflectId.toInt()))
+            outputStream.write(encryptedEnvelope)
+            return D2mContainer(payloadType, outputStream.toByteArray())
+        }
+    }
+
+    class ReflectedAck(
+        private val reflectId: UInt,
+    ) : OutboundD2mMessage(D2mPayloadType.REFLECTED_ACK) {
+        override val type: String = "ReflectedAck"
+
+        override fun toContainer(): D2mContainer {
+            val outputStream = ByteArrayOutputStream()
+            outputStream.write(ByteArray(4)) // reserved
+            outputStream.write(Utils.intToByteArrayLittleEndian(reflectId.toInt()))
+            return D2mContainer(payloadType, outputStream.toByteArray())
         }
     }
 }
@@ -199,6 +235,8 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
                 D2mPayloadType.COMMIT_TRANSACTION_ACK -> CommitTransactionAck.decodeContainer(container)
                 D2mPayloadType.TRANSACTION_REJECTED -> TransactionRejected.decodeContainer(container)
                 D2mPayloadType.TRANSACTION_ENDED -> TransactionEnded.decodeContainer(container)
+                D2mPayloadType.REFLECTED -> Reflected.decodeContainer(container)
+                D2mPayloadType.REFLECT_ACK -> ReflectAck.decodeContainer(container)
                 else -> throw D2mProtocolException("Unsupported payload type `${container.payloadType.toHex()}`")
             }
         }
@@ -209,8 +247,9 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     internal class ServerHello(
         val version: UInt,
         val esk: ByteArray,
-        val challenge: ByteArray) : InboundD2mMessage(D2mPayloadType.SERVER_HELLO) {
-        override val type: String = "D2mServerHello"
+        val challenge: ByteArray
+    ) : InboundD2mMessage(D2mPayloadType.SERVER_HELLO) {
+        override val type: String = "ServerHello"
 
         companion object {
             fun decodeContainer(container: D2mContainer): ServerHello {
@@ -234,7 +273,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
         val encryptedSharedDeviceData: ByteArray,
         val reflectionQueueLength: UInt
     ) : InboundD2mMessage(D2mPayloadType.SERVER_INFO) {
-        override val type: String = "D2mServerInfo"
+        override val type: String = "ServerInfo"
 
         companion object {
             fun decodeContainer(container: D2mContainer): ServerInfo {
@@ -254,20 +293,20 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     }
 
     internal class ReflectionQueueDry : InboundD2mMessage(D2mPayloadType.REFLECTION_QUEUE_DRY) {
-        override val type: String = "D2mReflectionQueueDry"
+        override val type: String = "ReflectionQueueDry"
 
         companion object {
             fun decodeContainer(container: D2mContainer): ReflectionQueueDry {
-                 if (container.payloadType != D2mPayloadType.REFLECTION_QUEUE_DRY) {
-                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
-                 }
+                if (container.payloadType != D2mPayloadType.REFLECTION_QUEUE_DRY) {
+                    throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
+                }
                 return ReflectionQueueDry()
             }
         }
     }
 
     internal class RolePromotedToLeader : InboundD2mMessage(D2mPayloadType.ROLE_PROMOTED_TO_LEADER) {
-        override val type: String = "D2mRolePromotedToLeader"
+        override val type: String = "RolePromotedToLeader"
 
         companion object {
             fun decodeContainer(container: D2mContainer): RolePromotedToLeader {
@@ -280,20 +319,20 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     }
 
     class DevicesInfo(val augmentedDeviceInfo: Map<DeviceId, AugmentedDeviceInfo>) : InboundD2mMessage(D2mPayloadType.DEVICES_INFO) {
-        override val type: String = "D2mDevicesInfo"
+        override val type: String = "DevicesInfo"
 
-        data class AugmentedDeviceInfo (
+        data class AugmentedDeviceInfo(
             val encryptedDeviceInfo: ByteArray,
-            val connectedSince: ULong,
-            val lastDisconnectAt: ULong,
+            val connectedSince: ULong?,
+            val lastDisconnectAt: ULong?,
             val deviceSlotExpirationPolicy: DeviceSlotExpirationPolicy
         ) {
             companion object {
                 fun fromProto(augmentedDeviceInfo: MdD2M.DevicesInfo.AugmentedDeviceInfo): AugmentedDeviceInfo {
                     return AugmentedDeviceInfo(
                         augmentedDeviceInfo.encryptedDeviceInfo.toByteArray(),
-                        augmentedDeviceInfo.connectedSince.toULong(),
-                        augmentedDeviceInfo.lastDisconnectAt.toULong(),
+                        augmentedDeviceInfo.connectedSince.takeIf { augmentedDeviceInfo.hasConnectedSince() }?.toULong(),
+                        augmentedDeviceInfo.lastDisconnectAt.takeIf { augmentedDeviceInfo.hasLastDisconnectAt() }?.toULong(),
                         DeviceSlotExpirationPolicy.fromProto(augmentedDeviceInfo.deviceSlotExpirationPolicyValue)
                     )
                 }
@@ -328,13 +367,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
                 val proto = MdD2M.DevicesInfo.parseFrom(container.payload)
                 val info = proto.augmentedDeviceInfoMap.entries.associate {
                     val deviceId = DeviceId(it.key.toULong())
-                    val info = AugmentedDeviceInfo(
-                        it.value.encryptedDeviceInfo.toByteArray(),
-                        it.value.connectedSince.toULong(),
-                        it.value.lastDisconnectAt.toULong(),
-                        DeviceSlotExpirationPolicy.fromProto(it.value.deviceSlotExpirationPolicyValue)
-                    )
-                    deviceId to info
+                    deviceId to AugmentedDeviceInfo.fromProto(it.value)
                 }
                 return DevicesInfo(info)
             }
@@ -342,7 +375,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     }
 
     class DropDeviceAck(val deviceId: DeviceId) : InboundD2mMessage(D2mPayloadType.DROP_DEVICE_ACK) {
-        override val type: String = "D2mDropDeviceAck"
+        override val type: String = "DropDeviceAck"
 
         companion object {
             fun decodeContainer(container: D2mContainer): DropDeviceAck {
@@ -356,7 +389,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     }
 
     class BeginTransactionAck : InboundD2mMessage(D2mPayloadType.BEGIN_TRANSACTION_ACK) {
-        override val type: String = "D2mBeginTransactionAck"
+        override val type: String = "BeginTransactionAck"
 
         companion object {
             fun decodeContainer(container: D2mContainer): BeginTransactionAck {
@@ -369,7 +402,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
     }
 
     class CommitTransactionAck : InboundD2mMessage(D2mPayloadType.COMMIT_TRANSACTION_ACK) {
-        override val type: String = "D2mCommitTransactionAck"
+        override val type: String = "CommitTransactionAck"
 
         companion object {
             fun decodeContainer(container: D2mContainer): CommitTransactionAck {
@@ -385,7 +418,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
         val deviceId: DeviceId,
         val encryptedScope: ByteArray
     ) : InboundD2mMessage(D2mPayloadType.TRANSACTION_REJECTED) {
-        override val type: String = "D2mTransactionRejected"
+        override val type: String = "TransactionRejected"
 
         companion object {
             fun decodeContainer(container: D2mContainer): TransactionRejected {
@@ -405,7 +438,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
         val deviceId: DeviceId,
         val encryptedScope: ByteArray
     ) : InboundD2mMessage(D2mPayloadType.TRANSACTION_ENDED) {
-        override val type: String = "D2mTransactionEnded"
+        override val type: String = "TransactionEnded"
 
         companion object {
             fun decodeContainer(container: D2mContainer): TransactionEnded {
@@ -421,9 +454,47 @@ sealed class InboundD2mMessage(override val payloadType: UByte) : InboundL2Messa
         }
     }
 
-    // TODO(ANDR-2475): Reflected messages
-    // class Reflect : OutboundD2mMessage
-    // class ReflectAck : D2mMessage
-    // class Reflected : D2mMessage
-    // class ReflectedAck : OutboundD2mMessage
+    class ReflectAck(
+        val reflectId: UInt,
+        val timestamp: ULong,
+    ) : InboundD2mMessage(D2mPayloadType.REFLECT_ACK) {
+        override val type: String = "ReflectAck"
+
+        companion object {
+            fun decodeContainer(container: D2mContainer): ReflectAck {
+                val buffer = ByteBuffer
+                    .wrap(container.payload, 4, 12)
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                val reflectId = buffer.int.toUInt()
+                val timestamp = buffer.long.toULong()
+                return ReflectAck(reflectId, timestamp)
+            }
+        }
+    }
+
+    class Reflected(
+        val flags: UShort,
+        val reflectedId: UInt,
+        val timestamp: ULong,
+        val envelope: ByteArray
+    ) : InboundD2mMessage(D2mPayloadType.REFLECTED) {
+        override val type: String = "Reflected"
+
+        companion object {
+            fun decodeContainer(container: D2mContainer): Reflected {
+                val headerLength = container.payload[0].toUByte().toInt()
+                if (headerLength != 16) {
+                    throw D2mProtocolException("Unexpected header length in `Reflected`: $headerLength")
+                }
+                val buffer = ByteBuffer
+                    // we start at [2] because [0] is the header length and [1] is reserved
+                    .wrap(container.payload.copyOfRange(2, headerLength))
+                    .order(ByteOrder.LITTLE_ENDIAN)
+                val flags = buffer.short.toUShort()
+                val reflectedId = buffer.int.toUInt()
+                val timestamp = buffer.long.toULong()
+                return Reflected(flags, reflectedId, timestamp, container.payload.copyOfRange(headerLength, container.payload.size))
+            }
+        }
+    }
 }

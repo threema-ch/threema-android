@@ -25,25 +25,25 @@ import android.os.Bundle;
 import android.view.View;
 
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactNotificationsActivity extends NotificationsActivity {
-	private String identity;
 	private ContactModel contactModel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		this.identity = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-		if (TestUtil.isEmptyOrNull(this.identity)) {
+		String identity = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+		if (TestUtil.isEmptyOrNull(identity)) {
 			finish();
 			return;
 		}
 
 		this.contactModel = contactService.getByIdentity(identity);
-		this.uid = contactService.getUniqueIdString(contactModel);
+		this.uid = ContactUtil.getUniqueIdString(identity);
 
 		refreshSettings();
 	}

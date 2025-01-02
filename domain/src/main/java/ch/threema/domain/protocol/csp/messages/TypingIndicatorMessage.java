@@ -79,6 +79,11 @@ public class TypingIndicatorMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return false;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}

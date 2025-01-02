@@ -164,11 +164,6 @@ public class DistributionListServiceImpl implements DistributionListService {
 	}
 
 	@Override
-	public void clearAvatarCache(@NonNull DistributionListModel model) {
-		// Nothing to do, as distribution list avatars currently aren't being cached
-	}
-
-	@Override
 	public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
 		if (distributionList != null) {
 			return distributionList.getThemedColor(context);

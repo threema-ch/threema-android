@@ -86,6 +86,7 @@ fun initiateCall(
         groupModel: GroupModel
 ) {
     val serviceManager = ThreemaApplication.getServiceManager() ?: return
+    val contactModelRepository = serviceManager.modelRepositories.contacts
     val userService: UserService
     val groupService: GroupService
     val contactService: ContactService
@@ -112,7 +113,7 @@ fun initiateCall(
         return
     }
 
-    val otherMemberIdentities = groupService.getGroupIdentities(groupModel).filter { !userService.isMe(it) }
+    val otherMemberIdentities = groupService.getMembersWithoutUser(groupModel).toList()
     val otherMembers = contactService.getByIdentities(otherMemberIdentities)
 
     // Disallow group calls in empty groups
@@ -131,8 +132,13 @@ fun initiateCall(
                 .show(activity.supportFragmentManager, dialogTagFetchingFeatureMask)
 
             withContext(Dispatchers.Default) {
-                otherMembers.forEach { UpdateFeatureLevelRoutine.removeTimeCache(it) }
-                UpdateFeatureLevelRoutine(contactService, apiConnector, otherMembers).run()
+                otherMembers.forEach { UpdateFeatureLevelRoutine.removeTimeCache(it.identity) }
+                UpdateFeatureLevelRoutine(
+                    contactModelRepository,
+                    userService,
+                    apiConnector,
+                    otherMembers.map { it.identity }
+                ).run()
             }
 
             DialogUtil.dismissDialog(activity.supportFragmentManager, dialogTagFetchingFeatureMask, true)

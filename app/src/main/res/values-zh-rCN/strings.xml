@@ -1552,6 +1552,17 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="md_link_device_qr_scan_message">请扫描二维码</string>
     <string name="directory_request_failed">目录请求失败，请再试一次。</string>
     <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
+    <string name="scan_qr_code">扫描二维码</string>
+    <string name="scan_qr_code_explain">在您要链接的设备上扫描 %s 桌面测试版中显示的二维码。</string>
+    <string name="connecting">连接中…</string>
+    <string name="trust_new_device">信任新设备</string>
+    <string name="trust_new_device_explain">请选择与新设备上显示的相同图像，以确认您信任新设备。</string>
+    <string name="trust_new_device_info">新设备将存储您的 %s 个人资料的独立副本，该设备将可以发送和接收消息。</string>
+    <string name="no_match_question">没有匹配项？</string>
+    <string name="sending_data">正在发送数据…</string>
+    <string name="continue_on_new_device">请在您的新设备上继续</string>
+    <string name="device_linked_successfully">设备链接成功</string>
+    <string name="device_linked_successfully_explain">现在，您可以在你刚刚链接的设备上使用 %s（即使此设备已关机或无互联网连接）。</string>
     <string name="resend_message_dialog_title">重新发送群组消息？</string>
     <string name="resend_message_dialog_message">此消息无法发送给群组所有成员。重新发送消息到%1$s？</string>
     <string name="work_lost_credentials_help">忘记了您的凭证？请联系您的 %1$s 管理员。</string>
@@ -1596,6 +1607,10 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="incoming_calls">来电</string>
     <string name="group_chats">群组会话</string>
     <string name="edit_history_file_no_caption">无编辑记录</string>
+    <string name="device_linking_failed">设备链接失败</string>
+    <string name="device_linking_failed_explain">无法链接设备，请重试。\n原因：%s。</string>
+    <string name="qr_code_scan_error">扫描二维码时发生错误</string>
+    <string name="verification_failed">验证失败</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您对这条消息表示 “同意”。</string>
     <string name="cd_dec_icon">您对这条消息表示 “不同意”。</string>

@@ -32,7 +32,7 @@ import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 
 import static ch.threema.domain.testhelpers.TestHelpers.boxMessage;
 import static ch.threema.domain.testhelpers.TestHelpers.decodeMessageFromBox;
-import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaults;
+import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaultSenderAndReceiver;
 
 public class ForwardSecurityMessageTest {
 
@@ -42,7 +42,7 @@ public class ForwardSecurityMessageTest {
 
 	private static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
 		final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance(), true);
-		setMessageDefaults(msg);
+		setMessageDefaultSenderAndReceiver(msg);
 		return msg;
 	}
 

@@ -27,6 +27,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.stores.ContactStore;
 
 /**
@@ -34,7 +35,7 @@ import ch.threema.domain.stores.ContactStore;
  */
 public class InMemoryContactStore implements ContactStore {
 	private final Map<String, Contact> contacts = new HashMap<>();
-	private final Map<String, Contact> contactsCache = new HashMap<>();
+	private final Map<String, BasicContact> contactsCache = new HashMap<>();
 
 	@Override
 	public Contact getContactForIdentity(@NonNull String identity) {
@@ -47,13 +48,14 @@ public class InMemoryContactStore implements ContactStore {
 	}
 
 	@Override
-	public void removeContact(@NonNull Contact contact) {
-		this.contacts.remove(contact.getIdentity());
+	public void addCachedContact(@NonNull BasicContact contact) {
+		this.contactsCache.put(contact.getIdentity(), contact);
 	}
 
+	@Nullable
 	@Override
-	public void addCachedContact(@NonNull Contact contact) {
-		this.contactsCache.put(contact.getIdentity(), contact);
+	public BasicContact getCachedContact(@NonNull String identity) {
+		return this.contactsCache.get(identity);
 	}
 
 	@Nullable
@@ -65,5 +67,10 @@ public class InMemoryContactStore implements ContactStore {
 		}
 
 		return getContactForIdentity(identity);
+	}
+
+	@Override
+	public boolean isSpecialContact(@NonNull String identity) {
+		return false;
 	}
 }

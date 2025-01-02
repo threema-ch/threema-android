@@ -24,8 +24,10 @@ package ch.threema.app.tasks
 import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
-import ch.threema.app.utils.fetchContactModel
-import ch.threema.app.utils.sendMessageToReceivers
+import ch.threema.app.utils.OutgoingCspMessageHandle
+import ch.threema.app.utils.OutgoingCspMessageServices
+import ch.threema.app.utils.runBundledMessagesSendSteps
+import ch.threema.app.utils.toBasicContact
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -54,7 +56,7 @@ class OutgoingGroupSyncRequestTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     private val messageId = messageId ?: MessageId()
     private val apiConnector by lazy { serviceManager.apiConnector }
-    private val taskCreator by lazy { serviceManager.taskCreator }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseServiceNew.outgoingGroupSyncRequestLogModelFactory }
     private val blockedContactsService by lazy { serviceManager.blockedContactsService }
 
@@ -79,35 +81,50 @@ class OutgoingGroupSyncRequestTask(
             return
         }
 
-        val recipient = contactService.getByIdentity(creatorIdentity)
-            ?: creatorIdentity.fetchContactModel(apiConnector)
+        val recipient = creatorIdentity.toBasicContact(
+            contactModelRepository, contactStore, apiConnector
+        )
+
+        val createdAt = Date()
 
         val messageCreator = OutgoingCspGroupMessageCreator(
             messageId,
+            createdAt,
             groupId,
-            creatorIdentity
+            creatorIdentity,
         ) { GroupSyncRequestMessage() }
 
-        // Send message
-        handle.sendMessageToReceivers(
-            messageCreator,
+        val outgoingCspMessageHandle = OutgoingCspMessageHandle(
             setOf(recipient),
-            forwardSecurityMessageProcessor,
-            identityStore,
-            contactStore,
-            nonceFactory,
-            blockedContactsService,
-            taskCreator
+            messageCreator,
+        )
+
+        // Send message
+        handle.runBundledMessagesSendSteps(
+            outgoingCspMessageHandle,
+            OutgoingCspMessageServices(
+                forwardSecurityMessageProcessor,
+                identityStore,
+                userService,
+                contactStore,
+                contactService,
+                contactModelRepository,
+                groupService,
+                nonceFactory,
+                blockedContactsService,
+                preferenceService,
+                multiDeviceManager
+            )
         )
 
         // Update sync request sent date
         if (model == null) {
             val newModel = OutgoingGroupSyncRequestLogModel()
             newModel.setAPIGroupId(groupId.toString(), creatorIdentity)
-            newModel.lastRequest = Date()
+            newModel.lastRequest = createdAt
             outgoingGroupSyncRequestLogModelFactory.create(newModel)
         } else {
-            model.lastRequest = Date()
+            model.lastRequest = createdAt
             outgoingGroupSyncRequestLogModelFactory.update(model)
         }
     }

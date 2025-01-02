@@ -1,1 +1,4 @@
-- Behebung eines Fehlers des Updaters der Shop Version
+- Behebung eines Fehlers der zu einem Crash auf einigen Motorola Geräten führt, wenn ein Chat geöffnet wird
+- Behebung eines Fehlers bei der Darstellung von Sprachnachrichten auf Tablets
+- Änderungen bei der Verarbeitung von Nachrichten als Vorbereitung für Multi Device auf Android
+- Weniger Statusnachrichten bei Umfragen

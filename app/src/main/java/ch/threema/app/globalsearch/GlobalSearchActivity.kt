@@ -53,6 +53,7 @@ import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.ui.EmptyView
 import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
@@ -196,7 +197,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
                     val deadlineListIdentifier: String = if (messageModel is GroupMessageModel) {
                         groupService.getUniqueIdString(messageModel.groupId)
                     } else {
-                        contactService.getUniqueIdString(messageModel.identity)
+                        ContactUtil.getUniqueIdString(messageModel.identity)
                     }
                     hiddenChatsListService.has(deadlineListIdentifier)
                 }

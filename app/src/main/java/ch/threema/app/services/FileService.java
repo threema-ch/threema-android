@@ -128,9 +128,9 @@ public interface FileService {
 	 */
 	File createWallpaperFile(MessageReceiver messageReceiver) throws IOException;
 
-	boolean hasContactAvatarFile(@NonNull String identity);
+	boolean hasUserDefinedProfilePicture(@NonNull String identity);
 
-	boolean hasContactPhotoFile(@NonNull String identity);
+	boolean hasContactDefinedProfilePicture(@NonNull String identity);
 
 	/**
 	 * decrypt a file and save into a new one
@@ -194,93 +194,107 @@ public interface FileService {
 	 */
 	boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) throws Exception;
 
-	/**
-	 * Save a group avatar (resize if needed) and return true on success.
-	 */
-	boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws Exception;
+    /**
+     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * the avatar cache for this group.
+     */
+	boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * get the group avatar as InputStream
 	 */
-	InputStream getGroupAvatarStream(GroupModel groupModel) throws Exception;
+	InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * get the group avatar if the file exists
 	 */
-	Bitmap getGroupAvatar(GroupModel groupModel) throws Exception;
+	Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException;
 
 	/**
-	 * remove the group avatar
+	 * Remove the group avatar. Additionally, this resets the avatar cache for this group.
 	 */
-	void removeGroupAvatar(GroupModel groupModel);
+	void removeGroupAvatar(@NonNull GroupModel groupModel);
 
 	boolean hasGroupAvatarFile(GroupModel groupModel);
 
-	/**
-	 * write the contact avatar
-	 */
-	boolean writeContactAvatar(@NonNull String identity, File file) throws Exception;
+    /**
+     * Write the contact profile picture set by the user. Additionally, this resets the avatar cache
+     * for this contact.
+     */
+	boolean writeUserDefinedProfilePicture(@NonNull String identity, File file);
 
 	/**
-	 * write the contact avatar
+	 * Write the contact profile picture set by the user. Additionally, this resets the avatar cache
+     * for this contact.
 	 */
-	boolean writeContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception;
+	boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException;
 
 	/**
-	 * write the contact photo received by the contact
+	 * Write the contact profile picture received by the contact. Additionally, this resets the
+     * avatar cache for this contact.
 	 */
-	boolean writeContactPhoto(@NonNull String identity, byte[] encryptedBlob) throws Exception;
+	boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException;
 
 	/**
-	 * write the contact avatar from Android's address book
+	 * Write the contact profile picture from Android's address book. Additionally, this resets the
+     * avatar cache for this contact.
 	 */
-	boolean writeAndroidContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception;
+	boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws Exception;
 
 	/**
 	 * return the decrypted bitmap of a contact avatar
 	 * if no file exists, null will be returned
 	 */
-	Bitmap getContactAvatar(@NonNull String identity) throws Exception;
+	Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws Exception;
 
-	Bitmap getAndroidContactAvatar(@NonNull ContactModel contactModel) throws Exception;
+	Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception;
 
 	/**
 	 * Return a input stream of a local saved contact avatar
 	 */
-	InputStream getContactAvatarStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
+	InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * Return a input stream of a contact photo
 	 */
-	InputStream getContactPhotoStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
+	InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException;
 
 	/**
 	 * return the decrypted bitmap of a contact-provided profile picture
 	 * returns null if no file exists
 	 */
-	Bitmap getContactPhoto(@NonNull String identity) throws Exception;
+	Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws Exception;
 
 	/**
-	 * remove the saved avatar
-	 * return true if the avatar was deleted, false if the remove failed or no avatar file exists
+     * Remove the user defined profile picture for the contact with the given identity.
+     * Additionally, this resets the avatar cache for this contact.
+     *
+     * @param identity the identity of the contact
+     * @return true if the avatar was deleted, false if the remove failed or no avatar file exists
+     */
+	boolean removeUserDefinedProfilePicture(@NonNull String identity);
+
+    /**
+     * Remove the contact defined profile picture for the contact with the given identity.
+     * Additionally, this resets the avatar cache for this contact.
+     *
+     * @param identity the identity of the contact
+     * @return true if avatar was deleted, false if the remove failed or no avatar file exists
+     */
+	boolean removeContactDefinedProfilePicture(@NonNull String identity);
+
+	/**
+	 * Remove the profile picture from Android's address book. Additionally, this resets the avatar
+     * cache for this contact.
+     *
+     * @param identity the identity of the contact
+	 * @return true if the avatar was deleted, false if the remove failed or no avatar file exists
 	 */
-	boolean removeContactAvatar(@NonNull String identity);
+	boolean removeAndroidDefinedProfilePicture(@NonNull String identity);
 
 	/**
-	 * remove the saved profile pic for this contact
-	 * @param identity the identity of the contact
-	 * @return true if avatar was deleted, false if the remove failed or no avatar file exists
-	 */
-	boolean removeContactPhoto(@NonNull String identity);
-
-	/**
-	 * remove the saved avatar from Android's address book
-	 * return true if the avatar was deleted, false if the remove failed or no avatar file exists
-	 */
-	boolean removeAndroidContactAvatar(@NonNull String identity);
-
-	/**
-	 * remove all avatars in the respective directory
+	 * Remove all avatars in the respective directory. Note that this does *not* reset the avatar
+     * caches.
 	 */
 	void removeAllAvatars();
 

@@ -605,7 +605,12 @@
 			android:launchMode="singleTop"
 			android:parentActivityName=".activities.HomeActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
-			android:configChanges="uiMode" />
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode" />
+		<activity
+			android:name=".multidevice.wizard.LinkNewDeviceWizardActivity"
+			android:theme="@style/Theme.Threema.Translucent"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+	        android:windowSoftInputMode="adjustNothing"/>
 
 		<!-- VoIP activities -->
 		<activity
@@ -885,6 +890,9 @@
 			android:name=".activities.ProblemSolverActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:launchMode="singleTop"/>
+		<activity
+			android:name=".debug.PatternLibraryActivity"
+			android:theme="@style/Theme.Threema.Translucent" />
 
 		<!-- services -->
 		<service

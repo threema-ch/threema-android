@@ -59,6 +59,11 @@ public interface MessageTypeProperties {
 	boolean reflectOutgoing();
 
 	/**
+	 * Return whether an 'outgoing message update sent' should be reflected for this message.
+	 */
+	boolean reflectSentUpdate();
+
+	/**
 	 * Return whether an automatic delivery receipt should be send back when receiving a message of
 	 * this type. Note that sending automatic delivery receipts must be prevented for messages that
 	 * have flag 0x80 set.

@@ -21,25 +21,39 @@
 
 package ch.threema.data;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
+import ch.threema.app.managers.CoreServiceManager;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.storage.DatabaseBackend;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.taskmanager.TaskManager;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 public class GroupModelJavaTest {
 	private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
+	private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
+	private final MultiDeviceManager multiDeviceManagerMock = mock(MultiDeviceManager.class);
+	private final TaskManager taskManagerMock = mock(TaskManager.class);
+
+	@Before
+	public void init() {
+		when(coreServiceManagerMock.getMultiDeviceManager()).thenReturn(multiDeviceManagerMock);
+		when(coreServiceManagerMock.getTaskManager()).thenReturn(taskManagerMock);
+	}
 
 	@Test
 	public void testConstruction() {
@@ -55,6 +69,7 @@ public class GroupModelJavaTest {
 		final String groupDesc = "Description";
 		final Date groupDescChangedAt = new Date();
 		final Set<String> members = Set.of("AAAAAAAA", "BBBBBBBB");
+		final ch.threema.storage.models.GroupModel.UserState userState = ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 		final GroupModel groupModel = new GroupModel(
 			new GroupIdentity(creatorIdentity, groupId.toLong()),
@@ -70,9 +85,11 @@ public class GroupModelJavaTest {
 				colorIndex,
 				groupDesc,
 				groupDescChangedAt,
-				members
+				members,
+				userState
 			),
-			databaseBackendMock
+			databaseBackendMock,
+			coreServiceManagerMock
 		);
 
 		final GroupModelData value = groupModel.getData().getValue();
@@ -157,7 +174,8 @@ public class GroupModelJavaTest {
 			colorIndex,
 			"Description",
 			new Date(),
-			Collections.emptySet()
+			Collections.emptySet(),
+			ch.threema.storage.models.GroupModel.UserState.MEMBER
 		);
 	}
 
@@ -176,7 +194,8 @@ public class GroupModelJavaTest {
 				colorIndex,
 				"Description",
 				new Date(),
-				Collections.emptySet()
+				Collections.emptySet(),
+				ch.threema.storage.models.GroupModel.UserState.MEMBER
 			)
 		);
 	}

@@ -206,6 +206,9 @@ internal class CspSession(
             logger.debug("Server nonce = {}", NaCl.asHex(nonce))
         }
 
+        // Note that the public key of the server is checked here in our custom chat server
+        // protocol. This gives us the same security protections as certificate pinning in the tls
+        // context.
         serverPubKeyPerm = serverAddressProvider.chatServerPublicKey
         var kClientTempServerPerm = NaCl(clientTempKeySec, serverPubKeyPerm)
         var serverHello = kClientTempServerPerm.decrypt(serverHelloBox, nonce)
@@ -306,7 +309,7 @@ internal class CspSession(
 
     private fun createExtensions(): ByteArray {
         /* Client info (0x00) */
-        val clientInfo = ProtocolExtension(ProtocolExtension.CLIENT_INFO_TYPE, version.fullVersion.encodeToByteArray())
+        val clientInfo = ProtocolExtension(ProtocolExtension.CLIENT_INFO_TYPE, version.fullVersionString.encodeToByteArray())
 
         /* Csp device id (0x01) if multi device is active, omit if md is not active */
         val cspDeviceIdBytes = cspDeviceId

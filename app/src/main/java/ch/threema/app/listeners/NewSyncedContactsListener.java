@@ -24,7 +24,7 @@ package ch.threema.app.listeners;
 import java.util.List;
 
 import androidx.annotation.AnyThread;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.data.models.ContactModel;
 
 /**
  * Listen for new contacts added via sync.

@@ -22,12 +22,14 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.apache.commons.io.EndianUtils;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -42,7 +44,9 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 @Deprecated
 public class GroupAudioMessage extends AbstractGroupMessage {
 
-	private int duration;
+    private final static Logger logger = LoggingUtil.getThreemaLogger("GroupAudioMessage");
+
+    private int duration;
 	private byte[] audioBlobId;
 	private int audioSize;
 	private byte[] encryptionKey;
@@ -98,6 +102,11 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return true;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}
@@ -108,6 +117,7 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+    @Nullable
 	public byte[] getBody() {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -118,11 +128,11 @@ public class GroupAudioMessage extends AbstractGroupMessage {
 			bos.write(audioBlobId);
 			EndianUtils.writeSwappedInteger(bos, audioSize);
 			bos.write(encryptionKey);
+            return bos.toByteArray();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+            logger.error("Cannot create body of message", e);
+            return null;
 		}
-
-		return bos.toByteArray();
 	}
 
 	public int getDuration() {

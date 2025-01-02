@@ -26,6 +26,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 class OutgoingVoipCallHangupMessageTask(
     private val voipCallHangupData: VoipCallHangupData,
@@ -35,12 +36,10 @@ class OutgoingVoipCallHangupMessageTask(
     override val type: String = "OutgoingVoipCallHangupMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
-        val message = VoipCallHangupMessage()
-        message.setData(voipCallHangupData)
-        message.toIdentity = toIdentity
-        message.messageId = MessageId()
-
-        sendContactMessage(message, null, handle)
+        val message = VoipCallHangupMessage().apply {
+            this.data = voipCallHangupData
+        }
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     // We do not need to persist this message

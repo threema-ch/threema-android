@@ -63,7 +63,7 @@ public class AvatarListItemUtil {
 			contactService.loadAvatarIntoImage(
 				conversationModel.getContact(),
 				avatarView,
-				AvatarOptions.PRESET_RESPECT_SETTINGS,
+				AvatarOptions.PRESET_DEFAULT_FALLBACK,
 				requestManager
 			);
 		} else if (conversationModel.isGroupConversation()) {
@@ -115,7 +115,7 @@ public class AvatarListItemUtil {
 
 		AvatarOptions options;
 		if (model instanceof ContactModel) {
-			options = AvatarOptions.PRESET_RESPECT_SETTINGS;
+			options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
 		} else if (model instanceof GroupModel) {
 			options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
 		} else {

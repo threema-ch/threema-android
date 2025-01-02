@@ -48,14 +48,14 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
-import ch.threema.app.asynctasks.AddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.AlreadyVerified;
-import ch.threema.app.asynctasks.ContactAddResult;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactResult;
+import ch.threema.app.asynctasks.ContactCreated;
 import ch.threema.app.asynctasks.ContactExists;
 import ch.threema.app.asynctasks.ContactModified;
 import ch.threema.app.asynctasks.Failed;
 import ch.threema.app.asynctasks.PolicyViolation;
-import ch.threema.app.asynctasks.Success;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.NewContactDialog;
@@ -74,6 +74,7 @@ import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
@@ -237,8 +238,9 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			return;
 		}
 
-		backgroundExecutor.execute(new AddOrUpdateContactBackgroundTask(
+		backgroundExecutor.execute(new BasicAddOrUpdateContactBackgroundTask(
 			identity,
+			ContactModel.AcquaintanceLevel.DIRECT,
 			getMyIdentity(),
 			apiConnector,
 			contactModelRepository,
@@ -252,14 +254,14 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 			}
 
 			@Override
-			public void onFinished(@NonNull ContactAddResult result) {
+			public void onFinished(@NonNull ContactResult result) {
 				if (isDestroyed()) {
 					return;
 				}
 
 				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
 
-				if (result instanceof Success) {
+				if (result instanceof ContactCreated) {
 					showContactAndFinish(identity, R.string.creating_contact_successful);
 				} else if (result instanceof ContactModified) {
 					if (((ContactModified) result).getAcquaintanceLevelChanged()) {
@@ -271,6 +273,9 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 					showContactAndFinish(identity, R.string.scan_duplicate);
 				} else if (result instanceof ContactExists) {
 					showContactAndFinish(identity, R.string.identity_already_exists);
+				} else if (result instanceof PolicyViolation) {
+					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
+					finish();
 				} else if (result instanceof Failed) {
 					GenericAlertDialog.newInstance(
 						ConfigUtils.isOnPremBuild() ?
@@ -280,9 +285,6 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 						R.string.close,
 						0
 					).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
-				} else if (result instanceof PolicyViolation) {
-					Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
-					finish();
 				}
 			}
 		});

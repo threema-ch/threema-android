@@ -60,16 +60,20 @@ class OutgoingPollSetupMessageTask(
         val messageModel = getContactMessageModel(messageModelId) ?: return
 
         // Create the message
-        val message = PollSetupMessage()
-            .also {
-                it.ballotCreator = serviceManager.identityStore.identity
-                it.ballotId = ballotId
-                it.data = ballotData
-                it.toIdentity = messageModel.identity
-                it.messageId = ensureMessageId(messageModel)
-            }
+        val message = PollSetupMessage().also {
+            it.ballotCreatorIdentity = serviceManager.identityStore.identity
+            it.ballotId = ballotId
+            it.ballotData = ballotData
+        }
 
-        sendContactMessage(message, messageModel, handle)
+        sendContactMessage(
+            message,
+            messageModel,
+            messageModel.identity,
+            ensureMessageId(messageModel),
+            messageModel.createdAt,
+            handle
+        )
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
@@ -82,14 +86,14 @@ class OutgoingPollSetupMessageTask(
             group,
             recipientIdentities,
             messageModel,
+            messageModel.createdAt,
             ensureMessageId(messageModel),
             {
-                GroupPollSetupMessage()
-                    .also {
-                        it.ballotCreator = serviceManager.identityStore.identity
-                        it.ballotId = ballotId
-                        it.data = ballotData
-                    }
+                GroupPollSetupMessage().also {
+                    it.ballotCreatorIdentity = serviceManager.identityStore.identity
+                    it.ballotId = ballotId
+                    it.ballotData = ballotData
+                }
             },
             handle
         )

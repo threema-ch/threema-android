@@ -34,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -80,9 +79,8 @@ import ch.threema.domain.stores.TokenStoreInterface;
 import ove.crypto.digest.Blake2b;
 
 /**
- * Fetches data and executes commands on the Threema API (such as creating a new
- * identity, fetching public keys for a given identity, linking e-mail addresses
- * and mobile phone numbers, etc.).
+ * Fetches data and executes commands on the Threema API (such as creating a new identity, fetching
+ * public keys for a given identity, linking e-mail addresses and mobile phone numbers, etc.).
  * <p>
  * All calls run synchronously; if necessary the caller should dispatch a separate thread.
  */
@@ -94,8 +92,18 @@ public class APIConnector {
     private static final String JSON_FIELD_DEPARTMENT = "department";
 
     // HMAC-SHA256 keys for contact matching
-    private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50, (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d, (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90, (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88, (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62, (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
-    private static final byte[] MOBILENO_HMAC_KEY = new byte[]{(byte) 0x85, (byte) 0xad, (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9, (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29, (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8, (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8, (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
+    private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50
+		    , (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d,
+		    (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90,
+		    (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88,
+		    (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62,
+		    (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
+    private static final byte[] MOBILENO_HMAC_KEY = new byte[]{(byte) 0x85, (byte) 0xad,
+		    (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9,
+		    (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29,
+		    (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8,
+		    (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8,
+		    (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
 
     private static final int DEFAULT_MATCH_CHECK_INTERVAL = 86400;
     private static final int RESPONSE_LEN = 32;
@@ -215,8 +223,7 @@ public class APIConnector {
     }
 
     /**
-     * Fetch identity-related information (public key) for
-     * a given identity.
+     * Fetch identity-related information (public key) for a given identity.
      *
      * @param identity the desired identity
      * @return information related to identity
@@ -224,7 +231,8 @@ public class APIConnector {
      * @throws HttpConnectionException on http error
      * @throws NetworkException        on network error
      */
-    public FetchIdentityResult fetchIdentity(String identity) throws ThreemaException, NetworkException, HttpConnectionException {
+    public FetchIdentityResult fetchIdentity(String identity) throws ThreemaException,
+		    NetworkException, HttpConnectionException {
         try {
             String responseStr = doGet(getServerUrl() + "identity/" + identity);
             JSONObject jsonResponse = new JSONObject(responseStr);
@@ -247,39 +255,44 @@ public class APIConnector {
      *
      * @param identities the desired identities
      * @return array list of information related to identity
-     * @throws FileNotFoundException if identity not found
-     * @throws Exception             on network error
+     * @throws ThreemaException         if the server url cannot be fetched on onprem builds
+     * @throws IllegalArgumentException if the argument is null or empty
+     * @throws NetworkException         on network error
      */
-    public ArrayList<FetchIdentityResult> fetchIdentities(List<String> identities) throws Exception {
-        if (identities == null || identities.size() < 1) {
-            throw new ThreemaException("empty identities array");
+    public List<FetchIdentityResult> fetchIdentities(List<String> identities) throws ThreemaException, NetworkException {
+        if (identities == null || identities.isEmpty()) {
+            throw new IllegalArgumentException("empty identities array");
         }
 
-        JSONObject postObject = new JSONObject();
-        postObject.put("identities", new JSONArray(identities));
-        String postResponse = this.postJson(getServerUrl() + "identity/fetch_bulk", postObject);
+        try {
+            JSONObject postObject = new JSONObject();
+            postObject.put("identities", new JSONArray(identities));
+            String postResponse = this.postJson(getServerUrl() + "identity/fetch_bulk", postObject);
 
-        if (postResponse == null) {
-            throw new ThreemaException("no valid response or network error");
+            if (postResponse == null) {
+                throw new NetworkException("no valid response or network error");
+            }
+
+            JSONObject resultObject = new JSONObject(postResponse);
+            JSONArray resultArray = resultObject.getJSONArray("identities");
+
+            List<FetchIdentityResult> fetchIdentityResults = new ArrayList<>();
+            for (int i = 0; i < resultArray.length(); i++) {
+                JSONObject jsonResponse = resultArray.getJSONObject(i);
+                FetchIdentityResult fetchIdentityResult = new FetchIdentityResult();
+                fetchIdentityResult.publicKey = Base64.decode(jsonResponse.getString("publicKey"));
+                fetchIdentityResult.featureLevel = jsonResponse.optInt("featureLevel");
+                fetchIdentityResult.featureMask = jsonResponse.optInt("featureMask");
+                fetchIdentityResult.identity = jsonResponse.getString("identity");
+                fetchIdentityResult.state = jsonResponse.optInt("state");
+                fetchIdentityResult.type = jsonResponse.optInt("type");
+
+                fetchIdentityResults.add(fetchIdentityResult);
+            }
+            return fetchIdentityResults;
+        } catch (JSONException | IOException e) {
+            throw new NetworkException(e);
         }
-
-        JSONObject resultObject = new JSONObject(postResponse);
-        JSONArray resultArray = resultObject.getJSONArray("identities");
-
-        ArrayList<FetchIdentityResult> fetchIdentityResults = new ArrayList<>();
-        for (int i = 0; i < resultArray.length(); i++) {
-            JSONObject jsonResponse = resultArray.getJSONObject(i);
-            FetchIdentityResult fetchIdentityResult = new FetchIdentityResult();
-            fetchIdentityResult.publicKey = Base64.decode(jsonResponse.getString("publicKey"));
-            fetchIdentityResult.featureLevel = jsonResponse.optInt("featureLevel");
-            fetchIdentityResult.featureMask = jsonResponse.optInt("featureMask");
-            fetchIdentityResult.identity = jsonResponse.getString("identity");
-            fetchIdentityResult.state = jsonResponse.optInt("state");
-            fetchIdentityResult.type = jsonResponse.optInt("type");
-
-            fetchIdentityResults.add(fetchIdentityResult);
-        }
-        return fetchIdentityResults;
     }
 
     /**
@@ -329,8 +342,8 @@ public class APIConnector {
 
     /**
      * Link an e-mail address with the identity from the given store. The user gets a verification
-     * e-mail with a link. {@link #linkEmailCheckStatus(String, IdentityStoreInterface)} should be called
-     * to check whether the user has already confirmed.
+     * e-mail with a link. {@link #linkEmailCheckStatus(String, IdentityStoreInterface)} should be
+     * called to check whether the user has already confirmed.
      * <p>
      * To unlink, pass an empty string as the e-mail address. In that case, checking status is not
      * necessary as the unlink operation does not need e-mail verification.
@@ -339,7 +352,8 @@ public class APIConnector {
      * @param language      language for confirmation e-mail, ISO-639-1 (e.g. "de", "en", "fr")
      * @param identityStore identity store for authentication of request
      * @return true if e-mail address is accepted for verification, false if already linked
-     * @throws LinkEmailException if the server reports an error (should be displayed to the user verbatim)
+     * @throws LinkEmailException if the server reports an error (should be displayed to the user
+     *                            verbatim)
      * @throws Exception          if a network error occurs
      */
     public boolean linkEmail(String email, String language, IdentityStoreInterface identityStore) throws LinkEmailException, Exception {
@@ -379,8 +393,8 @@ public class APIConnector {
     }
 
     /**
-     * Check whether a given e-mail address is already linked to the identity (i.e. the user
-     * has confirmed the verification mail).
+     * Check whether a given e-mail address is already linked to the identity (i.e. the user has
+     * confirmed the verification mail).
      *
      * @param email         e-mail address to be linked
      * @param identityStore identity store for authentication of request
@@ -402,27 +416,33 @@ public class APIConnector {
     }
 
     /**
-     * Link a mobile phone number with the identity from the given store. The user gets a verification code via
-     * SMS; this code should be passed to {@link #linkMobileNoVerify(String, String)} along with the verification ID
-     * returned by this method to complete the operation.
+     * Link a mobile phone number with the identity from the given store. The user gets a
+     * verification code via SMS; this code should be passed to
+     * {@link #linkMobileNoVerify(String, String)} along with the verification ID returned by this
+     * method to complete the operation.
      * <p>
      * To unlink, pass an empty string as the mobile number.
      *
      * @param mobileNo      mobile phone number in E.164 format without + (e.g. 41791234567)
      * @param language      language for SMS text, ISO-639-1 (e.g. "de", "en", "fr")
      * @param identityStore identity store for authentication of request
-     * @return verification ID that should be passed to {@link #linkMobileNoVerify(String, String)}, or null if verification is already complete
-     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user verbatim)
+     * @return verification ID that should be passed to {@link #linkMobileNoVerify(String, String)},
+     * or null if verification is already complete
+     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user
+     *                               verbatim)
      * @throws Exception             if a network error occurs
      */
-    public String linkMobileNo(String mobileNo, String language, IdentityStoreInterface identityStore) throws LinkMobileNoException, Exception {
+    public String linkMobileNo(String mobileNo, String language,
+                               IdentityStoreInterface identityStore) throws LinkMobileNoException
+		    , Exception {
         return this.linkMobileNo(mobileNo, language, identityStore, null);
     }
 
     /**
-     * Link a mobile phone number with the identity from the given store. The user gets a verification code via
-     * SMS; this code should be passed to {@link #linkMobileNoVerify(String, String)} along with the verification ID
-     * returned by this method to complete the operation.
+     * Link a mobile phone number with the identity from the given store. The user gets a
+     * verification code via SMS; this code should be passed to
+     * {@link #linkMobileNoVerify(String, String)} along with the verification ID returned by this
+     * method to complete the operation.
      * <p>
      * To unlink, pass an empty string as the mobile number.
      *
@@ -430,11 +450,14 @@ public class APIConnector {
      * @param language      language for SMS text, ISO-639-1 (e.g. "de", "en", "fr")
      * @param identityStore identity store for authentication of request
      * @param urlScheme     optional parameter (url schema of the verification link)
-     * @return verification ID that should be passed to {@link #linkMobileNoVerify(String, String)}, or null if verification is already complete
-     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user verbatim)
+     * @return verification ID that should be passed to {@link #linkMobileNoVerify(String, String)},
+     * or null if verification is already complete
+     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user
+     *                               verbatim)
      * @throws Exception             if a network error occurs
      */
-    public String linkMobileNo(String mobileNo, String language, IdentityStoreInterface identityStore, String urlScheme) throws LinkMobileNoException, Exception {
+    public String linkMobileNo(String mobileNo, String language,
+                               IdentityStoreInterface identityStore, String urlScheme) throws LinkMobileNoException, Exception {
         String url = getServerUrl() + "identity/link_mobileno";
 
         // Phase 1: send identity and mobile no
@@ -480,9 +503,11 @@ public class APIConnector {
     /**
      * Complete verification of mobile number link.
      *
-     * @param verificationId the verification ID returned by {@link #linkMobileNo(String, String, IdentityStoreInterface)}
+     * @param verificationId the verification ID returned by
+     *                       {@link #linkMobileNo(String, String, IdentityStoreInterface)}
      * @param code           the SMS code (usually 6 digits)
-     * @throws LinkMobileNoException if the server reports an error, e.g. wrong code or too many attempts (should be displayed to the user verbatim)
+     * @throws LinkMobileNoException if the server reports an error, e.g. wrong code or too many
+     *                               attempts (should be displayed to the user verbatim)
      * @throws Exception             if a network error occurs
      */
     public void linkMobileNoVerify(String verificationId, String code) throws LinkMobileNoException, Exception {
@@ -500,12 +525,16 @@ public class APIConnector {
     }
 
     /**
-     * Trigger a phone call for the given verification ID. This should only be done if the SMS doesn't arrive
-     * in a normal amount of time (e.g. 10 minutes). The verification code will be read to the user twice,
-     * and {@link #linkMobileNoVerify(String, String)} should then be called with the code.
+     * Trigger a phone call for the given verification ID. This should only be done if the SMS
+     * doesn't arrive in a normal amount of time (e.g. 10 minutes). The verification code will be
+     * read to the user twice, and {@link #linkMobileNoVerify(String, String)} should then be called
+     * with the code.
      *
-     * @param verificationId verification ID returned from {@link #linkMobileNo(String, String, IdentityStoreInterface)}
-     * @throws LinkMobileNoException if the server reports an error, e.g. unable to call the destination, already called etc. (should be displayed to the user verbatim)
+     * @param verificationId verification ID returned from
+     *                       {@link #linkMobileNo(String, String, IdentityStoreInterface)}
+     * @throws LinkMobileNoException if the server reports an error, e.g. unable to call the
+     *                               destination, already called etc. (should be displayed to the
+     *                               user verbatim)
      * @throws Exception             if a network error occurs
      */
     public void linkMobileNoCall(String verificationId) throws LinkMobileNoException, Exception {
@@ -522,23 +551,28 @@ public class APIConnector {
     }
 
     /**
-     * Find identities that have been linked with the given e-mail addresses and/or mobile phone numbers.
-     * The mobile phone numbers can be provided in national or international format, as they will be automatically
-     * passed through libphonenumber (which also takes care of spaces, brackets etc.).
+     * Find identities that have been linked with the given e-mail addresses and/or mobile phone
+     * numbers. The mobile phone numbers can be provided in national or international format, as
+     * they will be automatically passed through libphonenumber (which also takes care of spaces,
+     * brackets etc.).
      * <p>
-     * The server also returns its desired check interval to the {@code APIConnector} object during this call.
-     * The caller should use {@link #getMatchCheckInterval()} to determine the earliest time for the next call
-     * after this call. This is important so that the server can request longer intervals from its clients during
-     * periods of heavy traffic or temporary capacity problems.
+     * The server also returns its desired check interval to the {@code APIConnector} object during
+     * this call. The caller should use {@link #getMatchCheckInterval()} to determine the earliest
+     * time for the next call after this call. This is important so that the server can request
+     * longer intervals from its clients during periods of heavy traffic or temporary capacity
+     * problems.
      *
-     * @param emails          map of e-mail addresses (key = e-mail, value = arbitrary object for reference that is returned with any found identities)
-     * @param mobileNos       map of phone numbers (key = phone number, value = arbitrary object for reference that is returned with any found identities)
-     * @param userCountry     the user's home country (for correct interpretation of national phone numbers), ISO 3166-1, e.g. "CH" (or null to disable normalization)
+     * @param emails          map of e-mail addresses (key = e-mail, value = arbitrary object for
+     *                        reference that is returned with any found identities)
+     * @param mobileNos       map of phone numbers (key = phone number, value = arbitrary object for
+     *                        reference that is returned with any found identities)
+     * @param userCountry     the user's home country (for correct interpretation of national phone
+     *                        numbers), ISO 3166-1, e.g. "CH" (or null to disable normalization)
      * @param includeInactive if true, inactive IDs will be included in the results also
      * @param identityStore   identity store to use for obtaining match token
      * @param matchTokenStore for storing match token for reuse (may be null)
-     * @return map of found identities (key = identity). The value objects from the {@code emails} and {@code mobileNos} parameters
-     * will be returned in {@code refObject}.
+     * @return map of found identities (key = identity). The value objects from the {@code emails}
+     * and {@code mobileNos} parameters will be returned in {@code refObject}.
      */
     @SuppressLint("DefaultLocale")
     public Map<String, MatchIdentityResult> matchIdentities(
@@ -557,7 +591,8 @@ public class APIConnector {
 
         for (Map.Entry<String, ?> entry : emails.entrySet()) {
             String normalizedEmail = entry.getKey().toLowerCase().trim();
-            byte[] emailHash = emailMac.doFinal(normalizedEmail.getBytes(StandardCharsets.US_ASCII));
+            byte[] emailHash =
+		            emailMac.doFinal(normalizedEmail.getBytes(StandardCharsets.US_ASCII));
             emailHashes.put(Base64.encodeBytes(emailHash), entry.getValue());
 
             // Gmail address? If so, hash with the other domain as well
@@ -569,7 +604,8 @@ public class APIConnector {
             }
 
             if (normalizedEmailAlt != null) {
-                byte[] emailHashAlt = emailMac.doFinal(normalizedEmailAlt.getBytes(StandardCharsets.US_ASCII));
+                byte[] emailHashAlt =
+		                emailMac.doFinal(normalizedEmailAlt.getBytes(StandardCharsets.US_ASCII));
                 emailHashes.put(Base64.encodeBytes(emailHashAlt), entry.getValue());
             }
         }
@@ -589,14 +625,17 @@ public class APIConnector {
             try {
                 String normalizedMobileNo;
                 if (phoneNumberUtil != null) {
-                    Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(entry.getKey(), userCountry);
-                    String normalizedMobileNoWithPlus = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+                    Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(entry.getKey(),
+		                    userCountry);
+                    String normalizedMobileNoWithPlus = phoneNumberUtil.format(phoneNumber,
+		                    PhoneNumberUtil.PhoneNumberFormat.E164);
                     normalizedMobileNo = normalizedMobileNoWithPlus.replace("+", "");
                 } else {
                     normalizedMobileNo = entry.getKey().replaceAll("[^0-9]", "");
                 }
 
-                byte[] mobileNoHash = mobileNoMac.doFinal(normalizedMobileNo.getBytes(StandardCharsets.US_ASCII));
+                byte[] mobileNoHash =
+		                mobileNoMac.doFinal(normalizedMobileNo.getBytes(StandardCharsets.US_ASCII));
                 mobileNoHashes.put(Base64.encodeBytes(mobileNoHash), entry.getValue());
             } catch (NumberParseException e) {
                 // Skip/ignore this number
@@ -604,7 +643,8 @@ public class APIConnector {
             }
         }
 
-        return matchIdentitiesHashed(emailHashes, mobileNoHashes, includeInactive, identityStore, matchTokenStore);
+        return matchIdentitiesHashed(emailHashes, mobileNoHashes, includeInactive, identityStore,
+		        matchTokenStore);
     }
 
     public Map<String, MatchIdentityResult> matchIdentitiesHashed(
@@ -616,12 +656,14 @@ public class APIConnector {
     ) throws Exception {
         String matchToken = obtainMatchToken(identityStore, matchTokenStore, false);
         try {
-            return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive, matchToken);
+            return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive,
+		            matchToken);
         } catch (Exception e) {
             // Match token may be invalid/expired, refresh and try again
             logger.debug("Match failed", e);
             matchToken = obtainMatchToken(identityStore, matchTokenStore, true);
-            return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive, matchToken);
+            return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive,
+		            matchToken);
         }
     }
 
@@ -647,7 +689,8 @@ public class APIConnector {
         logger.debug(String.format("Match identities: sending to server: %s", request.toString()));
 
         JSONObject result = new JSONObject(postJson(url, request));
-        logger.debug(String.format("Match identities: response from server: %s", result.toString()));
+        logger.debug(String.format("Match identities: response from server: %s",
+		        result.toString()));
 
         matchCheckInterval = result.getInt("checkInterval");
         logger.debug("Server requested check interval of {} seconds", matchCheckInterval);
@@ -681,8 +724,8 @@ public class APIConnector {
      *
      * @param identityStore   Obtain a match token for the identity stored in this identity store.
      * @param matchTokenStore Optional cache used to store match tokens after lookup.
-     * @param forceRefresh    If set to true, then a match token will always be re-fetched.
-     *                        The `matchTokenStore` cache will be ignored.
+     * @param forceRefresh    If set to true, then a match token will always be re-fetched. The
+     *                        `matchTokenStore` cache will be ignored.
      * @return The match token as string
      */
     private String obtainMatchToken(
@@ -734,7 +777,8 @@ public class APIConnector {
      * Obtain an authentication token (for OnPrem only).
      *
      * @param authTokenStore the token store to use for caching the token
-     * @param forceRefresh   if true, a new token is always requested even if one is currently cached
+     * @param forceRefresh   if true, a new token is always requested even if one is currently
+     *                       cached
      * @return The authentication token
      */
     public String obtainAuthToken(
@@ -770,7 +814,8 @@ public class APIConnector {
      * <p>
      * The token will be prefixed with `3ma;`.
      *
-     * @param identityStore Obtain a Threema Push token for the identity stored in this identity store.
+     * @param identityStore Obtain a Threema Push token for the identity stored in this identity
+     *                      store.
      * @return The match token as string
      */
     public @NonNull String obtainThreemaPushToken(
@@ -867,7 +912,8 @@ public class APIConnector {
      *
      * @param featureMask   feature mask of the current identity
      * @param identityStore identity store for authentication of request
-     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user verbatim)
+     * @throws LinkMobileNoException if the server reports an error (should be displayed to the user
+     *                               verbatim)
      * @throws Exception             if a network error occurs
      */
     public void setFeatureMask(long featureMask, IdentityStoreInterface identityStore) throws Exception {
@@ -960,7 +1006,8 @@ public class APIConnector {
     /**
      * Set the revocation key for the stored identity
      */
-    public SetRevocationKeyResult setRevocationKey(IdentityStoreInterface identityStore, String revocationKey) throws Exception {
+    public SetRevocationKeyResult setRevocationKey(IdentityStoreInterface identityStore,
+                                                   String revocationKey) throws Exception {
 
         // Calculate key
         MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -993,8 +1040,8 @@ public class APIConnector {
     }
 
     /**
-     * This call is used to check a list of IDs and determine the status of each ID.
-     * The response contains a list of status codes, one for each ID in the same order as in the request.
+     * This call is used to check a list of IDs and determine the status of each ID. The response
+     * contains a list of status codes, one for each ID in the same order as in the request.
      */
     public CheckIdentityStatesResult checkIdentityStates(String[] identities) throws Exception {
         String url = getServerUrl() + "identity/check";
@@ -1078,13 +1125,15 @@ public class APIConnector {
         }
 
         String[] turnUrls = jsonArrayToStringArray(p2Result.getJSONArray("turnUrls"));
-        String[] turnUrlsDualStack = jsonArrayToStringArray(p2Result.getJSONArray("turnUrlsDualStack"));
+        String[] turnUrlsDualStack = jsonArrayToStringArray(p2Result.getJSONArray(
+				"turnUrlsDualStack"));
         String turnUsername = p2Result.getString("turnUsername");
         String turnPassword = p2Result.getString("turnPassword");
         int expiration = p2Result.getInt("expiration");
         Date expirationDate = new Date(new Date().getTime() + expiration * 1000L);
 
-        return new TurnServerInfo(turnUrls, turnUrlsDualStack, turnUsername, turnPassword, expirationDate);
+        return new TurnServerInfo(turnUrls, turnUrlsDualStack, turnUsername, turnPassword,
+		        expirationDate);
     }
 
     /**
@@ -1095,7 +1144,8 @@ public class APIConnector {
      * @param senderNickname Nickname of sender, if known
      * @throws Exception If junk report could not be sent
      */
-    public void reportJunk(IdentityStoreInterface identityStore, @NonNull String senderIdentity, @Nullable String senderNickname) throws Exception {
+    public void reportJunk(IdentityStoreInterface identityStore, @NonNull String senderIdentity,
+                           @Nullable String senderNickname) throws Exception {
         if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
             return;
         }
@@ -1181,7 +1231,7 @@ public class APIConnector {
     private CheckLicenseResult checkLicense(JSONObject request, String deviceId) throws Exception {
         String url = getServerUrl() + "check_license";
         request.put("deviceId", deviceId);
-        request.put("version", version.getFullVersion());
+        request.put("version", version.getFullVersionString());
         request.put("arch", version.getArchitecture());
 
         JSONObject result = new JSONObject(this.postJson(url, request));
@@ -1222,7 +1272,8 @@ public class APIConnector {
         }
         request.put("contacts", identityArray);
 
-        PostJsonResult postJsonResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2", request);
+        PostJsonResult postJsonResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2",
+		        request);
         if (postJsonResult.responseCode > 0 || postJsonResult.responseBody == null || postJsonResult.responseBody.length() == 0) {
             workData.responseCode = postJsonResult.responseCode;
             return workData;
@@ -1260,8 +1311,10 @@ public class APIConnector {
                             Base64.decode(contact.getString("pk")),
                             contact.has("first") ? contact.getString("first") : null,
                             contact.has("last") ? contact.getString("last") : null,
-                            contact.has(JSON_FIELD_JOB_TITLE) ? contact.getString(JSON_FIELD_JOB_TITLE) : null,
-                            contact.has(JSON_FIELD_DEPARTMENT) ? contact.getString(JSON_FIELD_DEPARTMENT) : null
+                            contact.has(JSON_FIELD_JOB_TITLE) ?
+		                            contact.getString(JSON_FIELD_JOB_TITLE) : null,
+                            contact.has(JSON_FIELD_DEPARTMENT) ?
+		                            contact.getString(JSON_FIELD_DEPARTMENT) : null
                         )
                     );
                 }
@@ -1290,7 +1343,8 @@ public class APIConnector {
         JSONObject jsonResponseOrganization = jsonResponse.optJSONObject("org");
         if (jsonResponseOrganization != null) {
             workData.organization.name =
-                jsonResponseOrganization.isNull("name") ? null : jsonResponseOrganization.optString("name");
+                jsonResponseOrganization.isNull("name") ? null :
+		                jsonResponseOrganization.optString("name");
         }
 
         JSONObject directory = jsonResponse.optJSONObject("directory");
@@ -1319,7 +1373,8 @@ public class APIConnector {
      * @param username   Threema Work license username
      * @param password   Threema Work license password
      * @param identities List of Threema IDs to check
-     * @return List of valid threema work contacts - empty list if there are no matching contacts in this package.
+     * @return List of valid threema work contacts - empty list if there are no matching contacts in
+     * this package.
      */
     @NonNull
     public List<WorkContact> fetchWorkContacts(
@@ -1361,8 +1416,10 @@ public class APIConnector {
                             Base64.decode(contact.getString("pk")),
                             contact.isNull("first") ? null : contact.getString("first"),
                             contact.isNull("last") ? null : contact.getString("last"),
-                            contact.isNull(JSON_FIELD_JOB_TITLE) ? null : contact.getString(JSON_FIELD_JOB_TITLE),
-                            contact.isNull(JSON_FIELD_DEPARTMENT) ? null : contact.getString(JSON_FIELD_DEPARTMENT)
+                            contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
+		                            contact.getString(JSON_FIELD_JOB_TITLE),
+                            contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
+		                            contact.getString(JSON_FIELD_DEPARTMENT)
                         )
                     );
                 }
@@ -1467,18 +1524,27 @@ public class APIConnector {
                     WorkDirectoryContact directoryContact = new WorkDirectoryContact(
                         contact.getString("id"),
                         Base64.decode(contact.getString("pk")),
-                        contact.has("first") ? (contact.isNull("first") ? null : contact.optString("first")) : null,
-                        contact.has("last") ? (contact.isNull("last") ? null : contact.optString("last")) : null,
-                        contact.has("csi") ? (contact.isNull("csi") ? null : contact.optString("csi")) : null,
-                        contact.has(JSON_FIELD_JOB_TITLE) ? (contact.isNull(JSON_FIELD_JOB_TITLE) ? null : contact.optString(JSON_FIELD_JOB_TITLE)) : null,
-                        contact.has(JSON_FIELD_DEPARTMENT) ? (contact.isNull(JSON_FIELD_DEPARTMENT) ? null : contact.optString(JSON_FIELD_DEPARTMENT)) : null
+                        contact.has("first") ? (contact.isNull("first") ? null :
+		                        contact.optString("first")) : null,
+                        contact.has("last") ? (contact.isNull("last") ? null : contact.optString(
+								"last")) : null,
+                        contact.has("csi") ? (contact.isNull("csi") ? null : contact.optString(
+								"csi")) : null,
+                        contact.has(JSON_FIELD_JOB_TITLE) ?
+		                        (contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
+				                        contact.optString(JSON_FIELD_JOB_TITLE)) : null,
+                        contact.has(JSON_FIELD_DEPARTMENT) ?
+		                        (contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
+				                        contact.optString(JSON_FIELD_DEPARTMENT)) : null
                     );
 
                     if (!contact.isNull("org")) {
                         JSONObject jsonResponseOrganization = contact.optJSONObject("org");
 
-                        if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull("name")) {
-                            directoryContact.organization.name = jsonResponseOrganization.optString("name");
+                        if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull(
+								"name")) {
+                            directoryContact.organization.name =
+		                            jsonResponseOrganization.optString("name");
                         }
                     }
 
@@ -1572,16 +1638,16 @@ public class APIConnector {
     /**
      * Get the full app version.
      * <p>
-     * If provided also append the mdm source to the version.
-     * This might seem to not be the appropriate location for this information
-     * but has been specified in ANDR-2213 and "Update Work Info" in documentation.
+     * If provided also append the mdm source to the version. This might seem to not be the
+     * appropriate location for this information but has been specified in ANDR-2213 and "Update
+     * Work Info" in documentation.
      *
      * @param mdmSource The source(s) of the active mdm parameters
      * @return The version string
      */
     @NonNull
     private String getUpdateWorkInfoVersion(@Nullable String mdmSource) {
-        StringBuilder updateWorkInfoVersion = new StringBuilder(version.getFullVersion());
+        StringBuilder updateWorkInfoVersion = new StringBuilder(version.getFullVersionString());
         if (mdmSource != null) {
             updateWorkInfoVersion.append(";");
             updateWorkInfoVersion.append(mdmSource);
@@ -1619,7 +1685,8 @@ public class APIConnector {
         urlConnection.setConnectTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
         urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
         urlConnection.setRequestMethod("GET");
-        urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT + "/" + version.getVersion());
+        urlConnection.setRequestProperty("User-Agent",
+		        ProtocolStrings.USER_AGENT + "/" + version.getVersionString());
         if (language != null) {
             urlConnection.setRequestProperty("Accept-Language", language);
         }
@@ -1645,8 +1712,8 @@ public class APIConnector {
     /**
      * Send a HTTP POST request with the specified body to the specified URL.
      * <p>
-     * The `Content-Type` header will be set to `application/json`, and the `User-Agent`
-     * will be set appropriately as well.
+     * The `Content-Type` header will be set to `application/json`, and the `User-Agent` will be set
+     * appropriately as well.
      *
      * @param urlStr The target URL
      * @param body   The request body
@@ -1664,12 +1731,13 @@ public class APIConnector {
     /**
      * Send a HTTP POST request with the specified body to the specified URL.
      * <p>
-     * The `Content-Type` header will be set to `application/json`, and the `User-Agent`
-     * will be set appropriately as well.
+     * The `Content-Type` header will be set to `application/json`, and the `User-Agent` will be set
+     * appropriately as well.
      *
      * @param urlStr The target URL
      * @param body   The request body
-     * @return A PostJsonResult object containing the response body, UTF-8 decoded and the server's response code
+     * @return A PostJsonResult object containing the response body, UTF-8 decoded and the server's
+     * response code
      */
     @NonNull
     protected PostJsonResult postJsonWithResult(@NonNull String urlStr, @NonNull JSONObject body) throws IOException {
@@ -1683,7 +1751,8 @@ public class APIConnector {
         urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
         urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("Content-Type", "application/json");
-        urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT + "/" + this.version.getVersion());
+        urlConnection.setRequestProperty("User-Agent",
+		        ProtocolStrings.USER_AGENT + "/" + this.version.getVersionString());
         if (this.language != null) {
             urlConnection.setRequestProperty("Accept-Language", this.language);
         }
@@ -1695,7 +1764,8 @@ public class APIConnector {
 
         try {
             // Send request
-            try (OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(), StandardCharsets.UTF_8)) {
+            try (OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(),
+		            StandardCharsets.UTF_8)) {
                 osw.write(body.toString());
             }
 
@@ -1713,8 +1783,8 @@ public class APIConnector {
     }
 
     /**
-     * Create a token response for a two-phase API request by updating
-     * the original request JSON object.
+     * Create a token response for a two-phase API request by updating the original request JSON
+     * object.
      *
      * @param p1Result      Phase 1 response.
      * @param request       Phase 1 request. This request will be updated with the signed token.
@@ -1739,7 +1809,7 @@ public class APIConnector {
     }
 
     public @Nullable APIConnector.FetchIdentityResult getFetchResultByIdentity(
-        ArrayList<APIConnector.FetchIdentityResult> results,
+        List<APIConnector.FetchIdentityResult> results,
         String identity
     ) {
         if (identity != null) {
@@ -1847,7 +1917,8 @@ public class APIConnector {
         public final String turnPassword;
         public final Date expirationDate;
 
-        public TurnServerInfo(String[] turnUrls, String[] turnUrlsDualStack, String turnUsername, String turnPassword, Date expirationDate) {
+        public TurnServerInfo(String[] turnUrls, String[] turnUrlsDualStack, String turnUsername,
+                              String turnPassword, Date expirationDate) {
             this.turnUrls = turnUrls;
             this.turnUrlsDualStack = turnUrlsDualStack;
             this.turnUsername = turnUsername;
@@ -1859,6 +1930,10 @@ public class APIConnector {
     public static class NetworkException extends Exception {
         public NetworkException(Throwable cause) {
             super(cause);
+        }
+
+        public NetworkException(@Nullable String msg) {
+            super(msg);
         }
     }
 

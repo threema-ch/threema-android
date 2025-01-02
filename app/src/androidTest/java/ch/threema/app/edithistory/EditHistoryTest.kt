@@ -26,11 +26,17 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
 import ch.threema.app.activities.HomeActivity
+import ch.threema.app.asynctasks.AndroidContactLinkPolicy
+import ch.threema.app.asynctasks.ContactSyncPolicy
+import ch.threema.app.asynctasks.DeleteContactServices
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
+import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
+import ch.threema.app.utils.executor.BackgroundExecutor
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.domain.models.MessageId
@@ -42,6 +48,7 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
+import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.MessageModelFactory
 import ch.threema.storage.models.AbstractMessageModel
@@ -62,9 +69,28 @@ class EditHistoryTest : MessageProcessorProvider() {
     private val messageService: MessageService by lazy { serviceManager.messageService }
     private val contactService: ContactService by lazy { serviceManager.contactService }
     private val groupService: GroupService by lazy { serviceManager.groupService }
-    private val messageModelFactory: MessageModelFactory by lazy { serviceManager.databaseServiceNew.messageModelFactory }
-    private val groupMessageModelFactory: GroupMessageModelFactory by lazy { serviceManager.databaseServiceNew.groupMessageModelFactory }
-    private val editHistoryDao: EditHistoryDao by lazy { EditHistoryDaoImpl(serviceManager.databaseServiceNew) }
+    private val databaseService: DatabaseServiceNew by lazy { serviceManager.databaseServiceNew }
+    private val messageModelFactory: MessageModelFactory by lazy { databaseService.messageModelFactory }
+    private val groupMessageModelFactory: GroupMessageModelFactory by lazy { databaseService.groupMessageModelFactory }
+    private val editHistoryDao: EditHistoryDao by lazy { EditHistoryDaoImpl(databaseService) }
+    private val contactModelRepository: ContactModelRepository by lazy { serviceManager.modelRepositories.contacts }
+    private val deleteContactServices: DeleteContactServices by lazy {
+        DeleteContactServices(
+            serviceManager.userService,
+            contactService,
+            serviceManager.conversationService,
+            serviceManager.ringtoneService,
+            serviceManager.mutedChatsListService,
+            serviceManager.hiddenChatsListService,
+            serviceManager.profilePicRecipientsService,
+            serviceManager.wallpaperService,
+            serviceManager.fileService,
+            serviceManager.excludedSyncIdentitiesService,
+            serviceManager.dhSessionStore,
+            serviceManager.notificationService,
+            databaseService,
+        )
+    }
 
     @Test
     fun testHistoryDeletedOnContactMessageDelete() = runTest {
@@ -248,7 +274,15 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         messageModel.assertHistorySize(1)
 
-        contactService.remove(contactA.contactModel)
+        BackgroundExecutor().executeDeferred(
+            MarkContactAsDeletedBackgroundTask(
+                setOf(messageModel.identity),
+                contactModelRepository,
+                deleteContactServices,
+                ContactSyncPolicy.INCLUDE,
+                AndroidContactLinkPolicy.KEEP,
+            )
+        ).await()
 
         messageModel.assertHistorySize(0)
     }

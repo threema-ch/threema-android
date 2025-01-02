@@ -228,7 +228,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return ImageScale_MEDIUM;
 		}
 
-		switch (Integer.valueOf(imageScale)) {
+		switch (Integer.parseInt(imageScale)) {
 			case 0:
 				return ImageScale_SMALL;
 			case 2:
@@ -250,7 +250,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return VideoSize_MEDIUM;
 		}
 
-		switch (Integer.valueOf(videoSize)) {
+		switch (Integer.parseInt(videoSize)) {
 			case 0:
 				return VideoSize_SMALL;
 			case 2:
@@ -335,7 +335,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	@Override
 	public void setRecentEmojis2(LinkedList<String> list) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__recent_emojis2), list.toArray(new String[list.size()]), false);
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__recent_emojis2), list.toArray(new String[0]), false);
 	}
 
 	@Override
@@ -506,7 +506,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 			return R.style.FontStyle_Normal;
 		}
 
-		switch (Integer.valueOf(fontStyle)) {
+		switch (Integer.parseInt(fontStyle)) {
 			case 1:
 				return R.style.FontStyle_Large;
 			case 2:
@@ -669,11 +669,9 @@ public class PreferenceServiceImpl implements PreferenceService {
 			String valueClass = v[2];
 
 			if (valueClass.equals(Boolean.class.toString())) {
-				this.preferenceStore.save(key, Boolean.valueOf(value));
-			} else if (valueClass.equals(Float.class.toString())) {
-//					this.preferenceStore.save(key, ((Float) v).floatValue());
+				this.preferenceStore.save(key, Boolean.parseBoolean(value));
 			} else if (valueClass.equals(Integer.class.toString())) {
-				this.preferenceStore.save(key, Integer.valueOf(value));
+				this.preferenceStore.save(key, Integer.parseInt(value));
 			} else if (valueClass.equals(Long.class.toString())) {
 				this.preferenceStore.save(key, Long.valueOf(value));
 			} else if (valueClass.equals(String.class.toString())) {
@@ -686,16 +684,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 
 	private String getKeyName(@StringRes int resourceId) {
 		return this.context.getString(resourceId);
-	}
-
-	@Override
-	public Integer getRoutineInterval(String key) {
-		return this.preferenceStore.getInt(key);
-	}
-
-	@Override
-	public void setRoutineInterval(String key, Integer intervalSeconds) {
-		this.preferenceStore.save(key, intervalSeconds);
 	}
 
 	@Override
@@ -1371,6 +1359,16 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public int getWorkSyncCheckInterval() {
 		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__work_sync_check_interval));
+	}
+
+	@Override
+	public void setIdentityStateSyncInterval(int syncIntervalS) {
+		this.preferenceStore.save(this.getKeyName(R.string.preferences__identity_states_check_interval), syncIntervalS);
+	}
+
+	@Override
+	public int getIdentityStateSyncIntervalS() {
+		return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__identity_states_check_interval));
 	}
 
 	@Override

@@ -22,12 +22,14 @@
 package ch.threema.data.storage
 
 import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.storage.models.ContactModel
+import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 
 // This file contains the types used in the database abstraction layer.
@@ -56,7 +58,7 @@ data class DbContact(
     /** Acquaintance level (direct / group). */
     val acquaintanceLevel: ContactModel.AcquaintanceLevel,
     /** Activity state (active / inactive / invalid). */
-    val activityState: ContactModel.State,
+    val activityState: IdentityState,
     /** Contact sync state. */
     val syncState: ContactSyncState,
     /** Feature mask. */
@@ -107,6 +109,8 @@ data class DbGroup(
     val groupDescriptionChangedAt: Date?,
     /** The group members' identities. */
     val members: Set<String>,
+    /** The group user state. */
+    val userState: UserState,
 )
 
 data class DbEditHistoryEntry(

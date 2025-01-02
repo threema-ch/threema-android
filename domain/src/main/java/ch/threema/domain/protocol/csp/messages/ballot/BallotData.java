@@ -57,7 +57,6 @@ public class BallotData {
 			}
 			throw new IllegalArgumentException();
 		}
-
 	}
 
 	public enum AssessmentType {
@@ -228,7 +227,8 @@ public class BallotData {
 		return this.participants;
 	}
 
-	public static BallotData parse(String jsonObjectString) throws BadMessageException {
+	@NonNull
+    public static BallotData parse(String jsonObjectString) throws BadMessageException {
 		try {
 			JSONObject o = new JSONObject(jsonObjectString);
 
@@ -284,13 +284,12 @@ public class BallotData {
 
 			return ballotData;
 		}
-		catch (JSONException e) {
-			throw new BadMessageException("TM029");
+		catch (JSONException jsonException) {
+			throw new BadMessageException("TM029", jsonException);
 		}
-
 	}
 
-	public void write(ByteArrayOutputStream bos) throws Exception {
+	public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
 		bos.write(this.generateString().getBytes(StandardCharsets.UTF_8));
 	}
 
@@ -316,8 +315,8 @@ public class BallotData {
 			}
 			o.put(KEY_PARTICIPANTS, p);
 		}
-		catch (Exception e) {
-			throw new BadMessageException("TM033");
+		catch (Exception jsonException) {
+			throw new BadMessageException("TM033", jsonException);
 		}
 
 		return o.toString();

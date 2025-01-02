@@ -21,8 +21,6 @@
 
 package ch.threema.app.services;
 
-import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
-
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -31,22 +29,31 @@ import android.content.Context;
 import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import com.neilalexander.jnacl.NaCl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
+import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.SerialCredentials;
@@ -55,7 +62,10 @@ import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.stores.PreferenceStoreInterfaceDevNullImpl;
+import ch.threema.app.tasks.ReflectUserProfileNicknameSyncTask;
+import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DeviceIdUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.PushUtil;
@@ -67,8 +77,16 @@ import ch.threema.domain.identitybackup.IdentityBackupDecoder;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
+import ch.threema.domain.protocol.blob.BlobScope;
+import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.taskmanager.TaskManager;
+import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.ThreemaApplication.PHONE_LINKED_PLACEHOLDER;
+import static ch.threema.app.utils.StreamUtilKt.toByteArray;
 
 /**
  * This service class handle all user actions (db/identity....)
@@ -76,12 +94,28 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface  {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("UserServiceImpl");
 
+    @NonNull
 	private final Context context;
+    @NonNull
 	private final PreferenceStoreInterface preferenceStore;
+    @NonNull
 	private final IdentityStore identityStore;
+    @NonNull
 	private final APIConnector apiConnector;
+    @NonNull
+    private final ApiService apiService;
+    @NonNull
+    private final FileService fileService;
+    @NonNull
 	private final LocaleService localeService;
+    @NonNull
 	private final PreferenceService preferenceService;
+    @NonNull
+	private final TaskManager taskManager;
+    @NonNull
+    private final TaskCreator taskCreator;
+    @NonNull
+    private final MultiDeviceManager multiDeviceManager;
 	private String policyResponseData;
 	private String policySignature;
 	private int policyErrorCode;
@@ -92,19 +126,29 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	private boolean isFsEnabled = true;
 
 	public UserServiceImpl(
-		Context context,
-		PreferenceStoreInterface preferenceStore,
-		LocaleService localeService,
-		APIConnector apiConnector,
-		IdentityStore identityStore,
-		PreferenceService preferenceService
+		@NonNull Context context,
+		@NonNull PreferenceStoreInterface preferenceStore,
+		@NonNull LocaleService localeService,
+		@NonNull APIConnector apiConnector,
+        @NonNull ApiService apiService,
+        @NonNull FileService fileService,
+		@NonNull IdentityStore identityStore,
+		@NonNull PreferenceService preferenceService,
+        @NonNull TaskManager taskManager,
+        @NonNull TaskCreator taskCreator,
+        @NonNull MultiDeviceManager multiDeviceManager
 	) {
 		this.context = context;
 		this.preferenceStore = preferenceStore;
 		this.localeService = localeService;
 		this.identityStore = identityStore;
 		this.apiConnector = apiConnector;
+        this.apiService = apiService;
+        this.fileService = fileService;
 		this.preferenceService = preferenceService;
+        this.taskCreator = taskCreator;
+        this.taskManager = taskManager;
+        this.multiDeviceManager = multiDeviceManager;
 	}
 
 	@Override
@@ -437,19 +481,167 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 	}
 
 	@Override
-	public String setPublicNickname(String publicNickname) {
-		//truncate string into a 32 byte length string
-		//fix #ANDR-530
-		String truncated = Utils.truncateUTF8String(publicNickname, ProtocolDefines.PUSH_FROM_LEN);
-		this.identityStore.setPublicNickname(truncated);
-		//run update work info (only if the app is the work version)
-		if(ConfigUtils.isWorkBuild()) {
+	public String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource) {
+        final @NonNull String oldNickname = this.identityStore.getPublicNickname();
+		// truncate string into a 32 byte length string
+		// fix #ANDR-530
+		final @Nullable String publicNicknameTruncated = Utils.truncateUTF8String(
+            publicNickname,
+            ProtocolDefines.PUSH_FROM_LEN
+        );
+		this.identityStore.persistPublicNickname(publicNicknameTruncated);
+		// run update work info (only if the app is the work version)
+		if (ConfigUtils.isWorkBuild()) {
 			UpdateWorkInfoRoutine.start();
 		}
-		return truncated;
+        if (publicNicknameTruncated != null && !publicNicknameTruncated.equals(oldNickname)
+            && multiDeviceManager.isMultiDeviceActive()
+            && triggerSource != TriggerSource.SYNC) {
+            taskManager.schedule(
+                new ReflectUserProfileNicknameSyncTask(
+                    publicNicknameTruncated,
+                    ThreemaApplication.requireServiceManager()
+                )
+            );
+        }
+		return publicNicknameTruncated;
 	}
 
-	private String getLanguage() {
+    @Override
+    @Nullable
+    public byte[] getUserProfilePicture() {
+        try {
+            return toByteArray(fileService.getUserDefinedProfilePictureStream(getIdentity()));
+        } catch (Exception e) {
+            logger.error("Could not get user profile picture");
+            return null;
+        }
+    }
+
+    @Override
+    public boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource) {
+        try {
+            fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
+            onUserProfilePictureChanged();
+            if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
+               taskCreator.scheduleReflectUserProfilePictureTask();
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("Could not set user profile picture", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource) {
+        try {
+            fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
+            onUserProfilePictureChanged();
+            if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
+                taskCreator.scheduleReflectUserProfilePictureTask();
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("Could not set user profile picture", e);
+            return false;
+        }
+    }
+
+    @Override
+    public void removeUserProfilePicture(@NonNull TriggerSource triggerSource) {
+        fileService.removeUserDefinedProfilePicture(getIdentity());
+        onUserProfilePictureChanged();
+        if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
+            taskCreator.scheduleReflectUserProfilePictureTask();
+        }
+    }
+
+    @Override
+    @WorkerThread
+    @NonNull
+    public ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData() {
+        byte[] profilePicture = getUserProfilePicture();
+        if (profilePicture == null) {
+            // If there is no profile picture set, then return empty upload data with an empty byte
+            // array as blob ID.
+            ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
+            data.blobId = ContactModel.NO_PROFILE_PICTURE_BLOB_ID;
+            return data;
+        }
+
+        // Only upload blob every 7 days
+        long uploadedAt = preferenceService.getProfilePicUploadDate();
+        Date uploadDeadline = new Date(uploadedAt + ContactUtil.PROFILE_PICTURE_BLOB_CACHE_DURATION);
+        Date now = new Date();
+
+        if (now.after(uploadDeadline)) {
+            logger.info("Uploading profile picture blob");
+
+            ContactService.ProfilePictureUploadData data = uploadContactPhoto(profilePicture);
+
+            if (data == null) {
+                return new ContactService.ProfilePictureUploadData();
+            }
+
+            data.uploadedAt = now.getTime();
+
+            preferenceService.setProfilePicUploadDate(now);
+            preferenceService.setProfilePicUploadData(data);
+            return data;
+        } else {
+            ContactService.ProfilePictureUploadData data = preferenceService.getProfilePicUploadData();
+            if (data != null) {
+                data.uploadedAt = uploadedAt;
+                data.bitmapArray = profilePicture;
+                return data;
+            } else {
+                return new ContactService.ProfilePictureUploadData();
+            }
+        }
+    }
+
+    @Nullable
+    private ContactService.ProfilePictureUploadData uploadContactPhoto(@NonNull byte[] contactPhoto) {
+        ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
+
+        SecureRandom rnd = new SecureRandom();
+        data.encryptionKey = new byte[NaCl.SYMMKEYBYTES];
+        rnd.nextBytes(data.encryptionKey);
+
+        data.bitmapArray = contactPhoto;
+        byte[] imageData = NaCl.symmetricEncryptData(data.bitmapArray, data.encryptionKey, ProtocolDefines.CONTACT_PHOTO_NONCE);
+        try {
+            BlobUploader blobUploader = this.apiService.createUploader(
+                imageData,
+                false,
+                BlobScope.Public.INSTANCE
+            );
+            data.blobId = blobUploader.upload();
+        } catch (ThreemaException | IOException e) {
+            logger.error("Could not upload contact photo", e);
+
+            if (e instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
+                logger.info("Invalidating auth token");
+                apiService.invalidateAuthToken();
+            }
+
+            return null;
+        }
+        data.size = imageData.length;
+        return data;
+    }
+
+    private void onUserProfilePictureChanged() {
+        // Reset the last profile picture upload date
+        this.preferenceService.setProfilePicUploadDate(new Date(0));
+        this.preferenceService.setProfilePicUploadData(null);
+
+        // Notify listeners
+        ListenerManager.profileListeners.handle(ProfileListener::onAvatarChanged);
+    }
+
+    private String getLanguage() {
 		return LocaleUtil.getLanguage();
 	}
 

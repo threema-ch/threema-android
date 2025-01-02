@@ -67,7 +67,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
         // Create group rename message
         val groupARenamed =
-            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed")
+            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed", myContact.identity)
 
         val renameTracker = GroupRenameTracker(groupARenamed).apply { start() }
 
@@ -103,7 +103,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
         // Create group rename message (from wrong sender)
         val groupARenamed =
-            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed")
+            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed", myContact.identity)
 
         val renameTracker = GroupRenameTracker(null).apply { start() }
 
@@ -215,7 +215,6 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
             override fun onNewMember(
                 group: GroupModel?,
                 newIdentity: String?,
-                previousMemberCount: Int
             ) {
                 fail()
             }
@@ -223,7 +222,6 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
             override fun onMemberLeave(
                 group: GroupModel?,
                 identity: String?,
-                previousMemberCount: Int
             ) {
                 fail()
             }
@@ -231,7 +229,6 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
             override fun onMemberKicked(
                 group: GroupModel?,
                 identity: String?,
-                previousMemberCount: Int
             ) {
                 fail()
             }

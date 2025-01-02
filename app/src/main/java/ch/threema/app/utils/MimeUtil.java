@@ -452,7 +452,7 @@ public class MimeUtil {
 		String mimeType = fileDataModel.getMimeType();
 
 		int messageContentsType = MessageContentsType.FILE;
-		if (mimeType.length() > 0) {
+		if (!mimeType.isEmpty()) {
 			if (MimeUtil.isGifFile(mimeType)) {
 				messageContentsType = MessageContentsType.GIF;
 			} else if (MimeUtil.isImageFile(mimeType)) {

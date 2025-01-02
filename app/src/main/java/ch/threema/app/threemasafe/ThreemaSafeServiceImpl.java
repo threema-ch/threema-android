@@ -32,14 +32,6 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import com.neilalexander.jnacl.NaCl;
 
 import org.bouncycastle.crypto.generators.SCrypt;
@@ -65,6 +57,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.Deflater;
@@ -72,12 +65,20 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.EntryAlreadyExistsException;
-import ch.threema.app.exceptions.InvalidEntryException;
-import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactAvailable;
+import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
@@ -93,6 +94,7 @@ import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.utils.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.GzipOutputStream;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.StringConversionUtil;
@@ -103,6 +105,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
@@ -111,6 +114,7 @@ import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.factories.DistributionListMemberModelFactory;
@@ -128,11 +132,13 @@ import static ch.threema.app.ThreemaApplication.WORKER_PERIODIC_THREEMA_SAFE_UPL
 import static ch.threema.app.ThreemaApplication.WORKER_THREEMA_SAFE_UPLOAD;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
 import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_NOBODY;
-import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_SOME;
+import static ch.threema.app.services.PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
 import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
 import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
+import static ch.threema.storage.models.GroupModel.UserState.LEFT;
+import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
@@ -247,6 +253,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private final ServerAddressProvider serverAddressProvider;
 	@NonNull
 	private final PreferenceStoreInterface preferenceStore;
+	@NonNull
+	private final ContactModelRepository contactModelRepository;
 
 	public ThreemaSafeServiceImpl(
 		Context context,
@@ -266,7 +274,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		@NonNull APIConnector apiConnector,
 		DeadlineListService hiddenChatsListService,
 		@NonNull ServerAddressProvider serverAddressProvider,
-		@NonNull PreferenceStoreInterface preferenceStore
+		@NonNull PreferenceStoreInterface preferenceStore,
+		@NonNull ContactModelRepository contactModelRepository
 		) {
 		this.context = context;
 		this.preferenceService = preferenceService;
@@ -286,6 +295,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		this.hiddenChatsListService = hiddenChatsListService;
 		this.serverAddressProvider = serverAddressProvider;
 		this.preferenceStore = preferenceStore;
+		this.contactModelRepository = contactModelRepository;
 	}
 
 	@Override
@@ -816,7 +826,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		ContactModel contactModel = contactService.getByIdentity(userService.getIdentity());
 		if (contactModel != null) {
-			userService.setPublicNickname(nickname);
+			userService.setPublicNickname(nickname, TriggerSource.LOCAL);
 
 
 			boolean isLinksRestricted = false;
@@ -847,7 +857,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			String profilePic = user.optString(TAG_SAFE_USER_PROFILE_PIC, null);
 			if (profilePic != null) {
 				try {
-					contactService.setAvatar(contactModel, Base64.decode(profilePic));
+					contactService.setUserDefinedProfilePicture(contactModel, Base64.decode(profilePic), TriggerSource.LOCAL);
 				} catch (Exception e) {
 					// base 64 decoding or avatar setting failed - forget about the pic
 				}
@@ -855,7 +865,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 			JSONArray profilePicRelease = user.optJSONArray(TAG_SAFE_USER_PROFILE_PIC_RELEASE);
 			if (profilePicRelease != null) {
-				preferenceService.setProfilePicRelease(PROFILEPIC_RELEASE_SOME);
+				preferenceService.setProfilePicRelease(PROFILEPIC_RELEASE_ALLOW_LIST);
 
 				for (int i = 0; i < profilePicRelease.length(); i++) {
 					String id = profilePicRelease.getString(i);
@@ -937,7 +947,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			return;
 		}
 
-		ArrayList<APIConnector.FetchIdentityResult> results;
+		List<APIConnector.FetchIdentityResult> results;
 		try {
 			results = this.apiConnector.fetchIdentities(identities);
 		}
@@ -978,16 +988,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 							default:
 								logger.warn("Identity fetch returned invalid identity type: {}", result.type);
 						}
-						switch (result.state) {
-							case IdentityState.ACTIVE:
-								contactModel.setState(ContactModel.State.ACTIVE);
-								break;
-							case IdentityState.INACTIVE:
-								contactModel.setState(ContactModel.State.INACTIVE);
-								break;
-							case IdentityState.INVALID:
-								contactModel.setState(ContactModel.State.INVALID);
-								break;
+						if (result.state == IdentityState.ACTIVE.getValue()) {
+							contactModel.setState(IdentityState.ACTIVE);
+						} else if (result.state == IdentityState.INACTIVE.getValue()) {
+							contactModel.setState(IdentityState.INACTIVE);
+						} else if (result.state == IdentityState.INVALID.getValue()) {
+							contactModel.setState(IdentityState.INVALID);
 						}
 						contactModel.setIsWork(contact.optBoolean(TAG_SAFE_CONTACT_WORK_VERIFIED));
 						contactModel.setFirstName(contact.optString(TAG_SAFE_CONTACT_FIRST_NAME));
@@ -1011,7 +1017,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 						contactModelFactory.createOrUpdate(contactModel);
 
 						if (contact.optBoolean(TAG_SAFE_CONTACT_PRIVATE, false)) {
-							hiddenChatsListService.add(contactService.getUniqueIdString(contactModel), DeadlineListService.DEADLINE_INDEFINITE);
+							hiddenChatsListService.add(ContactUtil.getUniqueIdString(contactModel.getIdentity()), DeadlineListService.DEADLINE_INDEFINITE);
 						}
 					}
 				}
@@ -1046,7 +1052,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					groupModel.setDeleted(group.getBoolean(TAG_SAFE_GROUP_DELETED));
 					groupModel.setSynchronizedAt(new Date(0));
 					if (!group.isNull(TAG_SAFE_GROUP_LAST_UPDATE)) {
-						final long lastUpdate = group.getLong("lastUpdate");
+						final long lastUpdate = group.getLong(TAG_SAFE_GROUP_LAST_UPDATE);
 						groupModel.setLastUpdate(new Date(lastUpdate));
 					}
 
@@ -1055,27 +1061,48 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 							hiddenChatsListService.add(this.groupService.getUniqueIdString(groupModel), DeadlineListService.DEADLINE_INDEFINITE);
 						}
 
+						String myIdentity = userService.getIdentity();
+						boolean isMember = false;
+
 						JSONArray members = group.getJSONArray(TAG_SAFE_GROUP_MEMBERS);
 						for (int j = 0; j < members.length(); j++) {
 							String identity = members.getString(j);
 							if (!TestUtil.isEmptyOrNull(identity)) {
 								if (contactService.getByIdentity(identity) == null) {
-									// fetch group contact if not in contact list
-									try {
-										contactService.createContactByIdentity(identity, true, AcquaintanceLevel.GROUP);
-									} catch (InvalidEntryException | EntryAlreadyExistsException | PolicyViolationException e) {
-										// do not add as group member if contact cannot be created
+									// Fetch group contact if not in contact list. Note that we do
+									// not add the contact to the group if it couldn't be created.
+									ContactResult result = new BasicAddOrUpdateContactBackgroundTask(
+										identity,
+										AcquaintanceLevel.GROUP,
+										myIdentity,
+										apiConnector,
+										contactModelRepository,
+										AddContactRestrictionPolicy.IGNORE,
+										context,
+										null
+									).runSynchronously();
+
+									if (!(result instanceof ContactAvailable)) {
+										logger.error("Contact {} could not be created", identity);
 										continue;
 									}
 								}
 
-								GroupMemberModel groupMemberModel = new GroupMemberModel();
-								groupMemberModel.setGroupId(groupModel.getId());
-								groupMemberModel.setIdentity(identity);
+								if (identity.equals(myIdentity)) {
+									isMember = true;
+								} else {
+									// Only create a group member model if it is not the user itself
+									GroupMemberModel groupMemberModel = new GroupMemberModel();
+									groupMemberModel.setGroupId(groupModel.getId());
+									groupMemberModel.setIdentity(identity);
 
-								groupMemberModelFactory.create(groupMemberModel);
+									groupMemberModelFactory.create(groupMemberModel);
+								}
 							}
 						}
+
+						groupModel.setUserState(isMember ? MEMBER : LEFT);
+						groupModelFactory.update(groupModel);
 					}
 				}
 			} catch (JSONException | NullPointerException e){
@@ -1123,11 +1150,21 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					String identity = members.getString(j);
 					if (!TestUtil.isEmptyOrNull(identity)) {
 						if (contactService.getByIdentity(identity) == null) {
-							// fetch contact if not in contact list
-							try {
-								contactService.createContactByIdentity(identity, true, AcquaintanceLevel.GROUP);
-							} catch (InvalidEntryException | EntryAlreadyExistsException | PolicyViolationException e) {
-								// do not add as distribution list member if contact cannot be created
+							// Fetch contact if not in contact list. Note that we do not add the
+							// contact to the distribution list if it couldn't be created.
+							ContactResult result = new BasicAddOrUpdateContactBackgroundTask(
+								identity,
+								AcquaintanceLevel.DIRECT,
+								userService.getIdentity(),
+								apiConnector,
+								contactModelRepository,
+								AddContactRestrictionPolicy.IGNORE,
+								context,
+								null
+							).runSynchronously();
+
+							if (!(result instanceof ContactAvailable)) {
+								logger.error("Contact {} could not be created", identity);
 								continue;
 							}
 						}
@@ -1331,7 +1368,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		contact.put(TAG_SAFE_CONTACT_IDENTITY, contactModel.getIdentity());
 		boolean contactIsVerified = contactModel.verificationLevel == VerificationLevel.FULLY_VERIFIED;
-		boolean contactIsRevoked = contactModel.getState() == ContactModel.State.INVALID;
+		boolean contactIsRevoked = contactModel.getState() == IdentityState.INVALID;
 		if (contactIsVerified || contactIsRevoked) {
 			// Back up the public key if the contact is verified, or if it's revoked.
 			//
@@ -1358,7 +1395,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		contact.put(TAG_SAFE_CONTACT_HIDDEN, contactModel.getAcquaintanceLevel() == AcquaintanceLevel.GROUP);
 		contact.put(TAG_SAFE_CONTACT_TYPING_INDICATORS, contactModel.getTypingIndicators());
 		contact.put(TAG_SAFE_CONTACT_READ_RECEIPTS, contactModel.getReadReceipts());
-		contact.put(TAG_SAFE_CONTACT_PRIVATE, hiddenChatsListService.has(contactService.getUniqueIdString(contactModel)));
+		contact.put(TAG_SAFE_CONTACT_PRIVATE, hiddenChatsListService.has(ContactUtil.getUniqueIdString(contactModel.getIdentity())));
 
 		return contact;
 	}
@@ -1375,11 +1412,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		return contactsArray;
 	}
 
-	private JSONArray getGroupMembers(String[] groupMembers) {
+	private JSONArray getGroupMembers(String[] groupMembers, @Nullable String ignoreIdentity) {
 		JSONArray membersArray = new JSONArray();
 
 		for (final String groupMember : groupMembers) {
-			membersArray.put(groupMember);
+			if (!groupMember.equals(ignoreIdentity)) {
+				membersArray.put(groupMember);
+			}
 		}
 
 		return membersArray;
@@ -1398,7 +1437,15 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		} else {
 			group.put(TAG_SAFE_GROUP_CREATED_AT, 0);
 		}
-		group.put(TAG_SAFE_GROUP_MEMBERS, getGroupMembers(this.groupService.getGroupIdentities(groupModel)));
+		JSONArray groupMembers;
+		if (groupModel.getUserState() == MEMBER) {
+			// In case the user is a member, we should include the user in the list
+			groupMembers = getGroupMembers(this.groupService.getGroupIdentities(groupModel), null);
+		} else {
+			// If the user is no member, we do not include the user's identity
+			groupMembers = getGroupMembers(this.groupService.getGroupIdentities(groupModel), userService.getIdentity());
+		}
+		group.put(TAG_SAFE_GROUP_MEMBERS, groupMembers);
 		group.put(TAG_SAFE_GROUP_DELETED, groupModel.isDeleted());
 		if (groupModel.getLastUpdate() != null) {
 			group.put(TAG_SAFE_GROUP_LAST_UPDATE, groupModel.getLastUpdate().getTime());
@@ -1519,7 +1566,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		user.put(TAG_SAFE_USER_NICKNAME, userService.getPublicNickname());
 
 		try {
-			Bitmap image = fileService.getContactAvatar(contactService.getMe().getIdentity());
+			Bitmap image = fileService.getUserDefinedProfilePicture(contactService.getMe().getIdentity());
 			if (image != null) {
 				// scale image - assume profile pics are always square
 				if (Math.max(image.getWidth(), image.getHeight()) > PROFILEPIC_MAX_WIDTH) {
@@ -1531,7 +1578,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 					case PROFILEPIC_RELEASE_EVERYONE:
 						profilePicRelease.put(PROFILE_PIC_RELEASE_ALL_PLACEHOLDER);
 						break;
-					case PROFILEPIC_RELEASE_SOME:
+					case PROFILEPIC_RELEASE_ALLOW_LIST:
 						for (String id: profilePicRecipientsService.getAll()) {
 							profilePicRelease.put(id);
 						}

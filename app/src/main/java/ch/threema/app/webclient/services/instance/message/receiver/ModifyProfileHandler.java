@@ -33,18 +33,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -59,10 +59,11 @@ public class ModifyProfileHandler extends MessageReceiver {
 	private static final String FIELD_AVATAR = "avatar";
 
 	// Dispatchers
+    @NonNull
 	private final MessageDispatcher responseDispatcher;
 
 	// Services
-	private final ContactService contactService;
+    @NonNull
 	private final UserService userService;
 
 	// Error codes
@@ -83,12 +84,12 @@ public class ModifyProfileHandler extends MessageReceiver {
 	}
 
 	@AnyThread
-	public ModifyProfileHandler(MessageDispatcher responseDispatcher,
-	                            ContactService contactService,
-	                            UserService userService) {
+	public ModifyProfileHandler(
+        @NonNull MessageDispatcher responseDispatcher,
+        @NonNull UserService userService
+    ) {
 		super(Protocol.SUB_TYPE_PROFILE);
 		this.responseDispatcher = responseDispatcher;
-		this.contactService = contactService;
 		this.userService = userService;
 	}
 
@@ -138,18 +139,16 @@ public class ModifyProfileHandler extends MessageReceiver {
 		if (nickname.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_PUBLIC_NICKNAME) {
 			throw new ModifyProfileException(Protocol.ERROR_VALUE_TOO_LONG);
 		}
-		this.userService.setPublicNickname(nickname);
+		this.userService.setPublicNickname(nickname, TriggerSource.LOCAL);
 	}
 
 	/**
 	 * Update the avatar.
 	 */
 	private void processAvatar(@Nullable byte[] avatarBytes) throws ModifyProfileException {
-		final ContactModel me = this.contactService.getMe();
-
 		// If avatar bytes are null, delete own avatar.
 		if (avatarBytes == null) {
-			this.contactService.removeAvatar(me);
+            userService.removeUserProfilePicture(TriggerSource.LOCAL);
 			return;
 		}
 
@@ -170,15 +169,15 @@ public class ModifyProfileHandler extends MessageReceiver {
 			ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX
 		);
 
-		// Set the avatar
-		try {
-			final byte[] converted = BitmapUtil
-				.bitmapToByteArray(resized, Bitmap.CompressFormat.PNG, 100);
-			this.contactService.setAvatar(this.contactService.getMe(), converted);
-		} catch (Exception e) {
-			logger.error("Could not update own avatar", e);
-			throw new ModifyProfileException(Protocol.ERROR_INTERNAL);
-		}
+        // Set the avatar
+        try {
+            final byte[] converted = BitmapUtil
+                .bitmapToByteArray(resized, Bitmap.CompressFormat.PNG, 100);
+            userService.setUserProfilePicture(converted, TriggerSource.LOCAL);
+        } catch (Exception e) {
+            logger.error("Could not update own avatar", e);
+            throw new ModifyProfileException(Protocol.ERROR_INTERNAL);
+        }
 	}
 
 	@Override

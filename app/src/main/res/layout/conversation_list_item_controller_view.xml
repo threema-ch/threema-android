@@ -48,6 +48,7 @@
         app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
         app:indicatorSize="@dimen/conversation_controller_progress_size"
         app:showAnimationBehavior="inward"
+        app:trackColor="?attr/colorPrimaryContainer"
         app:trackThickness="@dimen/conversation_controller_progress_stroke_width" />
 
 </merge>

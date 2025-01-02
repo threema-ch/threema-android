@@ -49,11 +49,8 @@ class OutgoingContactDeleteMessageTask(
         val deleteMessage = DeleteMessage(
             DeleteMessageData(messageId = MessageId.fromString(message.apiMessageId).messageIdLong)
         )
-        deleteMessage.toIdentity = toIdentity
-        deleteMessage.date = deletedAt
-        deleteMessage.messageId = messageId
 
-        sendContactMessage(deleteMessage, null, handle)
+        sendContactMessage(deleteMessage, null, toIdentity, messageId, deletedAt, handle)
     }
 
     override fun serialize(): SerializableTaskData =

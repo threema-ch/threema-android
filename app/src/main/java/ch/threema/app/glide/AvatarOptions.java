@@ -34,36 +34,27 @@ public class AvatarOptions {
 	 */
 	public enum DefaultAvatarPolicy {
 		/**
-		 * Try to load the custom avatar. If no custom avatar available, then return the default avatar instead of null.
+		 * Try to load the custom avatar. If no custom avatar available, then return the default
+         * avatar instead of null.
 		 */
 		DEFAULT_FALLBACK,
 		/**
-		 * Load the custom avatar. If no custom avatar is set, then return null.
+		 * Load the custom avatar. If no custom avatar is set, then return null. Note that a custom
+         * avatar can either be a contact or user defined profile picture.
 		 */
 		CUSTOM_AVATAR,
 		/**
 		 * Load the default avatar even if a custom avatar would be available.
 		 */
 		DEFAULT_AVATAR,
-		/**
-		 * Load the custom avatar if not prevented by settings. Otherwise returns the default avatar.
-		 */
-		RESPECT_SETTINGS
 	}
 
 	/**
-	 * Load the avatar in low resolution. If no avatar is found, load the default avatar.
+	 * Load the avatar in low resolution. If no avatar is found, load the default avatar. This
+     * respects the setting where the user defined profile picture should not be shown.
 	 */
 	public static final AvatarOptions PRESET_DEFAULT_FALLBACK = new Builder()
 		.setReturnPolicy(DefaultAvatarPolicy.DEFAULT_FALLBACK)
-		.toOptions();
-
-	/**
-	 * Load the avatar in low resolution. If no avatar is found, or custom avatars are disabled in settings,
-	 * load the default avatar.
-	 */
-	public static final AvatarOptions PRESET_RESPECT_SETTINGS = new Builder()
-		.setReturnPolicy(DefaultAvatarPolicy.RESPECT_SETTINGS)
 		.toOptions();
 
 	/**
@@ -146,7 +137,7 @@ public class AvatarOptions {
 	 */
 	public static class Builder {
 		private boolean highRes = false;
-		private @NonNull DefaultAvatarPolicy defaultAvatarPolicy = DefaultAvatarPolicy.RESPECT_SETTINGS;
+		private @NonNull DefaultAvatarPolicy defaultAvatarPolicy = DefaultAvatarPolicy.DEFAULT_AVATAR;
 		private boolean disableCache = false;
 		private boolean darkerBackground = false;
 

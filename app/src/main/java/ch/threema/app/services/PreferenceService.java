@@ -28,8 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
@@ -78,7 +76,7 @@ public interface PreferenceService {
 
 	int PROFILEPIC_RELEASE_NOBODY = 0;
 	int PROFILEPIC_RELEASE_EVERYONE = 1;
-	int PROFILEPIC_RELEASE_SOME = 2;
+	int PROFILEPIC_RELEASE_ALLOW_LIST = 2;
 
 	int PRIVACY_POLICY_ACCEPT_NONE = 0;
 	int PRIVACY_POLICY_ACCEPT_EXCPLICIT = 1;
@@ -221,8 +219,6 @@ public interface PreferenceService {
 
 	/**
 	 * value in seconds!
-	 *
-	 * @return
 	 */
 	int getPinLockGraceTime();
 
@@ -252,13 +248,9 @@ public interface PreferenceService {
 
 	void clear();
 
-	public List<String[]> write();
+	List<String[]> write();
 
 	boolean read(List<String[]> values);
-
-	Integer getRoutineInterval(String key);
-
-	void setRoutineInterval(String key, Integer intervalSeconds);
 
 	boolean showInactiveContacts();
 
@@ -502,6 +494,17 @@ public interface PreferenceService {
 
 	void setWorkSyncCheckInterval(int checkInterval);
 	int getWorkSyncCheckInterval();
+
+	/**
+	 * Store the interval for the identity state sync in seconds.
+	 * @param syncIntervalS The sync interval in seconds
+	 */
+	void setIdentityStateSyncInterval(int syncIntervalS);
+
+	/**
+	 * @return The identity state sync interval in seconds
+	 */
+	int getIdentityStateSyncIntervalS();
 
 	boolean getIsExportIdTooltipShown();
 

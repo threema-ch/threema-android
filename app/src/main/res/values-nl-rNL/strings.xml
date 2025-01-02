@@ -1521,6 +1521,17 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="md_link_device_qr_scan_message">Scan de QR-code</string>
     <string name="directory_request_failed">Directory-aanvraag is mislukt. Probeer het opnieuw.</string>
     <string name="add_shortcut_exists">Er bestaat al een snelkoppeling voor dit doel.</string>
+    <string name="scan_qr_code">Scan QR-code</string>
+    <string name="scan_qr_code_explain">Scan de QR-code die wordt weergegeven in de bètaversie van %s Desktop op het apparaat dat je wilt koppelen.</string>
+    <string name="connecting">Verbinden...</string>
+    <string name="trust_new_device">Nieuw apparaat vertrouwen</string>
+    <string name="trust_new_device_explain">Selecteer dezelfde afbeeldingen als op het nieuwe apparaat om te bevestigen dat je het vertrouwt.</string>
+    <string name="trust_new_device_info">Het nieuwe apparaat zal een onafhankelijke kopie van je %s profiel opslaan en berichten zullen namens jou worden verzonden en ontvangen.</string>
+    <string name="no_match_question">Geen match?</string>
+    <string name="sending_data">Gegevens verzenden...</string>
+    <string name="continue_on_new_device">Ga door op nieuw apparaat</string>
+    <string name="device_linked_successfully">Apparaat succesvol gekoppeld</string>
+    <string name="device_linked_successfully_explain">%s kan nu worden gebruikt op het apparaat dat je zojuist hebt gekoppeld (zelfs als dit apparaat is uitgeschakeld of niet is verbonden met het internet).</string>
     <string name="resend_message_dialog_title">Het groepsbericht opnieuw verzenden?</string>
     <string name="resend_message_dialog_message">Dit bericht is niet naar alle leden verzonden. Het bericht opnieuw verzenden naar %1$s?</string>
     <string name="work_lost_credentials_help">Bent u uw toegangsgegevens vergeten? Neem contact op met de beheerder van %1$s.</string>
@@ -1565,6 +1576,10 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="incoming_calls">Inkomende oproepen</string>
     <string name="group_chats">Groepschats</string>
     <string name="edit_history_file_no_caption">Geen bijschrift</string>
+    <string name="device_linking_failed">Apparaatkoppeling mislukt</string>
+    <string name="device_linking_failed_explain">Het apparaat kon niet gekoppeld worden. Probeer het opnieuw.\nReden: %s.</string>
+    <string name="qr_code_scan_error">Er is een fout opgetreden tijdens het scannen van de QR-code</string>
+    <string name="verification_failed">Verificatie mislukt</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">akkoord verzonden</string>
     <string name="cd_dec_icon">niet akkoord verzonden</string>

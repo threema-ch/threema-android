@@ -25,10 +25,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
@@ -36,15 +32,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
-import ch.threema.app.processors.groupcontrol.IncomingGroupSetupTask;
+import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupSetupTask;
 import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
@@ -200,12 +198,13 @@ public interface GroupService extends AvatarService<GroupModel> {
 	) throws Exception;
 
 	/**
-	 * Add a member to a group. Will fetch the identity from the server if not known. If "block
-	 * unknown" is enabled, the contact (and group member) will not be created if not already in
-	 * contacts. Note that this does not fire any listeners nor sending any messages.
+	 * Add a member to a group. Note that the user's identity must not be added to the member list
+	 * and is therefore ignored by this method. If the contact does not exist, the identity won't be
+	 * added to the members list. Note that this does not fire any listeners nor sending any
+	 * messages.
 	 *
 	 * @return true if the identity is added or already in the group, false if no contact with this
-	 * identity exists
+	 * identity exists or it is the user's identity
 	 */
 	boolean addMemberToGroup(@NonNull GroupModel groupModel, @NonNull String identity);
 
@@ -278,35 +277,31 @@ public interface GroupService extends AvatarService<GroupModel> {
 	void leaveGroupFromLocal(@NonNull GroupModel groupModel);
 
 	/**
-	 * Return the member identities of the group except the user.
-	 */
-	@NonNull
-	Set<String> getOtherMembers(@NonNull GroupModel groupModel);
-
-	/**
-	 * Return the identities of all members of this group including the creator and including the current user
-	 * @param groupModel Group model of the group
-	 * @return String array of identities (i.e. Threema IDs)
-	 */
-	@NonNull String[] getGroupIdentities(@NonNull GroupModel groupModel);
-
-	/**
-	 * Return the group member models of the group. This includes the group creator - except in
-	 * orphaned groups.
-	 *
-	 * @param groupModel the group model
-	 * @return a list of the group members
-	 */
-	List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel);
-
-	/**
-	 * Get the group members including the group creator.
+	 * Get the group members including the group creator and the user (if the creator or user are
+	 * members).
 	 *
 	 * @param groupModel the group model
 	 * @return a list of the contact models
 	 */
 	@NonNull
 	Collection<ContactModel> getMembers(@NonNull GroupModel groupModel);
+
+	/**
+	 * Return the identities of all members of this group including the creator (if the creator has
+	 * not left the group) and the user (if the user is part of the group). To check whether the
+	 * user is a member of the group, use {@link #isGroupMember(GroupModel)}.
+	 *
+	 * @param groupModel Group model of the group
+	 * @return String array of identities (i.e. Threema IDs)
+	 */
+	@NonNull String[] getGroupIdentities(@NonNull GroupModel groupModel);
+
+	/**
+	 * Return the member identities (including the creator if part of the group) of the group except
+	 * the user.
+	 */
+	@NonNull
+	Set<String> getMembersWithoutUser(@NonNull GroupModel groupModel);
 
 	/**
 	 * Get a string where the group members' display names are concatenated and separated by a
@@ -345,6 +340,16 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean isGroupMember(@NonNull GroupModel groupModel);
 
 	/**
+	 * Check whether the given identity is part of the group. Note that the group creator is also a
+	 * member.
+	 *
+	 * @param groupModel the group model
+	 * @param identity   the identity that is checked
+	 * @return {@code true} if the identity belongs to a group member, {@code false} otherwise
+	 */
+	boolean isGroupMember(@NonNull GroupModel groupModel, @NonNull String identity);
+
+	/**
 	 * Check whether the group is orphaned or not. In an orphaned group, the group creator is not a
 	 * member. Additionally, the user must not be the creator, otherwise it is a dissolved group.
 	 * Legacy groups where no members are stored, are orphaned if the user is not the creator.
@@ -358,7 +363,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	boolean isOrphanedGroup(@NonNull GroupModel groupModel);
 
 	/**
-	 * Count members in a group. This includes the group creator.
+	 * Count members in a group. This includes the group creator and the user.
 	 *
 	 * @param groupModel the group model
 	 * @return Number of members in this group including group creator and the current user
@@ -391,7 +396,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 * @param model the group model
 	 * @return the number of other members
 	 */
-	int getOtherMemberCount(@NonNull GroupModel model);
+	int countMembersWithoutUser(@NonNull GroupModel model);
 
 	/**
 	 * Get a map from the group member identity to its id color index.

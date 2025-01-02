@@ -33,6 +33,8 @@ import android.text.format.DateUtils;
 
 import org.slf4j.Logger;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,10 +48,17 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask;
+import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.Base32;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -60,9 +69,33 @@ import ch.threema.storage.models.ContactModel;
 public class ContactUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
 
+	private static final String CONTACT_UID_PREFIX = "c-";
+
 	public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
 
 	public static final long PROFILE_PICTURE_BLOB_CACHE_DURATION = DateUtils.WEEK_IN_MILLIS;
+
+	@Deprecated
+	public static int getUniqueId(@Nullable String identity) {
+		if (identity == null) {
+			return 0;
+		}
+		return (CONTACT_UID_PREFIX + identity).hashCode();
+	}
+
+	@NonNull
+	public static String getUniqueIdString(@Nullable String identity) {
+		if (identity != null) {
+			try {
+				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+				messageDigest.update((CONTACT_UID_PREFIX + identity).getBytes());
+				return Base32.encode(messageDigest.digest());
+			} catch (NoSuchAlgorithmException e) {
+				logger.warn("Could not calculate unique id string");
+			}
+		}
+		return "";
+	}
 
 	public static boolean canChangeFirstName(@Nullable ContactModel contact) {
 		return contact != null && !contact.isLinkedToAndroidContact();
@@ -80,7 +113,7 @@ public class ContactUtil {
 		@NonNull FileService fileService
 	) {
 		return canHaveCustomAvatar(contactModel)
-				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactPhotoFile(contactModel.getIdentity()));
+				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(contactModel.getIdentity()));
 	}
 
 	/**
@@ -127,22 +160,28 @@ public class ContactUtil {
 				&& !isEchoEchoOrGatewayContact(contactModel);
 	}
 
-	public static boolean allowedChangeToState(
-		@Nullable ContactModel contactModel,
-		@Nullable ContactModel.State newState
-	) {
-		if(contactModel != null && newState != null && contactModel.getState() != newState) {
-			ContactModel.State oldState = contactModel.getState();
+	public static boolean canReceiveVoipMessages(@Nullable String identity, @Nullable IdListService blockedContactsService) {
+		return identity != null
+			&& blockedContactsService != null
+			&& !blockedContactsService.has(identity)
+			&& !isEchoEchoOrGatewayContact(identity);
+	}
 
-			switch (newState) {
-				//change to active is always allowed
-				case ACTIVE:
-					return true;
-				case INACTIVE:
-					return oldState == ContactModel.State.ACTIVE;
-				case INVALID:
-					return true;
-			}
+	public static boolean allowedChangeToState(
+		@Nullable IdentityState oldState,
+		@Nullable IdentityState newState
+	) {
+		if (oldState == newState || newState == null) {
+			return false;
+		}
+		switch (newState) {
+			//change to active is always allowed
+			case ACTIVE:
+				return true;
+			case INACTIVE:
+				return oldState == IdentityState.ACTIVE;
+			case INVALID:
+				return true;
 		}
 		return false;
 	}
@@ -214,34 +253,46 @@ public class ContactUtil {
 		return key;
 	}
 
-	public static @DrawableRes int getVerificationResource(ContactModel contactModel) {
-		int iconResource = R.drawable.ic_verification_none;
-		if(contactModel != null) {
-			switch (contactModel.verificationLevel) {
-				case SERVER_VERIFIED:
-					if (ConfigUtils.isWorkBuild() && contactModel.isWork()) {
-						iconResource = R.drawable.ic_verification_server_work;
-					} else {
-						iconResource = R.drawable.ic_verification_server;
-					}
-					break;
-				case FULLY_VERIFIED:
-					if (ConfigUtils.isWorkBuild() && contactModel.isWork()) {
-						iconResource = R.drawable.ic_verification_full_work;
-					} else {
-						iconResource = R.drawable.ic_verification_full;
-					}
-					break;
-			}
+	public static @DrawableRes int getVerificationResource(
+		@NonNull VerificationLevel verificationLevel,
+		@NonNull WorkVerificationLevel workVerificationLevel
+	) {
+		int iconResource;
+		boolean isWorkVerifiedOnWorkBuild = ConfigUtils.isWorkBuild()
+			&& workVerificationLevel == WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED;
+		switch (verificationLevel) {
+			case SERVER_VERIFIED:
+				if (isWorkVerifiedOnWorkBuild) {
+					iconResource = R.drawable.ic_verification_server_work;
+				} else {
+					iconResource = R.drawable.ic_verification_server;
+				}
+				break;
+			case FULLY_VERIFIED:
+				if (isWorkVerifiedOnWorkBuild) {
+					iconResource = R.drawable.ic_verification_full_work;
+				} else {
+					iconResource = R.drawable.ic_verification_full;
+				}
+				break;
+			case UNVERIFIED:
+			default:
+				iconResource = R.drawable.ic_verification_none;
+				break;
 		}
 		return iconResource;
 	}
 
-	public static Drawable getVerificationDrawable(Context context, ContactModel contactModel) {
-		if (context != null) {
-			return AppCompatResources.getDrawable(context, getVerificationResource(contactModel));
-		}
-		return null;
+	@Nullable
+	public static Drawable getVerificationDrawable(
+		@NonNull Context context,
+		@NonNull VerificationLevel verificationLevel,
+		@NonNull WorkVerificationLevel workVerificationLevel
+	) {
+		return AppCompatResources.getDrawable(context, getVerificationResource(
+			verificationLevel,
+			workVerificationLevel
+		));
 	}
 
 	public static String getIdentityFromViewIntent(Context context, Intent intent) {
@@ -278,6 +329,43 @@ public class ContactUtil {
 			return ListFormatter.getInstance(LocaleUtil.getCurrentLocale(context)).format(contactNames);
 		} else {
 			return String.join(", ", contactNames);
+		}
+	}
+
+	/**
+	 * Perform the required steps if a contact does not support forward security anymore due to a
+	 * change of its feature mask. This includes creating a status message in the conversation with
+	 * that contact to warn the user that forward security has been disabled for this contact. This
+	 * method also terminates all existing sessions with the contact.
+	 * <p>
+	 * Note that the status message is only created if a forward security session currently exists.
+	 * <p>
+	 * Note that this method must only be called if the feature mask of a contact is changed from a
+	 * feature mask that indicates forward security support to a feature mask without forward
+	 * security support.
+	 *
+	 * @param contactModel the affected contact
+	 */
+	public static void onForwardSecurityNotSupportedAnymore(@NonNull ch.threema.data.models.ContactModel contactModel) {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.error("Service manager is null");
+			return;
+		}
+
+		try {
+			serviceManager.getTaskManager().schedule(
+				new OnFSFeatureMaskDowngradedTask(
+					contactModel,
+					serviceManager.getContactService(),
+					serviceManager.getMessageService(),
+					serviceManager.getDHSessionStore(),
+					serviceManager.getIdentityStore(),
+					serviceManager.getForwardSecurityMessageProcessor()
+				)
+			);
+		} catch (ThreemaException e) {
+			logger.error("Could not schedule fs feature mask downgraded task");
 		}
 	}
 }

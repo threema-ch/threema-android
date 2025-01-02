@@ -42,7 +42,7 @@ public class GroupJoinResponseMessageTest {
 	}
 	static GroupJoinResponseMessage getMessageTestInstance() throws BadMessageException {
 		final GroupJoinResponseMessage msg = new GroupJoinResponseMessage(getDataTestInstance());
-		setMessageDefaults(msg);
+		setMessageDefaultSenderAndReceiver(msg);
 		return msg;
 	}
 

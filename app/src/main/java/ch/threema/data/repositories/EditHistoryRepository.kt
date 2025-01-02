@@ -22,6 +22,7 @@
 package ch.threema.data.repositories
 
 import android.database.sqlite.SQLiteException
+import ch.threema.app.managers.CoreServiceManager
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelTypeCache
@@ -39,14 +40,15 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("EditHistoryRepository
 class EditHistoryRepository(
     private val cache: ModelTypeCache<String, EditHistoryListModel>,
     private val editHistoryDao: EditHistoryDao,
+    private val coreServiceManager: CoreServiceManager,
 ) {
     fun getByMessageUid(messageUid: String): EditHistoryListModel? {
         return cache.getOrCreate(messageUid) {
             logger.debug("Load edit history for message {} from database", messageUid)
             EditHistoryListModel(
-                editHistoryDao
-                    .findAllByMessageUid(messageUid)
-                    .map(DbEditHistoryEntry::toDataType)
+                editHistoryDao.findAllByMessageUid(messageUid)
+                    .map { it.toDataType() },
+                coreServiceManager,
             )
         }
     }

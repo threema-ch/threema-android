@@ -104,18 +104,19 @@ public class GroupModelFactory extends ModelFactory {
 				@Override
 				public boolean next(CursorHelper cursorHelper) {
 					c
-							.setId(cursorHelper.getInt(GroupModel.COLUMN_ID))
-							.setApiGroupId(new GroupId(cursorHelper.getString(GroupModel.COLUMN_API_GROUP_ID)))
-							.setName(cursorHelper.getString(GroupModel.COLUMN_NAME))
-							.setCreatorIdentity(cursorHelper.getString(GroupModel.COLUMN_CREATOR_IDENTITY))
-							.setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
-							.setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
-							.setLastUpdate(cursorHelper.getDate(GroupModel.COLUMN_LAST_UPDATE))
-							.setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
-							.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
-							.setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
-							.setGroupDescTimestamp(cursorHelper.getDateByString(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
-							.setColorIndex(cursorHelper.getInt(GroupModel.COLUMN_COLOR_INDEX))
+						.setId(cursorHelper.getInt(GroupModel.COLUMN_ID))
+						.setApiGroupId(new GroupId(cursorHelper.getString(GroupModel.COLUMN_API_GROUP_ID)))
+						.setName(cursorHelper.getString(GroupModel.COLUMN_NAME))
+						.setCreatorIdentity(cursorHelper.getString(GroupModel.COLUMN_CREATOR_IDENTITY))
+						.setSynchronizedAt(cursorHelper.getDate(GroupModel.COLUMN_SYNCHRONIZED_AT))
+						.setCreatedAt(cursorHelper.getDateByString(GroupModel.COLUMN_CREATED_AT))
+						.setLastUpdate(cursorHelper.getDate(GroupModel.COLUMN_LAST_UPDATE))
+						.setDeleted(cursorHelper.getBoolean(GroupModel.COLUMN_DELETED))
+						.setArchived(cursorHelper.getBoolean(GroupModel.COLUMN_IS_ARCHIVED))
+						.setGroupDesc(cursorHelper.getString(GroupModel.COLUMN_GROUP_DESC))
+						.setGroupDescTimestamp(cursorHelper.getDateByString(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
+						.setColorIndex(cursorHelper.getInt(GroupModel.COLUMN_COLOR_INDEX))
+						.setUserState(GroupModel.UserState.valueOf(cursorHelper.getInt(GroupModel.COLUMN_USER_STATE)))
 					;
 
 					return false;
@@ -173,6 +174,8 @@ public class GroupModelFactory extends ModelFactory {
 		contentValues.put(GroupModel.COLUMN_GROUP_DESC, groupModel.getGroupDesc());
 		contentValues.put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, groupModel.getGroupDescTimestamp() !=null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getGroupDescTimestamp()) : null);
 		contentValues.put(GroupModel.COLUMN_COLOR_INDEX, groupModel.getColorIndex());
+		// In case the user state is not set, we fall back to 'member'.
+		contentValues.put(GroupModel.COLUMN_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : GroupModel.UserState.MEMBER.value);
 
 		return contentValues;
 	}
@@ -305,7 +308,8 @@ public class GroupModelFactory extends ModelFactory {
 				"`" + GroupModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0, " +
 				"`" + GroupModel.COLUMN_GROUP_DESC + "` VARCHAR DEFAULT NULL, " +
 				"`" + GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP + "` VARCHAR DEFAULT NULL, " +
-				"`" + GroupModel.COLUMN_COLOR_INDEX + "` INTEGER DEFAULT 0 NOT NULL" +
+				"`" + GroupModel.COLUMN_COLOR_INDEX + "` INTEGER DEFAULT 0 NOT NULL, " +
+				"`" + GroupModel.COLUMN_USER_STATE + "` INTEGER DEFAULT 0 NOT NULL " +
 				");",
 			"CREATE UNIQUE INDEX `apiGroupIdAndCreator` ON `" + GroupModel.TABLE + "` ( " +
 				"`" + GroupModel.COLUMN_API_GROUP_ID + "`, `" + GroupModel.COLUMN_CREATOR_IDENTITY + "` " +

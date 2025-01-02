@@ -21,8 +21,6 @@
 
 package ch.threema.app.services;
 
-import androidx.annotation.NonNull;
-
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.storage.models.AbstractMessageModel;
 

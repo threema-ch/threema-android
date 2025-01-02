@@ -25,6 +25,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 class OutgoingTypingIndicatorMessageTask(
     private val isTyping: Boolean,
@@ -35,12 +36,10 @@ class OutgoingTypingIndicatorMessageTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = TypingIndicatorMessage().also {
-            it.messageId = MessageId()
-            it.toIdentity = toIdentity
             it.isTyping = isTyping
         }
 
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
     }
 
     override fun serialize(): SerializableTaskData? = null

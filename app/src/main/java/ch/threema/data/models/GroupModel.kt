@@ -23,12 +23,15 @@ package ch.threema.data.models
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
+import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
 import ch.threema.data.repositories.RepositoryToken
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbGroup
+import ch.threema.domain.taskmanager.Task
+import ch.threema.storage.models.GroupModel.UserState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
 import java.nio.ByteBuffer
@@ -89,6 +92,8 @@ data class GroupModelData(
      * @throws UnsupportedOperationException if the set is being modified
      */
     @JvmField val members: Set<String>,
+    /** The group user state */
+    @JvmField val userState: UserState,
 ) {
     companion object {
         /**
@@ -108,6 +113,7 @@ data class GroupModelData(
             groupDescription: String?,
             groupDescriptionChangedAt: Date?,
             members: Set<String>,
+            userState: UserState,
         ): GroupModelData {
             if (colorIndex < 0 || colorIndex > 255) {
                 throw IllegalArgumentException("colorIndex must be between 0 and 255")
@@ -124,6 +130,7 @@ data class GroupModelData(
                 groupDescription,
                 groupDescriptionChangedAt,
                 Collections.unmodifiableSet(members),
+                userState,
             )
         }
     }
@@ -141,7 +148,13 @@ class GroupModel(
     val groupIdentity: GroupIdentity,
     data: GroupModelData,
     private val databaseBackend: DatabaseBackend,
-) : BaseModel<GroupModelData>(MutableStateFlow(data), "GroupModel") {
+    coreServiceManager: CoreServiceManager,
+) : BaseModel<GroupModelData, Task<*, Any>>(
+    MutableStateFlow(data),
+    "GroupModel",
+    coreServiceManager.multiDeviceManager,
+    coreServiceManager.taskManager
+) {
 
     init {
         runtimeAssert(
@@ -197,6 +210,7 @@ internal object GroupModelDataFactory : ModelDataFactory<GroupModelData, DbGroup
         groupDescription = value.groupDescription,
         groupDescriptionChangedAt = value.groupDescriptionChangedAt,
         members = value.members,
+        userState = value.userState,
     )
 
     override fun toDataType(value: DbGroup): GroupModelData = GroupModelData(
@@ -211,6 +225,7 @@ internal object GroupModelDataFactory : ModelDataFactory<GroupModelData, DbGroup
         groupDescription = value.groupDescription,
         groupDescriptionChangedAt = value.groupDescriptionChangedAt,
         members = value.members,
+        userState = value.userState,
     )
 
     private fun groupIdDbToData(littleEndianHexGroupId: String): Long {

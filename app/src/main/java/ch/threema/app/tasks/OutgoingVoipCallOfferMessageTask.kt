@@ -26,6 +26,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import java.util.Date
 
 class OutgoingVoipCallOfferMessageTask(
     private val voipCallOfferData: VoipCallOfferData,
@@ -39,12 +40,10 @@ class OutgoingVoipCallOfferMessageTask(
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipCallOfferMessage()
         message.data = voipCallOfferData
-        message.toIdentity = toIdentity
-        message.messageId = MessageId()
 
         voipStateService.addRequiredMessageId(voipCallOfferData.callId ?: 0, message.messageId)
 
-        sendContactMessage(message, null, handle)
+        sendContactMessage(message, null, toIdentity, MessageId(), Date(), handle)
 
         contactService.bumpLastUpdate(toIdentity)
     }

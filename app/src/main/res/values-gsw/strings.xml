@@ -1511,8 +1511,21 @@
     <string name="md_linked_devices">Verchnüpfti Grät</string>
     <string name="md_link_device">Neus Grät verchnüpfe</string>
     <string name="md_enable">Verchnüpfti Grät zuelaa</string>
+    <string name="md_linked_devices_empty">Laded Sie di cool Desktop-App vo irgendwo abe und legged Sie los 🚀</string>
+    <string name="md_link_device_qr_scan_message">Bitte scanned Sie de QR-Code</string>
     <string name="directory_request_failed">Verzeichnis-Abfrag fehlgschlage. Versueched Sie’s nomal.</string>
     <string name="add_shortcut_exists">E Verchnüpfig für das Ziil existiert scho.</string>
+    <string name="scan_qr_code">QR-Code scanne</string>
+    <string name="scan_qr_code_explain">Scanned Sie de QR-Code ide Beta-Version vo %s für Desktop ufem Grät, wo söll verchnüpft werde.</string>
+    <string name="connecting">Wird verbunde…</string>
+    <string name="trust_new_device">Neuem Grät vertraue</string>
+    <string name="trust_new_device_explain">Tipped Sie uf d’Bilderfolg, wo ufem neue Grät erschiint, zum bestätige, dass Sie ihm vertraued.</string>
+    <string name="trust_new_device_info">S’neue Grät speicheret e unabhängigi Kopie vo Ihrem %s-Profil, und Nachrichte werded i Ihrem Name gschickt und empfange.</string>
+    <string name="no_match_question">Kei Übereinstimmig?</string>
+    <string name="sending_data">Date werded gschickt…</string>
+    <string name="continue_on_new_device">Bitte fahred Sie ufem neue Grät fort</string>
+    <string name="device_linked_successfully">Grät erfolgriich verchnüpft</string>
+    <string name="device_linked_successfully_explain">%s cha jetzt ufem neu verchnüpfte Grät bruucht werde (au wenn das Grät usgschalte isch oder kei Internetverbindig hät).</string>
     <string name="resend_message_dialog_title">Gruppenachricht nomal schicke?</string>
     <string name="resend_message_dialog_message">Die Nachricht hät nöd a all Mitglieder chöne verschickt werde. Wänd Sie die Nachricht nomal a %1$s schicke?</string>
     <string name="work_lost_credentials_help">Zuegangsdate vergässe? – Mäldet Sie sich bi Ihrem %1$s-Administrator.</string>
@@ -1557,6 +1570,10 @@
     <string name="incoming_calls">Iigehendi Aarüef</string>
     <string name="group_chats">Gruppechats</string>
     <string name="edit_history_file_no_caption">Kei Bildunderschrift</string>
+    <string name="device_linking_failed">Verchnüpfig fehlgschlage</string>
+    <string name="device_linking_failed_explain">S’Grät hät nöd chöne verchnüpft werde. Bitte versueched Sie’s nomal.\nGrund: %s.</string>
+    <string name="qr_code_scan_error">Bim Scanne vom QR-Code isch en Fehler ufträtte</string>
+    <string name="verification_failed">Überprüefig fehlgschlage</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abglehnt</string>
@@ -1669,6 +1686,10 @@ Beachted Sie, dass d’Afrage nöd widerruefe werded und Sie möglicherwiis no a
     <plurals name="forward_security_messages_skipped">
         <item quantity="one">%d Nachricht isch sit de letschte Nachricht verlore gange.</item>
         <item quantity="other">%d Nachrichte sind sit de letschte Nachricht verlore gange.</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">Die Nachricht lösche?</item>
+        <item quantity="other">%d Nachrichte lösche?</item>
     </plurals>
     <plurals name="number_of_group_members">
         <item quantity="one">%d Gruppemitglied</item>

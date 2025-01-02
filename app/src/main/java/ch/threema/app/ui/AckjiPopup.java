@@ -133,7 +133,7 @@ AckjiPopup extends PopupWindow implements View.OnClickListener {
                     if (!isMember) {
                         this.editButton.setVisibility(View.GONE);
                     }
-                    if (!isMember || groupService.getOtherMemberCount(groupModel) < 1) {
+                    if (!isMember || groupService.countMembersWithoutUser(groupModel) < 1) {
                         this.decButton.setVisibility(View.GONE);
                         this.ackButton.setVisibility(View.GONE);
                     }

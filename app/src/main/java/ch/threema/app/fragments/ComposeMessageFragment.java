@@ -762,17 +762,17 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+		public void onNewMember(GroupModel group, String newIdentity) {
 			updateToolBarTitleInUIThread();
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberLeave(GroupModel group, String identity) {
 			updateToolBarTitleInUIThread();
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberKicked(GroupModel group, String identity) {
 			updateToolBarTitleInUIThread();
 
 			if (userService.isMe(identity)) {
@@ -821,7 +821,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
+		public void onAvatarChanged(final @NonNull String identity) {
 			updateToolBarTitleInUIThread();
 		}
 
@@ -3112,7 +3112,7 @@ public class ComposeMessageFragment extends Fragment implements
 								// If there is no rejected recipient, we can just update the message
 								// state as the rejected recipient is not longer a group member.
 								// Note that this should never happen.
-								messageService.updateMessageState(messageModel, MessageState.SENT, null);
+								messageService.updateOutgoingMessageState(messageModel, MessageState.SENT, new Date());
 								logger.warn("Resend for group members requested, although no member rejected it");
 								return;
 							}
@@ -4086,13 +4086,16 @@ public class ComposeMessageFragment extends Fragment implements
 			setAvatarContentDescription(R.string.distribution_list);
 		} else {
 			if (contactModel != null) {
-				this.actionBarSubtitleImageView.setContactModel(contactModel);
+				this.actionBarSubtitleImageView.setVerificationLevel(
+					contactModel.verificationLevel,
+					contactModel.getWorkVerificationLevel()
+				);
 				this.actionBarSubtitleImageView.setVisibility(View.VISIBLE);
 				if (actionBarAvatarView.getAvatarView().isAttachedToWindow()) {
 					contactService.loadAvatarIntoImage(
 						contactModel,
 						this.actionBarAvatarView.getAvatarView(),
-						AvatarOptions.PRESET_RESPECT_SETTINGS,
+						AvatarOptions.PRESET_DEFAULT_FALLBACK,
 						Glide.with(requireActivity())
 					);
 				}
@@ -5594,7 +5597,7 @@ public class ComposeMessageFragment extends Fragment implements
 	@Override
 	public void onReportSpamClicked(@NonNull final ContactModel spammerContactModel, boolean block) {
 		contactService.reportSpam(
-			spammerContactModel,
+			spammerContactModel.getIdentity(),
 			unused -> {
 				if (isAdded()) {
 					LongToast.makeText(getContext(), R.string.spam_successfully_reported, Toast.LENGTH_LONG).show();

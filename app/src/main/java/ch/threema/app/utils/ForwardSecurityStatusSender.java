@@ -32,7 +32,9 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.Contact;
@@ -50,15 +52,30 @@ import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.Forw
 public class ForwardSecurityStatusSender implements ForwardSecurityStatusListener {
 	private final static Logger logger = LoggingUtil.getThreemaLogger("ForwardSecurityStatusSender");
 	private final boolean debug;
+	@NonNull
 	private final ContactService contactService;
+	@NonNull
 	private final MessageService messageService;
+	@NonNull
 	private final APIConnector apiConnector;
+	@NonNull
+	private final UserService userService;
+	@NonNull
+	private final ContactModelRepository contactModelRepository;
 
-	public ForwardSecurityStatusSender(ContactService contactService, MessageService messageService, APIConnector apiConnector) {
+	public ForwardSecurityStatusSender(
+		@NonNull ContactService contactService,
+		@NonNull MessageService messageService,
+		@NonNull APIConnector apiConnector,
+		@NonNull UserService userService,
+		@NonNull ContactModelRepository contactModelRepository
+	) {
 		this.debug = ConfigUtils.isDevBuild();
 		this.contactService = contactService;
 		this.messageService = messageService;
 		this.apiConnector = apiConnector;
+		this.userService = userService;
+		this.contactModelRepository = contactModelRepository;
 	}
 
 	@Override
@@ -247,11 +264,12 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
 		}
 
 		// Force a feature mask re-fetch
-		UpdateFeatureLevelRoutine.removeTimeCache(contactModel);
+		UpdateFeatureLevelRoutine.removeTimeCache(contactModel.getIdentity());
 		new UpdateFeatureLevelRoutine(
-			contactService,
+			contactModelRepository,
+			userService,
 			apiConnector,
-			Collections.singletonList(contactModel)
+			Collections.singletonList(contactModel.getIdentity())
 		).run();
 	}
 

@@ -41,6 +41,8 @@ import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.DatabaseServiceNew;
 
 /**
@@ -71,6 +73,8 @@ public class ServicesContainer {
 	@NonNull public final SessionWakeUpService sessionWakeUp;
 	@NonNull public final WakeLockService wakeLock;
 	@NonNull public final BatteryStatusService batteryStatus;
+	@NonNull public final APIConnector apiConnector;
+	@NonNull public final ContactModelRepository contactModelRepository;
 
 	public ServicesContainer(
 		@NonNull final Context appContext,
@@ -89,7 +93,9 @@ public class ServicesContainer {
 		@NonNull final DeadlineListService hiddenChat,
 		@NonNull final FileService file,
 		@NonNull final SynchronizeContactsService synchronizeContacts,
-		@NonNull final LicenseService license
+		@NonNull final LicenseService license,
+		@NonNull final APIConnector apiConnector,
+		@NonNull final ContactModelRepository contactModelRepository
 	) {
 		this.appContext = appContext;
 		this.lifetime = lifetime;
@@ -109,6 +115,8 @@ public class ServicesContainer {
 		this.synchronizeContacts = synchronizeContacts;
 		this.license = license;
 		this.sessionWakeUp = SessionWakeUpServiceImpl.getInstance();
+		this.apiConnector = apiConnector;
+		this.contactModelRepository = contactModelRepository;
 
 		// Initialize wakelock service
 		this.wakeLock = new WakeLockServiceImpl(appContext, lifetime);

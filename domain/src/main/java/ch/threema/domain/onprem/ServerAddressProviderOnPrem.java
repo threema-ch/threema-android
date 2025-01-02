@@ -26,141 +26,198 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
+import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.ServerAddressProvider;
+import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider;
 
 public class ServerAddressProviderOnPrem implements ServerAddressProvider {
 
-	public interface FetcherProvider {
-		OnPremConfigFetcher getFetcher() throws ThreemaException;
-	}
+    public interface FetcherProvider {
+        OnPremConfigFetcher getFetcher() throws ThreemaException;
+    }
 
-	private final FetcherProvider fetcherProvider;
+    private final FetcherProvider fetcherProvider;
 
-	public ServerAddressProviderOnPrem(FetcherProvider fetcherProvider) {
-		this.fetcherProvider = fetcherProvider;
-	}
+    public ServerAddressProviderOnPrem(FetcherProvider fetcherProvider) {
+        this.fetcherProvider = fetcherProvider;
+    }
 
-	@Override
-	public String getChatServerNamePrefix(boolean ipv6) throws ThreemaException {
-		return "";
-	}
+    @Override
+    public String getChatServerNamePrefix(boolean ipv6) throws ThreemaException {
+        return "";
+    }
 
-	@Override
-	public String getChatServerNameSuffix(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getChatConfig().getHostname();
-	}
+    @Override
+    public String getChatServerNameSuffix(boolean ipv6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getChatConfig().getHostname();
+    }
 
-	@Override
-	public int[] getChatServerPorts() throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getChatConfig().getPorts();
-	}
+    @Override
+    public int[] getChatServerPorts() throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getChatConfig().getPorts();
+    }
 
-	@Override
-	public boolean getChatServerUseServerGroups() {
-		return false;
-	}
+    @Override
+    public boolean getChatServerUseServerGroups() {
+        return false;
+    }
 
-	@Override
-	public byte[] getChatServerPublicKey() throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getChatConfig().getPublicKey();
-	}
+    @Override
+    public byte[] getChatServerPublicKey() throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getChatConfig().getPublicKey();
+    }
 
-	@Override
-	public byte[] getChatServerPublicKeyAlt() throws ThreemaException {
-		// No alternate public key for OnPrem, as it can easily be switched in OPPF
-		return getOnPremConfigFetcher().fetch().getChatConfig().getPublicKey();
-	}
+    @Override
+    public byte[] getChatServerPublicKeyAlt() throws ThreemaException {
+        // No alternate public key for OnPrem, as it can easily be switched in OPPF
+        return getOnPremConfigFetcher().fetch().getChatConfig().getPublicKey();
+    }
 
-	@Override
-	public String getDirectoryServerUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getDirectoryConfig().getUrl();
-	}
+    @Override
+    public String getDirectoryServerUrl(boolean ipv6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getDirectoryConfig().getUrl();
+    }
 
-	@Override
-	public String getWorkServerUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getWorkConfig().getUrl();
-	}
+    @Override
+    public String getWorkServerUrl(boolean ipv6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getWorkConfig().getUrl();
+    }
 
-	@Override
-	public String getBlobServerDownloadUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getBlobConfig().getDownloadUrl();
-	}
+    // TODO(ANDR-3375): Return correct base url of mirror server
+    @NonNull
+    @Override
+    public String getBlobBaseUrlMirrorServer(@NonNull MultiDevicePropertyProvider multiDevicePropertyProvider) throws ThreemaException {
+        throw new ThreemaException("Not yet implemented.");
+    }
 
-	@Override
-	public String getBlobServerDoneUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getBlobConfig().getDoneUrl();
-	}
+    @NonNull
+    @Override
+    public String getBlobServerDownloadUrl(boolean useIpV6, @NonNull byte[] blobId) throws ThreemaException {
+        final @Nullable String blobIdHexString = Utils.byteArrayToHexString(blobId);
+        if (blobIdHexString == null || blobIdHexString.isBlank()) {
+            throw new ThreemaException("Argument blobId is not in correct form");
+        }
+        return getOnPremConfigFetcher()
+            .fetch()
+            .getBlobConfig()
+            .getDownloadUrl()
+            .replace(OnPremConfigBlob.PLACEHOLDER_BLOB_ID, blobIdHexString);
+    }
 
-	@Override
-	public String getBlobServerUploadUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getBlobConfig().getUploadUrl();
-	}
+    @NonNull
+    @Override
+    public String getBlobServerUploadUrl(boolean useIpV6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getBlobConfig().getUploadUrl();
+    }
 
-	@Override
-	public String getAvatarServerUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getAvatarConfig().getUrl();
-	}
+    @NonNull
+    @Override
+    public String getBlobServerDoneUrl(boolean useIpV6, @NonNull byte[] blobId) throws ThreemaException {
+        final @Nullable String blobIdHexString = Utils.byteArrayToHexString(blobId);
+        if (blobIdHexString == null || blobIdHexString.isBlank()) {
+            throw new ThreemaException("Argument blobId is not in correct form");
+        }
+        return getOnPremConfigFetcher()
+            .fetch()
+            .getBlobConfig()
+            .getDoneUrl()
+            .replace(OnPremConfigBlob.PLACEHOLDER_BLOB_ID, blobIdHexString);
+    }
 
-	@Override
-	public String getSafeServerUrl(boolean ipv6) throws ThreemaException {
-		return getOnPremConfigFetcher().fetch().getSafeConfig().getUrl();
-	}
+    // TODO(ANDR-3375): Return correct url of mirror server
+    @NonNull
+    @Override
+    public String getBlobMirrorServerDownloadUrl(
+        @NonNull MultiDevicePropertyProvider multiDevicePropertyProvider,
+        @NonNull byte[] blobId
+    ) throws ThreemaException {
+        return getBlobServerDownloadUrl(false, blobId);
+    }
 
-	@Override
-	@Nullable
-	public String getWebServerUrl() throws ThreemaException {
-		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+    // TODO(ANDR-3375): Return correct url of mirror server
+    @NonNull
+    @Override
+    public String getBlobMirrorServerUploadUrl(
+        @NonNull MultiDevicePropertyProvider multiDevicePropertyProvider
+    ) throws ThreemaException {
+        return getBlobServerUploadUrl(false);
+    }
 
-		if (onPremConfigWeb != null) {
-			return onPremConfigWeb.getUrl();
-		}
-		throw new ThreemaException("Unable to fetch Threema Web server url");
-	}
+    // TODO(ANDR-3375): Return correct url of mirror server
+    @NonNull
+    @Override
+    public String getBlobMirrorServerDoneUrl(
+        @NonNull MultiDevicePropertyProvider multiDevicePropertyProvider,
+        @NonNull byte[] blobId
+    ) throws ThreemaException {
+        return getBlobServerDoneUrl(false, blobId);
+    }
 
-	@Override
-	public String getWebOverrideSaltyRtcHost() throws ThreemaException {
-		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+    @Override
+    public String getAvatarServerUrl(boolean ipv6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getAvatarConfig().getUrl();
+    }
 
-		if (onPremConfigWeb != null) {
-			return onPremConfigWeb.getOverrideSaltyRtcHost();
-		}
-		return null;
-	}
+    @Override
+    public String getSafeServerUrl(boolean ipv6) throws ThreemaException {
+        return getOnPremConfigFetcher().fetch().getSafeConfig().getUrl();
+    }
 
-	@Override
-	public int getWebOverrideSaltyRtcPort() throws ThreemaException {
-		OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
+    @Override
+    @Nullable
+    public String getWebServerUrl() throws ThreemaException {
+        OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
 
-		if (onPremConfigWeb != null) {
-			return onPremConfigWeb.getOverrideSaltyRtcPort();
-		}
-		return 0;
-	}
+        if (onPremConfigWeb != null) {
+            return onPremConfigWeb.getUrl();
+        }
+        throw new ThreemaException("Unable to fetch Threema Web server url");
+    }
 
-	@Override
-	public byte[] getThreemaPushPublicKey() throws ThreemaException {
-		// TODO(ONPREM-164): Allow to configure for OnPrem
-		return null;
-	}
+    @Override
+    public String getWebOverrideSaltyRtcHost() throws ThreemaException {
+        OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
 
-	@NonNull
-	@Override
-	public String getMediatorUrl() throws ThreemaException {
-		OnPremConfigMediator onPremConfigMediator = getOnPremConfigFetcher().fetch().getMediatorConfig();
+        if (onPremConfigWeb != null) {
+            return onPremConfigWeb.getOverrideSaltyRtcHost();
+        }
+        return null;
+    }
 
-		if (onPremConfigMediator == null) {
-			throw new ThreemaException("No mediator config available");
-		}
-		return Objects.requireNonNull(onPremConfigMediator.getUrl());
-	}
+    @Override
+    public int getWebOverrideSaltyRtcPort() throws ThreemaException {
+        OnPremConfigWeb onPremConfigWeb = getOnPremConfigFetcher().fetch().getWebConfig();
 
-	@NonNull
-	@Override
-	public String getAppRatingUrl() throws ThreemaException {
-		throw new ThreemaException("App rating is not supported in onprem");
-	}
+        if (onPremConfigWeb != null) {
+            return onPremConfigWeb.getOverrideSaltyRtcPort();
+        }
+        return 0;
+    }
 
-	private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {
-		return fetcherProvider.getFetcher();
-	}
+    @Override
+    public byte[] getThreemaPushPublicKey() throws ThreemaException {
+        // TODO(ONPREM-164): Allow to configure for OnPrem
+        return null;
+    }
+
+    @NonNull
+    @Override
+    public String getMediatorUrl() throws ThreemaException {
+        OnPremConfigMediator onPremConfigMediator = getOnPremConfigFetcher().fetch().getMediatorConfig();
+
+        if (onPremConfigMediator == null) {
+            throw new ThreemaException("No mediator config available");
+        }
+        return Objects.requireNonNull(onPremConfigMediator.getUrl());
+    }
+
+    @NonNull
+    @Override
+    public String getAppRatingUrl() throws ThreemaException {
+        throw new ThreemaException("App rating is not supported in onprem");
+    }
+
+    private OnPremConfigFetcher getOnPremConfigFetcher() throws ThreemaException {
+        return fetcherProvider.getFetcher();
+    }
 }

@@ -35,6 +35,7 @@ import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.LocationDataModel;
@@ -346,11 +347,6 @@ public abstract class AbstractMessageModel {
 
     public AbstractMessageModel setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
-        if (getState() == MessageState.DELIVERED) {
-            this.deliveredAt = modifiedAt;
-        } else if (getState() == MessageState.READ) {
-            this.readAt = modifiedAt;
-        }
         return this;
     }
 
@@ -566,7 +562,7 @@ public abstract class AbstractMessageModel {
         return (FileDataModel) this.dataObject;
     }
 
-    public void setFileData(FileDataModel fileDataModel) {
+    public void setFileDataModel(@NonNull FileDataModel fileDataModel) {
         this.setType(MessageType.FILE);
         this.setBody(fileDataModel.toString());
         this.dataObject = fileDataModel;
@@ -672,9 +668,38 @@ public abstract class AbstractMessageModel {
     }
 
     /**
-     * TODO(ANDR-XXXX): evil code!
+     * This method only makes sense (finds its use) when multi device is active.
+     * The api call to download a blob without multi-device does not require a scope.
      *
-     * @param sourceModel
+     * @return The {@code BlobScope} to use when downloading the blob from the mirror server.
+     * If the message if outgoing ({@code isOutbox()}) we use the local scope to download the
+     * blob, as we know we received a reflected message. For every kind of incoming message we
+     * need to use the public scope, as the blob might only be present on the usual blob
+     * server (not mirror)
+     */
+    public BlobScope getBlobScopeForDownload() {
+        return isOutbox()
+            ? BlobScope.Local.INSTANCE
+            : BlobScope.Public.INSTANCE;
+    }
+
+    /**
+     * This method only makes sense (finds its use) when multi device is active.
+     * The api call to mark a blob as done without multi-device does not require a scope.
+     *
+     * @return The {@code BlobScope} to use when marking the blob as "done" on the blob mirror server.
+     * We only use the public scope here if the message is incoming and its not a group message. If
+     * the message in outgoing, always use local scope (because we got the reflection only). If the
+     * message is incoming but in a group, we use local scope (so that the blob is retained for other group members).
+     */
+    public BlobScope getBlobScopeForMarkAsDone() {
+        return (!this.isOutbox() && !(this instanceof GroupMessageModel))
+            ? BlobScope.Public.INSTANCE
+            : BlobScope.Local.INSTANCE;
+    }
+
+    /**
+     * TODO(ANDR-XXXX): evil code!
      */
     public void copyFrom(AbstractMessageModel sourceModel) {
         //copy all objects

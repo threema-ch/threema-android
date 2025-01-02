@@ -168,15 +168,6 @@ public interface ConversationService {
 	 *
 	 * @return the number of removed messages.
 	 */
-	int empty(@NonNull ContactModel contactModel);
-
-	/**
-	 * Empty associated conversation (remove all messages).
-	 *
-	 * The message listener onRemoved method will *not* be called for removed messages.
-	 *
-	 * @return the number of removed messages.
-	 */
 	int empty(@NonNull String identity);
 
 	/**

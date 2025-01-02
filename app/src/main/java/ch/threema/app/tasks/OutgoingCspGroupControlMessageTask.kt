@@ -23,9 +23,10 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
-import ch.threema.app.utils.filterValid
-import ch.threema.app.utils.sendMessageToReceivers
-import ch.threema.app.utils.toKnownContactModels
+import ch.threema.app.utils.OutgoingCspMessageHandle
+import ch.threema.app.utils.OutgoingCspMessageServices
+import ch.threema.app.utils.runBundledMessagesSendSteps
+import ch.threema.app.utils.toBasicContacts
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
@@ -34,8 +35,9 @@ import java.util.Date
 
 abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
     OutgoingCspMessageTask(serviceManager) {
-    private val taskCreator by lazy { serviceManager.taskCreator }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val blockedContactsService by lazy { serviceManager.blockedContactsService }
+    private val apiConnector by lazy { serviceManager.apiConnector }
 
     protected abstract val messageId: MessageId
     protected abstract val creatorIdentity: String
@@ -45,28 +47,36 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val recipients = recipientIdentities
-            .toSet()
-            .toKnownContactModels(contactService)
-            .filterValid()
+            .toBasicContacts(contactModelRepository, contactStore, apiConnector)
             .toSet()
 
         val messageCreator = OutgoingCspGroupMessageCreator(
             messageId,
+            date,
             groupId,
-            creatorIdentity
+            creatorIdentity,
         ) { createGroupMessage() }
 
-        // Note that the given recipients may no longer be part of the group. Therefore we must use
-        // sendMessageToReceivers instead of sendGroupMessage.
-        handle.sendMessageToReceivers(
-            messageCreator,
+        val outgoingCspMessageHandle = OutgoingCspMessageHandle(
             recipients,
-            forwardSecurityMessageProcessor,
-            identityStore,
-            contactStore,
-            nonceFactory,
-            blockedContactsService,
-            taskCreator
+            messageCreator,
+        )
+
+        handle.runBundledMessagesSendSteps(
+            outgoingCspMessageHandle,
+            OutgoingCspMessageServices(
+                forwardSecurityMessageProcessor,
+                identityStore,
+                userService,
+                contactStore,
+                contactService,
+                contactModelRepository,
+                groupService,
+                nonceFactory,
+                blockedContactsService,
+                preferenceService,
+                multiDeviceManager
+            )
         )
     }
 

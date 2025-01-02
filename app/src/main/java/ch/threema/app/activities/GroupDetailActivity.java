@@ -230,9 +230,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
-			if (this.shouldHandleChange(contactModel.getIdentity())) {
-				this.onModified(contactModel.getIdentity());
+		public void onAvatarChanged(final @NonNull String identity) {
+			if (this.shouldHandleChange(identity)) {
+				this.onModified(identity);
 			}
 		}
 
@@ -263,12 +263,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+		public void onNewMember(GroupModel group, String newIdentity) {
 			resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberLeave(GroupModel group, String identity) {
 			if (identity.equals(myIdentity)) {
 				finish();
 			} else {
@@ -277,7 +277,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberKicked(GroupModel group, String identity) {
 			if (identity.equals(myIdentity)) {
 				finish();
 			} else {
@@ -482,7 +482,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	private void setupAdapter() throws MasterKeyLockedException, FileSystemNotPresentException {
 		Runnable onCloneGroupRunnable = null;
-		if (groupService.isOrphanedGroup(groupModel) && groupService.getOtherMemberCount(groupModel) > 0) {
+		if (groupService.isOrphanedGroup(groupModel) && groupService.countMembersWithoutUser(groupModel) > 0) {
 			onCloneGroupRunnable = this::showCloneDialog;
 		}
 
@@ -597,7 +597,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 			boolean isMember = groupService.isGroupMember(groupModel);
 			boolean isCreator = groupService.isGroupCreator(groupModel);
-			boolean hasOtherMembers = groupService.getOtherMemberCount(groupModel) > 0;
+			boolean hasOtherMembers = groupService.countMembersWithoutUser(groupModel) > 0;
 
 			// The clone menu only makes sense if at least one other member is present
 			cloneMenu.setVisible(hasOtherMembers);

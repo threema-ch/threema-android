@@ -178,7 +178,7 @@ internal class SfuConnectionImpl (
     }
 
     private fun getUserAgent(): String {
-        return "${ProtocolStrings.USER_AGENT}/${version.version}"
+        return "${ProtocolStrings.USER_AGENT}/${version.versionString}"
     }
 
     @WorkerThread

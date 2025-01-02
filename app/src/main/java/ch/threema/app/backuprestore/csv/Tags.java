@@ -36,7 +36,10 @@ public abstract class Tags {
 	public static final String CONTACT_AVATAR_FILE_PREFIX = "contact_avatar_";
 	public static final String CONTACT_AVATAR_FILE_SUFFIX_ME = "me";
 	public static final String CONTACT_PROFILE_PIC_FILE_PREFIX = "contact_profile_pic_";
-	public static final String NONCE_FILE_NAME = "nonces";
+	// do not rename csp nonces file to preserve backwards compatibility
+	public static final String NONCE_FILE_NAME_CSP = "nonces";
+	public static final String NONCE_FILE_NAME_D2D = "nonces_d2d";
+	public static final String NONCE_COUNTS_FILE = "nonce_counts";
 
 	public static final String DISTRIBUTION_LIST_MESSAGE_MEDIA_FILE_PREFIX = "distribution_list_message_media_";
 	public static final String DISTRIBUTION_LIST_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX = "distribution_list_thumbnail_";
@@ -51,6 +54,8 @@ public abstract class Tags {
 	public static final String TAG_INFO_VERSION = "version";
 
 	public static final String TAG_NONCES = "nonces";
+	public static final String TAG_NONCE_COUNT_CSP = "csp";
+	public static final String TAG_NONCE_COUNT_D2D = "d2d";
 
 	public static final String TAG_CONTACT_IDENTITY = "identity";
 	public static final String TAG_CONTACT_FIRST_NAME = "firstname";
@@ -75,6 +80,7 @@ public abstract class Tags {
 	public static final String TAG_GROUP_DESC = "groupDesc";
 	public static final String TAG_GROUP_DESC_TIMESTAMP = "groupDescTimestamp";
 	public static final String TAG_GROUP_UID = "group_uid";
+	public static final String TAG_GROUP_USER_STATE = "user_state";
 
 	public static final String TAG_MESSAGE_UID = "uid";
 	public static final String TAG_MESSAGE_IDENTITY = "identity";

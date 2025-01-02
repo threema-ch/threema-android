@@ -137,7 +137,13 @@ public interface AvatarCacheService {
 	@AnyThread
 	void reset(@NonNull ContactModel contactModel);
 
-	/**
+    /**
+     * Clears the cache of the contact with the given identity.
+     */
+    @AnyThread
+    void reset(@NonNull String identity);
+
+    /**
 	 * Clears the cache of the given group model.
 	 */
 	@AnyThread

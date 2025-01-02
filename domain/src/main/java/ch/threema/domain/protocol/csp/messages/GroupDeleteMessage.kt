@@ -43,6 +43,8 @@ class GroupDeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufGroup
 
     override fun reflectOutgoing() = true
 
+    override fun reflectSentUpdate() = false
+
     override fun sendAutomaticDeliveryReceipt() = false
 
     override fun bumpLastUpdate() = false

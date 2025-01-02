@@ -886,7 +886,7 @@
     <string name="rate_thank_you">Дякуємо за ваш відгук!</string>
     <string name="disabled_by_policy_short">Функцію вимкнено адміністратором</string>
     <string name="rate_forward_to_play_store">Бажаєте оцінити додаток також на Google Play?</string>
-    <string name="rate_error">Не вдалося надіслати відгук на сервер. Перевірте з\'єднання з Інтернетом і спробуйте ще раз.</string>
+    <string name="rate_error">Не вдалося надіслати відгук на сервер. Перевірте з\'єднання з Інтернетом і повторіть спробу.</string>
     <string name="off_unless_i_was_mentioned">Увімкнено, але сповіщати про згадки</string>
     <string name="dnd">Режим \"Не турбувати\"</string>
     <string name="minus">Мінус</string>
@@ -962,7 +962,7 @@
     <string name="number_of_days">%d дн.</string>
     <string name="backup_other_restore_options">Інші варіанти відновлення</string>
     <string name="safe_size">Розмір рез. копії</string>
-    <string name="backup_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Будь ласка, оновіть додаток до останньої версії.</string>
+    <string name="backup_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Оновіть додаток до останньої версії.</string>
     <string name="safe_restore_failed">Помилка відновлення</string>
     <string name="safe_failed_notification">Резервну копію Threema Safe не вдається створити %d дн. поспіль. Торкніться тут, щоб дізнатися більше.</string>
     <string name="safe_restore">Відновити Threema Safe</string>
@@ -1056,7 +1056,7 @@
     <string name="archived_chats">Архівовані чати</string>
     <string name="unarchive">Розархівувати</string>
     <string name="no_archived_chats">Немає архівованих чатів.\n\nЩоб архівувати чат, проведіть по ньому вліво в списку чатів.</string>
-    <string name="add_contact_enter_id_hint">Введіть ID Threema контакта, якого потрібно додати</string>
+    <string name="add_contact_enter_id_hint">Введіть ID Threema контакта, який потрібно додати</string>
     <string name="notification_channel_new_contact">Нові контакти</string>
     <string name="notification_channel_new_contact_desc">Сповіщення про нові контакти</string>
     <string name="notification_contact_has_joined">Контакт \"%1$s\" приєднався до %2$s. Торкніться тут, щоб написати йому.</string>
@@ -1291,7 +1291,7 @@
     <string name="id_backup_info">Відновити лише ID</string>
     <string name="restore_your_id_contacts_and_groups">Відновити ID, контакти та групи</string>
     <string name="threema_safe_backup">Рез. копія Threema Safe</string>
-    <string name="forgot_your_password"><![CDATA[<a href=%s>Забули пароль?</a>]]></string>
+    <string name="forgot_your_password"><![CDATA[<a href=%s>Допомога</a>]]></string>
     <string name="download_failed">Помилка завантаження. Код помилки: %d</string>
     <string name="edit_answer">Редагувати варіант</string>
     <string name="share_media">Поділитися в іншому додатку…</string>
@@ -1563,6 +1563,17 @@
     <string name="md_link_device_qr_scan_message">Відскануйте QR-код</string>
     <string name="directory_request_failed">Помилка запиту каталогу. Повторіть спробу.</string>
     <string name="add_shortcut_exists">Такий ярлик уже існує.</string>
+    <string name="scan_qr_code">Відскануйте QR-код</string>
+    <string name="scan_qr_code_explain">Відскануйте QR-код у бета-версії %s Desktop за допомогою пристрою, який потрібно зв\'язати.</string>
+    <string name="connecting">Підключення…</string>
+    <string name="trust_new_device">Довіряти новому пристрою</string>
+    <string name="trust_new_device_explain">Виберіть зображення, показані на новому пристрої, щоб підтвердити, що ви йому довіряєте.</string>
+    <string name="trust_new_device_info">Новий пристрій зберігатиме незалежну копію вашого профілю %s. Ви надсилатимете й отримуватимете повідомлення від свого імені.</string>
+    <string name="no_match_question">Немає збігів?</string>
+    <string name="sending_data">Надсилання даних…</string>
+    <string name="continue_on_new_device">Продовжте на новому пристрої</string>
+    <string name="device_linked_successfully">Пристрій зв\'язано</string>
+    <string name="device_linked_successfully_explain">Тепер ви можете використовувати %s на пристрої, який щойно зв’язали (навіть якщо цей пристрій вимкнено або не підключено до Інтернету).</string>
     <string name="resend_message_dialog_title">Надіслати групове повідомлення знову?</string>
     <string name="resend_message_dialog_message">Це повідомлення отримали не всі учасники. Надіслати повідомлення контакту \"%1$s\" знову?</string>
     <string name="work_lost_credentials_help">Забули облікові дані? Зверніться до свого адміністратора %1$s.</string>
@@ -1607,6 +1618,10 @@
     <string name="incoming_calls">Вхідні виклики</string>
     <string name="group_chats">Групові чати</string>
     <string name="edit_history_file_no_caption">Без підпису</string>
+    <string name="device_linking_failed">Помилка зв\'язування пристрою</string>
+    <string name="device_linking_failed_explain">Не вдалося зв\'язати пристрій. Повторіть спробу.\nПричина: %s.</string>
+    <string name="qr_code_scan_error">Під час сканування QR-коду сталася помилка</string>
+    <string name="verification_failed">Помилка підтвердження</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">\"погоджуюся\" надіслано</string>
     <string name="cd_dec_icon">\"не погоджуюся\" надіслано</string>

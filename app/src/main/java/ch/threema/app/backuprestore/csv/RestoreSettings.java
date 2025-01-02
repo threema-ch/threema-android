@@ -44,8 +44,9 @@ public class RestoreSettings {
 	 * 22: add lastUpdate and remove isQueued flag
 	 * 23: add editedAt
 	 * 24: add deletedAt
+	 * 25: add group user state
 	 */
-	public static final int CURRENT_VERSION = 24;
+	public static final int CURRENT_VERSION = 25;
 	private int version;
 
 	public RestoreSettings(int version) {

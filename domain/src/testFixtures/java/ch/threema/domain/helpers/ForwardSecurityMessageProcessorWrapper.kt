@@ -22,6 +22,9 @@
 package ch.threema.domain.helpers
 
 import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.Nonce
+import ch.threema.base.crypto.NonceFactory
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityEncryptionResult
@@ -49,12 +52,14 @@ class ForwardSecurityMessageProcessorWrapper(
     private val fsmp: ForwardSecurityMessageProcessor,
 ) {
     @Throws(ThreemaException::class)
-    fun makeMessage(
-        contact: Contact,
+    fun runFsEncapsulationSteps(
+        contact: BasicContact,
         innerMessage: AbstractMessage,
+        nonce: ByteArray,
+        nonceFactory: NonceFactory,
         handle: ActiveTaskCodec,
     ): ForwardSecurityEncryptionResult {
-        return fsmp.makeMessage(contact, innerMessage, handle)
+        return fsmp.runFsEncapsulationSteps(contact, innerMessage, Nonce(nonce), nonceFactory, handle)
     }
 
     @Throws(

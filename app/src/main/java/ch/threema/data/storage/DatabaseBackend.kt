@@ -61,6 +61,12 @@ interface DatabaseBackend {
     fun deleteContactByIdentity(identity: String): Boolean
 
     /**
+     * Check whether the contact is currently part of a group. Note that only groups are considered
+     * where 'deleted' is set to 0.
+     */
+    fun isContactInGroup(identity: String): Boolean
+
+    /**
      * Insert a new group.
      *
      * @throws SQLiteException if insertion fails due to a conflict

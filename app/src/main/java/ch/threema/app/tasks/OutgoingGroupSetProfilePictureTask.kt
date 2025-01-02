@@ -28,11 +28,13 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import com.neilalexander.jnacl.NaCl
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.security.SecureRandom
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSetProfilePictureTask")
@@ -44,7 +46,7 @@ class OutgoingGroupSetProfilePictureTask(
     private val groupPhoto: Bitmap,
     messageId: MessageId?,
     serviceManager: ServiceManager,
-): OutgoingCspGroupControlMessageTask(serviceManager) {
+) : OutgoingCspGroupControlMessageTask(serviceManager) {
     private val apiService by lazy { serviceManager.apiService }
     private val groupPhotoUploadResult by lazy { tryUploadingGroupPhoto(groupPhoto) }
 
@@ -92,9 +94,20 @@ class OutgoingGroupSetProfilePictureTask(
             encryptionKey,
             ProtocolDefines.GROUP_PHOTO_NONCE
         )
-        val blobUploader = apiService.createUploader(encryptedData)
-        val blobId = blobUploader.upload()
+        val blobUploader = apiService.createUploader(
+            /* data = */ encryptedData,
+            /* shouldPersist = */ false,
+            /* scope = */ BlobScope.Public
+        )
+        val blobId: ByteArray? = blobUploader.upload()
         val size = encryptedData.size
+
+        if (blobId == null) {
+            // This should never happen because the blob uploader only returns null when
+            // it's explicitly cancelled. If the upload request fails for any other reason,
+            // the exception is thrown directly from the uploader
+            throw IOException("failed to upload blob")
+        }
 
         return GroupPhotoUploadResult(blobId, encryptionKey, size)
     }

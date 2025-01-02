@@ -28,6 +28,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.FileService
@@ -36,18 +37,25 @@ import ch.threema.app.tasks.TaskArchiverImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
-import ch.threema.app.utils.DeviceCookieManagerImpl
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ForwardSecurityStatusSender
+import ch.threema.base.crypto.HashedNonce
+import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.helpers.DecryptTaskCodec
 import ch.threema.domain.helpers.InMemoryContactStore
 import ch.threema.domain.helpers.InMemoryDHSessionStore
 import ch.threema.domain.helpers.InMemoryNonceStore
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
 import ch.threema.domain.models.GroupId
+import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.ThreemaFeature
+import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
@@ -59,7 +67,7 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataInit
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStoreInterface
-import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -87,31 +95,32 @@ open class MessageProcessorProvider {
     protected val contactB = TestContact("ABCDEFGH")
     protected val contactC = TestContact("TESTTEST")
 
-    protected val myGroup = TestGroup(GroupId(0), myContact, listOf(myContact, contactA, contactB), "MyGroup")
+    protected val myGroup = TestGroup(GroupId(0), myContact, listOf(myContact, contactA, contactB), "MyGroup", myContact.identity)
     protected val myGroupWithProfilePicture =
         TestGroup(
             GroupId(1),
             myContact,
             listOf(myContact, contactA),
             "MyGroupWithPicture",
-            byteArrayOf(0, 1, 2, 3)
+            byteArrayOf(0, 1, 2, 3),
+            myContact.identity
         )
     protected val groupA =
-        TestGroup(GroupId(2), contactA, listOf(myContact, contactA), "GroupA")
+        TestGroup(GroupId(2), contactA, listOf(myContact, contactA), "GroupA", myContact.identity)
     protected val groupB =
-        TestGroup(GroupId(3), contactB, listOf(myContact, contactB), "GroupB")
+        TestGroup(GroupId(3), contactB, listOf(myContact, contactB), "GroupB", myContact.identity)
     protected val groupAB =
-        TestGroup(GroupId(4), contactA, listOf(myContact, contactA, contactB), "GroupAB")
+        TestGroup(GroupId(4), contactA, listOf(myContact, contactA, contactB), "GroupAB", myContact.identity)
     protected val groupAUnknown =
-        TestGroup(GroupId(5), contactA, listOf(myContact, contactA, contactB), "GroupAUnknown")
+        TestGroup(GroupId(5), contactA, listOf(myContact, contactA, contactB), "GroupAUnknown", myContact.identity)
     protected val groupALeft =
-        TestGroup(GroupId(6), contactA, listOf(contactA, contactB), "GroupALeft")
+        TestGroup(GroupId(6), contactA, listOf(contactA, contactB), "GroupALeft", myContact.identity)
     protected val myUnknownGroup =
-        TestGroup(GroupId(7), myContact, listOf(myContact, contactA), "MyUnknownGroup")
+        TestGroup(GroupId(7), myContact, listOf(myContact, contactA), "MyUnknownGroup", myContact.identity)
     protected val myLeftGroup =
-        TestGroup(GroupId(8), myContact, listOf(contactA), "MyLeftGroup")
+        TestGroup(GroupId(8), myContact, listOf(contactA), "MyLeftGroup", myContact.identity)
     protected val newAGroup =
-        TestGroup(GroupId(9), contactA, listOf(myContact, contactA, contactB), "NewAGroup")
+        TestGroup(GroupId(9), contactA, listOf(myContact, contactA, contactB), "NewAGroup", myContact.identity)
 
     protected val serviceManager: ServiceManager = ThreemaApplication.requireServiceManager()
     private val contactStore: ContactStore = InMemoryContactStore().apply {
@@ -128,11 +137,21 @@ open class MessageProcessorProvider {
         contactC.identity to contactC.identityStore,
     ).toMap()
 
-    private val forwardSecurityStatusListener = object : ForwardSecurityStatusSender(serviceManager.contactService, serviceManager.messageService, null) {
+    private val forwardSecurityStatusListener = object : ForwardSecurityStatusSender(
+        serviceManager.contactService,
+        serviceManager.messageService,
+        APIConnector(
+            false,
+            null,
+            false
+        ) { host -> ConfigUtils.getSSLSocketFactory(host) },
+        serviceManager.userService,
+        serviceManager.modelRepositories.contacts,
+    ) {
         override fun messageWithoutFSReceived(
             contact: Contact,
             session: DHSession,
-            message: AbstractMessage
+            message: AbstractMessage,
         ) {
             throw AssertionError("We do not accept messages without forward security")
         }
@@ -244,12 +263,6 @@ open class MessageProcessorProvider {
 
             override fun hasPendingTasks(): Boolean = false
 
-            @Deprecated(
-                "We should only be able to send and receive messages from within tasks.",
-                replaceWith = ReplaceWith("TaskManager#schedule")
-            )
-            override fun getMigrationTaskHandle(): ActiveTaskCodec = globalTaskCodec
-
             override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
                 // Nothing to do
             }
@@ -280,20 +293,29 @@ open class MessageProcessorProvider {
             // encapsulated message as we only want to initiate a new fs session. Therefore we just
             // need to send the first message, which is the init.
             val result =
-                myForwardSecurityMessageProcessor.makeMessage(it.contact, textMessage, globalTaskCodec)
+                myForwardSecurityMessageProcessor.runFsEncapsulationSteps(
+                    it.toBasicContact(),
+                    textMessage,
+                    nonceFactory.next(NonceScope.CSP),
+                    nonceFactory,
+                    globalTaskCodec,
+                )
 
             // Commit the dh session state
             myForwardSecurityMessageProcessor.commitSessionState(result)
 
             // Process the init message
-            val initCspMessage = result
-                .outgoingMessages
-                .first()
-                .apply { toIdentity = it.contact.identity }
-                .toCspMessage(myContact.identityStore, contactStore, nonceFactory, nonceFactory.next(false))
+            val (initMessage, initNonce) = result.outgoingMessages.first()
+
+            initMessage.toIdentity = it.contact.identity
+            val initCspMessage =
+                initMessage.toCspMessage(myContact.identityStore, contactStore, initNonce)
 
             val initMessageBox = MessageBox.parseBinary(initCspMessage.toOutgoingMessageData().data)
-            val init = MessageCoder(contactStore, it.identityStore).decode(initMessageBox) as ForwardSecurityEnvelopeMessage
+            val init = MessageCoder(
+                contactStore,
+                it.identityStore
+            ).decode(initMessageBox) as ForwardSecurityEnvelopeMessage
             runBlocking {
                 forwardSecurityMessageProcessorMap[it.identity]!!.processInit(
                     myContact.contact,
@@ -390,9 +412,11 @@ open class MessageProcessorProvider {
             serviceManager.databaseServiceNew,
             serviceManager.preferenceStore,
             TaskArchiverImpl(serviceManager.databaseServiceNew.taskArchiveFactory),
-            serviceManager.deviceCookieManager as DeviceCookieManagerImpl,
+            serviceManager.deviceCookieManager,
             taskManager,
-            serviceManager.multiDeviceManager as MultiDeviceManagerImpl
+            serviceManager.multiDeviceManager as MultiDeviceManagerImpl,
+            serviceManager.identityStore,
+            serviceManager.nonceFactory,
         )
 
         val field = ServiceManager::class.java.getDeclaredField("coreServiceManager")
@@ -427,7 +451,14 @@ open class MessageProcessorProvider {
         val contactStore = serviceManager.contactStore
         val fileService = serviceManager.fileService
 
-        initialContacts.forEach { addContactToDatabase(it, databaseService, contactStore, AcquaintanceLevel.GROUP) }
+        initialContacts.forEach {
+            addContactToDatabase(
+                it,
+                databaseService,
+                contactStore,
+                AcquaintanceLevel.GROUP
+            )
+        }
 
         initialGroups.forEach { addGroupToDatabase(it, databaseService, fileService) }
     }
@@ -443,7 +474,10 @@ open class MessageProcessorProvider {
                 .setFeatureMask(ThreemaFeature.FORWARD_SECURITY)
         )
 
-        contactStore.addCachedContact(testContact.contact)
+        contactStore.addCachedContact(testContact.toBasicContact())
+
+        // We trigger the listeners to invalidate the cache of the new contact model.
+        ListenerManager.contactListeners.handle { it.onModified(testContact.identity) }
     }
 
     private fun addGroupToDatabase(
@@ -454,7 +488,7 @@ open class MessageProcessorProvider {
         val groupModel = testGroup.groupModel
         databaseService.groupModelFactory.createOrUpdate(groupModel)
         testGroup.setLocalGroupId(groupModel.id)
-        testGroup.members.forEach { member ->
+        testGroup.members.filter { it.identity != myContact.identity }.forEach { member ->
             val memberModel = GroupMemberModel()
                 .setGroupId(groupModel.id)
                 .setIdentity(member.identity)
@@ -479,20 +513,9 @@ open class MessageProcessorProvider {
         )
 
         // Process the group message
-        val messageProcessor = serviceManager.let {
-            IncomingMessageProcessorImpl(
-                it.messageService,
-                it.nonceFactory,
-                it.forwardSecurityMessageProcessor,
-                it.contactService,
-                it.contactStore,
-                it.identityStore,
-                it.blockedContactsService,
-                it.preferenceService,
-                it
-            )
-        }
-        messageProcessor.processIncomingMessage(messageBox, localTaskCodec)
+        val messageProcessor = IncomingMessageProcessorImpl(serviceManager)
+
+        messageProcessor.processIncomingCspMessage(messageBox, localTaskCodec)
 
         // Assert that this message has been acked towards the server
         assertEquals(
@@ -506,6 +529,13 @@ open class MessageProcessorProvider {
     }
 
     /**
+     * Run a task with the local task codec.
+     */
+    protected fun <T> runTask(task: ActiveTask<T>): T = runBlocking {
+        task.invoke(localTaskCodec)
+    }
+
+    /**
      * Create a message box from a user with the given identity store.
      */
     private fun createMessageBox(
@@ -514,19 +544,45 @@ open class MessageProcessorProvider {
         forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
     ): MessageBox {
         val nonceFactory = NonceFactory(object : NonceStore {
-            override fun exists(nonce: ByteArray) = false
-            override fun store(nonce: ByteArray) = true
-            override fun getAllHashedNonces() = listOf<ByteArray>()
+            override fun exists(scope: NonceScope, nonce: Nonce) = false
+            override fun store(scope: NonceScope, nonce: Nonce) = true
+            override fun getAllHashedNonces(scope: NonceScope) = listOf<HashedNonce>()
+            override fun getCount(scope: NonceScope) = 0L
+            override fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {}
+            override fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>) = true
         })
 
-        val encapsulated = forwardSecurityMessageProcessor.makeMessage(
+        val encapsulated = forwardSecurityMessageProcessor.runFsEncapsulationSteps(
             contactStore.getContactForIdentityIncludingCache(
                 msg.toIdentity
-            )!!, msg, globalTaskCodec
-        ).outgoingMessages.last()
+            )!!.enhanceToBasicContact(),
+            msg,
+            nonceFactory.next(NonceScope.CSP),
+            nonceFactory,
+            globalTaskCodec
+        ).outgoingMessages.last().first
 
         val messageCoder = MessageCoder(contactStore, identityStore)
-        return messageCoder.encode(encapsulated, nonceFactory.next(false), nonceFactory)
+        return messageCoder.encode(encapsulated, nonceFactory.next(NonceScope.CSP).bytes)
     }
+
+    private fun Contact.enhanceToBasicContact() = BasicContact(
+        identity,
+        publicKey,
+        ThreemaFeature.Builder()
+            .audio(true)
+            .group(true)
+            .ballot(true)
+            .file(true)
+            .voip(true)
+            .videocalls(true)
+            .forwardSecurity(true)
+            .groupCalls(true)
+            .editMessages(true)
+            .deleteMessages(true)
+            .build().toULong(),
+        IdentityState.ACTIVE,
+        IdentityType.NORMAL,
+    )
 
 }

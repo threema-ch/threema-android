@@ -22,12 +22,14 @@
 package ch.threema.domain.protocol.csp.messages;
 
 import org.apache.commons.io.EndianUtils;
+import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -48,7 +50,9 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 @Deprecated
 public class GroupVideoMessage extends AbstractGroupMessage {
 
-	private int duration;
+    private final static Logger logger = LoggingUtil.getThreemaLogger("GroupVideoMessage");
+
+    private int duration;
 	private byte[] videoBlobId;
 	private int videoSize;
 	private byte[] thumbnailBlobId;
@@ -106,6 +110,11 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return true;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}
@@ -128,11 +137,11 @@ public class GroupVideoMessage extends AbstractGroupMessage {
 			bos.write(thumbnailBlobId);
 			EndianUtils.writeSwappedInteger(bos, thumbnailSize);
 			bos.write(encryptionKey);
+            return bos.toByteArray();
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			logger.error("Cannot create body of message", e);
+            return null;
 		}
-
-		return bos.toByteArray();
 	}
 
 	public int getDuration() {

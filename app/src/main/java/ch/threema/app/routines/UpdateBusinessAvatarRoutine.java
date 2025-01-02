@@ -45,6 +45,7 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
@@ -120,14 +121,16 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 				if (responseCode != HttpsURLConnection.HTTP_OK) {
 					if (responseCode == HttpsURLConnection.HTTP_NOT_FOUND) {
 						logger.debug("Avatar not found");
-						//remove existing avatar
-						this.fileService.removeContactAvatar(contactModel.getIdentity());
+						// Remove existing avatar
+                        // Note that the profile picture of a gateway id is stored as user defined
+                        // profile picture on purpose. This prevents that it is overwritten if the
+                        // gateway would suddenly start distributing its own profile picture via csp
+                        // messages.
+						this.fileService.removeUserDefinedProfilePicture(contactModel.getIdentity());
 
 						//ok, no avatar set
 						//add expires date = now + 1day
 						this.contactModel.setLocalAvatarExpires(tomorrow);
-
-						this.contactService.clearAvatarCache(contactModel.getIdentity());
 					} else if (responseCode == HttpsURLConnection.HTTP_UNAUTHORIZED) {
 						 logger.warn("Unauthorized access to avatar server");
 						 if (ConfigUtils.isOnPremBuild()) {
@@ -163,12 +166,15 @@ public class UpdateBusinessAvatarRoutine implements Runnable {
 
 						logger.debug("Avatar downloaded");
 
-						//define avatar
-						this.contactService.setAvatar(contactModel.getIdentity(), temporaryFile);
+						// Store profile picture
+                        // Note that the profile picture of a gateway id is stored as user defined
+                        // profile picture on purpose. This prevents that it is overwritten if the
+                        // gateway would suddenly start distributing its own profile picture via csp
+                        // messages.
+						this.contactService.setUserDefinedProfilePicture(contactModel.getIdentity(), temporaryFile, TriggerSource.LOCAL);
 
 						//set expires header
 						this.contactModel.setLocalAvatarExpires(expires);
-						this.contactService.clearAvatarCache(contactModel.getIdentity());
 
 						//remove temporary file
 						FileUtil.deleteFileOrWarn(temporaryFile, "temporaryFile", logger);

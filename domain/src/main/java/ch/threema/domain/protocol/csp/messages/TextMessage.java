@@ -23,9 +23,13 @@ package ch.threema.domain.protocol.csp.messages;
 
 import java.nio.charset.StandardCharsets;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
+import ch.threema.protobuf.d2d.MdD2D;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * A message that has plain text as its contents.
@@ -84,6 +88,11 @@ public class TextMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return true;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return true;
 	}
@@ -104,5 +113,41 @@ public class TextMessage extends AbstractMessage {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	@NonNull
+	public static TextMessage fromReflected(MdD2D.IncomingMessage message) throws BadMessageException {
+		TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
+		textMessage.initializeCommonProperties(message);
+		return textMessage;
+	}
+
+	@NonNull
+	public static TextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {
+		return fromByteArray(data, 0, data.length);
+	}
+
+	/**
+	 * Get the text message from the given array.
+	 *
+	 * @param data   the data that represents the message
+	 * @param offset the offset where the data starts
+	 * @param length the length of the data (needed to ignore the padding)
+	 * @return the text message
+	 * @throws BadMessageException if the length is invalid
+	 */
+	@NonNull
+	public static TextMessage fromByteArray(@NonNull byte[] data, int offset, int length) throws BadMessageException {
+		if (data.length < offset + length) {
+			throw new BadMessageException("Invalid byte array length (" + data.length + ") for " +
+				"offset " + offset + " and length " + length);
+		}
+		if (length < 1) {
+			throw new BadMessageException("Bad length (" + length + ") for text message");
+		}
+
+		TextMessage textMessage = new TextMessage();
+		textMessage.setText(new String(data, offset, length, UTF_8));
+		return textMessage;
 	}
 }

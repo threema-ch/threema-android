@@ -21,12 +21,6 @@
 
 package ch.threema.app.activities;
 
-import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_FILES;
-import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
-import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
-import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
-import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -55,22 +49,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.TaskStackBuilder;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -87,6 +65,21 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.TaskStackBuilder;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -94,6 +87,9 @@ import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
 import ch.threema.app.adapters.FilterableListAdapter;
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
+import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -106,6 +102,7 @@ import ch.threema.app.fragments.RecipientListFragment;
 import ch.threema.app.fragments.UserListFragment;
 import ch.threema.app.fragments.WorkUserListFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
@@ -124,14 +121,17 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
+import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -141,6 +141,12 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import java8.util.concurrent.CompletableFuture;
+
+import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_FILES;
+import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
+import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
+import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
+import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     CancelableHorizontalProgressDialog.ProgressDialogClickListener,
@@ -181,12 +187,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     private final List<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
     private boolean isInternallyForwardingMediaFiles = false;
 
-    private GroupService groupService;
-    private ContactService contactService;
-    private ConversationService conversationService;
-    private DistributionListService distributionListService;
-    private MessageService messageService;
-    private FileService fileService;
+	private GroupService groupService;
+	private ContactService contactService;
+	private ConversationService conversationService;
+	private DistributionListService distributionListService;
+	private MessageService messageService;
+	private FileService fileService;
+	private UserService userService;
+	private APIConnector apiConnector;
+	private ContactModelRepository contactModelRepository;
+
+	@NonNull
+	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
     private final Runnable copyExternalFilesRunnable = new Runnable() {
         @Override
@@ -276,6 +288,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             this.distributionListService = serviceManager.getDistributionListService();
             this.messageService = serviceManager.getMessageService();
             this.fileService = serviceManager.getFileService();
+            this.apiConnector = serviceManager.getAPIConnector();
+            this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
             userService = serviceManager.getUserService();
         } catch (Exception e) {
             logger.error("Exception", e);
@@ -838,36 +852,35 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         if (contactModel == null) {
             GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), "pro");
 
-            new AsyncTask<Void, Void, Void>() {
-                boolean fail = false;
-                ContactModel newContactModel = null;
+			backgroundExecutor.get().execute(
+				new BasicAddOrUpdateContactBackgroundTask(
+					identity,
+					ContactModel.AcquaintanceLevel.DIRECT,
+					userService.getIdentity(),
+					apiConnector,
+					contactModelRepository,
+					AddContactRestrictionPolicy.CHECK,
+					RecipientListBaseActivity.this,
+					null
+				) {
+					@Override
+					public void onFinished(ContactResult result) {
+						DialogUtil.dismissDialog(getSupportFragmentManager(), "pro", true);
 
-                @Override
-                protected Void doInBackground(Void... params) {
-                    try {
-                        newContactModel = contactService.createContactByIdentity(identity, false);
-                    } catch (Exception e) {
-                        fail = true;
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    DialogUtil.dismissDialog(getSupportFragmentManager(), "pro", true);
-
-                    if (fail) {
-                        View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
-                        Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
-                    } else {
-                        prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)), false);
-                    }
-                }
-            }.execute();
-        } else {
-            prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
-        }
-    }
+						ContactModel newContactModel = contactService.getByIdentity(identity);
+						if (newContactModel == null) {
+							View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
+							Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
+						} else {
+							prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)), false);
+						}
+					}
+				}
+			);
+		} else {
+			prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
+		}
+	}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

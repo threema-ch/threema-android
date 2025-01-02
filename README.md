@@ -167,6 +167,14 @@ Prerequisites:
 - Android SDK
 - Android NDK
 - bash shell
+- protobuf compiler version 21.12
+- Rust compiler and cargo (including the target architectures)
+
+The best way to install all required target architectures for Rust is
+through [rustup](https://rustup.rs/):
+
+    TOOLCHAIN=$(grep channel domain/libthreema/rust-toolchain.toml | cut -d'"' -f2)
+    rustup target add --toolchain $TOOLCHAIN armv7-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android
 
 The application APK can be built using Gradle Wrapper:
 

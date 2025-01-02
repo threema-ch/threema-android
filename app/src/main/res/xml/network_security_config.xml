@@ -12,6 +12,10 @@
 		</trust-anchors>
 	</base-config>
 	<domain-config cleartextTrafficPermitted="false">
+        <!--
+            Note that these pins are not used for CSP. Pinning the public key is part of the
+            protocol.
+        -->
 		<domain includeSubdomains="true">threema.ch</domain>
 		<pin-set>
 			<pin digest="SHA-256">8kTK9HP1KHIP0sn6T2AFH3Bq+qq3wn2i/OJSMjewpFw=</pin>

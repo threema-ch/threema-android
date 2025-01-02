@@ -1519,6 +1519,17 @@
     <string name="md_link_device_qr_scan_message">Отсканируйте QR-код</string>
     <string name="directory_request_failed">Сбой запроса каталога. Повторите попытку.</string>
     <string name="add_shortcut_exists">Ярлык для этого элемента уже существует.</string>
+    <string name="scan_qr_code">Сканировать QR-код</string>
+    <string name="scan_qr_code_explain">Отсканируйте QR-код, отображаемый в бета-версии %s для ПК, на устройстве, которое вы хотите привязать.</string>
+    <string name="connecting">Подключение…</string>
+    <string name="trust_new_device">Доверять новому устройству</string>
+    <string name="trust_new_device_explain">Выберите те же изображения, что и на новом устройстве, чтобы подтвердить доверие.</string>
+    <string name="trust_new_device_info">На новом устройстве будет храниться независимая копия вашего профиля %s и сообщения будут отправляться и приниматься от вашего имени.</string>
+    <string name="no_match_question">Нет совпадений?</string>
+    <string name="sending_data">Отправка данных…</string>
+    <string name="continue_on_new_device">Продолжите на новом устройстве</string>
+    <string name="device_linked_successfully">Устройство успешно привязано</string>
+    <string name="device_linked_successfully_explain">Теперь можно использовать %s на привязанном устройстве (даже если оно выключено или не подключено к интернету).</string>
     <string name="resend_message_dialog_title">Повторно отправить сообщение группе?</string>
     <string name="resend_message_dialog_message">Это сообщение удалось отправить не всем участникам. Отправить сообщение пользователю(ям) %1$s повторно?</string>
     <string name="work_lost_credentials_help">Забыли свои учётные данные? Обратитесь администратору %1$s.</string>
@@ -1563,6 +1574,10 @@
     <string name="incoming_calls">Входящие звонки</string>
     <string name="group_chats">Групповые чаты</string>
     <string name="edit_history_file_no_caption">Без заголовка</string>
+    <string name="device_linking_failed">Привязка устройства не выполнена</string>
+    <string name="device_linking_failed_explain">Невозможно привязать устройство. Попробуйте ещё раз.\nПричина: %s.</string>
+    <string name="qr_code_scan_error">Ошибка при сканировании QR-кода</string>
+    <string name="verification_failed">Проверка не выполнена</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">согласие отправлено</string>
     <string name="cd_dec_icon">несогласие отправлено</string>

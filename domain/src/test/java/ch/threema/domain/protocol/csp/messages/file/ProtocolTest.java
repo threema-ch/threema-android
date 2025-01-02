@@ -26,15 +26,12 @@ import androidx.annotation.NonNull;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
-import ch.threema.base.crypto.NonceStore;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -45,220 +42,200 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.testhelpers.TestHelpers;
 
 public class ProtocolTest {
 
-	/**
-	 * Encrypt a file for a group.
-	 */
-	@Test
-	public void groupTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
-		//create a new file message
-		final String myIdentity = "TESTTEST";
-		final String toIdentity = "ABCDEFGH";
+    /**
+     * Encrypt a file for a group.
+     */
+    @Test
+    public void groupTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+        //create a new file message
+        final String myIdentity = "TESTTEST";
+        final String toIdentity = "ABCDEFGH";
 
-		byte[] blobIdFile = new byte[ProtocolDefines.BLOB_ID_LEN];
-		byte[] blobIdThumbnail = new byte[ProtocolDefines.BLOB_ID_LEN];
-		byte[] key = new byte[ProtocolDefines.BLOB_KEY_LEN];
+        byte[] blobIdFile = new byte[ProtocolDefines.BLOB_ID_LEN];
+        byte[] blobIdThumbnail = new byte[ProtocolDefines.BLOB_ID_LEN];
+        byte[] key = new byte[ProtocolDefines.BLOB_KEY_LEN];
 
-		GroupId groupId = new GroupId(new byte[ProtocolDefines.GROUP_ID_LEN]);
-		String groupCreator = myIdentity;
+        GroupId groupId = new GroupId(new byte[ProtocolDefines.GROUP_ID_LEN]);
+        String groupCreator = myIdentity;
 
-		GroupFileMessage groupFileMessage = new GroupFileMessage();
-		groupFileMessage.setFromIdentity(toIdentity);
-		groupFileMessage.setToIdentity(myIdentity);
-		groupFileMessage.setApiGroupId(groupId);
-		groupFileMessage.setGroupCreator(groupCreator);
-		FileData data = new FileData();
-		data
-				.setFileBlobId(blobIdFile)
-				.setThumbnailBlobId(blobIdThumbnail)
-				.setEncryptionKey(key)
-				.setMimeType("image/jpg")
-				.setFileName("therme.jpg")
-				.setFileSize(123)
-				.setRenderingType(FileData.RENDERING_DEFAULT);
-		groupFileMessage.setData(data);
+        GroupFileMessage groupFileMessage = new GroupFileMessage();
+        groupFileMessage.setFromIdentity(toIdentity);
+        groupFileMessage.setToIdentity(myIdentity);
+        groupFileMessage.setApiGroupId(groupId);
+        groupFileMessage.setGroupCreator(groupCreator);
+        FileData data = new FileData();
+        data
+            .setFileBlobId(blobIdFile)
+            .setThumbnailBlobId(blobIdThumbnail)
+            .setEncryptionKey(key)
+            .setMimeType("image/jpg")
+            .setFileName("therme.jpg")
+            .setFileSize(123)
+            .setRenderingType(FileData.RENDERING_DEFAULT);
+        groupFileMessage.setFileData(data);
 
-		ContactStore contactStore = createFakeContactStore();
-		IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
-		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
+        ContactStore contactStore = createFakeContactStore();
+        IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
+        MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		NonceFactory nonceFactory = new NonceFactory(new NonceStore() {
-			@Override
-			public boolean exists(@NonNull byte[] nonce) {
-				return false;
-			}
+        NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
-			@Override
-			public boolean store(@NonNull byte[] nonce) {
-				return true;
-			}
+        MessageBox boxmsg = messageCoder.encode(groupFileMessage, nonceFactory.nextNonce(NonceScope.CSP));
+        Assert.assertNotNull("BoxMessage failed", boxmsg);
 
-			@NonNull
-			@Override
-			public List<byte[]> getAllHashedNonces() {
-				return Collections.emptyList();
-			}
-		});
+        //now decode again
+        AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
+        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
+        Assert.assertTrue(decodedBoxMessage instanceof GroupFileMessage);
 
-		MessageBox boxmsg = messageCoder.encode(groupFileMessage, nonceFactory.next(false), nonceFactory);
-		Assert.assertNotNull("BoxMessage failed", boxmsg);
+        GroupFileMessage groupFileMessageDecoded = (GroupFileMessage) decodedBoxMessage;
+        FileData fileData = groupFileMessageDecoded.getFileData();
+        Assert.assertNotNull(fileData);
 
-		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-		Assert.assertTrue(decodedBoxMessage instanceof GroupFileMessage);
+        Assert.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
+        Assert.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
+        Assert.assertArrayEquals(key, fileData.getEncryptionKey());
+        Assert.assertEquals("image/jpg", fileData.getMimeType());
+        Assert.assertEquals("therme.jpg", fileData.getFileName());
+        Assert.assertEquals(123, fileData.getFileSize());
+        Assert.assertEquals(FileData.RENDERING_DEFAULT, fileData.getRenderingType());
+    }
 
-		GroupFileMessage groupFileMessageDecoded = (GroupFileMessage)decodedBoxMessage;
-		FileData fileData = groupFileMessageDecoded.getData();
-		Assert.assertNotNull(fileData);
+    @Test
+    public void identityTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
+        //create a new file message
+        final String myIdentity = "TESTTEST";
+        final String toIdentity = "ABCDEFGH";
 
-		Assert.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
-		Assert.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
-		Assert.assertArrayEquals(key, fileData.getEncryptionKey());
-		Assert.assertEquals("image/jpg", fileData.getMimeType());
-		Assert.assertEquals("therme.jpg", fileData.getFileName());
-		Assert.assertEquals(123, fileData.getFileSize());
-		Assert.assertEquals(FileData.RENDERING_DEFAULT, fileData.getRenderingType());
-	}
+        byte[] blobIdFile = new byte[ProtocolDefines.BLOB_ID_LEN];
+        byte[] blobIdThumbnail = new byte[ProtocolDefines.BLOB_ID_LEN];
+        byte[] key = new byte[ProtocolDefines.BLOB_KEY_LEN];
 
-	@Test
-	public void identityTest() throws ThreemaException, MissingPublicKeyException, BadMessageException {
-		//create a new file message
-		final String myIdentity = "TESTTEST";
-		final String toIdentity = "ABCDEFGH";
+        FileMessage fileMessage = new FileMessage();
+        fileMessage.setFromIdentity(toIdentity);
+        fileMessage.setToIdentity(myIdentity);
+        FileData data = new FileData();
+        data
+            .setFileBlobId(blobIdFile)
+            .setThumbnailBlobId(blobIdThumbnail)
+            .setEncryptionKey(key)
+            .setMimeType("image/jpg")
+            .setFileName("therme.jpg")
+            .setFileSize(123)
+            .setRenderingType(FileData.RENDERING_MEDIA);
+        fileMessage.setFileData(data);
 
-		byte[] blobIdFile = new byte[ProtocolDefines.BLOB_ID_LEN];
-		byte[] blobIdThumbnail = new byte[ProtocolDefines.BLOB_ID_LEN];
-		byte[] key = new byte[ProtocolDefines.BLOB_KEY_LEN];
+        ContactStore contactStore = createFakeContactStore();
+        IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
+        MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
-		FileMessage fileMessage = new FileMessage();
-		fileMessage.setFromIdentity(toIdentity);
-		fileMessage.setToIdentity(myIdentity);
-		FileData data = new FileData();
-		data
-				.setFileBlobId(blobIdFile)
-				.setThumbnailBlobId(blobIdThumbnail)
-				.setEncryptionKey(key)
-				.setMimeType("image/jpg")
-				.setFileName("therme.jpg")
-				.setFileSize(123)
-				.setRenderingType(FileData.RENDERING_MEDIA);
-		fileMessage.setData(data);
+        NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
-		ContactStore contactStore = createFakeContactStore();
-		IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
-		MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
+        MessageBox boxmsg = messageCoder.encode(fileMessage, nonceFactory.nextNonce(NonceScope.CSP));
+        Assert.assertNotNull("BoxMessage failed", boxmsg);
 
-		NonceFactory nonceFactory = new NonceFactory(new NonceStore() {
-			@Override
-			public boolean exists(@NonNull byte[] nonce) {
-				return false;
-			}
+        //now decode again
+        AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
+        Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
+        Assert.assertTrue(decodedBoxMessage instanceof FileMessage);
 
-			@Override
-			public boolean store(@NonNull byte[] nonce) {
-				return true;
-			}
+        FileMessage fileMessageDecoded = (FileMessage) decodedBoxMessage;
+        FileData fileData = fileMessageDecoded.getFileData();
+        Assert.assertNotNull(fileData);
 
-			@NonNull
-			@Override
-			public List<byte[]> getAllHashedNonces() {
-				return Collections.emptyList();
-			}
-		});
+        Assert.assertArrayEquals(blobIdFile, fileData.getFileBlobId());
+        Assert.assertArrayEquals(blobIdThumbnail, fileData.getThumbnailBlobId());
+        Assert.assertArrayEquals(key, fileData.getEncryptionKey());
+        Assert.assertEquals("image/jpg", fileData.getMimeType());
+        Assert.assertEquals("therme.jpg", fileData.getFileName());
+        Assert.assertEquals(123, fileData.getFileSize());
+        Assert.assertEquals(FileData.RENDERING_MEDIA, fileData.getRenderingType());
+    }
 
-		MessageBox boxmsg = messageCoder.encode(fileMessage, nonceFactory.next(false), nonceFactory);
-		Assert.assertNotNull("BoxMessage failed", boxmsg);
+    private static ContactStore createFakeContactStore() {
+        return new ContactStore() {
+            @Override
+            public void addCachedContact(@NonNull BasicContact contact) {
+            }
 
-		//now decode again
-		AbstractMessage decodedBoxMessage = messageCoder.decode(boxmsg);
-		Assert.assertNotNull("decodedBox failed", decodedBoxMessage);
-		Assert.assertTrue(decodedBoxMessage instanceof FileMessage);
+            @Nullable
+            @Override
+            public BasicContact getCachedContact(@NonNull String identity) {
+                return null;
+            }
 
-		FileMessage fileMessageDecoded = (FileMessage)decodedBoxMessage;
-		FileData fileData = fileMessageDecoded.getData();
-		Assert.assertNotNull(fileData);
+            @NonNull
+            @Override
+            public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
+                return getContactForIdentity(identity);
+            }
 
-		Assert.assertTrue(Arrays.equals(blobIdFile, fileData.getFileBlobId()));
-		Assert.assertTrue(Arrays.equals(blobIdThumbnail, fileData.getThumbnailBlobId()));
-		Assert.assertTrue(Arrays.equals(key, fileData.getEncryptionKey()));
-		Assert.assertEquals("image/jpg", fileData.getMimeType());
-		Assert.assertEquals("therme.jpg", fileData.getFileName());
-		Assert.assertEquals(123, fileData.getFileSize());
-		Assert.assertEquals(FileData.RENDERING_MEDIA, fileData.getRenderingType());
-	}
+            @Override
+            public Contact getContactForIdentity(@NonNull String identity) {
+                return new Contact(identity, new byte[256], VerificationLevel.UNVERIFIED);
+            }
 
-	private static ContactStore createFakeContactStore() {
-		return new ContactStore() {
-			@Override
-			public void addCachedContact(@NonNull Contact contact) { }
+            @Override
+            public void addContact(@NonNull Contact contact) {
+            }
 
-			@Nullable
-			@Override
-			public Contact getContactForIdentityIncludingCache(@NonNull String identity) {
-				return getContactForIdentity(identity);
-			}
+            @Override
+            public boolean isSpecialContact(@NonNull String identity) {
+                return false;
+            }
+        };
+    }
 
-			@Override
-			public Contact getContactForIdentity(@NonNull String identity) {
-				return new Contact(identity, new byte[256], VerificationLevel.UNVERIFIED);
-			}
+    private static IdentityStoreInterface createFakeIdentityStore(final String myIdentity) {
+        return new IdentityStoreInterface() {
+            @Override
+            public byte[] encryptData(@NonNull byte[] plaintext, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
+                return plaintext;
+            }
 
-			@Override
-			public void addContact(@NonNull Contact contact) { }
+            @Override
+            public byte[] decryptData(@NonNull byte[] ciphertext, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
+                return ciphertext;
+            }
 
-			@Override
-			public void removeContact(@NonNull Contact contact) { }
-		};
-	}
+            @Override
+            public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
+                return new byte[32];
+            }
 
-	private static IdentityStoreInterface createFakeIdentityStore(final String myIdentity) {
-		return new IdentityStoreInterface() {
-			@Override
-			public byte[] encryptData(byte[] plaintext, byte[] nonce, byte[] receiverPublicKey) {
-				return plaintext;
-			}
+            @Override
+            public String getIdentity() {
+                return myIdentity;
+            }
 
-			@Override
-			public byte[] decryptData(byte[] ciphertext, byte[] nonce, byte[] senderPublicKey) {
-				return ciphertext;
-			}
+            @Override
+            public String getServerGroup() {
+                return null;
+            }
 
-			@Override
-			public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
-				return new byte[32];
-			}
+            @Override
+            public byte[] getPublicKey() {
+                return new byte[256];
+            }
 
-			@Override
-			public String getIdentity() {
-				return myIdentity;
-			}
+            @Override
+            public byte[] getPrivateKey() {
+                return new byte[32];
+            }
 
-			@Override
-			public String getServerGroup() {
-				return null;
-			}
+            @Override
+            @NonNull
+            public String getPublicNickname() {
+                return "";
+            }
 
-			@Override
-			public byte[] getPublicKey() {
-				return new byte[256];
-			}
-
-			@Override
-			public byte[] getPrivateKey() {
-				return new byte[32];
-			}
-
-			@Override
-			@NonNull
-			public String getPublicNickname() {
-				return "";
-			}
-
-			@Override
-			public void storeIdentity(String identity, String serverGroup, byte[] publicKey, byte[] privateKey) { }
-		};
-	}
+            @Override
+            public void storeIdentity(@NonNull String identity, @NonNull String serverGroup, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
+            }
+        };
+    }
 }

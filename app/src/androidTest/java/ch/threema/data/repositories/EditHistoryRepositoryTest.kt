@@ -21,9 +21,13 @@
 
 package ch.threema.data.repositories
 
+import ch.threema.app.TestCoreServiceManager
+import ch.threema.app.TestTaskManager
+import ch.threema.app.ThreemaApplication
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
+import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
@@ -41,7 +45,13 @@ class EditHistoryRepositoryTest {
     @Before
     fun before() {
         databaseService = TestDatabaseService()
-        editHistoryRepository = ModelRepositories(databaseService).editHistory
+        val testCoreServiceManager = TestCoreServiceManager(
+            version = ThreemaApplication.getAppVersion(),
+            databaseService = databaseService,
+            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            taskManager = TestTaskManager(UnusedTaskCodec())
+        )
+        editHistoryRepository = ModelRepositories(testCoreServiceManager).editHistory
         editHistoryDao = EditHistoryDaoImpl(databaseService)
     }
 

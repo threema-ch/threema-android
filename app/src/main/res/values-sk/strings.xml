@@ -1522,6 +1522,17 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="md_link_device_qr_scan_message">Naskenujte QR kód, prosím</string>
     <string name="directory_request_failed">Žiadosť na zložku sa nepodarila. Skúste to znova.</string>
     <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
+    <string name="scan_qr_code">Skenovať QR kód</string>
+    <string name="scan_qr_code_explain">Naskenujte kód QR zobrazený v beta verzii aplikácie %s Desktop na zariadení, ktoré chcete prepojiť.</string>
+    <string name="connecting">Pripája sa…</string>
+    <string name="trust_new_device">Dôverovať novému zariadeniu</string>
+    <string name="trust_new_device_explain">Vyberte rovnaké obrázky, aké sú zobrazené na novom zariadení, aby ste potvrdili, že mu dôverujete.</string>
+    <string name="trust_new_device_info">Nové zariadenie uloží nezávislú kópiu vášho profilu %s a správy sa budú odosielať a prijímať vo vašom mene.</string>
+    <string name="no_match_question">Žiadna zhoda?</string>
+    <string name="sending_data">Odosielajú sa údaje…</string>
+    <string name="continue_on_new_device">Pokračujte prosím na novom zariadení…</string>
+    <string name="device_linked_successfully">Zariadenie úspešne prepojené</string>
+    <string name="device_linked_successfully_explain">%s možno teraz používať na práve prepojenom zariadení (aj keď je toto zariadenie vypnuté alebo nie je pripojené k internetu)</string>
     <string name="resend_message_dialog_title">Znovu odoslať skupinovú správu?</string>
     <string name="resend_message_dialog_message">Táto správa nemohla byť odoslaná všetkým členom. Opätovne poslať správu na adresu %1$s?</string>
     <string name="work_lost_credentials_help">Zabudli ste svoje prihlasovacie údaje? Obráťte sa na vášho správcu %1$s.</string>
@@ -1567,6 +1578,10 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="incoming_calls">Prichádzajúce hovory</string>
     <string name="group_chats">Skupinové hovory</string>
     <string name="edit_history_file_no_caption">Bez titulku</string>
+    <string name="device_linking_failed">Prepojenie zariadenia zlyhalo</string>
+    <string name="device_linking_failed_explain">Zariadenie nebolo možné prepojiť. Skúste to prosím znova.\nDôvod: %s.</string>
+    <string name="qr_code_scan_error">Pri skenovaní QR kódu došlo k chybe</string>
+    <string name="verification_failed">Overenie zlyhalo</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">súhlas odoslaný</string>
     <string name="cd_dec_icon">nesúhlas odoslaný</string>

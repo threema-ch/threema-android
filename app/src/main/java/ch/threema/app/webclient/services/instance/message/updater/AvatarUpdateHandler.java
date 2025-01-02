@@ -21,14 +21,14 @@
 
 package ch.threema.app.webclient.services.instance.message.updater;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.slf4j.Logger;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
@@ -57,13 +57,23 @@ public class AvatarUpdateHandler extends MessageUpdater {
 	// Dispatchers
 	private final @NonNull MessageDispatcher updateDispatcher;
 
+    // Services
+    private final @NonNull ContactService contactService;
+
 	@AnyThread
-	public AvatarUpdateHandler(@NonNull HandlerExecutor handler, @NonNull MessageDispatcher updateDispatcher) {
+	public AvatarUpdateHandler(
+        @NonNull HandlerExecutor handler,
+        @NonNull MessageDispatcher updateDispatcher,
+        @NonNull ContactService contactService
+    ) {
 		super(Protocol.SUB_TYPE_AVATAR);
 		this.handler = handler;
 
 		// Dispatchers
 		this.updateDispatcher = updateDispatcher;
+
+        // Services
+        this.contactService = contactService;
 
 		// Create receiver listeners
 		this.contactListener = new ContactListener();
@@ -90,7 +100,7 @@ public class AvatarUpdateHandler extends MessageUpdater {
 	/**
 	 * Update a contact avatar.
 	 */
-	private void update(final ContactModel contact) {
+	private void update(@NonNull final ContactModel contact) {
 		this.update(new Utils.ModelWrapper(contact));
 	}
 
@@ -125,9 +135,14 @@ public class AvatarUpdateHandler extends MessageUpdater {
 	@AnyThread
 	private class ContactListener implements ch.threema.app.listeners.ContactListener {
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
+		public void onAvatarChanged(final @NonNull String identity) {
 			logger.debug("Contact Listener: onAvatarChanged");
-			handler.post(() -> AvatarUpdateHandler.this.update(contactModel));
+            ContactModel contactModel = contactService.getByIdentity(identity);
+            if (contactModel == null) {
+                logger.error("Got an avatar update for an unknown contact");
+            } else {
+                handler.post(() -> AvatarUpdateHandler.this.update(contactModel));
+            }
 		}
 	}
 

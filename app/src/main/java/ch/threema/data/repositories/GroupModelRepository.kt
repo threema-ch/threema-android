@@ -22,6 +22,7 @@
 package ch.threema.data.repositories
 
 import ch.threema.app.listeners.GroupListener
+import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.GroupIdentity
@@ -33,6 +34,7 @@ import ch.threema.domain.models.GroupId
 class GroupModelRepository(
     private val cache: ModelTypeCache<GroupIdentity, GroupModel>, // Note: Synchronize access
     private val databaseBackend: DatabaseBackend,
+    private val coreServiceManager: CoreServiceManager,
 ) {
     private object GroupModelRepositoryToken : RepositoryToken
 
@@ -46,7 +48,6 @@ class GroupModelRepository(
             override fun onNewMember(
                 group: ch.threema.storage.models.GroupModel?,
                 newIdentity: String?,
-                previousMemberCount: Int,
             ) {
                 onModified(group)
             }
@@ -54,7 +55,6 @@ class GroupModelRepository(
             override fun onMemberLeave(
                 group: ch.threema.storage.models.GroupModel?,
                 identity: String?,
-                previousMemberCount: Int,
             ) {
                 onModified(group)
             }
@@ -62,7 +62,6 @@ class GroupModelRepository(
             override fun onMemberKicked(
                 group: ch.threema.storage.models.GroupModel?,
                 identity: String?,
-                previousMemberCount: Int,
             ) {
                 onModified(group)
             }
@@ -114,6 +113,7 @@ class GroupModelRepository(
                 groupIdentity,
                 GroupModelDataFactory.toDataType(dbGroup),
                 databaseBackend,
+                coreServiceManager,
             )
         }
     }
@@ -132,7 +132,8 @@ class GroupModelRepository(
             GroupModel(
                 groupIdentity,
                 GroupModelDataFactory.toDataType(dbGroup),
-                databaseBackend
+                databaseBackend,
+                coreServiceManager,
             )
         }
     }

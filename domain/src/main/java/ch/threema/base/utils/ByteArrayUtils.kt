@@ -36,3 +36,7 @@ fun ByteArray.toHexString(maxBytes: Int = 0): String {
         Utils.byteArrayToHexString(this)
     }
 }
+
+fun ByteArray.chunked(size: Int): List<ByteArray> = asIterable()
+    .chunked(size)
+    .map { it.toByteArray() }

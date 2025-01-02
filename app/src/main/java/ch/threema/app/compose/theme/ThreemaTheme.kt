@@ -33,10 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import androidx.preference.PreferenceManager
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.theme.color.ColorsDark
 import ch.threema.app.compose.theme.color.ColorsLight
 import ch.threema.app.compose.theme.color.CustomColor
@@ -46,17 +49,19 @@ import ch.threema.app.compose.theme.color.LocalCustomColor
 
 val AppTypography = Typography() // system default
 
-/**
- *  @param dynamicColor available on Android 12+
- */
 @Composable
 fun ThreemaTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+
+    val shouldUseDynamicColors: Boolean = remember {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+        sharedPreferences.getBoolean("pref_dynamic_color", false)
+    }
+
     val materialColorScheme: ColorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        shouldUseDynamicColors && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

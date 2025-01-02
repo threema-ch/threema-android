@@ -171,7 +171,10 @@ public class UserListAdapter extends FilterableListAdapter {
 				blockedContactsService != null && blockedContactsService.has(contactModel.getIdentity())
 		);
 
-		holder.verificationLevelView.setContactModel(contactModel);
+		holder.verificationLevelView.setVerificationLevel(
+			contactModel.verificationLevel,
+			contactModel.getWorkVerificationLevel()
+		);
 
 		String lastMessageDateString = null;
 		MessageReceiver messageReceiver = this.contactService.createReceiver(contactModel);

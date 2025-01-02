@@ -95,7 +95,8 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
 	/**
 	 * Subscribe to the battery status broadcast.
 	 */
-	public void acquire(WebClientSessionModel session) {
+	@Override
+    public void acquire(WebClientSessionModel session) {
 		logger.debug("Acquire webclient battery status subscription for session {}", session.getId());
 		if (!this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.add(session.getId());
@@ -106,7 +107,8 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
 	/**
 	 * Unsubscribe from the battery status broadcast.
 	 */
-	public void release(WebClientSessionModel session) {
+	@Override
+    public void release(WebClientSessionModel session) {
 		logger.debug("Release webclient battery status subscription for session {}", session.getId());
 		if (this.acquiredSessionIds.contains(session.getId())) {
 			this.acquiredSessionIds.remove((Integer)session.getId());

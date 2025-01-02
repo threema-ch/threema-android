@@ -21,12 +21,23 @@
 
 package ch.threema.data
 
+import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.NonceStore
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.storage.DatabaseBackend
+import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.Task
+import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.taskmanager.TaskManager
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import org.junit.Assert
 import org.junit.Assert.assertArrayEquals
+import org.mockito.Mockito.`when`
 import org.powermock.api.mockito.PowerMockito
 import java.util.Date
 import kotlin.test.Test
@@ -34,6 +45,34 @@ import kotlin.test.assertEquals
 
 class GroupModelTest {
     private val databaseBackendMock = PowerMockito.mock(DatabaseBackend::class.java)
+    private val multiDeviceManagerMock = PowerMockito.mock(MultiDeviceManager::class.java).also {
+        `when`(it.isMultiDeviceActive).thenReturn(true)
+    }
+    private val nonceStoreMock = PowerMockito.mock(NonceStore::class.java)
+    private val nonceFactory = NonceFactory(nonceStoreMock)
+    private val taskManager = object : TaskManager {
+        val scheduledTasks = mutableListOf<Task<*, TaskCodec>>()
+
+        override fun <R> schedule(task: Task<R, TaskCodec>): Deferred<R> {
+            scheduledTasks.add(task)
+            return CompletableDeferred()
+        }
+
+        override fun hasPendingTasks(): Boolean = scheduledTasks.isNotEmpty()
+
+        override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
+            // Nothing to do
+        }
+
+        override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
+            // Nothing to do
+        }
+    }
+    private val coreServiceManagerMock = PowerMockito.mock(CoreServiceManager::class.java).also {
+        `when`(it.taskManager).thenReturn(taskManager)
+        `when`(it.multiDeviceManager).thenReturn(multiDeviceManagerMock)
+        `when`(it.nonceFactory).thenReturn(nonceFactory)
+    }
 
     private fun createTestGroup(): GroupModel {
         val groupIdentity = GroupIdentity("TESTTEST", 42)
@@ -52,8 +91,10 @@ class GroupModelTest {
                 "Description",
                 Date(),
                 members,
+                ch.threema.storage.models.GroupModel.UserState.MEMBER,
             ),
-            databaseBackendMock
+            databaseBackendMock,
+            coreServiceManagerMock,
         )
     }
 
@@ -117,7 +158,10 @@ class GroupModelTest {
                 groupDesc,
                 groupDescChangedAt,
                 members,
-            ), databaseBackendMock
+                ch.threema.storage.models.GroupModel.UserState.MEMBER,
+            ),
+            databaseBackendMock,
+            coreServiceManagerMock,
         )
 
         val value = group.data.value!!
@@ -143,7 +187,8 @@ class GroupModelTest {
             // The same identity but different object is provided
             GroupIdentity("AAAAAAAA", 42),
             data,
-            databaseBackendMock
+            databaseBackendMock,
+            coreServiceManagerMock,
         )
 
         assertEquals("AAAAAAAA", model.groupIdentity.creatorIdentity)
@@ -159,7 +204,8 @@ class GroupModelTest {
             GroupModel(
                 data.groupIdentity.copy(creatorIdentity = "BBBBBBBB"),
                 data,
-                databaseBackendMock
+                databaseBackendMock,
+                coreServiceManagerMock,
             )
         }
     }
@@ -173,7 +219,8 @@ class GroupModelTest {
             GroupModel(
                 data.groupIdentity.copy(groupId = 0),
                 data,
-                databaseBackendMock
+                databaseBackendMock,
+                coreServiceManagerMock,
             )
         }
     }

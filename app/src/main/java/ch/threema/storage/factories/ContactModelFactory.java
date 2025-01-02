@@ -25,16 +25,19 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.CursorHelper;
@@ -127,7 +130,7 @@ public class ContactModelFactory extends ModelFactory {
                     cursorFactory1.getString(ContactModel.COLUMN_FIRST_NAME),
                     cursorFactory1.getString(ContactModel.COLUMN_LAST_NAME))
                 .setPublicNickName(cursorFactory1.getString(ContactModel.COLUMN_PUBLIC_NICK_NAME))
-                .setState(ContactModel.State.valueOf(cursorFactory1.getString(ContactModel.COLUMN_STATE)))
+                .setState(IdentityState.valueOf(cursorFactory1.getString(ContactModel.COLUMN_STATE)))
                 .setAndroidContactLookupKey(cursorFactory1.getString(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
                 .setIsWork(cursorFactory1.getInt(ContactModel.COLUMN_IS_WORK) == 1)
                 .setIdentityType(
@@ -157,15 +160,15 @@ public class ContactModelFactory extends ModelFactory {
             // Convert state to enum
             switch (cursorFactory1.getString(ContactModel.COLUMN_STATE)) {
                 case "INACTIVE":
-                    c.setState(ContactModel.State.INACTIVE);
+                    c.setState(IdentityState.INACTIVE);
                     break;
                 case "INVALID":
-                    c.setState(ContactModel.State.INVALID);
+                    c.setState(IdentityState.INVALID);
                     break;
                 case "ACTIVE":
                 case "TEMPORARY": // Legacy state, see !276
                 default:
-                    c.setState(ContactModel.State.ACTIVE);
+                    c.setState(IdentityState.ACTIVE);
                     break;
             }
 
@@ -220,7 +223,7 @@ public class ContactModelFactory extends ModelFactory {
         contentValues.put(ContactModel.COLUMN_VERIFICATION_LEVEL, contactModel.verificationLevel.ordinal());
 
         if (contactModel.getState() == null) {
-            contactModel.setState(ContactModel.State.ACTIVE);
+            contactModel.setState(IdentityState.ACTIVE);
         }
         contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
         contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
@@ -263,6 +266,22 @@ public class ContactModelFactory extends ModelFactory {
             );
         }
         return true;
+    }
+
+    /**
+     * Updates the last update flag of the given identity.
+     */
+    public void setLastUpdate(@NonNull String identity, @Nullable Date lastUpdate) {
+        Long lastUpdateTime = lastUpdate != null ? lastUpdate.getTime() : null;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ContactModel.COLUMN_LAST_UPDATE, lastUpdateTime);
+
+        getWritableDatabase().update(
+            ContactModel.TABLE,
+            contentValues,
+            ContactModel.COLUMN_IDENTITY + " = ?",
+            new String[]{identity}
+        );
     }
 
     public int delete(ContactModel contactModel) {

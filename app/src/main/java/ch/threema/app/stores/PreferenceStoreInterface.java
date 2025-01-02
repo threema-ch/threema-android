@@ -155,8 +155,6 @@ public interface PreferenceStoreInterface {
 
 	JSONObject getJSONObject(String key, boolean crypt);
 
-	<T> T getRealObject(String key, boolean crypt);
-
 	void clear();
 
 	Map<String, ?> getAllNonCrypted();

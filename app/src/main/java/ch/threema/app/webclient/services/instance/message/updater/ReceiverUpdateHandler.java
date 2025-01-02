@@ -261,19 +261,19 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 		}
 
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+		public void onNewMember(GroupModel group, String newIdentity) {
 			logger.debug("Group Listener: onNewMember");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}
 
 		@Override
-		public void onMemberLeave(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberLeave(GroupModel group, String identity) {
 			logger.debug("Group Listener: onMemberLeave");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}
 
 		@Override
-		public void onMemberKicked(GroupModel group, String identity, int previousMemberCount) {
+		public void onMemberKicked(GroupModel group, String identity) {
 			logger.debug("Group Listener: onMemberKicked");
 			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
 		}

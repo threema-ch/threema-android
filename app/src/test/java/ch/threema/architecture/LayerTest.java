@@ -42,6 +42,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
 public class LayerTest {
+	/** @noinspection unused*/
 	@ArchTest
 	public static final ArchRule classesInPredefinedLayers = classes().should().resideInAnyPackage(
 		PACKAGE_ANNOTATION,
@@ -56,7 +57,8 @@ public class LayerTest {
 		"ch.threema.protobuf..",
 		"ch.threema.webrtc..",
 		"ch.threema.taskmanager..",
-		"ch.threema.testhelpers.."
+		"ch.threema.testhelpers..",
+		"ch.threema.libthreema.."
 	);
 
 }

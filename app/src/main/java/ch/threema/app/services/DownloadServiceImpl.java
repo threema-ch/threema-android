@@ -46,6 +46,7 @@ import ch.threema.base.ProgressListener;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.blob.BlobLoader;
+import ch.threema.domain.protocol.blob.BlobScope;
 
 public class DownloadServiceImpl implements DownloadService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadServiceImpl");
@@ -109,7 +110,7 @@ public class DownloadServiceImpl implements DownloadService {
 						messageModelId,
 						cancel);
 					if (cancel) {
-						download.blobLoader.cancel();
+						download.blobLoader.cancelDownload();
 					}
 					this.downloads.remove(download);
 				}
@@ -127,7 +128,13 @@ public class DownloadServiceImpl implements DownloadService {
 
 	@Override
 	@WorkerThread
-	public @Nullable byte[] download(int messageModelId, final byte[] blobId, boolean markAsDown, @Nullable ProgressListener progressListener) {
+	public @Nullable byte[] download(
+        int messageModelId,
+        final @Nullable byte[] blobId,
+        @NonNull BlobScope blobScopeDownload,
+        @Nullable BlobScope blobScopeMarkAsDone,
+        @Nullable ProgressListener progressListener
+    ) {
 		PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG);
 		try {
 			if (wakeLock != null) {
@@ -174,12 +181,12 @@ public class DownloadServiceImpl implements DownloadService {
 				}
 
 				if (progressListener != null) {
-					blobLoader.setProgressListener(progressListener);
+					blobLoader.progressListener = progressListener;
 				}
 
 				// Load blob from server
 				logger.info("Blob {} now fetching", blobIdHex);
-				blobBytes = blobLoader.load(false);
+				blobBytes = blobLoader.load(blobScopeDownload);
 
 				if (blobBytes != null) {
 					synchronized (this.downloads) {
@@ -197,8 +204,8 @@ public class DownloadServiceImpl implements DownloadService {
 								if (downloadFile.length() == blobBytes.length) {
 									downloadSuccess = true;
 
-									//ok download saved, set as down if set
-									if (markAsDown) {
+									//ok download saved, set as done if set
+									if (blobScopeMarkAsDone != null) {
 										logger.info("Blob {} scheduled for marking as downloaded", blobIdHex);
 										try {
 											new Thread(() -> {
@@ -208,7 +215,7 @@ public class DownloadServiceImpl implements DownloadService {
 												}
 												if (download != null) {
 													if (download.blobLoader != null) {
-														download.blobLoader.markAsDone(download.blobId);
+														download.blobLoader.markAsDone(download.blobId, blobScopeMarkAsDone);
 													}
 													logger.info("Blob {} marked as downloaded", blobIdHex);
 												}

@@ -95,7 +95,7 @@ internal class IncomingMessageTaskQueue(
                     return ReadMessageResult(bypassMessages, backlogMessage.inboundMessage)
                 }
 
-                // TODO(ANDR-2475): once we bypass messages, no bypassed message should be added to the backlog queue
+                // TODO(ANDR-2707): once we bypass messages, no bypassed message should be added to the backlog queue
                 MessageFilterInstruction.BYPASS_OR_BACKLOG -> continue
 
                 MessageFilterInstruction.REJECT -> TODO("Implement") // TODO(ANDR-2868)
@@ -112,11 +112,11 @@ internal class IncomingMessageTaskQueue(
                 )
 
                 MessageFilterInstruction.BYPASS_OR_BACKLOG -> {
-                    // TODO(ANDR-2475): bypass d2d messages
+                    // TODO(ANDR-2707): bypass d2d messages
                     backlogQueue.add(message)
                 }
 
-                MessageFilterInstruction.REJECT -> TODO("Implement") // TODO(ANDR-2475)
+                MessageFilterInstruction.REJECT -> TODO("Implement") // TODO(ANDR-2868)
             }
         }
     }
@@ -140,7 +140,7 @@ internal class IncomingMessageTaskQueue(
         private val task by lazy {
             when (inboundMessage) {
                 is CspMessage -> IncomingCspMessageTask(inboundMessage, incomingMessageProcessor)
-                is InboundD2mMessage -> IncomingD2mMessageTask(inboundMessage)
+                is InboundD2mMessage -> IncomingD2mMessageTask(inboundMessage, incomingMessageProcessor)
             }
         }
         private val done: CompletableDeferred<Unit> = CompletableDeferred()

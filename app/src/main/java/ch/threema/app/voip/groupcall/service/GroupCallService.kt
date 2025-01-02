@@ -65,6 +65,8 @@ import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -143,6 +145,8 @@ class GroupCallService : Service() {
     private lateinit var identityStore: IdentityStore
     private lateinit var contactService: ContactService
     private lateinit var groupService: GroupService
+    private lateinit var apiConnector: APIConnector
+    private lateinit var contactModelRepository: ContactModelRepository
     private lateinit var sfuConnection: SfuConnection
     private lateinit var preferenceService: PreferenceService
     private lateinit var voipStateService: VoipStateService
@@ -201,6 +205,8 @@ class GroupCallService : Service() {
         contactService = serviceManager.contactService
         sfuConnection = serviceManager.sfuConnection
         groupService = serviceManager.groupService
+        apiConnector = serviceManager.apiConnector
+        contactModelRepository = serviceManager.modelRepositories.contacts
         preferenceService = serviceManager.preferenceService
         voipStateService = serviceManager.voipStateService
     }
@@ -329,7 +335,9 @@ class GroupCallService : Service() {
                 controller.dependencies = GroupCallDependencies(
                     identityStore,
                     contactService,
-                    groupService
+                    groupService,
+                    apiConnector,
+                    contactModelRepository
                 )
                 CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
                     launch { controller.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() } }

@@ -48,14 +48,17 @@ class IncomingCspMessageTask(
     }
 
     private fun processError(data: CspMessage.ServerErrorData) {
+        // Note that server errors are already processed in the task manager
         logger.warn("Processed server error in incoming csp message task: '{}'", data.message)
     }
 
     private fun processAlert(data: CspMessage.ServerAlertData) {
+        // Note that server alerts are already processed in the task manager
         logger.warn("Processed server alert in incoming csp message task: '{}'", data.message)
     }
 
     private fun processOutgoingMessageAck(data: CspMessage.MessageAck) {
+        // Note that outgoing message acks should be consumed in the task that sent out the message
         logger.warn(
             "Processed ack for outgoing message {} to {} in incoming csp message task",
             data.messageId,
@@ -67,23 +70,27 @@ class IncomingCspMessageTask(
         data: CspMessage.IncomingMessageData,
         handle: ActiveTaskCodec,
     ) {
+        // TODO(ANDR-2732): If multi device is active and the device is not the leader: abort and restart connection
+
         if (data.data.size < ProtocolDefines.OVERHEAD_MSG_HDR) {
             throw PayloadProcessingException("Bad length (${data.data.size}) for message payload")
         }
         suspend {
             val messageBox = MessageBox.parseBinary(data.data)
 
-            incomingMessageProcessor.processIncomingMessage(messageBox, handle)
+            incomingMessageProcessor.processIncomingCspMessage(messageBox, handle)
         }.catchAllExceptNetworkException {
             logger.error("Could not process incoming message", it)
         }
     }
 
     private fun processQueueSendComplete() {
+        // Note that queue send complete messages are already processed in the task manager
         logger.warn("Processed queue send complete inside incoming csp message task")
     }
 
     private fun processDeviceCookieChangeIndication() {
+        // Note that device cookie change indications are already processed in the task manager
         logger.warn("Processed device cookie change indication inside incoming csp message task")
     }
 

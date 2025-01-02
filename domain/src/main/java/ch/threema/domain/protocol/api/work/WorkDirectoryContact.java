@@ -24,19 +24,21 @@ package ch.threema.domain.protocol.api.work;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class WorkDirectoryContact extends WorkContact {
+    @Nullable
     public final String csi;
     public final List<String> categoryIds = new ArrayList<>();
     public final WorkOrganization organization = new WorkOrganization();
 
     public WorkDirectoryContact(
-        String threemaId,
-        byte[] publicKey,
-        String firstName,
-        String lastName,
-        String csi,
+        @NonNull String threemaId,
+        @NonNull byte[] publicKey,
+        @Nullable String firstName,
+        @Nullable String lastName,
+        @Nullable String csi,
         @Nullable String jobTitle,
         @Nullable String department
     ) {
@@ -55,7 +57,7 @@ public class WorkDirectoryContact extends WorkContact {
                 (firstName != null ? firstName : "");
         }
 
-        if (name.length() > 0) {
+        if (!name.isEmpty()) {
             return name.substring(0, 1);
         }
         return " ";

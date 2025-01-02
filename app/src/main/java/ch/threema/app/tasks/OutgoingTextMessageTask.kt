@@ -59,11 +59,16 @@ class OutgoingTextMessageTask(
 
         // Create the message
         val message = TextMessage()
-        message.messageId = ensureMessageId(messageModel)
         message.text = messageModel.bodyAndQuotedMessageId
-        message.toIdentity = messageModel.identity
 
-        sendContactMessage(message, messageModel, handle)
+        sendContactMessage(
+            message,
+            messageModel,
+            messageModel.identity,
+            ensureMessageId(messageModel),
+            messageModel.createdAt,
+            handle
+        )
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
@@ -78,6 +83,7 @@ class OutgoingTextMessageTask(
             group,
             recipientIdentities,
             messageModel,
+            messageModel.createdAt,
             ensureMessageId(messageModel),
             {
                 GroupTextMessage().apply {

@@ -21,15 +21,14 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.WorkerThread;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
 
 import java.util.Map;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.routines.ReadMessagesRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;

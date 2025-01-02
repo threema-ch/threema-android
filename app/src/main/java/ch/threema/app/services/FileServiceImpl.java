@@ -139,10 +139,19 @@ public class FileServiceImpl implements FileService {
 	private final File appDataPath;
 	private final File backupPath;
 
-	public FileServiceImpl(Context c, MasterKey masterKey, PreferenceService preferenceService) {
+    @NonNull
+    private final AvatarCacheService avatarCacheService;
+
+	public FileServiceImpl(
+        @NonNull Context c,
+        @NonNull MasterKey masterKey,
+        @NonNull PreferenceService preferenceService,
+        @NonNull AvatarCacheService avatarCacheService
+    ) {
 		this.context = c;
 		this.preferenceService = preferenceService;
 		this.masterKey = masterKey;
+        this.avatarCacheService = avatarCacheService;
 
 		String mediaPathPrefix = Environment.getExternalStorageDirectory() + "/" + BuildConfig.MEDIA_PATH + "/";
 
@@ -491,14 +500,14 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean hasContactAvatarFile(@NonNull String identity) {
+	public boolean hasUserDefinedProfilePicture(@NonNull String identity) {
 		File avatar = getContactAvatarFile(identity);
 
 		return avatar != null && avatar.exists();
 	}
 
 	@Override
-	public boolean hasContactPhotoFile(@NonNull String identity) {
+	public boolean hasContactDefinedProfilePicture(@NonNull String identity) {
 		File avatar = getContactPhotoFile(identity);
 
 		return avatar != null && avatar.exists();
@@ -524,6 +533,7 @@ public class FileServiceImpl implements FileService {
 		return getPictureFile(getAvatarDirPath(), ".p-", identity);
 	}
 
+	@Nullable
 	private File getAndroidContactAvatarFile(@NonNull String identity) {
 		return getPictureFile(getAvatarDirPath(), ".a-", identity);
 	}
@@ -928,12 +938,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws Exception {
-		return this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel)));
+	public boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException {
+		boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel)));
+        if (success) {
+            avatarCacheService.reset(groupModel);
+        }
+        return success;
 	}
 
 	@Override
-	public InputStream getGroupAvatarStream(GroupModel groupModel) throws Exception {
+	public InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException {
 		File f = this.getGroupAvatarFile(groupModel);
 		if (f.exists()) {
 			return masterKey.getCipherInputStream(new FileInputStream(f));
@@ -943,19 +957,20 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getGroupAvatar(GroupModel groupModel) throws Exception {
+	public Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException {
 		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
+			throw new MasterKeyLockedException("no masterkey or locked");
 		}
 
 		return decryptBitmapFromFile(this.getGroupAvatarFile(groupModel));
 	}
 
 	@Override
-	public void removeGroupAvatar(GroupModel groupModel) {
+	public void removeGroupAvatar(@NonNull GroupModel groupModel) {
 		File f = this.getGroupAvatarFile(groupModel);
 		if (f.exists()) {
 			FileUtil.deleteFileOrWarn(f, "removeGroupAvatar", logger);
+            avatarCacheService.reset(groupModel);
 		}
 	}
 
@@ -967,38 +982,54 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean writeContactAvatar(@NonNull String identity, File file) throws Exception {
-		return this.decryptFileToFile(file, this.getContactAvatarFile(identity));
+	public boolean writeUserDefinedProfilePicture(@NonNull String identity, File file) {
+		boolean success = this.decryptFileToFile(file, this.getContactAvatarFile(identity));
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public boolean writeContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception {
-		return this.writeFile(avatarFile, this.getContactAvatarFile(identity));
+	public boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
+		boolean success = this.writeFile(avatarFile, this.getContactAvatarFile(identity));
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public boolean writeContactPhoto(@NonNull String identity, byte[] encryptedBlob) throws Exception {
-		return this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
+	public boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException {
+		boolean success = this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public boolean writeAndroidContactAvatar(@NonNull String identity, byte[] avatarFile) throws Exception {
-		return this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
+	public boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
+		boolean success = this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public Bitmap getContactAvatar(@NonNull String identity) throws Exception {
+	public Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
 		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
+			throw new MasterKeyLockedException("no masterkey or locked");
 		}
 
 		return decryptBitmapFromFile(this.getContactAvatarFile(identity));
 	}
 
 	@Override
-	public Bitmap getAndroidContactAvatar(@NonNull ContactModel contactModel) throws Exception {
+	public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
 		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
+			throw new MasterKeyLockedException("no masterkey or locked");
 		}
 
 		long now = System.currentTimeMillis();
@@ -1006,9 +1037,13 @@ public class FileServiceImpl implements FileService {
 		if (expiration < now) {
 			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 			if (serviceManager != null) {
-				if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
-					ContactService contactService = serviceManager.getContactService();
-					contactService.save(contactModel);
+				try {
+					if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
+						ContactService contactService = serviceManager.getContactService();
+						contactService.save(contactModel);
+					}
+				} catch (SecurityException e) {
+					logger.error("Could not update avatar by android contact", e);
 				}
 			}
 		}
@@ -1017,7 +1052,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public InputStream getContactAvatarStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+	public InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
 		File f = this.getContactAvatarFile(identity);
 		if (f != null && f.exists() && f.length() > 0) {
 			return masterKey.getCipherInputStream(new FileInputStream(f));
@@ -1027,7 +1062,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public InputStream getContactPhotoStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+	public InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
 		File f = this.getContactPhotoFile(identity);
 		if (f != null && f.exists() && f.length() > 0) {
 			return masterKey.getCipherInputStream(new FileInputStream(f));
@@ -1036,18 +1071,15 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Bitmap getContactPhoto(@NonNull String identity) throws Exception {
+	public Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
 		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
+			throw new MasterKeyLockedException("no masterkey or locked");
 		}
 
-		if (this.preferenceService.getProfilePicReceive()) {
-			return decryptBitmapFromFile(this.getContactPhotoFile(identity));
-		}
-		return null;
+		return decryptBitmapFromFile(this.getContactPhotoFile(identity));
 	}
 
-	private Bitmap decryptBitmapFromFile(@Nullable File file) throws Exception {
+	private Bitmap decryptBitmapFromFile(@Nullable File file) throws IOException, MasterKeyLockedException {
 		if (file != null && file.exists()) {
 			InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
 			if (inputStream != null) {
@@ -1062,21 +1094,33 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public boolean removeContactAvatar(@NonNull String identity) {
+	public boolean removeUserDefinedProfilePicture(@NonNull String identity) {
 		File f = this.getContactAvatarFile(identity);
-		return f != null && f.exists() && f.delete();
+		boolean success = f != null && f.exists() && f.delete();
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public boolean removeContactPhoto(@NonNull String identity) {
+	public boolean removeContactDefinedProfilePicture(@NonNull String identity) {
 		File f = this.getContactPhotoFile(identity);
-		return f != null && f.exists() && f.delete();
+		boolean success = f != null && f.exists() && f.delete();
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
-	public boolean removeAndroidContactAvatar(@NonNull String identity) {
+	public boolean removeAndroidDefinedProfilePicture(@NonNull String identity) {
 		File f = this.getAndroidContactAvatarFile(identity);
-		return f != null && f.exists() && f.delete();
+		boolean success = f != null && f.exists() && f.delete();
+        if (success) {
+            avatarCacheService.reset(identity);
+        }
+        return success;
 	}
 
 	@Override
@@ -1088,8 +1132,8 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-	private boolean writeFile(byte[] data, File file) throws Exception {
-		if (data != null && data.length > 0) {
+	private boolean writeFile(@Nullable byte[] data, @Nullable File file) throws IOException, MasterKeyLockedException {
+		if (data != null && data.length > 0 && file != null) {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
 				cipherOutputStream.write(data);
 				return true;
@@ -1101,7 +1145,7 @@ public class FileServiceImpl implements FileService {
 		return false;
 	}
 
-	private boolean writeFile(byte[] data, int pos, int length, File file) throws Exception {
+	private boolean writeFile(byte[] data, int pos, int length, File file) throws IOException, MasterKeyLockedException {
 		if (data != null && data.length > 0) {
 			try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
 				cipherOutputStream.write(data, pos, length);

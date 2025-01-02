@@ -22,13 +22,18 @@
 package ch.threema.domain.protocol.csp.fs
 
 import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.fs.DHSession.RejectMessageError
 import ch.threema.domain.fs.DHSessionId
 import ch.threema.domain.fs.KDFRatchet.RatchetRotationException
+import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
+import ch.threema.domain.protocol.ThreemaFeature
+import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageCoder
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -47,8 +52,8 @@ import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
 import ch.threema.domain.stores.IdentityStoreInterface
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
 import ch.threema.domain.taskmanager.toCspMessage
-import ch.threema.domain.taskmanager.waitForServerAck
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated.DHType
 import ch.threema.protobuf.csp.e2e.fs.Reject
@@ -93,8 +98,8 @@ class ForwardSecurityMessageProcessor(
     /**
      * Set whether forward security is enabled.
      *
-     * If disabled calls to [makeMessage] will throw an exception and received fs messages will be
-     * answered with a [Terminate].
+     * If disabled, [runFsEncapsulationSteps] does not encapsulate the message and received fs
+     * messages will be answered with a [Terminate].
      *
      * TODO(ANDR-2519): Remove when md allows fs
      */
@@ -132,29 +137,80 @@ class ForwardSecurityMessageProcessor(
     }
 
     /**
-     * Encapsulate the message for sending it with forward security. This method returns a
-     * [ForwardSecurityEncryptionResult] that contains a list of all message that should be sent out
-     * and the forward security mode of the given message. The list of messages may contain an init
-     * or an empty forward security message. The given inner message is always part of the returned
-     * list - either encapsulated or in its original form if it cannot be encapsulated in the
-     * existing session.
+     * Run the forward security encapsulation steps for the given recipient and inner message.
      *
      * Note that this result must be used to commit the forward security session after all messages
      * of this result have been acknowledged by the server. To commit the forward security session
      * use [commitSessionState].
      *
+     * @param recipient    the recipient of the [innerMessage]
+     * @param innerMessage the message that will be encapsulated if the session allows it
+     * @param nonce        the nonce that will be used for the [innerMessage]. Note that the nonce
+     *                     is only appended to the corresponding [innerMessage] in the result.
+     * @param nonceFactory the nonce factory is only used to pre generate a nonce for every outgoing
+     *                     message
+     * @param handle       the task codec that is only used to communicate an illegal state of a
+     *                     session to the chat partner
+     *
+     * @return a [ForwardSecurityEncryptionResult] with the outgoing messages and their nonce
+     */
+    fun runFsEncapsulationSteps(
+        recipient: BasicContact,
+        innerMessage: AbstractMessage,
+        nonce: Nonce,
+        nonceFactory: NonceFactory,
+        handle: ActiveTaskCodec,
+    ): ForwardSecurityEncryptionResult {
+        //TODO(ANDR-2519): Remove when md allows fs
+        val senderCanForwardSecurity = isForwardSecurityEnabled()
+        val recipientCanForwardSecurity =
+            ThreemaFeature.canForwardSecurity(recipient.featureMask.toLong())
+        val innerMessageEncapsulated = innerMessage is ForwardSecurityEnvelopeMessage
+
+        // Create forward security encryption result
+        val (outgoingMessages, session) =
+            if (senderCanForwardSecurity && recipientCanForwardSecurity && !innerMessageEncapsulated) {
+                makeMessage(recipient, innerMessage, handle)
+            } else {
+                listOf(innerMessage) to null
+            }
+
+        // Get the forward security mode from the encryption result if available, otherwise take
+        // the forward security mode of the inner message.
+        val forwardSecurityMode = outgoingMessages.last().forwardSecurityMode
+
+        // Create a nonce for every outgoing message. Note that the nonce will be saved when the
+        // message is encoded (depending on the message type)
+        val nonces = outgoingMessages.dropLast(1).map { nonceFactory.next(NonceScope.CSP) }
+
+        return ForwardSecurityEncryptionResult(
+            outgoingMessages zip (nonces + nonce),
+            session,
+            forwardSecurityMode,
+        )
+    }
+
+    /**
+     * Encapsulate the message for sending it with forward security. This method returns a list of
+     * messages to be sent in the same order and an updated dh session. The list of messages may
+     * contain an init or an empty forward security message. The given inner message is always part
+     * of the returned list - either encapsulated or in its original form if it cannot be
+     * encapsulated in the existing session.
+     *
      * @param contact      the recipient identity
      * @param innerMessage the inner message that may get encapsulated
      * @param handle       the task codec that is only used to communicate an illegal state of a
      *                     session to the chat partner
-     * @return a [ForwardSecurityEncryptionResult] that contains the encapsulated message
+     * @return the encapsulated messages and an updated dh session
+     *
+     * @throws IllegalStateException if [isFsEnabled] is false
      */
     @Throws(ThreemaException::class)
-    fun makeMessage(
+    private fun makeMessage(
         contact: Contact,
         innerMessage: AbstractMessage,
         handle: ActiveTaskCodec,
-    ): ForwardSecurityEncryptionResult {
+    ): Pair<List<AbstractMessage>, DHSession> {
         // TODO(ANDR-2519): Remove when md allows fs
         if (!isFsEnabled) {
             throw IllegalStateException("Sending messages with fs is not supported locally")
@@ -206,11 +262,7 @@ class ForwardSecurityMessageProcessor(
                 )
 
                 // If the session has been newly created, add the inner message un-encapsulated
-                return ForwardSecurityEncryptionResult(
-                    initMessage,
-                    innerMessage,
-                    session
-                )
+                return listOfNotNull(initMessage, innerMessage) to session
             }
         }
 
@@ -245,20 +297,13 @@ class ForwardSecurityMessageProcessor(
                 // after the outgoing messages have been acknowledged by the server.
                 session.lastOutgoingMessageTimestamp = now
             }
-            ForwardSecurityEncryptionResult(
-                emptyMessage,
-                innerMessage,
-                session
-            )
+            listOfNotNull(emptyMessage, innerMessage) to session
         } else {
             // Update the session, but do not yet persist this change. It must only be persisted
             // after the outgoing messages have been acknowledged by the server.
             session.lastOutgoingMessageTimestamp = Date().time
-            ForwardSecurityEncryptionResult(
-                initMessage,
-                encapsulateMessage(session, innerMessage, isExistingSession),
-                session
-            )
+            val encapsulatedMessage = encapsulateMessage(session, innerMessage, isExistingSession)
+            listOfNotNull(initMessage, encapsulatedMessage) to session
         }
     }
 
@@ -269,8 +314,10 @@ class ForwardSecurityMessageProcessor(
      * @param result the encryption result that was generated when encrypting the messages
      */
     fun commitSessionState(result: ForwardSecurityEncryptionResult) {
+        val updatedSessionState = result.updatedSessionState ?: return
+
         try {
-            dhSessionStoreInterface.storeDHSession(result.updatedSessionState)
+            dhSessionStoreInterface.storeDHSession(updatedSessionState)
         } catch (e: DHSessionStoreException) {
             logger.error("Could not store updated session state", e)
         }
@@ -835,13 +882,8 @@ class ForwardSecurityMessageProcessor(
         val message = ForwardSecurityEnvelopeMessage(init, true)
         message.toIdentity = contact.identity
 
-        handle.write(
-            message.toCspMessage(
-                identityStoreInterface, contactStore, nonceFactory, nonceFactory.next(false)
-            )
-        )
-
-        handle.waitForServerAck(message.messageId, message.toIdentity)
+        // Send and await server ack
+        sendMessageToContact(message, handle)
 
         // As soon as the server ack has been received, we store the session locally.
         dhSessionStoreInterface.storeDHSession(session)
@@ -860,15 +902,7 @@ class ForwardSecurityMessageProcessor(
             emptyMessage.messageId,
             emptyMessage.toIdentity
         )
-        handle.write(
-            fsMessage.toCspMessage(
-                identityStoreInterface,
-                contactStore,
-                nonceFactory,
-                nonceFactory.next(false)
-            )
-        )
-        handle.waitForServerAck(fsMessage.messageId, fsMessage.toIdentity)
+        sendMessageToContact(fsMessage, handle)
     }
 
     @Throws(ThreemaException::class)
@@ -905,12 +939,7 @@ class ForwardSecurityMessageProcessor(
         // Symmetrically encrypt message (type byte + body)
         val bos = ByteArrayOutputStream()
         bos.write(message.type)
-        try {
-            bos.write(message.body)
-        } catch (e: IOException) {
-            // Should never happen
-            throw RuntimeException(e)
-        }
+        message.body?.let { bos.write(it) } ?: throw ThreemaException("Message body is null")
         val plaintext = bos.toByteArray()
         // A new key is used for each message, so the nonce can be zero
         val nonce = ByteArray(NaCl.NONCEBYTES)
@@ -1032,17 +1061,22 @@ class ForwardSecurityMessageProcessor(
             contact.identity
         )
 
-        // Note that the nonce may be saved when it is sent (depending on message type)
-        val nonce = nonceFactory.next(false)
-        handle.write(
-            message.toCspMessage(
-                identityStoreInterface,
-                contactStore,
-                nonceFactory,
-                nonce
-            )
-        )
-        handle.waitForServerAck(message.messageId, message.toIdentity)
+        sendMessageToContact(message, handle)
+    }
+
+    /**
+     * Send the [message] to the contact that is specified as 'toIdentity'. Stores the nonce
+     * depending on the message type and awaits the server ack if expected to receive one.
+     */
+    private suspend fun sendMessageToContact(message: AbstractMessage, handle: ActiveTaskCodec) {
+        val nonce = nonceFactory.next(NonceScope.CSP)
+        handle.write(message.toCspMessage(identityStoreInterface, contactStore, nonce))
+        if (message.protectAgainstReplay()) {
+            nonceFactory.store(NonceScope.CSP, nonce)
+        }
+        if (!message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
+            handle.awaitOutgoingMessageAck(message.messageId, message.toIdentity)
+        }
     }
 
     /**
@@ -1166,37 +1200,28 @@ class ForwardSecurityDecryptionResult(
 
 /**
  * This is the result we get when encrypting a message with forward security. It contains a list
- * of messages that should be sent out in the same order. After a server acknowledge has been
- * received, this result should be used to commit the session. For more details see
- * [ForwardSecurityMessageProcessor.makeMessage] and
+ * of messages and nonces that should be sent out in the same order. After a server acknowledge has
+ * been received, this result should be used to commit the session. For more details see
+ * [ForwardSecurityMessageProcessor.runFsEncapsulationSteps] and
  * [ForwardSecurityMessageProcessor.commitSessionState].
  */
 class ForwardSecurityEncryptionResult(
-    preFSMessage: ForwardSecurityEnvelopeMessage?,
-    message: AbstractMessage,
+    /**
+     * This contains the outgoing messages and the nonces that will be used. These messages must be
+     * sent in the same order as in this list.
+     */
+    val outgoingMessages: List<Pair<AbstractMessage, Nonce>>,
     /**
      * This is the updated session state of the session in which the message(s) should be sent. This
      * state must be committed once all the messages have been successfully acknowledged by the
      * server.
      */
-    internal val updatedSessionState: DHSession,
-) {
-    /**
-     * This contains the outgoing messages including the aimed message. These messages must be sent
-     * in the same order as in this list.
-     */
-    val outgoingMessages: List<AbstractMessage>
-
+    internal val updatedSessionState: DHSession?,
     /**
      * The forward security mode of the aimed message.
      */
-    val forwardSecurityMode: ForwardSecurityMode
-
-    init {
-        outgoingMessages = listOfNotNull(preFSMessage, message)
-        forwardSecurityMode = message.forwardSecurityMode
-    }
-}
+    val forwardSecurityMode: ForwardSecurityMode,
+)
 
 
 class UnknownMessageTypeException(msg: String) : ThreemaException(msg)

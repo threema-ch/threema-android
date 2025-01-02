@@ -35,7 +35,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.domain.protocol.csp.messages.ballot.BallotCreateInterface;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotSetupInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -95,7 +95,7 @@ public interface BallotService {
 	 * @return BallotUpdateResult
 	 * @throws ThreemaException if an error occurred during processing
 	 */
-	@NonNull BallotUpdateResult update(BallotCreateInterface createMessage) throws ThreemaException, BadMessageException;
+	@NonNull BallotUpdateResult update(BallotSetupInterface createMessage) throws ThreemaException, BadMessageException;
 	boolean update(BallotModel ballotModel);
 
 	BallotPublishResult publish(MessageReceiver<?> messageReceiver, BallotModel ballotModel,

@@ -64,10 +64,6 @@ class GroupAvatarFetcher(
                 defaultAvatar = true
                 defaultAvatarIfNone = true
             }
-            AvatarOptions.DefaultAvatarPolicy.RESPECT_SETTINGS -> {
-                defaultAvatar = preferenceService?.profilePicReceive == false
-                defaultAvatarIfNone = true
-            }
         }
         val backgroundColor = getBackgroundColor(config.options)
 

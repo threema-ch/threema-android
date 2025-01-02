@@ -44,3 +44,8 @@ fun randomIdentity(): String {
         .map { allowedChars.random() }
         .joinToString("")
 }
+
+@Suppress("FunctionName")
+fun MUST_NOT_BE_CALLED(): Nothing {
+    throw UnsupportedOperationException("This method must not be called")
+}

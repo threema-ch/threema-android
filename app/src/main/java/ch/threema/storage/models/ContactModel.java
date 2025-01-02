@@ -43,8 +43,11 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.BasicContact;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.models.WorkVerificationLevel;
 
 import static ch.threema.app.utils.TextUtil.SPACE;
 import static ch.threema.app.utils.TextUtil.TILDE;
@@ -82,36 +85,21 @@ public class ContactModel extends Contact implements ReceiverModel {
 
     public static final byte[] NO_PROFILE_PICTURE_BLOB_ID = new byte[0];
 
-    public enum State {
-        /**
-         * Contact is active.
-         */
-        ACTIVE,
-        /**
-         * Contact is inactive.
-         */
-        INACTIVE,
-        /**
-         * Contact does not have a valid Threema-ID, or the ID was revoked.
-         */
-        INVALID
-    }
-
-    /**
-     * Acquaintance level of the contact.
-     */
-    public enum AcquaintanceLevel {
-        /**
-         * The contact was explicitly added by the user or a 1:1 conversation with the contact
-         * has been initiated.
-         */
-        DIRECT,
-        /**
-         * The contact is part of a group the user is also part of. The contact was not explicitly
-         * added and no 1:1 conversation has been initiated.
-         */
-        GROUP
-    }
+	/**
+	 * Acquaintance level of the contact.
+	 */
+	public enum AcquaintanceLevel {
+		/**
+		 * The contact was explicitly added by the user or a 1:1 conversation with the contact
+		 * has been initiated.
+		 */
+		DIRECT,
+		/**
+		 * The contact is part of a group the user is also part of. The contact was not explicitly
+		 * added and no 1:1 conversation has been initiated.
+		 */
+		GROUP
+	}
 
     /**
      * Policy for sending read receipts or typing indicators
@@ -140,19 +128,20 @@ public class ContactModel extends Contact implements ReceiverModel {
     // Timeout for avatars of linked contacts
     public static long DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY = DateUtils.DAY_IN_MILLIS * 14;
 
-    private String publicNickName;
-    private State state;
-    private String androidContactId;
-    private long featureMask;
-    private int colorIndex = -1;
-    private boolean isWork, isRestored, isArchived;
-    private AcquaintanceLevel acquaintanceLevel = AcquaintanceLevel.DIRECT;
-    private Date localAvatarExpires, dateCreated;
-    private @Nullable Date lastUpdate;
-    private byte[] profilePicBlobID;
-    private @Nullable IdentityType type;
-    private @OverridePolicy int readReceipts, typingIndicators;
-    private int forwardSecurityState; // TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
+	private String publicNickName;
+	private IdentityState state;
+	private String androidContactId;
+	private long featureMask;
+	private int colorIndex = -1;
+	private boolean isWork, isRestored, isArchived;
+	private AcquaintanceLevel acquaintanceLevel = AcquaintanceLevel.DIRECT;
+	private Date localAvatarExpires, dateCreated;
+	private @Nullable Date lastUpdate;
+	private byte[] profilePicBlobID;
+	private @Nullable IdentityType type;
+	private @OverridePolicy int readReceipts, typingIndicators;
+	// TODO(ANDR-2452): Remove the forward security state when most of clients support 1.1 anyway
+	private int forwardSecurityState;
     private @Nullable String jobTitle;
     private @Nullable String department;
 
@@ -293,14 +282,14 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this;
     }
 
-    public State getState() {
-        return this.state;
-    }
+	public IdentityState getState() {
+		return this.state;
+	}
 
-    public ContactModel setState(State state) {
-        this.state = state;
-        return this;
-    }
+	public ContactModel setState(IdentityState state) {
+		this.state = state;
+		return this;
+	}
 
     /**
      * Get the expiration date of a local avatar (either a gateway contact avatar,
@@ -340,16 +329,30 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this.isWork;
     }
 
-    /**
-     * Get the BlobId of the latest profile picture that was sent to this contact.
-     *
-     * @return The blobId of the latest profile-picture sent to this contact, {@code null} if no
-     * profile-picture has been sent or {@code new byte[0]} if a delete-profile-picture message has been sent
-     */
-    @Nullable
-    public byte[] getProfilePicBlobID() {
-        return profilePicBlobID;
-    }
+	/**
+	 * Get the work verification level of the contact. If {@link #isWork} is true,
+	 * {@link WorkVerificationLevel#WORK_SUBSCRIPTION_VERIFIED} is returned,
+	 * {@link WorkVerificationLevel#NONE} otherwise.
+	 */
+	@NonNull
+	public WorkVerificationLevel getWorkVerificationLevel() {
+		if (isWork) {
+			return WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED;
+		} else {
+			return WorkVerificationLevel.NONE;
+		}
+	}
+
+	/**
+	 * Get the BlobId of the latest profile picture that was sent to this contact.
+	 *
+	 * @return The blobId of the latest profile-picture sent to this contact, {@code null} if no
+	 *      profile-picture has been sent or {@code new byte[0]} if a delete-profile-picture message has been sent
+	 */
+	@Nullable
+	public byte[] getProfilePicBlobID() {
+		return profilePicBlobID;
+	}
 
     /**
      * Set the {@link AcquaintanceLevel} of the contact.
@@ -500,33 +503,48 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this;
     }
 
-    public Object[] getModifiedValueCandidates() {
-        return new Object[]{
-            this.getPublicKey(),
-            this.getFirstName(),
-            this.getLastName(),
-            this.publicNickName,
-            this.verificationLevel,
-            this.androidContactId,
-            this.colorIndex,
-            this.state,
-            this.featureMask,
-            this.localAvatarExpires,
-            this.isWork,
-            this.profilePicBlobID,
-            this.type,
-            this.dateCreated,
-            this.acquaintanceLevel,
-            this.lastUpdate,
-            this.isRestored,
-            this.isArchived,
-            this.readReceipts,
-            this.typingIndicators,
-            this.forwardSecurityState,
-            this.jobTitle,
-            this.department
-        };
-    }
+	@NonNull
+	public BasicContact toBasicContact() {
+		if (type == null) {
+			logger.warn("Identity type is null. Using normal as default.");
+		}
+		if (state == null) {
+			logger.warn("Identity state is null. Using active as default.");
+		}
+		return BasicContact.javaCreate(
+			getIdentity(),
+			getPublicKey(),
+			featureMask,
+			state != null ? state : IdentityState.ACTIVE,
+			type != null ? type : IdentityType.NORMAL
+		);
+	}
+
+	public Object[] getModifiedValueCandidates() {
+		return new Object[] {
+			this.getPublicKey(),
+			this.getFirstName(),
+			this.getLastName(),
+			this.publicNickName,
+			this.verificationLevel,
+			this.androidContactId,
+			this.colorIndex,
+			this.state,
+			this.featureMask,
+			this.localAvatarExpires,
+			this.isWork,
+			this.profilePicBlobID,
+			this.type,
+			this.dateCreated,
+			this.acquaintanceLevel,
+			this.lastUpdate,
+			this.isRestored,
+			this.isArchived,
+			this.readReceipts,
+			this.typingIndicators,
+			this.forwardSecurityState
+		};
+	}
 
     @Override
     @NonNull

@@ -189,7 +189,8 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 		);
 		final AvatarUpdateHandler avatarUpdateHandler = new AvatarUpdateHandler(
 			handler,
-			updateDispatcher
+			updateDispatcher,
+            services.contact
 		);
 		final ConversationUpdateHandler conversationUpdateHandler = new ConversationUpdateHandler(
 			handler,
@@ -438,7 +439,10 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 
 		createDispatcher.addReceiver(new CreateContactHandler(
 			createDispatcher,
-			services.contact
+			services.contact,
+			services.user,
+			services.apiConnector,
+			services.contactModelRepository
 		));
 
 		createDispatcher.addReceiver(new CreateGroupHandler(
@@ -465,7 +469,6 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 		));
 		updateDispatcher.addReceiver(new ModifyProfileHandler(
 			responseDispatcher,
-			services.contact,
 			services.user
 		));
 		updateDispatcher.addReceiver(new ModifyConversationHandler(

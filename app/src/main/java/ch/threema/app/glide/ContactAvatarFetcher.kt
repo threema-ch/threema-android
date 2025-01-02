@@ -60,7 +60,7 @@ class ContactAvatarFetcher(
         val returnDefaultIfNone: Boolean
         when (contactAvatarConfig.options.defaultAvatarPolicy) {
             AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK -> {
-                profilePicReceive = true
+                profilePicReceive = preferenceService?.profilePicReceive == true
                 defaultAvatar = false
                 returnDefaultIfNone = true
             }
@@ -72,11 +72,6 @@ class ContactAvatarFetcher(
             AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR -> {
                 profilePicReceive = false
                 defaultAvatar = true
-                returnDefaultIfNone = true
-            }
-            AvatarOptions.DefaultAvatarPolicy.RESPECT_SETTINGS -> {
-                profilePicReceive = preferenceService?.profilePicReceive == true
-                defaultAvatar = false
                 returnDefaultIfNone = true
             }
         }
@@ -96,29 +91,29 @@ class ContactAvatarFetcher(
             return buildDefaultAvatar(null, highRes, backgroundColor)
         }
 
-        // try profile picture
+        // Try the contact defined profile picture
         if (profilePicReceive) {
-            getProfilePicture(contactModel, highRes)?.let {
+            getContactDefinedProfilePicture(contactModel, highRes)?.let {
                 return it
             }
         }
 
-        // try local saved avatar
-        getLocallySavedAvatar(contactModel, highRes)?.let {
+        // Try the user defined profile picture
+        getUserDefinedProfilePicture(contactModel, highRes)?.let {
             return it
         }
 
-        // try android contact picture
-        getAndroidContactAvatar(contactModel, highRes)?.let {
+        // Try the android defined profile picture
+        getAndroidDefinedProfilePicture(contactModel, highRes)?.let {
             return it
         }
 
         return if (returnDefaultIfNone) buildDefaultAvatar(contactModel, highRes, backgroundColor) else null
     }
 
-    private fun getProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
+    private fun getContactDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
         try {
-            val result = fileService?.getContactPhoto(contactModel.identity)
+            val result = fileService?.getContactDefinedProfilePicture(contactModel.identity)
             if (result != null && !highRes) {
                 return AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -128,9 +123,9 @@ class ContactAvatarFetcher(
         }
     }
 
-    private fun getLocallySavedAvatar(contactModel: ContactModel, highRes: Boolean): Bitmap? {
+    private fun getUserDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
         return try {
-            var result = fileService?.getContactAvatar(contactModel.identity)
+            var result = fileService?.getUserDefinedProfilePicture(contactModel.identity)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -140,13 +135,13 @@ class ContactAvatarFetcher(
         }
     }
 
-    private fun getAndroidContactAvatar(contactModel: ContactModel, highRes: Boolean): Bitmap? {
+    private fun getAndroidDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
         if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance().getAndroidContactUri(contactModel) == null) {
             return null
         }
         // regular contacts
         return try {
-            var result = fileService?.getAndroidContactAvatar(contactModel)
+            var result = fileService?.getAndroidDefinedProfilePicture(contactModel)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }

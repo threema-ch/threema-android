@@ -1546,6 +1546,17 @@ Threema 支援的所有表情符號。</string>
     <string name="md_link_device_qr_scan_message">請掃描QR碼</string>
     <string name="directory_request_failed">目錄要求失敗，請再試一次。</string>
     <string name="add_shortcut_exists">此目標的捷徑已經存在。</string>
+    <string name="scan_qr_code">掃描QR碼</string>
+    <string name="scan_qr_code_explain">在您要連結的裝置上掃描 %s 桌面測試版中顯示的QR碼。</string>
+    <string name="connecting">連線中…</string>
+    <string name="trust_new_device">信任新裝置</string>
+    <string name="trust_new_device_explain">請選擇與新裝置上顯示的相同圖像，以確認您信任新裝置。</string>
+    <string name="trust_new_device_info">新裝置將儲存您的 %s 個人檔案的獨立副本，該裝置將可以傳送和接收訊息。</string>
+    <string name="no_match_question">没有相符項？</string>
+    <string name="sending_data">正在傳送資料…</string>
+    <string name="continue_on_new_device">請在您的新裝置上繼續</string>
+    <string name="device_linked_successfully">裝置連結成功</string>
+    <string name="device_linked_successfully_explain">現在，您可以在你剛剛連結的裝置上使用 %s（即使此裝置已關機或沒有網路連線）。</string>
     <string name="resend_message_dialog_title">重新傳送群組訊息？</string>
     <string name="resend_message_dialog_message">此訊息無法傳送給群組所有成員。重新傳送訊息至%1$s？</string>
     <string name="work_lost_credentials_help">忘記了您的憑證？請聯絡您的 %1$s 管理員。</string>
@@ -1590,6 +1601,10 @@ Threema 支援的所有表情符號。</string>
     <string name="incoming_calls">來電</string>
     <string name="group_chats">群組對話</string>
     <string name="edit_history_file_no_caption">無編輯記錄</string>
+    <string name="device_linking_failed">裝置連結失敗</string>
+    <string name="device_linking_failed_explain">無法連結裝置，請再試一次。\n原因：%s。</string>
+    <string name="qr_code_scan_error">掃描QR碼時發生錯誤</string>
+    <string name="verification_failed">驗證失敗</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您對這則訊息表示「同意」。</string>
     <string name="cd_dec_icon">您對這則訊息表示「不同意」。</string>

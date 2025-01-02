@@ -1,0 +1,19 @@
+error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
+ --> tests/fail/01-incorrect-length.rs:9:27
+  |
+9 |     let result: [u8; 8] = concat_fixed_bytes!(a, b); // yields 7 bytes, not 8
+  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: source type: `main::ConcatenatedArrays<4, 3>` (56 bits)
+  = note: target type: `[u8; 8]` (64 bits)
+  = note: this error originates in the macro `concat_fixed_bytes` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0512]: cannot transmute between types of different sizes, or dependently-sized types
+  --> tests/fail/01-incorrect-length.rs:10:27
+   |
+10 |     let result: [u8; 8] = concat_fixed_bytes!(a, b, c); // yields 10 bytes, not 8
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: source type: `main::ConcatenatedArrays<4, 3, 3>` (80 bits)
+   = note: target type: `[u8; 8]` (64 bits)
+   = note: this error originates in the macro `concat_fixed_bytes` (in Nightly builds, run with -Z macro-backtrace for more info)

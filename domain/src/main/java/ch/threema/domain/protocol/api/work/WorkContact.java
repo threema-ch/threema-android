@@ -21,21 +21,22 @@
 
 package ch.threema.domain.protocol.api.work;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class WorkContact {
-    public final String firstName;
-    public final String lastName;
-    public final byte[] publicKey;
-    public final String threemaId;
+    public final @Nullable String firstName;
+    public final @Nullable String lastName;
+    public final @NonNull byte[] publicKey;
+    public final @NonNull String threemaId;
     public final @Nullable String jobTitle;
     public final @Nullable String department;
 
     public WorkContact(
-        String threemaId,
-        byte[] publicKey,
-        String firstName,
-        String lastName,
+        @NonNull String threemaId,
+        @NonNull byte[] publicKey,
+        @Nullable String firstName,
+        @Nullable String lastName,
         @Nullable String jobTitle,
         @Nullable String department
     ) {

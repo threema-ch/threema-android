@@ -132,7 +132,11 @@ public class IdentityStore implements IdentityStoreInterface {
 		return this.publicNickname;
 	}
 
-	public void setPublicNickname(String publicNickname) {
+    /**
+     * This method persists the public nickname. It does *not* reflect the changes and must
+     * therefore only be used to persist the nickname.
+     */
+	public void persistPublicNickname(String publicNickname) {
 		this.publicNickname = publicNickname;
 		this.preferenceStore.save(PreferenceStore.PREFS_PUBLIC_NICKNAME, publicNickname);
 		ListenerManager.profileListeners.handle(listener -> listener.onNicknameChanged(publicNickname));
@@ -156,7 +160,7 @@ public class IdentityStore implements IdentityStoreInterface {
 		this.preferenceStore.save(PreferenceStore.PREFS_PRIVATE_KEY, privateKey, true);
 
 		//default identity
-		this.setPublicNickname(identity);
+		this.persistPublicNickname(identity);
 	}
 
 	public void clear() {

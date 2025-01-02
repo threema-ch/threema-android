@@ -43,14 +43,12 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.fail
 import org.junit.Test
 import java.util.Date
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @DangerousTest
 class IncomingMessageProcessorTest : MessageProcessorProvider() {
 
@@ -93,9 +91,9 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         }
 
         val pollSetupMessage = PollSetupMessage().also {
-            it.ballotCreator = ballotCreator
+            it.ballotCreatorIdentity = ballotCreator
             it.ballotId = ballotId
-            it.data = ballotData
+            it.ballotData = ballotData
         }.enrich()
 
         // Test a valid ballot setup message that opens a poll
@@ -103,12 +101,9 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
 
         val pollVoteMessage = PollVoteMessage().also { voteMessage ->
             voteMessage.ballotId = ballotId
-            voteMessage.ballotCreator = ballotCreator
-            voteMessage.ballotVotes.addAll(List(5) { index ->
-                BallotVote().also {
-                    it.id = index
-                    it.value = 0
-                }
+            voteMessage.ballotCreatorIdentity = ballotCreator
+            voteMessage.votes.addAll(List(5) { index ->
+                BallotVote(index, 0)
             })
         }.enrich()
 

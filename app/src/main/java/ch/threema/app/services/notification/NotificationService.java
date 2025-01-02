@@ -259,7 +259,7 @@ public interface NotificationService {
 
 	void cancelWorkSyncProgress();
 
-	void showNewSyncedContactsNotification(List<ContactModel> contactModels);
+	void showNewSyncedContactsNotification(List<ch.threema.data.models.ContactModel> contactModels);
 
 	void showWebclientResumeFailed(String msg);
 	void cancelRestartNotification();

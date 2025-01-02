@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
@@ -40,11 +41,13 @@ import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.utils.ShortcutUtil;
+import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
+import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.DatabaseNonceStore;
+import ch.threema.storage.DatabaseServiceNew;
 
 public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteIdentityAsyncTask");
@@ -54,6 +57,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 	private final ServiceManager serviceManager;
 	private final FragmentManager fragmentManager;
 	private final Runnable runOnCompletion;
+	private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
 	public DeleteIdentityAsyncTask(@Nullable FragmentManager fragmentManager,
 	                               @Nullable Runnable runOnCompletion) {
@@ -80,7 +84,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 			serviceManager.getMessageService().removeAll();
 			serviceManager.getConversationService().reset();
 			serviceManager.getGroupService().removeAll();
-			serviceManager.getContactService().removeAll();
+			backgroundExecutor.execute(getDeleteAllContactsTask());
 			try {
 				serviceManager.getUserService().removeIdentity();
 			} catch (Exception ignored) {}
@@ -155,6 +159,28 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
 				runOnCompletion.run();
 			}
 		}
+	}
+
+	@NonNull
+	private DeleteAllContactsBackgroundTask getDeleteAllContactsTask() throws ThreemaException {
+		return new DeleteAllContactsBackgroundTask(
+			serviceManager.getModelRepositories().getContacts(),
+			new DeleteContactServices(
+				serviceManager.getUserService(),
+				serviceManager.getContactService(),
+				serviceManager.getConversationService(),
+				serviceManager.getRingtoneService(),
+				serviceManager.getMutedChatsListService(),
+				serviceManager.getHiddenChatsListService(),
+				serviceManager.getProfilePicRecipientsService(),
+				serviceManager.getWallpaperService(),
+				serviceManager.getFileService(),
+				serviceManager.getExcludedSyncIdentitiesService(),
+				serviceManager.getDHSessionStore(),
+				serviceManager.getNotificationService(),
+				serviceManager.getDatabaseServiceNew()
+			)
+		);
 	}
 
 	private void secureDelete(File file) {

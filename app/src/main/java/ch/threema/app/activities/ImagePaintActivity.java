@@ -903,7 +903,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
 			@Override
 			protected void onPostExecute(List<FaceItem> faceItemList) {
-				if (faceItemList != null && faceItemList.size() > 0) {
+				if (faceItemList != null && !faceItemList.isEmpty()) {
 					motionView.post(() -> {
 						for (FaceItem faceItem : faceItemList) {
 							Layer layer = new Layer();
@@ -1702,9 +1702,6 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 	public void onYes(String tag, Object data) {
 		finishWithoutChanges();
 	}
-
-	@Override
-	public void onNo(String tag, Object data) {}
 
 	/**
 	 * Finish activity with changes (result ok)

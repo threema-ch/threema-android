@@ -32,6 +32,6 @@ public interface IdListService {
 	void toggle(Context context, ContactModel contactModel);
 
 	String[] getAll();
-	void addAll(String[] ids);
 	void removeAll();
+    void replaceAll(String[] ids);
 }

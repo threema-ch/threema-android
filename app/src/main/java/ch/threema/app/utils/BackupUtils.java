@@ -28,9 +28,6 @@ import ch.threema.storage.models.ballot.BallotModel;
 
 public class BackupUtils {
 
-	public static final String BACKUP_DIR = "backup/";
-	public static final String KEY_BACKUP_PATH = BACKUP_DIR + "keybackup.bin";
-
 	private static String buildBallotChoiceUid(int apiChoiceId) {
 		return String.valueOf(apiChoiceId);
 	}
@@ -59,5 +56,28 @@ public class BackupUtils {
 
 	public static String buildDistributionListUid(DistributionListModel distributionListModel) {
 		return String.valueOf(distributionListModel.getId());
+	}
+
+	/**
+	 * Calculate the count of nonces that are not yet respected in the progress calculation.
+	 *
+	 * This calculation is based on the assumption that per noncesPerChunk of processed nonces
+	 * the steps are calculated like `steps = noncesInChunk / noncesPerStep`. It is assumed that every
+	 * chunk except the last contains noncesPerChunk.
+	 * Therefore for every processed chunk there may remain some nonces that are not yet respected.
+	 *
+	 * @return The number of nonces not yet respected for step calculation
+	 */
+	public static int calcRemainingNoncesProgress(
+		final int noncesPerChunk,
+		final int noncesPerStep,
+		final int nonceCount
+	) {
+		int fullChunks = nonceCount / noncesPerChunk;
+		int lastChunkCount = nonceCount - (noncesPerChunk * fullChunks);
+
+		int remainingPerFullChunk = noncesPerChunk % noncesPerStep;
+		int remainingInLastChunk = lastChunkCount % noncesPerStep;
+		return remainingPerFullChunk * fullChunks + remainingInLastChunk;
 	}
 }

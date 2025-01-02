@@ -51,6 +51,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -245,20 +246,20 @@ public class ConversationServiceImpl implements ConversationService {
                     });
                 }
 
-                if (filter.noInvalid()) {
-                    logger.debug("filter chats with revoked contacts / left group that cannot receive messages");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            if (conversationModel.isContactConversation()) {
-                                return conversationModel.getContact() != null && !(conversationModel.getContact().getState() == ContactModel.State.INVALID);
-                            } else if (conversationModel.isGroupConversation()) {
-                                return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
-                            }
-                            return true;
-                        }
-                    });
-                }
+				if (filter.noInvalid()) {
+					logger.debug("filter chats with revoked contacts / left group that cannot receive messages");
+					filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
+						@Override
+						public boolean apply(@NonNull ConversationModel conversationModel) {
+							if (conversationModel.isContactConversation()) {
+								return conversationModel.getContact() != null && conversationModel.getContact().getState() != IdentityState.INVALID;
+							} else if (conversationModel.isGroupConversation()) {
+								return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
+							}
+							return true;
+						}
+					});
+				}
 
                 if (filter.onlyPersonal()) {
                     logger.debug("filter non-personal chats such as channels/broadcasts or blocked chats");
@@ -538,15 +539,14 @@ public class ConversationServiceImpl implements ConversationService {
 
     @Override
     public synchronized int empty(@NonNull MessageReceiver receiver) {
-        switch (receiver.getType()) {
-            case MessageReceiver.Type_CONTACT:
-                return this.empty(((ContactMessageReceiver) receiver).getContact());
-            case MessageReceiver.Type_GROUP:
-                return this.empty(((GroupMessageReceiver) receiver).getGroup());
-            case MessageReceiver.Type_DISTRIBUTION_LIST:
-                return this.empty(((DistributionListMessageReceiver) receiver).getDistributionList());
-            default:
-                throw new IllegalStateException("Got ReceiverModel with invalid receiver type!");
+        // First refresh the receiver. Otherwise it is possible that the conversation is null as it
+        // does not yet exist (or is just not yet loaded) and then the chat won't be emptied.
+        ConversationModel model = refresh(receiver);
+        if (model != null) {
+            return this.empty(model, true);
+        } else {
+            logger.error("Could not empty conversation as conversation model is null");
+            return 0;
         }
     }
 
@@ -574,11 +574,6 @@ public class ConversationServiceImpl implements ConversationService {
 
         // Return number of removed messages
         return messages.size();
-    }
-
-    @Override
-    public synchronized int empty(@NonNull ContactModel contactModel) {
-        return empty(contactModel.getIdentity());
     }
 
     @Override

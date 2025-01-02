@@ -85,10 +85,12 @@ import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
@@ -99,6 +101,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -109,6 +112,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	private static final int REQUEST_CODE_CAMERA = 43322;
 	private static final int REQUEST_CODE_CROP = 43323;
 	private static final String DIALOG_TAG_SAMSUNG_FIX = "samsung_fix";
+    private UserService userService;
 	private ContactService contactService;
 	private GroupService groupService;
 	private FileService fileService;
@@ -153,10 +157,12 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		avatarData = new ViewModelProvider(getActivity()).get(AvatarEditViewModel.class);
 
 		try {
-			contactService = ThreemaApplication.getServiceManager().getContactService();
-			groupService = ThreemaApplication.getServiceManager().getGroupService();
-			fileService = ThreemaApplication.getServiceManager().getFileService();
-			preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+            ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
+            userService = serviceManager.getUserService();
+			contactService = serviceManager.getContactService();
+			groupService = serviceManager.getGroupService();
+			fileService = serviceManager.getFileService();
+			preferenceService = serviceManager.getPreferenceService();
 		} catch (Exception e) {
 			logger.error("Exception", e);
 			return;
@@ -179,7 +185,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 	private final ContactListener contactListener = new ContactListener() {
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
+		public void onAvatarChanged(final @NonNull String identity) {
+            ContactModel contactModel = contactService.getByIdentity(identity);
 			if (contactModel != null && this.shouldHandleChange(contactModel.getIdentity())) {
 				RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(contactModel, null));
 			}
@@ -229,19 +236,20 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
 		try {
 			if (contactModel != null) {
-				// Get the custom avatar (or null if no custom avatar available)
-				Bitmap bitmap = getCustomContactAvatar(contactModel);
-				boolean isCustomAvatar = true;
-				if (bitmap == null) {
-					// Get default avatar as no custom avatar is available
-					bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
-						.setHighRes(true)
-						.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
-						.setDarkerBackground(isAvatarEditable())
-						.toOptions()
-					);
-					isCustomAvatar = false;
-				}
+				// Respect the settings for getting the profile picture.
+				Bitmap bitmap = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
+					.setHighRes(true)
+					.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
+					.setDarkerBackground(isAvatarEditable())
+					.toOptions()
+				);
+
+				// If the preferences allow showing the profile pictures, then check if there is a
+				// profile picture available for the contact. Otherwise, check whether there is a
+				// locally saved avatar.
+				boolean isCustomAvatar =
+					(preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(contactModel.getIdentity()))
+						|| fileService.hasUserDefinedProfilePicture(contactModel.getIdentity());
 
 				// If it is my profile picture then make it round
 				if (isMyProfilePicture) {
@@ -280,49 +288,6 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		avatarImage.setClickable(editable);
 		avatarImage.setFocusable(editable);
 		avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
-	}
-
-	/**
-	 * Get the custom contact avatar. The size is automatically scaled down to the maximum possible
-	 * size if it was too large. Due to a bug in compression some avatars may be too large and then
-	 * the application crashes when displaying them in full size.
-	 *
-	 * Updates the avatar if it needs to be resized (only if it is my profile picture).
-	 *
-	 * If there is no custom avatar set for the contact, null is returned.
-	 */
-	@Nullable
-	private Bitmap getCustomContactAvatar(@NonNull ContactModel contactModel) {
-		Bitmap customAvatar = contactService.getAvatar(contactModel, new AvatarOptions.Builder()
-			.setHighRes(true)
-			.setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
-			.toOptions()
-		);
-
-		Bitmap scaledAvatar = scaleToSize(customAvatar);
-		if (scaledAvatar != null && scaledAvatar != customAvatar && isLocallySavedAvatar(contactModel)) {
-			try {
-				logger.info("Updating resized contact avatar");
-				contactService.setAvatar(contactModel, BitmapUtil.bitmapToByteArray(scaledAvatar, Bitmap.CompressFormat.PNG, 100));
-			} catch (Exception e) {
-				logger.error("Could not update avatar", e);
-			}
-		}
-
-		return scaledAvatar;
-	}
-
-	/**
-	 * Returns true if the locally saved avatar is displayed. The locally saved avatar is displayed
-	 * if it is my profile picture or there is a locally saved avatar available and the profile
-	 * pictures are hidden ('getProfilePicReceive-preference') or there is no profile picture.
-	 */
-	private boolean isLocallySavedAvatar(@NonNull ContactModel contactModel) {
-		boolean showProfilePictures = preferenceService.getProfilePicReceive();
-		boolean hasProfilePicture = fileService.hasContactPhotoFile(contactModel.getIdentity());
-		boolean hasLocallySavedAvatar = fileService.hasContactAvatarFile(contactModel.getIdentity());
-
-		return isMyProfilePicture || (hasLocallySavedAvatar && (!showProfilePictures || !hasProfilePicture));
 	}
 
 	/**
@@ -471,10 +436,16 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 			new AsyncTask<Void, Void, Void>() {
 				@Override
 				protected Void doInBackground(Void... voids) {
-					if (avatarData.getContactModel() != null) {
-						contactService.removeAvatar(avatarData.getContactModel());
-						fileService.removeContactPhoto(avatarData.getContactModel().getIdentity());
-					} else if (avatarData.getGroupModel() != null) {
+                    ContactModel contactModel = avatarData.getContactModel();
+                    if (contactModel != null) {
+                        if (userService.isMe(contactModel.getIdentity())) {
+                            userService.removeUserProfilePicture(TriggerSource.LOCAL);
+                        } else {
+                            contactService.removeUserDefinedProfilePicture(
+                                avatarData.getContactModel(), TriggerSource.LOCAL
+                            );
+                        }
+                    } else if (avatarData.getGroupModel() != null) {
 						saveGroupAvatar(null, true);
 					}
 					return null;
@@ -605,9 +576,20 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 							if (listenerRef.get() != null) {
 								listenerRef.get().onAvatarSet(avatarData.getCroppedFile());
 							} else {
-								if (this.avatarData.getContactModel() != null) {
+                                ContactModel contactModel = avatarData.getContactModel();
+								if (contactModel != null) {
 									try {
-										contactService.setAvatar(this.avatarData.getContactModel(), avatarData.getCroppedFile());
+                                        File profilePicture = avatarData.getCroppedFile();
+                                        if (profilePicture == null) {
+                                            logger.error("Cropped file for profile picture is null");
+                                            return;
+                                        }
+
+                                        if (userService.isMe(contactModel.getIdentity())) {
+                                            userService.setUserProfilePicture(profilePicture, TriggerSource.LOCAL);
+                                        } else {
+                                            contactService.setUserDefinedProfilePicture(contactModel, profilePicture, TriggerSource.LOCAL);
+                                        }
 										loadAvatarForModel(this.avatarData.getContactModel(), null);
 									} catch (Exception e) {
 										logger.error("Exception", e);
@@ -738,8 +720,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 	 */
 	private boolean hasAvatar() {
 		if (this.avatarData.getContactModel() != null) {
-			return fileService.hasContactAvatarFile(this.avatarData.getContactModel().getIdentity())
-				|| fileService.hasContactPhotoFile(this.avatarData.getContactModel().getIdentity());
+			return fileService.hasUserDefinedProfilePicture(this.avatarData.getContactModel().getIdentity())
+				|| fileService.hasContactDefinedProfilePicture(this.avatarData.getContactModel().getIdentity());
 		} else if (this.avatarData.getGroupModel() != null) {
 			return fileService.hasGroupAvatarFile(this.avatarData.getGroupModel());
 		}
@@ -754,7 +736,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 		if (this.avatarData.getContactModel() != null) {
 			return isEditable && ContactUtil.canHaveCustomAvatar(this.avatarData.getContactModel())
 				&& !(preferenceService.getProfilePicReceive()
-				&& fileService.hasContactPhotoFile(this.avatarData.getContactModel().getIdentity()));
+				&& fileService.hasContactDefinedProfilePicture(this.avatarData.getContactModel().getIdentity()));
 		} else if (this.avatarData.getGroupModel() != null) {
 			GroupModel group = avatarData.getGroupModel();
 			return isEditable && groupService.isGroupCreator(group) && groupService.isGroupMember(group);

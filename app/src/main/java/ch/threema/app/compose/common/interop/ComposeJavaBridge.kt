@@ -22,8 +22,6 @@
 package ch.threema.app.compose.common.interop
 
 import androidx.compose.ui.platform.ComposeView
-import androidx.preference.PreferenceManager
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.MessageDetailsUiModel
 import ch.threema.app.activities.MessageTimestampsUiModel
 import ch.threema.app.activities.toUiModel
@@ -40,7 +38,7 @@ object ComposeJavaBridge {
         messageDetailsUiModel: MessageDetailsUiModel,
     ) {
         composeView.setContent {
-            ThreemaTheme(dynamicColor = shouldUseDynamicColors()) {
+            ThreemaTheme {
                 CombinedMessageDetailsList(
                     messageTimestampsUiModel,
                     messageDetailsUiModel
@@ -56,17 +54,12 @@ object ComposeJavaBridge {
     ) {
         val messageBubbleUiState = model.toUiModel(myIdentity)
         composeView.setContent {
-            ThreemaTheme(dynamicColor = shouldUseDynamicColors()) {
+            ThreemaTheme {
                 MessageBubble(
                     text = messageBubbleUiState.text,
                     isOutbox = messageBubbleUiState.isOutbox,
                 )
             }
         }
-    }
-
-    private fun shouldUseDynamicColors(): Boolean {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
-        return sharedPreferences.getBoolean("pref_dynamic_color", false)
     }
 }

@@ -89,7 +89,7 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 	@Override
 	protected AbstractMessageModel setData(MediaMessageDataInterface data) {
 		AbstractMessageModel messageModel = this.getMessageModel();
-		messageModel.setFileData((FileDataModel) data);
+		messageModel.setFileDataModel((FileDataModel) data);
 		return messageModel;
 	}
 

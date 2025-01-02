@@ -34,6 +34,27 @@ sealed interface D2dMessage {
         val appVersion: String,
         val label: String
     ) : D2dMessage {
+        companion object {
+            val INVALID_DEVICE_INFO = DeviceInfo(Platform.UNSPECIFIED, "", "", "")
+
+            fun fromProtobuf(deviceInfo: MdD2D.DeviceInfo): DeviceInfo {
+                val platform: Platform = when (deviceInfo.platform) {
+                    MdD2D.DeviceInfo.Platform.UNSPECIFIED -> Platform.UNSPECIFIED
+                    MdD2D.DeviceInfo.Platform.ANDROID -> Platform.ANDROID
+                    MdD2D.DeviceInfo.Platform.IOS -> Platform.IOS
+                    MdD2D.DeviceInfo.Platform.DESKTOP -> Platform.DESKTOP
+                    MdD2D.DeviceInfo.Platform.WEB -> Platform.WEB
+                    null, MdD2D.DeviceInfo.Platform.UNRECOGNIZED -> Platform.UNSPECIFIED
+                }
+                return DeviceInfo(
+                    platform,
+                    deviceInfo.platformDetails,
+                    deviceInfo.appVersion,
+                    deviceInfo.label
+                )
+            }
+        }
+
         enum class Platform(val value: Int) {
             UNSPECIFIED(0),
             ANDROID(1),

@@ -22,11 +22,15 @@
 package ch.threema.data.repositories
 
 import ch.threema.data.TestDatabaseService
+import ch.threema.app.TestCoreServiceManager
+import ch.threema.app.TestTaskManager
+import ch.threema.app.ThreemaApplication
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbGroup
 import ch.threema.data.storage.SqliteDatabaseBackend
+import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.GroupModel
 import org.junit.Assert
@@ -40,6 +44,7 @@ import kotlin.test.assertTrue
 class GroupModelRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
     private lateinit var databaseBackend: DatabaseBackend
+    private lateinit var coreServiceManager: TestCoreServiceManager
     private lateinit var groupModelRepository: GroupModelRepository
 
     private fun createTestDbGroup(groupIdentity: GroupIdentity): DbGroup {
@@ -56,6 +61,7 @@ class GroupModelRepositoryTest {
             "Description",
             Date(),
             setOf("AAAAAAAA", "BBBBBBBB"),
+            GroupModel.UserState.MEMBER,
         )
     }
 
@@ -63,7 +69,13 @@ class GroupModelRepositoryTest {
     fun before() {
         this.databaseService = TestDatabaseService()
         this.databaseBackend = SqliteDatabaseBackend(databaseService)
-        this.groupModelRepository = ModelRepositories(databaseService).groups
+        this.coreServiceManager = TestCoreServiceManager(
+            version = ThreemaApplication.getAppVersion(),
+            databaseService = databaseService,
+            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            taskManager = TestTaskManager(UnusedTaskCodec())
+        )
+        this.groupModelRepository = ModelRepositories(coreServiceManager).groups
     }
 
     @Test

@@ -39,7 +39,7 @@ public interface ContactListener {
 	/**
 	 * Called when the contact avatar was changed.
 	 */
-	@AnyThread default void onAvatarChanged(final ContactModel contactModel) { }
+	@AnyThread default void onAvatarChanged(final @NonNull String identity) { }
 
 	/**
 	 * The contact was removed.

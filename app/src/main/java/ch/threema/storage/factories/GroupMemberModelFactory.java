@@ -64,7 +64,11 @@ public class GroupMemberModelFactory extends ModelFactory {
 				null));
 	}
 
-	public long countMembers(int groupId) {
+	/**
+	 * This does not include the user itself. If the user is part of the group, the total number of
+	 * members is the value returned by this method + 1.
+	 */
+	public long countMembersWithoutUser(int groupId) {
 		return DatabaseUtil.count(this.databaseService.getReadableDatabase().rawQuery(
 			"SELECT COUNT(*) FROM " + this.getTableName()
 				+ " WHERE " + GroupMemberModel.COLUMN_GROUP_ID + "=?",

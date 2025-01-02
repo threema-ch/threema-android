@@ -24,6 +24,11 @@ package ch.threema.app.voip.groupcall.sfu
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import ch.threema.app.ThreemaApplication
+import ch.threema.app.asynctasks.AddContactRestrictionPolicy
+import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask
+import ch.threema.app.asynctasks.ContactAvailable
+import ch.threema.app.asynctasks.Failed
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.gcBlake2b
@@ -36,6 +41,7 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.storage.models.ContactModel
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.neilalexander.jnacl.NaCl
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -49,7 +55,7 @@ class P2PHandshake private constructor(
     val sender: LocalParticipant,
     val receiverId: ParticipantId,
     private val call: GroupCall,
-    initialState: HandshakeState
+    initialState: HandshakeState,
 ) {
     private var handshakeState: HandshakeState = initialState
         set(value) {
@@ -77,7 +83,8 @@ class P2PHandshake private constructor(
     lateinit var p2pContexts: P2PContexts
 
     private val queuedMessages = mutableListOf<P2PMessageContent>()
-    private val completedSignal: CompletableDeferred<Pair<P2PContexts, List<P2PMessageContent.MediaKey>>> = CompletableDeferred()
+    private val completedSignal: CompletableDeferred<Pair<P2PContexts, List<P2PMessageContent.MediaKey>>> =
+        CompletableDeferred()
 
     val isDone: Boolean
         get() = handshakeState == HandshakeState.DONE
@@ -113,10 +120,12 @@ class P2PHandshake private constructor(
                 logger.debug("Queuing Rekey to be sent once authenticated")
                 queuedMessages.add(message)
             }
+
             HandshakeState.DONE -> {
                 // Note: This is considered unreachable
                 throw Error("Cannot queue Rekey, handshake already done!")
             }
+
             HandshakeState.CANCELLED -> logger.debug("Ignoring Rekey because handshake is cancelled")
             else -> logger.debug("Ignoring Rekey because we have not sent a Handshake.*Auth yet")
         }
@@ -131,8 +140,14 @@ class P2PHandshake private constructor(
             try {
                 when (handshakeState) {
                     HandshakeState.INIT -> handleUnexpectedMessage(message)
-                    HandshakeState.AWAIT_EXISTING_PARTICIPANT_HELLO -> handleMessageInAwaitEpHelloState(message)
-                    HandshakeState.AWAIT_NEW_PARTICIPANT_HELLO -> handleMessageInAwaitNpHelloState(message)
+                    HandshakeState.AWAIT_EXISTING_PARTICIPANT_HELLO -> handleMessageInAwaitEpHelloState(
+                        message
+                    )
+
+                    HandshakeState.AWAIT_NEW_PARTICIPANT_HELLO -> handleMessageInAwaitNpHelloState(
+                        message
+                    )
+
                     HandshakeState.AWAIT_AUTH -> handleMessageInAwaitAuthState(message)
                     HandshakeState.DONE, HandshakeState.CANCELLED -> handleUnexpectedMessage(message)
                 }
@@ -161,7 +176,8 @@ class P2PHandshake private constructor(
         logger.info("Create Hello from {} to {}", sender.id, receiverId)
         val hello = Handshake.Hello(
             call.dependencies.identityStore.identity,
-            call.dependencies.identityStore.publicNickname ?: call.dependencies.identityStore.identity,
+            call.dependencies.identityStore.publicNickname
+                ?: call.dependencies.identityStore.identity,
             senderP2PContext.pckPublic,
             senderP2PContext.pcck
         )
@@ -180,7 +196,8 @@ class P2PHandshake private constructor(
             receiverP2PContext.pcck,
             call.context.connectionCtx.pcmk.all().map { P2PMessageContent.MediaKey.fromState(it) },
         )
-        val encryptedInnerData = NaCl.symmetricEncryptData(auth.getEnvelopeBytes(), gcnhak, innerNonce)
+        val encryptedInnerData =
+            NaCl.symmetricEncryptData(auth.getEnvelopeBytes(), gcnhak, innerNonce)
         val encryptedAuthData = pck.encrypt(
             innerNonce + encryptedInnerData,
             senderP2PContext.nextPcckNonce()
@@ -200,9 +217,16 @@ class P2PHandshake private constructor(
                 renderer: SurfaceViewRenderer,
                 width: Int,
                 height: Int,
-                fps: Int
+                fps: Int,
             ): DetachSinkFn {
-                call.context.sendMessageToSfu { P2SMessage.SubscribeParticipantCamera(participantId, width, height, fps) }
+                call.context.sendMessageToSfu {
+                    P2SMessage.SubscribeParticipantCamera(
+                        participantId,
+                        width,
+                        height,
+                        fps
+                    )
+                }
 
                 participantLogger.trace("Starting to render remote camera video")
                 val videoContext = remoteCtx?.cameraVideoContext
@@ -215,14 +239,22 @@ class P2PHandshake private constructor(
             @UiThread
             override fun unsubscribeCamera() {
                 participantLogger.trace("Unsubscribe camera participant={}", participantId.id)
-                call.context.sendMessageToSfu { P2SMessage.UnsubscribeParticipantCamera(participantId) }
+                call.context.sendMessageToSfu {
+                    P2SMessage.UnsubscribeParticipantCamera(
+                        participantId
+                    )
+                }
             }
         }
     }
 
     @WorkerThread
     private fun handleUnexpectedMessage(message: P2POuterEnvelope) {
-        logger.warn("Received unexpected message from {} while in handshake state '{}'", message.senderId, handshakeState)
+        logger.warn(
+            "Received unexpected message from {} while in handshake state '{}'",
+            message.senderId,
+            handshakeState
+        )
     }
 
     @WorkerThread
@@ -273,7 +305,7 @@ class P2PHandshake private constructor(
     private fun isGroupMember(identity: String): Boolean {
         val groupService = call.dependencies.groupService
         return groupService.getById(call.description.groupId.id)?.let {
-            identity in groupService.getGroupIdentities(it)
+            groupService.isGroupMember(it, identity)
         } ?: false
     }
 
@@ -307,12 +339,42 @@ class P2PHandshake private constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         try {
-            receiverContact = call.dependencies.contactService.getOrCreateByIdentity(hello.identity, false)
+            receiverContact = getOrCreateContact(hello.identity)
             val receiverParticipant = createRemoteParticipant(receiverId)
             receiverP2PContext = RemoteP2PContext(receiverParticipant, hello.pck, hello.pcck)
         } catch (e: Exception) {
             throw GroupCallException("Could not init receiver", e)
         }
+    }
+
+    @WorkerThread
+    private fun getOrCreateContact(identity: String): ContactModel {
+        // Check if the contact already exists
+        call.dependencies.contactService.getByIdentity(identity)?.let {
+            return it
+        }
+
+        val result = BasicAddOrUpdateContactBackgroundTask(
+            identity = identity,
+            AcquaintanceLevel.GROUP,
+            myIdentity = sender.identity,
+            call.dependencies.apiConnector,
+            call.dependencies.contactModelRepository,
+            AddContactRestrictionPolicy.CHECK,
+            context = ThreemaApplication.getAppContext(),
+            null
+        ).runSynchronously()
+
+        when (result) {
+            is ContactAvailable -> Unit
+            is Failed -> {
+                logger.error("Could not create contact: {}", result.message)
+                throw IllegalStateException("Could not create contact")
+            }
+        }
+
+        return call.dependencies.contactService.getByIdentity(identity)
+            ?: throw IllegalStateException("Contact must exist after creating it")
     }
 
     @WorkerThread
@@ -332,7 +394,9 @@ class P2PHandshake private constructor(
 
     @WorkerThread
     private fun hasValidRepeatedAuthFeatures(auth: Handshake.Auth): Boolean {
-        return auth.pck.contentEquals(senderP2PContext.pckPublic) && auth.pcck.contentEquals(senderP2PContext.pcck)
+        return auth.pck.contentEquals(senderP2PContext.pckPublic) && auth.pcck.contentEquals(
+            senderP2PContext.pcck
+        )
     }
 
     @WorkerThread
@@ -367,7 +431,8 @@ class P2PHandshake private constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         val nonce = decryptedOuterData.copyOfRange(0, NaCl.NONCEBYTES)
-        val encryptedInnerData = decryptedOuterData.copyOfRange(NaCl.NONCEBYTES, decryptedOuterData.size)
+        val encryptedInnerData =
+            decryptedOuterData.copyOfRange(NaCl.NONCEBYTES, decryptedOuterData.size)
         return NaCl.symmetricDecryptData(encryptedInnerData, gcnhak, nonce)
     }
 
@@ -407,7 +472,7 @@ class P2PHandshake private constructor(
     @WorkerThread
     internal class P2PHandshakeFactory(
         private val sender: LocalParticipant,
-        private val call: GroupCall
+        private val call: GroupCall,
     ) {
         /**
          * This will initiate a Handshake with an existing call participant.

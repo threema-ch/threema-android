@@ -146,11 +146,6 @@ public interface AvatarService<M extends ReceiverModel> {
 	}
 
 	/**
-	 * Delete the cache of the given model
-	 */
-	void clearAvatarCache(@NonNull M model);
-
-	/**
 	 * Get the color of the avatar. This method considers the "isDefaultContactPictureColored" setting.
 	 *
 	 * @param model the model where the avatar color is determined. If null, the default color is returned

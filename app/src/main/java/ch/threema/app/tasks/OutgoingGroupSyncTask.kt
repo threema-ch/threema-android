@@ -43,7 +43,6 @@ class OutgoingGroupSyncTask(
     private val receiverIdentities: Set<String>,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
-    private val userService by lazy { serviceManager.userService }
 
     override val type: String = "OutgoingGroupSyncTask"
 
@@ -68,7 +67,7 @@ class OutgoingGroupSyncTask(
         OutgoingGroupSetupTask(
             groupId,
             creatorIdentity,
-            groupService.getMembers(group).map { it.identity }.toSet(),
+            groupService.getGroupIdentities(group).toSet(),
             receiverIdentities,
             null,
             serviceManager

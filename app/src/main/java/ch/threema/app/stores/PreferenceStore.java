@@ -35,15 +35,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -59,7 +55,6 @@ import java.util.Set;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 
-import ch.threema.app.listeners.PreferenceListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.StringConversionUtil;
@@ -91,7 +86,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 
 	private final Context context;
 	private final MasterKey masterKey;
-	private SharedPreferences sharedPreferences;
+	private final SharedPreferences sharedPreferences;
 
 	public PreferenceStore(Context context, MasterKey masterKey) {
 		this.context = context;
@@ -309,7 +304,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		if (crypt) {
 			//save into a file
 			try {
-				//TODO
+				// TODO(ANDR-2798): Implement or remove method if unused
 				//this.saveDataToCryptedFile(thing, key);
 			} catch (Exception e) {
 				logger.error("Exception", e);
@@ -340,6 +335,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		// ignore close exception
 	}
 
+	@Override
 	public void save(String key, JSONArray array, boolean crypt) {
 		if (crypt) {
 			if (array != null) {
@@ -423,7 +419,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	@Override
 	@Nullable
 	public String[] getStringArray(String key, boolean crypted) {
-		String value = null;
+		String value;
 		if (crypted) {
 			byte[] r = this.getDataFromCryptedFile(key);
 			if (r != null) {
@@ -606,10 +602,12 @@ public class PreferenceStore implements PreferenceStoreInterface {
 		return this.sharedPreferences.getFloat(key, defValue);
 	}
 
+	@Override
 	public boolean getBoolean(String key) {
 		return this.sharedPreferences.getBoolean(key, false);
 	}
 
+	@Override
 	public boolean getBoolean(String key, boolean defValue) {
 		return this.sharedPreferences.getBoolean(key, defValue);
 	}
@@ -669,49 +667,13 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	@Override
-	public <T> T getRealObject(String key, boolean crypt) {
-		try {
-			if (crypt) {
-				byte[] data = this.getDataFromCryptedFile(key);
-
-				ByteArrayInputStream bis = new ByteArrayInputStream(data);
-				ObjectInput in = null;
-				T o = null;
-				try {
-					in = new ObjectInputStream(bis);
-					o = (T)in.readObject();
-				} finally {
-					try {
-						if (in != null) {
-							in.close();
-						}
-					} catch (IOException ex) {
-						// ignore close exception
-					}
-				}
-				return o;
-			} else {
-				// not implemented
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return null;
-	}
-
-	@Override
 	public void clear() {
 		SharedPreferences.Editor editor = this.sharedPreferences.edit();
 		editor.clear();
 		editor.apply();
 
 		try {
-			for (File f : this.context.getFilesDir().listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String filename) {
-					return filename.startsWith(CRYPTED_FILE_PREFIX);
-				}
-			})) {
+			for (File f : this.context.getFilesDir().listFiles((dir, filename) -> filename.startsWith(CRYPTED_FILE_PREFIX))) {
 				FileUtil.deleteFileOrWarn(f, "clear", logger);
 			}
 		} catch (Exception e) {
@@ -749,12 +711,7 @@ public class PreferenceStore implements PreferenceStoreInterface {
 	}
 
 	private void fireOnChanged(final String key, final  Object value) {
-		ListenerManager.preferenceListeners.handle(new ListenerManager.HandleListener<PreferenceListener>() {
-			@Override
-			public void handle(PreferenceListener listener) {
-				listener.onChanged(key, value);
-			}
-		});
+		ListenerManager.preferenceListeners.handle(listener -> listener.onChanged(key, value));
 	}
 
 	@WorkerThread

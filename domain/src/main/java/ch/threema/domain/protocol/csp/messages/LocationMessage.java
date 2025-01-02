@@ -92,6 +92,11 @@ public class LocationMessage extends AbstractMessage {
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return true;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return true;
 	}

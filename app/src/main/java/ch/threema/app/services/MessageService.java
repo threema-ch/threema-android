@@ -47,12 +47,12 @@ import ch.threema.app.ui.MediaItem;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
+import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
-import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
-import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -267,35 +267,44 @@ public interface MessageService {
     @WorkerThread
     boolean sendUserDecline(@NonNull AbstractMessageModel messageModel, boolean markAsRead);
 
-    void updateMessageState(@NonNull final MessageId apiMessageId, MessageState state, @NonNull DeliveryReceiptMessage stateMessage);
+	/**
+	 * Update message state of an outgoing message. Note that the state is only changed if it is a
+	 * legal transition. E.g. a message's state won't be changed from read to delivered. See
+	 * {@link ch.threema.app.utils.MessageUtil#canChangeToState(MessageState, MessageState, boolean)}
+	 * for possible state transitions.
+	 *
+	 * The corresponding timestamps are changed in any case. E.g. the delivered at timestamp will be
+	 * saved even if the message has already been marked as read.
+	 *
+	 * Do not use this method for reactions: Use
+	 * {@link #addMessageReaction(AbstractMessageModel, MessageState, String, Date)} instead.
+	 *
+	 * @param messageModel the message model that should be updated
+	 * @param state        the mew state
+	 * @param date         the date of the state change
+	 */
+	void updateOutgoingMessageState(
+		@NonNull final AbstractMessageModel messageModel,
+		@NonNull MessageState state,
+		@NonNull Date date
+	);
 
-    void updateGroupMessageState(@NonNull final MessageId apiMessageId, @NonNull MessageState state, @NonNull GroupDeliveryReceiptMessage stateMessage);
+	/**
+	 * Add a reaction to a contact or group message.
+	 *
+	 * @param messageModel the message model that should be updated
+	 * @param state        the reaction (as state, but only ACK and DEC allowed)
+	 * @param fromIdentity the identity that reacted to the message
+	 * @param date         the date of the state change
+	 */
+	void addMessageReaction(
+		@NonNull AbstractMessageModel messageModel,
+		@NonNull MessageState state,
+		@NonNull String fromIdentity,
+		@NonNull Date date
+	);
 
-    /**
-     * Update the message state of a contact message. Currently only used for server acks.
-     *
-     * @param messageId         the message id of the message
-     * @param recipientIdentity the recipient of the message
-     * @param state             the new state
-     * @param stateDate         the date of state change
-     */
-    boolean updateContactMessageState(
-        @NonNull final MessageId messageId,
-        @NonNull String recipientIdentity,
-        @NonNull MessageState state,
-        @Nullable Date stateDate
-    );
-
-    /**
-     * Update message state of outgoing message. Currently only used for server acks.
-     *
-     * @param messageModel the message model that should be updated
-     * @param state        the mew state
-     * @param stateDate    the date of state change
-     */
-    boolean updateMessageState(@NonNull final AbstractMessageModel messageModel, @NonNull MessageState state, @Nullable Date stateDate);
-
-    boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
+	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
 
     @WorkerThread
     boolean markAsConsumed(AbstractMessageModel message) throws ThreemaException;
@@ -354,11 +363,33 @@ public interface MessageService {
     @Nullable
     DistributionListMessageModel getDistributionListMessageModel(long id);
 
-    MessageString getMessageString(AbstractMessageModel messageModel, int maxLength);
+	/**
+	 * Get the contact message model by message id and identity.
+	 */
+	@Nullable
+	MessageModel getContactMessageModel(
+		@NonNull final MessageId messageId,
+		@NonNull final String identity
+	);
 
-    MessageString getMessageString(AbstractMessageModel messageModel, int maxLength, boolean withPrefix);
+	/**
+	 * Get the group message model by message id, creator identity, and group id.
+	 */
+	@Nullable
+	GroupMessageModel getGroupMessageModel(
+		@NonNull MessageId messageId,
+		@NonNull String creatorIdentity,
+		@NonNull GroupId groupId
+	);
+
+	MessageString getMessageString(AbstractMessageModel messageModel, int maxLength);
+	MessageString getMessageString(AbstractMessageModel messageModel, int maxLength, boolean withPrefix);
 
     void saveIncomingServerMessage(ServerMessageModel msg);
+
+    boolean downloadThumbnailIfPresent(@NonNull FileData fileData, @NonNull AbstractMessageModel messageModel) throws Exception;
+
+    boolean shouldAutoDownload(@NonNull AbstractMessageModel messageModel);
 
     boolean downloadMediaMessage(AbstractMessageModel mediaMessageModel, ProgressListener progressListener) throws Exception;
 

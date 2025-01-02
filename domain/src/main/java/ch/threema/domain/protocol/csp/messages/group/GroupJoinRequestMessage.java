@@ -69,6 +69,11 @@ public class GroupJoinRequestMessage extends AbstractProtobufMessage<GroupJoinRe
 	}
 
 	@Override
+	public boolean reflectSentUpdate() {
+		return false;
+	}
+
+	@Override
 	public boolean sendAutomaticDeliveryReceipt() {
 		return false;
 	}

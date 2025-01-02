@@ -83,7 +83,7 @@ internal class MonitoringLayer(
         CoroutineScope(controller.dispatcher.coroutineContext).launch {
             launch {
                 controller.cspAuthenticated.await()
-                startMonitoring(ProtocolDefines.CONNECTION_IDLE_TIMEOUT)
+                startMonitoring()
             }
             launch {
                 controller.connectionClosed.await()
@@ -133,8 +133,8 @@ internal class MonitoringLayer(
         CoroutineScope(controller.dispatcher.coroutineContext).launch {
             controller.cspAuthenticated.await()
             logger.debug("Send UnblockIncomingMessage to chat server")
-            // TODO(ANDR-2475): Only send this when all (supported) reflected messages have been processed and acked (ReflectedAck)
-            //  Should unsupported (yet) messages also be acked, or ignored for this?
+            // We can send unblock incoming messages directly as we will process the messages
+            // sequentially, i.e., the reflected messages will be processed before new messages
             outbound.send(CspContainer(ProtocolDefines.PLTYPE_UNBLOCK_INCOMING_MESSAGES.toUByte(), ByteArray(0)))
         }
     }
@@ -202,19 +202,30 @@ internal class MonitoringLayer(
         logger.info("Received echo reply (seq: {}, rtt: {} ms) ", lastRcvdEchoSeq, rttMs)
     }
 
-    private fun startMonitoring(connectionIdleTimeoutS: Short) {
+    private fun startMonitoring() {
         controller.dispatcher.assertDispatcherContext()
+
+        val (echoRequestInterval, echoResponseTimeout, connectionIdleTimeout) = if (controller is MdLayer4Controller) {
+            // Multi device is active
+            Triple(ProtocolDefines.ECHO_REQUEST_INTERVAL_MD, ProtocolDefines.ECHO_RESPONSE_TIMEOUT, ProtocolDefines.CONNECTION_IDLE_TIMEOUT_MD)
+        } else {
+            Triple(ProtocolDefines.ECHO_REQUEST_INTERVAL_CSP, ProtocolDefines.ECHO_RESPONSE_TIMEOUT, ProtocolDefines.CONNECTION_IDLE_TIMEOUT_CSP)
+        }
+        logger.debug("echoRequestInterval={}, echoResponseTimeout={}, connectionIdleTimeout={}", echoRequestInterval, echoResponseTimeout, connectionIdleTimeout)
 
         if (stopped) {
             logger.warn("Ignore attempt to start monitoring after monitoring has already been stopped")
         } else {
-            logger.trace("Set connection idle timeout to {} seconds", connectionIdleTimeoutS)
-            outbound.send(prepareSetConnectionIdleTimeout(connectionIdleTimeoutS))
+            logger.trace("Set connection idle timeout to {} seconds", connectionIdleTimeout)
+            outbound.send(prepareSetConnectionIdleTimeout(connectionIdleTimeout))
             logger.debug("Start periodic echo requests")
             echoRequestJob = CoroutineScope(controller.dispatcher.coroutineContext).launch {
                 while(true) {
-                    delay(ProtocolDefines.ECHO_REQUEST_INTERVAL * 1000L)
-                    sendEchoRequest()
+                    delay(echoRequestInterval * 1000L)
+                    val sequence = sendEchoRequest()
+                    launch {
+                        expectEchoResponse(sequence, echoResponseTimeout)
+                    }
                 }
             }
         }
@@ -230,16 +241,22 @@ internal class MonitoringLayer(
         echoRequestJob = null
     }
 
-    private suspend fun sendEchoRequest() {
+    /**
+     * @return the sequence number of the sent echo request
+     */
+    private fun sendEchoRequest(): Int {
         controller.dispatcher.assertDispatcherContext()
 
-        lastSentEchoSeq++
-        logger.info("Sending echo request (seq: $lastSentEchoSeq)")
-        outbound.send(prepareEchoRequest(lastSentEchoSeq))
+        val sequence = ++lastSentEchoSeq
+        logger.info("Sending echo request (seq: {})", sequence)
+        outbound.send(prepareEchoRequest(sequence))
+        return sequence
+    }
 
-        delay(ProtocolDefines.ECHO_RESPONSE_TIMEOUT * 1000L)
-        if (lastRcvdEchoSeq < lastSentEchoSeq) {
-            logger.info("No reply to echo request (seq: {}); terminate connection", lastSentEchoSeq)
+    private suspend fun expectEchoResponse(expectedSequence: Int, responseTimeoutS: Short) {
+        delay(responseTimeoutS * 1000L)
+        if (lastRcvdEchoSeq < expectedSequence) {
+            logger.info("No reply to echo request (seq: {}); terminate connection", expectedSequence)
             controller.ioProcessingStoppedSignal.completeExceptionally(ServerConnectionException("No reply to echo request"))
         }
     }

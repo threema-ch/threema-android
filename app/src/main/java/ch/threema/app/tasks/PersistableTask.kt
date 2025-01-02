@@ -25,8 +25,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 internal sealed interface PersistableTask {
     fun serialize(): SerializableTaskData?

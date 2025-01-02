@@ -75,6 +75,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 import static ch.threema.app.ThreemaApplication.MAX_BLOB_SIZE;
 import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
+import static ch.threema.app.utils.StreamUtilKt.getFromUri;
 
 public class FileUtil {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("FileUtil");
@@ -832,7 +833,7 @@ public class FileUtil {
 	 * @return true if the file is an animated WebP file, false if it is not animated, in another format, corrupt or not readable
 	 */
 	private static boolean isAnimatedWebPFile(@NonNull Uri uri) {
-		try (InputStream inputStream = StreamUtil.getFromUri(ThreemaApplication.getAppContext(), uri)) {
+		try (InputStream inputStream = getFromUri(ThreemaApplication.getAppContext(), uri)) {
 			byte[] buffer = new byte[34];
 			return inputStream != null
 				&& inputStream.read(buffer) == 34

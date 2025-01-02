@@ -48,6 +48,7 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
 import ch.threema.domain.helpers.UnusedTaskCodec
+import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
@@ -69,12 +70,6 @@ internal class CspConnectionTest : ServerConnectionTest() {
             }
 
             override fun <R> schedule(task: Task<R, TaskCodec>): Deferred<R> = CompletableDeferred()
-
-            @Deprecated(
-                "We should only be able to send and receive messages from within tasks.",
-                replaceWith = ReplaceWith("TaskManager#schedule")
-            )
-            override fun getMigrationTaskHandle(): ActiveTaskCodec = UnusedTaskCodec()
 
             override fun hasPendingTasks(): Boolean = false
 
@@ -109,7 +104,8 @@ internal class CspConnectionTest : ServerConnectionTest() {
 
     private fun createConfiguration(): CspConnectionConfiguration {
         val incomingMessageProcessor = object : IncomingMessageProcessor {
-            override suspend fun processIncomingMessage(messageBox: MessageBox, handle: ActiveTaskCodec) { }
+            override suspend fun processIncomingCspMessage(messageBox: MessageBox, handle: ActiveTaskCodec) { }
+            override suspend fun processIncomingD2mMessage(message: InboundD2mMessage.Reflected, handle: ActiveTaskCodec) {}
             override fun processIncomingServerAlert(alertData: CspMessage.ServerAlertData) { }
             override fun processIncomingServerError(errorData: CspMessage.ServerErrorData) { }
         }

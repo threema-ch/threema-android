@@ -461,7 +461,10 @@ public final class ShortcutUtil {
 	 * @param messageReceiver MessageReceiver represented by shortcut
 	 */
 	@WorkerThread
-	public static void updateShareTargetShortcut(MessageReceiver messageReceiver) {
+	public static void updateShareTargetShortcut(@Nullable MessageReceiver<?> messageReceiver) {
+        if (messageReceiver == null) {
+            return;
+        }
 		synchronized (dynamicShortcutLock) {
 			List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 			for (ShortcutInfoCompat shortcutInfo: shortcutInfos) {

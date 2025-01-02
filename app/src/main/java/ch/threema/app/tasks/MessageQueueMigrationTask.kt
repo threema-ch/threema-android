@@ -32,7 +32,7 @@ import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
-import ch.threema.domain.taskmanager.waitForServerAck
+import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
 import ch.threema.localcrypto.MasterKey
 import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.MessageModelFactory
@@ -158,19 +158,18 @@ class MessageQueueMigrationTask(
         val recipientIdentity = messageBox.toIdentity
 
         // Wait until message has been sent
-        handle.waitForServerAck(messageId, recipientIdentity)
+        handle.awaitOutgoingMessageAck(messageId, recipientIdentity)
 
         // Update state if message model found for message
         updateMessageModel(messageId, recipientIdentity)
     }
 
     private fun updateMessageModel(messageId: MessageId, identity: String) {
-        val date = Date()
         val messageModels = getMatchingMessageModels(messageId, identity).filterNotNull()
         // We update the state for each message model that fits the message id and identity. Note
         // that for group messages, the message state is set to sent too early. Since this is only
         // needed for the migration to the task manager queue, this is acceptable.
-        messageModels.forEach { messageService.updateMessageState(it, MessageState.SENT, date) }
+        messageModels.forEach { messageService.updateOutgoingMessageState(it, MessageState.SENT, Date()) }
     }
 
     private fun getMatchingMessageModels(

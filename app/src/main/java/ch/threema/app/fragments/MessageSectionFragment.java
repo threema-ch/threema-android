@@ -149,7 +149,6 @@ import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -221,6 +220,7 @@ public class MessageSectionFragment extends MainFragment
 
 	private Activity activity;
 	private File tempMessagesFile;
+    @Nullable
 	private MessageListAdapter messageListAdapter;
 	private EmptyRecyclerView recyclerView;
 	private View loadingView;
@@ -333,7 +333,7 @@ public class MessageSectionFragment extends MainFragment
 
 	private final GroupListener groupListener = new GroupListener() {
 		@Override
-		public void onNewMember(GroupModel group, String newIdentity, int previousMemberCount) {
+		public void onNewMember(GroupModel group, String newIdentity) {
 			// If this user is added to an existing group
 			if (groupService != null && myIdentity != null && myIdentity.equals(newIdentity)) {
 				fireReceiverUpdate(groupService.createReceiver(group));
@@ -390,7 +390,7 @@ public class MessageSectionFragment extends MainFragment
 		}
 
 		@Override
-		public void onAvatarChanged(ContactModel contactModel) {
+		public void onAvatarChanged(final @NonNull String identity) {
 			this.handleChange();
 		}
 
@@ -599,8 +599,10 @@ public class MessageSectionFragment extends MainFragment
 		@Override
 		public boolean onQueryTextChange(String query) {
 			filterQuery = query;
-			messageListAdapter.setFilterQuery(query);
-			updateList(0, null, null);
+            if (messageListAdapter != null) {
+                messageListAdapter.setFilterQuery(query);
+                updateList(0, null, null);
+            }
 			return true;
 		}
 
@@ -691,14 +693,16 @@ public class MessageSectionFragment extends MainFragment
 	private void doUnhideChat(@NonNull ConversationModel conversationModel) {
 		MessageReceiver<?> receiver = conversationModel.getReceiver();
 		if (receiver != null && hiddenChatsListService.has(receiver.getUniqueIdString())) {
-			hiddenChatsListService.remove(receiver.getUniqueIdString());
+            hiddenChatsListService.remove(receiver.getUniqueIdString());
 
-			if (getView() != null) {
-				Snackbar.make(getView(), R.string.chat_visible, Snackbar.LENGTH_SHORT).show();
-			}
+            if (getView() != null) {
+                Snackbar.make(getView(), R.string.chat_visible, Snackbar.LENGTH_SHORT).show();
+            }
 
-			this.fireReceiverUpdate(receiver);
-			messageListAdapter.clearSelections();
+            this.fireReceiverUpdate(receiver);
+            if (messageListAdapter != null) {
+                messageListAdapter.clearSelections();
+            }
 		}
 	}
 
@@ -759,6 +763,9 @@ public class MessageSectionFragment extends MainFragment
 			@Override
 			protected void onPostExecute(Boolean success) {
 				if (success) {
+                    if (messageListAdapter == null) {
+                        return;
+                    }
 					messageListAdapter.clearSelections();
 					if (getView() != null) {
 						Snackbar.make(getView(), R.string.chat_hidden, Snackbar.LENGTH_SHORT).show();
@@ -894,6 +901,10 @@ public class MessageSectionFragment extends MainFragment
 
 				@Override
 				public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    if (messageListAdapter == null) {
+                        return;
+                    }
+
 					// swipe has ended successfully
 
 					// required to clear swipe layout
@@ -1153,7 +1164,7 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public boolean onItemLongClick(View view, int position, ConversationModel conversationModel) {
-		if (!isMultiPaneEnabled(activity)) {
+		if (!isMultiPaneEnabled(activity) && messageListAdapter != null) {
 			messageListAdapter.toggleItemChecked(conversationModel, position);
 			showSelector();
 			return true;
@@ -1220,7 +1231,9 @@ public class MessageSectionFragment extends MainFragment
 		}
 		updateHiddenMenuVisibility();
 
-		messageListAdapter.updateDateView();
+        if (messageListAdapter != null) {
+            messageListAdapter.updateDateView();
+        }
 
 		super.onResume();
 	}
@@ -1245,7 +1258,7 @@ public class MessageSectionFragment extends MainFragment
 		ArrayList<SelectorDialogItem> labels = new ArrayList<>();
 		ArrayList<Integer> tags = new ArrayList<>();
 
-		if (messageListAdapter.getCheckedItemCount() != 1) {
+		if (messageListAdapter == null || messageListAdapter.getCheckedItemCount() != 1) {
 			return;
 		}
 
@@ -1311,7 +1324,7 @@ public class MessageSectionFragment extends MainFragment
 			}
 			boolean isCreator = groupService.isGroupCreator(group);
 			boolean isMember = groupService.isGroupMember(group);
-			boolean hasOtherMembers = groupService.getOtherMemberCount(group) > 0;
+			boolean hasOtherMembers = groupService.countMembersWithoutUser(group) > 0;
 			// Check also if the user is a group member, because orphaned groups should not be
 			// editable.
 			if (isCreator && isMember) {
@@ -1350,7 +1363,9 @@ public class MessageSectionFragment extends MainFragment
 	public void onClick(String tag, int which, Object data) {
 		GenericAlertDialog dialog;
 
-		messageListAdapter.clearSelections();
+        if (messageListAdapter != null) {
+            messageListAdapter.clearSelections();
+        }
 
 		final ConversationModel conversationModel = (ConversationModel) data;
 
@@ -1468,12 +1483,14 @@ public class MessageSectionFragment extends MainFragment
 
 	@Override
 	public void onCancel(String tag) {
+        if (messageListAdapter != null) {
 		messageListAdapter.clearSelections();
+        }
 	}
 
 	@Override
 	public void onNo(String tag) {
-		if (DIALOG_TAG_SELECT_DELETE_ACTION.equals(tag)) {
+		if (messageListAdapter != null && DIALOG_TAG_SELECT_DELETE_ACTION.equals(tag)) {
 			messageListAdapter.clearSelections();
 		}
 	}

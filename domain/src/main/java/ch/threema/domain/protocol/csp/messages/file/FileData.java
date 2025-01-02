@@ -282,7 +282,7 @@ public class FileData {
 			}
 			return fileData;
 		} catch (JSONException e) {
-			throw new BadMessageException("TM037");
+			throw new BadMessageException("TM037", e);
 		}
 	}
 
@@ -320,7 +320,7 @@ public class FileData {
 			o.put(KEY_RENDERING_TYPE, this.renderingType);
 		}
 		catch (Exception e) {
-			throw new BadMessageException("TM037");
+			throw new BadMessageException("TM037", e);
 		}
 
 		return o.toString();

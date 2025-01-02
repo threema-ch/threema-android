@@ -47,6 +47,10 @@ class OutgoingFileMessageTask(
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
 
+    private val myIdentity by lazy { serviceManager.userService.identity }
+
+    private val isMultiDeviceActive by lazy { serviceManager.multiDeviceManager.isMultiDeviceActive }
+
     override val type: String = "OutgoingFileMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -66,14 +70,23 @@ class OutgoingFileMessageTask(
 
         val fileDataModel = messageModel.fileData
 
+        val apiMessageId = ensureMessageId(messageModel)
+
         // Create the message
         val message = FileMessage().apply {
-            data = fileDataModel.toFileData(thumbnailBlobId, messageModel)
+            fileData = fileDataModel.toFileData(thumbnailBlobId, messageModel)
             toIdentity = messageModel.identity
-            messageId = ensureMessageId(messageModel)
+            messageId = apiMessageId
         }
 
-        sendContactMessage(message, messageModel, handle)
+        sendContactMessage(
+            message,
+            messageModel,
+            messageModel.identity,
+            apiMessageId,
+            messageModel.createdAt,
+            handle
+        )
     }
 
     private suspend fun sendGroupMessage(handle: ActiveTaskCodec) {
@@ -88,13 +101,14 @@ class OutgoingFileMessageTask(
             group,
             recipientIdentities,
             messageModel,
+            messageModel.createdAt,
             ensureMessageId(messageModel),
             {
                 GroupFileMessage().apply {
-                    data = fileDataModel.toFileData(thumbnailBlobId, messageModel)
+                    fileData = fileDataModel.toFileData(thumbnailBlobId, messageModel)
                 }
             },
-            handle
+            handle,
         )
     }
 
@@ -103,16 +117,22 @@ class OutgoingFileMessageTask(
         messageModel: AbstractMessageModel,
     ): FileData {
 
-        // Validate that the blob id has the correct length
-        if (blobId == null || blobId.size != ProtocolDefines.BLOB_ID_LEN) {
-            logger.error("Invalid blob id of length {}", blobId?.size)
-            throw IllegalStateException("Invalid blob id")
-        }
+        // In case there are recipients or multi device is active, we need a blob id and an
+        // encryption key. Otherwise the message will be invalid and cannot be sent. In case there
+        // is no recipient and multi device is not active, the message is sent in a notes group
+        // where we do not upload the blob.
+        if (recipientIdentities.minus(myIdentity).isNotEmpty() || isMultiDeviceActive) {
+            // Validate that the blob id has the correct length
+            if (blobId == null || blobId.size != ProtocolDefines.BLOB_ID_LEN) {
+                logger.error("Invalid blob id of length {}", blobId?.size)
+                throw IllegalStateException("Invalid blob id")
+            }
 
-        // Validate that the encryption key has the correct length
-        if (encryptionKey == null || encryptionKey.size != ProtocolDefines.BLOB_KEY_LEN) {
-            logger.error("Invalid encryption key of length {}", encryptionKey?.size)
-            throw IllegalStateException("Invalid blob encryption key")
+            // Validate that the encryption key has the correct length
+            if (encryptionKey == null || encryptionKey.size != ProtocolDefines.BLOB_KEY_LEN) {
+                logger.error("Invalid encryption key of length {}", encryptionKey?.size)
+                throw IllegalStateException("Invalid blob encryption key")
+            }
         }
 
         return FileData().also {

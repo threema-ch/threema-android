@@ -57,7 +57,7 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	 * @param title title of dialog
 	 * @param button label of cancel button
 	 * @param total maximum allowed progress value.
-	 * @return nothing
+	 * @return the dialog
 	 */
 	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, @StringRes int button, int total) {
 		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
@@ -71,11 +71,30 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 	}
 
 	/**
+	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below.
+	 * Mimics deprecated system ProgressDialog behavior.
+	 * Note that when using this constructor, no cancel button is shown.
+	 *
+	 * @param title title of dialog
+	 * @param total maximum allowed progress value.
+	 * @return the dialog
+	 */
+	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, int total) {
+		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
+		Bundle args = new Bundle();
+		args.putInt("title", title);
+		args.putInt("total", total);
+
+		dialog.setArguments(args);
+		return dialog;
+	}
+
+	/**
 	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
 	 * @param title title of dialog
 	 * @param button label of cancel button
 	 * @param total maximum allowed progress value.
-	 * @return nothing
+	 * @return the dialog
 	 */
 	public static CancelableHorizontalProgressDialog newInstance(@NonNull String title, @NonNull String button, int total) {
 		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();

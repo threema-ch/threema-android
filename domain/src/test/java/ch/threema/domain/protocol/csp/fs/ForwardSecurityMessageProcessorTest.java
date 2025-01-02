@@ -28,17 +28,17 @@ import org.mockito.exceptions.base.MockitoException;
 import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
-import ch.threema.base.crypto.NonceStore;
+import ch.threema.base.crypto.NonceScope;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.fs.KDFRatchet;
@@ -95,12 +95,14 @@ import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.domain.stores.DummyContactStore;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
+import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 import ch.threema.protobuf.csp.e2e.fs.VersionRange;
+import kotlin.Pair;
 
 import static ch.threema.domain.protocol.connection.ConnectionTestUtilsKt.getFromOutboundMessage;
-import static ch.threema.domain.taskmanager.OutgoingCspMessageUtilsKt.toCspMessage;
+import static ch.threema.domain.taskmanager.OutgoingCspMessageUtilsKt.toCspMessageJava;
 
 public class ForwardSecurityMessageProcessorTest {
 
@@ -122,23 +124,7 @@ public class ForwardSecurityMessageProcessorTest {
 
 	private final ActiveTaskCodec testCodec = new UnusedTaskCodec();
 
-	private final NonceFactory nonceFactory = new NonceFactory(new NonceStore() {
-		@Override
-		public boolean exists(@NonNull byte[] nonce) {
-			return false;
-		}
-
-		@Override
-		public boolean store(@NonNull byte[] nonce) {
-			return true;
-		}
-
-		@Override
-		@NonNull
-		public List<byte[]> getAllHashedNonces() {
-			return Collections.emptyList();
-		}
-	});
+	private final NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
 
 	private final ForwardSecurityStatusListener forwardSecurityStatusListener = new ForwardSecurityStatusListener() {
 		@Override
@@ -647,7 +633,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Field appliedVersionField = ForwardSecurityDataMessage.class.getDeclaredField("offeredVersion");
 		appliedVersionField.setAccessible(true);
 		appliedVersionField.setInt(data, 0x01FF);
-		aliceContext.handle.writeAsync(toCspMessage(message, aliceContext.identityStore, aliceContext.contactStore, nonceFactory, nonceFactory.next(false)));
+		aliceContext.handle.writeAsync(toCspMessageJava(message, aliceContext.identityStore, aliceContext.contactStore, nonceFactory.nextNonce(NonceScope.CSP)));
 
 		// Now Bob processes the text message from Alice. This should not fail, even if the offered
 		// version is not known.
@@ -700,7 +686,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Field appliedVersionField = ForwardSecurityDataMessage.class.getDeclaredField("appliedVersion");
 		appliedVersionField.setAccessible(true);
 		appliedVersionField.setInt(data, 0x0100);
-		aliceContext.handle.writeAsync(toCspMessage(message, aliceContext.identityStore, aliceContext.contactStore, nonceFactory, nonceFactory.next(false)));
+		aliceContext.handle.writeAsync(toCspMessageJava(message, aliceContext.identityStore, aliceContext.contactStore, nonceFactory.nextNonce(NonceScope.CSP)));
 
 		// Now Bob processes the text message from Alice. Note that the message should be rejected
 		// and therefore return an empty list.
@@ -799,7 +785,7 @@ public class ForwardSecurityMessageProcessorTest {
 		assertMessageNotEncapsulated(new VoipICECandidatesMessage(), aliceContext, DummyUsers.BOB);
 		assertMessageNotEncapsulated(new DeliveryReceiptMessage(), aliceContext, DummyUsers.BOB);
 		assertMessageNotEncapsulated(new TypingIndicatorMessage(), aliceContext, DummyUsers.BOB);
-		assertMessageNotEncapsulated(new SetProfilePictureMessage(), aliceContext, DummyUsers.BOB);
+		assertMessageNotEncapsulated(new SetProfilePictureMessage(new byte[0], 0, new byte[0]), aliceContext, DummyUsers.BOB);
 		assertMessageNotEncapsulated(new DeleteProfilePictureMessage(), aliceContext, DummyUsers.BOB);
 		assertMessageNotEncapsulated(new ContactRequestProfilePictureMessage(), aliceContext, DummyUsers.BOB);
 	}
@@ -842,7 +828,7 @@ public class ForwardSecurityMessageProcessorTest {
 			new VoipICECandidatesMessage(),
 			new DeliveryReceiptMessage(),
 			new TypingIndicatorMessage(),
-			new SetProfilePictureMessage(),
+			new SetProfilePictureMessage(new byte[0], 0, new byte[0]),
 			new DeleteProfilePictureMessage(),
 			new ContactRequestProfilePictureMessage()
 		).forEach( fs1_1_message -> {
@@ -923,14 +909,16 @@ public class ForwardSecurityMessageProcessorTest {
 		// Set the (non-sense) group identity
 		textMessage.setGroupCreator(DummyUsers.ALICE.getIdentity());
 		textMessage.setApiGroupId(new GroupId(0));
-
-		ForwardSecurityEncryptionResult encryptionResult = aliceContext.fsmp.makeMessage(
-			DummyUsers.getContactForUser(DummyUsers.BOB),
+		ForwardSecurityEncryptionResult encryptionResult = aliceContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(DummyUsers.BOB),
 			textMessage,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
 			aliceContext.handle
 		);
 
-		List<AbstractMessage> outgoingMessages = encryptionResult.getOutgoingMessages();
+		List<AbstractMessage> outgoingMessages = encryptionResult.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 		Assert.assertEquals(2, outgoingMessages.size());
 
 		// Assert that the first message is sent with FS
@@ -941,11 +929,10 @@ public class ForwardSecurityMessageProcessorTest {
 
 		for (AbstractMessage message : outgoingMessages) {
 			aliceContext.handle.writeAsync(
-				toCspMessage(message,
+				toCspMessageJava(message,
 					aliceContext.identityStore,
 					aliceContext.contactStore,
-					nonceFactory,
-					nonceFactory.next(false))
+					nonceFactory.nextNonce(NonceScope.CSP))
 			);
 		}
 
@@ -972,21 +959,23 @@ public class ForwardSecurityMessageProcessorTest {
 		textMessage.setText(ALICE_MESSAGE_2);
 		textMessage.setToIdentity(DummyUsers.BOB.getIdentity());
 
-		ForwardSecurityEncryptionResult encryptionResult = aliceContext.fsmp.makeMessage(
-			DummyUsers.getContactForUser(DummyUsers.BOB),
+		ForwardSecurityEncryptionResult encryptionResult = aliceContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(DummyUsers.BOB),
 			textMessage,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
 			aliceContext.handle
 		);
 
-		List<AbstractMessage> outgoingMessages = encryptionResult.getOutgoingMessages();
+		List<AbstractMessage> outgoingMessages = encryptionResult.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 		Assert.assertEquals(1, outgoingMessages.size());
 
 		aliceContext.handle.writeAsync(
-			toCspMessage(outgoingMessages.get(0),
+			toCspMessageJava(outgoingMessages.get(0),
 				aliceContext.identityStore,
 				aliceContext.contactStore,
-				nonceFactory,
-				nonceFactory.next(false))
+				nonceFactory.nextNonce(NonceScope.CSP))
 		);
 
 		TextMessage receivedMessage = (TextMessage) processOneReceivedMessage(
@@ -1404,7 +1393,7 @@ public class ForwardSecurityMessageProcessorTest {
 
 	private List<AbstractMessage> processReceivedMessages(ServerAckTaskCodec sourceHandle, UserContext recipientContext) throws BadMessageException, ThreemaException, MissingPublicKeyException {
 		List<AbstractMessage> decapsulatedMessages = new LinkedList<>();
-		while (sourceHandle.getOutboundMessages().size() > 0) {
+		while (!sourceHandle.getOutboundMessages().isEmpty()) {
 			AbstractMessage decapMsg = processOneReceivedMessage(sourceHandle, recipientContext, 0, false);
 			if (decapMsg != null) {
 				decapsulatedMessages.add(decapMsg);
@@ -1485,7 +1474,7 @@ public class ForwardSecurityMessageProcessorTest {
 	private AbstractMessage sendTextMessage(String text, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
 		List<AbstractMessage> messages = makeEncapTextMessage(text, senderContext, recipient);
 		for (AbstractMessage message : messages) {
-			senderContext.handle.writeAsync(toCspMessage(message, senderContext.identityStore, senderContext.contactStore, nonceFactory, nonceFactory.next(false)));
+			senderContext.handle.writeAsync(toCspMessageJava(message, senderContext.identityStore, senderContext.contactStore, nonceFactory.nextNonce(NonceScope.CSP)));
 		}
 		return getEncapsulatedMessageFromOutgoingMessageList(messages);
 	}
@@ -1519,9 +1508,16 @@ public class ForwardSecurityMessageProcessorTest {
 		TextMessage textMessage = new TextMessage();
 		textMessage.setText(text);
 		textMessage.setToIdentity(recipient.getIdentity());
-		ForwardSecurityEncryptionResult result = senderContext.fsmp.makeMessage(DummyUsers.getContactForUser(recipient), textMessage, senderContext.handle);
+		ForwardSecurityEncryptionResult result = senderContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(recipient),
+			textMessage,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
+			senderContext.handle
+		);
 		senderContext.fsmp.commitSessionState(result);
-		List<AbstractMessage> outgoingMessages = result.getOutgoingMessages();
+		List<AbstractMessage> outgoingMessages = result.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 		for (AbstractMessage message : outgoingMessages) {
 			message.setToIdentity(recipient.getIdentity());
 		}
@@ -1540,13 +1536,16 @@ public class ForwardSecurityMessageProcessorTest {
 			// mocking usually only works for the empty message.
 			messageMock = message;
 		}
-		ForwardSecurityEncryptionResult result = senderContext.fsmp.makeMessage(
-			DummyUsers.getContactForUser(recipient),
+		ForwardSecurityEncryptionResult result = senderContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(recipient),
 			messageMock,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
 			senderContext.handle
 		);
 
-		List<AbstractMessage> messages = result.getOutgoingMessages();
+		List<AbstractMessage> messages = result.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 
 		Assert.assertEquals(2, messages.size());
 		Assert.assertTrue(((ForwardSecurityEnvelopeMessage) messages.get(0)).getData() instanceof ForwardSecurityDataInit);
@@ -1554,9 +1553,16 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	private void assertNewSessionMessageNotEncapsulated(AbstractMessage message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
-		ForwardSecurityEncryptionResult result = senderContext.fsmp.makeMessage(DummyUsers.getContactForUser(recipient), message, senderContext.handle);
+		ForwardSecurityEncryptionResult result = senderContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(recipient),
+			message,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
+			senderContext.handle
+		);
 		senderContext.fsmp.commitSessionState(result);
-		List<AbstractMessage> messages = result.getOutgoingMessages();
+		List<AbstractMessage> messages = result.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 		// As the message type is not supported for the available forward security session, it is
 		// sent without being encapsulated. Therefore the message equals the original message.
 		Assert.assertEquals(2, messages.size());
@@ -1565,9 +1571,16 @@ public class ForwardSecurityMessageProcessorTest {
 	}
 
 	private void assertMessageNotEncapsulated(AbstractMessage message, UserContext senderContext, DummyUsers.User recipient) throws ThreemaException {
-		ForwardSecurityEncryptionResult result = senderContext.fsmp.makeMessage(DummyUsers.getContactForUser(recipient), message, senderContext.handle);
+		ForwardSecurityEncryptionResult result = senderContext.fsmp.runFsEncapsulationSteps(
+			DummyUsers.getBasicContactForUser(recipient),
+			message,
+			nonceFactory.nextNonce(NonceScope.CSP),
+			nonceFactory,
+			senderContext.handle
+		);
 		senderContext.fsmp.commitSessionState(result);
-		List<AbstractMessage> messages = result.getOutgoingMessages();
+		List<AbstractMessage> messages = result.getOutgoingMessages()
+			.stream().map(Pair::getFirst).collect(Collectors.toList());
 		// As the message type is not supported for the available forward security session, it is
 		// sent without being encapsulated. Therefore the message equals the original message.
 		// If the size does not match, then check that this method is used for existing and fresh
@@ -1609,7 +1622,7 @@ public class ForwardSecurityMessageProcessorTest {
 		Contact contact,
 		ForwardSecurityEnvelopeMessage msg,
 		ActiveTaskCodec handle
-	) throws BadMessageException, ThreemaException {
+	) throws ThreemaException, BadMessageException {
 		ForwardSecurityData data = msg.getData();
 		if (data instanceof ForwardSecurityDataInit) {
 			fsmp.processInit(contact, (ForwardSecurityDataInit) data, handle);

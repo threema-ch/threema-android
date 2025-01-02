@@ -21,22 +21,6 @@
 
 package ch.threema.app.voip.services;
 
-import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
-import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
-import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
-import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
-import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
-
 import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -61,18 +45,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.LocusIdCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-
 import org.slf4j.Logger;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
@@ -88,17 +60,30 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.LocusIdCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationGroups;
+import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IdUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
@@ -128,6 +113,22 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
 import java8.util.concurrent.CompletableFuture;
+
+import static ch.threema.app.ThreemaApplication.INCOMING_CALL_NOTIFICATION_ID;
+import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
+import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_REJECT_REASON;
+import static ch.threema.app.voip.services.VoipCallService.ACTION_ICE_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
+import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
 
 /**
  * The service keeping track of VoIP call state.
@@ -576,7 +577,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             return false;
         }
         final String sdpType = offer.getSdpType();
-        if (!sdpType.equals("offer")) {
+        if (sdpType == null || !sdpType.equals("offer")) {
             logger.error("Offer data is invalid: Sdp type is {}, not offer", sdpType);
             return false;
         }
@@ -632,13 +633,13 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      * @return true if messages was successfully processed
      */
     @WorkerThread
-    public synchronized boolean handleCallOffer(final VoipCallOfferMessage msg) {
+    public synchronized boolean handleCallOffer(@NonNull final VoipCallOfferMessage voipCallOfferMessage) {
         // Unwrap data
-        final String callerIdentity = msg.getFromIdentity();
-        final VoipCallOfferData callOfferData = msg.getData();
+        final String callerIdentity = voipCallOfferMessage.getFromIdentity();
+        final VoipCallOfferData callOfferData = voipCallOfferMessage.getData();
         if (callOfferData == null) {
             logger.warn("Call offer received from {}. Data is null, ignoring.", callerIdentity);
-            return true;
+            return false;
         }
         final long callId = callOfferData.getCallIdOrDefault(0L);
         logCallInfo(
@@ -652,7 +653,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         final ContactModel contact = this.contactService.getByIdentity(callerIdentity);
         if (contact == null) {
             logCallError(callId, "Could not fetch contact for identity {}", callerIdentity);
-            return true;
+            return false;
         }
 
         // Handle some reasons for rejecting calls...
@@ -698,7 +699,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         Config.getTurnServerCache().prefetchTurnServers();
 
         // Reset fetch cache
-        ch.threema.app.routines.UpdateFeatureLevelRoutine.removeTimeCache(contact);
+        UpdateFeatureLevelRoutine.removeTimeCache(contact.getIdentity());
 
         // Store offer in offer map
         logger.debug("Adding information for call {} to offerMap", callId);
@@ -736,7 +737,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         this.setStateRinging(callId);
 
         // Show call notification
-        final Notification notification = this.showNotification(contact, accept, reject, msg);
+        final Notification notification = this.showNotification(contact, accept, reject, voipCallOfferMessage);
 
         DNDUtil dndUtil = DNDUtil.getInstance();
         boolean isReceiverMuted = dndUtil.isMutedPrivate(messageReceiver, null);
@@ -752,7 +753,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         this.startVibration(notification, isMuted);
 
         // Update conversation timestamp
-        contactService.bumpLastUpdate(callerIdentity);
+        if (voipCallOfferMessage.bumpLastUpdate()) {
+            contactService.bumpLastUpdate(callerIdentity);
+        }
 
         // Send "ringing" message to caller
         try {
@@ -770,7 +773,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // Notify listeners
         VoipListenerManager.messageListener.handle(listener -> {
             if (listener.handle(callerIdentity)) {
-                listener.onOffer(callerIdentity, msg.getData());
+                listener.onOffer(callerIdentity, voipCallOfferMessage.getData());
             }
         });
         VoipListenerManager.callEventListener.handle(listener -> listener.onRinging(callerIdentity));
@@ -854,16 +857,16 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      * @return true if messages was successfully processed
      */
     @WorkerThread
-    public synchronized boolean handleICECandidates(final VoipICECandidatesMessage msg) {
+    public synchronized boolean handleICECandidates(@NonNull final VoipICECandidatesMessage voipICECandidatesMessage) {
         // Unwrap data
-        final VoipICECandidatesData candidatesData = msg.getData();
+        final VoipICECandidatesData candidatesData = voipICECandidatesMessage.getData();
         if (candidatesData == null) {
-            logger.warn("Call ICE candidate message received from {}. Data is null, ignoring", msg.getFromIdentity());
-            return true;
+            logger.warn("Call ICE candidate message received from {}. Data is null, ignoring", voipICECandidatesMessage.getFromIdentity());
+            return false;
         }
         if (candidatesData.getCandidates() == null) {
-            logger.warn("Call ICE candidate message received from {}. Candidates are null, ignoring", msg.getFromIdentity());
-            return true;
+            logger.warn("Call ICE candidate message received from {}. Candidates are null, ignoring", voipICECandidatesMessage.getFromIdentity());
+            return false;
         }
 
         // Validate Call ID
@@ -871,21 +874,21 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         if (!this.isCallIdValid(callId)) {
             logger.info(
                 "Call ICE candidate message received from {} for an invalid Call ID ({}, local={}), ignoring",
-                msg.getFromIdentity(), callId, this.callState.getCallId()
+                voipICECandidatesMessage.getFromIdentity(), callId, this.callState.getCallId()
             );
-            return true;
+            return false;
         }
 
         // The "removed" flag is deprecated, see ANDR-1145 / SE-66
         if (candidatesData.isRemoved()) {
             logCallInfo(callId, "Call ICE candidate message received from {} with removed=true, ignoring");
-            return true;
+            return false;
         }
 
         logCallInfo(
             callId,
             "Call ICE candidate message received from {} ({} candidates)",
-            msg.getFromIdentity(), candidatesData.getCandidates().length
+            voipICECandidatesMessage.getFromIdentity(), candidatesData.getCandidates().length
         );
         for (VoipICECandidatesData.Candidate candidate : candidatesData.getCandidates()) {
             logCallInfo(callId, "  Incoming ICE candidate: {}", candidate.getCandidate());
@@ -894,21 +897,19 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // Handle candidates depending on state
         if (this.callState.isIdle() || this.callState.isRinging()) {
             // If the call hasn't been started yet, cache the candidate(s)
-            this.cacheCandidate(msg.getFromIdentity(), candidatesData);
+            this.cacheCandidate(voipICECandidatesMessage.getFromIdentity(), candidatesData);
         } else if (this.callState.isInitializing() || this.callState.isCalling()) {
             // Otherwise, send candidate(s) directly to call service via broadcast
             Intent intent = new Intent();
             intent.setAction(ACTION_ICE_CANDIDATES);
-            intent.putExtra(EXTRA_CALL_ID, msg.getData().getCallIdOrDefault(0L));
-            intent.putExtra(EXTRA_CONTACT_IDENTITY, msg.getFromIdentity());
+            intent.putExtra(EXTRA_CALL_ID, voipICECandidatesMessage.getData().getCallIdOrDefault(0L));
+            intent.putExtra(EXTRA_CONTACT_IDENTITY, voipICECandidatesMessage.getFromIdentity());
             intent.putExtra(EXTRA_CANDIDATES, candidatesData);
             LocalBroadcastManager.getInstance(appContext).sendBroadcast(intent);
         } else {
             logCallWarning(callId, "Received ICE candidates in invalid call state ({})", this.callState);
+            return false;
         }
-
-        // Otherwise, ignore message.
-
         return true;
     }
 
@@ -965,30 +966,30 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      * @return true if message was successfully processed
      */
     @WorkerThread
-    public synchronized boolean handleRemoteCallHangup(final VoipCallHangupMessage msg) {
+    public synchronized boolean handleRemoteCallHangup(@NonNull final VoipCallHangupMessage voipCallHangupMessage) {
         // Validate Call ID
         //
         // NOTE: Hangup messages from older Threema versions may not have any associated data!
         // NOTE: If a remote hangup message arrives with an invalid call id that does not appear
         // in the call history, it is a missed call
-        final long callId = msg.getData() == null
+        final long callId = voipCallHangupMessage.getData() == null
             ? 0L
-            : msg.getData().getCallIdOrDefault(0L);
+            : voipCallHangupMessage.getData().getCallIdOrDefault(0L);
         if (!this.isCallIdValid(callId)) {
-            if (isMissedCall(msg, callId)) {
-                handleMissedCall(msg, callId, false);
+            if (isMissedCall(voipCallHangupMessage, callId)) {
+                handleMissedCall(voipCallHangupMessage, callId, false);
                 return true;
             }
             logger.info(
                 "Call hangup message received from {} for an invalid Call ID ({}, local={}), ignoring",
-                msg.getFromIdentity(), callId, this.callState.getCallId()
+                voipCallHangupMessage.getFromIdentity(), callId, this.callState.getCallId()
             );
-            return true;
+            return false;
         }
 
-        logCallInfo(callId, "Call hangup message received from {}", msg.getFromIdentity());
+        logCallInfo(callId, "Call hangup message received from {}", voipCallHangupMessage.getFromIdentity());
 
-        final String identity = msg.getFromIdentity();
+        final String identity = voipCallHangupMessage.getFromIdentity();
 
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
         final Integer duration = getCallDuration();
@@ -1003,20 +1004,20 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         this.setStateIdle();
 
         // Cancel call notification for that person
-        this.cancelCallNotification(msg.getFromIdentity(), CallActivity.ACTION_DISCONNECTED);
+        this.cancelCallNotification(voipCallHangupMessage.getFromIdentity(), CallActivity.ACTION_DISCONNECTED);
 
         // Notify listeners
         VoipListenerManager.messageListener.handle(listener -> {
             if (listener.handle(identity)) {
-                listener.onHangup(identity, msg.getData());
+                listener.onHangup(identity, voipCallHangupMessage.getData());
             }
         });
         if (incoming && (prevState.isIdle() || prevState.isRinging() || prevState.isInitializing())) {
             final boolean accepted = prevState.isInitializing();
-            handleMissedCall(msg, callId, accepted);
+            handleMissedCall(voipCallHangupMessage, callId, accepted);
         } else if (prevState.isCalling() && duration != null) {
             VoipListenerManager.callEventListener.handle(listener -> {
-                listener.onFinished(callId, msg.getFromIdentity(), !incoming, duration);
+                listener.onFinished(callId, voipCallHangupMessage.getFromIdentity(), !incoming, duration);
             });
         }
 
@@ -1063,13 +1064,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // ANDR-1140: If we are the initiator, then we will have initialized the call ID to a
         // random value. If however the remote device does not yet support call IDs, then returned
         // messages will not contain a Call ID. Accept the messages anyways.
-        final boolean isInitiatior = this.isInitiator() == Boolean.TRUE;
-        if (isInitiatior && callId == 0L) {
-            return true;
-        }
-
-        // Otherwise, there's a call ID mismatch.
-        return false;
+        final boolean isInitiator = this.isInitiator() == Boolean.TRUE;
+        return isInitiator && callId == 0L;
     }
 
     /**
@@ -1591,7 +1587,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 nbuilder.addPerson(contactLookupUri);
             }
 
-            nbuilder.setLocusId(new LocusIdCompat(contactService.getUniqueIdString(contact)));
+            nbuilder.setLocusId(new LocusIdCompat(ContactUtil.getUniqueIdString(contact.getIdentity())));
 
             // Actions
             final SpannableString rejectString = new SpannableString(appContext.getString(R.string.voip_reject));

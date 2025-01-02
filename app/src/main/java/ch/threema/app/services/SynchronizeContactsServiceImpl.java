@@ -36,7 +36,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.listeners.NewSyncedContactsListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
@@ -44,6 +43,7 @@ import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -61,7 +61,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final LocaleService localeService;
 	private final IdentityStoreInterface identityStore;
 
-	private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<SynchronizeContactsRoutine>();
+	private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<>();
 	private final IdListService excludedIdentityListService;
 	private final PreferenceService preferenceService;
 	private final DeviceService deviceService;
@@ -106,18 +106,10 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 		if (sync != null) {
 			if(this.deviceService != null && this.deviceService.isOnline()) {
-				sync.addOnFinished(new SynchronizeContactsRoutine.OnFinished() {
-					@Override
-					public void finished(boolean success, long modifiedAccounts, List<ContactModel> createdContacts, long deletedAccounts) {
-						// let user know that contact was added
-						ListenerManager.newSyncedContactListener.handle(new ListenerManager.HandleListener<NewSyncedContactsListener>() {
-							@Override
-							public void handle(NewSyncedContactsListener listener) {
-								listener.onNew(createdContacts);
-							}
-						});
-					}
-				});
+				sync.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) ->
+					// let user know that contact was added
+					ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts))
+				);
 
 				new Thread(new Runnable() {
 					@Override
@@ -180,19 +172,20 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		logger.info("Running contact sync");
 		logger.debug("instantiateSynchronization with account {}", account);
 
-        final SynchronizeContactsRoutine routine = new SynchronizeContactsRoutine(
-            this.context,
-            this.apiConnector,
-            this.contactService,
-            this.userService,
-            this.localeService,
-            this.contentResolver,
-            this.excludedIdentityListService,
-            this.deviceService,
-            this.preferenceService,
-            this.identityStore,
-            this.blockedContactsService
-        );
+		final SynchronizeContactsRoutine routine =
+				new SynchronizeContactsRoutine(
+						this.context,
+						this.apiConnector,
+						this.contactService,
+						this.contactModelRepository,
+						this.userService,
+						this.localeService,
+						this.contentResolver,
+						this.excludedIdentityListService,
+						this.deviceService,
+						this.preferenceService,
+						this.identityStore,
+						this.blockedContactsService);
 
 		synchronized (this.pendingRoutines) {
 			this.pendingRoutines.add(routine);
@@ -200,7 +193,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 
 		routine.addOnFinished(new SynchronizeContactsRoutine.OnFinished() {
 			@Override
-			public void finished(boolean success, long modifiedAccounts, List<ContactModel> createdContacts, long deletedAccounts) {
+			public void finished(boolean success, long modifiedAccounts, List<ch.threema.data.models.ContactModel> createdContacts, long deletedAccounts) {
 				finishedRoutine(routine);
 			}
 		});
@@ -292,9 +285,15 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 			// cleanup / degrade remaining identities that are still server verified
 			List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);
 			if (identities != null && !identities.isEmpty()) {
-				for (ContactModel contactModel : contactService.getByIdentities(identities)) {
-					contactModel.verificationLevel = VerificationLevel.UNVERIFIED;
-					contactService.save(contactModel);
+				for (String identity : identities) {
+					ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(identity);
+					if (model != null) {
+						try {
+							model.setVerificationLevelFromLocal(VerificationLevel.UNVERIFIED);
+						} catch (ModelDeletedException e) {
+							logger.info("Could not set verification level because contact {} has been deleted", identity, e);
+						}
+					}
 				}
 			}
 		}

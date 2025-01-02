@@ -31,31 +31,20 @@ import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.fs.DHSession;
+import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ServerAddressProvider;
-import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.DHSessionStoreException;
-import ch.threema.domain.stores.DHSessionStoreInterface;
-import ch.threema.domain.stores.IdentityStoreInterface;
-import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
-import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 
 /**
  * The {@link DatabaseContactStore} is an implementation of the {@link ContactStore} interface
@@ -64,8 +53,6 @@ import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel;
 public class DatabaseContactStore implements ContactStore {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseContactStore");
 
-	private final @NonNull IdentityStoreInterface identityStore;
-	private final @NonNull DHSessionStoreInterface fsSessions;
 	private final @NonNull DatabaseServiceNew databaseServiceNew;
 
 	/**
@@ -74,19 +61,15 @@ public class DatabaseContactStore implements ContactStore {
 	private final @NonNull Map<String, Contact> specialContacts = new HashMap<>();
 
 	/**
-	 * The cache of fetched contacts. Note that this cache only contains the cached contacts from a
-	 * server fetch. Contacts from the database are not cached here.
+	 * The cache of contacts. Note that this cache only contains the cached contacts from a server
+	 * fetch. Contacts from the database are not cached here.
 	 */
-	private final @NonNull Map<String, Contact> contactCache = new HashMap<>();
+	private final @NonNull Map<String, BasicContact> contactCache = new HashMap<>();
 
 	public DatabaseContactStore(
-		@NonNull IdentityStoreInterface identityStore,
-		@NonNull DHSessionStoreInterface fsSessions,
 		@NonNull DatabaseServiceNew databaseServiceNew,
 		@NonNull ServerAddressProvider serverAddressProvider
 	) {
-		this.identityStore = identityStore;
-		this.fsSessions = fsSessions;
 		this.databaseServiceNew = databaseServiceNew;
 
 		try {
@@ -119,8 +102,14 @@ public class DatabaseContactStore implements ContactStore {
 	}
 
 	@Override
-	public void addCachedContact(@NonNull Contact contact) {
+	public void addCachedContact(@NonNull BasicContact contact) {
 		contactCache.put(contact.getIdentity(), contact);
+	}
+
+	@Nullable
+	@Override
+	public BasicContact getCachedContact(@NonNull String identity) {
+		return contactCache.get(identity);
 	}
 
 	@Nullable
@@ -173,28 +162,6 @@ public class DatabaseContactStore implements ContactStore {
 					);
 				}
 			}
-
-			// Only warn about an FS feature mask downgrade if an FS session existed.
-			DHSession fsSession = null;
-			try {
-				fsSession = fsSessions.getBestDHSession(identityStore.getIdentity(), contact.getIdentity(), ThreemaApplication.requireServiceManager().getMigrationTaskHandle());
-			} catch (DHSessionStoreException | NullPointerException exception) {
-				logger.error("Unable to determine best DH session", exception);
-			}
-			if (fsSession != null && !ThreemaFeature.canForwardSecurity(contactModel.getFeatureMask())) {
-				logger.info("Forward security feature has been downgraded for contact {}", contactModel.getIdentity());
-				// Create a status message that forward security has been disabled for this contact
-				// due to a downgrade.
-				createForwardSecurityDowngradedStatus(contactModel);
-
-				// Clear and terminate all sessions with that contact
-				ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-				if (serviceManager != null) {
-					serviceManager.getTaskCreator().scheduleDeleteAndTerminateFSSessionsTaskAsync(
-						contact, Terminate.Cause.DISABLED_BY_REMOTE
-					);
-				}
-			}
 		}
 
 		contactModelFactory.createOrUpdate(contactModel);
@@ -207,49 +174,9 @@ public class DatabaseContactStore implements ContactStore {
 		}
 	}
 
-	private void createForwardSecurityDowngradedStatus(@NonNull ContactModel contactModel) {
-		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager != null) {
-				MessageService messageService = serviceManager.getMessageService();
-				ContactService contactService = serviceManager.getContactService();
-				messageService.createForwardSecurityStatus(
-					contactService.createReceiver(contactModel),
-					ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE,
-					0,
-					null
-				);
-			} else {
-				logger.error("ServiceManager is null");
-			}
-		} catch (ThreemaException e) {
-			logger.error("Error while creating forward security downgrade status message", e);
-		}
-	}
-
-	/**
-	 * Mark the contact as hidden / unhidden. Then store or update the contact in the database.
-	 */
-	public void hideContact(@NonNull ContactModel contactModel, boolean hide) {
-		// Mark as hidden / unhidden
-		contactModel.setAcquaintanceLevel(hide ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
-
-		// Update database
-		ContactModelFactory contactModelFactory = this.databaseServiceNew.getContactModelFactory();
-		contactModelFactory.createOrUpdate(contactModel);
-
-		// Fire listeners
-		this.fireOnModifiedContact(contactModel.getIdentity());
-	}
-
 	@Override
-	public void removeContact(@NonNull Contact contact) {
-		this.removeContact((ContactModel)contact);
-	}
-
-	public void removeContact(final ContactModel contactModel) {
-		this.databaseServiceNew.getContactModelFactory().delete(contactModel);
-		fireOnRemovedContact(contactModel);
+	public boolean isSpecialContact(@NonNull String identity) {
+		return specialContacts.containsKey(identity);
 	}
 
 	private void fireOnNewContact(final ContactModel createdContactModel) {
@@ -261,12 +188,6 @@ public class DatabaseContactStore implements ContactStore {
 	private void fireOnModifiedContact(final String identity) {
 		ListenerManager.contactListeners.handle(listener -> {
 			listener.onModified(identity);
-		});
-	}
-
-	private void fireOnRemovedContact(final ContactModel removedContactModel) {
-		ListenerManager.contactListeners.handle(listener -> {
-			listener.onRemoved(removedContactModel.getIdentity());
 		});
 	}
 }

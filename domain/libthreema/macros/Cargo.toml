@@ -1,0 +1,20 @@
+[package]
+name = "libthreema-macros"
+version = "0.1.0"
+authors = ["Threema GmbH"]
+license = "AGPL-3.0-only"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[lints]
+workspace = true
+
+[dependencies]
+convert_case = "0.6"
+quote = "1"
+syn = "2"
+
+[dev-dependencies]
+trybuild = "1"

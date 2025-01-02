@@ -23,11 +23,14 @@ package ch.threema.app.multidevice
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -37,11 +40,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
-import ch.threema.app.services.QRCodeServiceImpl
+import ch.threema.app.multidevice.wizard.LinkNewDeviceWizardActivity
 import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.ui.SilentSwitchCompat
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.QRScannerUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -56,18 +58,25 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
     private val viewModel: LinkedDevicesViewModel by viewModels()
 
-    private val qrScanner = QRScannerUtil.prepareScanner(this) {
-        if (it?.isNotEmpty() == true) {
-            logger.debug("Got device link data: {}", it)
-            viewModel.linkDevice(it, serviceManager.deviceJoinDataCollector)
-        }
-    }
-
     private lateinit var devicesList: EmptyRecyclerView
     private lateinit var devicesAdapter: LinkedDevicesAdapter
 
     private lateinit var onOffButton: SilentSwitchCompat
     private lateinit var linkDeviceButton: ExtendedFloatingActionButton
+
+    private var wizardLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            logger.debug("Device linking success")
+            viewModel.refreshLinkedDevices()
+        } else {
+            // TODO(ANDR-2758): proper error handling
+            if (result.data?.getStringExtra(LinkNewDeviceWizardActivity.ACTIVITY_RESULT_EXTRA_FAILURE_REASON) != null) {
+                logger.debug("Device linking failed")
+            } else {
+                logger.debug("Device linking cancelled (not started)")
+            }
+        }
+    }
 
     override fun getLayoutResource(): Int = R.layout.activity_linked_devices
 
@@ -93,6 +102,11 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
 
         linkDeviceButton = findViewById(R.id.link_device_button)
         linkDeviceButton.setOnClickListener { initiateLinking() }
+        // TODO(ANDR-2717): Remove
+        linkDeviceButton.setOnLongClickListener {
+            viewModel.dropOtherDevices()
+            true
+        }
 
         initDevicesList()
 
@@ -104,7 +118,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                scanQr()
+                startLinkingWizard()
             } else if (!this.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                 ConfigUtils.showPermissionRationale(this, findViewById(R.id.parent_layout), R.string.permission_camera_qr_required)
             }
@@ -139,16 +153,13 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     private fun initiateLinking() {
         logger.debug("Initiate linking")
         if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
-            scanQr()
+            startLinkingWizard()
         }
     }
 
-    private fun scanQr() {
-        logger.info("Scan Qr Code")
-        qrScanner.scan(
-            getString(R.string.md_link_device_qr_scan_message),
-            QRCodeServiceImpl.QR_TYPE_ANY
-        )
+    private fun startLinkingWizard() {
+        logger.info("Start linking wizard")
+        wizardLauncher.launch(Intent(this, LinkNewDeviceWizardActivity::class.java))
     }
 
     private fun startObservers() {

@@ -48,6 +48,7 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.models.IdentityState;
 import ch.threema.storage.models.ContactModel;
 
 public class WorkUserListFragment extends RecipientListFragment {
@@ -115,21 +116,21 @@ public class WorkUserListFragment extends RecipientListFragment {
 		new AsyncTask<Void, Void, List<ContactModel>>() {
 			@Override
 			protected List<ContactModel> doInBackground(Void... voids) {
-				final ContactModel.State[] contactStates;
+				final IdentityState[] contactStates;
 				if (preferenceService.showInactiveContacts()) {
-					contactStates = new ContactModel.State[]{
-						ContactModel.State.ACTIVE,
-						ContactModel.State.INACTIVE
+					contactStates = new IdentityState[]{
+						IdentityState.ACTIVE,
+						IdentityState.INACTIVE
 					};
 				} else {
-					contactStates = new ContactModel.State[]{
-						ContactModel.State.ACTIVE
+					contactStates = new IdentityState[]{
+						IdentityState.ACTIVE
 					};
 				}
 
 				return Functional.filter(contactService.find(new ContactService.Filter() {
 					@Override
-					public ContactModel.State[] states() {
+					public IdentityState[] states() {
 						return contactStates;
 					}
 
