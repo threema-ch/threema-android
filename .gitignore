@@ -18,5 +18,4 @@ export/
 threema-android-*
 release/
 .cxx/
-patches/
 **/.DS_Store
