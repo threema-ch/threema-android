@@ -73,7 +73,7 @@ public class DistributionList extends Converter {
 			}
 			builder.put(MEMBERS, memberBuilder);
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
@@ -82,7 +82,7 @@ public class DistributionList extends Converter {
 		try {
 			return String.valueOf(distributionList.getId());
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class DistributionList extends Converter {
 		try {
 			return NameUtil.getDisplayName(distributionList, getDistributionListService());
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class DistributionList extends Converter {
 		try {
 			return String.format("#%06X", (0xFFFFFF & distributionList.getColorLight()));
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 

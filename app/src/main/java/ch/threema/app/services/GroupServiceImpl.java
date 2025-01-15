@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -819,7 +818,7 @@ public class GroupServiceImpl implements GroupService {
 	 */
 	private @UpdateResult int updateGroupPictureFromLocal(@NonNull GroupModel groupModel, @Nullable Bitmap picture) {
 		if (!isGroupCreator(groupModel)) {
-			logger.error("Cannot rename group where the user is not the creator");
+			logger.error("Cannot update group picture where the user is not the creator");
 			return UPDATE_ERROR;
 		}
 
@@ -1334,7 +1333,7 @@ public class GroupServiceImpl implements GroupService {
 			}
 		}
 
-		if (groupIds.size() > 0) {
+		if (!groupIds.isEmpty()) {
 			List<GroupModel> groups = this.databaseServiceNew.getGroupModelFactory().getInId(
 				groupIds);
 
@@ -1436,18 +1435,17 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	@Override
-	public void addGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToAdd, @NonNull MessageState newState) {
+	public void removeGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToRemove) {
 		GroupModel groupModel = getById(messageModel.getGroupId());
 		if (groupModel != null) {
-			if (isGroupMember(groupModel, identityToAdd)) {
+			if (isGroupMember(groupModel, identityToRemove)) {
 				Map<String, Object> groupMessageStates = messageModel.getGroupMessageStates();
-				if (groupMessageStates == null) {
-					groupMessageStates = new HashMap<>();
+				if (groupMessageStates != null) {
+					groupMessageStates.remove(identityToRemove);
+					messageModel.setGroupMessageStates(groupMessageStates);
 				}
-				groupMessageStates.put(identityToAdd, newState.toString());
-				messageModel.setGroupMessageStates(groupMessageStates);
 			} else {
-				logger.debug("Received state change for non-member {}", identityToAdd);
+				logger.debug("Received state change for non-member {}", identityToRemove);
 			}
 		} else {
 			logger.debug("Received state change for non existent group {}", messageModel.getGroupId());

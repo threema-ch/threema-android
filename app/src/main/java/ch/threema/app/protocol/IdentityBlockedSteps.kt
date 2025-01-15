@@ -21,8 +21,8 @@
 
 package ch.threema.app.protocol
 
+import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.IdListService
 import ch.threema.app.services.PreferenceService
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.ContactStore
@@ -63,14 +63,14 @@ fun runIdentityBlockedSteps(
     contactModelRepository: ContactModelRepository,
     contactStore: ContactStore,
     groupService: GroupService,
-    blockedContactsService: IdListService,
+    blockedIdentitiesService: BlockedIdentitiesService,
     preferenceService: PreferenceService,
 ): BlockState {
     if (contactStore.isSpecialContact(identity)) {
         return BlockState.NOT_BLOCKED
     }
 
-    if (blockedContactsService.has(identity)) {
+    if (blockedIdentitiesService.isBlocked(identity)) {
         return BlockState.EXPLICITLY_BLOCKED
     }
 

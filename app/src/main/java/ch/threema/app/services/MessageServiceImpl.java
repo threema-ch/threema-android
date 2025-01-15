@@ -81,6 +81,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.exceptions.TranscodeCanceledException;
 import ch.threema.app.managers.ListenerManager;
@@ -124,7 +125,11 @@ import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.crypto.SymmetricEncryptionService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.models.EmojiReactionData;
 import ch.threema.data.repositories.EditHistoryRepository;
+import ch.threema.data.repositories.EmojiReactionEntryCreateException;
+import ch.threema.data.repositories.EmojiReactionEntryRemoveException;
+import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.blob.BlobScope;
@@ -139,11 +144,11 @@ import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.EditMessage;
 import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
-import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage;
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
 import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
 import ch.threema.domain.protocol.csp.messages.ImageMessage;
-import ch.threema.domain.protocol.csp.messages.LocationMessage;
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotSetupInterface;
@@ -151,6 +156,9 @@ import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.domain.protocol.csp.messages.location.Poi;
+import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.protobuf.csp.e2e.Reaction;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.MessageModelFactory;
@@ -203,7 +211,7 @@ public class MessageServiceImpl implements MessageService {
 	public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_SI = FILE_AUTO_DOWNLOAD_MAX_SIZE_M * 1000 * 1000; // used for presentation only
 	public static final int THUMBNAIL_SIZE_PX = 512;
 
-	private final Context context;
+	private final @NonNull Context context;
 
 	// Services
 	private final MessageSendingService messageSendingService;
@@ -218,11 +226,13 @@ public class MessageServiceImpl implements MessageService {
 	private final ApiService apiService;
 	private final DownloadService downloadService;
 	private final DeadlineListService hiddenChatsListService;
-	private final IdListService blockedContactsService;
+    @NonNull
+	private final BlockedIdentitiesService blockedIdentitiesService;
 	private final SymmetricEncryptionService symmetricEncryptionService;
 
     // Repositories
     private final EditHistoryRepository editHistoryRepository;
+	private final EmojiReactionsRepository emojiReactionsRepository;
 
     // Managers
     private final MultiDeviceManager multiDeviceManager;
@@ -235,6 +245,7 @@ public class MessageServiceImpl implements MessageService {
 	private final SparseIntArray loadingProgress = new SparseIntArray();
 
 	public MessageServiceImpl(
+        @NonNull
         Context context,
         CacheService cacheService,
         DatabaseServiceNew databaseServiceNew,
@@ -249,9 +260,10 @@ public class MessageServiceImpl implements MessageService {
         ApiService apiService,
         DownloadService downloadService,
         DeadlineListService hiddenChatsListService,
-        IdListService blockedContactsService,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
+		MultiDeviceManager multiDeviceManager,
         EditHistoryRepository editHistoryRepository,
-        MultiDeviceManager multiDeviceManager
+		EmojiReactionsRepository emojiReactionsRepository
     ) {
 		this.context = context;
 		this.databaseServiceNew = databaseServiceNew;
@@ -266,14 +278,16 @@ public class MessageServiceImpl implements MessageService {
 		this.apiService = apiService;
 		this.downloadService = downloadService;
 		this.hiddenChatsListService = hiddenChatsListService;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 
 		contactMessageCache = cacheService.getMessageModelCache();
 		groupMessageCache = cacheService.getGroupMessageModelCache();
 		distributionListMessageCache = cacheService.getDistributionListMessageCache();
 
-        this.editHistoryRepository = editHistoryRepository;
-        this.multiDeviceManager = multiDeviceManager;
+		this.multiDeviceManager = multiDeviceManager;
+
+		this.editHistoryRepository = editHistoryRepository;
+		this.emojiReactionsRepository = emojiReactionsRepository;
 
         // init queue
 		messageSendingService = new MessageSendingServiceExponentialBackOff(new MessageSendingService.MessageSendingServiceState() {
@@ -570,11 +584,167 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
+	public void saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, Reaction.ActionCase actionCase, @NonNull String emojiSequence) {
+		logger.debug("saving emoji reaction of type {} to message {}", actionCase, targetMessage.getApiMessageId());
+
+		if (actionCase == Reaction.ActionCase.APPLY) {
+			try {
+				emojiReactionsRepository.createEntry(targetMessage, senderIdentity, emojiSequence);
+			} catch (EmojiReactionEntryCreateException|IllegalStateException e) {
+				logger.error("Unable to create emoji reaction.");
+				return;
+			}
+		} else if (actionCase == Reaction.ActionCase.WITHDRAW) {
+			try {
+				emojiReactionsRepository.removeEntry(targetMessage, senderIdentity, emojiSequence);
+			} catch (EmojiReactionEntryRemoveException|IllegalStateException e) {
+				logger.error("Unable to remove emoji reaction.");
+				return;
+			}
+		} else {
+			logger.debug("Unsupported emoji reaction action case {}. ignoring.", actionCase);
+			return;
+		}
+		fireOnModifiedMessage(targetMessage);
+	}
+
+	@Override
+	public void clearMessageState(@NonNull AbstractMessageModel targetMessage) {
+		if (targetMessage.getState() != MessageState.USERACK && targetMessage.getState() != MessageState.USERDEC) {
+			return;
+		}
+
+		MessageState newMessageState;
+		String myIdentity = identityStore != null ? identityStore.getIdentity() : null;
+
+		if (targetMessage.isRead()) {
+			newMessageState = MessageState.READ;
+		} else if (targetMessage.getDeliveredAt() != null) {
+			newMessageState = MessageState.DELIVERED;
+		} else {
+			newMessageState = MessageState.SENT;
+		}
+
+		targetMessage.setState(newMessageState);
+		if (targetMessage instanceof GroupMessageModel && myIdentity != null) {
+			groupService.removeGroupMessageState((GroupMessageModel) targetMessage, myIdentity);
+		}
+		save(targetMessage);
+	}
+
+	@WorkerThread
+	@Override
+	public synchronized boolean sendEmojiReaction(@NonNull AbstractMessageModel message, @NonNull String emojiSequence, @NonNull MessageReceiver receiver, boolean markAsRead) throws ThreemaException {
+		logger.debug("Send emoji reaction to message {}", message.getApiMessageId());
+		logger.trace("Reaction: '{}'", emojiSequence);
+
+        if (!EmojiUtil.isFullyQualifiedEmoji(emojiSequence)) {
+            logger.warn("Attempt to send non fully-qualified emoji sequence '{}'", emojiSequence);
+            // Return true, as the return value only indicates whether this failed due to
+            // compatibility issues when a phase 1 client tries to send an emoji sequence
+            // to a client without reactions support.
+            return true;
+        }
+
+        @MessageReceiver.EmojiReactionsSupport
+        final int reactionSupport = receiver.getEmojiReactionSupport();
+
+		if (reactionSupport != MessageReceiver.Reactions_NONE) {
+			final String myIdentity = identityStore.getIdentity();
+			List<EmojiReactionData> emojiReactionData = emojiReactionsRepository.safeGetReactionsByMessage(message);
+
+			Reaction.ActionCase actionCase = Reaction.ActionCase.APPLY;
+
+			// check if there's already an identical reaction with us as the sender. if yes, withdraw it.
+			if (containsEmojiSequence(emojiReactionData, emojiSequence, identityStore.getIdentity())) {
+				actionCase = Reaction.ActionCase.WITHDRAW;
+			}
+
+			if (receiver instanceof ContactMessageReceiver) {
+				((ContactMessageReceiver) receiver).sendReactionMessage(
+					message,
+					actionCase,
+					emojiSequence,
+					new Date() // use current timestamp for reaction message
+				);
+			} else if (receiver instanceof GroupMessageReceiver) {
+				((GroupMessageReceiver) receiver).sendReactionMessage(
+					message,
+					actionCase,
+					emojiSequence,
+					new Date() // use current timestamp for reaction message
+				);
+			} else {
+				throw new ThreemaException("Unsupported receiver type of: " + receiver.getClass());
+			}
+
+			if (actionCase == Reaction.ActionCase.APPLY) {
+				emojiReactionsRepository.createEntry(message, myIdentity, emojiSequence);
+			} else {
+				emojiReactionsRepository.removeEntry(message, myIdentity, emojiSequence);
+			}
+
+            showToastOnPartialReactionSupport(
+                reactionSupport,
+                actionCase,
+                emojiSequence
+            );
+
+			fireOnModifiedMessage(message);
+		} else {
+			// fallback to ack/dec
+			if (EmojiUtil.isThumbsUpEmoji(emojiSequence)) {
+				if (MessageUtil.canSendUserAcknowledge(message)) {
+					sendDeliveryReceiptAckDec(message, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK, MessageState.USERACK);
+				} else {
+					logger.error("Unable to send ack message.");
+				}
+			} else if (EmojiUtil.isThumbsDownEmoji(emojiSequence)) {
+				if (MessageUtil.canSendUserDecline(message)) {
+					sendDeliveryReceiptAckDec(message, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC, MessageState.USERDEC);
+				} else {
+					logger.error("Unable to send dec message");
+				}
+			} else {
+				// TODO(ANDR-3492): Remove else branch and probably set method's return type to `void`
+				// unsupported emoji sequence (V1 to V2)
+				return false;
+			}
+		}
+		return true;
+	}
+
+    /**
+     * Show a toast if reaction support is only partial for the current receiver.
+     * Also note that for now a toast is only shown if the action is APPLY.
+     * If the reaction can be mapped to ACK/DEC, no toast is shown.
+     */
+    @AnyThread
+    private void showToastOnPartialReactionSupport(
+        @MessageReceiver.EmojiReactionsSupport int reactionSupport,
+        @NonNull Reaction.ActionCase actionCase,
+        @NonNull String emojiSequence
+    ) {
+        if (reactionSupport == MessageReceiver.Reactions_PARTIAL
+            && actionCase == Reaction.ActionCase.APPLY
+            && !EmojiUtil.isThumbsUpOrDownEmoji(emojiSequence)) {
+            RuntimeUtil.runOnUiThread(() ->
+                Toast.makeText(context, R.string.group_emoji_reactions_partially_supported, Toast.LENGTH_SHORT).show());
+        }
+    }
+
+	private boolean containsEmojiSequence(@Nullable List<EmojiReactionData> emojiReactionData, @NonNull String emojiSequence, @NonNull String senderIdentity) {
+		return
+			emojiReactionData != null &&
+			emojiReactionData.stream().anyMatch(a -> a.senderIdentity.equals(senderIdentity) && a.emojiSequence.equals(emojiSequence));
+	}
+
+	@Override
 	public void sendDeleteMessage(
 		@NonNull AbstractMessageModel message, // Let `message` be the referred message.
 		@NonNull MessageReceiver receiver
 	) throws Exception {
-		logger.debug("sendDeleteMessage message = {}", message.getApiMessageId());
+		logger.debug("sendDeleteMessage        message = {}", message.getApiMessageId());
 
 		if (!message.isOutbox()) {
 			logger.error("Tried deleting a message that is not outgoing. message = {}", message.getId());
@@ -597,7 +767,7 @@ public class MessageServiceImpl implements MessageService {
 
 		// 4. Replace `message` with a message informing the user that the message of
 		//    the user has been removed at `created-at`.
-		deleteMessageContentsAndEditHistory(message, createdAt);
+		deleteMessageContentsAndRelatedData(message, createdAt);
 
 		if (receiver instanceof ContactMessageReceiver) {
 			((ContactMessageReceiver) receiver).sendDeleteMessage(
@@ -615,7 +785,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public void deleteMessageContentsAndEditHistory(@NonNull AbstractMessageModel message, Date deletedAt) {
+	public void deleteMessageContentsAndRelatedData(@NonNull AbstractMessageModel message, Date deletedAt) {
 		logger.info("deleteMessageContents = {}", message.getApiMessageId());
 
 		fileService.removeMessageFiles(message, true);
@@ -632,37 +802,49 @@ public class MessageServiceImpl implements MessageService {
 
 		save(message);
 
-        // Delete the edit history. Note that the foreign key does not work in this case, as the
+        // Delete the edit history and emoji reactions. Note that the foreign keys do not work in this case, as the
         // original message entry is not removed from the database.
         editHistoryRepository.deleteByMessageUid(message.getUid());
+
+        emojiReactionsRepository.deleteAllReactionsForMessage(message);
 
 		fireOnModifiedMessage(message);
 		fireOnMessageDeletedForAll(message);
 	}
 
 	@Override
-	public AbstractMessageModel sendLocation(@NonNull Location location, String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException {
+	public AbstractMessageModel sendLocation(@NonNull Location location, @Nullable String poiName, MessageReceiver receiver, final CompletionHandler completionHandler) throws ThreemaException {
 		final String tag = "sendLocationMessage";
 		logger.info("{}: start", tag);
 
 		AbstractMessageModel messageModel = receiver.createLocalModel(MessageType.LOCATION, MessageContentsType.LOCATION, new Date());
 		cache(messageModel);
 
-		String address = null;
+        @Nullable Poi poi = null;
 		try {
-			address = GeoLocationUtil.getAddressFromLocation(context, location.getLatitude(), location.getLongitude());
+			final @NonNull String lookedUpPoiAddress = GeoLocationUtil.getAddressFromLocation(
+                context,
+                location.getLatitude(),
+                location.getLongitude()
+            );
+            if (poiName != null && !poiName.isBlank()) {
+                poi = new Poi.Named(poiName, lookedUpPoiAddress);
+            } else {
+                poi = new Poi.Unnamed(lookedUpPoiAddress);
+            }
 		} catch (IOException e) {
 			logger.error("Exception", e);
 			//do not show this error!
 		}
 
-		messageModel.setLocationData(new LocationDataModel(
+		messageModel.setLocationData(
+            new LocationDataModel(
 				location.getLatitude(),
 				location.getLongitude(),
-				(long) location.getAccuracy(),
-				address,
-				poiName
-		));
+                (double) location.getAccuracy(),
+                poi
+		    )
+        );
 
 		messageModel.setOutbox(true);
 		messageModel.setState(MessageState.PENDING);
@@ -687,7 +869,9 @@ public class MessageServiceImpl implements MessageService {
 		@NonNull AbstractMessageModel messageModel,
 		@NonNull MessageReceiver<AbstractMessageModel> receiver,
 		@Nullable CompletionHandler completionHandler,
-		@NonNull Collection<String> recipientIdentities
+		@NonNull Collection<String> recipientIdentities,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
 	) throws Exception {
 		NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
 		notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
@@ -698,7 +882,7 @@ public class MessageServiceImpl implements MessageService {
 			} else if (messageModel.getType() == MessageType.BALLOT) {
 				BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
 				if (ballotModel != null) {
-					resendBallotMessage(messageModel, ballotModel, receiver);
+					resendBallotMessage(messageModel, ballotModel, receiver, messageId, triggerSource);
 				}
 			} else if (messageModel.getType() == MessageType.TEXT) {
 				resendTextMessage(messageModel, receiver, recipientIdentities);
@@ -920,46 +1104,54 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public AbstractMessageModel sendBallotMessage(BallotModel ballotModel) throws MessageTooLongException {
+	public AbstractMessageModel sendBallotMessage(
+        @NonNull BallotModel ballotModel,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException {
 		//create a new ballot model
-		if(ballotModel != null) {
 			MessageReceiver receiver = ballotService.getReceiver(ballotModel);
 
-				if(receiver != null) {
-					//ok...
-					logger.debug("sendBallotMessage to {}", receiver);
+        if (receiver != null) {
+            //ok...
+            logger.debug("sendBallotMessage to {}", receiver);
 					final AbstractMessageModel messageModel = receiver.createLocalModel(MessageType.BALLOT, MessageContentsType.BALLOT, new Date());
-					cache(messageModel);
+            cache(messageModel);
 
-					messageModel.setOutbox(true);
-					messageModel.setState(MessageState.PENDING);
+            messageModel.setOutbox(true);
+            messageModel.setState(MessageState.PENDING);
 
-					messageModel.setBallotData(new BallotDataModel(
-							ballotModel.getState() == BallotModel.State.OPEN ?
-									BallotDataModel.Type.BALLOT_CREATED :
+            messageModel.setBallotData(new BallotDataModel(
+                ballotModel.getState() == BallotModel.State.OPEN ?
+                    BallotDataModel.Type.BALLOT_CREATED :
 									BallotDataModel.Type.BALLOT_CLOSED,
-							ballotModel.getId()));
+                ballotModel.getId()));
 
-					messageModel.setSaved(true);
-					receiver.saveLocalModel(messageModel);
-					fireOnCreatedMessage(messageModel);
-					resendBallotMessage(messageModel, ballotModel, receiver);
+            messageModel.setSaved(true);
+            receiver.saveLocalModel(messageModel);
+            fireOnCreatedMessage(messageModel);
+            resendBallotMessage(messageModel, ballotModel, receiver, messageId, triggerSource);
 
-					return messageModel;
-				}
-		}
+            return messageModel;
+        }
 
 		return null;
 	}
 
-	private void resendBallotMessage(AbstractMessageModel messageModel, BallotModel ballotModel, MessageReceiver receiver) throws MessageTooLongException {
+	private void resendBallotMessage(
+        AbstractMessageModel messageModel,
+        BallotModel ballotModel,
+        MessageReceiver<?> receiver,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException {
 		//get ballot data
 		if(!TestUtil.required(messageModel, ballotModel, receiver)) {
 			return;
 		}
 		updateOutgoingMessageState(messageModel, MessageState.PENDING, new Date());
 		try {
-			ballotService.publish(receiver, ballotModel, messageModel);
+			ballotService.publish(receiver, ballotModel, messageModel, messageId, triggerSource);
 		}
 		catch (NotAllowedException | MessageTooLongException x) {
 			logger.error("Exception", x);
@@ -971,22 +1163,6 @@ public class MessageServiceImpl implements MessageService {
 				updateOutgoingMessageState(messageModel, MessageState.SENDFAILED, new Date());
 			}
 		}
-	}
-
-	@Override
-	public boolean sendUserAcknowledgement(@NonNull AbstractMessageModel messageModel, boolean markAsRead) {
-		if (MessageUtil.canSendUserAcknowledge(messageModel)) {
-			return sendQuickReaction(messageModel, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK, MessageState.USERACK);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean sendUserDecline(@NonNull AbstractMessageModel messageModel, boolean markAsRead) {
-		if (MessageUtil.canSendUserDecline(messageModel)) {
-			return sendQuickReaction(messageModel, markAsRead, ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC, MessageState.USERDEC);
-		}
-		return false;
 	}
 
 	private boolean sendDeliveryReceipts(@NonNull AbstractMessageModel messageModel, int type) throws ThreemaException {
@@ -1018,31 +1194,39 @@ public class MessageServiceImpl implements MessageService {
 	 * @param receiptType Type of receipt (currently only ACK and DEC are supported for groups)
 	 */
 	private boolean sendGroupDeliveryReceipt(@NonNull GroupMessageModel messageModel, int receiptType) {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.warn("Service manager is null: cannot send group delivery receipt");
-			return false;
-		}
-
 		GroupModel group = groupService.getById(messageModel.getGroupId());
 		if (group == null) {
 			logger.warn("Cannot send group delivery receipt for unknown group");
 			return false;
 		}
+		return sendGroupDeliveryReceipt(Set.of(groupService.getGroupIdentities(group)), messageModel, receiptType);
+	}
 
+	/**
+	 * Send a delivery receipt to the identities specified
+	 * @param identities Identities to send the receipt to
+	 * @param messageModel GroupMessageModel for which a receipt should be sent
+	 * @param receiptType Type of receipt (currently only ACK and DEC are supported for groups)
+	 */
+	@Override
+	public boolean sendGroupDeliveryReceipt(@NonNull Set<String> identities, GroupMessageModel messageModel, int receiptType) {
+		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+		if (serviceManager == null) {
+			logger.warn("Service manager is null: cannot send group delivery receipt");
+			return false;
+		}
 		serviceManager.getTaskManager().schedule(
 			new OutgoingGroupDeliveryReceiptMessageTask(
 				messageModel.getId(),
 				receiptType,
-				Set.of(groupService.getGroupIdentities(group)),
+				identities,
 				serviceManager
 			)
 		);
-
 		return true;
 	}
 
-	private boolean sendQuickReaction(@NonNull AbstractMessageModel messageModel, boolean markAsRead, int receiptType, @NonNull MessageState newMessageState) {
+	private void sendDeliveryReceiptAckDec(@NonNull AbstractMessageModel messageModel, boolean markAsRead, int receiptType, @NonNull MessageState newMessageState) {
 		try {
 			if (markAsRead) {
 				markAsRead(messageModel, true);
@@ -1050,22 +1234,18 @@ public class MessageServiceImpl implements MessageService {
 
 			if (!sendDeliveryReceipts(messageModel, receiptType)) {
 				logger.error("Failed to send delivery receipt");
-				return false;
-			}
-			messageModel.setState(newMessageState);
-
-			if (messageModel instanceof GroupMessageModel && identityStore != null && identityStore.getIdentity() != null) {
-				groupService.addGroupMessageState((GroupMessageModel) messageModel, identityStore.getIdentity(), newMessageState);
+				return;
 			}
 
-			save(messageModel);
+			// clear any existing ack/dec message state
+			clearMessageState(messageModel); // TODO(ANDR-3325): Remove ACK/DEC compatibility
+
+			updateAckDecState(messageModel, newMessageState, identityStore.getIdentity());
+
 			fireOnModifiedMessage(messageModel);
-
-			return true;
 		} catch (ThreemaException e) {
 			logger.error("Exception", e);
 		}
-		return false;
 	}
 
 	@Nullable
@@ -1142,9 +1322,9 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void updateOutgoingMessageState(
-		@NonNull AbstractMessageModel messageModel,
-		@NonNull MessageState state,
-		@NonNull Date date
+			@NonNull AbstractMessageModel messageModel,
+			@NonNull MessageState state,
+			@NonNull Date date
 	) {
 		if (!messageModel.isOutbox()) {
 			throw new IllegalArgumentException("Updating outgoing message state on incoming message " + messageModel.getApiMessageId());
@@ -1160,8 +1340,8 @@ public class MessageServiceImpl implements MessageService {
 
 		synchronized (this) {
 			logger.debug(
-				"Updating message state from {} to {} at {}",
-				messageModel.getState(), state, date.getTime()
+					"Updating message state from {} to {} at {}",
+					messageModel.getState(), state, date.getTime()
 			);
 
 			boolean hasChanges = true;
@@ -1204,8 +1384,8 @@ public class MessageServiceImpl implements MessageService {
 				hasChanges = true;
 			} else {
 				logger.warn(
-					"State transition from {} to {}, ignoring",
-					messageModel.getState(), state
+						"State transition from {} to {}, ignoring",
+						messageModel.getState(), state
 				);
 			}
 
@@ -1218,38 +1398,51 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void addMessageReaction(
-		@NonNull AbstractMessageModel messageModel,
-		@NonNull MessageState state,
-		@NonNull String fromIdentity,
-		@NonNull Date date
+			@NonNull AbstractMessageModel messageModel,
+			@NonNull MessageState state,
+			@NonNull String fromIdentity,
+			@NonNull Date date
 	) {
 		if (!MessageUtil.isReaction(state)) {
 			throw new IllegalArgumentException("The given message state is not a reaction: " + state);
 		}
+		updateAckDecState(messageModel, state, fromIdentity);
+	}
 
-		messageModel.setModifiedAt(date);
+	/**
+	 * Special compatibility handling for state changes to ACK and DEC. Saves these messages to the reactions database
+	 * @param messageModel The target message model of this state change / reaction
+	 * @param newState The desired new state (ACK or DEC)
+	 * @param senderIdentity The identity of the sender who sent this state change / reaction
+	 */
+	private void updateAckDecState(@NonNull AbstractMessageModel messageModel, @NonNull MessageState newState, @Nullable String senderIdentity) {
+		if (newState != MessageState.USERACK && newState != MessageState.USERDEC) {
+			return;
+		}
 
-		if (messageModel instanceof GroupMessageModel) {
-			// Add group reaction
-			groupService.addGroupMessageState((GroupMessageModel) messageModel, fromIdentity, state);
-			save(messageModel);
-			fireOnModifiedMessage(messageModel);
-		} else {
-			// Add contact reaction (only if state transition is possible)
-			boolean canChangeState;
-			if (messageModel.isOutbox()) {
-				// For outbound messages, we need to check whether the message state transition is
-				// possible. For example, we can't add a reaction to failed messages.
-				canChangeState = MessageUtil.canChangeToState(messageModel.getState(), state, false);
-			} else {
-				// For inbound messages it is always possible to add a reaction
-				canChangeState = true;
-			}
-			if (canChangeState) {
-				messageModel.setState(state);
-				save(messageModel);
-				fireOnModifiedMessage(messageModel);
-			}
+		if (senderIdentity == null) {
+			senderIdentity = identityStore.getIdentity();
+		}
+
+		clearMessageState(messageModel); // TODO(ANDR-3325): Remove
+
+		handleEmojiReaction(messageModel, newState, senderIdentity);
+	}
+
+	/**
+	 * Map state changes (acknowledge and decline) to their emoji reaction equivalents keeping in account
+	 * the mutual exclusivity of acks and decs
+	 * @param messageModel The AbstractMessageModel of the target message
+	 * @param state The desired new state
+	 * @param fromIdentity The identity of the sender of this ack/dec reaction
+	 */
+	private void handleEmojiReaction(AbstractMessageModel messageModel, MessageState state, String fromIdentity) {
+		if (state == MessageState.USERACK) {
+			saveEmojiReactionMessage(messageModel, fromIdentity, Reaction.ActionCase.WITHDRAW, EmojiUtil.THUMBS_DOWN_SEQUENCE);
+			saveEmojiReactionMessage(messageModel, fromIdentity, Reaction.ActionCase.APPLY, EmojiUtil.THUMBS_UP_SEQUENCE);
+		} else if (state == MessageState.USERDEC) {
+			saveEmojiReactionMessage(messageModel, fromIdentity, Reaction.ActionCase.WITHDRAW, EmojiUtil.THUMBS_UP_SEQUENCE);
+			saveEmojiReactionMessage(messageModel, fromIdentity, Reaction.ActionCase.APPLY, EmojiUtil.THUMBS_DOWN_SEQUENCE);
 		}
 	}
 
@@ -1284,6 +1477,11 @@ public class MessageServiceImpl implements MessageService {
 			if (contactModel == null) {
 				return saved;
 			}
+
+            if (message.getApiMessageId() == null) {
+                logger.info("Message id is null; cannot send read receipt or reflect message update");
+                return saved;
+            }
 
             boolean receiverAllowsDeliveryReceipt;
             switch (contactModel.getReadReceipts()) {
@@ -1482,7 +1680,7 @@ public class MessageServiceImpl implements MessageService {
         // message will trigger the listeners that, among other things, update the webclient. For
         // this purpose it is important that the last update flag has already been bumped.
         if (message.bumpLastUpdate()) {
-            contactService.bumpLastUpdate(senderIdentity);
+           contactService.bumpLastUpdate(senderIdentity);
         }
 
 		// Handle message depending on subtype
@@ -1525,7 +1723,7 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public boolean processIncomingGroupMessage(AbstractGroupMessage message) throws Exception {
+	public boolean processIncomingGroupMessage(@NonNull AbstractGroupMessage message) throws Exception {
 		logger.info("processIncomingGroupMessage: {}", message.getMessageId());
 		GroupMessageModel messageModel = null;
 
@@ -1548,7 +1746,7 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		// is the user blocked?
-		if (blockedContactsService != null && blockedContactsService.has(message.getFromIdentity())) {
+		if (blockedIdentitiesService.isBlocked(message.getFromIdentity())) {
 			//set success to true (remove from server)
 			logger.info("GroupMessage {}: Sender is blocked, ignoring", message.getMessageId());
 			return true;
@@ -1664,13 +1862,17 @@ public class MessageServiceImpl implements MessageService {
 		@NonNull ContactModel contactModel
 	) throws Exception {
 		MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
-		return (MessageModel) saveBallotCreateMessage(
-				messageReceiver,
-				message.getMessageId(),
-				message,
-				messageModel,
-				message.getMessageFlags(),
-				message.getForwardSecurityMode());
+        return (MessageModel) saveBallotCreateMessage(
+            messageReceiver,
+            message.getMessageId(),
+            message,
+            messageModel,
+            message.getMessageFlags(),
+            message.getForwardSecurityMode(),
+            // Note that this may also be remote, but it is certainly never local. To be safe,
+            // we use sync as this will prevent sending any csp messages.
+            TriggerSource.SYNC
+        );
 	}
 
 	private GroupMessageModel saveGroupMessage(GroupPollSetupMessage message, GroupMessageModel messageModel) throws Exception {
@@ -1682,24 +1884,30 @@ public class MessageServiceImpl implements MessageService {
 
 		MessageReceiver messageReceiver = groupService.createReceiver(groupModel);
 
-		return (GroupMessageModel) saveBallotCreateMessage(
-				messageReceiver,
-				message.getMessageId(),
-				message,
-				messageModel,
-				message.getMessageFlags(),
-				message.getForwardSecurityMode());
+        return (GroupMessageModel) saveBallotCreateMessage(
+            messageReceiver,
+            message.getMessageId(),
+            message,
+            messageModel,
+            message.getMessageFlags(),
+            message.getForwardSecurityMode(),
+            // Note that this may also be remote, but it is certainly never local. To be safe,
+            // we use sync as this will prevent sending any csp messages.
+            TriggerSource.SYNC
+        );
 	}
 
-	private AbstractMessageModel saveBallotCreateMessage(MessageReceiver receiver,
-	                                                     MessageId messageId,
-	                                                     BallotSetupInterface message,
-	                                                     AbstractMessageModel messageModel,
-														 int messageFlags,
-	                                                     ForwardSecurityMode forwardSecurityMode)
-			throws ThreemaException, BadMessageException
-	{
-		BallotUpdateResult result = ballotService.update(message);
+    @Override
+	public AbstractMessageModel saveBallotCreateMessage(
+        @NonNull MessageReceiver<?> receiver,
+        @NonNull MessageId messageId,
+        @NonNull BallotSetupInterface message,
+        @Nullable AbstractMessageModel messageModel,
+        int messageFlags,
+        @Nullable ForwardSecurityMode forwardSecurityMode,
+        @NonNull TriggerSource triggerSource
+    ) throws ThreemaException, BadMessageException {
+		BallotUpdateResult result = ballotService.update(message, messageId, triggerSource);
 
 		if(result.getBallotModel() == null) {
 			throw new ThreemaException("could not create ballot model");
@@ -1909,7 +2117,7 @@ public class MessageServiceImpl implements MessageService {
         // If multi-device is active, we always mark as done. Otherwise we do not mark as done if its a group message
         boolean shouldMarkAsDone = multiDeviceManager.isMultiDeviceActive() || !(messageModel instanceof GroupMessageModel);
         @Nullable BlobScope blobScopeMarkAsDone = null;
-        if (shouldMarkAsDone) {
+        if (shouldMarkAsDone)            {
             blobScopeMarkAsDone = messageModel.getBlobScopeForMarkAsDone();
         }
 
@@ -2201,7 +2409,8 @@ public class MessageServiceImpl implements MessageService {
 				messageModel);
 	}
 
-	@WorkerThread
+	@Nullable
+    @WorkerThread
 	private GroupMessageModel saveGroupMessage(GroupLocationMessage message, GroupMessageModel messageModel) {
 		GroupModel groupModel = groupService.getByGroupMessage(message);
 		boolean isNewMessage = false;
@@ -2224,22 +2433,27 @@ public class MessageServiceImpl implements MessageService {
 			isNewMessage = true;
 		}
 
-		String address = message.getPoiAddress();
-		if (TestUtil.isEmptyOrNull(address)) {
+        // If the location model is missing an address, we perform a lookup based on the coordinates
+        @Nullable Poi effectivePoi = message.getPoi();
+		if (effectivePoi == null) {
 			try {
-				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
-			} catch (IOException e) {
-				logger.error("Exception", e);
-				//do not show this error!
+                // Will result in "Unknown address" as a fallback value
+				final @NonNull String lookedUpPoiAddress = GeoLocationUtil.getAddressFromLocation(
+                    context,
+                    message.getLatitude(),
+                    message.getLongitude()
+                );
+                effectivePoi = new Poi.Unnamed(lookedUpPoiAddress);
+			} catch (IOException ioException) {
+				logger.error("Exception", ioException);
 			}
 		}
 
 		messageModel.setLocationData(new LocationDataModel(
-				message.getLatitude(),
-				message.getLongitude(),
-				(long) message.getAccuracy(),
-				address,
-				message.getPoiName()
+            message.getLatitude(),
+            message.getLongitude(),
+            message.getAccuracy(),
+            effectivePoi
 		));
 
 		messageModel.setSaved(true);
@@ -2425,7 +2639,7 @@ public class MessageServiceImpl implements MessageService {
 			if (success) {
 				// write stripped file
 				success = fileService.writeConversationMedia(messageModel, strippedImageOS.toByteArray());
-			} else {
+			} else{
 				// write original file
 				success = fileService.writeConversationMedia(messageModel, image);
 			}
@@ -2461,37 +2675,44 @@ public class MessageServiceImpl implements MessageService {
 		messageModel.setForwardSecurityMode(message.getForwardSecurityMode());
 		messageModel.setSaved(true);
 
-		messageModel.setLocationData(new LocationDataModel(
-			message.getLatitude(),
-			message.getLongitude(),
-			(long) message.getAccuracy(),
-			null,
-			message.getPoiName()
-		));
+		messageModel.setLocationData(
+            new LocationDataModel(
+                message.getLatitude(),
+                message.getLongitude(),
+                message.getAccuracy(),
+			    message.getPoi()
+		    )
+        );
 
 		// We save the message model already here to ensure it is in the database in case the app
 		// gets killed before resolving the address.
 		databaseServiceNew.getMessageModelFactory().create(messageModel);
 
-		String address = message.getPoiAddress();
-		if (TestUtil.isEmptyOrNull(address)) {
+        // If the location model is missing an address, we perform a lookup based on the coordinates
+		if (message.getPoi() == null) {
 			try {
-				address = GeoLocationUtil.getAddressFromLocation(context, message.getLatitude(), message.getLongitude());
-			} catch (IOException e) {
-				logger.error("Exception", e);
-				//do not show this error!
+                // Will result in "Unknown address" as a fallback value
+                final @NonNull String lookedUpPoiAddress = GeoLocationUtil.getAddressFromLocation(
+                    context,
+                    message.getLatitude(),
+                    message.getLongitude()
+                );
+
+                           messageModel.setLocationData(
+                    new LocationDataModel(
+                        message.getLatitude(),
+                        message.getLongitude(),
+                        message.getAccuracy(),
+                        new Poi.Unnamed(lookedUpPoiAddress)
+                    )
+                );
+
+                // Update the db record
+                databaseServiceNew.getMessageModelFactory().update(messageModel);
+
+			} catch (IOException ioException) {
+				logger.error("Exception", ioException);
 			}
-
-			messageModel.setLocationData(new LocationDataModel(
-				message.getLatitude(),
-				message.getLongitude(),
-				(long) message.getAccuracy(),
-				address,
-				message.getPoiName()
-			));
-
-			// Update the record
-			databaseServiceNew.getMessageModelFactory().update(messageModel);
 		}
 
 		fireOnNewMessage(messageModel);
@@ -2722,6 +2943,12 @@ public class MessageServiceImpl implements MessageService {
 		return model;
 	}
 
+	@Nullable
+	@Override
+	public MessageModel getContactMessageModel(final String uid) {
+		return databaseServiceNew.getMessageModelFactory().getByUid(uid);
+	}
+
 	@Override
 	@Nullable
 	public GroupMessageModel getGroupMessageModel(final Integer id) {
@@ -2736,6 +2963,12 @@ public class MessageServiceImpl implements MessageService {
 			}
 			return model;
 		}
+	}
+
+	@Nullable
+	@Override
+	public GroupMessageModel getGroupMessageModel(final String uid) {
+		return databaseServiceNew.getGroupMessageModelFactory().getByUid(uid);
 	}
 
 	private GroupMessageModel getGroupMessageModel(
@@ -2821,8 +3054,9 @@ public class MessageServiceImpl implements MessageService {
 				return new MessageString(prefix + context.getResources().getString(R.string.video_placeholder));
 			case LOCATION:
 				String locationString = prefix + context.getResources().getString(R.string.location_placeholder);
-				if (!TestUtil.isEmptyOrNull(messageModel.getLocationData().getPoi())) {
-					locationString += ": " + messageModel.getLocationData().getPoi();
+				final @NonNull LocationDataModel locationDataModel = messageModel.getLocationData();
+                if (locationDataModel.poiNameOrNull != null) {
+					locationString += ": " + locationDataModel.poiNameOrNull;
 				}
 				return new MessageString(locationString);
 			case VOICEMESSAGE:
@@ -3181,7 +3415,7 @@ public class MessageServiceImpl implements MessageService {
 					Iterator<MessageModel> iterator = contactMessageCache.iterator();
 					while (iterator.hasNext()) {
 						MessageModel cached = iterator.next();
-						if (cached.getId() == messageModel.getId() && cached != messageModel) {
+						if (cached.getId()== messageModel.getId() && cached != messageModel) {
 							// Remove old message model from cache if not the same object
 							iterator.remove();
 						}
@@ -3344,20 +3578,21 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public boolean shareTextMessage(Context context, AbstractMessageModel model) {
-		if (model != null) {
+	public boolean shareTextMessage(Context context, AbstractMessageModel messageModel) {
+		if (messageModel != null) {
 			String text = "";
 
 			Intent intent = new Intent();
-			if (model.getType() == MessageType.LOCATION) {
-				Uri locationUri = GeoLocationUtil.getLocationUri(model);
+			if (messageModel.getType() == MessageType.LOCATION) {
+				Uri locationUri = GeoLocationUtil.getLocationUri(messageModel);
 
-				if (!TestUtil.isEmptyOrNull(model.getLocationData().getAddress())) {
-					text = model.getLocationData().getAddress() + " - ";
+                final @NonNull LocationDataModel locationDataModel = messageModel.getLocationData();
+				if (locationDataModel.poiAddressOrNull != null) {
+					text = locationDataModel.poiAddressOrNull + " - ";
 				}
 				text += locationUri.toString();
 			} else {
-				text = QuoteUtil.getMessageBody(model, false);
+				text = QuoteUtil.getMessageBody(messageModel, false);
 			}
 
 			intent.setAction(Intent.ACTION_SEND);

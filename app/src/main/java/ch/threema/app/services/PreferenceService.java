@@ -40,6 +40,7 @@ import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
+import ch.threema.domain.taskmanager.TriggerSource;
 
 public interface PreferenceService {
 	@Retention(RetentionPolicy.SOURCE)
@@ -89,7 +90,7 @@ public interface PreferenceService {
 	String VIDEO_CODEC_SW = "sw";
 
 	boolean isReadReceipts();
-	void setReadReceipts(boolean value);
+	void setReadReceipts(boolean value, @NonNull TriggerSource triggerSource);
 
 	boolean isSyncContacts();
 
@@ -97,32 +98,20 @@ public interface PreferenceService {
 
 	boolean isBlockUnknown();
 
-	void setBlockUnknown(boolean value);
+	void setBlockUnknown(boolean value, @NonNull TriggerSource triggerSource);
 
 	boolean isTypingIndicator();
-	void setTypingIndicator(boolean value);
-
-	Uri getNotificationSound();
-
-	Uri getGroupNotificationSound();
-
-	Uri getGroupCallRingtone();
+	void setTypingIndicator(boolean value, @NonNull TriggerSource triggerSource);
 
 	Uri getVoiceCallSound();
 
 	boolean isVoiceCallVibrate();
-
-	boolean isGroupCallVibrate();
 
 	void setNotificationSound(Uri uri);
 
 	void setGroupNotificationSound(Uri uri);
 
 	void setVoiceCallSound(Uri uri);
-
-	boolean isVibrate();
-
-	boolean isGroupVibrate();
 
 	HashMap<String, String> getRingtones();
 
@@ -137,8 +126,6 @@ public interface PreferenceService {
 	boolean isInAppSounds();
 
 	boolean isInAppVibrate();
-
-	boolean isShowMessagePreview();
 
 	@ImageScale int getImageScale();
 
@@ -183,8 +170,6 @@ public interface PreferenceService {
 	void setUseThreemaPush(boolean enabled);
 
 	boolean isSaveMedia();
-
-	boolean isMasterKeyNewMessageNotifications();
 
 	boolean isPinSet();
 
@@ -293,15 +278,9 @@ public interface PreferenceService {
 
 	int getLockoutAttempts();
 
-	void setWizardRunning(boolean running);
-
-	boolean getWizardRunning();
-
 	boolean isAnimationAutoplay();
 
 	boolean isUseProximitySensor();
-
-	void setBlockUnkown(Boolean booleanPreset);
 
 	void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme);
 
@@ -410,10 +389,6 @@ public interface PreferenceService {
 	boolean isIpv6Preferred();
 
 	boolean allowWebrtcIpv6();
-
-	int getNotificationPriority();
-
-	void setNotificationPriority(int value);
 
 	Set<String> getMobileAutoDownload();
 
@@ -564,8 +539,6 @@ public interface PreferenceService {
 
 	boolean getCameraPermissionRequestShown();
 	void setCameraPermissionRequestShown(boolean shown);
-
-	boolean getDisableSmartReplies();
 
 	@Nullable String getPoiServerHostOverride();
 

@@ -85,7 +85,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.PreferenceService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
@@ -128,7 +128,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final @NonNull Context context;
     private final @NonNull LockAppService lockAppService;
     private final @NonNull DeadlineListService hiddenChatsListService;
-    private final @NonNull PreferenceService preferenceService;
+    private final @NonNull NotificationPreferenceService preferenceService;
     private final @NonNull RingtoneService ringtoneService;
     private @Nullable ContactService contactService = null;
     private @Nullable GroupService groupService = null;
@@ -152,7 +152,7 @@ public class NotificationServiceImpl implements NotificationService {
         @NonNull Context context,
         @NonNull LockAppService lockAppService,
         @NonNull DeadlineListService hiddenChatsListService,
-        @NonNull PreferenceService preferenceService,
+        @NonNull NotificationPreferenceService preferenceService,
         @NonNull RingtoneService ringtoneService
     ) {
         this.context = context;
@@ -215,6 +215,7 @@ public class NotificationServiceImpl implements NotificationService {
         return groupService;
     }
 
+    @Override
     @Deprecated
     public void deleteNotificationChannels() {
         if (ConfigUtils.supportsNotificationChannels()) {
@@ -574,7 +575,7 @@ public class NotificationServiceImpl implements NotificationService {
             logger.info(
                 "Showing notification {} sound: {}",
                 conversationNotification.getUid(),
-                notificationSchema.soundUri != null ? notificationSchema.soundUri.toString() : "null"
+                notificationSchema.soundUri != null ? notificationSchema.soundUri.toString() : null
             );
 
             showIconBadge(unreadMessagesCount);
@@ -747,7 +748,7 @@ public class NotificationServiceImpl implements NotificationService {
     @NonNull
     @Contract("_ -> new")
     private NotificationCompat.Action getThumbsUpAction(PendingIntent ackPendingIntent) {
-        return new NotificationCompat.Action.Builder(R.drawable.ic_thumb_up_white_24dp, context.getString(R.string.acknowledge), ackPendingIntent)
+        return new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_up, context.getString(R.string.acknowledge), ackPendingIntent)
             .setShowsUserInterface(false)
             .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP)
             .build();
@@ -786,13 +787,13 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (this.preferenceService.isShowMessagePreview() && !hiddenChatsListService.has(uniqueId)) {
             if (numberOfUnreadMessagesForThisChat == 1 && newestGroup.messageReceiver instanceof ContactMessageReceiver && !hiddenChatsListService.has(uniqueId)) {
-                NotificationCompat.Action ackAction = new NotificationCompat.Action.Builder(R.drawable.ic_wear_full_ack,
+                NotificationCompat.Action ackAction = new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_up,
                     context.getString(R.string.acknowledge), ackPendingIntent)
                     .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP)
                     .build();
                 wearableExtender.addAction(ackAction);
 
-                NotificationCompat.Action decAction = new NotificationCompat.Action.Builder(R.drawable.ic_wear_full_decline,
+                NotificationCompat.Action decAction = new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_down,
                     context.getString(R.string.decline), decPendingIntent)
                     .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_DOWN)
                     .build();
@@ -1176,28 +1177,29 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void showSafeBackupFailed(int numDays) {
-        if (numDays > 0 && preferenceService.getThreemaSafeEnabled()) {
-            Intent intent = new Intent(context, BackupAdminActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
+    public void showSafeBackupFailed(int fullDaysSinceLastBackup) {
+        Intent intent = new Intent(context, BackupAdminActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
 
-            String content = String.format(this.context.getString(R.string.safe_failed_notification), numDays);
+        String content = String.format(this.context.getString(R.string.safe_failed_notification), fullDaysSinceLastBackup);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
-                .setSmallIcon(R.drawable.ic_error_red_24dp)
-                .setTicker(content)
-                .setLocalOnly(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_ERROR)
-                .setContentIntent(pendingIntent)
-                .setContentTitle(this.context.getString(R.string.app_name))
-                .setContentText(content)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+            .setSmallIcon(R.drawable.ic_error_red_24dp)
+            .setTicker(content)
+            .setLocalOnly(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_ERROR)
+            .setContentIntent(pendingIntent)
+            .setContentTitle(this.context.getString(R.string.app_name))
+            .setContentText(content)
+            .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
 
-            this.notify(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
-        } else {
-            this.cancel(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID);
-        }
+        this.notify(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
+    }
+
+    @Override
+    public void cancelSafeBackupFailed() {
+        this.cancel(ThreemaApplication.SAFE_FAILED_NOTIFICATION_ID);
     }
 
     @Override

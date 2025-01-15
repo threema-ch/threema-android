@@ -24,7 +24,6 @@ package ch.threema.app.adapters;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -47,8 +46,6 @@ import androidx.media3.session.MediaController;
 
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -75,7 +72,7 @@ import ch.threema.app.adapters.decorators.VoipStatusDataChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.AnimatedImageDrawableDecorator;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.emojireactions.EmojiReactionGroup;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
@@ -94,7 +91,8 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.EmojiReactionData;
+import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -102,8 +100,7 @@ import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
-public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
+public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> implements EmojiReactionGroup.OnEmojiReactionGroupClickListener {
 	public static final int MIN_CONSTRAINT_LENGTH = 2;
 
 	private final List<AbstractMessageModel> values;
@@ -127,6 +124,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 	private final Context context;
 	private final ShapeAppearanceModel shapeAppearanceModelReceiveTop, shapeAppearanceModelReceiveMiddle, shapeAppearanceModelReceiveBottom, shapeAppearanceModelSendTop, shapeAppearanceModelSendMiddle, shapeAppearanceModelSendBottom, shapeAppearanceModelSingle;
 	private final LayoutInflater layoutInflater;
+	private final EmojiReactionsRepository emojiReactionsRepository;
 
 	@Retention(RetentionPolicy.SOURCE)
 	@IntDef({
@@ -195,27 +193,32 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 		void avatarClick(View view, int position, AbstractMessageModel messageModel);
 		void onSearchResultsUpdate(int searchResultsIndex, int searchResultsSize, int queryLength);
 		void onSearchInProgress(boolean inProgress);
+		void onEmojiReactionClick(@Nullable String emojiSequence, @Nullable AbstractMessageModel messageModel);
+		void onEmojiReactionLongClick(@Nullable String emojiSequence, @Nullable AbstractMessageModel messageModel);
+		void onSelectButtonClick(@Nullable AbstractMessageModel messageModel);
+		void onMoreReactionsButtonClick(@Nullable AbstractMessageModel messageModel);
 	}
 
 	public ComposeMessageAdapter(
-			Context context,
-			MessagePlayerService messagePlayerService,
-			List<AbstractMessageModel> values,
-			UserService userService,
-			ContactService contactService,
-			FileService fileService,
-			MessageService messageService,
-			BallotService ballotService,
-			PreferenceService preferenceService,
-			DownloadService downloadService,
-			LicenseService licenseService,
-			MessageReceiver messageReceiver,
-			ListView listView,
-			ThumbnailCache<?> thumbnailCache,
-			int thumbnailWidth,
-			Fragment fragment,
-			int unreadMessagesCount,
-			ListenableFuture<MediaController> mediaControllerFuture) {
+		Context context,
+		MessagePlayerService messagePlayerService,
+		List<AbstractMessageModel> values,
+		UserService userService,
+		ContactService contactService,
+		FileService fileService,
+		MessageService messageService,
+		BallotService ballotService,
+		PreferenceService preferenceService,
+		DownloadService downloadService,
+		LicenseService<?> licenseService,
+		EmojiReactionsRepository emojiReactionsRepository,
+		MessageReceiver<?> messageReceiver,
+		ListView listView,
+		ThumbnailCache<?> thumbnailCache,
+		int thumbnailWidth,
+		Fragment fragment,
+		int unreadMessagesCount,
+		ListenableFuture<MediaController> mediaControllerFuture) {
 		super(context, R.layout.conversation_list_item_send, values);
 
 		this.context = context;
@@ -250,6 +253,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				maxQuoteTextLength,
 				mediaControllerFuture
 		);
+		this.emojiReactionsRepository = emojiReactionsRepository;
 
 		int cornerRadius = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius),
 			cornerRadiusSharp = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius_sharp);
@@ -518,14 +522,10 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 					holder.readOnContainer = itemView.findViewById(R.id.read_on_container);
 					holder.readOnButton = itemView.findViewById(R.id.read_on_button);
 					holder.audioMessageIcon = itemView.findViewById(R.id.audio_message_icon);
-					holder.groupAckContainer = itemView.findViewById(R.id.groupack_container);
-					holder.groupAckThumbsUpCount = itemView.findViewById(R.id.groupack_thumbsup_count);
-					holder.groupAckThumbsDownCount = itemView.findViewById(R.id.groupack_thumbsdown_count);
-					holder.groupAckThumbsUpImage = itemView.findViewById(R.id.groupack_thumbsup);
-					holder.groupAckThumbsDownImage = itemView.findViewById(R.id.groupack_thumbsdown);
 					holder.tapToResend = itemView.findViewById(R.id.tap_to_resend);
 					holder.starredIcon = itemView.findViewById(R.id.star_icon);
 					holder.editedText = itemView.findViewById(R.id.edited_text);
+					holder.emojiReactionGroup = itemView.findViewById(R.id.emoji_reactions);
 				}
 				itemView.setTag(holder);
 			}
@@ -594,6 +594,22 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 						}
 					}
 				}
+			}
+		}
+
+		if (holder.emojiReactionGroup != null) {
+			List<EmojiReactionData> reactions = emojiReactionsRepository.safeGetReactionsByMessage(messageModel);
+			if (!reactions.isEmpty()) {
+				final EmojiReactionGroup group = holder.emojiReactionGroup;
+				if (false) {
+					group.setMessageModel(decoratorHelper.getMessageReceiver(), messageModel, reactions);
+				} else {
+					group.post(() -> group.setMessageModel(decoratorHelper.getMessageReceiver(), messageModel, reactions));
+				}
+				holder.emojiReactionGroup.setOnEmojiReactionGroupClickListener(this);
+				holder.emojiReactionGroup.setVisibility(View.VISIBLE);
+			} else {
+				holder.emojiReactionGroup.setVisibility(View.GONE);
 			}
 		}
 
@@ -918,12 +934,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				resultMapIndex = resultMap.size() - 1;
 				searchUpdate();
 				if (!TextUtils.isEmpty(filterString)) {
-					listView.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							listView.setSelection(positionOfLastMatch);
-						}
-					}, 500);
+					listView.postDelayed(() -> listView.setSelection(positionOfLastMatch), 500);
 				}
 			} else if (positionOfLastMatch != AbsListView.INVALID_POSITION) {
 				if (listView != null) {
@@ -1103,12 +1114,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 
 		if(c > 0 && c == this.getCount()) {
 			//nothing deleted, search!
-			AbstractMessageModel newObject = Functional.select(this.values, new IPredicateNonNull<AbstractMessageModel>() {
-				@Override
-				public boolean apply(@NonNull AbstractMessageModel o) {
-					return o.getId() == object.getId();
-				}
-			});
+			AbstractMessageModel newObject = Functional.select(this.values, o -> o.getId() == object.getId());
 
 			if(newObject != null) {
 				super.remove(newObject);
@@ -1190,5 +1196,25 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onEmojiReactionClick(@Nullable AbstractMessageModel messageModel, @Nullable String emojiSequence) {
+		onClickListener.onEmojiReactionClick(emojiSequence, messageModel);
+	}
+
+	@Override
+	public void onEmojiReactionLongClick(@Nullable AbstractMessageModel messageModel, @Nullable String emojiSequence) {
+		onClickListener.onEmojiReactionLongClick(emojiSequence, messageModel);
+	}
+
+	@Override
+	public void onSelectButtonClick(@Nullable AbstractMessageModel messageModel) {
+		onClickListener.onSelectButtonClick(messageModel);
+	}
+
+	@Override
+    public void onMoreReactionsButtonClick(@Nullable AbstractMessageModel messageModel) {
+		onClickListener.onMoreReactionsButtonClick(messageModel);
 	}
 }

@@ -49,18 +49,13 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
-import ch.threema.app.activities.AckUiModel
-import ch.threema.app.activities.GroupAckDecState
-import ch.threema.app.activities.GroupAckUiModel
 import ch.threema.app.activities.MessageUiModel
-import ch.threema.app.activities.UserReaction
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.interop.InteropEmojiConversationTextView
 import ch.threema.app.compose.theme.AppTypography
 import ch.threema.app.compose.theme.customColorScheme
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LocaleUtil
-import ch.threema.data.models.EditHistoryEntryData
 import java.util.Date
 
 @Composable
@@ -153,8 +148,7 @@ fun CompleteMessageBubble(
                     isOutbox = message.isOutbox,
                     deliveryIconRes = message.deliveryIconRes,
                     deliveryIconContentDescriptionRes = message.deliveryIconContentDescriptionRes,
-                    contentColor = contentColor,
-                    ackUiModel = message.ackUiModel
+                    contentColor = contentColor
                 )
             }
         )
@@ -190,8 +184,7 @@ fun MessageBubbleFooter(
     isOutbox: Boolean,
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
-    contentColor: Color,
-    ackUiModel: AckUiModel? = null
+    contentColor: Color
 ) {
     Row(
         modifier = Modifier
@@ -208,12 +201,6 @@ fun MessageBubbleFooter(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-        if (ackUiModel != null && !isOutbox) {
-            Spacer(modifier = Modifier.size(8.dp))
-            MessageStateIndicator(
-                ackUiModel = ackUiModel,
-            )
-        }
         date?.let {
             Spacer(modifier = Modifier.size(4.dp))
             val formattedDate = LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
@@ -224,10 +211,9 @@ fun MessageBubbleFooter(
                 color = contentColor
             )
         }
-        if ((ackUiModel != null || deliveryIconRes != null) && isOutbox) {
+        if (deliveryIconRes != null && isOutbox) {
             Spacer(modifier = Modifier.size(8.dp))
             MessageStateIndicator(
-                ackUiModel = ackUiModel,
                 deliveryIconRes = deliveryIconRes,
                 deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
                 deliveryIndicatorTintColor = contentColor
@@ -249,8 +235,7 @@ private fun MessageBubblePreview() {
                 date = Date(),
                 isOutbox = true,
                 deliveryIconRes = R.drawable.ic_mark_read,
-                contentColor = contentColor,
-                ackUiModel = GroupAckUiModel(GroupAckDecState(2, UserReaction.REACTED), GroupAckDecState(1, UserReaction.NONE)),
+                contentColor = contentColor
             )
         }
     )

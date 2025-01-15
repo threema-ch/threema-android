@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiParser;
@@ -71,7 +72,7 @@ public class TextUtil {
         return string;
     }
 
-    public static Spannable highlightMatches(Context context, CharSequence fullText, String filterText, boolean background, boolean normalize) {
+    public static Spannable highlightMatches(Context context, @Nullable CharSequence fullText, @Nullable String filterText, boolean background, boolean normalize) {
         if (fullText == null) {
             return new SpannableString("");
         }
@@ -106,7 +107,7 @@ public class TextUtil {
      *
      * @param text      input text
      * @param maxLength maximum length of one result string in bytes
-     * @return array of text strings
+     * @return List of text strings
      */
     public static ArrayList<String> splitEmojiText(String text, int maxLength) {
         ArrayList<String> splitText = new ArrayList<>();
@@ -132,7 +133,7 @@ public class TextUtil {
                 }
                 newString.append(toAdd);
             }
-            if (newString.toString().length() > 0) {
+            if (!newString.toString().isEmpty()) {
                 splitText.add(newString.toString());
             }
         } else {
@@ -141,7 +142,7 @@ public class TextUtil {
         return splitText;
     }
 
-    private static String[] passwordChecks = {
+    private static final String[] passwordChecks = {
         "(.)\\1+",    // do not allow single repeating characters
         "^[0-9]{0,15}$",    // do not short numeric-only passwords
     };
@@ -149,7 +150,6 @@ public class TextUtil {
     /**
      * Check a given password string for badness
      *
-     * @param password
      * @return true if the password is considered bad or listed in the list of bad passwords, false otherwise
      */
     @WorkerThread

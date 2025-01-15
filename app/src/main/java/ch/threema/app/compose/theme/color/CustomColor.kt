@@ -27,8 +27,6 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class CustomColor(
-    val ackTint: Color = Color(0xFF4caf50),
-    val decTint: Color = Color(0xFFff9800),
     val messageBubbleContainerReceive: Color = Color.Red,
 )
 

@@ -65,5 +65,4 @@ class IncomingMessageProcessorImpl(private val serviceManager: ServiceManager) :
             messageService.saveIncomingServerMessage(msg)
         }
     }
-
 }

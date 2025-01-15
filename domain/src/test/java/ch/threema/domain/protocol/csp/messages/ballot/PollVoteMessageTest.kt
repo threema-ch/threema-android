@@ -24,6 +24,7 @@ package ch.threema.domain.protocol.csp.messages.ballot
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.incomingMessage
+import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
 import org.junit.Test
@@ -169,7 +170,7 @@ open class PollVoteMessageTest {
     }
 
     @Test
-    fun fromReflectedShouldParseBodyAndSetCommonFields() {
+    fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
 
         // act
         val incomingMessageId = 12345678L
@@ -189,6 +190,27 @@ open class PollVoteMessageTest {
         assertEquals(resultPollVoteMessage.messageId, MessageId(incomingMessageId))
         assertEquals(resultPollVoteMessage.date.time, incomingMessageCreatedAt)
         assertEquals(resultPollVoteMessage.fromIdentity, incomingMessageSenderIdentity)
+        assertPollVoteMessageContainsCorrectValues(resultPollVoteMessage)
+    }
+
+    @Test
+    fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
+
+        // act
+        val outgoingMessageId = MessageId()
+        val outgoingMessageCreatedAt: Long = System.currentTimeMillis()
+        val outgoingD2DMessage = outgoingMessage {
+            this.messageId = outgoingMessageId.messageIdLong
+            this.createdAt = outgoingMessageCreatedAt
+            this.body = pollVoteMessageBody.toByteString()
+        }
+
+        // act
+        val resultPollVoteMessage: PollVoteMessage = PollVoteMessage.fromReflected(outgoingD2DMessage)
+
+        // assert
+        assertEquals(outgoingMessageId, resultPollVoteMessage.messageId)
+        assertEquals(outgoingMessageCreatedAt, resultPollVoteMessage.date.time)
         assertPollVoteMessageContainsCorrectValues(resultPollVoteMessage)
     }
 

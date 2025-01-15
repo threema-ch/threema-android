@@ -31,7 +31,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK
 import ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
-import ch.threema.domain.protocol.csp.messages.LocationMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData
@@ -41,6 +41,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessageData
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -62,12 +63,16 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
 
     @Test
     fun testIncomingLocationMessage() = runTest {
-        assertSuccessfulMessageProcessing(LocationMessage().also {
-            it.longitude = 0.0
-            it.longitude = 0.0
-        }.enrich(), contactA)
-
-        assertSuccessfulMessageProcessing(LocationMessage().enrich(), contactA)
+        val locationMessageData = LocationMessageData(
+            latitude = 0.0,
+            longitude = 0.0,
+            accuracy = null,
+            poi = null
+        )
+        assertSuccessfulMessageProcessing(
+            message = LocationMessage(locationMessageData = locationMessageData).enrich(),
+            fromContact = contactA
+        )
     }
 
     @Test
@@ -221,7 +226,7 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         )
 
         val expectDeliveryReceiptSent = message.sendAutomaticDeliveryReceipt()
-                && !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
+            && !message.hasFlags(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
         if (expectDeliveryReceiptSent) {
             val deliveryReceiptMessage = sentMessagesInsideTask.poll()
             if (deliveryReceiptMessage is DeliveryReceiptMessage) {

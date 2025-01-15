@@ -33,10 +33,13 @@ import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.ThreemaException;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotSetupInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -62,7 +65,9 @@ public interface BallotService {
 			BallotModel.State state,
 			BallotModel.Assessment assessment,
 			BallotModel.Type type,
-			BallotModel.ChoiceType choiceType) throws NotAllowedException;
+			BallotModel.ChoiceType choiceType,
+            @NonNull BallotId ballotId
+    ) throws NotAllowedException;
 
 	BallotModel create(
 			GroupModel groupModel,
@@ -70,15 +75,30 @@ public interface BallotService {
 			BallotModel.State state,
 			BallotModel.Assessment assessment,
 			BallotModel.Type type,
-			BallotModel.ChoiceType choiceType) throws NotAllowedException;
+			BallotModel.ChoiceType choiceType,
+            @NonNull BallotId ballotId
+    ) throws NotAllowedException;
 
-	boolean modifyFinished(BallotModel ballotModel) throws MessageTooLongException;
+	void modifyFinished(
+        @NonNull BallotModel ballotModel,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException;
 
 	boolean viewingBallot(BallotModel ballotModel, boolean view);
 
 	boolean update(BallotModel ballotModel, BallotChoiceModel choice) throws NotAllowedException;
-	boolean close(Integer ballotModelId) throws NotAllowedException, MessageTooLongException;
-	boolean send(BallotModel ballotModel, ListenerManager.HandleListener<BallotListener> handleListener) throws MessageTooLongException;
+	boolean close(
+        Integer ballotModelId,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws NotAllowedException, MessageTooLongException;
+	boolean send(
+        BallotModel ballotModel,
+        ListenerManager.HandleListener<BallotListener> handleListener,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException;
 
 	@Nullable
 	BallotModel get(int ballotId);
@@ -95,17 +115,28 @@ public interface BallotService {
 	 * @return BallotUpdateResult
 	 * @throws ThreemaException if an error occurred during processing
 	 */
-	@NonNull BallotUpdateResult update(BallotSetupInterface createMessage) throws ThreemaException, BadMessageException;
+	@NonNull BallotUpdateResult update(
+        @NonNull BallotSetupInterface createMessage,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws ThreemaException, BadMessageException;
 	boolean update(BallotModel ballotModel);
 
-	BallotPublishResult publish(MessageReceiver<?> messageReceiver, BallotModel ballotModel,
-								AbstractMessageModel abstractMessageModel) throws NotAllowedException, MessageTooLongException;
+    BallotPublishResult publish(
+        MessageReceiver<?> messageReceiver,
+        BallotModel ballotModel,
+        AbstractMessageModel abstractMessageModel,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws NotAllowedException, MessageTooLongException;
 
 	BallotPublishResult publish(
 		MessageReceiver messageReceiver,
         BallotModel ballotModel,
         AbstractMessageModel abstractMessageModel,
-        @Nullable Collection<String> receivingIdentities
+        @Nullable Collection<String> receivingIdentities,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
 	) throws NotAllowedException, MessageTooLongException;
 
 	LinkBallotModel getLinkedBallotModel(BallotModel ballotModel) throws NotAllowedException;
@@ -121,7 +152,7 @@ public interface BallotService {
 	voting stuff
 	 */
 
-	BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> values) throws NotAllowedException;
+	BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> values, @NonNull TriggerSource triggerSource) throws NotAllowedException;
 	BallotVoteResult vote(BallotVoteInterface ballotVoteMessage) throws NotAllowedException;
 
 	/**

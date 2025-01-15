@@ -495,11 +495,11 @@ class ContactModelTest {
         val data = createTestContact().data.value!!.copy(identity = "AAAAAAAA")
         Assert.assertThrows(AssertionError::class.java) {
             ContactModel(
-                "BBBBBBBB",
-                data,
-                databaseBackendMock,
-                contactModelRepository,
-                coreServiceManagerMock
+                identity = "BBBBBBBB",
+                data = data,
+                databaseBackend = databaseBackendMock,
+                contactModelRepository = contactModelRepository,
+                coreServiceManager = coreServiceManagerMock
             )
         }
     }

@@ -56,7 +56,7 @@ public class Receiver extends Converter {
 			builder.put(Type.GROUP, Group.convert(groups));
 			builder.put(Type.DISTRIBUTION_LIST, DistributionList.convert(distributionLists));
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}

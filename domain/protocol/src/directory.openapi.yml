@@ -156,10 +156,13 @@
       by:
         description: The sort key applied to the resulting contacts.
         type: string
+        anyOf:
+          - title: First name
+            const: firstName
+          - title: Last name
+            const: lastName
+          - {}
         default: firstName
-        enum:
-          - firstName
-          - lastName
       asc:
         description: |-
           Sort contacts ascending by `by` if `true`, sort descending if `false`.
@@ -208,6 +211,77 @@
             )
           )
           ```
+
+  sfu-credentials-request: &sfu-credentials-request
+    type: object
+    required:
+      - identity
+    properties:
+      identity: *identity
+
+  sfu-credentials-response:
+    ok: &sfu-credentials-response-ok
+      description: SFU information retrieved successfully.
+      type: object
+      required:
+        - success
+        - sfuBaseUrl
+        - allowedSfuHostnameSuffixes
+        - sfuToken
+        - expiration
+      properties:
+        success:
+          type: boolean
+          const: true
+        sfuBaseUrl:
+          description: |-
+            Base URL used to create and distribute new calls.
+          type: string
+        allowedSfuHostnameSuffixes:
+          description: |-
+            A set of allowed hostname suffixes to be applied against a _SFU
+            Base URL_ when joining calls.
+
+            If the provided _SFU Base URL_'s hostname does not end with one of
+            the provided hostname suffixes, joining or peeking that call is
+            disallowed.
+          type: array
+          items:
+            type: string
+        sfuToken:
+          description: |-
+            An opaque token used to authenticate against a SFU.
+
+            HTTP requests towards the SFU must include it as a header in the
+            following way: `Authorization: ThreemaSfuToken <token>`
+          type: string
+        expiration:
+          <<: *u64
+          description: |-
+            Amount of seconds until the SFU information is considered stale and
+            must be discarded.
+      example:
+        success: true
+        sfuBaseUrl: https://sfu.threema.ch
+        allowedSfuHostnameSuffixes:
+          - threema.ch
+        sfuToken: givemeaccessplz
+        expiration: 600
+
+    error: &sfu-credentials-response-error
+      description: SFU information could not be retrieved.
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          type: string
+      example:
+        sucess: false
+        error: 'Identity not found'
 
   update-work-data-request: &update-work-data-request
     type: object
@@ -500,6 +574,38 @@ servers:
     description: Sandbox server
 
 paths:
+  /identity/sfu_cred:
+    post:
+      summary: SFU Information
+      description: |-
+        Retrieve SFU information including URLs and authentication credentials.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - *sfu-credentials-request
+                - !merge-objects
+                  - *auth-challenge-response
+                  - *sfu-credentials-request
+      responses:
+        '200':
+          description: Success... or not.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *auth-challenge-request
+                  - *sfu-credentials-response-ok
+                  - *sfu-credentials-response-error
+        '429':
+          description: Rate limit exceeded.
+
   /identity/update_work_info:
     post:
       summary: Work Properties
@@ -573,6 +679,8 @@ paths:
       summary: Work Contacts
       description: |-
         Request properties associated to a contact of the same Work subscription.
+
+        Note: This endpoint is currently buggy. See TWRK-1633 for a list of bugs.
 
         TODO(SE-368): When sending/receiving steps. Send before adding a new
         contact.

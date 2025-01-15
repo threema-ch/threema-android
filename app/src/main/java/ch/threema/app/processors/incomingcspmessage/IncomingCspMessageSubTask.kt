@@ -22,6 +22,8 @@
 package ch.threema.app.processors.incomingcspmessage
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactReactionMessageTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupReactionMessageTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallAnswerTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallHangupTask
 import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallIceCandidateTask
@@ -34,12 +36,14 @@ import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContact
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactEditMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactFileMessageTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactLocationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollSetupTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollVoteTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupConversationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupEditMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupFileMessageTask
+import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupLocationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupPollSetupTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupPollVoteTask
 import ch.threema.app.processors.incomingcspmessage.fs.IncomingEmptyTask
@@ -70,9 +74,12 @@ import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
+import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
+import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
@@ -84,6 +91,7 @@ import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage
 import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
@@ -154,6 +162,10 @@ fun getSubTaskFromMessage(
     is DeliveryReceiptMessage -> IncomingDeliveryReceiptTask(message, triggerSource, serviceManager)
     is GroupDeliveryReceiptMessage -> IncomingGroupDeliveryReceiptTask(message, triggerSource, serviceManager)
 
+    // Check if message is a location message
+    is LocationMessage -> IncomingContactLocationMessageTask(message, triggerSource, serviceManager)
+    is GroupLocationMessage -> IncomingGroupLocationMessageTask(message, triggerSource, serviceManager)
+
     // Check if message is a group control message
     is GroupSetupMessage -> IncomingGroupSetupTask(message, triggerSource, serviceManager)
     is GroupNameMessage -> IncomingGroupNameTask(message, triggerSource, serviceManager)
@@ -195,6 +207,10 @@ fun getSubTaskFromMessage(
     // Check if message is a delete message
     is DeleteMessage -> IncomingContactDeleteMessageTask(message, triggerSource, serviceManager)
     is GroupDeleteMessage -> IncomingGroupDeleteMessageTask(message, triggerSource, serviceManager)
+
+    // Check if message is a group reaction message
+    is ReactionMessage -> IncomingContactReactionMessageTask(message, triggerSource, serviceManager)
+    is GroupReactionMessage -> IncomingGroupReactionMessageTask(message, triggerSource, serviceManager)
 
     // Check if message is a file message
     is FileMessage -> IncomingContactFileMessageTask(message, triggerSource, serviceManager)

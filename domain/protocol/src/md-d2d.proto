@@ -15,6 +15,52 @@ option java_package = "ch.threema.protobuf.d2d";
 import "common.proto";
 import "md-d2d-sync.proto";
 
+// D2D protocol versions.
+//
+// Note 1: The most significant byte is the major version and the least
+// significant byte is the minor version.
+//
+// Note 2: Once the D2D protocol is more stable, an unknown major version can be
+// interpreted as incompatible. For now, we only have 0.X versions that define
+// in which way they break compatibility.
+enum ProtocolVersion {
+  // The version is unspecified.
+  UNSPECIFIED = 0;
+
+  // V0.1
+  //
+  // Devices using this version use the opportunistic (but problematic) group
+  // sync mechanism via pure CSP reflection. D2D group sync reflection was
+  // totally underspecified but is partially supported on the receiving side.
+  V0_1 = 0x0001;
+
+  // V0.2
+  //
+  // Builds on V0.1 with backwards compatibility to V0.1. Devices using this
+  // version use the explicit group sync mechanism via D2D sync reflection.
+  //
+  // Upon reception, V0.2 devices detecting a reflected message will switch over
+  // the version, and:
+  //
+  // - for V0.1 in combination with a CSP group message, fall back to the
+  //   backwards compatibility mode and update the group according to the
+  //   message.
+  // - for V0.2+ in combination with a CSP group message, ignore it.
+  V0_2 = 0x0002;
+
+  // V0.3
+  //
+  // Builds on V0.2 but removes the backwards compatibility to V0.1.
+  //
+  // Upon reception, V0.2 devices detecting a reflected message will switch over
+  // the version, and:
+  //
+  // - for V0.1 in combination with a CSP group message, spit out a warning that
+  //   the group is going to desync.
+  // - for V0.2+ in combination with a CSP group message, ignore it.
+  V0_3 = 0x0003;
+}
+
 // Data shared across all devices and transmitted during the handshake.
 message SharedDeviceData {
   // Random amount of padding, ignored by the receiver
@@ -77,6 +123,11 @@ message Envelope {
 
   // Sender device id
   fixed64 device_id = 13;
+
+  // D2D (`ProtocolVersion`) the device used when it sent this message.
+  //
+  // If `0`, assume V0.1 (`0x0001`).
+  uint32 protocol_version = 3;
 
   // The enveloped reflected message
   oneof content {
@@ -268,32 +319,19 @@ message IncomingMessageUpdate {
 // User profile synchronisation message.
 message UserProfileSync {
   // Update the user's profile
-  message Update {
-    sync.UserProfile user_profile = 1;
-  }
+  message Update { sync.UserProfile user_profile = 1; }
 
   // Synchronisation type
-  oneof action {
-    Update update = 1;
-  }
+  oneof action { Update update = 1; }
 }
 
 // Contact synchronisation message.
 message ContactSync {
   // Create a Threema contact.
-  message Create {
-    sync.Contact contact = 1;
-  }
+  message Create { sync.Contact contact = 1; }
 
   // Update a Threema contact.
-  message Update {
-    sync.Contact contact = 1;
-  }
-
-  // Delete a Threema contact.
-  message Delete {
-    string delete_identity = 1;
-  }
+  message Update { sync.Contact contact = 1; }
 
   // Synchronisation type
   oneof action {
@@ -301,21 +339,44 @@ message ContactSync {
     Create create = 1;
     // Update a Threema contact
     Update update = 2;
-    // Delete a Threema contact
-    Delete delete = 3;
   }
 }
 
 // Group synchronisation message.
 message GroupSync {
   // Create a group.
-  message Create {
-    sync.Group group = 1;
-  }
+  message Create { sync.Group group = 1; }
 
   // Update a group.
+  //
+  // When receiving this variant:
+  //
+  // 1. Let `current` be a snapshot of the current group state.
+  // 2. Persist the update to the group.
+  // 3. Let `member-changes` be an empty list.
+  // 4. For each `identity`, `state-change` pair of `member_state_changes`:
+  //    1. If `state-change` is `ADDED` and `identity` does not exist in
+  //       `current.members`, add the tuple `identity`, `state-change` to
+  //       `member-changes`.
+  //    2. If `state-change` is `KICKED` or `LEFT` and `identity` does exist in
+  //       `current.members`, add the tuple `identity`, `state-change` to
+  //       `member-changes`.
+  // 5. Group `member-changes` by their associated `state-change` and add
+  //    appropriate status messages to the associated conversation.
   message Update {
     sync.Group group = 1;
+
+    enum MemberStateChange {
+      // The member has been added
+      ADDED = 0;
+      // The member has been kicked from the group.
+      KICKED = 1;
+      // The member left the group.
+      LEFT = 2;
+    }
+
+    // A map of the member identity string to the member state change.
+    map<string, MemberStateChange> member_state_changes = 2;
   }
 
   // Delete a group.
@@ -338,14 +399,10 @@ message GroupSync {
 // Distribution list synchronisation message.
 message DistributionListSync {
   // Create a distribution list.
-  message Create {
-    sync.DistributionList distribution_list = 1;
-  }
+  message Create { sync.DistributionList distribution_list = 1; }
 
   // Update a distribution list.
-  message Update {
-    sync.DistributionList distribution_list = 1;
-  }
+  message Update { sync.DistributionList distribution_list = 1; }
 
   // Delete a distribution list.
   message Delete {
@@ -367,14 +424,10 @@ message DistributionListSync {
 // Settings synchronisation message.
 message SettingsSync {
   // Update settings.
-  message Update {
-    sync.Settings settings = 1;
-  }
+  message Update { sync.Settings settings = 1; }
 
   // Synchronisation type
-  oneof action {
-    Update update = 1;
-  }
+  oneof action { Update update = 1; }
 }
 
 // MDM parameter synchronisation message.
@@ -382,12 +435,8 @@ message MdmParameterSync {
   // Update MDM parameters.
   //
   // When receiving this variant, run the _MDM Merge And Apply Steps_.
-  message Update {
-    sync.MdmParameters parameters = 1;
-  }
+  message Update { sync.MdmParameters parameters = 1; }
 
   // Synchronisation type
-  oneof action {
-    Update update = 1;
-  }
+  oneof action { Update update = 1; }
 }

@@ -36,12 +36,18 @@ import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
+import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
+import ch.threema.domain.protocol.csp.messages.EditMessage
+import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
+import ch.threema.domain.protocol.csp.messages.GroupEditMessage
+import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
+import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
@@ -49,6 +55,8 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
@@ -57,7 +65,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
-import ch.threema.protobuf.Common
+import ch.threema.protobuf.Common.CspE2eMessageType
 import ch.threema.protobuf.d2d.MdD2D.ContactSync
 import ch.threema.protobuf.d2d.MdD2D.DistributionListSync
 import ch.threema.protobuf.d2d.MdD2D.Envelope
@@ -88,6 +96,7 @@ class IncomingReflectedMessageTask(
 ) : ActiveComposableTask<Unit> {
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val myIdentity by lazy { serviceManager.userService.identity }
 
     override suspend fun run(handle: ActiveTaskCodec) {
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
@@ -177,28 +186,68 @@ class IncomingReflectedMessageTask(
         handle: ActiveTaskCodec,
     ) {
         when (incomingMessage.type) {
-            Common.CspE2eMessageType.TEXT -> TextMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.FILE -> FileMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.GROUP_FILE -> GroupFileMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.DELIVERY_RECEIPT -> DeliveryReceiptMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> GroupDeliveryReceiptMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.GROUP_TEXT -> GroupTextMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.POLL_SETUP -> PollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
-            Common.CspE2eMessageType.POLL_VOTE -> PollVoteMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.GROUP_POLL_SETUP -> GroupPollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
-            Common.CspE2eMessageType.GROUP_POLL_VOTE -> GroupPollVoteMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CALL_OFFER -> VoipCallOfferMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CALL_ICE_CANDIDATE -> VoipICECandidatesMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CALL_RINGING -> VoipCallRingingMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CALL_ANSWER -> VoipCallAnswerMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CALL_HANGUP -> VoipCallHangupMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.GROUP_CALL_START -> GroupCallStartMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ContactRequestProfilePictureMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> SetProfilePictureMessage.fromReflected(incomingMessage)
-            Common.CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> DeleteProfilePictureMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.TEXT -> TextMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.FILE -> FileMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_FILE -> GroupFileMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DELIVERY_RECEIPT -> DeliveryReceiptMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> GroupDeliveryReceiptMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_TEXT -> GroupTextMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.POLL_SETUP -> PollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
+            CspE2eMessageType.POLL_VOTE -> PollVoteMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_POLL_SETUP -> GroupPollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
+            CspE2eMessageType.GROUP_POLL_VOTE -> GroupPollVoteMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_OFFER -> VoipCallOfferMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_ICE_CANDIDATE -> VoipICECandidatesMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_RINGING -> VoipCallRingingMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_ANSWER -> VoipCallAnswerMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_HANGUP -> VoipCallHangupMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_CALL_START -> GroupCallStartMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ContactRequestProfilePictureMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> SetProfilePictureMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> DeleteProfilePictureMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.LOCATION -> LocationMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_LOCATION -> GroupLocationMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DELETE_MESSAGE -> DeleteMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_DELETE_MESSAGE -> GroupDeleteMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.EDIT_MESSAGE -> EditMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_EDIT_MESSAGE -> GroupEditMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_SYNC_REQUEST -> GroupSyncRequestMessage.fromReflected(incomingMessage, myIdentity)
 
-            else -> {
-                logger.warn("Reflected incoming message of type {} is not yet supported", incomingMessage.type)
+            // TODO(ANDR-3443): Process reflected incoming deprecated messages
+            CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
+            CspE2eMessageType.DEPRECATED_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
+            CspE2eMessageType.DEPRECATED_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
+            CspE2eMessageType.GROUP_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
+            CspE2eMessageType.GROUP_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
+            CspE2eMessageType.GROUP_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
+
+            CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
+            CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
+
+            // TODO(ANDR-3472): Process reflected incoming emoji reactions
+            CspE2eMessageType.REACTION -> throw NotImplementedError("Reaction implementation is missing")
+            CspE2eMessageType.GROUP_REACTION -> throw NotImplementedError("Group reaction implementation is missing")
+
+            // TODO(ANDR-2990): Process group control messages from sync
+            CspE2eMessageType.GROUP_SETUP -> throw NotImplementedError("Group sync implementation is missing")
+            CspE2eMessageType.GROUP_NAME -> throw NotImplementedError("Group sync implementation is missing")
+            CspE2eMessageType.GROUP_LEAVE -> throw NotImplementedError("Group sync implementation is missing")
+            CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
+            CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
+
+            CspE2eMessageType.WEB_SESSION_RESUME -> throw NotImplementedError("Web session resume implementation is missing")
+
+            CspE2eMessageType.TYPING_INDICATOR -> TypingIndicatorMessage.fromReflected(incomingMessage)
+
+            CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException("A forward security envelope message should never be received as reflected incoming message")
+
+            CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected incoming message")
+
+            CspE2eMessageType.UNRECOGNIZED -> throw IllegalStateException("The reflected incoming message type is unrecognized")
+            CspE2eMessageType._INVALID_TYPE -> throw IllegalStateException("The reflected incoming message type is invalid")
+
+            null -> {
+                logger.error("The reflected incoming message type is null")
                 null
             }
         }?.let { message: AbstractMessage ->

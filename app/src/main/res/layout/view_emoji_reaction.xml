@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/emojireactions_height_inside"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ch.threema.app.emojis.EmojiTextView
+            android:id="@+id/reaction_emoji"
+            style="@style/Threema.EmojiReactions.Text.Emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:visibility="gone"
+            tools:text="&#128522;"
+            tools:visibility="visible" />
+
+        <Space
+            android:id="@+id/reaction_spacer"
+            android:layout_width="6dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/reaction_label"
+            style="@style/Threema.EmojiReactions.Text.Count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:text="2"
+            tools:visibility="visible" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</merge>

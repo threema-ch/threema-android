@@ -28,6 +28,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
@@ -36,14 +43,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.IdentityListAdapter;
@@ -51,7 +50,6 @@ import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -67,7 +65,24 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     private EmptyRecyclerView recyclerView;
     private ContactService contactService;
 
-    abstract protected IdListService getIdentityListService();
+    public interface IdentityList {
+        /**
+         * Get all identities.
+         */
+        Set<String> getAll();
+
+        /**
+         * Add an identity.
+         */
+        void addIdentity(@NonNull String identity);
+
+        /**
+         * Remove an identity.
+         */
+        void removeIdentity(@NonNull String identity);
+    }
+
+    abstract protected IdentityList getIdentityListHandle();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -133,12 +148,12 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     protected abstract String getTitleText();
 
     private void updateListAdapter() {
-        if(this.getIdentityListService() == null) {
+        if(this.getIdentityListHandle() == null) {
             //do nothing;
             return;
         }
 
-        List<IdentityListAdapter.Entity> identityList = Arrays.stream(this.getIdentityListService().getAll())
+        List<IdentityListAdapter.Entity> identityList = this.getIdentityListHandle().getAll().stream()
             .map(IdentityListAdapter.Entity::new)
             .collect(Collectors.toList());
 
@@ -207,13 +222,12 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void excludeIdentity(String identity) {
-        if(this.getIdentityListService() == null) {
+        if(this.getIdentityListHandle() == null) {
             return;
         }
 
         //add identity to list!
-        this.getIdentityListService()
-            .add(identity);
+        this.getIdentityListHandle().addIdentity(identity);
 
         fireOnModifiedContact(identity);
 
@@ -221,12 +235,12 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void removeIdentity(String identity) {
-        if(this.getIdentityListService() == null) {
+        if(this.getIdentityListHandle() == null) {
             return;
         }
 
         //remove identity from list!
-        this.getIdentityListService().remove(identity);
+        this.getIdentityListHandle().removeIdentity(identity);
 
         fireOnModifiedContact(identity);
 

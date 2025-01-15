@@ -102,7 +102,8 @@ public class StringConversionUtil {
 	 * Join a string array using a delimiter.
 	 * Ignore empty elements.
 	 */
-	public static String join(CharSequence delimiter, String... pieces) {
+	@NonNull
+    public static String join(CharSequence delimiter, @NonNull String... pieces) {
 		final StringBuilder builder = new StringBuilder();
 		for (String p: pieces) {
 			if (!TestUtil.isEmptyOrNull(p)) {

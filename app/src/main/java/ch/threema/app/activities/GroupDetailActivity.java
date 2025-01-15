@@ -93,8 +93,8 @@ import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.DeviceService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
@@ -150,7 +150,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
 	private GroupInviteService groupInviteService;
 	private DeviceService deviceService;
-	private IdListService blockedContactsService;
+	private BlockedIdentitiesService blockedIdentitiesService;
 	private GroupCallManager groupCallManager;
 
 	private GroupModel groupModel;
@@ -324,7 +324,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 		// services
 		try {
 			this.deviceService = serviceManager.getDeviceService();
-			this.blockedContactsService = serviceManager.getBlockedContactsService();
+			this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
 			this.groupInviteService = serviceManager.getGroupInviteService();
 			this.groupCallManager = serviceManager.getGroupCallManager();
 		} catch (ThreemaException e) {
@@ -333,7 +333,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			return;
 		}
 
-		if (this.deviceService == null || this.blockedContactsService == null) {
+		if (this.deviceService == null || this.blockedIdentitiesService == null) {
 			finish();
 			return;
 		}
@@ -1167,7 +1167,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 			items.add(new SelectorDialogItem(String.format(getString(R.string.chat_with), shortName), R.drawable.ic_chat_bubble));
 			optionsMap.add(SELECTOR_OPTION_CHAT);
 
-			if (ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService)
+			if (ContactUtil.canReceiveVoipMessages(contactModel, blockedIdentitiesService)
 				&& ConfigUtils.isCallsEnabled()
 			) {
 				items.add(new SelectorDialogItem(String.format(getString(R.string.call_with), shortName), R.drawable.ic_phone_locked_outline));

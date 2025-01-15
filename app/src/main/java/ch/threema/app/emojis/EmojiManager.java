@@ -22,7 +22,6 @@
 package ch.threema.app.emojis;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import org.slf4j.Logger;
@@ -36,8 +35,6 @@ import ch.threema.app.R;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Consumer;
-import java8.util.function.Supplier;
 
 public class EmojiManager {
     private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiManager");
@@ -90,6 +87,7 @@ public class EmojiManager {
      * @param emojiSequence - sequence of UTF-8 characters representing the emoji
      * @return Drawable for emoji or null if there is no matching emoji
      */
+	@Nullable
     public Drawable getEmojiDrawable(String emojiSequence) {
         EmojiParser.ParseResult result = EmojiParser.parseAt(emojiSequence, 0);
 
@@ -117,23 +115,8 @@ public class EmojiManager {
                 } else {
                     try {
                         CompletableFuture
-                            .supplyAsync(new Supplier<Bitmap>() {
-                                @Override
-                                public Bitmap get() {
-                                    return emojiGroup.getSpritemapBitmap(coordinates.spritemapId).loadSpritemapAsset();
-                                }
-                            })
-                            .thenAccept(new Consumer<Bitmap>() {
-                                @Override
-                                public void accept(Bitmap bitmap) {
-                                    RuntimeUtil.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            drawable.setBitmap(bitmap);
-                                        }
-                                    });
-                                }
-                            })
+                            .supplyAsync(() -> emojiGroup.getSpritemapBitmap(coordinates.spritemapId).loadSpritemapAsset())
+                            .thenAccept(bitmap -> RuntimeUtil.runOnUiThread(() -> drawable.setBitmap(bitmap)))
                             .get();
                     } catch (InterruptedException | ExecutionException e) {
                         logger.error("Exception", e);

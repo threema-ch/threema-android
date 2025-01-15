@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/msg_list_item_send"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
-	android:paddingRight="@dimen/chat_bubble_container_padding_left_right">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/msg_list_item_send"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom">
 
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/message_block"
-		style="@style/Threema.CardView.Bubble.Send">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/message_block"
+        style="@style/Threema.CardView.Bubble.Send">
 
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="vertical">
 
-		<include layout="@layout/conversation_bubble_header"/>
+            <include layout="@layout/conversation_bubble_header" />
 
-		<include layout="@layout/conversation_list_item_media"/>
+            <include layout="@layout/conversation_list_item_media" />
 
-		<ch.threema.app.emojis.EmojiConversationTextView
-			style="@style/Threema.Bubble.Text.Body"
-			android:id="@+id/text_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="6dp"
-			android:paddingLeft="@dimen/chat_bubble_margin_end"
-			android:paddingRight="@dimen/chat_bubble_margin_start"
-			android:visibility="gone"/>
+            <ch.threema.app.emojis.EmojiConversationTextView
+                android:id="@+id/text_view"
+                style="@style/Threema.Bubble.Text.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:animateLayoutChanges="true"
+                android:paddingLeft="@dimen/chat_bubble_margin_end"
+                android:paddingRight="@dimen/chat_bubble_margin_start"
+                android:visibility="gone" />
 
-		<include layout="@layout/conversation_bubble_footer_send"/>
+            <include layout="@layout/conversation_bubble_footer_send" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <include layout="@layout/conversation_list_item_emoji_reactions_send" />
 
 </RelativeLayout>

@@ -26,6 +26,7 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
@@ -33,7 +34,6 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
@@ -63,7 +63,7 @@ public class ServicesContainer {
 	@NonNull public final MessageService message;
 	@NonNull public final NotificationService notification;
 	@NonNull public final DatabaseServiceNew database;
-	@NonNull public final IdListService blockedContactsService;
+	@NonNull public final BlockedIdentitiesService blockedIdentitiesService;
 	@NonNull public final PreferenceService preference;
 	@NonNull public final UserService user;
 	@NonNull public final DeadlineListService hiddenChat;
@@ -87,7 +87,7 @@ public class ServicesContainer {
 		@NonNull final MessageService message,
 		@NonNull final NotificationService notification,
 		@NonNull final DatabaseServiceNew database,
-		@NonNull final IdListService blockedContactsService,
+		@NonNull final BlockedIdentitiesService blockedIdentitiesService,
 		@NonNull final PreferenceService preference,
 		@NonNull final UserService user,
 		@NonNull final DeadlineListService hiddenChat,
@@ -107,7 +107,7 @@ public class ServicesContainer {
 		this.message = message;
 		this.notification = notification;
 		this.database = database;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 		this.preference = preference;
 		this.user = user;
 		this.hiddenChat = hiddenChat;

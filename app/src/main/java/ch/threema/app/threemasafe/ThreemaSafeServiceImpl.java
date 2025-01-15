@@ -80,6 +80,7 @@ import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.services.ApiService;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
@@ -244,7 +245,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private final GroupService groupService;
 	private final DistributionListService distributionListService;
 	private final FileService fileService;
-	private final IdListService blockedContactsService;
+	private final BlockedIdentitiesService blockedIdentitiesService;
 	private final IdListService excludedSyncIdentitiesService;
 	private final IdListService profilePicRecipientsService;
 	private final DatabaseServiceNew databaseServiceNew;
@@ -265,7 +266,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		DistributionListService distributionListService,
 		LocaleService localeService,
 		FileService fileService,
-		IdListService blockedContactsService,
+		@NonNull BlockedIdentitiesService blockedIdentitiesService,
 		IdListService excludedSyncIdentitiesService,
 		IdListService profilePicRecipientsService,
 		DatabaseServiceNew databaseServiceNew,
@@ -289,7 +290,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 		this.localeService = localeService;
 		this.databaseServiceNew = databaseServiceNew;
 		this.fileService = fileService;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 		this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
 		this.profilePicRecipientsService = profilePicRecipientsService;
 		this.hiddenChatsListService = hiddenChatsListService;
@@ -1196,9 +1197,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 			preferenceService.setSyncContacts(settings.optBoolean(TAG_SAFE_SETTINGS_SYNC_CONTACTS, false));
 		}
 
-		preferenceService.setBlockUnkown(settings.optBoolean(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, false));
-		preferenceService.setTypingIndicator(settings.optBoolean(TAG_SAFE_SETTINGS_SEND_TYPING, true));
-		preferenceService.setReadReceipts(settings.optBoolean(TAG_SAFE_SETTINGS_READ_RECEIPTS, true));
+		preferenceService.setBlockUnknown(settings.optBoolean(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, false), TriggerSource.LOCAL);
+		preferenceService.setTypingIndicator(settings.optBoolean(TAG_SAFE_SETTINGS_SEND_TYPING, true), TriggerSource.LOCAL);
+		preferenceService.setReadReceipts(settings.optBoolean(TAG_SAFE_SETTINGS_READ_RECEIPTS, true), TriggerSource.LOCAL);
 		preferenceService.setVoipEnabled(settings.optBoolean(TAG_SAFE_SETTINGS_THREEMA_CALLS, true));
 		preferenceService.setForceTURN(settings.optBoolean(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, false));
 		preferenceService.setDisableScreenshots(settings.optBoolean(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, false));
@@ -1601,7 +1602,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 	private JSONArray getSettingsBlockedContacts() {
 		JSONArray blockedContactsArray = new JSONArray();
 
-		for (final String id : blockedContactsService.getAll()) {
+		for (final String id : blockedIdentitiesService.getAllBlockedIdentities()) {
 			blockedContactsArray.put(id);
 		}
 
@@ -1613,7 +1614,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
 		for (int i=0; i <blockedContacts.length(); i++) {
 			try {
-				blockedContactsService.add(blockedContacts.getString(i));
+				blockedIdentitiesService.blockIdentity(blockedContacts.getString(i), null);
 			} catch (JSONException e) {
 				// ignore invalid entry
 			}

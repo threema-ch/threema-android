@@ -92,6 +92,14 @@ class TaskCreator(private val serviceManager: ServiceManager) {
         )
     }
 
+    fun scheduleReflectBlockedIdentitiesTask() = scheduleTaskAsync {
+        ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate(
+            multiDeviceManager = serviceManager.multiDeviceManager,
+            nonceFactory = serviceManager.nonceFactory,
+            blockedIdentitiesService = serviceManager.blockedIdentitiesService,
+        )
+    }
+
     private fun <R> scheduleTaskAsync(createTask: () -> Task<R, TaskCodec>): Deferred<R> {
         return serviceManager.taskManager.schedule(createTask())
     }

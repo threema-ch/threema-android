@@ -136,3 +136,22 @@ data class DbEditHistoryEntry(
         const val COLUMN_EDITED_AT = "editedAt"
     }
 }
+
+data class DbEmojiReaction(
+    /** The row id of the message this reaction refers to - see [ch.threema.storage.models.AbstractMessageModel.COLUMN_ID] */
+    val messageId: Int,
+    /** The identity of the person who reacted. This may differ from the sender of the message */
+    val senderIdentity: String,
+    /** The emoji codepoint sequence of the reaction. This can never be empty */
+    val emojiSequence: String,
+    /** Timestamp when the reaction was locally created. */
+    val reactedAt: Date
+) {
+    companion object {
+        const val COLUMN_MESSAGE_ID = "messageId"
+        const val COLUMN_SENDER_IDENTITY = "senderIdentity"
+        const val COLUMN_EMOJI_SEQUENCE = "emojiSequence"
+        const val COLUMN_REACTED_AT = "reactedAt"
+    }
+}
+

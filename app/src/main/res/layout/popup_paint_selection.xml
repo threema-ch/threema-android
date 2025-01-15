@@ -24,9 +24,9 @@
 
 			<ImageView
 				android:id="@+id/remove_paint"
-				android:layout_width="@dimen/ackdec_emoji_size"
-				android:layout_height="@dimen/ackdec_emoji_size"
-				android:padding="@dimen/ackdec_popup_content_margin"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+				android:padding="@dimen/reaction_popup_content_margin"
 				android:src="@drawable/ic_delete_outline"
 				android:contentDescription="@string/delete"
 				android:background="?attr/selectableItemBackgroundBorderless"
@@ -38,16 +38,16 @@
 				android:id="@+id/flip_separator"
 				android:layout_width="1dp"
 				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
-				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+				android:layout_marginRight="@dimen/reaction_popup_content_margin"
 				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
 				android:id="@+id/flip_paint"
-				android:layout_width="@dimen/ackdec_emoji_size"
-				android:layout_height="@dimen/ackdec_emoji_size"
-				android:padding="@dimen/ackdec_popup_content_margin"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+				android:padding="@dimen/reaction_popup_content_margin"
 				android:src="@drawable/ic_flip_outline"
 				android:contentDescription="@string/flip"
 				android:background="?attr/selectableItemBackgroundBorderless"
@@ -59,16 +59,16 @@
 				android:id="@+id/bring_to_front_separator"
 				android:layout_width="1dp"
 				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
-				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+				android:layout_marginRight="@dimen/reaction_popup_content_margin"
 				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
 				android:id="@+id/bring_to_front_paint"
-				android:layout_width="@dimen/ackdec_emoji_size"
-				android:layout_height="@dimen/ackdec_emoji_size"
-				android:padding="@dimen/ackdec_popup_content_margin"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+				android:padding="@dimen/reaction_popup_content_margin"
 				android:src="@drawable/ic_bring_to_front"
 				android:contentDescription="@string/to_front"
 				android:background="?attr/selectableItemBackgroundBorderless"
@@ -80,16 +80,16 @@
 				android:id="@+id/color_separator"
 				android:layout_width="1dp"
 				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/ackdec_popup_content_margin"
-				android:layout_marginRight="@dimen/ackdec_popup_content_margin"
+				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+				android:layout_marginRight="@dimen/reaction_popup_content_margin"
 				android:background="@color/file_picker_divider_color"
 				/>
 
 			<ImageView
 				android:id="@+id/color_paint"
-				android:layout_width="@dimen/ackdec_emoji_size"
-				android:layout_height="@dimen/ackdec_emoji_size"
-				android:padding="@dimen/ackdec_popup_content_margin"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+				android:padding="@dimen/reaction_popup_content_margin"
 				android:src="@drawable/ic_color_lens_24px"
 				android:contentDescription="@string/palette"
 				android:background="?attr/selectableItemBackgroundBorderless"

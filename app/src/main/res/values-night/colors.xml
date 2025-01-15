@@ -29,6 +29,11 @@
 	<color name="mention_text_color_inverted">@color/md_theme_light_onBackground</color>
 
 	<color name="voice_recorder_counter_background">@color/dark_surface</color>
-
     <color name="text_color_deleted">#cccccc</color>
+
+	<!-- emoji reactions -->
+	<color name="emojireactions_background">@color/material_grey_600</color>
+	<color name="emojireactions_background_checked">@color/material_grey_500</color>
+	<color name="emojireactions_background_pressed">@color/material_grey_400</color>
+    <color name="emojireactions_popup_background_selected">@color/material_grey_500</color>
 </resources>

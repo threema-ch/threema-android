@@ -124,7 +124,7 @@ class DeviceLinkingDataCollector(
     private val distributionListService by lazy { serviceManager.distributionListService }
     private val deviceCookieManager by lazy { serviceManager.deviceCookieManager }
     private val preferenceService by lazy { serviceManager.preferenceService }
-    private val blockedIdentitiesService by lazy { serviceManager.blockedContactsService }
+    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
     private val excludeFromSyncService by lazy { serviceManager.excludedSyncIdentitiesService }
     private val fileService by lazy { serviceManager.fileService }
     private val hiddenChatsService by lazy { serviceManager.hiddenChatsListService }
@@ -340,7 +340,7 @@ class DeviceLinkingDataCollector(
 
     private fun collectBlockedIdentities(): Identities {
         return identities {
-            identities += blockedIdentitiesService.all.toSet()
+            identities += blockedIdentitiesService.getAllBlockedIdentities()
         }
     }
 
@@ -396,7 +396,7 @@ class DeviceLinkingDataCollector(
                 else -> Contact.IdentityType.UNRECOGNIZED
             }
             acquaintanceLevel = when (contactModel.acquaintanceLevel) {
-                ContactModel.AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP
+                ContactModel.AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP_OR_DELETED
                 ContactModel.AcquaintanceLevel.DIRECT -> Contact.AcquaintanceLevel.DIRECT
             }
             activityState = when (contactModel.state) {

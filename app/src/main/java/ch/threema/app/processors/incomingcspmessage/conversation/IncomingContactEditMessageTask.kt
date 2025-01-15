@@ -22,6 +22,7 @@
 package ch.threema.app.processors.incomingcspmessage.conversation
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.runCommonEditMessageReceiveSteps
@@ -29,6 +30,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.storage.models.AbstractMessageModel
 import org.slf4j.Logger
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("IncomingContactEditMessageTask")
@@ -59,8 +61,8 @@ class IncomingContactEditMessageTask(
             return ReceiveStepsResult.DISCARD
         }
 
-        val receiver = contactService.createReceiver(contactModel)
-        val editedMessage = runCommonEditMessageReceiveSteps(message, receiver, messageService)
+        val fromReceiver: ContactMessageReceiver = contactService.createReceiver(contactModel)
+        val editedMessage: AbstractMessageModel = runCommonEditMessageReceiveSteps(message, fromReceiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
 
         messageService.saveEditedMessageText(editedMessage, message.data.text, message.date)

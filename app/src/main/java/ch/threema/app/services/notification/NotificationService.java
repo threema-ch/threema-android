@@ -255,7 +255,16 @@ public interface NotificationService {
 		@NonNull MessageReceiver<?> messageReceiver
 	);
 
+    /**
+     * Shows a notification that the safe backup has failed for the provided number of days. Note
+     * that this method should only be called if safe backups are enabled and the number of days
+     * that the backup has failed is at least one. Otherwise the notification may not make sense.
+     *
+     * @param numDays the number of days where a safe backup failed
+     */
 	void showSafeBackupFailed(int numDays);
+
+    void cancelSafeBackupFailed();
 
 	void cancelWorkSyncProgress();
 

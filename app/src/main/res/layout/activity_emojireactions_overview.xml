@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2020 Threema GmbH
+  ~ All rights reserved.
+  -->
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent_activity_overlay">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_sheet"
+        style="?attr/bottomSheetStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:outlineProvider="none"
+        app:behavior_hideable="true"
+        app:behavior_saveFlags="all"
+        android:elevation="2dp"
+        android:animateLayoutChanges="true"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <ImageView
+            style="@style/Threema.BottomSheet.DragHandle"
+            android:id="@+id/drag_handle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- TODO(ANDR-3492): Remove -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/infobox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="4dp"
+            android:clickable="false"
+            android:outlineProvider="none"
+            android:visibility="gone"
+            app:cardBackgroundColor="?android:attr/colorBackground"
+            app:cardCornerRadius="@dimen/cardview_border_radius"
+            app:cardElevation="@dimen/notice_views_elevation"
+            app:contentPaddingRight="4dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/drag_handle"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="8dp"
+                    android:clickable="false"
+                    android:importantForAccessibility="no"
+                    app:srcCompat="@drawable/ic_info_outline" />
+
+                <ch.threema.app.emojis.EmojiTextView
+                    android:id="@+id/infobox_text"
+                    style="@style/Threema.TextAppearance.BodyLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|left"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="false"
+                    android:gravity="left"
+                    android:hyphenationFrequency="full"
+                    android:text="@string/emoji_reactions_compatibility_infobox_text"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.tabs.TabLayout
+            style="@style/Threema.TabLayout.EmojiReactionsOverview"
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:layout_marginTop="4dp"
+            android:background="@android:color/transparent"
+            android:nestedScrollingEnabled="false"
+            app:tabMode="scrollable"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/infobox" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:color/transparent"
+            android:nestedScrollingEnabled="false"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tab_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

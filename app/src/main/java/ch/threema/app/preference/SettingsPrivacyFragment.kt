@@ -37,7 +37,7 @@ import androidx.preference.TwoStatePreference
 import androidx.work.WorkManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.activities.BlockedContactsActivity
+import ch.threema.app.activities.BlockedIdentitiesActivity
 import ch.threema.app.activities.ExcludedSyncIdentitiesActivity
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericProgressDialog
@@ -48,6 +48,7 @@ import ch.threema.app.routines.SynchronizeContactsRoutine
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.localcrypto.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
@@ -55,6 +56,9 @@ import com.google.android.material.snackbar.Snackbar
 private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
 
 class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.DialogClickListener {
+    private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
+    private val preferenceService by lazy { serviceManager.preferenceService }
+    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
 
     private lateinit var disableScreenshot: CheckBoxPreference
     private var disableScreenshotChecked = false
@@ -98,8 +102,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
         disableScreenshot = getPref(R.string.preferences__hide_screenshots)
         disableScreenshotChecked = this.disableScreenshot.isChecked
 
-        if (ConfigUtils.getScreenshotsDisabled(ThreemaApplication.getServiceManager()?.preferenceService,
-                        ThreemaApplication.getServiceManager()?.lockAppService)) {
+        if (ConfigUtils.getScreenshotsDisabled(preferenceService, serviceManager.lockAppService)) {
             disableScreenshot.isEnabled = false
             disableScreenshot.isSelectable = false
         }
@@ -117,6 +120,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
         initDirectSharePref()
 
         updateView()
+
+        if (multiDeviceManager.isMultiDeviceActive) {
+            subscribeToMdRelevantSettings()
+        }
     }
 
     override fun getPreferenceTitleResource(): Int = R.string.prefs_privacy
@@ -172,9 +179,9 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
             contactSyncPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
                 val newCheckedValue = newValue == true
                 if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
-                    requirePreferenceService().emailSyncHashCode = 0
-                    requirePreferenceService().phoneNumberSyncHashCode = 0
-                    requirePreferenceService().timeOfLastContactSync = 0L
+                    preferenceService.emailSyncHashCode = 0
+                    preferenceService.phoneNumberSyncHashCode = 0
+                    preferenceService.timeOfLastContactSync = 0L
 
                     if (newCheckedValue) {
                         enableSync()
@@ -218,7 +225,7 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     private fun initBlockedContactsPref() {
         getPref<Preference>("pref_blocked_contacts").setOnPreferenceClickListener {
-            startActivity(Intent(activity, BlockedContactsActivity::class.java))
+            startActivity(Intent(activity, BlockedIdentitiesActivity::class.java))
             false
         }
     }
@@ -311,6 +318,32 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
                 RuntimeUtil.runOnUiThread { Toast.makeText(context, R.string.reset_successful, Toast.LENGTH_SHORT).show() }
             }, "ResetReceiptSettings").start()
         }
+    }
+
+    private fun subscribeToMdRelevantSettings() {
+        getPref<CheckBoxPreference>(R.string.preferences__block_unknown)
+            .setOnPreferenceChangeListener { _, newValue ->
+                // Note that it is necessary that the preference is already persisted before it is
+                // reflected.
+                preferenceService.setBlockUnknown(newValue as Boolean, TriggerSource.LOCAL)
+                true
+            }
+
+        getPref<CheckBoxPreference>(R.string.preferences__read_receipts)
+            .setOnPreferenceChangeListener { _, newValue ->
+                // Note that it is necessary that the preference is already persisted before it is
+                // reflected.
+                preferenceService.setReadReceipts(newValue as Boolean, TriggerSource.LOCAL)
+                true
+            }
+
+        getPref<CheckBoxPreference>(R.string.preferences__typing_indicator)
+            .setOnPreferenceChangeListener { _, newValue ->
+                // Note that it is necessary that the preference is already persisted before it is
+                // reflected.
+                preferenceService.setTypingIndicator(newValue as Boolean, TriggerSource.LOCAL)
+                true
+            }
     }
 
     companion object {

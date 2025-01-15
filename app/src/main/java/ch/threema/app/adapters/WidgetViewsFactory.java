@@ -43,6 +43,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
@@ -62,6 +63,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 	private DistributionListService distributionListService;
 	private LockAppService lockAppService;
 	private PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
 	private MessageService messageService;
 	private DeadlineListService hiddenChatsListService;
 	private List<ConversationModel> conversations;
@@ -81,6 +83,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 				this.messageService = serviceManager.getMessageService();
 				this.lockAppService = serviceManager.getLockAppService();
 				this.preferenceService = serviceManager.getPreferenceService();
+                this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 				this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
 			} catch (ThreemaException e) {
 				logger.debug("no conversationservice");
@@ -153,7 +156,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 	public int getCount() {
 		if (lockAppService != null &&
 				!lockAppService.isLocked() &&
-				preferenceService.isShowMessagePreview() &&
+				notificationPreferenceService.isShowMessagePreview() &&
 				conversations != null) {
 			return conversations.size();
 		} else {
@@ -180,7 +183,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 				Bundle extras = new Bundle();
 				String uniqueId = conversationModel.getReceiver().getUniqueIdString();
 
-				if (this.lockAppService != null && !this.lockAppService.isLocked() && preferenceService.isShowMessagePreview()) {
+				if (this.lockAppService != null && !this.lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
 					sender = conversationModel.getReceiver().getDisplayName();
 
 					if (conversationModel.isContactConversation()) {

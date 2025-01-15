@@ -104,9 +104,9 @@ class VoipICECandidatesMessage : VoipMessage() {
         @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray, offset: Int, length: Int): VoipICECandidatesMessage {
             if (length < 1) {
-                throw BadMessageException("Bad length ($length) for text message")
+                throw BadMessageException("Bad length ($length) for voip-ice-candidates message")
             } else if (offset < 0) {
-                throw BadMessageException("Bad offset ($offset) for text message")
+                throw BadMessageException("Bad offset ($offset) for voip-ice-candidates message")
             } else if (data.size < length + offset) {
                 throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
             }

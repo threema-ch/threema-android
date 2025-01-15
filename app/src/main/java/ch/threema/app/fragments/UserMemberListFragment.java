@@ -142,7 +142,7 @@ public class UserMemberListFragment extends MemberListFragment {
 					preselectedIdentities,
 					checkedItemPositions,
 					contactService,
-					blockedContactsService,
+                    blockedIdentitiesService,
 					hiddenChatsListService,
 					preferenceService,
 					UserMemberListFragment.this,

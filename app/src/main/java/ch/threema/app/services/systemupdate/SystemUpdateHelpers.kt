@@ -40,3 +40,13 @@ fun fieldExists(
         null
     ).use { cursor -> return cursor.count > 0 }
 }
+
+fun tableExists(
+    sqliteDatabase: SQLiteDatabase,
+    table: String
+): Boolean {
+    return sqliteDatabase.rawQuery(
+        "SELECT 1 FROM `sqlite_master` WHERE type = 'table' AND name = ?",
+        arrayOf(table)
+    ).use { cursor -> cursor.count > 0 }
+}

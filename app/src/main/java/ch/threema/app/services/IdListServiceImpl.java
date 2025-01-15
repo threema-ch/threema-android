@@ -21,15 +21,8 @@
 
 package ch.threema.app.services;
 
-import android.content.Context;
-import android.widget.Toast;
-
 import java.util.Arrays;
 import java.util.List;
-
-import ch.threema.app.R;
-import ch.threema.app.managers.ListenerManager;
-import ch.threema.storage.models.ContactModel;
 
 public class IdListServiceImpl implements IdListService {
     private final Object lock = new Object();
@@ -85,20 +78,6 @@ public class IdListServiceImpl implements IdListService {
                 }
             }
         }
-    }
-
-    @Override
-    public void toggle(Context context, final ContactModel contactModel) {
-        String identity = contactModel.getIdentity();
-
-        if (this.has(identity)) {
-            this.remove(identity);
-            Toast.makeText(context, context.getString(R.string.contact_now_unblocked), Toast.LENGTH_SHORT).show();
-        } else {
-            IdListServiceImpl.this.add(contactModel.getIdentity());
-            Toast.makeText(context, context.getString(R.string.contact_now_blocked), Toast.LENGTH_SHORT).show();
-        }
-        ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
     }
 
     @Override

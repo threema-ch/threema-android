@@ -28,4 +28,8 @@ public class ConversionException extends DispatchException {
 	public ConversionException(String message) {
 		super(message);
 	}
+
+    public ConversionException(Throwable throwable) {
+        super(throwable);
+    }
 }

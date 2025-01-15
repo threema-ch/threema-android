@@ -51,4 +51,6 @@
 
 	</com.google.android.material.card.MaterialCardView>
 
+    <include layout="@layout/conversation_list_item_emoji_reactions_send"/>
+
 </RelativeLayout>

@@ -86,7 +86,6 @@ class ReflectedContactSyncTask(
         when (contactSync.actionCase) {
             ContactSync.ActionCase.CREATE -> handleContactCreate(contactSync.create)
             ContactSync.ActionCase.UPDATE -> handleContactUpdate(contactSync.update)
-            ContactSync.ActionCase.DELETE -> logger.error("Cannot receive contact sync delete")
             ContactSync.ActionCase.ACTION_NOT_SET -> logger.warn("No action set for contact sync")
             null -> logger.warn("Action is null for contact sync")
         }
@@ -561,7 +560,7 @@ class ReflectedContactSyncTask(
         return if (hasAcquaintanceLevel()) {
             when (acquaintanceLevel) {
                 Contact.AcquaintanceLevel.DIRECT -> AcquaintanceLevel.DIRECT
-                Contact.AcquaintanceLevel.GROUP -> AcquaintanceLevel.GROUP
+                Contact.AcquaintanceLevel.GROUP_OR_DELETED -> AcquaintanceLevel.GROUP
                 Contact.AcquaintanceLevel.UNRECOGNIZED -> unrecognizedValue("acquaintance level")
                 null -> nullValue("acquaintance level")
             }

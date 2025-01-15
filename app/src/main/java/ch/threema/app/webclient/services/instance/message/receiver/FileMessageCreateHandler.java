@@ -42,6 +42,7 @@ import java.util.Map;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
@@ -85,12 +86,14 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
 	private final FileService fileService;
 
 	@AnyThread
-	public FileMessageCreateHandler(MessageDispatcher dispatcher,
-	                                MessageService messageService,
-	                                FileService fileService,
-	                                LifetimeService lifetimeService,
-	                                IdListService blockedContactsService) {
-		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blockedContactsService);
+    public FileMessageCreateHandler(
+        MessageDispatcher dispatcher,
+        MessageService messageService,
+        FileService fileService,
+        LifetimeService lifetimeService,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService
+    ) {
+		super(Protocol.SUB_TYPE_FILE_MESSAGE, dispatcher, messageService, lifetimeService, blockedIdentitiesService);
 
 		this.fileService = fileService;
 	}

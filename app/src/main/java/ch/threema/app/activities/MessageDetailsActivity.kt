@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.edithistory.EditHistoryList
@@ -59,6 +58,7 @@ import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.LinkifyUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
+import ch.threema.storage.models.MessageType
 import com.google.android.material.appbar.MaterialToolbar
 import org.slf4j.Logger
 
@@ -192,24 +192,35 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                     isOutbox = messageModel.isOutbox,
                     shouldMarkupText = uiState.shouldMarkupText,
                     headerContent = {
-                        Column {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            CompleteMessageBubble(
-                                message = messageModel,
-                                shouldMarkupText = uiState.shouldMarkupText,
-                                isTextSelectable = true,
-                                textSelectionCallback = textSelectionCallback
-                            )
+                        when (messageModel.type) {
+                            MessageType.TEXT,
+                            MessageType.FILE,
+                            MessageType.LOCATION,
+                            MessageType.IMAGE,
+                            MessageType.VIDEO,
+                            MessageType.VOICEMESSAGE,
+                            -> Column {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                CompleteMessageBubble(
+                                    message = messageModel,
+                                    shouldMarkupText = uiState.shouldMarkupText,
+                                    isTextSelectable = true,
+                                    textSelectionCallback = textSelectionCallback
+                                )
+                            }
+                            else -> Unit
                         }
                     },
-                    footerContent = if (BuildConfig.SHOW_TIMESTAMPS_AND_TECHNICAL_INFO_IN_MESSAGE_DETAILS) {
-                        {
-                            Column {
+                    footerContent = {
+                        Column {
+                            if (messageModel.messageTimestampsUiModel.hasProperties()) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 MessageTimestampsListBox(
                                     messageTimestampsUiModel = messageModel.messageTimestampsUiModel,
                                     isOutbox = messageModel.isOutbox
                                 )
+                            }
+                            if (messageModel.messageDetailsUiModel.hasProperties()) {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 MessageDetailsListBox(
                                     messageDetailsUiModel = messageModel.messageDetailsUiModel,
@@ -218,8 +229,6 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                 Spacer(modifier = Modifier.height(24.dp))
                             }
                         }
-                    } else {
-                        {}
                     }
                 )
             }

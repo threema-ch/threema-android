@@ -77,6 +77,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -398,7 +399,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 }
 
-                SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, true, false, false);
+                SpannableStringBuilder emojified = (SpannableStringBuilder) EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, true, false, false, false);
 
                 int transitionStart = emojified.nextSpanTransition(firstMatch - snippetThreshold, firstMatch, EmojiImageSpan.class);
                 if (transitionStart == firstMatch) {
@@ -409,7 +410,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
         }
-        return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, false, false, false);
+        return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, false, false, false, false);
     }
 
 
@@ -444,19 +445,13 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
                 break;
             case LOCATION:
-                final LocationDataModel location = messageModel.getLocationData();
-                StringBuilder locationStringBuilder = new StringBuilder();
-                if (!TestUtil.isEmptyOrNull(location.getPoi())) {
-                    locationStringBuilder.append(location.getPoi());
+                final @NonNull LocationDataModel locationDataModel = messageModel.getLocationData();
+                if (locationDataModel.poi == null) {
+                    break;
                 }
-                if (!TestUtil.isEmptyOrNull(location.getAddress())) {
-                    if (locationStringBuilder.length() > 0) {
-                        locationStringBuilder.append(" - ");
-                    }
-                    locationStringBuilder.append(location.getAddress());
-                }
-                if (locationStringBuilder.length() > 0) {
-                    snippetText = getSnippet(locationStringBuilder.toString(), this.queryString, viewHolder);
+                final @Nullable String poiSnippetForSearch = locationDataModel.poi.getSnippetForSearchOrNull();
+                if (poiSnippetForSearch != null) {
+                    snippetText = getSnippet(poiSnippetForSearch, this.queryString, viewHolder);
                 }
                 break;
             default:

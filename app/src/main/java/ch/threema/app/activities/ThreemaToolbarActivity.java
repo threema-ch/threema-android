@@ -49,6 +49,7 @@ import ch.threema.app.activities.wizard.WizardIntroActivity;
 import ch.threema.app.emojis.EmojiPicker;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LockAppService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
@@ -71,6 +72,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 	protected ServiceManager serviceManager;
 	protected LockAppService lockAppService;
 	protected PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
 	protected ServerConnection connection;
 
 	@Override
@@ -135,6 +137,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
 			lockAppService = serviceManager.getLockAppService();
 			preferenceService = serviceManager.getPreferenceService();
+            notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 		}
 	}
 
@@ -158,7 +161,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 			finish();
 		}
 
-		if (preferenceService != null && preferenceService.getWizardRunning()) {
+		if (notificationPreferenceService != null && notificationPreferenceService.getWizardRunning()) {
 			startActivity(new Intent(this, WizardIntroActivity.class));
 			return false;
 		}

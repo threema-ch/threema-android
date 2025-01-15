@@ -97,7 +97,7 @@ public class Contact extends Converter {
 			builder.maybePut(IS_WORK, ConfigUtils.isWorkBuild() && contact.isWork());
 			builder.put(PUBLIC_KEY, contact.getPublicKey());
 			builder.put(IDENTITY_TYPE, contact.getIdentityType() == IdentityType.WORK ? 1 : 0);
-			builder.put(IS_BLOCKED, getBlockedContactsService().has(contact.getIdentity()));
+			builder.put(IS_BLOCKED, getBlockedContactsService().isBlocked(contact.getIdentity()));
 
 			final long featureMask = contact.getFeatureMask();
 			builder.put(FEATURE_MASK, featureMask);
@@ -115,7 +115,7 @@ public class Contact extends Converter {
 					.put(CAN_CHANGE_FIRST_NAME, ContactUtil.canChangeFirstName(contact))
 					.put(CAN_CHANGE_LAST_NAME, ContactUtil.canChangeLastName(contact)));
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
@@ -218,7 +218,7 @@ public class Contact extends Converter {
 		try {
 			return contact.getIdentity();
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -227,7 +227,7 @@ public class Contact extends Converter {
 		try {
 			return NameUtil.getDisplayNameOrNickname(contact, true);
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -236,7 +236,7 @@ public class Contact extends Converter {
 		try {
 			return String.format("#%06X", (0xFFFFFF & contact.getColorLight()));
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 

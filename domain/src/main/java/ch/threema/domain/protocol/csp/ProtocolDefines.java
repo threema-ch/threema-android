@@ -132,6 +132,8 @@ public class ProtocolDefines {
 	public static final int MSGTYPE_DELETE_MESSAGE = 0x92;
 	public static final int MSGTYPE_GROUP_EDIT_MESSAGE = 0x93;
 	public static final int MSGTYPE_GROUP_DELETE_MESSAGE = 0x94;
+	public static final int MSGTYPE_REACTION = 0x82;
+	public static final int MSGTYPE_GROUP_REACTION = 0x83;
 
 	/* message flags */
 	// Note: Do not forget to update AbstractMessage#getMessageTypeDefaultFlags when adding a flag

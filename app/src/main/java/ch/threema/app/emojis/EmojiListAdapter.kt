@@ -31,7 +31,6 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import android.widget.AbsListView
 import ch.threema.app.R
-import ch.threema.app.utils.ConfigUtils
 
 class EmojiListAdapter(
 	context: Context,

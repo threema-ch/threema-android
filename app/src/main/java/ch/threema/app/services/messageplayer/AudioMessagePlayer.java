@@ -51,6 +51,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.LocaleUtil;
@@ -73,21 +74,27 @@ public class AudioMessagePlayer extends MessagePlayer {
     private int position = 0; // position in milliseconds
     private Thread mediaPositionListener;
     private final PreferenceService preferenceService;
+    @NonNull
+    private final NotificationPreferenceService notificationPreferenceService;
     private final FileService fileService;
     private final DeadlineListService hiddenChatsListService;
     private final ListenableFuture<MediaController> mediaControllerFuture;
 
-    protected AudioMessagePlayer(Context context,
-                                 MessageService messageService,
-                                 FileService fileService,
-                                 PreferenceService preferenceService,
-                                 DeadlineListService hiddenChatsListService,
-                                 MessageReceiver<?> messageReceiver,
-                                 ListenableFuture<MediaController> mediaControllerFuture,
-                                 AbstractMessageModel messageModel) {
+    protected AudioMessagePlayer(
+        @NonNull Context context,
+        @NonNull MessageService messageService,
+        @NonNull FileService fileService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull NotificationPreferenceService notificationPreferenceService,
+        @NonNull DeadlineListService hiddenChatsListService,
+        @NonNull MessageReceiver<?> messageReceiver,
+        @NonNull ListenableFuture<MediaController> mediaControllerFuture,
+        @NonNull AbstractMessageModel messageModel
+    ) {
         super(context, messageService, fileService, messageReceiver, messageModel);
 
         this.preferenceService = preferenceService;
+        this.notificationPreferenceService = notificationPreferenceService;
         this.fileService = fileService;
         this.hiddenChatsListService = hiddenChatsListService;
         this.mediaControllerFuture = mediaControllerFuture;
@@ -179,7 +186,7 @@ public class AudioMessagePlayer extends MessagePlayer {
         if (mediaController != null) {
             String displayName;
             Bitmap artworkBitmap = null;
-            if (!this.preferenceService.isShowMessagePreview() || this.hiddenChatsListService.has(currentMessageReceiver.getUniqueIdString())) {
+            if (!this.notificationPreferenceService.isShowMessagePreview() || this.hiddenChatsListService.has(currentMessageReceiver.getUniqueIdString())) {
                 displayName = getContext().getString(R.string.notification_channel_voice_message_player);
             } else {
                 displayName = currentMessageReceiver.getDisplayName();

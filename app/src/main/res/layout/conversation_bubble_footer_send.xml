@@ -73,8 +73,6 @@
         android:ellipsize="none"
         android:singleLine="true" />
 
-    <include layout="@layout/conversation_bubble_footer_groupack_send" />
-
     <ImageView
         android:id="@+id/delivered_indicator"
         android:layout_width="18dp"

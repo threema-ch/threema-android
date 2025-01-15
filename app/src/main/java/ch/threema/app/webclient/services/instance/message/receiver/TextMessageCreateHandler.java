@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
@@ -37,6 +38,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -60,11 +62,13 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
 	private static final String FIELD_QUOTE_MESSAGE_ID = "messageId";
 
 	@AnyThread
-	public TextMessageCreateHandler(MessageDispatcher dispatcher,
-	                                MessageService messageService,
-	                                LifetimeService lifetimeService,
-	                                IdListService blockedContactsService) {
-		super(Protocol.SUB_TYPE_TEXT_MESSAGE, dispatcher, messageService, lifetimeService, blockedContactsService);
+    public TextMessageCreateHandler(
+        MessageDispatcher dispatcher,
+        MessageService messageService,
+        LifetimeService lifetimeService,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService
+    ) {
+		super(Protocol.SUB_TYPE_TEXT_MESSAGE, dispatcher, messageService, lifetimeService, blockedIdentitiesService);
 	}
 
 	@Override

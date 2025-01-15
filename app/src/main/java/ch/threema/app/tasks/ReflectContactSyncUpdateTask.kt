@@ -718,7 +718,7 @@ abstract class ReflectContactSyncUpdateTask(
             identity = contactIdentity
             acquaintanceLevel = when (newAcquaintanceLevel) {
                 AcquaintanceLevel.DIRECT -> Contact.AcquaintanceLevel.DIRECT
-                AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP
+                AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP_OR_DELETED
             }
         }
 

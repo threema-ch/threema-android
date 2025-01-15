@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.IdListService;
@@ -70,7 +71,7 @@ public class UserListAdapter extends FilterableListAdapter {
 	private final List<ContactModel> originalValues;
 	private UserListFilter userListFilter;
 	private final ContactService contactService;
-	private final IdListService blockedContactsService;
+	private final BlockedIdentitiesService blockedIdentitiesService;
 	private final DeadlineListService hiddenChatsListService;
 	private final FilterResultsListener filterResultsListener;
 	private final @NonNull RequestManager requestManager;
@@ -81,7 +82,7 @@ public class UserListAdapter extends FilterableListAdapter {
 		@Nullable final List<String> preselectedIdentities,
 		final List<Integer> checkedItems,
 		ContactService contactService,
-		IdListService blockedContactsService,
+		BlockedIdentitiesService blockedIdentitiesService,
 		DeadlineListService hiddenChatsListService,
 		PreferenceService preferenceService,
 		FilterResultsListener filterResultsListener,
@@ -92,7 +93,7 @@ public class UserListAdapter extends FilterableListAdapter {
 		this.context = context;
 		this.contactService = contactService;
 		this.hiddenChatsListService = hiddenChatsListService;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 		this.filterResultsListener = filterResultsListener;
 		this.requestManager = requestManager;
 
@@ -168,7 +169,7 @@ public class UserListAdapter extends FilterableListAdapter {
 
 		ViewUtil.show(
 				holder.blockedView,
-				blockedContactsService != null && blockedContactsService.has(contactModel.getIdentity())
+				blockedIdentitiesService != null && blockedIdentitiesService.isBlocked(contactModel.getIdentity())
 		);
 
 		holder.verificationLevelView.setVerificationLevel(

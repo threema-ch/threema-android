@@ -50,7 +50,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             serviceManager.modelRepositories.contacts,
             serviceManager.groupService,
             serviceManager.nonceFactory,
-            serviceManager.blockedContactsService,
+            serviceManager.blockedIdentitiesService,
             serviceManager.preferenceService,
             serviceManager.multiDeviceManager,
         )

@@ -77,11 +77,11 @@ class IncomingMessageTask(
     private val identityStore by lazy { serviceManager.identityStore }
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val messageService by lazy { serviceManager.messageService }
-    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
+    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
     private val preferenceService by lazy { serviceManager.preferenceService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    private val incomingForwardSecurityPreProcessor by lazy {IncomingForwardSecurityProcessor(serviceManager) }
+    private val incomingForwardSecurityPreProcessor by lazy { IncomingForwardSecurityProcessor(serviceManager) }
 
     override suspend fun run(handle: ActiveTaskCodec) {
         suspend {
@@ -142,7 +142,7 @@ class IncomingMessageTask(
                     contactModelRepository,
                     contactStore,
                     serviceManager.groupService,
-                    blockedContactsService,
+                    blockedIdentitiesService,
                     preferenceService,
                 )
                 if (blockState.isBlocked()) {
@@ -168,7 +168,8 @@ class IncomingMessageTask(
                     )
 
                     else -> {
-                        logger.warn("Received unexpected message {} from {}",
+                        logger.warn(
+                            "Received unexpected message {} from {}",
                             Utils.byteToHex(message.type.toByte(), true, true),
                             ProtocolDefines.SPECIAL_CONTACT_PUSH
                         )
@@ -392,41 +393,25 @@ class IncomingMessageTask(
         nickname: String,
         handle: ActiveTaskCodec,
     ) {
-        val contactModel = contactModelRepository.getByIdentity(fromIdentity)
-        val data = contactModel?.data?.value
-            ?: run {
-                // This can happen for example if a group message is received from a member that is
-                // not in the group anymore and has been deleted.
-                logger.warn("Contact data is null. Nickname cannot be updated.")
-                return
-            }
-
-        val nicknameChanged = nickname != data.nickname
-
-        contactModel.setNicknameFromRemote(nickname, handle)
-
-        if (nicknameChanged) {
-            // This is a hack: As the last update flag may be bumped soon this can lead to the
-            // cached model with the old nickname to be saved in the database after updating the
-            // nickname.
-            contactService.removeFromCache(fromIdentity)
+        val contactModel = contactModelRepository.getByIdentity(fromIdentity) ?: run {
+            // This can happen for example if a group message is received from a member that is
+            // not in the group anymore and has been deleted.
+            logger.warn("Contact data is null. Nickname cannot be updated.")
+            return
         }
+        contactModel.setNicknameFromRemote(nickname, handle)
     }
 
     private suspend fun createDirectContactIfNotExists(
         identity: String,
         nickname: String?,
         handle: ActiveTaskCodec,
-    )  {
+    ) {
         val contactModel = contactModelRepository.getByIdentity(identity)
         val data = contactModel?.data?.value
         if (data != null && data.acquaintanceLevel == AcquaintanceLevel.GROUP) {
             // Update acquaintance level from local
             contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT)
-            // This is a hack: As the conversation may be updated soon, the conversation service
-            // will fetch the old contact model which may not be fresh and therefore may contain the
-            // old acquaintance level. This would prevent this conversation to be shown.
-            contactService.removeFromCache(identity)
         } else if (data == null) {
             val fetchedContact = contactStore.getCachedContact(identity)
                 ?: run {

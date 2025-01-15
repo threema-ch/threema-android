@@ -34,7 +34,7 @@ import androidx.annotation.Nullable;
 
 public class EmojiDrawable extends Drawable {
 	private final SpriteCoordinates coords;
-	private int spritemapInSampleSize;
+	private final int spritemapInSampleSize;
 	private Bitmap bitmap;
 
 	private static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);

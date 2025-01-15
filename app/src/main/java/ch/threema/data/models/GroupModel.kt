@@ -164,11 +164,6 @@ class GroupModel(
     }
 
     /**
-     * Get a [LiveData] for the internal data state flow.
-     */
-    fun liveData(): LiveData<GroupModelData?> = data.asLiveData()
-
-    /**
      * Update all data from database.
      *
      * Note: This method may only be called by the repository, in code that bridges the old models

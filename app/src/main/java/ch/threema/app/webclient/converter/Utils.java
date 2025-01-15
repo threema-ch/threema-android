@@ -115,7 +115,7 @@ public class Utils extends Converter {
 						throw typeException(String.valueOf(receiver.getType()));
 				}
 			} catch (NullPointerException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 		}
 
@@ -159,7 +159,7 @@ public class Utils extends Converter {
 						throw typeException();
 				}
 			} catch (NullPointerException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 
 			// Check for null
@@ -182,7 +182,7 @@ public class Utils extends Converter {
 						throw typeException();
 				}
 			} catch (NullPointerException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 		}
 
@@ -223,7 +223,7 @@ public class Utils extends Converter {
 
 				return null;
 			} catch (NullPointerException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 		}
 
@@ -242,7 +242,7 @@ public class Utils extends Converter {
 				GroupService groupService = getGroupService();
 				return groupService.getById(id);
 			} catch (NumberFormatException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 		}
 
@@ -255,7 +255,7 @@ public class Utils extends Converter {
 				DistributionListService distributionListService = getDistributionListService();
 				return distributionListService.getById(id);
 			} catch (NumberFormatException e) {
-				throw new ConversionException(e.toString());
+				throw new ConversionException(e);
 			}
 		}
 

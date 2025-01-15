@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.services.IdListService;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.MessageUtil;
@@ -57,7 +57,8 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 	private final MessageDispatcher dispatcher;
 	protected final MessageService messageService;
 	private final LifetimeService lifetimeService;
-	private final IdListService blockedContactsService;
+    @NonNull
+	private final BlockedIdentitiesService blockedIdentitiesService;
 
 	/**
 	 * A validation error.
@@ -80,13 +81,13 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 		MessageDispatcher dispatcher,
 		MessageService messageService,
 		LifetimeService lifetimeService,
-		IdListService blockedContactsService
+		@NonNull BlockedIdentitiesService blockedIdentitiesService
 	) {
 		super(subType);
 		this.dispatcher = dispatcher;
 		this.messageService = messageService;
 		this.lifetimeService = lifetimeService;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 
 	}
 
@@ -116,7 +117,7 @@ abstract public class MessageCreateHandler extends MessageReceiver {
 			ch.threema.app.messagereceiver.MessageReceiver receiver = receiverModel.getReceiver();
 			if (receiver.getType() == receiver.Type_CONTACT) {
 				ContactModel receiverContact = ((ContactMessageReceiver) receiver).getContact();
-				if (receiverContact != null && this.blockedContactsService.has(receiverContact.getIdentity())) {
+				if (receiverContact != null && this.blockedIdentitiesService.isBlocked(receiverContact.getIdentity())) {
 					throw new MessageCreateHandler.MessageValidationException("blocked", false);
 				}
 			}

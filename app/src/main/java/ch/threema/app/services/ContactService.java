@@ -456,8 +456,9 @@ public interface ContactService extends AvatarService<ContactModel> {
 
 	/**
 	 * Remove the specified contact from the contact cache.
+     * This has to be called after every mutation of a ContactModel
 	 */
-	void removeFromCache(@NonNull String identity);
+	void invalidateCache(@NonNull String identity);
 
 	/**
 	 * Fetch contact if not available locally. There are different steps executed to get the public

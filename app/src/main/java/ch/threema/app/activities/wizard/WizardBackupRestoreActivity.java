@@ -55,6 +55,8 @@ import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.NotificationPreferenceService;
+import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
@@ -82,6 +84,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 	private FileService fileService;
 	private UserService userService;
 	private PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
 	private File backupFile;
 	private String backupPassword;
 
@@ -137,6 +140,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 				fileService = serviceManager.getFileService();
 				userService = serviceManager.getUserService();
 				preferenceService = serviceManager.getPreferenceService();
+                notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 			}
 		} catch (Exception e) {
 			logger.error("Exception ", e);
@@ -365,7 +369,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
 	private void startNextWizard() {
 		if (this.userService.hasIdentity()) {
-			this.preferenceService.setWizardRunning(true);
+			this.notificationPreferenceService.setWizardRunning(true);
 			startActivity(new Intent(this, WizardBaseActivity.class));
 			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 			finish();

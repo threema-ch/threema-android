@@ -742,7 +742,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 			.forwardSecurity(isFsEnabled)
 			.groupCalls(true)
 			.editMessages(true)
-			.deleteMessages(true);
+			.deleteMessages(true)
+			.emojiReactions(true);
 
 		return builder.build();
 	}

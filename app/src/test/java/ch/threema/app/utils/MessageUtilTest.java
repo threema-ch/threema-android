@@ -345,12 +345,12 @@ public class MessageUtilTest  {
 
 		assertFalse(MessageUtil.showStatusIcon(this.contactMessageModelInbox));
 		assertTrue(MessageUtil.showStatusIcon(this.contactMessageModelOutbox));
-		assertTrue(MessageUtil.showStatusIcon(this.contactMessageModelInboxUserAcknowledged));
+		assertFalse(MessageUtil.showStatusIcon(this.contactMessageModelInboxUserAcknowledged));
 		assertTrue(MessageUtil.showStatusIcon(this.contactMessageModelOutboxUserAcknowledged));
 
 		assertFalse(MessageUtil.showStatusIcon(this.businessContactMessageModelInbox));
 		assertFalse(MessageUtil.showStatusIcon(this.businessContactMessageModelOutbox));
-		assertTrue(MessageUtil.showStatusIcon(this.businessContactMessageModelInboxUserAcknowledged));
+		assertFalse(MessageUtil.showStatusIcon(this.businessContactMessageModelInboxUserAcknowledged));
 		assertFalse(MessageUtil.showStatusIcon(this.businessContactMessageModelOutboxUserAcknowledged));
 
 		assertFalse(MessageUtil.showStatusIcon(this.groupMessageModelInbox));

@@ -48,7 +48,6 @@ import java.util.Map;
 
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
-import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DownloadService;
@@ -274,8 +273,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         try {
             actionModeStatus = (ActionModeStatus) helper.getFragment();
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                + " must implement ActionModeStatus");
+            throw new ClassCastException(context + " must implement ActionModeStatus");
         }
     }
 
@@ -440,10 +438,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                 stateBitmapUtil.setStateDrawable(getContext(), messageModel, viewHolder.deliveredIndicator, null);
             }
 
-            if (viewHolder.groupAckContainer != null) {
-                stateBitmapUtil.setGroupAckCount(messageModel, viewHolder);
-            }
-
             if (viewHolder.editedText != null) {
                 viewHolder.editedText.setVisibility(messageModel.getEditedAt() != null ? View.VISIBLE : View.GONE);
             }
@@ -454,7 +448,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         }
     }
 
-    public Spannable highlightMatches(CharSequence fullText, String filterText) {
+    public Spannable highlightMatches(@Nullable CharSequence fullText, @Nullable String filterText) {
         return TextUtil.highlightMatches(getContext(), fullText, filterText, true, false);
     }
 
@@ -615,7 +609,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             holder.bodyTextView.setText(formatTextString(caption, filterString));
 
             LinkifyUtil.getInstance().linkify(
-                (ComposeMessageFragment) helper.getFragment(),
+                helper.getFragment(),
                 holder.bodyTextView,
                 getMessageModel(),
                 true,

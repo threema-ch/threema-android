@@ -13,10 +13,10 @@ package d2m;
 
 option java_package = "ch.threema.protobuf.d2m";
 
-// D2M protocol versions (32 bit).
+// D2M protocol versions.
 enum ProtocolVersion {
   // Initial D2M protocol version (alpha, may break).
-  INITIAL = 0;
+  V0 = 0;
 }
 
 // Send along client information when connecting to the mediator server.

@@ -317,9 +317,9 @@
 	<dimen name="send_media_item_width">72dp</dimen>
 
 	<!-- acknowledge / decline popup -->
-	<dimen name="ackdec_popup_content_margin">8dp</dimen>
-	<dimen name="ackdec_emoji_size">40dp</dimen>
-	<dimen name="ackdec_popup_content_margin_horizontal">4dp</dimen>
+	<dimen name="reaction_popup_content_margin">4dp</dimen>
+	<dimen name="reaction_popup_emoji_size">40dp</dimen>
+	<dimen name="reaction_popup_content_margin_horizontal">4dp</dimen>
 
 	<!-- gesture exclusion -->
     <dimen name="gesture_exclusion_border_width">16dp</dimen>
@@ -341,5 +341,17 @@
 
 	<!-- offset of badge on overflow toolbar item -->
     <dimen name="overflow_badge_offset">18dp</dimen>
+
+	<!-- emoji reactions -->
+	<dimen name="emojireactions_chip_border_radius">16dp</dimen>
+	<dimen name="emojireactions_chip_padding_inside_left">8dp</dimen>
+	<dimen name="emojireactions_chip_padding_inside_right">8dp</dimen>
+	<dimen name="emojireactions_chip_padding_inside_top">0dp</dimen>
+	<dimen name="emojireactions_chip_padding_inside_bottom">0dp</dimen>
+    <dimen name="emojireactions_stroke_width">1.5dp</dimen>
+	<dimen name="emojireactions_height">31dp</dimen>
+    <dimen name="emojireactions_height_inside">28dp</dimen> <!-- height of chip minus stroke width times two -->
+    <dimen name="emojireactions_width">36dp</dimen>
+    <dimen name="emojireactions_width_with_count">50dp</dimen>
 
 </resources>

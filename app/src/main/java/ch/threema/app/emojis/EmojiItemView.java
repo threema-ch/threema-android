@@ -24,6 +24,7 @@ package ch.threema.app.emojis;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -50,21 +51,53 @@ public class EmojiItemView extends View implements Drawable.Callback {
 		super(context, attrs, defStyleAttr);
 	}
 
-	public void setEmoji(String emoji, boolean hasDiverse, @ColorInt int diverseColor) {
+	public Drawable setEmoji(String emoji, boolean hasDiverse, @ColorInt int diverseColor) {
 		this.emoji = emoji;
 		this.drawable = EmojiManager.getInstance(getContext()).getEmojiDrawable(emoji);
 		this.hasDiverse = hasDiverse;
 		this.diverseColor = diverseColor;
 
 		postInvalidate();
+
+		return this.drawable;
 	}
 
 	public String getEmoji() {
 		return emoji;
 	}
 
+	private void drawCenteredCharacter(Canvas canvas, String character) {
+		Paint centeredCharacterPaint = new Paint();
+		centeredCharacterPaint.setTextAlign(Paint.Align.CENTER);
+
+		// Measure text bounds to get width and height
+		Rect bounds = new Rect();
+		centeredCharacterPaint.getTextBounds(character, 0, 1, bounds);
+		int textWidth = bounds.width();
+		int textHeight = bounds.height();
+
+		// Get canvas dimensions
+		int canvasWidth = canvas.getWidth();
+		int canvasHeight = canvas.getHeight();
+
+		// Calculate scaling factor to fit text within canvas
+		float scaleX = (float) canvasWidth / textWidth;
+		float scaleY = (float) canvasHeight / textHeight;
+		float scaleFactor = Math.min(scaleX, scaleY);
+
+		// Apply scaling to text size
+		centeredCharacterPaint.setTextSize(centeredCharacterPaint.getTextSize() * scaleFactor);
+
+		// Calculate centered position
+		float x = canvasWidth / 2f; // Horizontal center
+		float y = canvasHeight / 2f - (centeredCharacterPaint.descent() + centeredCharacterPaint.ascent()) / 2f; // Vertical center
+
+		// Draw the character
+		canvas.drawText(character, x, y, centeredCharacterPaint);
+	}
+
 	@Override
-	protected void onDraw(Canvas canvas) {
+	protected void onDraw(@NonNull Canvas canvas) {
 		if (this.drawable != null) {
 			this.drawable.setBounds(getPaddingLeft(),
 				getPaddingTop(),
@@ -81,6 +114,8 @@ public class EmojiItemView extends View implements Drawable.Callback {
 				this.paint.setColor(this.diverseColor);
 				canvas.drawText("◢", xPos, yPos, this.paint);
 			}
+		} else {
+			drawCenteredCharacter(canvas, EmojiUtil.REPLACEMENT_CHARACTER);
 		}
 	}
 

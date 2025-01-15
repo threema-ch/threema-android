@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import ch.threema.app.R;
 import ch.threema.app.collections.Functional;
@@ -57,7 +56,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -69,6 +68,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.GroupBallotModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
@@ -115,14 +115,17 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotModel create(GroupModel groupModel,
-                              String description,
-                              BallotModel.State state,
-                              BallotModel.Assessment assessment,
-                              BallotModel.Type type,
-                              BallotModel.ChoiceType choiceType) throws NotAllowedException {
+    public BallotModel create(
+        GroupModel groupModel,
+        String description,
+        BallotModel.State state,
+        BallotModel.Assessment assessment,
+        BallotModel.Type type,
+        BallotModel.ChoiceType choiceType,
+        @NonNull BallotId ballotId
+    ) throws NotAllowedException {
 
-        final BallotModel model = this.create(description, state, assessment, type, choiceType);
+        final BallotModel model = this.create(description, state, assessment, type, choiceType, ballotId);
         if (model != null) {
             this.link(groupModel, model);
             //handle
@@ -133,41 +136,41 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public boolean modifyFinished(final BallotModel ballotModel) throws MessageTooLongException {
-        if (ballotModel != null) {
-            switch (ballotModel.getState()) {
-                case TEMPORARY:
-                    ballotModel.setState(BallotModel.State.OPEN);
-                    try {
-                        this.checkAccess();
-                        this.databaseServiceNew.getBallotModelFactory().update(
-                            ballotModel
-                        );
-                    } catch (NotAllowedException e) {
-                        logger.error("Exception", e);
-                        return false;
-                    }
-
-                    try {
-                        return this.send(ballotModel, listener -> {
-                            if (listener.handle(ballotModel)) {
-                                listener.onCreated(ballotModel);
-                            }
-                        });
-                    } catch (MessageTooLongException e) {
-                        ballotModel.setState(BallotModel.State.TEMPORARY);
-                        this.databaseServiceNew.getBallotModelFactory().update(
-                            ballotModel
-                        );
-                        throw new MessageTooLongException();
-                    }
-                default:
-                    this.handleModified(ballotModel);
-                    break;
+    public void modifyFinished(
+        @NonNull final BallotModel ballotModel,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException {
+        if (ballotModel.getState() == BallotModel.State.TEMPORARY) {
+            ballotModel.setState(BallotModel.State.OPEN);
+            try {
+                this.checkAccess();
+                this.databaseServiceNew.getBallotModelFactory().update(ballotModel);
+            } catch (NotAllowedException e) {
+                logger.error("Exception", e);
+                return;
             }
-            return true;
+
+            try {
+                this.send(
+                    ballotModel, listener -> {
+                        if (listener.handle(ballotModel)) {
+                            listener.onCreated(ballotModel);
+                        }
+                    },
+                    messageId,
+                    triggerSource
+                );
+            } catch (MessageTooLongException e) {
+                ballotModel.setState(BallotModel.State.TEMPORARY);
+                this.databaseServiceNew.getBallotModelFactory().update(
+                    ballotModel
+                );
+                throw e;
+            }
+        } else {
+            this.handleModified(ballotModel);
         }
-        return false;
     }
 
     @Override
@@ -190,13 +193,16 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotModel create(ContactModel contactModel,
-                              String description,
-                              BallotModel.State state,
-                              BallotModel.Assessment assessment,
-                              BallotModel.Type type,
-                              BallotModel.ChoiceType choiceType) throws NotAllowedException {
-        final BallotModel model = this.create(description, state, assessment, type, choiceType);
+    public BallotModel create(
+        ContactModel contactModel,
+        String description,
+        BallotModel.State state,
+        BallotModel.Assessment assessment,
+        BallotModel.Type type,
+        BallotModel.ChoiceType choiceType,
+        @NonNull BallotId ballotId
+    ) throws NotAllowedException {
+        final BallotModel model = this.create(description, state, assessment, type, choiceType, ballotId);
         if (model != null) {
             this.link(contactModel, model);
         }
@@ -204,24 +210,20 @@ public class BallotServiceImpl implements BallotService {
         return model;
     }
 
-    private BallotModel create(String description,
-                               BallotModel.State state,
-                               BallotModel.Assessment assessment,
-                               BallotModel.Type type,
-                               BallotModel.ChoiceType choiceType) throws NotAllowedException {
+    private BallotModel create(
+        String description,
+        BallotModel.State state,
+        BallotModel.Assessment assessment,
+        BallotModel.Type type,
+        BallotModel.ChoiceType choiceType,
+        BallotId newBallotId
+    ) throws NotAllowedException {
         //create a new blank model
         try {
             this.checkAccess();
 
 
             final BallotModel ballotModel = new BallotModel();
-            //unique id
-            String randomId = UUID.randomUUID().toString();
-            BallotId newBallotId = new BallotId(
-                Utils.hexStringToByteArray(
-                    randomId.substring(randomId.length() - (ProtocolDefines.BALLOT_ID_LEN * 2))
-                ));
-
             ballotModel.setApiBallotId(Utils.byteArrayToHexString(newBallotId.getBallotId()));
             ballotModel.setCreatorIdentity(this.userService.getIdentity());
             ballotModel.setCreatedAt(new Date());
@@ -274,7 +276,7 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public boolean close(Integer ballotModelId) throws NotAllowedException, MessageTooLongException {
+    public boolean close(Integer ballotModelId, @NonNull MessageId messageId, @NonNull TriggerSource triggerSource) throws NotAllowedException, MessageTooLongException {
         //be sure to use the cached ballot model!
         final BallotModel ballotModel = this.get(ballotModelId);
 
@@ -291,31 +293,38 @@ public class BallotServiceImpl implements BallotService {
         //save model
         ballotModel.setState(BallotModel.State.CLOSED);
         if (this.update(ballotModel)) {
-            return this.send(ballotModel, listener -> {
-                if (listener.handle(ballotModel)) {
-                    listener.onClosed(ballotModel);
-                }
-            });
+            return this.send(
+                ballotModel, listener -> {
+                    if (listener.handle(ballotModel)) {
+                        listener.onClosed(ballotModel);
+                    }
+                },
+                messageId,
+                triggerSource
+            );
         }
         return false;
     }
 
     @Override
-    public boolean send(BallotModel ballotModel, ListenerManager.HandleListener<BallotListener> handleListener) throws MessageTooLongException {
+    public boolean send(
+        BallotModel ballotModel,
+        ListenerManager.HandleListener<BallotListener> handleListener,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws MessageTooLongException {
         //add message
         if (TestUtil.compare(userService.getIdentity(), ballotModel.getCreatorIdentity())) {
             //ok, i am the creator.... send a message to every participant
             try {
-                if (serviceManager.getMessageService() != null) {
-                    if (serviceManager.getMessageService().sendBallotMessage(ballotModel) != null) {
-                        ListenerManager.ballotListeners.handle(handleListener);
-                        return true;
-                    }
+                if (serviceManager.getMessageService().sendBallotMessage(ballotModel, messageId, triggerSource) != null) {
+                    ListenerManager.ballotListeners.handle(handleListener);
+                    return true;
                 }
             } catch (ThreemaException e) {
                 logger.error("Exception", e);
                 if (e instanceof MessageTooLongException) {
-                    throw new MessageTooLongException();
+                    throw (MessageTooLongException) e;
                 }
             }
         }
@@ -338,7 +347,11 @@ public class BallotServiceImpl implements BallotService {
 
     @Override
     @NonNull
-    public BallotUpdateResult update(BallotSetupInterface createMessage) throws ThreemaException, BadMessageException {
+    public BallotUpdateResult update(
+        @NonNull BallotSetupInterface createMessage,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws ThreemaException, BadMessageException {
         //check if allowed
         BallotData ballotData = createMessage.getBallotData();
         if (ballotData == null) {
@@ -437,7 +450,7 @@ public class BallotServiceImpl implements BallotService {
             if (contactModel == null) {
                 throw new ThreemaException("invalid identity");
             }
-            //link with group
+            //link with contact
             this.link(contactModel, ballotModel);
         } else {
             throw new ThreemaException("invalid");
@@ -501,20 +514,28 @@ public class BallotServiceImpl implements BallotService {
 
         if (toState == BallotModel.State.OPEN) {
             this.cache(ballotModel);
-            this.send(ballotModel, listener -> {
-                if (listener.handle(ballotModel)) {
-                    listener.onCreated(ballotModel);
-                }
-            });
+
+            this.send(
+                ballotModel, listener -> {
+                    if (listener.handle(ballotModel)) {
+                        listener.onCreated(ballotModel);
+                    }
+                },
+                messageId,
+                triggerSource
+            );
 
             return new BallotUpdateResult(ballotModel, BallotUpdateResult.Operation.CREATE);
         } else {
-            // toState == BallotModel.State.CLOSED
-            this.send(ballotModel, listener -> {
-                if (listener.handle(ballotModel)) {
-                    listener.onClosed(ballotModel);
-                }
-            });
+            this.send(
+                ballotModel, listener -> {
+                    if (listener.handle(ballotModel)) {
+                        listener.onClosed(ballotModel);
+                    }
+                },
+                messageId,
+                triggerSource
+            );
             return new BallotUpdateResult(ballotModel, BallotUpdateResult.Operation.CLOSE);
         }
     }
@@ -770,15 +791,24 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotPublishResult publish(MessageReceiver messageReceiver, final BallotModel ballotModel, AbstractMessageModel abstractMessageModel) throws NotAllowedException, MessageTooLongException {
-        return this.publish(messageReceiver, ballotModel, abstractMessageModel, null);
+    public BallotPublishResult publish(
+        MessageReceiver messageReceiver,
+        final BallotModel ballotModel,
+        AbstractMessageModel abstractMessageModel,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) throws NotAllowedException, MessageTooLongException {
+        return this.publish(messageReceiver, ballotModel, abstractMessageModel, null, messageId, triggerSource);
     }
 
     @Override
-    public BallotPublishResult publish(MessageReceiver messageReceiver,
-                                       final BallotModel ballotModel,
-                                       AbstractMessageModel abstractMessageModel,
-                                       @Nullable Collection<String> receivingIdentities
+    public BallotPublishResult publish(
+        MessageReceiver messageReceiver,
+        final BallotModel ballotModel,
+        AbstractMessageModel abstractMessageModel,
+        @Nullable Collection<String> receivingIdentities,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
     ) throws NotAllowedException, MessageTooLongException {
         BallotPublishResult result = new BallotPublishResult();
 
@@ -897,8 +927,9 @@ public class BallotServiceImpl implements BallotService {
                 ballotData,
                 ballotModel,
                 abstractMessageModel,
-                null,
-                receivingIdentities
+                messageId,
+                receivingIdentities,
+                triggerSource
             );
 
             //set as open
@@ -1074,7 +1105,11 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> voting) throws NotAllowedException {
+    public BallotVoteResult vote(
+        Integer ballotModelId,
+        Map<Integer, Integer> voting,
+        @NonNull TriggerSource triggerSource
+    ) throws NotAllowedException {
         BallotModel ballotModel = this.get(ballotModelId);
 
         if (!TestUtil.required(ballotModel, voting)) {
@@ -1113,7 +1148,7 @@ public class BallotServiceImpl implements BallotService {
 
         try {
             //send
-            messageReceiver.createAndSendBallotVoteMessage(votes, ballotModel);
+            messageReceiver.createAndSendBallotVoteMessage(votes, ballotModel, triggerSource);
 
             //and save
             this.databaseServiceNew.getBallotVoteModelFactory().deleteByBallotIdAndVotingIdentity(
@@ -1181,43 +1216,29 @@ public class BallotServiceImpl implements BallotService {
 
         //load existing votes of user
         List<BallotVoteModel> existingVotes = this.getVotes(ballotModel.getId(), fromIdentity);
-        final boolean firstVote = existingVotes == null || existingVotes.size() == 0;
+        final boolean firstVote = existingVotes == null || existingVotes.isEmpty();
 
         List<BallotVoteModel> savingVotes = new ArrayList<>();
         List<BallotChoiceModel> choices = this.getChoices(ballotModel.getId());
 
         for (final BallotVote apiVoteModel : voteMessage.getVotes()) {
-            apiVoteModel.getId();
-
             //check if the choice correct
-            final BallotChoiceModel c = Functional.select(choices, new IPredicateNonNull<BallotChoiceModel>() {
-                @Override
-                public boolean apply(@NonNull BallotChoiceModel type) {
-                    return type.getApiBallotChoiceId() == apiVoteModel.getId();
-                }
-            });
+            final BallotChoiceModel ballotChoiceModel = Functional.select(choices, type -> type.getApiBallotChoiceId() == apiVoteModel.getId());
 
-            if (c != null) {
+            if (ballotChoiceModel != null) {
                 //cool, correct choice
-                BallotVoteModel ballotVoteModel = Functional.select(existingVotes, new IPredicateNonNull<BallotVoteModel>() {
-                    @Override
-                    public boolean apply(@NonNull BallotVoteModel type) {
-                        return type.getBallotChoiceId() == c.getId();
-                    }
-                });
+                BallotVoteModel ballotVoteModel = Functional.select(existingVotes, type -> type.getBallotChoiceId() == ballotChoiceModel.getId());
 
                 if (ballotVoteModel == null) {
                     //ok, a new vote
                     ballotVoteModel = new BallotVoteModel();
                     ballotVoteModel.setBallotId(ballotModel.getId());
-                    ballotVoteModel.setBallotChoiceId(c.getId());
+                    ballotVoteModel.setBallotChoiceId(ballotChoiceModel.getId());
                     ballotVoteModel.setVotingIdentity(fromIdentity);
                     ballotVoteModel.setCreatedAt(new Date());
                 } else {
                     //remove from existing votes
-                    if (existingVotes != null) {
-                        existingVotes.remove(ballotVoteModel);
-                    }
+                    existingVotes.remove(ballotVoteModel);
                 }
 
                 if (
@@ -1236,14 +1257,13 @@ public class BallotServiceImpl implements BallotService {
         //remove votes
         boolean hasModifications = false;
 
-        if (existingVotes != null && existingVotes.size() > 0) {
+        if (existingVotes != null && !existingVotes.isEmpty()) {
             int[] ids = new int[existingVotes.size()];
             for (int n = 0; n < ids.length; n++) {
                 ids[n] = existingVotes.get(n).getId();
             }
 
-            this.databaseServiceNew.getBallotVoteModelFactory().deleteByIds(
-                ids);
+            this.databaseServiceNew.getBallotVoteModelFactory().deleteByIds(ids);
 
             hasModifications = true;
         }
@@ -1256,18 +1276,22 @@ public class BallotServiceImpl implements BallotService {
         }
 
         if (hasModifications) {
-
-            ListenerManager.ballotVoteListeners.handle(new ListenerManager.HandleListener<BallotVoteListener>() {
-                @Override
-                public void handle(BallotVoteListener listener) {
+            if (fromIdentity.equals(userService.getIdentity())) {
+                ListenerManager.ballotVoteListeners.handle(listener -> {
+                    if (listener.handle(ballotModel)) {
+                        listener.onSelfVote(ballotModel);
+                    }
+                });
+            } else {
+                ListenerManager.ballotVoteListeners.handle(listener -> {
                     if (listener.handle(ballotModel)) {
                         listener.onVoteChanged(
                             ballotModel,
                             fromIdentity,
                             firstVote);
                     }
-                }
-            });
+                });
+            }
         }
         return new BallotVoteResult(true);
     }

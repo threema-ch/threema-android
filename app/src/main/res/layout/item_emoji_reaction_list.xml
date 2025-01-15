@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="16dp">
+
+    <ch.threema.app.ui.AvatarView
+        android:id="@+id/contact_avatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:visibility="visible"
+        tools:background="#000000" />
+
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/contact_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_weight="1"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+        tools:text="Firstname Lastname" />
+
+    <ImageView
+        android:id="@+id/remove_icon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:clickable="false"
+        android:contentDescription="@string/remove"
+        android:focusable="false"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_delete_outline"
+        app:tint="@color/material_red"
+        tools:visibility="visible" />
+
+</LinearLayout>

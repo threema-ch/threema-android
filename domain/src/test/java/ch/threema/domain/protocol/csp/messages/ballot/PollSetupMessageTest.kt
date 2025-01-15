@@ -24,6 +24,7 @@ package ch.threema.domain.protocol.csp.messages.ballot
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.incomingMessage
+import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
 import org.junit.Test
@@ -82,7 +83,7 @@ open class PollSetupMessageTest {
                 data = pollSetupMessageBody,
                 offset = 0,
                 length = 0,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity
             )
         }
 
@@ -101,7 +102,7 @@ open class PollSetupMessageTest {
                 data = pollSetupMessageBody,
                 offset = -1,
                 length = 64,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity
             )
         }
 
@@ -120,7 +121,7 @@ open class PollSetupMessageTest {
                 data = pollSetupMessageBody,
                 offset = 0,
                 length = pollSetupMessageBody.size + 1,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity
             )
         }
 
@@ -139,7 +140,7 @@ open class PollSetupMessageTest {
                 data = pollSetupMessageBody,
                 offset = 1,
                 length = pollSetupMessageBody.size,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity
             )
         }
 
@@ -155,7 +156,7 @@ open class PollSetupMessageTest {
             data = pollSetupMessageBody,
             offset = 0,
             length = pollSetupMessageBody.size,
-            fromIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity
         )
 
         // assert
@@ -173,7 +174,7 @@ open class PollSetupMessageTest {
             data = dataWithOffsetByte,
             offset = 1,
             length = pollSetupMessageBody.size,
-            fromIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity
         )
 
         // assert
@@ -181,7 +182,7 @@ open class PollSetupMessageTest {
     }
 
     @Test
-    fun fromReflectedShouldParseBodyAndSetCommonFields() {
+    fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
 
         // act
         val incomingMessageId = 12345678L
@@ -196,13 +197,37 @@ open class PollSetupMessageTest {
         // act
         val resultPollSetupMessage: PollSetupMessage = PollSetupMessage.fromReflected(
             message = incomingD2DMessage,
-            fromIdentity = fromIdentity
+            ballotCreatorIdentity = fromIdentity
         )
 
         // assert
         assertEquals(resultPollSetupMessage.messageId, MessageId(incomingMessageId))
         assertEquals(resultPollSetupMessage.date.time, incomingMessageCreatedAt)
         assertEquals(resultPollSetupMessage.fromIdentity, fromIdentity)
+        assertPollSetupMessageFields(resultPollSetupMessage)
+    }
+
+    @Test
+    fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
+
+        // act
+        val outgoingMessageId = MessageId()
+        val outgoingMessageCreatedAt: Long = 42424242
+        val outgoingD2DMessage = outgoingMessage {
+            this.messageId = outgoingMessageId.messageIdLong
+            this.createdAt = outgoingMessageCreatedAt
+            this.body = pollSetupMessageBody.toByteString()
+        }
+
+        // act
+        val resultPollSetupMessage: PollSetupMessage = PollSetupMessage.fromReflected(
+            message = outgoingD2DMessage,
+            ballotCreatorIdentity = fromIdentity
+        )
+
+        // assert
+        assertEquals(resultPollSetupMessage.messageId, outgoingMessageId)
+        assertEquals(resultPollSetupMessage.date.time, outgoingMessageCreatedAt)
         assertPollSetupMessageFields(resultPollSetupMessage)
     }
 
@@ -219,7 +244,7 @@ open class PollSetupMessageTest {
                 data = dataWithOffsetByte,
                 offset = 0,
                 length = pollSetupMessageBody.size,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = fromIdentity
             )
         }
 

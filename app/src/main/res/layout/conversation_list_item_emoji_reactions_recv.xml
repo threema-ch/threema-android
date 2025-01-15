@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ch.threema.app.emojireactions.EmojiReactionGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/emoji_reactions"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/emojireactions_height"
+    android:layout_below="@+id/message_block"
+    android:layout_toRightOf="@id/avatar_view"
+    android:duplicateParentState="false"
+    android:layout_marginTop="-5dp" />

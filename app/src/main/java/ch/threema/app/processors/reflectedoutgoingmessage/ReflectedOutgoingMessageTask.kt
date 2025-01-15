@@ -136,10 +136,10 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> ReflectedOutgoingGroupDeliveryReceiptTask(this, serviceManager)
     CspE2eMessageType.FILE -> ReflectedOutgoingFileTask(this, serviceManager)
     CspE2eMessageType.GROUP_FILE -> ReflectedOutgoingGroupFileTask(this, serviceManager)
-    CspE2eMessageType.POLL_SETUP -> throw IllegalStateException("Message type POLL_SETUP for reflected outgoing messages is not implemented yet") // TODO(ANDR-3465)
-    CspE2eMessageType.POLL_VOTE -> throw IllegalStateException("Message type POLL_VOTE for reflected outgoing messages is not implemented yet") // TODO(ANDR-3465)
-    CspE2eMessageType.GROUP_POLL_SETUP -> throw IllegalStateException("Message type GROUP_POLL_SETUP for reflected outgoing messages is not implemented yet") // TODO(ANDR-3465)
-    CspE2eMessageType.GROUP_POLL_VOTE -> throw IllegalStateException("Message type GROUP_POLL_VOTE for reflected outgoing messages is not implemented yet") // TODO(ANDR-3465)
+    CspE2eMessageType.POLL_SETUP -> ReflectedOutgoingPollSetupMessageTask(this, serviceManager)
+    CspE2eMessageType.POLL_VOTE -> ReflectedOutgoingPollVoteMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_POLL_SETUP -> ReflectedOutgoingGroupPollSetupMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_POLL_VOTE -> ReflectedOutgoingGroupPollVoteMessageTask(this, serviceManager)
     CspE2eMessageType.GROUP_CALL_START -> ReflectedOutgoingGroupCallStartTask(this, serviceManager)
     CspE2eMessageType.CALL_OFFER,
     CspE2eMessageType.CALL_RINGING,
@@ -154,6 +154,46 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ReflectedOutgoingContactRequestProfilePictureTask(this, serviceManager)
     CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> ReflectedOutgoingContactSetProfilePictureTask(this, serviceManager)
     CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> ReflectedOutgoingDeleteProfilePictureTask(this, serviceManager)
+    CspE2eMessageType.LOCATION -> ReflectedOutgoingLocationTask(this, serviceManager)
+    CspE2eMessageType.GROUP_LOCATION -> ReflectedOutgoingGroupLocationTask(this, serviceManager)
+    CspE2eMessageType.DELETE_MESSAGE -> ReflectedOutgoingDeleteMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_DELETE_MESSAGE -> ReflectedOutgoingGroupDeleteMessageTask(this, serviceManager)
+    CspE2eMessageType.EDIT_MESSAGE -> ReflectedOutgoingEditMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_EDIT_MESSAGE -> ReflectedOutgoingGroupEditMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_SYNC_REQUEST -> ReflectedOutgoingGroupSyncRequestTask(this, serviceManager)
 
-    else -> throw IllegalStateException("Unknown message type $type")
+    // TODO(ANDR-3443): Process reflected outgoing deprecated messages
+    CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
+    CspE2eMessageType.DEPRECATED_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
+    CspE2eMessageType.DEPRECATED_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
+    CspE2eMessageType.GROUP_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
+    CspE2eMessageType.GROUP_AUDIO -> throw NotImplementedError("Deprecated messages implementation is missing")
+    CspE2eMessageType.GROUP_VIDEO -> throw NotImplementedError("Deprecated messages implementation is missing")
+
+    CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
+    CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
+
+    // TODO(ANDR-3472): Process reflected outgoing emoji reactions
+    CspE2eMessageType.REACTION -> throw NotImplementedError("Reaction implementation is missing")
+    CspE2eMessageType.GROUP_REACTION -> throw NotImplementedError("Group reaction implementation is missing")
+
+    // TODO(ANDR-2990): Process group control messages from sync
+    CspE2eMessageType.GROUP_SETUP -> throw NotImplementedError("Group sync implementation is missing")
+    CspE2eMessageType.GROUP_NAME -> throw NotImplementedError("Group sync implementation is missing")
+    CspE2eMessageType.GROUP_LEAVE -> throw NotImplementedError("Group sync implementation is missing")
+    CspE2eMessageType.GROUP_SET_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
+    CspE2eMessageType.GROUP_DELETE_PROFILE_PICTURE -> throw NotImplementedError("Group sync implementation is missing")
+
+    CspE2eMessageType.WEB_SESSION_RESUME -> throw IllegalStateException("Web session resume message is unexpected as reflected outgoing message")
+
+    CspE2eMessageType.TYPING_INDICATOR -> throw IllegalStateException("A typing indicator is unexpected as reflected outgoing message")
+
+    CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException("A forward security envelope message should never be received as reflected outgoing message")
+
+    CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected outgoing message")
+
+    CspE2eMessageType.UNRECOGNIZED -> throw IllegalStateException("The reflected outgoing message type is unrecognized")
+    CspE2eMessageType._INVALID_TYPE -> throw IllegalStateException("The reflected outgoing message type is invalid")
+
+    null -> throw IllegalStateException("The reflected outgoing message type is null")
 }

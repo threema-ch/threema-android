@@ -27,6 +27,7 @@ import android.net.Uri;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import java.util.HashMap;
@@ -40,11 +41,17 @@ import ch.threema.base.utils.LoggingUtil;
 public class RingtoneServiceImpl implements RingtoneService {
     private final static Logger logger = LoggingUtil.getThreemaLogger("RingtoneServiceImpl");
 	private final PreferenceService preferenceService;
+    @NonNull
+    private final NotificationPreferenceService notificationPreferenceService;
 	private HashMap<String, String> ringtones;
     private final boolean supportsNotificationChannels = ConfigUtils.supportsNotificationChannels();
 
-	public RingtoneServiceImpl(PreferenceService preferenceService) {
+	public RingtoneServiceImpl(
+        PreferenceService preferenceService,
+        @NonNull NotificationPreferenceService notificationPreferenceService
+    ) {
 		this.preferenceService = preferenceService;
+        this.notificationPreferenceService = notificationPreferenceService;
 
 		init();
 	}
@@ -88,7 +95,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 	public Uri getRingtoneFromUniqueId(String uniqueId) {
 		String ringtone = ringtones.get(uniqueId);
 		// check for "null" string (HTC bug)
-		if (ringtone != null && !ringtone.equals("null")) {
+		if (ringtone != null && !ringtone.equals(ServicesConstants.PREFERENCES_NULL)) {
 			return Uri.parse(ringtone);
 		} else {
 			// silent
@@ -123,7 +130,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 		preferenceService.setGroupNotificationSound(Uri.parse(context.getString(R.string.default_notification_sound)));
 		preferenceService.setNotificationSound(Uri.parse(context.getString(R.string.default_notification_sound)));
 		preferenceService.setVoiceCallSound(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
-		preferenceService.setNotificationPriority(NotificationCompat.PRIORITY_HIGH);
+		notificationPreferenceService.setNotificationPriority(NotificationCompat.PRIORITY_HIGH);
 	}
 
 	@Override
@@ -131,7 +138,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 		if (ringtones.containsKey(uniqueId)) {
 			return getRingtoneFromUniqueId(uniqueId);
 		} else {
-			return preferenceService.getNotificationSound();
+			return notificationPreferenceService.getNotificationSound();
 		}
 	}
 
@@ -140,7 +147,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 		if (ringtones.containsKey(uniqueId)) {
 			return getRingtoneFromUniqueId(uniqueId);
 		} else {
-			return preferenceService.getGroupNotificationSound();
+			return notificationPreferenceService.getGroupNotificationSound();
 		}
 	}
 
@@ -155,7 +162,7 @@ public class RingtoneServiceImpl implements RingtoneService {
             return null;
         }
 
-		return preferenceService.getNotificationSound();
+		return notificationPreferenceService.getNotificationSound();
 	}
 
 	@Override
@@ -164,7 +171,7 @@ public class RingtoneServiceImpl implements RingtoneService {
             return null;
         }
 
-		return preferenceService.getGroupNotificationSound();
+		return notificationPreferenceService.getGroupNotificationSound();
 	}
 
 	@Override
@@ -192,6 +199,6 @@ public class RingtoneServiceImpl implements RingtoneService {
 
     private boolean hasNoRingtone(String uniqueId) {
         Uri ringtone = getRingtoneFromUniqueId(uniqueId);
-        return (ringtone == null || ringtone.toString().equals("null"));
+        return (ringtone == null || ringtone.toString().equals(ServicesConstants.PREFERENCES_NULL));
     }
 }

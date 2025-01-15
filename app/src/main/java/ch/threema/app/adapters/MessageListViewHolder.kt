@@ -84,10 +84,6 @@ class MessageListViewHolder(
             @ColorInt
             val regularColor: Int,
             @ColorInt
-            val ackColor: Int,
-            @ColorInt
-            val decColor: Int,
-            @ColorInt
             val backgroundColor: Int,
             val isTablet: Boolean,
             val emojiMarkupUtil: EmojiMarkupUtil,
@@ -388,14 +384,7 @@ class MessageListViewHolder(
                     messageListAdapterItem.isGroupConversation -> strings.groups
                     else -> strings.distributionLists
                 }
-                deliveryView.setColorFilter(
-                    when {
-                        messageListAdapterItem.isGroupConversation -> params.regularColor
-                        messageListAdapterItem.latestMessageIsAck -> params.ackColor
-                        messageListAdapterItem.latestMessageIsDec -> params.decColor
-                        else -> params.regularColor
-                    }
-                )
+                deliveryView.setColorFilter(params.regularColor)
             } else {
                 if (messageListAdapterItem.latestMessage != null) {
                     // In case there is a latest message but no icon is set, we need to get the

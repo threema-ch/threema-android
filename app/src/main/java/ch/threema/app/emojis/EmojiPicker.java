@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -42,11 +43,17 @@ import com.google.android.material.tabs.TabLayout;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ch.threema.app.R;
+import ch.threema.app.emojireactions.EmojiReactionsGridAdapter;
 import ch.threema.app.ui.LockableViewPager;
+import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.EmojiReactionData;
 
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiPicker");
@@ -62,6 +69,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 	private RecentEmojiRemovePopup recentRemovePopup;
 	private RelativeLayout pickerHeader;
 	private EmojiSearchWidget emojiSearchWidget;
+	private List<EmojiReactionData> emojiReactions;
 	private boolean isKeyboardAnimated = false; // whether keyboard animation is enabled for this activity
 
 	private final LinearLayout.LayoutParams searchLayoutParams = new LinearLayout.LayoutParams(
@@ -100,12 +108,24 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 	}
 
 	public void init(EmojiService emojiService, boolean isKeyboardAnimated) {
+		init(emojiService, isKeyboardAnimated, null);
+	}
+
+	public void init(EmojiService emojiService, boolean isKeyboardAnimated, @Nullable List<EmojiReactionData> emojiReactions) {
 		this.emojiService = emojiService;
 		this.isKeyboardAnimated = isKeyboardAnimated;
-
+		this.emojiReactions = Optional.ofNullable(emojiReactions)
+            .map(reactions -> reactions.stream()
+                .filter(reaction -> EmojiUtil.isFullyQualifiedEmoji(reaction.emojiSequence))
+                .collect(Collectors.toList()))
+            .orElse(null);
 		this.emojiPickerView = LayoutInflater.from(getContext()).inflate(R.layout.emoji_picker, this, true);
 
 		initEmojiSearchWidget();
+
+		if (isInReactionsMode()) {
+			findViewById(R.id.backspace_button).setVisibility(View.GONE);
+		}
 
 		this.recentRemovePopup = new RecentEmojiRemovePopup(getContext(),  this.emojiPickerView);
 		this.recentRemovePopup.setListener(this::removeEmojiFromRecent);
@@ -145,7 +165,8 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		initPagerAdapter();
 	}
 
-	public boolean isShown() {
+	@Override
+    public boolean isShown() {
 		return getVisibility() == VISIBLE;
 	}
 
@@ -197,7 +218,16 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
 	@Override
 	public void onHideEmojiSearch() {
-		hide();
+		if (isInReactionsMode()) {
+			EditTextUtil.hideSoftKeyboard(emojiSearchWidget.searchInput);
+			showEmojiPicker();
+		} else {
+			hide();
+		}
+	}
+
+	private boolean isInReactionsMode() {
+		return emojiReactions != null;
 	}
 
 	private void showEmojiSearch() {
@@ -219,7 +249,11 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		viewPager.setVisibility(VISIBLE);
 		emojiSearchWidget.setVisibility(GONE);
 
-		setVisibility(VISIBLE);
+		if (isInReactionsMode()) {
+			AnimationUtil.slideInAnimation(this, true, getResources().getInteger(android.R.integer.config_shortAnimTime));
+		} else {
+			setVisibility(VISIBLE);
+		}
 
 		for (EmojiPickerListener listener : this.emojiPickerListeners) {
 			listener.onEmojiPickerOpen();
@@ -246,9 +280,20 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
 			@Override
 			public void onRecentLongClicked(View view, String emojiCodeString) {
-				onRecentListLongClicked(view, emojiCodeString);
+				if (!isInReactionsMode()) {
+					onRecentListLongClicked(view, emojiCodeString);
+				}
 			}
 		};
+
+		EmojiReactionsGridAdapter.KeyClickListener reactionsListener = null;
+		if (isInReactionsMode()) {
+			reactionsListener = emojiCodeString -> {
+				emojiKeyListener.onEmojiClick(emojiCodeString);
+				emojiService.addToRecentEmojis(emojiCodeString);
+				emojiService.saveRecentEmojis();
+			};
+		}
 
 		pickerHeader = findViewById(R.id.emoji_picker_header);
 		viewPager = findViewById(R.id.emoji_pager);
@@ -258,7 +303,9 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 			getContext(),
 			this,
 			emojiService,
-			keyClickListener);
+			keyClickListener,
+			reactionsListener,
+			emojiReactions);
 
 		this.viewPager.setAdapter(emojiPagerAdapter);
 		this.viewPager.setOffscreenPageLimit(1);
@@ -279,8 +326,8 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 		this.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-			}
+                // nothing to do
+            }
 
 			@Override
 			public void onPageSelected(int position) {
@@ -293,17 +340,22 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
 			@Override
 			public void onPageScrollStateChanged(int state) {
-
-			}
+                // nothing to do
+            }
 		});
 
-		// show first regular tab if there are no recent emojis
-		if (currentItem == 0 && emojiService.hasNoRecentEmojis()) {
-			this.viewPager.setCurrentItem(1);
-		}
-
+		setInitialTab(currentItem);
 		initEmojiSearchButton();
 		initEmojiBackspaceButton();
+	}
+
+	private void setInitialTab(int currentItem) {
+		// show first regular tab if there are no recent emojis (and no reactions)
+		if (currentItem == 0
+				&& emojiService.hasNoRecentEmojis()
+				&& (emojiReactions == null || emojiReactions.isEmpty())) {
+			this.viewPager.setCurrentItem(1);
+		}
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -396,8 +448,8 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 	}
 
 	public interface EmojiPickerListener {
-		default void onEmojiPickerOpen() {};
-		default void onEmojiPickerClose() {};
+		default void onEmojiPickerOpen() {}
+		default void onEmojiPickerClose() {}
 	}
 
 	public interface EmojiKeyListener {

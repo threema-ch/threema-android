@@ -112,7 +112,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity implemen
 						userService.createIdentity(bytes);
 						preferenceService.resetIDBackupCount();
 						preferenceService.setLastIDBackupReminderDate(new Date());
-						preferenceService.setWizardRunning(true);
+						notificationPreferenceService.setWizardRunning(true);
 					}
 				} catch (final ThreemaException e) {
 					logger.error("Exception", e);

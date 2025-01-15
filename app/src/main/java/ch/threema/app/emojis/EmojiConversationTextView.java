@@ -59,7 +59,7 @@ public class EmojiConversationTextView extends MaterialTextView {
 	@Override
 	public void setText(@Nullable CharSequence text, BufferType type) {
 		if (emojiMarkupUtil != null) {
-			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, this.ignoreMarkup, false, true), type);
+			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, this.ignoreMarkup, false, true, false), type);
 		} else {
 			super.setText(text, type);
 		}

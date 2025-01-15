@@ -139,14 +139,20 @@ public class IntentDataUtil {
 		intent.putExtra(INTENT_DATA_GROUP_NAME, groupName);
 	}
 
-	public static void append(LatLng latLng, String provider, String name, String address, Intent intent) {
+	public static void append(
+        @NonNull LatLng latLng,
+        @Nullable String provider,
+        @Nullable String poiName,
+        @Nullable String poiAddress,
+        @NonNull Intent intent
+    ) {
 		intent.putExtra(INTENT_DATA_LOCATION_LAT, latLng.getLatitude());
 		intent.putExtra(INTENT_DATA_LOCATION_LNG, latLng.getLongitude());
 		intent.putExtra(INTENT_DATA_LOCATION_PROVIDER, provider);
-		if (TestUtil.isEmptyOrNull(name)) {
-			intent.putExtra(INTENT_DATA_LOCATION_NAME, address);
+		if (TestUtil.isEmptyOrNull(poiName)) {
+			intent.putExtra(INTENT_DATA_LOCATION_NAME, poiAddress);
 		} else {
-			intent.putExtra(INTENT_DATA_LOCATION_NAME, name);
+			intent.putExtra(INTENT_DATA_LOCATION_NAME, poiName);
 		}
 	}
 

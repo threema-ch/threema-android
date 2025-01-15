@@ -60,8 +60,10 @@ public class ThreemaFeatureTest {
 			.forwardSecurity(true)
 			.groupCalls(true)
 			.editMessages(true)
+			.deleteMessages(true)
+			.emojiReactions(true)
 			.build();
-		Assert.assertEquals(511, maskAllFeatures);
+		Assert.assertEquals(2047, maskAllFeatures);
 
 		final long maskPartialFeatures = new ThreemaFeature.Builder()
 			.audio(true)
@@ -73,8 +75,10 @@ public class ThreemaFeatureTest {
 			.forwardSecurity(true)
 			.groupCalls(false)
 			.editMessages(true)
+			.deleteMessages(false)
+			.emojiReactions(true)
 			.build();
-		Assert.assertEquals(341, maskPartialFeatures);
+		Assert.assertEquals(1365, maskPartialFeatures);
 	}
 
 }

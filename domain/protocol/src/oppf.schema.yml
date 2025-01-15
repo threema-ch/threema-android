@@ -17,7 +17,8 @@ properties:
     description: |-
       The refresh interval in seconds
 
-      Clients should fetch the OPPF after the specified amount of time has passed.
+      Clients should fetch the OPPF after the specified amount of time has
+      passed.
     minimum: 1800
     examples:
       - 86400
@@ -49,36 +50,92 @@ properties:
       - id
       - expires
       - count
-  # TODO(SE-432): Finalize this schema
-  #publicKeyPinning:
-  #  type: array
-  #  items:
-  #    type: object
-  #    properties:
-  #      domain:
-  #        type: string
-  #        description: The domain to which the SPKI values belong
-  #      spkis:
-  #        type: array
-  #        items:
-  #          type: object
-  #          properties:
-  #            value:
-  #              type: string
-  #              description:
-  #                A 32 byte, base64 encoded public key (44 characters)
-  #            algorithm:
-  #              type: string
-  #              description: The hashing algorithm. Currently always `sha256`
-  #          required:
-  #            - value
-  #            - algorithm
-  #    required:
-  #      - domain
-  #      - spkis
-  #  description:
-  #    The domains and their associated SPKI pins that should be registered in
-  #    the app. Optional if no pinning should be used.
+  domains:
+    type: object
+    description: |-
+      Configure domains accessed by the Threema clients.
+
+      If this key is missing, then no constraints are applied.
+    properties:
+      rules:
+        type: array
+        items:
+          type: object
+          description: |-
+            Domain configuration rule to be applied to a domain (and potentially
+            subdomains).
+
+            Note: Generally, rules are applied on a first-match basis. However, the
+            exact order of which SPKI will be applied is not well-defined and
+            depends on the underlying platform.
+
+            When processing this entry:
+
+            1. If `matchMode` is unknown, log a warning and abort these steps.
+            2. If `spkis` is present, run the associated steps for each entry.
+          properties:
+            fqdn:
+              type: string
+              description: An FQDN
+            matchMode:
+              type: string
+              description: How to match domains and apply the respective rules.
+              anyOf:
+                - title: Exact
+                  description: The rule shall only be applied to the exact FQDN.
+                  const: exact
+                - title: Include subdomains
+                  description:
+                    The rule shall be applied to all subdomains recursively.
+                  const: include-subdomains
+                - {}
+            spkis:
+              type: array
+              items:
+                type: object
+                description: |-
+                  SPKI for certificate pinning to be applied to one or more domains.
+
+                  When processing this entry:
+
+                  1. Let `fqdn` and `matchMode` be the associated domain's FQDN and
+                    match mode.
+                  2. If `algorithm` is unknown, log a warning and abort these steps.
+                  3. Pin the SPKI to `fqdn` according to `matchMode`. All subsequent
+                    TLS-based communication must match the SPKI or be rejected.
+                properties:
+                  value:
+                    type: string
+                    description: The base64 encoded public key hash
+                    examples:
+                      - 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
+                  algorithm:
+                    type: string
+                    description: The SPKI hashing algorithm.
+                    anyOf:
+                      - const: sha256
+                      - {}
+                required:
+                  - value
+                  - algorithm
+          required:
+            - fqdn
+            - matchMode
+          examples:
+            - fqdn: threemaonprem.initrode.com
+              matchMode: include-subdomains
+              spkis:
+                - value: 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
+                  algorithm: sha256
+                - value: 'C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8='
+                  algorithm: sha256
+            - fqdn: another-host.initrode.com
+              matchMode: exact
+              spkis:
+                - value: 'XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4='
+                  algorithm: sha256
+    required:
+      - rules
   chat:
     type: object
     description: Configuration for the chat server
@@ -320,17 +377,18 @@ properties:
     required:
       - url
       - blob
-  # TODO(DESK-1299): Finalize this schema
-  #updates:
-  #  type: object
-  #  description: URLs for update checks
-  #  properties:
-  #    desktop:
-  #      type: object
-  #      properties:
-  #        check:
-  #          type: string
-  #          description: URL to the Threema Desktop update check
+  updates:
+    type: object
+    description: URLs for update checks
+    properties:
+      desktop:
+        type: object
+        properties:
+          autoUpdate:
+            type: boolean
+            description:
+              Whether or not the Threema Servers should be called to check if an
+              update is available
 required:
   - version
   - signatureKey

@@ -171,11 +171,11 @@ class ContactModelRepository(
         return cache.getOrCreate(identity) {
             val dbContact = databaseBackend.getContactByIdentity(identity) ?: return@getOrCreate null
             ContactModel(
-                identity,
-                ContactModelDataFactory.toDataType(dbContact),
-                databaseBackend,
-                this,
-                coreServiceManager,
+                identity = identity,
+                data = ContactModelDataFactory.toDataType(dbContact),
+                databaseBackend = databaseBackend,
+                contactModelRepository = this,
+                coreServiceManager = coreServiceManager
             )
         }
     }

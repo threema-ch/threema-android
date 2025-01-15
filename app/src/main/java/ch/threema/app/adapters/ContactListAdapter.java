@@ -60,8 +60,8 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.glide.AvatarOptions;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.CheckableConstraintLayout;
@@ -80,7 +80,8 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
     private final ContactService contactService;
     private final PreferenceService preferenceService;
-    private final IdListService blockedContactsService;
+    @NonNull
+    private final BlockedIdentitiesService blockedIdentitiesService;
 
     public static final int VIEW_TYPE_NORMAL = 0;
     public static final int VIEW_TYPE_RECENTLY_ADDED = 1;
@@ -116,7 +117,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         @NonNull List<ContactModel> values,
         ContactService contactService,
         PreferenceService preferenceService,
-        IdListService blockedContactsService,
+        BlockedIdentitiesService blockedIdentitiesService,
         AvatarListener avatarListener,
         @NonNull RequestManager requestManager
     ) {
@@ -126,7 +127,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         this.ovalues = this.values;
         this.contactService = contactService;
         this.preferenceService = preferenceService;
-        this.blockedContactsService = blockedContactsService;
+        this.blockedIdentitiesService = blockedIdentitiesService;
         this.avatarListener = avatarListener;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -398,16 +399,16 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         );
         AdapterUtil.styleContact(holder.contactTextBottomRight, contactModel);
 
-		if (holder.verificationLevelView != null) {
-			holder.verificationLevelView.setVerificationLevel(
-				contactModel.verificationLevel,
-				contactModel.getWorkVerificationLevel()
-			);
-		}
+        if (holder.verificationLevelView != null) {
+            holder.verificationLevelView.setVerificationLevel(
+                contactModel.verificationLevel,
+                contactModel.getWorkVerificationLevel()
+            );
+        }
 
         ViewUtil.show(
             holder.blockedContactView,
-            blockedContactsService != null && blockedContactsService.has(contactModel.getIdentity())
+            blockedIdentitiesService.isBlocked(contactModel.getIdentity())
         );
 
         if (viewType == VIEW_TYPE_RECENTLY_ADDED) {

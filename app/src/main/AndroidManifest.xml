@@ -498,7 +498,7 @@
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode" />
 		<activity
-			android:name=".activities.BlockedContactsActivity"
+			android:name=".activities.BlockedIdentitiesActivity"
 			android:theme="@style/Theme.Threema.WithToolbar"
 			android:configChanges="uiMode" />
 		<activity
@@ -893,6 +893,14 @@
 		<activity
 			android:name=".debug.PatternLibraryActivity"
 			android:theme="@style/Theme.Threema.Translucent" />
+        <activity
+            android:name="ch.threema.app.emojireactions.EmojiReactionsOverviewActivity"
+            android:theme="@style/Theme.Threema.Translucent"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name="ch.threema.app.emojireactions.EmojiReactionsPickerActivity"
+            android:theme="@style/Theme.Threema.Translucent"
+            android:windowSoftInputMode="adjustResize"/>
 
 		<!-- services -->
 		<service

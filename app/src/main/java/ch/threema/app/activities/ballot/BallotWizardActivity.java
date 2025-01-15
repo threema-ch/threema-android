@@ -28,12 +28,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.button.MaterialButton;
 
 import org.slf4j.Logger;
@@ -42,6 +36,12 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
@@ -59,7 +59,10 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.api.APIConnector;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
@@ -80,7 +83,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 	private MessageReceiver<?> receiver;
 
 	private final List<BallotChoiceModel> ballotChoiceModelList = new ArrayList<>();
-	private String ballotTitle;
+	private String ballotDescription;
 	private BallotModel.Type ballotType;
 	private BallotModel.Assessment ballotAssessment;
 
@@ -90,7 +93,16 @@ public class BallotWizardActivity extends ThreemaActivity {
 	private final Runnable createBallotRunnable = new Runnable() {
 		@Override
 		public void run() {
-			BallotUtil.createBallot(receiver, ballotTitle, ballotType, ballotAssessment, ballotChoiceModelList);
+            BallotUtil.createBallot(
+                receiver,
+                ballotDescription,
+                ballotType,
+                ballotAssessment,
+                ballotChoiceModelList,
+                new BallotId(),
+                new MessageId(),
+                TriggerSource.LOCAL
+            );
 		}
 	};
 
@@ -210,7 +222,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 	}
 
 	private boolean checkTitle() {
-		if (TestUtil.isEmptyOrNull(this.ballotTitle)) {
+		if (TestUtil.isEmptyOrNull(this.ballotDescription)) {
 			BallotWizardCallback callback = (BallotWizardCallback) this.fragmentList.get(0).get();
 			if (callback != null) {
 				callback.onMissingTitle();
@@ -245,8 +257,8 @@ public class BallotWizardActivity extends ThreemaActivity {
 		pager.setCurrentItem(0);
 	}
 
-	public void setBallotTitle(String title) {
-		this.ballotTitle = title != null ? title.trim() : title;
+	public void setBallotDescription(@Nullable String description) {
+		this.ballotDescription = description != null ? description.trim() : null;
 	}
 
 	public void setBallotType(BallotModel.Type ballotType) {
@@ -261,8 +273,8 @@ public class BallotWizardActivity extends ThreemaActivity {
 		return this.ballotChoiceModelList;
 	}
 
-	public String getBallotTitle() {
-		return this.ballotTitle;
+	public String getBallotDescription() {
+		return this.ballotDescription;
 	}
 
 	public BallotModel.Type getBallotType() {
@@ -352,7 +364,7 @@ public class BallotWizardActivity extends ThreemaActivity {
 
 	private void copyFrom(BallotModel ballotModel) {
 		if(ballotModel != null && this.requiredInstances()) {
-			this.ballotTitle = ballotModel.getName();
+			this.ballotDescription = ballotModel.getName();
 			this.ballotType = ballotModel.getType();
 			this.ballotAssessment = ballotModel.getAssessment();
 

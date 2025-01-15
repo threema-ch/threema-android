@@ -25,8 +25,8 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.IdListService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.PreferenceServiceImpl
 import ch.threema.app.testutils.TestHelpers
@@ -63,7 +63,7 @@ class IdentityBlockedStepsTest {
     private lateinit var groupService: GroupService
     private lateinit var blockUnknownPreferenceService: PreferenceService
     private lateinit var noBlockPreferenceService: PreferenceService
-    private lateinit var blockedContactsService: IdListService
+    private lateinit var blockedIdentitiesService: BlockedIdentitiesService
 
     private val myContact = TestHelpers.TEST_CONTACT
     private val knownContact = TestContact("12345678")
@@ -89,12 +89,15 @@ class IdentityBlockedStepsTest {
         contactModelRepository = ModelRepositories(coreServiceManager).contacts
         contactStore = serviceManager.contactStore
         groupService = serviceManager.groupService
-        blockedContactsService = serviceManager.blockedContactsService
-        blockedContactsService.add(explicitlyBlockedContact.identity)
+        blockedIdentitiesService = serviceManager.blockedIdentitiesService
+        blockedIdentitiesService.blockIdentity(explicitlyBlockedContact.identity)
 
         blockUnknownPreferenceService = object : PreferenceServiceImpl(
             ThreemaApplication.getAppContext(),
             serviceManager.preferenceStore,
+            coreServiceManager.taskManager,
+            coreServiceManager.multiDeviceManager,
+            coreServiceManager.nonceFactory,
         ) {
             override fun isBlockUnknown(): Boolean {
                 return true
@@ -104,6 +107,9 @@ class IdentityBlockedStepsTest {
         noBlockPreferenceService = object : PreferenceServiceImpl(
             ThreemaApplication.getAppContext(),
             serviceManager.preferenceStore,
+            coreServiceManager.taskManager,
+            coreServiceManager.multiDeviceManager,
+            coreServiceManager.nonceFactory,
         ) {
             override fun isBlockUnknown(): Boolean {
                 return false
@@ -211,7 +217,7 @@ class IdentityBlockedStepsTest {
         contactModelRepository,
         contactStore,
         groupService,
-        blockedContactsService,
+        blockedIdentitiesService,
         preferenceService,
     )
 

@@ -56,11 +56,13 @@ import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteMessageData;
 import ch.threema.domain.protocol.csp.messages.EmptyMessage;
 import ch.threema.domain.protocol.csp.messages.EditMessage;
-import ch.threema.domain.protocol.csp.messages.EditMessageData;
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage;
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage;
+import ch.threema.domain.protocol.csp.messages.GroupReactionMessage;
 import ch.threema.domain.protocol.csp.messages.ImageMessage;
-import ch.threema.domain.protocol.csp.messages.LocationMessage;
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage;
+import ch.threema.domain.protocol.csp.messages.ReactionMessage;
+import ch.threema.domain.protocol.csp.messages.ReactionMessageData;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
 import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage;
@@ -73,7 +75,7 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
 import ch.threema.domain.protocol.csp.messages.GroupImageMessage;
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage;
-import ch.threema.domain.protocol.csp.messages.GroupLocationMessage;
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage;
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage;
@@ -433,47 +435,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_LOCATION: {
-				if (realDataLength < 4) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for location message");
-				}
-
-				String locStr = new String(data, 1, realDataLength - 1, UTF_8);
-				String[] lines = locStr.split("\n");
-				String[] locArr = lines[0].split(",");
-
-				MessageCoder.logger.info("Raw location message: {}", locStr);
-
-				if (locArr.length < 2 || locArr.length > 3) {
-					throw new BadMessageException("Bad coordinate format in location message");
-				}
-
-				LocationMessage locationmsg = new LocationMessage();
-				locationmsg.setLatitude(Double.parseDouble(locArr[0]));
-				locationmsg.setLongitude(Double.parseDouble(locArr[1]));
-
-				if (locArr.length == 3) {
-					locationmsg.setAccuracy(Double.parseDouble(locArr[2]));
-				}
-
-				String address = null;
-				if (lines.length == 2) {
-					address = lines[1];
-				} else if (lines.length >= 3) {
-					locationmsg.setPoiName(lines[1]);
-					address = lines[2];
-				}
-
-				if (address != null) {
-					locationmsg.setPoiAddress(address.replace("\\n", "\n"));
-				}
-
-				if (locationmsg.getLatitude() < -90.0 || locationmsg.getLatitude() > 90.0 ||
-					locationmsg.getLongitude() < -180.0 || locationmsg.getLongitude() > 180.0) {
-					throw new BadMessageException("Invalid coordinate values in location message");
-				}
-
-				message = locationmsg;
-
+                message = LocationMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
@@ -527,16 +489,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_REQUEST_SYNC: {
-				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group request sync message");
-				}
-
-				GroupSyncRequestMessage groupSyncRequestMessage = new GroupSyncRequestMessage();
-				groupSyncRequestMessage.setGroupCreator(toIdentity);
-				groupSyncRequestMessage.setApiGroupId(new GroupId(data, 1));
-
-				message = groupSyncRequestMessage;
-
+                message = GroupSyncRequestMessage.fromByteArray(data, 1, realDataLength - 1, toIdentity);
 				break;
 			}
 
@@ -671,43 +624,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_LOCATION: {
-				if (realDataLength < (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 3)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group location message");
-				}
-
-				String locStr = new String(data, 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN,
-					realDataLength - ProtocolDefines.IDENTITY_LEN - ProtocolDefines.GROUP_ID_LEN - 1, UTF_8);
-				String[] lines = locStr.split("\n");
-				String[] locArr = lines[0].split(",");
-
-				MessageCoder.logger.info("Raw location message: {}", locStr);
-
-				if (locArr.length < 2 || locArr.length > 3) {
-					throw new BadMessageException("Bad coordinate format in group location message");
-				}
-
-				GroupLocationMessage grouplocationmsg = new GroupLocationMessage();
-				grouplocationmsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				grouplocationmsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
-				grouplocationmsg.setLatitude(Double.parseDouble(locArr[0]));
-				grouplocationmsg.setLongitude(Double.parseDouble(locArr[1]));
-
-				if (locArr.length == 3)
-					grouplocationmsg.setAccuracy(Double.parseDouble(locArr[2]));
-
-				if (lines.length >= 2) {
-					grouplocationmsg.setPoiName(lines[1]);
-					if (lines.length >= 3)
-						grouplocationmsg.setPoiAddress(lines[2].replace("\\n", "\n"));
-				}
-
-				if (grouplocationmsg.getLatitude() < -90.0 || grouplocationmsg.getLatitude() > 90.0 ||
-					grouplocationmsg.getLongitude() < -180.0 || grouplocationmsg.getLongitude() > 180.0) {
-					throw new BadMessageException("Invalid coordinate values in group location message");
-				}
-
-				message = grouplocationmsg;
-
+                message = GroupLocationMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
@@ -799,13 +716,7 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_TYPING_INDICATOR: {
-				if (realDataLength != 2) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for typing indicator");
-				}
-
-				TypingIndicatorMessage typingmsg = new TypingIndicatorMessage();
-				typingmsg.setTyping((data[1] & 0xFF) > 0);
-				message = typingmsg;
+                message = TypingIndicatorMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
@@ -879,56 +790,51 @@ public class MessageCoder {
 			}
 
 			case ProtocolDefines.MSGTYPE_EDIT_MESSAGE: {
-				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-				final EditMessageData editMessageData = EditMessageData.fromProtobuf(protobufPayload);
-				message = new EditMessage(editMessageData);
+				message = EditMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
 			case ProtocolDefines.MSGTYPE_DELETE_MESSAGE: {
-				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-				final DeleteMessageData deleteMessageData = DeleteMessageData.fromProtobuf(protobufPayload);
-				message = new DeleteMessage(deleteMessageData);
+				message = DeleteMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE: {
-				int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
-				if (realDataLength < headerLength) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group call start message");
-				}
-
-				final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
-
-				final EditMessageData editMessageData = EditMessageData.fromProtobuf(protobufPayload);
-				final GroupEditMessage editMessage = new GroupEditMessage(editMessageData);
-
-				editMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				editMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
-
-				message = editMessage;
-
+				message = GroupEditMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
 
 			case ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE: {
-				int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
-				if (realDataLength < headerLength) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for delete message");
-				}
-
-				final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
-
-				final DeleteMessageData deleteMessageData = DeleteMessageData.fromProtobuf(protobufPayload);
-				final GroupDeleteMessage deleteMessage = new GroupDeleteMessage(deleteMessageData);
-
-				deleteMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				deleteMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
-
-				message = deleteMessage;
-
+				message = GroupDeleteMessage.fromByteArray(data, 1, realDataLength - 1);
 				break;
 			}
+
+			case ProtocolDefines.MSGTYPE_REACTION: {
+                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+                final ReactionMessageData reactionMessageData = ReactionMessageData.fromProtobuf(protobufPayload);
+                message = new ReactionMessage(reactionMessageData);
+
+                break;
+            }
+
+            case ProtocolDefines.MSGTYPE_GROUP_REACTION: {
+                int headerLength = 1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN;
+                if (realDataLength < headerLength) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group reaction message");
+                }
+
+                final byte[] protobufPayload = Arrays.copyOfRange(data, headerLength, realDataLength);
+
+                final ReactionMessageData reactionMessageData = ReactionMessageData.fromProtobuf(protobufPayload);
+                final GroupReactionMessage reactionMessage = new GroupReactionMessage(reactionMessageData);
+
+                reactionMessage.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+                reactionMessage.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+
+                message = reactionMessage;
+
+                break;
+            }
 
 			default:
 				throw new BadMessageException("Unsupported message type " + type);

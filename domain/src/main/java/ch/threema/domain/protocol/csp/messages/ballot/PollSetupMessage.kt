@@ -94,21 +94,30 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
     companion object {
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage, fromIdentity: String): PollSetupMessage =
+        fun fromReflected(message: MdD2D.IncomingMessage, ballotCreatorIdentity: String): PollSetupMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = ballotCreatorIdentity
             ).apply {
                 initializeCommonProperties(message)
             }
 
         @JvmStatic
-        fun fromByteArray(data: ByteArray, fromIdentity: String): PollSetupMessage =
+        fun fromReflected(message: MdD2D.OutgoingMessage, ballotCreatorIdentity: String): PollSetupMessage =
+            fromByteArray(
+                data = message.body.toByteArray(),
+                ballotCreatorIdentity = ballotCreatorIdentity,
+            ).apply {
+                initializeCommonProperties(message)
+            }
+
+        @JvmStatic
+        fun fromByteArray(data: ByteArray, ballotCreatorIdentity: String): PollSetupMessage =
             fromByteArray(
                 data = data,
                 offset = 0,
                 length = data.size,
-                fromIdentity = fromIdentity
+                ballotCreatorIdentity = ballotCreatorIdentity
             )
 
         /**
@@ -117,13 +126,13 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
          * @param data   the data that represents the message
          * @param offset the offset where the data starts
          * @param length the length of the data (needed to ignore the padding)
-         * @param fromIdentity the identity of the sender
+         * @param ballotCreatorIdentity the identity of the sender
          * @return the poll-setup message
          * @throws BadMessageException if the length is invalid
          */
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, offset: Int, length: Int, fromIdentity: String): PollSetupMessage {
+        fun fromByteArray(data: ByteArray, offset: Int, length: Int, ballotCreatorIdentity: String): PollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")
             } else if (offset < 0) {
@@ -134,7 +143,7 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
 
             return PollSetupMessage().apply {
 
-                ballotCreatorIdentity = fromIdentity
+                this.ballotCreatorIdentity = ballotCreatorIdentity
 
                 var positionIndex = offset
                 ballotId = BallotId(data, positionIndex)

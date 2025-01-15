@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 
+import ch.threema.app.emojireactions.EmojiReactionGroup;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.AudioProgressBarView;
 import ch.threema.app.ui.ControllerView;
@@ -54,11 +55,9 @@ public class ComposeMessageHolder extends AvatarListItemHolder {
 	public FrameLayout readOnContainer;
 	public Chip readOnButton;
 	public ImageView audioMessageIcon;
-	public View groupAckContainer;
-	public ImageView groupAckThumbsUpImage, groupAckThumbsDownImage;
-	public TextView groupAckThumbsUpCount, groupAckThumbsDownCount;
 	public TextView tapToResend;
 	public View footerView;
+	public EmojiReactionGroup emojiReactionGroup;
 
 	public ControllerView controller;
 

@@ -29,6 +29,7 @@ import java.util.Map;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.ConversationNotificationUtil;
@@ -100,10 +101,14 @@ public class AcknowledgeRequestHandler extends MessageReceiver {
 			return;
 		}
 
-		if (isAcknowledged) {
-			this.messageService.sendUserAcknowledgement(messageModel, true);
-		} else {
-			this.messageService.sendUserDecline(messageModel, true);
+		try {
+			if (isAcknowledged) {
+				this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, receiver, true);
+			} else {
+				this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, receiver, true);
+			}
+		} catch (Exception e) {
+			logger.error("Unable to send emoji reaction", e);
 		}
 
 		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));

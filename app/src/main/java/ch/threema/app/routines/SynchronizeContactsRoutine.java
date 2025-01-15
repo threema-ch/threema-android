@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.threema.app.asynctasks.AddContactBackgroundTask;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.IdListService;
@@ -85,7 +86,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 	private final DeviceService deviceService;
 	private final PreferenceService preferenceService;
 	private final IdentityStoreInterface identityStore;
-	private final IdListService blockedContactsService;
+	private final BlockedIdentitiesService blockedIdentitiesService;
 
 	private OnStatusUpdate onStatusUpdate;
 	private final List<OnFinished> onFinished = new ArrayList<>();
@@ -109,18 +110,20 @@ public class SynchronizeContactsRoutine implements Runnable {
 		void started(boolean fullSync);
 	}
 
-	public SynchronizeContactsRoutine(Context context,
-	                                  APIConnector apiConnector,
-	                                  ContactService contactService,
-									  @NonNull ContactModelRepository contactModelRepository,
-	                                  UserService userService,
-	                                  LocaleService localeService,
-	                                  ContentResolver contentResolver,
-	                                  IdListService excludedSyncList,
-	                                  DeviceService deviceService,
-	                                  PreferenceService preferenceService,
-	                                  IdentityStoreInterface identityStore,
-	                                  IdListService blockedContactsService) {
+	public SynchronizeContactsRoutine(
+        Context context,
+        APIConnector apiConnector,
+        ContactService contactService,
+        @NonNull ContactModelRepository contactModelRepository,
+        UserService userService,
+        LocaleService localeService,
+        ContentResolver contentResolver,
+        IdListService excludedSyncList,
+        DeviceService deviceService,
+        PreferenceService preferenceService,
+        IdentityStoreInterface identityStore,
+        BlockedIdentitiesService blockedIdentitiesService
+    ) {
 		this.context = context;
 		this.apiConnector = apiConnector;
 		this.userService = userService;
@@ -132,7 +135,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 		this.deviceService = deviceService;
 		this.preferenceService = preferenceService;
 		this.identityStore = identityStore;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 	}
 
 	public SynchronizeContactsRoutine addProcessIdentity(String identity) {
@@ -363,7 +366,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 					}
 
 					if (createNewRawContact) {
-						boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact.getIdentity(), this.blockedContactsService)
+						boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact.getIdentity(), this.blockedIdentitiesService)
 							&& ConfigUtils.isCallsEnabled();
 
 						// create a raw contact for our stuff and aggregate it

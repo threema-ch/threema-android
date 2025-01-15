@@ -97,6 +97,28 @@ public class LayerDependenciesTest {
             nameMatching("ch\\.threema\\.data\\..*"),
             nameMatching("ch\\.threema\\.app\\.tasks\\..*")
         )
+        // TODO(ANDR-3037): Check if this is still necessary after this ticket
+        // Data layer needs to access "ThreemaApplication.getServiceManager()" to get old service
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.ThreemaApplication")
+        )
+        // TODO(ANDR-3037): Check if this is still necessary after this ticket
+        // Data layer needs to access old services to keep caches in sync
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\..*"),
+            nameMatching("ch\\.threema\\.app\\.services\\..*")
+        )
+        // TODO(ANDR-3325): Remove
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository.*"),
+            nameMatching("ch\\.threema\\.app\\.stores\\.IdentityStore")
+        )
+        // TODO(ANDR-3325): Remove
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository"),
+            nameMatching("ch\\.threema\\.app\\.emojis\\.EmojiUtil")
+        )
         .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationFailedException.class)
         .ignoreDependency(DatabaseServiceNew.class, DatabaseMigrationLockedException.class)
         .ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)

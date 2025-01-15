@@ -42,6 +42,7 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.testhelpers.randomIdentity
 import com.neilalexander.jnacl.NaCl
+import junit.framework.TestCase.assertNotNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertThrows
 import org.junit.Before
@@ -405,6 +406,20 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         // Reset transaction count in case this test is run several times
         taskCodecMd.transactionBeginCount = 0
         taskCodecMd.transactionCommitCount = 0
+    }
+
+    @Test
+    fun updateNickname() {
+        // Create contact using "old model"
+        val identity = randomIdentity()
+        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, nonSecureRandomArray(32)))
+
+        // Fetch model
+        val model: ch.threema.data.models.ContactModel? = contactModelRepository.getByIdentity(identity)
+        assertNotNull(model)
+        assertEquals(null, model!!.data.value?.nickname)
+        model.setNicknameFromSync("testnick")
+        assertEquals("testnick", model.data.value?.nickname)
     }
 
     private fun assertContentEquals(expected: ContactModelData?, actual: ContactModelData?) {

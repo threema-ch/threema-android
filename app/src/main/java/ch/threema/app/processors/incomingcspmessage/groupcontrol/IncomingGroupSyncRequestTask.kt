@@ -63,7 +63,7 @@ class IncomingGroupSyncRequestTask(
     }
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult {
-        // TODO(ANDR-2741): Support group synchronization
+        logger.info("Discarding incoming group sync request from sync")
         return ReceiveStepsResult.DISCARD
     }
 }

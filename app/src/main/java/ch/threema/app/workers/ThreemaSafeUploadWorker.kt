@@ -130,7 +130,12 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
         if (errorDate != null && errorDate.before(aWeekAgo)) {
             val lastBackupDate = preferenceService.threemaSafeBackupDate
             val notificationService = serviceManager!!.notificationService
-            notificationService?.showSafeBackupFailed(((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt())
+            val fullDaysSinceLastBackup = ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt();
+            if (fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
+                notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
+            } else {
+                notificationService.cancelSafeBackupFailed()
+            }
         }
     }
 }

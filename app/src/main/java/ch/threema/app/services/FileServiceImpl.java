@@ -194,7 +194,7 @@ public class FileServiceImpl implements FileService {
 		if (TestUtil.isEmptyOrNull(uriString)) {
 			// silent ringtone -> OK
 			return false;
-		} else if (!"null".equals(uriString)) {
+		} else if (uriString.equals(ServicesConstants.PREFERENCES_NULL)) {
 			Uri oldUri = Uri.parse(uriString);
 			if (oldUri.toString().equals("content://settings/system/ringtone")) {
 				// default system ringtone -> OK

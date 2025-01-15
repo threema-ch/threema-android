@@ -102,7 +102,7 @@ public class Group extends Converter {
 					.put(CAN_SYNC, admin && enabled)
 					.put(CAN_LEAVE, enabled));
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}

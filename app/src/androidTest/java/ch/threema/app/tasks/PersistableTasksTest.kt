@@ -457,6 +457,38 @@ class PersistableTasksTest {
         )
     }
 
+    @Test
+    fun testReflectUnknownContactPolicyUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate.ReflectUnknownContactPolicySyncUpdateData\"}"
+        )
+    }
+
+    @Test
+    fun testReflectReadReceiptPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate.ReadReceiptPolicySyncUpdateData\"}"
+        )
+    }
+
+    @Test
+    fun testReflectTypingIndicatorPolicySyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate.ReflectTypingIndicatorPolicySyncUpdateData\"}"
+        )
+    }
+
+    @Test
+    fun testReflectBlockedIdentitiesSyncUpdate() {
+        assertValidEncoding(
+            ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate::class.java,
+            "{\"type\":\"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate.ReflectBlockedIdentitiesSyncUpdateData\"}"
+        )
+    }
+
     private fun addTestIdentity() = runBlocking {
         val identity = "01234567"
         if (serviceManager.modelRepositories.contacts.getByIdentity(identity) != null) {

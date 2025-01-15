@@ -19,14 +19,14 @@ if (getGradle().getStartParameter().getTaskRequests().toString().contains("Hms")
 // version codes
 
 // Only use the scheme "<major>.<minor>.<patch>" for the app_version
-def app_version = "5.7.0"
+def app_version = "5.8.0"
 
 // beta_suffix with leading dash (e.g. `-beta1`)
 // should be one of (alpha|beta|rc) and an increasing number or empty for a regular release.
 // Note: in nightly builds this will be overwritten with a nightly version "-n12345"
 def beta_suffix = ""
 
-def defaultVersionCode = 1033
+def defaultVersionCode = 1043
 
 /**
  * Return the git hash, if git is installed.
@@ -158,7 +158,8 @@ android {
         buildConfigField "boolean", "MD_SYNC_DISTRIBUTION_LISTS", "false"
         buildConfigField "boolean", "EDIT_MESSAGES_ENABLED", "true"
         buildConfigField "boolean", "DELETE_MESSAGES_ENABLED", "true"
-        buildConfigField "boolean", "SHOW_TIMESTAMPS_AND_TECHNICAL_INFO_IN_MESSAGE_DETAILS", "false"
+        buildConfigField "boolean", "EMOJI_REACTIONS_ENABLED", "false"
+        buildConfigField "boolean", "EMOJI_REACTIONS_WEB_ENABLED", "false"
 
         // config fields for action URLs / deep links
         buildConfigField "String", "uriScheme", "\"threema\""
@@ -280,6 +281,9 @@ android {
             buildConfigField "boolean", "MD_ENABLED", "true"
 
             buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}\""
+
+            buildConfigField "boolean", "EMOJI_REACTIONS_ENABLED", "true"
+            buildConfigField "boolean", "EMOJI_REACTIONS_WEB_ENABLED", "true"
         }
         sandbox_work {
             versionName "${app_version}k${beta_suffix}"
@@ -314,6 +318,8 @@ android {
             buildConfigField "String", "actionUrl", "\"work.test.threema.ch\""
 
             buildConfigField "boolean", "MD_ENABLED", "true"
+            buildConfigField "boolean", "EMOJI_REACTIONS_ENABLED", "true"
+            buildConfigField "boolean", "EMOJI_REACTIONS_WEB_ENABLED", "true"
 
             manifestPlaceholders = [
                 uriScheme: "threemawork",
@@ -387,6 +393,9 @@ android {
             buildConfigField "String", "LOG_TAG", "\"3mablue\""
 
             buildConfigField "String", "BLOB_MIRROR_SERVER_URL", "\"https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}\""
+
+            buildConfigField "boolean", "EMOJI_REACTIONS_ENABLED", "true"
+            buildConfigField "boolean", "EMOJI_REACTIONS_WEB_ENABLED", "true"
 
             // config fields for action URLs / deep links
             buildConfigField "String", "uriScheme", "\"threemablue\""

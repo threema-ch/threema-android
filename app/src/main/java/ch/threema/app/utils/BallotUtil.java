@@ -31,6 +31,8 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -48,8 +50,11 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
+import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -165,28 +170,79 @@ public class BallotUtil {
 		}
 	}
 
-	public static void closeBallot(AppCompatActivity activity, final BallotModel ballotModel, final BallotService ballotService) {
+    /**
+     * Close the ballot.
+     *
+     * @param activity      if this is not null, a progress dialog is shown
+     * @param ballotModel   the ballot model that will be closed
+     * @param ballotService the ballot service
+     * @param messageId     the message id needs to be specified to potentially match the message id
+     *                      of the reflected outgoing message. In case the trigger source of closing
+     *                      the ballot is not a reflected outgoing poll setup message, a randomly
+     *                      generated message id must be passed.
+     * @param triggerSource the trigger source of this action. If it is sync, then there won't be
+     *                      any csp messages sent out
+     */
+	public static void closeBallot(
+        @Nullable AppCompatActivity activity,
+        @Nullable final BallotModel ballotModel,
+        @NonNull final BallotService ballotService,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) {
 		if (ballotModel != null && ballotModel.getState() != BallotModel.State.CLOSED) {
-			LoadingUtil.runInAlert(
-					activity.getSupportFragmentManager(),
-					R.string.ballot_close,
-					R.string.please_wait,
-					new Runnable() {
-						@Override
-						public void run() {
-							try {
-								ballotService.close(ballotModel.getId());
-							} catch (final NotAllowedException | MessageTooLongException e) {
-								logger.error("Exception", e);
-							}
-						}
-					}
-			);
+            Runnable ballotCloseRunnable = () -> {
+                try {
+                    ballotService.close(ballotModel.getId(), messageId, triggerSource);
+                } catch (final NotAllowedException | MessageTooLongException e) {
+                    logger.error("Could not close poll", e);
+                }
+            };
+            if (activity != null) {
+                LoadingUtil.runInAlert(
+                    activity.getSupportFragmentManager(),
+                    R.string.ballot_close,
+                    R.string.please_wait,
+                    ballotCloseRunnable
+                );
+            } else {
+                ballotCloseRunnable.run();
+            }
 		}
 	}
 
-	public static void createBallot(MessageReceiver receiver, String ballotTitle, BallotModel.Type ballotType, BallotModel.Assessment ballotAssessment, List<BallotChoiceModel> ballotChoiceModelList) {
-		BallotModel ballotModel = null;
+    /**
+     * Create a ballot.
+     *
+     * @param receiver              the message receiver
+     * @param description           the description of the ballot (in some places also called
+     *                              title)
+     * @param ballotType            the type of the ballot (with intermediate results or not)
+     * @param ballotAssessment      the assessment (single vs multiple choice)
+     * @param ballotChoiceModelList the choices that are available
+     * @param ballotId              the ballot id must be a random id, except when the ballot is
+     *                              created as a result of a reflected outgoing poll setup message
+     * @param messageId             the message id needs to be specified to potentially match the
+     *                              message id of the reflected outgoing message. In case the
+     *                              trigger source of creating the ballot is not a reflected
+     *                              outgoing poll setup message, a randomly generated message id
+     *                              must be passed.
+     * @param triggerSource         the trigger source of this action. If it is sync, then there
+     *                              won't be any csp messages sent out
+     */
+    @Nullable
+	public static BallotModel createBallot(
+        MessageReceiver receiver,
+        String description,
+        BallotModel.Type ballotType,
+        BallotModel.Assessment ballotAssessment,
+        List<BallotChoiceModel> ballotChoiceModelList,
+        @NonNull BallotId ballotId,
+        @NonNull MessageId messageId,
+        @NonNull TriggerSource triggerSource
+    ) {
+        @NonNull
+		BallotModel ballotModel;
 
 		try {
 			BallotService ballotService = ThreemaApplication.getServiceManager().getBallotService();
@@ -196,21 +252,25 @@ public class BallotUtil {
 				case MessageReceiver.Type_GROUP:
 					ballotModel = ballotService.create(
 						((GroupMessageReceiver) receiver).getGroup(),
-						ballotTitle,
+						description,
 						BallotModel.State.TEMPORARY,
 						ballotAssessment,
 						ballotType,
-						choiceType);
+						choiceType,
+                        ballotId
+                    );
 					break;
 
 				case MessageReceiver.Type_CONTACT:
 					ballotModel = ballotService.create(
 						((ContactMessageReceiver) receiver).getContact(),
-						ballotTitle,
+						description,
 						BallotModel.State.TEMPORARY,
 						ballotAssessment,
 						ballotType,
-						choiceType);
+						choiceType,
+                        ballotId
+                    );
 					break;
 				default:
 					throw new NotAllowedException("not allowed");
@@ -251,17 +311,21 @@ public class BallotUtil {
 			}
 
 			try {
-				ballotService.modifyFinished(ballotModel);
-				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, Toast.LENGTH_LONG).show());
-
+				ballotService.modifyFinished(ballotModel, messageId, triggerSource);
+                if (triggerSource == TriggerSource.LOCAL) {
+                    RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, Toast.LENGTH_LONG).show());
+                }
 			} catch (MessageTooLongException e) {
 				ballotService.remove(ballotModel);
 				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_too_long, Toast.LENGTH_LONG).show());
 				logger.error("Exception", e);
 			}
+            return ballotModel;
 		} catch (Exception e) {
 			RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.error, Toast.LENGTH_LONG).show());
 			logger.error("Exception", e);
 		}
+
+        return null;
 	}
 }

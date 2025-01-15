@@ -33,6 +33,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
@@ -43,6 +44,7 @@ public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity 
 
 	protected ServiceManager serviceManager;
 	protected PreferenceService preferenceService;
+    protected NotificationPreferenceService notificationPreferenceService;
 	protected UserService userService;
 	protected FileService fileService;
 
@@ -99,6 +101,7 @@ public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity 
 		serviceManager = ThreemaApplication.getServiceManager();
 		if (serviceManager != null) {
 			this.preferenceService = serviceManager.getPreferenceService();
+            this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 			try {
 				this.userService = serviceManager.getUserService();
 				this.fileService = serviceManager.getFileService();

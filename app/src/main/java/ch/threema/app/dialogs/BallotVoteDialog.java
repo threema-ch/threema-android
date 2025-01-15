@@ -55,6 +55,7 @@ import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.LoadingUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
@@ -302,7 +303,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
 			return;
 		}
 		try {
-			final BallotVoteResult result = this.ballotService.vote(ballotModel.getId(), this.listAdapter.getSelectedChoices());
+			final BallotVoteResult result = this.ballotService.vote(ballotModel.getId(), this.listAdapter.getSelectedChoices(), TriggerSource.LOCAL);
 			if (result != null) {
 				RuntimeUtil.runOnUiThread(() -> {
 					if (activity != null) {

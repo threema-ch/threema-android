@@ -39,9 +39,10 @@ public class ThreemaFeature {
 	public final static long GROUP_CALLS = Common.CspFeatureMaskFlag.GROUP_CALL_SUPPORT_VALUE;
 	public final static long EDIT_MESSAGES = Common.CspFeatureMaskFlag.EDIT_MESSAGE_SUPPORT_VALUE;
 	public final static long DELETE_MESSAGES = Common.CspFeatureMaskFlag.DELETE_MESSAGE_SUPPORT_VALUE;
+	public final static long EMOJI_REACTIONS = Common.CspFeatureMaskFlag.REACTION_SUPPORT_VALUE;
 
 	@Retention(RetentionPolicy.SOURCE)
-	@LongDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS, EDIT_MESSAGES, DELETE_MESSAGES })
+	@LongDef({ AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS, EDIT_MESSAGES, DELETE_MESSAGES, EMOJI_REACTIONS })
 	public @interface Feature {}
 
 	/**
@@ -88,6 +89,10 @@ public class ThreemaFeature {
 
 		public Builder deleteMessages(boolean enable) {
 			return this.set(ThreemaFeature.DELETE_MESSAGES, enable);
+		}
+
+		public Builder emojiReactions(boolean enable) {
+			return this.set(ThreemaFeature.EMOJI_REACTIONS, enable);
 		}
 
 		public long build() {
@@ -142,6 +147,9 @@ public class ThreemaFeature {
 	}
 	public static boolean canDeleteMessages(long featureMask) {
 		return hasFeature(featureMask, DELETE_MESSAGES);
+	}
+	public static boolean canEmojiReactions(long featureMask) {
+		return hasFeature(featureMask, EMOJI_REACTIONS);
 	}
 
 	public static boolean hasFeature(long featureMask, @Feature long feature) {

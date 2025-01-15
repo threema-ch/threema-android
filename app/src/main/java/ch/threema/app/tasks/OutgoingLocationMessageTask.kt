@@ -24,15 +24,13 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.protocol.csp.messages.LocationMessage
-import ch.threema.domain.protocol.csp.messages.GroupLocationMessage
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage
+import ch.threema.domain.protocol.csp.messages.location.LocationMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import kotlinx.serialization.Serializable
-
-private val logger = LoggingUtil.getThreemaLogger("OutgoingLocationMessageTask")
 
 class OutgoingLocationMessageTask(
     private val messageModelId: Int,
@@ -62,13 +60,14 @@ class OutgoingLocationMessageTask(
         val locationDataModel = messageModel.locationData
 
         // Create the message
-        val message = LocationMessage().apply {
-            latitude = locationDataModel.latitude
-            longitude = locationDataModel.longitude
-            accuracy = locationDataModel.accuracy.toDouble()
-            poiName = locationDataModel.poi
-            poiAddress = locationDataModel.address
-        }
+        val message = LocationMessage(
+            LocationMessageData(
+                latitude = locationDataModel.latitude,
+                longitude = locationDataModel.longitude,
+                accuracy = locationDataModel.accuracy,
+                poi = locationDataModel.poi
+            )
+        )
 
         sendContactMessage(
             message,
@@ -89,21 +88,22 @@ class OutgoingLocationMessageTask(
         val locationDataModel = messageModel.locationData
 
         sendGroupMessage(
-            group,
-            recipientIdentities,
-            messageModel,
-            messageModel.createdAt,
-            ensureMessageId(messageModel),
-            {
-                GroupLocationMessage().apply {
-                    latitude = locationDataModel.latitude
-                    longitude = locationDataModel.longitude
-                    accuracy = locationDataModel.accuracy.toDouble()
-                    poiName = locationDataModel.poi
-                    poiAddress = locationDataModel.address
-                }
+            group = group,
+            recipients = recipientIdentities,
+            messageModel = messageModel,
+            createdAt = messageModel.createdAt,
+            messageId = ensureMessageId(messageModel),
+            createAbstractMessage = {
+                GroupLocationMessage(
+                    LocationMessageData(
+                        latitude = locationDataModel.latitude,
+                        longitude = locationDataModel.longitude,
+                        accuracy = locationDataModel.accuracy,
+                        poi = locationDataModel.poi
+                    )
+                )
             },
-            handle
+            handle = handle
         )
     }
 

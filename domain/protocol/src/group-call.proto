@@ -220,11 +220,15 @@
 // 7. If `call` is marked as _new_:
 //    1. Optionally add an artificial wait period of 2s minus the time elapsed
 //       since step 1.[^1]
-//    2. Announce (the previously created but not yet sent) `call` in the
-//       associated group by sending it as a `GroupCallStart` message.
-//    3. Add the created `call` to the list of group calls that are currently
+//    2. Let `message-id` be a random message ID.
+//    3. Schedule a persistent task to run he _Bundled Messages Send Steps_ with
+//       the following properties:
+//       - `id` set to `message-id`,
+//       - `receivers` set to all group members that have `GROUP_CALL_SUPPORT`,
+//       - to construct a `GroupCallStart` message from `call`.
+//    4. Add the created `call` to the list of group calls that are currently
 //       considered running.
-//    4. Asynchronously run the _Group Call Refresh Steps_.[^2]
+//    5. Asynchronously run the _Group Call Refresh Steps_.[^2]
 // 8. The group call is now considered established and should asynchronously
 //    invoke the SFU to Participant and Participant to Participant flows.
 //
@@ -295,7 +299,7 @@
 //     NP <- GuestAuth --- EP
 //     NP -- GuestAuth --> EP
 //
-// If NP is a guest participant and NP is a normal participant:
+// If NP is a guest participant and EP is a normal participant:
 //
 //     NP -- GuestHello -> EP
 //     NP <---- Hello ---- EP

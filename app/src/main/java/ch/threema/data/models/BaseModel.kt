@@ -25,6 +25,8 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -43,8 +45,7 @@ interface ModelDataFactory<TDataType, TDbType> {
 /**
  * This exception is thrown when a model, which was deleted, is being mutated.
  */
-class ModelDeletedException(modelName: String, methodName: String)
-    : RuntimeException("Cannot call method $methodName: $modelName was deleted")
+class ModelDeletedException(modelName: String, methodName: String) : RuntimeException("Cannot call method $methodName: $modelName was deleted")
 
 /**
  * The base model is extended by every model.
@@ -86,7 +87,14 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
     val data: StateFlow<TData?> = mutableData
 
     /**
-     * Ensure that [data] is not null. Throw [ModelDeletedException] otherwise.
+     * Get a [LiveData] for the internal data state flow.
+     */
+    fun liveData(): LiveData<TData?> = data.asLiveData()
+
+    /**
+     * @return the non null [data]
+     *
+     * @throws ModelDeletedException if data is null
      */
     protected fun ensureNotDeleted(data: TData?, methodName: String): TData {
         if (data == null) {
@@ -104,6 +112,9 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
      * @param updateDatabase A function that updates the database with the updated data.
      * @param onUpdated An optional function that is invoked at the end if data was updated.
      * @param reflectUpdateTask The task that should be executed after the fields have been updated.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
+     *
      * Note that the [reflectUpdateTask] is only executed when MD is active.
      */
     protected fun updateFields(
@@ -129,8 +140,8 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
                 null
             }
         }
-        if (updatedData != null && onUpdated != null) {
-            onUpdated(updatedData)
+        if (updatedData != null) {
+            onUpdated?.invoke(updatedData)
         }
     }
 }

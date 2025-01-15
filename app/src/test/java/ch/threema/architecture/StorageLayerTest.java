@@ -40,40 +40,42 @@ import ch.threema.storage.models.data.MessageDataInterface;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 @RunWith(ArchUnitRunner.class)
-@AnalyzeClasses(packages = PACKAGE_STORAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
+@AnalyzeClasses(packages = PACKAGE_STORAGE, importOptions = {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
 public class StorageLayerTest {
-	@ArchTest
-	public static final ArchRule factoriesNaming =
-		classes().that().resideInAPackage(PACKAGE_STORAGE + ".factories..")
-			.and().areNotAnonymousClasses()
-			.and().areNotInnerClasses()
-			.and().areNotNestedClasses()
-			.should().haveSimpleNameEndingWith("Factory")
-			.orShould().haveSimpleNameEndingWith("FactoryKt");
+    @ArchTest
+    public static final ArchRule factoriesNaming =
+        classes().that().resideInAPackage(PACKAGE_STORAGE + ".factories..")
+            .and().areNotAnonymousClasses()
+            .and().areNotInnerClasses()
+            .and().areNotNestedClasses()
+            .should().haveSimpleNameEndingWith("Factory")
+            .orShould().haveSimpleNameEndingWith("FactoryKt");
 
-	@ArchTest
-	public static final ArchRule factoriesExtendModelFactory =
-		classes().that().resideInAPackage(PACKAGE_STORAGE + ".factories..")
-			.and().areNotAnonymousClasses()
-			.and().areNotInnerClasses()
-			.and().areNotNestedClasses()
-			.and().haveSimpleNameEndingWith("Factory") // This excludes kotlin classes as they cannot be checked to be assignable to a java class
-			.should().beAssignableTo(ModelFactory.class);
+    @ArchTest
+    public static final ArchRule factoriesExtendModelFactory =
+        classes().that().resideInAPackage(PACKAGE_STORAGE + ".factories..")
+            .and().areNotAnonymousClasses()
+            .and().areNotInnerClasses()
+            .and().areNotNestedClasses()
+            .and().haveSimpleNameEndingWith("Factory") // This excludes kotlin classes as they cannot be checked to be assignable to a java class
+            .should().beAssignableTo(ModelFactory.class);
 
-	@ArchTest
-	public static final ArchRule modelNaming =
-		classes().that().resideInAPackage(PACKAGE_STORAGE + ".models..")
-			.and().areNotAnonymousClasses()
-			.and().areNotInnerClasses()
-			.and().areNotNestedClasses()
-			.and().areNotEnums()
-			.and().doNotBelongToAnyOf(
-				ValidationMessage.class,
-				Access.class,
-				MessageContentsType.class,
-				MessageDataInterface.class,
-				MediaMessageDataInterface.class,
-				DisplayTag.class
-			)
-			.should().haveSimpleNameEndingWith("Model");
+    @ArchTest
+    public static final ArchRule modelNaming =
+        classes().that().resideInAPackage(PACKAGE_STORAGE + ".models..")
+            .and().areNotAnonymousClasses()
+            .and().areNotInnerClasses()
+            .and().haveSimpleNameNotEndingWith("Test")
+            .and().areNotNestedClasses()
+            .and().areNotEnums()
+            .and().doNotBelongToAnyOf(
+                ValidationMessage.class,
+                Access.class,
+                MessageContentsType.class,
+                MessageDataInterface.class,
+                MediaMessageDataInterface.class,
+                DisplayTag.class
+            )
+            .should().haveSimpleNameEndingWith("Model")
+            .orShould().haveSimpleNameEndingWith("ModelKt");
 }

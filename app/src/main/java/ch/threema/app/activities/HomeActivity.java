@@ -132,6 +132,7 @@ import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.ThreemaPushService;
@@ -230,6 +231,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 	private APIConnector apiConnector;
 	private LockAppService lockAppService;
 	private PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
 	private ConversationService conversationService;
 	private GroupCallManager groupCallManager;
 
@@ -1062,6 +1064,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		if (serviceManager != null) {
 			this.userService = this.serviceManager.getUserService();
 			this.preferenceService = this.serviceManager.getPreferenceService();
+            this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 			this.notificationService = serviceManager.getNotificationService();
 			this.lockAppService = serviceManager.getLockAppService();
 			try {
@@ -1123,8 +1126,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 		checkApp();
 
 		// start wizard if necessary
-		if (preferenceService.getWizardRunning() || !userService.hasIdentity()) {
-			logger.debug("Missing identity. Wizard running? " + preferenceService.getWizardRunning());
+		if (notificationPreferenceService.getWizardRunning() || !userService.hasIdentity()) {
+			logger.debug("Missing identity. Wizard running: {}", notificationPreferenceService.getWizardRunning());
 
 			if (userService.hasIdentity()) {
 				startActivity(new Intent(this, WizardBaseActivity.class));

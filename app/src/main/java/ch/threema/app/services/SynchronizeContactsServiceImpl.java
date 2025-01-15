@@ -67,23 +67,25 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 	private final DeviceService deviceService;
 	private final Context context;
 	private final FileService fileService;
-	private final IdListService blockedContactsService;
+	private final BlockedIdentitiesService blockedIdentitiesService;
 	private final ApiService apiService;
 
 	private Date latestFullSync;
 
-	public SynchronizeContactsServiceImpl(Context context, APIConnector apiConnector,
-										  ContactService contactService,
-										  @NonNull ContactModelRepository contactModelRepository,
-										  UserService userService,
-										  LocaleService localeService,
-										  IdListService excludedIdentityListService,
-										  PreferenceService preferenceService,
-										  DeviceService deviceService,
-										  FileService fileService,
-	                                      IdentityStoreInterface identityStore,
-	                                      IdListService blockedContactsService,
-	                                      ApiService apiService) {
+    public SynchronizeContactsServiceImpl(
+        Context context, APIConnector apiConnector,
+        ContactService contactService,
+        @NonNull ContactModelRepository contactModelRepository,
+        UserService userService,
+        LocaleService localeService,
+        IdListService excludedIdentityListService,
+        PreferenceService preferenceService,
+        DeviceService deviceService,
+        FileService fileService,
+        IdentityStoreInterface identityStore,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
+        ApiService apiService
+    ) {
 		this.excludedIdentityListService = excludedIdentityListService;
 		this.preferenceService = preferenceService;
 		this.deviceService = deviceService;
@@ -96,7 +98,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 		this.userService = userService;
 		this.localeService = localeService;
 		this.identityStore = identityStore;
-		this.blockedContactsService = blockedContactsService;
+		this.blockedIdentitiesService = blockedIdentitiesService;
 		this.apiService = apiService;
 	}
 
@@ -185,7 +187,8 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
 						this.deviceService,
 						this.preferenceService,
 						this.identityStore,
-						this.blockedContactsService);
+						this.blockedIdentitiesService
+                );
 
 		synchronized (this.pendingRoutines) {
 			this.pendingRoutines.add(routine);

@@ -286,7 +286,7 @@ class ReflectedContactSyncTaskTest {
     private fun MdD2DSync.Contact.AcquaintanceLevel.convert(): AcquaintanceLevel =
         when (this) {
             MdD2DSync.Contact.AcquaintanceLevel.DIRECT -> AcquaintanceLevel.DIRECT
-            MdD2DSync.Contact.AcquaintanceLevel.GROUP -> AcquaintanceLevel.GROUP
+            MdD2DSync.Contact.AcquaintanceLevel.GROUP_OR_DELETED -> AcquaintanceLevel.GROUP
             MdD2DSync.Contact.AcquaintanceLevel.UNRECOGNIZED -> fail("Acquaintance level is unrecognized")
         }
 

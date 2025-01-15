@@ -68,7 +68,7 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
 		this.editText.addTextChangedListener(new TextWatcher(){
 			public void afterTextChanged(Editable s) {
 				if( getBallotActivity() != null) {
-					getBallotActivity().setBallotTitle(editText.getText().toString());
+					getBallotActivity().setBallotDescription(editText.getText().toString());
 				}
 				if (s != null && s.length() > 0) {
 					textInputLayout.setError(null);
@@ -116,7 +116,7 @@ public class BallotWizardFragment0 extends BallotWizardFragment implements Ballo
 	public void updateView() {
 		if (getBallotActivity() != null) {
 			ViewUtil.showAndSet(this.editText,
-					this.getBallotActivity().getBallotTitle());
+					this.getBallotActivity().getBallotDescription());
 		}
 		if(this.getBallotActivity() != null) {
 			ViewUtil.showAndSet(this.typeCheckbox,

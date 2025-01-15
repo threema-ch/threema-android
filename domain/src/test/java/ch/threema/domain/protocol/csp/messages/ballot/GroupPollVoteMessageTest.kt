@@ -25,6 +25,7 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.incomingMessage
+import ch.threema.protobuf.d2d.outgoingMessage
 import ch.threema.testutils.willThrow
 import com.google.protobuf.kotlin.toByteString
 import org.junit.Test
@@ -174,7 +175,28 @@ open class GroupPollVoteMessageTest {
     }
 
     @Test
-    fun fromReflectedShouldParseBodyAndSetCommonFields() {
+    fun fromReflectedOutgoingShouldParseBodyAndSetCommonFields() {
+
+        // act
+        val outgoingMessageId = MessageId()
+        val outgoingMessageCreatedAt: Long = 42424242
+        val outgoingD2DMessage = outgoingMessage {
+            this.messageId = outgoingMessageId.messageIdLong
+            this.createdAt = outgoingMessageCreatedAt
+            this.body = groupPollVoteMessageBody.toByteString()
+        }
+
+        // act
+        val resultGroupPollVoteMessage: GroupPollVoteMessage = GroupPollVoteMessage.fromReflected(outgoingD2DMessage)
+
+        // assert
+        assertEquals(outgoingMessageId, resultGroupPollVoteMessage.messageId)
+        assertEquals(outgoingMessageCreatedAt, resultGroupPollVoteMessage.date.time)
+        assertGroupPollVoteMessageFields(resultGroupPollVoteMessage)
+    }
+
+    @Test
+    fun fromReflectedIncomingShouldParseBodyAndSetCommonFields() {
 
         // act
         val incomingMessageId = 12345678L

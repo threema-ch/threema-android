@@ -21,15 +21,9 @@
 
 package ch.threema.app.services;
 
-import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
-
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,19 +41,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.notifications.NotificationUtil;
+import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.tasks.ReflectSettingsSyncTask;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
+import ch.threema.domain.taskmanager.ActiveTask;
+import ch.threema.domain.taskmanager.TaskManager;
+import ch.threema.domain.taskmanager.TriggerSource;
+
+import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
 
 public class PreferenceServiceImpl implements PreferenceService {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("PreferenceServiceImpl");
@@ -68,22 +72,30 @@ public class PreferenceServiceImpl implements PreferenceService {
 	private static final String CONTACT_PHOTO_ENCRYPTION_KEY = "key";
 	private static final String CONTACT_PHOTO_SIZE = "size";
 
+    @NonNull
 	private final Context context;
+    @NonNull
 	private final PreferenceStoreInterface preferenceStore;
+    @NonNull
+    private final TaskManager taskManager;
+    @NonNull
+    private final MultiDeviceManager multiDeviceManager;
+    @NonNull
+    private final NonceFactory nonceFactory;
 
-	public PreferenceServiceImpl(Context context, PreferenceStoreInterface preferenceStore) {
-		this.context = context;
-		this.preferenceStore = preferenceStore;
-	}
-
-	@Nullable
-	private Uri ringtoneKeyToUri(@StringRes int ringtoneKey) {
-		String ringtone = this.preferenceStore.getString(this.getKeyName(ringtoneKey));
-		if (ringtone != null && ringtone.length() > 0 && !"null".equals(ringtone)) {
-			return Uri.parse(ringtone);
-		}
-		return null;
-	}
+    public PreferenceServiceImpl(
+        @NonNull Context context,
+        @NonNull PreferenceStoreInterface preferenceStore,
+        @NonNull TaskManager taskManager,
+        @NonNull MultiDeviceManager multiDeviceManager,
+        @NonNull NonceFactory nonceFactory
+    ) {
+        this.context = context;
+        this.preferenceStore = preferenceStore;
+        this.taskManager = taskManager;
+        this.multiDeviceManager = multiDeviceManager;
+        this.nonceFactory = nonceFactory;
+    }
 
 	@Override
 	public boolean isReadReceipts() {
@@ -91,8 +103,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setReadReceipts(boolean value) {
+	public void setReadReceipts(boolean value, @NonNull TriggerSource triggerSource) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__read_receipts), value);
+        scheduleSettingsSyncUpdateTask(new ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate(
+            multiDeviceManager,
+            nonceFactory,
+            this
+        ), triggerSource);
 	}
 
 	@Override
@@ -111,8 +128,13 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setBlockUnknown(boolean value) {
+	public void setBlockUnknown(boolean value, @NonNull TriggerSource triggerSource) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__block_unknown), value);
+        scheduleSettingsSyncUpdateTask(new ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate(
+            multiDeviceManager,
+            nonceFactory,
+            this
+        ), triggerSource);
 	}
 
 	@Override
@@ -121,38 +143,27 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setTypingIndicator(boolean value) {
+	public void setTypingIndicator(boolean value, @NonNull TriggerSource triggerSource) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__typing_indicator), value);
-	}
-
-	@Override
-	public Uri getNotificationSound() {
-		return ringtoneKeyToUri(R.string.preferences__notification_sound);
-	}
-
-	@Override
-	public Uri getGroupNotificationSound() {
-		return ringtoneKeyToUri(R.string.preferences__group_notification_sound);
-	}
-
-	@Override
-	public Uri getGroupCallRingtone() {
-		return ringtoneKeyToUri(R.string.preferences__group_calls_ringtone);
+        scheduleSettingsSyncUpdateTask(new ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate(
+            multiDeviceManager,
+            nonceFactory,
+            this
+        ), triggerSource);
 	}
 
 	@Override
 	public Uri getVoiceCallSound() {
-		return ringtoneKeyToUri(R.string.preferences__voip_ringtone);
+        String ringtone = this.preferenceStore.getString(getKeyName(R.string.preferences__voip_ringtone));
+        if (ringtone != null && !ringtone.isEmpty() && !ringtone.equals(ServicesConstants.PREFERENCES_NULL)) {
+            return Uri.parse(ringtone);
+        }
+        return null;
 	}
 
 	@Override
 	public boolean isVoiceCallVibrate() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__voip_vibration));
-	}
-
-	@Override
-	public boolean isGroupCallVibrate() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_calls_vibration));
 	}
 
 	@Override
@@ -168,21 +179,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public void setVoiceCallSound(Uri uri) {
 		this.preferenceStore.save(this.getKeyName(R.string.preferences__voip_ringtone), uri != null ? uri.toString() : null);
-	}
-
-	@Override
-	public boolean isVibrate() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__vibrate));
-	}
-
-	@Override
-	public boolean isGroupVibrate() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_vibrate));
-	}
-
-	@Override
-	public boolean isShowMessagePreview() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__notification_preview));
 	}
 
 	@Override
@@ -362,11 +358,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean isSaveMedia() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__save_media));
-	}
-
-	@Override
-	public boolean isMasterKeyNewMessageNotifications() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__masterkey_notification_newmsg));
 	}
 
 	/*
@@ -812,16 +803,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public void setWizardRunning(boolean running) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__wizard_running), running);
-	}
-
-	@Override
-	public boolean getWizardRunning() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__wizard_running));
-	}
-
-	@Override
 	public boolean isAnimationAutoplay() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__gif_autoplay));
 	}
@@ -829,11 +810,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean isUseProximitySensor() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__proximity_sensor));
-	}
-
-	@Override
-	public void setBlockUnkown(Boolean booleanPreset) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__block_unknown), booleanPreset);
 	}
 
 	@Override
@@ -1124,16 +1100,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	@Override
 	public boolean allowWebrtcIpv6() {
 		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__ipv6_webrtc_allowed));
-	}
-
-	@Override
-	public int getNotificationPriority() {
-		return NotificationUtil.getNotificationPriority(context);
-	}
-
-	@Override
-	public void setNotificationPriority(int value) {
-		this.preferenceStore.save(this.getKeyName(R.string.preferences__notification_priority), Integer.toString(value));
 	}
 
 	@Override
@@ -1599,11 +1565,6 @@ public class PreferenceServiceImpl implements PreferenceService {
 	}
 
 	@Override
-	public boolean getDisableSmartReplies() {
-		return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__disable_smart_replies), false);
-	}
-
-	@Override
 	public @Nullable
 	String getPoiServerHostOverride() {
 		// Defined in the developers settings menu
@@ -1784,4 +1745,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 	public long getLastNotificationPermissionRequestTimestamp() {
 		return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_notification_request_timestamp));
 	}
+
+    private void scheduleSettingsSyncUpdateTask(@NonNull ActiveTask<?> task, TriggerSource triggerSource) {
+        if (multiDeviceManager.isMultiDeviceActive() && triggerSource == TriggerSource.LOCAL) {
+            taskManager.schedule(task);
+        }
+    }
 }

@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
 public class EmojiTextView extends AppCompatTextView {
+
 	protected final EmojiMarkupUtil emojiMarkupUtil;
 
 	public EmojiTextView(Context context) {
@@ -49,10 +50,27 @@ public class EmojiTextView extends AppCompatTextView {
 	@Override
 	public void setText(@Nullable CharSequence text, BufferType type) {
 		if (emojiMarkupUtil != null) {
-			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, true), type);
+			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, true, true, false, true), type);
 		} else {
 			super.setText(text, type);
 		}
+	}
+
+	/**
+	 * Set text of the EmojiTextView to one single emoji.
+	 * If the text contains none or more than one emoji, or the provided emojiSequence is not known to EmojiMarkupUtil,
+	 * it will be substituted by the Unicode replacement character
+	 * @param emojiSequence Text to set
+	 * @return the text that was actually set
+	 */
+	public CharSequence setSingleEmojiSequence(@Nullable CharSequence emojiSequence) {
+		if (emojiMarkupUtil != null && EmojiUtil.isFullyQualifiedEmoji(emojiSequence)) {
+			CharSequence emojifiedSequence = emojiMarkupUtil.addTextSpans(getContext(), emojiSequence, this, true, true, false, true);
+            super.setText(emojifiedSequence, BufferType.SPANNABLE);
+            return getText();
+		}
+		super.setText(EmojiUtil.REPLACEMENT_CHARACTER, BufferType.NORMAL);
+		return getText();
 	}
 
 	@Override

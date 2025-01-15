@@ -27,8 +27,8 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.util.Objects
 
 class EditMessageData(
-        val messageId: Long,
-        val text: String
+    val messageId: Long,
+    val text: String
 ) : ProtobufDataInterface<EditMessage> {
 
     companion object {
@@ -37,11 +37,11 @@ class EditMessageData(
             try {
                 val protobufMessage = EditMessage.parseFrom(rawProtobufMessage)
                 return EditMessageData(
-                        protobufMessage.messageId,
-                        protobufMessage.text
+                    protobufMessage.messageId,
+                    protobufMessage.text
                 )
             } catch (e: InvalidProtocolBufferException) {
-                throw BadMessageException("Invalid EditMessage protobuf data")
+                throw BadMessageException("Invalid EditMessage protobuf data", e)
             } catch (e: IllegalArgumentException) {
                 throw BadMessageException("Could not create EditMessage data", e)
             }
@@ -50,9 +50,9 @@ class EditMessageData(
 
     override fun toProtobufMessage(): EditMessage {
         return EditMessage.newBuilder()
-                .setMessageId(messageId)
-                .setText(text)
-                .build()
+            .setMessageId(messageId)
+            .setText(text)
+            .build()
     }
 
     override fun equals(other: Any?): Boolean {

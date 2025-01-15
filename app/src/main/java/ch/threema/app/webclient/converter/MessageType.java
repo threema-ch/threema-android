@@ -65,7 +65,7 @@ public class MessageType extends Converter {
 					throw new ConversionException("Unknown message type: " + messageType);
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 }

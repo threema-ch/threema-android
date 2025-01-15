@@ -49,8 +49,8 @@ import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask;
 import ch.threema.base.ThreemaException;
@@ -153,17 +153,23 @@ public class ContactUtil {
 			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
 	}
 
-	public static boolean canReceiveVoipMessages(ContactModel contactModel, IdListService blockedContactsService) {
+	public static boolean canReceiveVoipMessages(
+        @Nullable ContactModel contactModel,
+        @Nullable BlockedIdentitiesService blockedIdentitiesService
+    ) {
 		return contactModel != null
-				&& blockedContactsService != null
-				&& !blockedContactsService.has(contactModel.getIdentity())
+				&& blockedIdentitiesService != null
+				&& !blockedIdentitiesService.isBlocked(contactModel.getIdentity())
 				&& !isEchoEchoOrGatewayContact(contactModel);
 	}
 
-	public static boolean canReceiveVoipMessages(@Nullable String identity, @Nullable IdListService blockedContactsService) {
+	public static boolean canReceiveVoipMessages(
+        @Nullable String identity,
+        @Nullable BlockedIdentitiesService blockedIdentitiesService
+    ) {
 		return identity != null
-			&& blockedContactsService != null
-			&& !blockedContactsService.has(identity)
+			&& blockedIdentitiesService != null
+			&& !blockedIdentitiesService.isBlocked(identity)
 			&& !isEchoEchoOrGatewayContact(identity);
 	}
 

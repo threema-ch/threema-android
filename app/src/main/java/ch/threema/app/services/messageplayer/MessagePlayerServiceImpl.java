@@ -40,8 +40,8 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -56,13 +56,23 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 	private final MessageService messageService;
 	private final FileService fileService;
 	private final PreferenceService preferenceService;
+    @NonNull
+    private final NotificationPreferenceService notificationPreferenceService;
 	private final DeadlineListService hiddenChatsListService;
 
-	public MessagePlayerServiceImpl(Context context, MessageService messageService, FileService fileService, PreferenceService preferenceService, DeadlineListService hiddenChatsListService) {
+	public MessagePlayerServiceImpl(
+        @NonNull Context context,
+        @NonNull MessageService messageService,
+        @NonNull FileService fileService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull NotificationPreferenceService notificationPreferenceService,
+        DeadlineListService hiddenChatsListService
+    ) {
 		this.context = context;
 		this.messageService = messageService;
 		this.fileService = fileService;
 		this.preferenceService = preferenceService;
+        this.notificationPreferenceService = notificationPreferenceService;
 		this.hiddenChatsListService = hiddenChatsListService;
 	}
 
@@ -89,6 +99,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 							this.messageService,
 							this.fileService,
 							this.preferenceService,
+                            this.notificationPreferenceService,
 							this.hiddenChatsListService,
 							messageReceiver,
 							mediaControllerFuture,
@@ -110,6 +121,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
 							this.messageService,
 							this.fileService,
 							this.preferenceService,
+                            this.notificationPreferenceService,
 							this.hiddenChatsListService,
 							messageReceiver,
 							mediaControllerFuture,

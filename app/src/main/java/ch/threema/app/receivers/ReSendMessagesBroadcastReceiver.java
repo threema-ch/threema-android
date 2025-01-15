@@ -41,6 +41,8 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -86,7 +88,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
 							receiverIdentities.add(failedMessage.getIdentity());
 						}
 						try {
-							messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities);
+							messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities, new MessageId(), TriggerSource.LOCAL);
 							notificationService.cancel(messageReceiver);
 						} catch (Exception e) {
 							RuntimeUtil.runOnUiThread(new Runnable() {

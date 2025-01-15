@@ -101,7 +101,7 @@ public class Conversation extends Converter {
 				append.append(builder, conversation, model);
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}

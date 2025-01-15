@@ -116,9 +116,9 @@ open class FileMessage : AbstractMessage(), FileMessageInterface {
         @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray, offset: Int, length: Int): FileMessage {
             if (length < 1) {
-                throw BadMessageException("Bad length ($length) for text message")
+                throw BadMessageException("Bad length ($length) for file message")
             } else if (offset < 0) {
-                throw BadMessageException("Bad offset ($offset) for text message")
+                throw BadMessageException("Bad offset ($offset) for file message")
             } else if (data.size < length + offset) {
                 throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
             }

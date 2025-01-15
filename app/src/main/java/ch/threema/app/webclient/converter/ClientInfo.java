@@ -51,7 +51,6 @@ public class ClientInfo extends Converter {
 	private final static String OS_VERSION = "osVersion";
 	private final static String APP_VERSION = "appVersion";
 	private final static String IS_WORK = "isWork";
-	private final static String IN_APP_LOGO = "inAppLogo";
 	private final static String PUSH_TOKEN = "pushToken";
 	private final static String CONFIGURATION = "configuration";
 	private final static String CAPABILITIES = "capabilities";
@@ -69,7 +68,8 @@ public class ClientInfo extends Converter {
 	private final static String QUOTES_V2 = "quotesV2";
 	private final static String IMAGE_FORMAT = "imageFormat";
 	private final static String MDM = "mdm";
-	private final static String GROUP_REACTIONS = "groupReactions";
+	private final static String GROUP_REACTIONS = "groupReactions"; // TODO(ANDR-3517): Remove
+    private final static String EMOJI_REACTIONS = "emojiReactions";
 
 	// Image format keys
 	private final static String FORMAT_AVATAR = "avatar";
@@ -125,16 +125,7 @@ public class ClientInfo extends Converter {
 		}
 
 		// Work stuff
-		if (ConfigUtils.isWorkBuild()) {
-			data.put(IS_WORK, true);
-			// Disabled for now
-			//data.maybePut(IN_APP_LOGO, AppLogo.convert(
-			//	preferenceService.getAppLogo(ConfigUtils.THEME_LIGHT),
-			//	preferenceService.getAppLogo(ConfigUtils.THEME_DARK)
-			//));
-		} else {
-			data.put(IS_WORK, false);
-		}
+        data.put(IS_WORK, ConfigUtils.isWorkBuild());
 
 		// Configuration
 		final MsgpackObjectBuilder config = new MsgpackObjectBuilder();
@@ -155,7 +146,11 @@ public class ClientInfo extends Converter {
 		capabilities.put(MAX_FILE_SIZE, ThreemaApplication.MAX_BLOB_SIZE);
 		capabilities.put(DISTRIBUTION_LISTS, true);
 		capabilities.put(QUOTES_V2, true);
-		capabilities.put(GROUP_REACTIONS, true);
+        if (BuildConfig.EMOJI_REACTIONS_WEB_ENABLED) {
+            capabilities.put(EMOJI_REACTIONS, true);
+        } else {
+            capabilities.put(GROUP_REACTIONS, true);
+        }
 
 		// Image format
 		final MsgpackObjectBuilder imageFormat = new MsgpackObjectBuilder();

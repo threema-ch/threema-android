@@ -66,6 +66,8 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotOverviewActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener, GenericAlertDialog.DialogClickListener, SelectorDialog.SelectorDialogClickListener {
@@ -451,7 +453,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 		if (tag.equals(DIALOG_TAG_BALLOT_DELETE)) {
 			removeSelectedBallotsDo((SparseBooleanArray) data);
 		} else if (tag.equals(ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT)) {
-			BallotUtil.closeBallot(this, (BallotModel) data, ballotService);
+			BallotUtil.closeBallot(this, (BallotModel) data, ballotService, new MessageId(), TriggerSource.LOCAL);
 		}
 	}
 

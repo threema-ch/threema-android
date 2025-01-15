@@ -110,7 +110,7 @@ public class EmojiGridAdapter extends BaseAdapter {
 			view = (EmojiItemView)convertView;
 		} else {
 			final EmojiItemView emojiItemView = new EmojiItemView(context);
-			Drawable background = ResourcesCompat.getDrawable(context.getResources(), R.drawable.listitem_background_selector_noripple, null);
+			Drawable background = ResourcesCompat.getDrawable(context.getResources(), R.drawable.selector_emoji_reactions_grid_item, null);
 			emojiItemView.setBackground(background);
 			emojiItemView.setPadding(emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize);
 			emojiItemView.setLayoutParams(new AbsListView.LayoutParams(emojiItemSize, emojiItemSize));

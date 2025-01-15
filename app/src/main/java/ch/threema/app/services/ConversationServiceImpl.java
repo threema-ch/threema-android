@@ -78,7 +78,7 @@ public class ConversationServiceImpl implements ConversationService {
     private final DistributionListService distributionListService;
     private final MessageService messageService;
     private final DeadlineListService hiddenChatsListService;
-    private final IdListService blockedContactsService;
+    private final BlockedIdentitiesService blockedIdentitiesService;
     private boolean initAllLoaded = false;
     private final TagModel unreadTagModel;
     private final @NonNull String pinTag;
@@ -131,8 +131,9 @@ public class ConversationServiceImpl implements ConversationService {
         DistributionListService distributionListService,
         MessageService messageService,
         @NonNull DeadlineListService hiddenChatsListService,
-        @NonNull IdListService blockedContactsService,
-        ConversationTagService conversationTagService) {
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
+        ConversationTagService conversationTagService
+    ) {
         this.context = context;
         this.databaseServiceNew = databaseServiceNew;
         this.contactService = contactService;
@@ -140,7 +141,7 @@ public class ConversationServiceImpl implements ConversationService {
         this.distributionListService = distributionListService;
         this.messageService = messageService;
         this.hiddenChatsListService = hiddenChatsListService;
-        this.blockedContactsService = blockedContactsService;
+        this.blockedIdentitiesService = blockedIdentitiesService;
         this.conversationCache = cacheService.getConversationModelCache();
         this.conversationTagService = conversationTagService;
 
@@ -268,7 +269,7 @@ public class ConversationServiceImpl implements ConversationService {
                         public boolean apply(@NonNull ConversationModel conversationModel) {
                             if (conversationModel.isContactConversation()) {
                                 return !ContactUtil.isEchoEchoOrGatewayContact(conversationModel.getContact()) &&
-                                    !blockedContactsService.has(conversationModel.getContact().getIdentity());
+                                    !blockedIdentitiesService.isBlocked(conversationModel.getContact().getIdentity());
                             }
                             return true;
                         }
@@ -468,7 +469,7 @@ public class ConversationServiceImpl implements ConversationService {
                 ContactModel cachedModel = contactService.getByIdentity(identity);
                 if (providedModel != cachedModel) {
                     logger.warn("Several contact model instances are in use. Resetting cache.");
-                    contactService.removeFromCache(identity);
+                    contactService.invalidateCache(identity);
                     cachedModel = contactService.getByIdentity(identity);
                 }
                 return this.refresh(cachedModel);

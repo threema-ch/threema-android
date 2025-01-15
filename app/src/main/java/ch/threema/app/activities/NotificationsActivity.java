@@ -63,6 +63,7 @@ import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.RingtoneService;
+import ch.threema.app.services.ServicesConstants;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LogUtil;
@@ -307,7 +308,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
 		// SOUND
 		if (ringtoneService.hasCustomRingtone(uid)) {
-			if (selectedRingtone == null || selectedRingtone.toString() == null || selectedRingtone.toString().equals("null")) {
+			if (selectedRingtone == null || selectedRingtone.toString().equals(ServicesConstants.PREFERENCES_NULL)) {
 				// silent ringtone selected
 				radioSoundNone.setChecked(true);
 				textSoundCustom.setEnabled(true);
@@ -404,7 +405,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
 	protected void pickRingtone(String uniqueId) {
 		Uri existingUri = this.ringtoneService.getRingtoneFromUniqueId(uniqueId);
-		if (existingUri != null && existingUri.getPath().equals("null")) {
+		if (existingUri != null && existingUri.getPath() != null && existingUri.getPath().equals(ServicesConstants.PREFERENCES_NULL)) {
 			existingUri = null;
 		}
 		if (existingUri == null && backupSoundCustom != null) {

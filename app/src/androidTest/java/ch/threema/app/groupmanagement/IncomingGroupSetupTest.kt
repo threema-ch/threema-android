@@ -146,8 +146,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         // Assert initial group conversations
         assertGroupConversations(scenario, initialGroups)
 
-        serviceManager.blockedContactsService.add(contactA.identity)
-        serviceManager.blockedContactsService.add(contactB.identity)
+        serviceManager.blockedIdentitiesService.blockIdentity(contactA.identity)
+        serviceManager.blockedIdentitiesService.blockIdentity(contactB.identity)
 
         val setupTracker = GroupSetupTracker(
             newAGroup,

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="vertical"
+    android:fadeScrollbars="true"
+    android:scrollbarAlwaysDrawVerticalTrack="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/reactions_title"
+            style="@style/Threema.TextAppearance.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/reactions_on_this_message" />
+
+        <ch.threema.app.ui.EndlessGridView
+            android:id="@+id/reactions_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="@dimen/emoji_picker_item_size"
+            android:gravity="center"
+            android:horizontalSpacing="0dp"
+            android:verticalSpacing="2dp"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth" />
+
+        <TextView
+            android:id="@+id/recents_title"
+            style="@style/Threema.TextAppearance.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/title_tab_recent" />
+
+        <ch.threema.app.ui.EndlessGridView
+            android:id="@+id/emoji_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="@dimen/emoji_picker_item_size"
+            android:gravity="center"
+            android:horizontalSpacing="0dp"
+            android:verticalSpacing="2dp"
+            android:numColumns="auto_fit"
+            android:stretchMode="columnWidth" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

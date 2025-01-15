@@ -42,6 +42,7 @@ import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -164,17 +165,22 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 
 	@Override
 	public void createAndSendBallotSetupMessage(
-		BallotData ballotData,
-		BallotModel ballotModel,
-		DistributionListMessageModel abstractMessageModel,
-		@Nullable MessageId messageId,
-		@Nullable Collection<String> recipientIdentities
-	) {
+        @NonNull BallotData ballotData,
+        @NonNull BallotModel ballotModel,
+        @NonNull DistributionListMessageModel abstractMessageModel,
+        @Nullable MessageId messageId,
+        @Nullable Collection<String> recipientIdentities,
+        @NonNull TriggerSource triggerSource
+    ) {
 		// Not supported in distribution lists
 	}
 
 	@Override
-	public void createAndSendBallotVoteMessage(BallotVote[] votes, BallotModel ballotModel) {
+	public void createAndSendBallotVoteMessage(
+        BallotVote[] votes,
+        BallotModel ballotModel,
+        @NonNull TriggerSource triggerSource
+    ) {
 		// Not supported in distribution lists
 	}
 
@@ -284,6 +290,12 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
 		if (distributionListModel != null) {
 			distributionListService.bumpLastUpdate(distributionListModel);
 		}
+	}
+
+	@Override
+    @EmojiReactionsSupport
+	public int getEmojiReactionSupport() {
+		return Reactions_NONE;
 	}
 
 	@Override

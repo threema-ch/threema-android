@@ -110,4 +110,10 @@
 	<!-- dark colors reference -->
 	<color name="dark_surface">#323232</color>
 	<color name="dark_background_dim">#77000000</color>
+
+	<!-- emoji reactions -->
+	<color name="emojireactions_background">@color/material_grey_250</color>
+	<color name="emojireactions_background_checked">@color/material_grey_350</color>
+	<color name="emojireactions_background_pressed">@color/material_grey_500</color>
+    <color name="emojireactions_popup_background_selected">@color/emojireactions_background_checked</color>
 </resources>

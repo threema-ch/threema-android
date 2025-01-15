@@ -125,9 +125,9 @@ open class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
         @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray, offset: Int, length: Int): GroupFileMessage {
             if (length <= ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN) {
-                throw BadMessageException("Bad length ($length) for text message")
+                throw BadMessageException("Bad length ($length) for group-file message")
             } else if (offset < 0) {
-                throw BadMessageException("Bad offset ($offset) for text message")
+                throw BadMessageException("Bad offset ($offset) for group-file message")
             } else if (data.size < length + offset) {
                 throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
             }

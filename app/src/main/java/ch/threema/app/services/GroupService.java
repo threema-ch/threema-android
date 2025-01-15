@@ -45,7 +45,6 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.GroupAccessModel;
 
 /**
@@ -488,14 +487,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 	 */
 	Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
 
-	/**
-	 * Add or update an identity-specific state to the specified group message
-	 * Don't forget to call save() to update the model
-	 * @param messageModel group message to update
-	 * @param identityToAdd identity of initiator of state change
-	 * @param newState state for the specified identity
-	 */
-	void addGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToAdd, @NonNull MessageState newState);
+	void removeGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToRemove);
 
 	/**
 	 * Check to which extent a feature is supported by the members of a group

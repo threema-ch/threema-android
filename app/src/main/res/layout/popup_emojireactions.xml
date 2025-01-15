@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:background="@android:color/transparent">
+
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/cardview"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/emoji_popup_cardview_margin_bottom"
+		android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
+		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
+		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
+		app:strokeWidth="0dp"
+		app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium"
+		app:cardElevation="4dp">
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="8dp"
+			android:orientation="horizontal">
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_0"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+				android:padding="@dimen/reaction_popup_content_margin"
+				android:foreground="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"/>
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_1"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+				android:focusable="true"/>
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_2"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+				android:focusable="true"/>
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_3"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+				android:focusable="true"/>
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_4"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+				android:focusable="true"/>
+
+			<ch.threema.app.emojis.EmojiItemView
+				android:id="@+id/top_5"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:layout_marginRight="2dp"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+				android:focusable="true"/>
+
+			<ImageView
+				android:id="@+id/add_reaction"
+				android:layout_width="@dimen/reaction_popup_emoji_size"
+				android:layout_height="@dimen/reaction_popup_emoji_size"
+				android:padding="@dimen/reaction_popup_content_margin"
+				android:src="@drawable/ic_add_reaction_outline"
+				app:tint="?attr/colorOnSurface"
+				android:contentDescription="@string/select_emoji"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:clickable="true"
+				android:focusable="true"/>
+
+		</LinearLayout>
+
+	</com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

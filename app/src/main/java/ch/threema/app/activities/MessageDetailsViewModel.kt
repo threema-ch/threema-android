@@ -103,36 +103,12 @@ data class MessageUiModel(
     val editedAt: Date?,
     val isDeleted: Boolean,
     val isOutbox: Boolean,
-    val ackUiModel: AckUiModel?,
     @DrawableRes val deliveryIconRes: Int?,
     @StringRes val deliveryIconContentDescriptionRes: Int?,
     val messageTimestampsUiModel: MessageTimestampsUiModel,
-    val messageDetailsUiModel: MessageDetailsUiModel
+    val messageDetailsUiModel: MessageDetailsUiModel,
+    val type: MessageType?,
 )
-
-enum class UserReaction {
-    REACTED,
-    NONE,
-}
-
-enum class ContactAckDecState {
-    ACK,
-    DEC,
-    NONE,
-}
-
-class GroupAckDecState(val count: Int, val userReaction: UserReaction)
-
-sealed interface AckUiModel
-
-data class ContactAckUiModel(
-    val ackDecState: ContactAckDecState,
-) : AckUiModel
-
-data class GroupAckUiModel(
-    val ackState: GroupAckDecState,
-    val decState: GroupAckDecState,
-) : AckUiModel
 
 data class MessageTimestampsUiModel(
     val createdAt: Date? = null,
@@ -143,14 +119,32 @@ data class MessageTimestampsUiModel(
     val modifiedAt: Date? = null,
     val editedAt: Date? = null,
     val deletedAt: Date? = null
-)
+) {
+   fun hasProperties(): Boolean {
+        return createdAt != null
+            || sentAt != null
+            || receivedAt != null
+            || deliveredAt != null
+            || readAt != null
+            || modifiedAt != null
+            || editedAt != null
+            || deletedAt != null
+    }
+}
 
 data class MessageDetailsUiModel(
     val messageId: String? = null,
     val mimeType: String? = null,
     val fileSizeInBytes: Long? = null,
-    val pfsState: ForwardSecurityMode? = null
-)
+    val pfsState: ForwardSecurityMode? = null,
+) {
+    fun hasProperties(): Boolean {
+        return messageId != null
+            || mimeType != null
+            || fileSizeInBytes != null
+            || pfsState != null
+    }
+}
 
 fun AbstractMessageModel.toUiModel(myIdentity: String) = MessageUiModel(
     uid = this.uid,
@@ -161,46 +155,10 @@ fun AbstractMessageModel.toUiModel(myIdentity: String) = MessageUiModel(
     isOutbox = this.isOutbox,
     deliveryIconRes = StateBitmapUtil.getInstance()?.getStateDrawable(this.state),
     deliveryIconContentDescriptionRes = StateBitmapUtil.getInstance()?.getStateDescription(this.state),
-    ackUiModel = this.getAckUiModel(myIdentity),
     messageTimestampsUiModel = this.toMessageTimestampsUiModel(),
-    messageDetailsUiModel = this.toMessageDetailsUiModel()
+    messageDetailsUiModel = this.toMessageDetailsUiModel(),
+    type = this.type,
 )
-
-/**
- *  @return Only returns an instance of [AckUiModel] if there is at least one ack/dec for this [AbstractMessageModel].
- */
-private fun AbstractMessageModel.getAckUiModel(myIdentity: String): AckUiModel? = let {
-    if (this is GroupMessageModel) {
-        val ackStates = groupMessageStates?.filter { groupMessageState -> groupMessageState.value == MessageState.USERACK.name }
-        val decStates = groupMessageStates?.filter { groupMessageState -> groupMessageState.value == MessageState.USERDEC.name }
-
-        val ackUserReaction = if (ackStates?.containsKey(myIdentity) == true) {
-            UserReaction.REACTED
-        } else {
-            UserReaction.NONE
-        }
-        val decUserReaction = if (decStates?.containsKey(myIdentity) == true) {
-            UserReaction.REACTED
-        } else {
-            UserReaction.NONE
-        }
-        return@let if (ackUserReaction != UserReaction.NONE || decUserReaction != UserReaction.NONE) {
-            GroupAckUiModel(
-                ackState = GroupAckDecState(ackStates?.size ?: 0, ackUserReaction),
-                decState = GroupAckDecState(decStates?.size ?: 0, decUserReaction),
-            )
-        } else {
-            null
-        }
-    } else {
-        val contactAckDecState = when (this.state) {
-            MessageState.USERACK -> ContactAckDecState.ACK
-            MessageState.USERDEC -> ContactAckDecState.DEC
-            else -> return@let null
-        }
-        ContactAckUiModel(contactAckDecState)
-    }
-}
 
 fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel {
     if (this == null) {

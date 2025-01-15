@@ -39,13 +39,17 @@ class GeoLocationUtilTest {
         assertEquals(expected.latitude, actual?.latitude)
         assertEquals(expected.longitude, actual?.longitude)
         assertEquals(expected.poi, actual?.poi)
-        assertEquals(expected.address, actual?.address)
         assertEquals(expected.accuracy, actual?.accuracy)
     }
 
     @Test
     fun testGetLocationFromUri() {
-        val latLong1234 = LocationDataModel(12.0, 34.0, 0, "", "")
+        val latLong1234 = LocationDataModel(
+            latitude = 12.0,
+            longitude = 34.0,
+            accuracy = 0.0,
+            poi = null
+        )
         expectLocationData(latLong1234, "geo:12,34;abcd=efg")
         expectLocationData(latLong1234, "geo:12.0,34.00;a=b;c=d")
         expectLocationData(latLong1234, "geo:12.0,34.0?q=12.0,34.0")

@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -86,6 +85,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -101,6 +101,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -109,7 +110,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -137,7 +137,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
-
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.SendAction;
@@ -150,9 +149,9 @@ import ch.threema.app.activities.GroupNotificationsActivity;
 import ch.threema.app.activities.HomeActivity;
 import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.activities.MediaGalleryActivity;
+import ch.threema.app.activities.MessageDetailsActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.activities.SendMediaActivity;
-import ch.threema.app.activities.MessageDetailsActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.activities.WorkExplainActivity;
@@ -165,13 +164,17 @@ import ch.threema.app.compose.common.interop.ComposeJavaBridge;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.dialogs.MessageDetailDialog;
 import ch.threema.app.dialogs.ResendGroupMessageDialog;
 import ch.threema.app.dialogs.SelectorDialog;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.emojireactions.EmojiReactionsOverviewActivity;
+import ch.threema.app.emojireactions.EmojiReactionsPickerActivity;
+import ch.threema.app.emojireactions.EmojiReactionsPopup;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.emojis.EmojiPicker;
 import ch.threema.app.emojis.EmojiTextView;
+import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.grouplinks.IncomingGroupRequestActivity;
 import ch.threema.app.grouplinks.OpenGroupRequestNoticeView;
@@ -189,9 +192,12 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaAttachActivity;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
+import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.app.routines.ReadMessagesRoutine;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
@@ -200,9 +206,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.RingtoneService;
@@ -212,7 +216,7 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
-import ch.threema.app.ui.AckjiPopup;
+import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.ContentCommitComposeEditText;
 import ch.threema.app.ui.ConversationListView;
@@ -248,10 +252,14 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GroupCallUtilKt;
+import ch.threema.app.utils.GroupFeatureAdoptionRate;
+import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.LogUtil;
+import ch.threema.app.utils.MessageUtil;
+import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -271,13 +279,13 @@ import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
+import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.protocol.csp.messages.file.FileData;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -287,13 +295,12 @@ import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
-import ch.threema.app.utils.GroupFeatureSupport;
-import ch.threema.app.utils.GroupFeatureAdoptionRate;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
+import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
 
 import static android.view.WindowManager.LayoutParams.FLAG_SECURE;
@@ -305,12 +312,6 @@ import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORECORDER;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_VOIP;
-import static ch.threema.app.ui.AckjiPopup.ITEM_ACK;
-import static ch.threema.app.ui.AckjiPopup.ITEM_DEC;
-import static ch.threema.app.ui.AckjiPopup.ITEM_EDIT;
-import static ch.threema.app.ui.AckjiPopup.ITEM_IMAGE_REPLY;
-import static ch.threema.app.ui.AckjiPopup.ITEM_INFO;
-import static ch.threema.app.ui.AckjiPopup.ITEM_STAR;
 import static ch.threema.app.ui.ScrollButtonManager.SCROLLBUTTON_VIEW_TIMEOUT;
 import static ch.threema.app.ui.ScrollButtonManager.TYPE_DOWN;
 import static ch.threema.app.utils.LinkifyUtil.DIALOG_TAG_CONFIRM_LINK;
@@ -416,7 +417,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ContactService contactService;
 	private MessageService messageService;
 	private NotificationService notificationService;
-	private IdListService blockedContactsService;
+	private BlockedIdentitiesService blockedIdentitiesService;
 	private ConversationService conversationService;
 	private DeviceService deviceService;
 	private WallpaperService wallpaperService;
@@ -427,8 +428,14 @@ public class ComposeMessageFragment extends Fragment implements
 	private VoipStateService voipStateService;
 	private DownloadService downloadService;
 	private LicenseService licenseService;
+    private EmojiReactionsRepository emojiReactionsRepository;
 
 	private ActivityResultLauncher<Intent> wallpaperLauncher;
+	private final ActivityResultLauncher<Intent> emojiReactionsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+		if (actionMode != null) {
+			actionMode.finish();
+		}
+	});
 	private final ActivityResultLauncher<Intent> imageReplyLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 		if (result.getResultCode() == Activity.RESULT_CANCELED) {
 			logger.info("Canceled image reply");
@@ -476,7 +483,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private ImageView wallpaperView;
 	private ActionBar actionBar;
 	private TooltipPopup workTooltipPopup;
-	private AckjiPopup ackjiPopup;
+	private EmojiReactionsPopup emojiReactionsPopup;
 	private QuotePopup quotePopup;
 	private OpenBallotNoticeView openBallotNoticeView;
 	private OpenGroupRequestNoticeView openGroupRequestNoticeView;
@@ -517,7 +524,6 @@ public class ComposeMessageFragment extends Fragment implements
 	@SuppressLint("SimpleDateFormat")
 	private final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyyMMdd");
 	private ThumbnailCache<?> thumbnailCache = null;
-
 
 	@Override
 	public boolean getActionModeEnabled() {
@@ -689,6 +695,13 @@ public class ComposeMessageFragment extends Fragment implements
 				if (composeMessageAdapter != null) {
 					composeMessageAdapter.notifyItemsChanged(modifiedMessageModels);
 				}
+                if (modifiedMessageModels.size() == 1) {
+                    final @Nullable AbstractMessageModel modifiedMessageModel = modifiedMessageModels.get(0);
+                    if (modifiedMessageModel != null && modifiedMessageModel.isDeleted()) {
+                        updateActionModeIfNecessary(modifiedMessageModel);
+                        dismissEmojiReactionPopupIfNecessary(modifiedMessageModel);
+                    }
+                }
 			});
 		}
 
@@ -725,6 +738,47 @@ public class ComposeMessageFragment extends Fragment implements
 		public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
 			// Ignore
 		}
+
+        /**
+         *  If we currently selected one message we have to consider dismissing the emoji-reactions-popup
+         *  if it was remote-deleted.
+         */
+        private void dismissEmojiReactionPopupIfNecessary(final @NonNull AbstractMessageModel deletedMessageModel) {
+
+            if (emojiReactionsPopup == null || !emojiReactionsPopup.isShowing() || selectedMessages.isEmpty()) {
+                return;
+            }
+
+            // Determine if the newly remote-deleted message is currently selected
+            final boolean deletedMessageIsCurrentlySelected = selectedMessages.stream().anyMatch(
+                (selectedMessageModel -> selectedMessageModel.getId() == deletedMessageModel.getId())
+            );
+
+            if (deletedMessageIsCurrentlySelected) {
+                emojiReactionsPopup.dismiss();
+            }
+        }
+
+        /**
+         *  If we currently have some messages selected (actionMode is visible) we have to consider updating the
+         *  menu items it displays when a message was remote-deleted.
+         */
+        private void updateActionModeIfNecessary(final @NonNull AbstractMessageModel deletedMessageModel){
+
+            // It is only possible to remote-delete a single message at a time
+            if (actionMode == null || selectedMessages.isEmpty()) {
+                return;
+            }
+
+            // Determine if the newly remote-deleted message is currently selected
+            final boolean deletedMessageIsCurrentlySelected = selectedMessages.stream().anyMatch(
+                (selectedMessageModel -> selectedMessageModel.getId() == deletedMessageModel.getId())
+            );
+
+            if (deletedMessageIsCurrentlySelected) {
+                actionMode.invalidate();
+            }
+        }
 	};
 
 	private final MessageDeletedForAllListener messageDeletedForAllListener = new MessageDeletedForAllListener() {
@@ -2623,7 +2677,7 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		// Exclude blocked contacts
-		if (blockedContactsService.has(contactModel.getIdentity())) {
+		if (blockedIdentitiesService.isBlocked(contactModel.getIdentity())) {
 			return false;
 		}
 
@@ -3051,6 +3105,7 @@ public class ComposeMessageFragment extends Fragment implements
 				preferenceService,
 				downloadService,
 				licenseService,
+				emojiReactionsRepository,
 				messageReceiver,
 				convListView,
 				thumbnailCache,
@@ -3076,7 +3131,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 						Runnable resendMessage = () -> ThreemaApplication.sendMessageExecutorService.execute(() -> {
 							try {
-								messageService.resendMessage(messageModel, messageReceiver, null, finalRecipientIdentities);
+								messageService.resendMessage(messageModel, messageReceiver, null, finalRecipientIdentities, new MessageId(), TriggerSource.LOCAL);
 							} catch (Exception e) {
 								RuntimeUtil.runOnUiThread(() -> {
 									if (isAdded()) {
@@ -3207,6 +3262,145 @@ public class ComposeMessageFragment extends Fragment implements
 						}
 					});
 				}
+
+				@Override
+				public void onEmojiReactionClick(@Nullable String emojiSequence, @Nullable AbstractMessageModel messageModel) {
+					if (emojiSequence != null && messageModel != null) {
+						if (EmojiUtil.REPLACEMENT_CHARACTER.equals(emojiSequence)) {
+                            logger.info("Unknown emoji reaction sequence clicked");
+                            RuntimeUtil.runOnUiThread(() -> {
+                                Optional.ofNullable(getContext())
+                                    .ifPresent(ctx -> LongToast.makeText(
+                                        ctx, R.string.reaction_cannot_be_displayed, Toast.LENGTH_LONG
+                                    ).show());
+                            });
+                        } else {
+							if (!MessageUtil.canEmojiReact(messageModel)) {
+								return;
+							}
+
+							RuntimeUtil.runOnWorkerThread(() -> {
+								try {
+                                    MessageReceiver<?> receiver = messageReceiver;
+                                    if (receiver == null) {
+                                        return;
+                                    }
+                                    boolean isReactionsSupportNone = receiver.getEmojiReactionSupport() == MessageReceiver.Reactions_NONE;
+                                    if (isReactionsSupportNone && isWithdraw(messageModel, emojiSequence)) {
+                                        showImpossibleWithdrawErrorDialog(messageModel);
+                                    } else if (!messageService.sendEmojiReaction(messageModel, emojiSequence, receiver, false)) {
+                                        showErrorDialogOnSendEmojiReactionFailed(messageModel);
+									}
+								} catch (Exception e) {
+									logger.error("failed to send emoji reaction", e);
+								}
+							});
+						}
+					} else {
+						logger.debug("messageModel or emojiSequence is null");
+					}
+				}
+
+                private boolean isWithdraw(@NonNull AbstractMessageModel messageModel, @NonNull String emojiSequence) {
+                    String userIdentity = userService.getIdentity();
+                    return emojiReactionsRepository.safeGetReactionsByMessage(messageModel).stream()
+                        .anyMatch(reaction -> reaction.senderIdentity.equals(userIdentity) && reaction.emojiSequence.equals(emojiSequence));
+                }
+
+                private void showImpossibleWithdrawErrorDialog(@NonNull AbstractMessageModel messageModel) {
+                    Optional.ofNullable(getImpossibleWithdrawErrorText(messageModel)).ifPresent(dialogBody ->
+                        RuntimeUtil.runOnUiThread(() -> SimpleStringAlertDialog.newInstance(
+                                R.string.emoji_reactions_cannot_remove_title, dialogBody
+                            ).show(getParentFragmentManager(), "er")
+                        )
+                    );
+                }
+
+                @Nullable
+                private String getImpossibleWithdrawErrorText(@NonNull AbstractMessageModel messageModel) {
+                    final Context context = getContext();
+                    if (context == null) {
+                        logger.warn("Could not get reaction withdraw error text. Context is null.");
+                        return null;
+                    }
+
+                    if (ConfigUtils.canSendEmojiReactions()) {
+                        // Phase 2 reaction support: Withdraw only possible if receiver supports reactions.
+                        if (messageModel instanceof GroupMessageModel) {
+                            logger.info("Cannot withdraw reaction in group without reaction support.");
+                            return context.getString(R.string.emoji_reactions_cannot_remove_group_body);
+                        } else {
+                            logger.info("Cannot withdraw reaction, because chat partner does not support reactions yet.");
+                            String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
+                            return name == null
+                                ? null
+                                : context.getString(R.string.emoji_reactions_cannot_remove_body, name);
+                        }
+                    } else {
+                        // Phase 1 reaction support: Withdraw not supported by client
+                        return context.getString(R.string.emoji_reactions_cannot_remove_v1_body);
+                    }
+                }
+
+                @AnyThread
+                private void showErrorDialogOnSendEmojiReactionFailed(@NonNull AbstractMessageModel messageModel) {
+                    Optional.ofNullable(getReactionSendFailedErrorText(messageModel)).ifPresent(dialogBody ->
+                        RuntimeUtil.runOnUiThread(() -> SimpleStringAlertDialog.newInstance(
+                                R.string.emoji_reactions_unavailable_title, dialogBody
+                            ).show(getParentFragmentManager(), "er")
+                        )
+                    );
+                }
+
+                @Nullable
+                private String getReactionSendFailedErrorText(@NonNull AbstractMessageModel messageModel) {
+                    final Context context = getContext();
+                    if (context == null) {
+                        logger.warn("Could not get reaction error text. Context is null.");
+                        return null;
+                    }
+                    if (ConfigUtils.canSendEmojiReactions()) {
+                        // Phase 2 reaction supported by this client. Therefore an error means the receiver
+                        // does not support reactions.
+                        if (isGroupChat) {
+                            // The group members can change so that no other group members support
+                            // reactions anymore. In this group it is not possible to send reactions anymore
+                            // but it is possible to still attempt sending a reaction by tapping a reaction
+                            // that is already present in the chat.
+                            return context.getString(R.string.emoji_reactions_unavailable_group_body);
+                        } else {
+                            // If the contact does not support emoji reactions, the only way to send a reaction
+                            // is by tapping a reaction already present in the chat. This means, the chat partner
+                            // has previously supported reactions.
+                            // Thus, we conclude this error happened due to a client downgrade of the chat partner.
+                            logger.info("Emoji reactions seems to be unavailable due to a client downgrade of the chat partner.");
+                            String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
+                            return name == null
+                                ? null
+                                : context.getString(R.string.emoji_reactions_unavailable_body, name);
+                        }
+                    } else {
+                        // Phase 1 reaction support: reactions can only be received but not sent.
+                        return context.getString(R.string.emoji_reactions_sending_not_supported_body);
+                    }
+                }
+
+				@Override
+				public void onEmojiReactionLongClick(@Nullable String emojiSequence, @Nullable AbstractMessageModel messageModel) {
+					showEmojiReactionsOverview(messageModel, emojiSequence);
+				}
+
+				@Override
+				public void onSelectButtonClick(@Nullable AbstractMessageModel messageModel) {
+					if (MessageUtil.canEmojiReact(messageModel)) {
+						showEmojiReactionsPicker(messageModel);
+					}
+				}
+
+				@Override
+				public void onMoreReactionsButtonClick(@Nullable AbstractMessageModel messageModel) {
+					showEmojiReactionsOverview(messageModel, null);
+				}
 			});
 
 			insertToList(values, false, !hiddenChatsListService.has(messageReceiver.getUniqueIdString()), false);
@@ -3218,6 +3412,20 @@ public class ComposeMessageFragment extends Fragment implements
 		setIdentityColors();
 
 		removeIsTypingFooter();
+	}
+
+	private void showEmojiReactionsOverview(@Nullable AbstractMessageModel messageModel, @Nullable String emojiSequence) {
+		if (messageModel == null) {
+			logger.error("MessageModel is null");
+			return;
+		}
+
+		Intent intent = new Intent(activity, EmojiReactionsOverviewActivity.class);
+		IntentDataUtil.append(messageModel, intent);
+		if (emojiSequence != null) {
+			intent.putExtra(EmojiReactionsOverviewActivity.EXTRA_INITIAL_EMOJI, emojiSequence);
+		}
+		emojiReactionsLauncher.launch(intent);
 	}
 
 	/**
@@ -3235,7 +3443,6 @@ public class ComposeMessageFragment extends Fragment implements
 						break;
 					}
 					position--;
-
 				}
 				final int finalUnreadCount = unreadCount;
 				if (!isHidden()) {
@@ -3475,53 +3682,69 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
-		showAckjiPopup(view);
+		showEmojiReactionsPopup(view, selectedMessage);
 	}
 
-	private void showAckjiPopup(View originView) {
-		if (ackjiPopup == null) {
-			ackjiPopup = new AckjiPopup(getContext(), convListView);
-			ackjiPopup.setListener(new AckjiPopup.AckDecPopupListener() {
-				@Override
-				public void onAckjiClicked(final int clickedItem) {
-					if (actionMode == null) {
-						return;
-					}
-
-					actionMode.finish();
-
-					switch (clickedItem) {
-						case ITEM_ACK:
-							sendUserAck();
-							break;
-						case ITEM_DEC:
-							sendUserDec();
-							break;
-						case ITEM_IMAGE_REPLY:
-							sendImageReply();
-							break;
-						case ITEM_INFO:
-							showMessageLog(selectedMessages.get(0));
-							break;
-						case ITEM_EDIT:
-							tryEditingSelectedMessage();
-							break;
-						case ITEM_STAR:
-							toggleStar(selectedMessages.get(0));
-							break;
-					}
-				}
-
-				@Override
-				public void onOpen() {
-				}
-
-				@Override
-				public void onClose() {
-				}
-			});
+	private void showEmojiReactionsPopup(@NonNull View originView, @NonNull AbstractMessageModel messageModel) {
+		if (messageReceiver == null) {
+			logger.error("No MessageReceiver to show emoji reactions popup for");
+			return;
 		}
-		ackjiPopup.show(originView.findViewById(R.id.message_block), selectedMessages.get(0));
+
+        // Don't even show popup in case of a DistributionList
+        if (messageReceiver instanceof DistributionListMessageReceiver) {
+            logger.debug("Cannot react on distribution list messages");
+            return;
+        }
+
+        // check if we can react on this kind of message
+        if (!MessageUtil.canEmojiReact(messageModel)) {
+            return;
+        }
+
+        boolean isReactionsSupportNone = messageReceiver.getEmojiReactionSupport() == MessageReceiver.Reactions_NONE;
+
+		if (messageReceiver instanceof ContactMessageReceiver
+			&& isReactionsSupportNone
+			&& messageModel.isOutbox()) {
+			logger.debug("Cannot react on my own messages if reactions are not yet supported by recipient");
+			return;
+		}
+
+		emojiReactionsPopup = new EmojiReactionsPopup(requireContext(), convListView, getParentFragmentManager(), !isReactionsSupportNone);
+		emojiReactionsPopup.setListener(new EmojiReactionsPopup.EmojiReactionsPopupListener() {
+			@Override
+			public void onTopReactionClicked(@NonNull final AbstractMessageModel messageModel, @NonNull final String emojiSequence) {
+				RuntimeUtil.runOnWorkerThread(() -> {
+					try {
+                        messageService.sendEmojiReaction(messageModel, emojiSequence, Objects.requireNonNull(messageReceiver), false);
+					} catch (Exception e) {
+						logger.error("Failed to send emoji reaction", e);
+					}
+				});
+
+				if (actionMode == null) {
+					return;
+				}
+				actionMode.finish();
+			}
+
+			@Override
+			public void onAddReactionClicked(@NonNull final AbstractMessageModel messageModel) {
+				showEmojiReactionsPicker(messageModel);
+			}
+		});
+		emojiReactionsPopup.show(originView.findViewById(R.id.message_block), selectedMessages.get(0));
+	}
+
+	private void showEmojiReactionsPicker(@Nullable AbstractMessageModel messageModel) {
+		if (messageModel != null && messageReceiver != null) {
+			Intent intent = new Intent(activity, EmojiReactionsPickerActivity.class);
+			IntentDataUtil.append(messageModel, intent);
+			emojiReactionsLauncher.launch(intent);
+		} else {
+			logger.debug("MessageModel or Receiver is null");
+		}
 	}
 
 	/**
@@ -3530,6 +3753,7 @@ public class ComposeMessageFragment extends Fragment implements
 	 * @param selectedMessage Message Model of the item
 	 * @return true if item is selectable, false otherwise
 	 */
+	@Contract("_, null -> false")
 	private boolean isItemSelectable(int viewType, @Nullable AbstractMessageModel selectedMessage) {
 		if (viewType == ComposeMessageAdapter.TYPE_FIRST_UNREAD  ||
 			viewType == ComposeMessageAdapter.TYPE_DATE_SEPARATOR) {
@@ -4007,17 +4231,6 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
-	private void showMessageLog(@Nullable AbstractMessageModel messageModel) {
-		if (messageModel == null) {
-			return;
-		}
-		MessageDetailDialog.newInstance(
-            R.string.message_log_title,
-            messageModel.getId(),
-            messageModel.getClass().toString()
-        ).show(getParentFragmentManager(), DIALOG_TAG_MESSAGE_DETAIL);
-	}
-
 	/**
 	 * Toggles the "starred" flag for the provided message and saves it to the database
 	 * @param messageModel AbstractMessageModel of the message
@@ -4291,8 +4504,8 @@ public class ComposeMessageFragment extends Fragment implements
 			// do not update if no longer attached to activity
 			return;
 		}
-		if (TestUtil.required(this.blockMenuItem, this.blockedContactsService, this.contactModel)) {
-			boolean state = this.blockedContactsService.has(this.contactModel.getIdentity());
+		if (TestUtil.required(this.blockMenuItem, this.blockedIdentitiesService, this.contactModel)) {
+			boolean state = this.blockedIdentitiesService.isBlocked(this.contactModel.getIdentity());
 			this.blockMenuItem.setTitle(state ? getString(R.string.unblock_contact) : getString(R.string.block_contact));
 			this.blockMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
 			this.mutedMenuItem.setShowAsAction(state ? MenuItem.SHOW_AS_ACTION_NEVER : MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -4310,7 +4523,7 @@ public class ComposeMessageFragment extends Fragment implements
 			if (isGroupChat) {
 				updateGroupCallMenuItem();
 			} else if (callItem != null) {
-				if (ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService) && ConfigUtils.isCallsEnabled()) {
+				if (ContactUtil.canReceiveVoipMessages(contactModel, blockedIdentitiesService) && ConfigUtils.isCallsEnabled()) {
 					logger.debug("updateVoipMenu newState " + newState);
 					callItem.setIcon(R.drawable.ic_phone_locked_outline);
 					callItem.setTitle(R.string.threema_call);
@@ -4415,8 +4628,8 @@ public class ComposeMessageFragment extends Fragment implements
 				activity.startActivity(intent);
 			}
 		} else if (id == R.id.menu_block_contact) {
-			if (this.blockedContactsService.has(contactModel.getIdentity())) {
-				this.blockedContactsService.toggle(activity, contactModel);
+			if (this.blockedIdentitiesService.isBlocked(contactModel.getIdentity())) {
+				this.blockedIdentitiesService.unblockIdentity(contactModel.getIdentity(), getContext());
 				updateBlockMenu();
 			} else {
 				GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).setTargetFragment(this).show(getFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
@@ -4519,7 +4732,7 @@ public class ComposeMessageFragment extends Fragment implements
 	private void createShortcut() {
 		if (!this.isGroupChat &&
 			!this.isDistributionListChat &&
-			ContactUtil.canReceiveVoipMessages(contactModel, blockedContactsService) &&
+			ContactUtil.canReceiveVoipMessages(contactModel, blockedIdentitiesService) &&
 			ConfigUtils.isCallsEnabled()) {
 							ArrayList<SelectorDialogItem> items = new ArrayList<>();
 				items.add(new SelectorDialogItem(getString(R.string.prefs_header_chat), R.drawable.ic_outline_chat_bubble_outline));
@@ -4587,7 +4800,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 	public class ComposeMessageAction implements ActionMode.Callback {
 		private final int position;
-		private MenuItem quoteItem, forwardItem, saveItem, copyItem, qrItem, shareItem, showText;
+		private MenuItem quoteItem, forwardItem, saveItem, copyItem, qrItem, shareItem, infoItem, editItem, starItem, unStarItem, imageReplyItem, deleteItem;
 
 		ComposeMessageAction(int position) {
 			this.position = position;
@@ -4595,14 +4808,17 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 
 		private void updateActionMenu(Menu menu) {
-			boolean isQuotable = selectedMessages.size() == 1;
-			boolean showAsQRCode = selectedMessages.size() == 1;
-			boolean showAsText = selectedMessages.size() == 1;
+			boolean isSingleMessage = selectedMessages.size() == 1;
+			boolean isQuotable = isSingleMessage;
+			boolean showAsQRCode = isSingleMessage;
+			boolean canShowInfo = isSingleMessage;
 			boolean isForwardable = selectedMessages.size() <= MAX_FORWARDABLE_ITEMS;
 			boolean isSaveable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
 			boolean isCopyable = true;
 			boolean isShareable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
-			boolean hasDefaultRendering = false;
+			boolean isEditable = isSingleMessage && MessageUtil.canEdit(selectedMessages.get(0));
+			boolean canSendImageReply = isSingleMessage && MessageUtil.canSendImageReply(selectedMessages.get(0));
+			boolean canStarMessage = isSingleMessage && MessageUtil.canStarMessage(selectedMessages.get(0));
 
 			if (selectedMessages.stream().anyMatch(AbstractMessageModel::isDeleted)) {
 				onlyShowItems(menu, R.id.menu_message_discard);
@@ -4613,32 +4829,30 @@ public class ComposeMessageFragment extends Fragment implements
 				if (message == null) continue;
 				isQuotable = isQuotable && isQuotable(message);
 				showAsQRCode = showAsQRCode && canShowAsQRCode(message);
-				showAsText = showAsText && canShowAsText(message);
 				isForwardable = isForwardable && isForwardable(message);
 				isSaveable = isSaveable && isSaveable(message);
 				isCopyable = isCopyable && isCopyable(message);
 				isShareable = isShareable && isShareable(message);
-				hasDefaultRendering = hasDefaultRendering || isDefaultRendering(message);
 			}
 
 			// Sharing text message is only possible when there is exactly one selected message
-			isShareable = isShareable && (selectedMessages.size() == 1 || !containsTextMessage(selectedMessages));
+			isShareable = isShareable && (isSingleMessage || !containsTextMessage(selectedMessages));
 
 			quoteItem.setVisible(isQuotable);
-			qrItem.setVisible(showAsQRCode);
-			showText.setVisible(showAsText);
+			qrItem.setVisible(false /*showAsQRCode*/); // TODO(ANDR-3498): Reenable or remove completely
+			infoItem.setVisible(canShowInfo);
 			forwardItem.setVisible(isForwardable);
 			saveItem.setVisible(isSaveable);
 			copyItem.setVisible(isCopyable);
 			shareItem.setVisible(isShareable);
+			editItem.setVisible(isEditable);
+			imageReplyItem.setVisible(canSendImageReply);
 
-			if (hasDefaultRendering) {
-				saveItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-				forwardItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-			} else {
-				saveItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-				forwardItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-			}
+            boolean isMessageCurrentlyStarred = (selectedMessages.get(0).getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED;
+            starItem.setVisible(canStarMessage && !isMessageCurrentlyStarred);
+            unStarItem.setVisible(canStarMessage && isMessageCurrentlyStarred);
+
+			deleteItem.setShowAsAction(isSingleMessage ? MenuItem.SHOW_AS_ACTION_IF_ROOM : MenuItem.SHOW_AS_ACTION_ALWAYS);
 		}
 
 		private void onlyShowItems(Menu menu, int... ids) {
@@ -4696,11 +4910,6 @@ public class ComposeMessageFragment extends Fragment implements
 			boolean isFileWithCaption = message.getType() == MessageType.FILE
 				&& !TextUtils.isEmpty(message.getCaption());
 			return isText || isFileWithCaption; // is text (not status) or a file with non-empty caption
-		}
-
-		private boolean isDefaultRendering(@NonNull AbstractMessageModel message) {
-			return message.getType() == MessageType.FILE                                    // if it is a file
-				&& message.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT;  // and default rendering is set
 		}
 
 		private boolean containsTextMessage(@NonNull List<AbstractMessageModel> messages) {
@@ -4761,7 +4970,12 @@ public class ComposeMessageFragment extends Fragment implements
 			qrItem = menu.findItem(R.id.menu_message_qrcode);
 			shareItem = menu.findItem(R.id.menu_share);
 			quoteItem = menu.findItem(R.id.menu_message_quote);
-			showText = menu.findItem(R.id.menu_show_text);
+			infoItem = menu.findItem(R.id.menu_info);
+			editItem = menu.findItem(R.id.menu_message_edit);
+			starItem = menu.findItem(R.id.menu_message_star);
+			unStarItem = menu.findItem(R.id.menu_message_unstar);
+			imageReplyItem = menu.findItem(R.id.menu_message_image_reply);
+			deleteItem = menu.findItem(R.id.menu_message_discard);
 
 			updateActionMenu(menu);
 
@@ -4812,13 +5026,21 @@ public class ComposeMessageFragment extends Fragment implements
 			} else if (id == R.id.menu_message_quote) {
 				showQuotePopup(null);
 				mode.finish();
-			} else if (id == R.id.menu_show_text) {
+			} else if (id == R.id.menu_info) {
 				showTextChatBubble(selectedMessages.get(0));
+				mode.finish();
+			} else if (id == R.id.menu_message_star || id == R.id.menu_message_unstar) {
+				toggleStar(selectedMessages.get(0));
+				mode.finish();
+			} else if (id == R.id.menu_message_edit) {
+				tryEditingSelectedMessage();
+				mode.finish();
+			} else  if (id == R.id.menu_message_image_reply) {
+				sendImageReply();
 				mode.finish();
 			} else {
 				return false;
 			}
-
 			return true;
 		}
 
@@ -4832,8 +5054,8 @@ public class ComposeMessageFragment extends Fragment implements
 			convListView.requestLayout();
 			convListView.post(() -> convListView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE));
 
-			if (ackjiPopup != null) {
-				ackjiPopup.dismiss();
+			if (emojiReactionsPopup != null) {
+				emojiReactionsPopup.dismiss();
 			}
 
 			// If the action mode has been left without clearing up the selected messages, we need
@@ -5018,6 +5240,24 @@ public class ComposeMessageFragment extends Fragment implements
 
 			editMessageActionMode = null;
 		}
+
+        /**
+         * Get the currently stored text for the given message model. For a text message, this is just
+         * the message's text. In case of a file message, the caption is returned. For other message
+         * types, null is returned.
+         */
+        @Nullable
+        private String getEditableText(@Nullable AbstractMessageModel messageModel) {
+            if (messageModel == null) {
+                return null;
+            }
+            if (messageModel.getType() == MessageType.TEXT) {
+                return messageModel.getBody();
+            } else if (messageModel.getType() == MessageType.FILE) {
+                return messageModel.getCaption();
+            }
+            return null;
+        }
 	}
 
 	private void showTextChatBubble(AbstractMessageModel messageModel) {
@@ -5031,26 +5271,6 @@ public class ComposeMessageFragment extends Fragment implements
 
 		if (messageModel != null && messageModel.getType() == MessageType.TEXT) {
 			new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, messageModel.getBody(), QRCodeServiceImpl.QR_TYPE_ANY);
-		}
-	}
-
-	@MainThread
-	private void sendUserAck() {
-		AbstractMessageModel messageModel = selectedMessages.get(0);
-
-		if (messageModel != null) {
-			new Thread(() -> messageService.sendUserAcknowledgement(messageModel, false)).start();
-			Toast.makeText(getActivity(), R.string.message_acknowledged, Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	@MainThread
-	private void sendUserDec() {
-		AbstractMessageModel messageModel = selectedMessages.get(0);
-
-		if (messageModel != null) {
-			new Thread(() -> messageService.sendUserDecline(messageModel, false)).start();
-			Toast.makeText(getActivity(), R.string.message_declined, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -5342,7 +5562,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.notificationService,
 				this.distributionListService,
 				this.messagePlayerService,
-				this.blockedContactsService,
+				this.blockedIdentitiesService,
 				this.ballotService,
 				this.conversationService,
 				this.deviceService,
@@ -5367,7 +5587,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.notificationService = serviceManager.getNotificationService();
 				this.distributionListService = serviceManager.getDistributionListService();
 				this.messagePlayerService = serviceManager.getMessagePlayerService();
-				this.blockedContactsService = serviceManager.getBlockedContactsService();
+				this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
 				this.ballotService = serviceManager.getBallotService();
 				this.databaseServiceNew = serviceManager.getDatabaseServiceNew();
 				this.conversationService = serviceManager.getConversationService();
@@ -5381,6 +5601,7 @@ public class ComposeMessageFragment extends Fragment implements
 				this.voipStateService = serviceManager.getVoipStateService();
 				this.downloadService = serviceManager.getDownloadService();
 				this.licenseService = serviceManager.getLicenseService();
+                this.emojiReactionsRepository = serviceManager.getModelRepositories().getEmojiReaction();
 			} catch (Exception e) {
 				LogUtil.exception(e, activity);
 			}
@@ -5401,7 +5622,7 @@ public class ComposeMessageFragment extends Fragment implements
 				}
 				break;
 			case ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT:
-				BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService);
+				BallotUtil.closeBallot((AppCompatActivity) requireActivity(), (BallotModel) data, ballotService, new MessageId(), TriggerSource.LOCAL);
 				break;
 			case DIALOG_TAG_CONFIRM_CALL:
 				VoipUtil.initiateCall((AppCompatActivity) requireActivity(), contactModel, false, null);
@@ -5410,7 +5631,7 @@ public class ComposeMessageFragment extends Fragment implements
 				emptyChat();
 				break;
 			case DIALOG_TAG_CONFIRM_BLOCK:
-				blockedContactsService.toggle(activity, contactModel);
+				blockedIdentitiesService.toggleBlocked(contactModel.getIdentity(), getContext());
 				updateBlockMenu();
 				break;
 			case DIALOG_TAG_CONFIRM_LINK:
@@ -5605,7 +5826,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 				final String spammerIdentity = spammerContactModel.getIdentity();
 				if (block) {
-					blockedContactsService.add(spammerIdentity);
+					blockedIdentitiesService.blockIdentity(spammerIdentity, null);
 					ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
 
 					if (messageReceiver != null) {
@@ -5688,23 +5909,5 @@ public class ComposeMessageFragment extends Fragment implements
 			logger.error("Unable to stop VoiceMessagePlayer", e);
 		}
 	}
-
-    /**
-     * Get the currently stored text for the given message model. For a text message, this is just
-     * the message's text. In case of a file message, the caption is returned. For other message
-     * types, null is returned.
-     */
-    @Nullable
-    private String getEditableText(@Nullable AbstractMessageModel messageModel) {
-        if (messageModel == null) {
-            return null;
-        }
-        if (messageModel.getType() == MessageType.TEXT) {
-            return messageModel.getBody();
-        } else if (messageModel.getType() == MessageType.FILE) {
-            return messageModel.getCaption();
-        }
-        return null;
-    }
 }
 

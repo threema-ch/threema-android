@@ -43,7 +43,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -60,10 +62,12 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.models.EmojiReactionData;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -77,19 +81,22 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 public class Message extends Converter {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("Message");
 
+    // TODO(ANDR-3517): Remove
+    public final static String REACTIONS = "reactions";
+    public final static String REACTIONS_ACK = "ack";
+    public final static String REACTIONS_DEC = "dec";
+
 	public final static String ID = "id";
 	public final static String TYPE = "type";
 	public final static String BODY = "body";
 	public final static String QUOTE = "quote";
-	public final static String QUOTE_IDENTITY = "identity";
-	public final static String QUOTE_TEXT= "text";
 	public final static String IS_OUTBOX = "isOutbox";
 	public final static String IS_STATUS = "isStatus";
 	public final static String PARTNER_ID = "partnerId";
 	public final static String STATE = "state";
-	public final static String REACTIONS = "reactions";
-	public final static String REACTIONS_ACK = "ack";
-	public final static String REACTIONS_DEC = "dec";
+    public final static String EMOJI_REACTIONS = "emojiReactions";
+    public final static String EMOJI_REACTIONS_KEY_EMOJI = "emoji";
+    public final static String EMOJI_REACTIONS_KEY_IDENTITIES = "identities";
 	public final static String DATE = "date";
 	public final static String LAST_EDITED_AT = "lastEditedAt";
 	public final static String EVENTS = "events";
@@ -224,7 +231,7 @@ public class Message extends Converter {
 		}
 
 		if (virtualMessageType == ch.threema.storage.models.MessageType.FORWARD_SECURITY_STATUS) {
-			return convertForwardSecurityStatus((AbstractMessageModel) message);
+			return convertForwardSecurityStatus(message);
 		}
 
 		// Serialize
@@ -261,15 +268,36 @@ public class Message extends Converter {
 				builder.put(PARTNER_ID, message.getIdentity());
 				builder.put(IS_UNREAD, MessageUtil.isUnread(message));
 
+                // TODO(ANDR-3517): Remove
+                final @NonNull List<EmojiReactionData> reactions = getReactions(message);
+
 				ch.threema.storage.models.MessageState messageState = message.getState();
-				if (message instanceof GroupMessageModel) {
+				if (message instanceof GroupMessageModel
+                    && (messageState == USERACK || messageState == USERDEC)) {
 					// web/webtop does not know how to handle group acks
-					if (messageState == USERACK
-						|| messageState == USERDEC) {
-						messageState = DELIVERED;
-					}
-					maybePutReactions(builder, REACTIONS, ((GroupMessageModel) message).getGroupMessageStates());
-				}
+                    messageState = DELIVERED;
+                } else if (message instanceof MessageModel) {
+                    // TODO(ANDR-3517): Remove else if branch
+                    messageState = EmojiReactionConverterUtil
+                        .getContactAckDecFromReactions((MessageModel) message, reactions)
+                        .orElse(messageState);
+                }
+                if (BuildConfig.EMOJI_REACTIONS_WEB_ENABLED) {
+                    maybePutEmojiReactions(builder, getReactionBuckets(message));
+                } else {
+                    if (message instanceof GroupMessageModel) {
+                        maybePutReactions(
+                            builder,
+                            REACTIONS,
+                            EmojiReactionConverterUtil.getGroupAckDecFromReactions(reactions)
+                        );
+                    } else if (message instanceof MessageModel) {
+                        messageState = EmojiReactionConverterUtil
+                            .getContactAckDecFromReactions((MessageModel) message, reactions)
+                            .orElse(messageState);
+                    }
+                }
+
 				maybePutState(builder, STATE, messageState);
 				maybePutDate(builder, DATE, message);
 				maybePutLastEditedAt(builder, LAST_EDITED_AT, message);
@@ -308,10 +336,35 @@ public class Message extends Converter {
 				}
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
+
+    @NonNull
+    private static List<ReactionBucket> getReactionBuckets(@NonNull AbstractMessageModel message) throws ConversionException {
+        try {
+            final @NonNull List<EmojiReactionData> reactions = Objects.requireNonNull(getServiceManager())
+                .getModelRepositories()
+                .getEmojiReaction()
+                .safeGetReactionsByMessage(message);
+            return ReactionBucket.fromReactions(reactions);
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    @NonNull
+    private static List<EmojiReactionData> getReactions(AbstractMessageModel message) throws ConversionException {
+        try {
+            return Objects.requireNonNull(getServiceManager())
+                .getModelRepositories()
+                .getEmojiReaction()
+                .safeGetReactionsByMessage(message);
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
 
 	private static MsgpackObjectBuilder convertGroupStatus(GroupMessageModel message) throws ConversionException {
 		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
@@ -333,7 +386,7 @@ public class Message extends Converter {
 				maybePutEvents(builder, EVENTS, message);
 			}
 		} catch (Exception e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
@@ -360,7 +413,7 @@ public class Message extends Converter {
 				maybePutEvents(builder, EVENTS, message);
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
@@ -385,7 +438,7 @@ public class Message extends Converter {
 				maybePutEvents(builder, EVENTS, message);
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 		return builder;
 	}
@@ -411,15 +464,16 @@ public class Message extends Converter {
 		}
 	}
 
-	private static void maybePutReactions(MsgpackObjectBuilder builder, String field, @Nullable Map<String, Object> messageStates) {
+    // TODO(ANDR-3517): Remove
+	private static void maybePutReactions(MsgpackObjectBuilder builder, String field, @Nullable Map<String, ch.threema.storage.models.MessageState> messageStates) {
 		if (messageStates != null) {
 			final MsgpackArrayBuilder ackBuilder = new MsgpackArrayBuilder();
 			final MsgpackArrayBuilder decBuilder = new MsgpackArrayBuilder();
 
-			for (Map.Entry<String, Object> entry : messageStates.entrySet()) {
-				if (ch.threema.storage.models.MessageState.USERACK.toString().equals(entry.getValue())) {
+			for (Map.Entry<String, ch.threema.storage.models.MessageState> entry : messageStates.entrySet()) {
+				if (ch.threema.storage.models.MessageState.USERACK == entry.getValue()) {
 					ackBuilder.put(entry.getKey());
-				} else  if (ch.threema.storage.models.MessageState.USERDEC.toString().equals(entry.getValue())) {
+				} else  if (ch.threema.storage.models.MessageState.USERDEC == entry.getValue()) {
 					decBuilder.put(entry.getKey());
 				}
 			}
@@ -431,6 +485,30 @@ public class Message extends Converter {
 			);
 		}
 	}
+
+    private static void maybePutEmojiReactions(
+        @NonNull MsgpackObjectBuilder builder,
+        @NonNull List<ReactionBucket> reactionBuckets
+    ) {
+        if (reactionBuckets.isEmpty()) {
+            return;
+        }
+
+        MsgpackArrayBuilder reactionBucketsBuilder = new MsgpackArrayBuilder();
+
+        for (ReactionBucket bucket : reactionBuckets) {
+            MsgpackArrayBuilder identityListBuilder = new MsgpackArrayBuilder();
+            for (String identity : bucket.getIdentities()) {
+                identityListBuilder.put(identity);
+            }
+            MsgpackObjectBuilder reactionBucketBuilder = new MsgpackObjectBuilder();
+            reactionBucketBuilder.put(EMOJI_REACTIONS_KEY_EMOJI, bucket.getReaction());
+            reactionBucketBuilder.put(EMOJI_REACTIONS_KEY_IDENTITIES, identityListBuilder);
+            reactionBucketsBuilder.put(reactionBucketBuilder);
+        }
+
+        builder.put(EMOJI_REACTIONS, reactionBucketsBuilder);
+    }
 
 	private static void maybePutDate(MsgpackObjectBuilder builder, String field, AbstractMessageModel message) {
 		Date date = message.getPostedAt();
@@ -623,11 +701,11 @@ public class Message extends Converter {
 	private static void maybePutLocation(MsgpackObjectBuilder builder, String field, LocationDataModel locationData) {
 		if(locationData != null) {
 			builder.put(field, new MsgpackObjectBuilder()
-					.put(DATA_LOCATION_LATITUDE, locationData.getLatitude())
-					.put(DATA_LOCATION_LONGITUDE, locationData.getLongitude())
-					.put(DATA_LOCATION_ACCURACY, locationData.getAccuracy())
-					.maybePut(DATA_LOCATION_ADDRESS, locationData.getAddress())
-					.put(DATA_LOCATION_DESCRIPTION, locationData.getPoi()));
+					.put(DATA_LOCATION_LATITUDE, locationData.latitude)
+					.put(DATA_LOCATION_LONGITUDE, locationData.longitude)
+					.put(DATA_LOCATION_ACCURACY, locationData.accuracy)
+					.maybePut(DATA_LOCATION_ADDRESS, locationData.poiAddressOrNull)
+					.put(DATA_LOCATION_DESCRIPTION, locationData.poiNameOrNull));
 		}
 	}
 

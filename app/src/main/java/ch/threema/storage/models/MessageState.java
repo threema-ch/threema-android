@@ -75,11 +75,13 @@ public enum MessageState {
 	/**
 	 * A "thumbs up" reaction was sent by the recipient.
 	 */
+	@Deprecated
 	USERACK,
 
 	/**
 	 * A "thumbs down" reaction was sent by the recipient.
 	 */
+	@Deprecated
 	USERDEC,
 
 	/**

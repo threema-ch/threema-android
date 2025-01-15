@@ -675,7 +675,7 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
          */
         try {
             if (getMasterKey() != null && !getMasterKey().isProtected()) {
-                if (serviceManager != null && serviceManager.getPreferenceService().getWizardRunning()) {
+                if (serviceManager != null && serviceManager.getNotificationPreferenceService().getWizardRunning()) {
                     getMasterKey().setPassphrase(null);
                 }
             }
@@ -1479,9 +1479,6 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 					try {
 						final ConversationService conversationService = serviceManager.getConversationService();
 						final ContactService contactService = serviceManager.getContactService();
-
-                        // Remove contact from cache
-                        contactService.removeFromCache(identity);
 
                         // Refresh conversation cache
                         conversationService.updateContactConversation(modifiedContactModel);

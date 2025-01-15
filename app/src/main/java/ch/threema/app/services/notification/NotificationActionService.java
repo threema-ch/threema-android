@@ -34,10 +34,12 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
 import androidx.core.app.RemoteInput;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.LifetimeService;
@@ -87,7 +89,6 @@ public class NotificationActionService extends IntentService {
 		}
 	}
 
-
 	@Override
 	protected void onHandleIntent(@Nullable Intent intent) {
 		if (intent != null) {
@@ -108,13 +109,13 @@ public class NotificationActionService extends IntentService {
 							return;
 						case ACTION_ACK:
 							if (messageModel != null) {
-								ack(messageModel);
+								ack(messageReceiver, messageModel);
 								return;
 							}
 							break;
 						case ACTION_DEC:
 							if (messageModel != null) {
-								dec(messageModel);
+								dec(messageReceiver, messageModel);
 								return;
 							}
 							break;
@@ -146,25 +147,29 @@ public class NotificationActionService extends IntentService {
 		logger.info("Failed to handle notification action");
 	}
 
-	private void ack(@NonNull AbstractMessageModel messageModel) {
+	@WorkerThread
+	private void ack(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
 		lifetimeService.acquireConnection(TAG);
-
-		messageService.sendUserAcknowledgement(messageModel, true);
-		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
-
-		showToast(R.string.message_acknowledged);
-
+		try {
+			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, true);
+			notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
+			showToast(R.string.message_acknowledged);
+		} catch (Exception e) {
+			logger.error("Failed to send emoji reaction", e);
+		}
 		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
 	}
 
-	private void dec(@NonNull AbstractMessageModel messageModel) {
+	@WorkerThread
+	private void dec(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
 		lifetimeService.acquireConnection(TAG);
-
-		messageService.sendUserDecline(messageModel, true);
-		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
-
-		showToast(R.string.message_declined);
-
+		try {
+			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, true);
+			notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
+			showToast(R.string.message_declined);
+		} catch (Exception e) {
+			logger.error("Failed to send emoji reaction", e);
+		}
 		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
 	}
 

@@ -135,7 +135,7 @@
 		<item name="emoji_picker_hint">@color/emoji_picker_hint</item>
 		<item name="emoji_search_background">@color/emoji_search_background</item>
 		<item name="emoji_search_stroke">@color/emoji_search_stroke</item>
-	</style>
+    </style>
 
 	<style name="Theme.Threema.WithToolbar" parent="AppBaseTheme">
 		<item name="windowActionBar">false</item>

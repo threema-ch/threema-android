@@ -24,18 +24,18 @@ package ch.threema.app.webclient.converter;
 import android.content.Context;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.exceptions.FileSystemNotPresentException;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.localcrypto.MasterKeyLockedException;
@@ -48,23 +48,23 @@ public abstract class Converter {
 
 	private static ServiceManager serviceManager = null;
 
-	@Nullable
+	@NonNull
 	protected static ServiceManager getServiceManager() {
 		if (serviceManager == null) {
-			serviceManager = ThreemaApplication.getServiceManager();
+			serviceManager = ThreemaApplication.requireServiceManager();
 		}
 		return serviceManager;
 	}
 
-	protected static IdListService getBlockedContactsService() {
-		return getServiceManager().getBlockedContactsService();
+	protected static BlockedIdentitiesService getBlockedContactsService() {
+		return getServiceManager().getBlockedIdentitiesService();
 	}
 
 	protected static ContactService getContactService() throws ConversionException {
 		try {
 			return getServiceManager().getContactService();
 		} catch (NullPointerException | MasterKeyLockedException | FileSystemNotPresentException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -73,7 +73,7 @@ public abstract class Converter {
 			return getServiceManager().getHiddenChatsListService();
 		}
 		catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 	protected static Context getContext() {
@@ -84,7 +84,7 @@ public abstract class Converter {
 		try {
 			return getServiceManager().getGroupService();
 		} catch (NullPointerException | MasterKeyLockedException | FileSystemNotPresentException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -92,7 +92,7 @@ public abstract class Converter {
 		try {
 			return getServiceManager().getDistributionListService();
 		} catch (NullPointerException | MasterKeyLockedException | NoIdentityException | FileSystemNotPresentException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -100,7 +100,7 @@ public abstract class Converter {
 		try {
 			return getServiceManager().getPreferenceService();
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 
@@ -108,7 +108,7 @@ public abstract class Converter {
 		try {
 			return getServiceManager().getFileService();
 		} catch (NullPointerException | FileSystemNotPresentException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 }

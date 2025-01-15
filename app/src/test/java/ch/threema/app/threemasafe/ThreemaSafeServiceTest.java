@@ -39,12 +39,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.managers.CoreServiceManager;
 import ch.threema.app.services.ApiService;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DistributionListService;
@@ -105,7 +108,7 @@ public class ThreemaSafeServiceTest {
 	@Mock
 	private IdListService profilePicRecipientsServiceMock;
 	@Mock
-	private IdListService blockedContactsServiceMock;
+	private BlockedIdentitiesService blockedIdentitiesServiceMock;
 	@Mock
 	private IdListService excludedSyncIdentitiesServiceMock;
 	@Mock
@@ -139,7 +142,7 @@ public class ThreemaSafeServiceTest {
 			contextMock, preferenceServiceMock, userServiceMock,
 			contactServiceMock, groupServiceMock, distributionListServiceMock,
 			localeServiceMock, fileServiceMock,
-			blockedContactsServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
+            blockedIdentitiesServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
 			databaseServiceNewMock, identityStoreMock, apiService, apiConnectorMock,
 			hiddenContactsListMock, serverAddressProviderMock, preferenceStoreMock,
 			contactModelRepository
@@ -156,7 +159,7 @@ public class ThreemaSafeServiceTest {
         Mockito.when(identityStoreMock.getPrivateKey()).thenReturn(TEST_PRIVATE_KEY_BYTES);
 
         // Identity lists
-        Mockito.when(blockedContactsServiceMock.getAll()).thenReturn(new String[]{});
+        Mockito.when(blockedIdentitiesServiceMock.getAllBlockedIdentities()).thenReturn(new HashSet<>());
         Mockito.when(excludedSyncIdentitiesServiceMock.getAll()).thenReturn(new String[]{});
     }
 
@@ -388,12 +391,15 @@ public class ThreemaSafeServiceTest {
 
     @Test
     public void testSafeJsonSettingBlockedContacts() throws Exception {
-        Mockito.when(blockedContactsServiceMock.getAll()).thenReturn(new String[]{"NONONONO", "BLOCKED0"});
+        final Set<String> blockedIdentities = Set.of("NONONONO", "BLOCKED0");
+        Mockito.when(blockedIdentitiesServiceMock.getAllBlockedIdentities()).thenReturn(blockedIdentities);
 
         final JSONObject parsed = getParsedSafeJson(getServiceImpl());
         final JSONObject settings = parsed.getJSONObject("settings");
         final JSONArray identities = settings.getJSONArray("blockedContacts");
-        Assert.assertArrayEquals(new String[]{"NONONONO", "BLOCKED0"}, JSONUtil.getStringArray(identities));
+        final Set<String> actualBlockedIdentities = Set.of(JSONUtil.getStringArray(identities));
+        Assert.assertTrue(blockedIdentities.containsAll(actualBlockedIdentities));
+        Assert.assertEquals(blockedIdentities.size(), actualBlockedIdentities.size());
     }
 
     @Test

@@ -311,7 +311,7 @@
     <string name="state_dialog_edited">Modifié</string>
     <string name="state_dialog_deleted">Supprimé</string>
     <string name="state_dialog_status">État</string>
-    <string name="title_tab_recent">Récent</string>
+    <string name="title_tab_recent">Récents</string>
     <string name="no_recent_conversations">Aucune conversation trouvée</string>
     <string name="save_changes">Enregistrer</string>
     <string name="group_created_confirm">Groupe bien créé</string>
@@ -476,7 +476,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="back">Retour</string>
     <string name="wearable_reply">Répondre</string>
     <string name="wearable_reply_label">Répondre à %s</string>
-    <string name="message_acknowledged">Message bien compris</string>
+    <string name="message_acknowledged">Envoi d’un « pouce en l’air »</string>
     <string name="push_disable_text">Si vous continuez, « Threema Push » sera utilisé au lieu du service Push du système. Cela aide à réduire votre empreinte numérique, mais nécessite une configuration de votre téléphone qui permet à l\'application de fonctionner en arrière-plan. Vous devriez peut-être contacter l\'assistance du fabricant de votre appareil pour obtenir de l\'aide concernant cette configuration si vous ne trouvez pas les options correspondantes dans les paramètres de l\'appareil.</string>
     <string name="ballot_intermediate_results_show">Montrer les résultats intermédiaires</string>
     <string name="converting_video">Traitement de la vidéo</string>
@@ -595,7 +595,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="permission_storage_required">Pour envoyer des médias, autorisez Threema à accéder à l\'espace de stockage.</string>
     <string name="permission_location_required">Pour envoyer un emplacement, autorisez Threema à accéder à votre position.</string>
     <string name="permission_contacts_required">Pour envoyer des contacts, autorisez Threema à accéder aux contacts.</string>
-    <string name="message_declined">« Désapprouver » envoyé</string>
+    <string name="message_declined">Envoi d’un « pouce vers le bas »</string>
     <string name="notifications_settings">Réglages des notifications</string>
     <string name="notifications_default">Réglages par défaut</string>
     <string name="notifications_until">Jusqu\'à %s</string>
@@ -1590,6 +1590,20 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="cd_message_details_container">détails du message</string>
     <string name="cd_enable_formatting">Activer le formatage</string>
     <string name="cd_message">message</string>
+    <string name="reactions_on_this_message">Toutes les réactions</string>
+    <string name="select_emoji_content_description">Sélectionner l’emoji à ajouter à partir du sélecteur d’emoji</string>
+    <string name="group_emoji_reactions_partially_supported">Certains ne verront pas vos réactions en raison d’une ancienne version.</string>
+    <string name="tab_emoji_reactions_overview_content_description">%1$s réactions avec %2$s</string>
+    <string name="emoji_reactions_compatibility_infobox_text">Vous avez reçu des réactions emoji d’un contact qui possède une version plus récente de l’application. Outre les 👍 et 👎, votre version de l’application ne permet pas encore d’envoyer des réactions emoji.</string>
+    <string name="reaction_cannot_be_displayed">Cette réaction ne peut pas être affichée. Emoji inconnu.</string>
+    <string name="emoji_reactions_unavailable_title">Réactions Emoji indisponibles</string>
+    <string name="emoji_reactions_sending_not_supported_body">La version de votre application ne permet pas encore d’envoyer des réactions emoji.</string>
+    <string name="emoji_reactions_unavailable_body">%1$s utilise une version de l’application qui ne prend pas encore en charge cette fonctionnalité.</string>
+    <string name="emoji_reactions_unavailable_group_body">Vous ne pouvez pas réagir à ce message avec un emoji car aucun membre du groupe ne dispose d’une version de l’application prenant en charge cette fonctionnalité.</string>
+    <string name="emoji_reactions_cannot_remove_title">Suppression des réactions indisponibles</string>
+    <string name="emoji_reactions_cannot_remove_body">%1$s utilise une version de l’application qui ne prend pas encore en charge la suppression des réactions emoji ou l’envoi de plus d’une réaction emoji. Vous pouvez toujours remplacer 👍 par 👎 ou vice versa.</string>
+    <string name="emoji_reactions_cannot_remove_group_body">Aucun membre du groupe n’utilise une version de l’application qui permet de supprimer des réactions emoji ou d’envoyer plus d’une réaction emoji. Vous pouvez remplacer 👍 par 👎 ou vice-versa.</string>
+    <string name="emoji_reactions_cannot_remove_v1_body">La version de votre application ne permet pas encore de supprimer les réactions emoji ou d’envoyer plus d’une réaction emoji.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

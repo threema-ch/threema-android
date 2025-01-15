@@ -55,6 +55,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.IdListService;
@@ -95,7 +96,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 	private GroupService groupService;
 	private PreferenceService preferenceService;
 	private IdListService excludeFromSyncListService;
-	private IdListService blockedContactsService;
+	private BlockedIdentitiesService blockedIdentitiesService;
 	private final @NonNull ch.threema.data.models.ContactModel contactModel;
 	private final @NonNull ContactModelData contactModelData;
 	private final List<GroupModel> values;
@@ -236,7 +237,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             this.contactService = serviceManager.getContactService();
             this.groupService = serviceManager.getGroupService();
             this.excludeFromSyncListService = serviceManager.getExcludedSyncIdentitiesService();
-            this.blockedContactsService = serviceManager.getBlockedContactsService();
+            this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
             this.preferenceService = serviceManager.getPreferenceService();
         } catch (Exception e) {
             logger.error("Failed to set up services", e);
@@ -291,7 +292,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 			String identityAdditional = null;
 			switch (this.contactModelData.activityState) {
 				case ACTIVE:
-					if (blockedContactsService.has(contactModelData.identity)) {
+					if (blockedIdentitiesService.isBlocked(contactModelData.identity)) {
 						identityAdditional = context.getString(R.string.blocked);
 					}
 					break;

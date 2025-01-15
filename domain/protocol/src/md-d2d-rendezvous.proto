@@ -34,9 +34,9 @@
 // has been inserted (i.e. semantically equivalent to `x++` in many languages).
 //
 // **Framing:** An `extra.transport.frame` is being used to frame all
-// transmitted data even if the transport supports datagrams. This
-// intentionally allows to fragment a frame across multiple datagrams (e.g.
-// useful for limited APIs that cannot deliver data in a streamed fashion).
+// transmitted data even if the transport supports datagrams. This intentionally
+// allows to fragment a frame across multiple datagrams (e.g. useful for limited
+// APIs that cannot deliver data in a streamed fashion).
 //
 // ### Key Derivation
 //
@@ -100,10 +100,11 @@
 // challenges. While doing so, the peers measure the RTT between challenge and
 // response in order to determine a good path candidate for nomination.
 //
-// One of the peers, defined by the upper-level protocol, nominates one of the
-// established paths. Once nominated, both peers silently close all other paths.
+// One of the peers, defined by the upper-layer protocol, nominates one of the
+// established paths. Once nominated, both peers close all other paths (WS:
+// `1000`).
 //
-// Once a path has been nominated, that path will be handed to the upper-level
+// Once a path has been nominated, that path will be handed to the upper-layer
 // protocol for arbitrary data transmission. That data must be protected by
 // continuing the respective encryption scheme of the associated role.
 //
@@ -139,6 +140,28 @@
 //
 // Note: It is recommended to warn the user if a metered connection path has
 // been nominated in case large amounts of data are to be transmitted.
+//
+// ### WebSocket Close Codes
+//
+// When WebSocket is used as rendezvous transport, the following close codes
+// should be used:
+//
+// - Normal (`1000`): The rendezvous connection was not nominated or the
+//   upper-layer protocol exited successfully.
+// - Rendezvous Protocol Error (`4000`): The rendezvous protocol was violated.
+//   Possible examples: Invalid WebSocket path, session full. Error details may
+//   be included in the WebSocket close _reason_.
+// - Init Timeout (`4003`): The other device did not connect in time.
+// - Other Device Disconnected (`4004`): The other device disconnected without a
+//   reflectable close code.
+// - Upper-Layer Protocol Error (`4100`): The rendezvous connection was
+//   nominated but an upper-layer protocol error occurred.
+//
+// The device should log all other close codes but treat them as a _Rendezvous
+// Protocol Error_ (`4000`).
+//
+// Close codes in the `41xx` range as well as `1000` are reflected by the
+// rendezvous server to the other device.
 //
 // ### Security
 //
@@ -208,7 +231,7 @@ option java_package = "ch.threema.protobuf.d2d.rendezvous";
 //       2. Wait 100ms.
 // 4. Connect to the provided relayed WebSocket server in the background.
 // 5. On each successful direct or relayed connection made in the background,
-//    forward an event to the upper-level protocol in order for it to select one
+//    forward an event to the upper-layer protocol in order for it to select one
 //    of the paths for nomination.
 message RendezvousInit {
   enum Version {
@@ -287,7 +310,8 @@ message Handshake {
     // When receiving this message:
     //
     // 1. If the challenge `response` from RRD does not match the challenge sent
-    //    by RID, abort the connection and these steps.
+    //    by RID, close the connection with a protocol error (WS: `4000`) and
+    //    abort these steps.
     message Auth {
       // 16 byte repeated authentication challenge from RRD.
       bytes response = 1;
@@ -303,7 +327,8 @@ message Handshake {
     // When receiving this message:
     //
     // 1. If the challenge `response` from RID does not match the challenge sent
-    //    by RRD, abort the connection and these steps.
+    //    by RRD, close the connection with a protocol error (WS: `4000`) and
+    //    abort these steps.
     message AuthHello {
       // 16 byte repeated authentication challenge from RRD.
       bytes response = 1;
@@ -321,9 +346,12 @@ message Handshake {
 // nominate and is encrypted by the respective encryption scheme with RIDTK or
 // RRDTK.
 //
-// When sending or receiving this message:
+// When receiving this message:
 //
-// 1. If the sender was not eligible to `Nominate`, abort the connection and
-//    these steps.
-// 2. Silently close all other pending or established connection paths.
+// 1. If the sender was not eligible to `Nominate`, close the connection with a
+//    protocol error (WS: `4000`) and abort these steps.
+// 2. Close all other pending or established connection paths (WS: `1000`).¹
+//
+// ¹: Closing other paths is only triggered by the receiver as it may otherwise
+//    lead to a race between nomination and close detection.
 message Nominate {}

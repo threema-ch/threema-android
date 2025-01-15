@@ -44,7 +44,7 @@ public class VerificationLevel extends Converter {
 					throw new ConversionException("Unknown verification level: " + verificationLevel);
 			}
 		} catch (NullPointerException e) {
-			throw new ConversionException(e.toString());
+			throw new ConversionException(e);
 		}
 	}
 }

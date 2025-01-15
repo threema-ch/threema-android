@@ -33,15 +33,12 @@ import android.text.format.DateUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
-import com.neilalexander.jnacl.NaCl;
 
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,7 +65,6 @@ import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.listeners.ContactTypingListener;
-import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -80,7 +76,6 @@ import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
@@ -102,9 +97,6 @@ import ch.threema.domain.models.TypingIndicatorPolicy;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.protocol.blob.BlobScope;
-import ch.threema.domain.protocol.blob.BlobUploader;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -136,7 +128,9 @@ public class ContactServiceImpl implements ContactService {
     // NOTE: The contact model cache will become unnecessary once everything uses the new data
     // layer, since that data layer has caching built-in.
     private final Map<String, ContactModel> contactModelCache;
-    private final IdListService blockedContactsService, profilePicRecipientsService;
+    @NonNull
+    private final BlockedIdentitiesService blockedIdentitiesService;
+    private final IdListService profilePicRecipientsService;
     private final FileService fileService;
     private final ApiService apiService;
     private final LicenseService licenseService;
@@ -185,7 +179,7 @@ public class ContactServiceImpl implements ContactService {
         UserService userService,
         IdentityStore identityStore,
         PreferenceService preferenceService,
-        IdListService blockedContactsService,
+        @NonNull BlockedIdentitiesService blockedIdentitiesService,
         IdListService profilePicRecipientsService,
         FileService fileService,
         CacheService cacheService,
@@ -204,7 +198,7 @@ public class ContactServiceImpl implements ContactService {
         this.userService = userService;
         this.identityStore = identityStore;
         this.preferenceService = preferenceService;
-        this.blockedContactsService = blockedContactsService;
+        this.blockedIdentitiesService = blockedIdentitiesService;
         this.profilePicRecipientsService = profilePicRecipientsService;
         this.fileService = fileService;
         this.apiService = apiService;
@@ -694,6 +688,7 @@ public class ContactServiceImpl implements ContactService {
         final ContactModel contact = this.getByIdentity(identity);
         if (contact != null && contact.isArchived() != archived) {
             contact.setArchived(archived);
+            invalidateCache(identity);
             save(contact); // listeners will be fired by save()
         }
     }
@@ -701,10 +696,9 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public void bumpLastUpdate(@NonNull String identity) {
         logger.info("Bump last update for contact with identity {}", identity);
-        final ContactModel contact = this.getByIdentity(identity);
-        if (contact != null) {
+        if (getByIdentity(identity) != null) {
             Date lastUpdate = new Date();
-            contact.setLastUpdate(lastUpdate);
+            invalidateCache(identity);
             databaseServiceNew.getContactModelFactory().setLastUpdate(identity, lastUpdate);
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         } else {
@@ -717,9 +711,8 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public void clearLastUpdate(@NonNull String identity) {
-        final ContactModel contact = this.getByIdentity(identity);
-        if (contact != null) {
-            contact.setLastUpdate(null);
+        if (getByIdentity(identity) != null) {
+            invalidateCache(identity);
             databaseServiceNew.getContactModelFactory().setLastUpdate(identity, null);
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         }
@@ -880,7 +873,7 @@ public class ContactServiceImpl implements ContactService {
             serviceManager,
             this.databaseServiceNew,
             this.identityStore,
-            this.blockedContactsService
+            this.blockedIdentitiesService
         );
     }
 
@@ -1109,7 +1102,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void removeFromCache(@NonNull String identity) {
+    public void invalidateCache(@NonNull String identity) {
         synchronized (this.contactModelCache) {
             this.contactModelCache.remove(identity);
         }

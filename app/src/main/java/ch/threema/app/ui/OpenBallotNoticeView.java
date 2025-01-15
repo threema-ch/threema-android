@@ -84,6 +84,8 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.MessageId;
+import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotModel;
 
 /**
@@ -446,7 +448,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						BallotUtil.closeBallot(getActivity(), model, ballotService);
+						BallotUtil.closeBallot(getActivity(), model, ballotService, new MessageId(), TriggerSource.LOCAL);
 					}
 				});
 			builder.create().show();

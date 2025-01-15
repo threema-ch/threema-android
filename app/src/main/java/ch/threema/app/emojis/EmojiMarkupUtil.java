@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
@@ -103,10 +104,22 @@ public class EmojiMarkupUtil {
 	}
 
 	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean singleScale) {
-		return addTextSpans(context, text, textView, ignoreMarkup, ignoreMarkup, singleScale);
+		return addTextSpans(context, text, textView, ignoreMarkup, ignoreMarkup, singleScale, false);
 	}
 
-	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean ignoreMentions, boolean singleScale) {
+	/**
+	 * Add text spans to given CharSequence such as markup, mentions and emojis
+	 * @param context A context
+	 * @param text CharSequence to add text spans to
+	 * @param textView The TextView where the text is going to be located (used for size calculations)
+	 * @param ignoreMarkup Do not substitute markups with corresponding Spans
+	 * @param ignoreMentions Do not substitute mentions with corresponding Spans
+	 * @param singleScale Scale up single emojis in text containing emojis only
+	 * @param overrideEmojiStyleSetting Override the user's desired emoji style and always use the app supplied emoji set
+	 * @return CharSequence with spans applied, if any
+	 */
+    @NonNull
+	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean ignoreMentions, boolean singleScale, boolean overrideEmojiStyleSetting) {
 		if (text == null) {
 			return "";
 		}
@@ -119,7 +132,7 @@ public class EmojiMarkupUtil {
 			return builder;
 		}
 
-		if (context != null && textView != null && (ConfigUtils.isDefaultEmojiStyle() || length <= 5)) {
+		if (context != null && textView != null && (ConfigUtils.isDefaultEmojiStyle() || overrideEmojiStyleSetting || length <= 5)) {
 			ArrayList<Pair<EmojiParser.ParseResult, Integer>> results = new ArrayList<>();
 			boolean containsRegularText = false;
 
@@ -143,7 +156,7 @@ public class EmojiMarkupUtil {
 			if (!results.isEmpty()) {
 				int scaleFactor = singleScale && ConfigUtils.isBiggerSingleEmojis(context) && !containsRegularText && results.size() <= LARGE_EMOJI_THRESHOLD ? LARGE_EMOJI_SCALE_FACTOR : 1;
 
-				if (ConfigUtils.isDefaultEmojiStyle()) {
+				if (ConfigUtils.isDefaultEmojiStyle() || overrideEmojiStyleSetting) {
 					for (Pair<EmojiParser.ParseResult, Integer> result : results) {
 						Drawable drawable = EmojiManager.getInstance(context).getEmojiDrawable(result.first.coords);
 
@@ -192,7 +205,7 @@ public class EmojiMarkupUtil {
 			matches.add(new Pair<>(matcher.start(), matcher.end()));
 		}
 
-		if (matches.size() < 1) {
+		if (matches.isEmpty()) {
 			return inputText;
 		}
 
@@ -245,7 +258,6 @@ public class EmojiMarkupUtil {
 
 	/**
 	 * Replace mentions by text instead of spans (used where spans cannot be displayed, i.e. in notifications)
-	 * @param inputText
 	 * @return ChatSequence where all mentions have been replaced by contact names or ids
 	 */
 	private CharSequence applyTextMentionMarkup(CharSequence inputText) {
@@ -299,7 +311,7 @@ public class EmojiMarkupUtil {
 	}
 
 	public CharSequence formatBodyTextString(Context context, String string, int maxLen) {
-		if (string != null && string.length() > 0)
+		if (string != null && !string.isEmpty())
 			return addMarkup(context, string.substring(0, Math.min(maxLen, string.length())));
 		else
 			return "";

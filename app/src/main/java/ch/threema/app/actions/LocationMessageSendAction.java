@@ -26,6 +26,7 @@ import android.location.Location;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.messagereceiver.MessageReceiver;
@@ -61,7 +62,7 @@ public class LocationMessageSendAction extends SendAction {
 	public boolean sendLocationMessage(
 		final MessageReceiver[] allReceivers,
 		final Location location,
-		final String poiName,
+		final @Nullable String poiName,
 		final ActionHandler actionHandler
 	) {
 		if (actionHandler == null) {
@@ -123,7 +124,7 @@ public class LocationMessageSendAction extends SendAction {
 	private void sendSingleMessage(
 		final MessageReceiver messageReceiver,
 		final @NonNull Location location,
-		final String poiName,
+		final @Nullable String poiName,
 		final @NonNull ActionHandler actionHandler
 	) {
 		if (messageReceiver == null) {

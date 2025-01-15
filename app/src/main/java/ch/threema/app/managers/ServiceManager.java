@@ -54,6 +54,8 @@ import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ApiServiceImpl;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.AvatarCacheServiceImpl;
+import ch.threema.app.services.BlockedIdentitiesService;
+import ch.threema.app.services.BlockedIdentitiesServiceImpl;
 import ch.threema.app.services.BrowserDetectionService;
 import ch.threema.app.services.BrowserDetectionServiceImpl;
 import ch.threema.app.services.CacheService;
@@ -84,6 +86,8 @@ import ch.threema.app.services.LocaleServiceImpl;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
+import ch.threema.app.services.NotificationPreferenceService;
+import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PinLockService;
@@ -190,6 +194,8 @@ public class ServiceManager {
     @Nullable
     private PreferenceService preferencesService;
     @Nullable
+    private NotificationPreferenceService notificationPreferenceService;
+    @Nullable
     private LocaleService localeService;
     @Nullable
     private DeviceService deviceService;
@@ -227,7 +233,9 @@ public class ServiceManager {
     private SystemScreenLockService systemScreenLockService;
 
     @Nullable
-    private IdListService blockedContactsService, excludedSyncIdentitiesService, profilePicRecipientsService;
+    private BlockedIdentitiesService blockedIdentitiesService;
+    @Nullable
+    private IdListService excludedSyncIdentitiesService, profilePicRecipientsService;
     @Nullable
     private DeadlineListService mutedChatsListService, hiddenChatListService, mentionOnlyChatsListService;
     @Nullable
@@ -445,7 +453,7 @@ public class ServiceManager {
                 this.getUserService(),
                 this.getIdentityStore(),
                 this.getPreferenceService(),
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
                 this.getProfilePicRecipientsService(),
                 this.getFileService(),
                 this.cacheService,
@@ -479,9 +487,10 @@ public class ServiceManager {
                 this.getApiService(),
                 this.getDownloadService(),
                 this.getHiddenChatsListService(),
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
+                this.getMultiDeviceManager(),
                 this.getModelRepositories().getEditHistory(),
-                this.getMultiDeviceManager()
+                this.getModelRepositories().getEmojiReaction()
             );
         }
 
@@ -493,10 +502,23 @@ public class ServiceManager {
         if (this.preferencesService == null) {
             this.preferencesService = new PreferenceServiceImpl(
                 this.getContext(),
-                this.coreServiceManager.getPreferenceStore()
+                this.coreServiceManager.getPreferenceStore(),
+                this.getTaskManager(),
+                this.getMultiDeviceManager(),
+                this.getNonceFactory()
             );
         }
         return this.preferencesService;
+    }
+
+    @NonNull
+    public NotificationPreferenceService getNotificationPreferenceService() {
+        if (notificationPreferenceService == null) {
+            notificationPreferenceService = new NotificationPreferenceServiceImpl(
+                getContext(), getPreferenceStore()
+            );
+        }
+        return notificationPreferenceService;
     }
 
     @NonNull
@@ -769,7 +791,7 @@ public class ServiceManager {
                 this.getDistributionListService(),
                 this.getMessageService(),
                 this.getHiddenChatsListService(),
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
                 this.getConversationTagService()
             );
         }
@@ -793,7 +815,7 @@ public class ServiceManager {
                 this.getContext(),
                 this.getLockAppService(),
                 this.getHiddenChatsListService(),
-                this.getPreferenceService(),
+                this.getNotificationPreferenceService(),
                 this.getRingtoneService()
             );
         }
@@ -815,7 +837,7 @@ public class ServiceManager {
                 this.getDeviceService(),
                 this.getFileService(),
                 this.getIdentityStore(),
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
                 this.getApiService()
             );
         }
@@ -824,12 +846,15 @@ public class ServiceManager {
     }
 
     @NonNull
-    public IdListService getBlockedContactsService() {
-        if (this.blockedContactsService == null) {
-            // Keep the uniqueListName `identity_list_blacklist` to avoid a migration of the key in the preferences
-            this.blockedContactsService = new IdListServiceImpl("identity_list_blacklist", this.getPreferenceService());
+    public BlockedIdentitiesService getBlockedIdentitiesService() {
+        if (this.blockedIdentitiesService == null) {
+            this.blockedIdentitiesService = new BlockedIdentitiesServiceImpl(
+                getPreferenceService(),
+                getMultiDeviceManager(),
+                getTaskCreator()
+            );
         }
-        return this.blockedContactsService;
+        return this.blockedIdentitiesService;
     }
 
     @NonNull
@@ -877,6 +902,7 @@ public class ServiceManager {
                 this.getMessageService(),
                 this.getFileService(),
                 this.getPreferenceService(),
+                this.getNotificationPreferenceService(),
                 this.getHiddenChatsListService()
             );
         }
@@ -934,7 +960,7 @@ public class ServiceManager {
                 this.getDistributionListService(),
                 this.getLocaleService(),
                 this.getFileService(),
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
                 this.getExcludedSyncIdentitiesService(),
                 this.getProfilePicRecipientsService(),
                 this.getDatabaseServiceNew(),
@@ -963,7 +989,10 @@ public class ServiceManager {
     @NonNull
     public RingtoneService getRingtoneService() {
         if (this.ringtoneService == null) {
-            this.ringtoneService = new RingtoneServiceImpl(this.getPreferenceService());
+            this.ringtoneService = new RingtoneServiceImpl(
+                this.getPreferenceService(),
+                this.getNotificationPreferenceService()
+            );
         }
 
         return this.ringtoneService;
@@ -1017,7 +1046,7 @@ public class ServiceManager {
                 this.getMessageService(),
                 this.getNotificationService(),
                 this.databaseServiceNew,
-                this.getBlockedContactsService(),
+                this.getBlockedIdentitiesService(),
                 this.getPreferenceService(),
                 this.getUserService(),
                 this.getHiddenChatsListService(),

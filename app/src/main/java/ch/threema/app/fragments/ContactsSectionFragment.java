@@ -108,6 +108,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.AvatarCacheService;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.PreferenceService;
@@ -652,7 +653,7 @@ public class ContactsSectionFragment
 							contactModels,
 							contactService,
 							serviceManager.getPreferenceService(),
-							serviceManager.getBlockedContactsService(),
+							serviceManager.getBlockedIdentitiesService(),
 							ContactsSectionFragment.this,
 							Glide.with(getContext())
 						);
@@ -1180,7 +1181,7 @@ public class ContactsSectionFragment
 				}
 			}
 
-			if (serviceManager.getBlockedContactsService().has(contactModel.getIdentity())) {
+			if (serviceManager.getBlockedIdentitiesService().isBlocked(contactModel.getIdentity())) {
 				items.add(new SelectorDialogItem(getString(R.string.unblock_contact), R.drawable.ic_block));
 			} else {
 				items.add(new SelectorDialogItem(getString(R.string.block_contact), R.drawable.ic_block));
@@ -1427,7 +1428,7 @@ public class ContactsSectionFragment
 				sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
 				break;
 			case SELECTOR_TAG_BLOCK:
-				serviceManager.getBlockedContactsService().toggle(getActivity(), contactModel);
+				serviceManager.getBlockedIdentitiesService().toggleBlocked(contactModel.getIdentity(), getContext());
 				break;
 			case SELECTOR_TAG_DELETE:
 				deleteContacts(Set.of(contactModel));
@@ -1463,7 +1464,7 @@ public class ContactsSectionFragment
 
 						final String spammerIdentity = contactModel.getIdentity();
 						if (checked) {
-							ThreemaApplication.requireServiceManager().getBlockedContactsService().add(spammerIdentity);
+							ThreemaApplication.requireServiceManager().getBlockedIdentitiesService().blockIdentity(spammerIdentity, null);
 							ThreemaApplication.requireServiceManager().getExcludedSyncIdentitiesService().add(spammerIdentity);
 
 							try {

@@ -133,6 +133,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
+import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -1591,11 +1592,14 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     @WorkerThread
     private void sendLocationMessage(final MessageReceiver[] messageReceivers, LocationDataModel locationData) {
         final Location location = new Location("");
-        location.setLatitude(locationData.getLatitude());
-        location.setLongitude(locationData.getLongitude());
-        location.setAccuracy(locationData.getAccuracy());
-
-        final String poiName = locationData.getPoi();
+        location.setLatitude(locationData.latitude);
+        location.setLongitude(locationData.longitude);
+        location.setAccuracy((float)locationData.accuracyOrFallback);
+        final @Nullable Poi poi = locationData.poi;
+        @Nullable String poiName = null;
+        if (poi != null) {
+            poiName = poi.getName();
+        }
 
         LocationMessageSendAction.getInstance()
             .sendLocationMessage(messageReceivers, location, poiName, new SendAction.ActionHandler() {

@@ -429,13 +429,15 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
 			createDispatcher,
 			services.message,
 			services.lifetime,
-			services.blockedContactsService));
+			services.blockedIdentitiesService
+        ));
 		createDispatcher.addReceiver(new FileMessageCreateHandler(
 			createDispatcher,
 			services.message,
 			services.file,
 			services.lifetime,
-			services.blockedContactsService));
+			services.blockedIdentitiesService
+        ));
 
 		createDispatcher.addReceiver(new CreateContactHandler(
 			createDispatcher,

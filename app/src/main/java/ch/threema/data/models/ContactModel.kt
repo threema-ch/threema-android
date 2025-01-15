@@ -21,12 +21,13 @@
 
 package ch.threema.data.models
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
-import ch.threema.app.tasks.ReflectContactSyncUpdateTask
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.managers.ServiceManager
+import ch.threema.app.services.ContactService
+import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
+import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.utils.ColorUtil
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.runtimeAssert
@@ -355,10 +356,18 @@ class ContactModel(
         runtimeAssert(identity == data.identity, "Contact model identity mismatch")
     }
 
+    // TODO(ANDR-3037): Check if this is still necessary after this ticket
     /**
-     * Get a [LiveData] for the internal data state flow.
+     *  We have to make the bridge over to the old ContactService in order
+     *  to keep the new and old caches both correct.
      */
-    fun liveData(): LiveData<ContactModelData?> = data.asLiveData()
+    private val deprecatedContactService: ContactService? by lazy {
+        val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
+        if (serviceManager == null) {
+            logger.warn("Tried to get the contactService before the service-manager was created.")
+        }
+        serviceManager?.contactService
+    }
 
     /**
      * Update the contact's first and last name.
@@ -371,7 +380,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.firstName != firstName || originalData.lastName != lastName },
             updateData = { originalData -> originalData.copy(firstName = firstName, lastName = lastName) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectNameUpdate(
                 newFirstName = firstName,
                 newLastName = lastName,
@@ -395,6 +404,7 @@ class ContactModel(
             updateData = { originalData -> originalData.copy(acquaintanceLevel = acquaintanceLevel) },
             updateDatabase = ::updateDatabase,
             onUpdated = { contactModelData ->
+                deprecatedContactService?.invalidateCache(contactModelData.identity)
                 when (acquaintanceLevel) {
                     AcquaintanceLevel.DIRECT -> notifyDeprecatedOnModifiedListeners(contactModelData)
                     AcquaintanceLevel.GROUP -> notifyDeprecatedOnRemovedListeners(contactModelData.identity)
@@ -421,7 +431,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.verificationLevel != verificationLevel },
             updateData = { originalData -> originalData.copy(verificationLevel = verificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate(
                 verificationLevel,
                 identity,
@@ -443,7 +453,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.workVerificationLevel != workVerificationLevel },
             updateData = { originalData -> originalData.copy(workVerificationLevel = workVerificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate(
                 workVerificationLevel,
                 identity,
@@ -465,7 +475,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.identityType != identityType },
             updateData = { originalData -> originalData.copy(identityType = identityType) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate(
                 identityType,
                 identity,
@@ -494,7 +504,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.featureMask != featureMask.toULong() },
             updateData = { originalData -> originalData.copy(featureMask = featureMask.toULong()) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate(
                 featureMask,
                 identity,
@@ -516,7 +526,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.firstName != firstName },
             updateData = { originalData -> originalData.copy(firstName = firstName) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -531,7 +541,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.lastName != lastName },
             updateData = { originalData -> originalData.copy(lastName = lastName) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -546,7 +556,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.nickname != nickname },
             updateData = { originalData -> originalData.copy(nickname = nickname) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -574,7 +584,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.nickname != nickname },
             updateData = { originalData -> originalData.copy(nickname = nickname) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -589,7 +599,7 @@ class ContactModel(
             detectChanges = { it.verificationLevel != verificationLevel },
             updateData = { it.copy(verificationLevel = verificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -604,7 +614,7 @@ class ContactModel(
             detectChanges = { it.workVerificationLevel != workVerificationLevel },
             updateData = { it.copy(workVerificationLevel = workVerificationLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -619,7 +629,7 @@ class ContactModel(
             detectChanges = { it.identityType != identityType },
             updateData = { it.copy(identityType = identityType) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -634,7 +644,7 @@ class ContactModel(
             detectChanges = { it.acquaintanceLevel != acquaintanceLevel },
             updateData = { it.copy(acquaintanceLevel = acquaintanceLevel) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -649,7 +659,7 @@ class ContactModel(
             detectChanges = { it.activityState != activityState },
             updateData = { it.copy(activityState = activityState) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -664,7 +674,7 @@ class ContactModel(
             detectChanges = { it.activityState != activityState },
             updateData = { it.copy(activityState = activityState) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectActivityStateUpdate(
                 activityState,
                 identity,
@@ -686,7 +696,7 @@ class ContactModel(
             detectChanges = { it.featureMask != featureMask },
             updateData = { it.copy(featureMask = featureMask) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -701,7 +711,11 @@ class ContactModel(
             detectChanges = { it.syncState != syncState },
             updateData = { it.copy(syncState = syncState) },
             updateDatabase = ::updateDatabase,
-            onUpdated = null // No need to notify listeners, this isn't something that will result in a UI change.
+            onUpdated = { updatedData ->
+                // No need to notify listeners, this isn't something that will result in a UI change.
+                // But keep old-service cache correct:
+                deprecatedContactService?.invalidateCache(updatedData.identity)
+            }
         )
     }
 
@@ -716,7 +730,7 @@ class ContactModel(
             detectChanges = { it.readReceiptPolicy != readReceiptPolicy },
             updateData = { it.copy(readReceiptPolicy = readReceiptPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -731,7 +745,7 @@ class ContactModel(
             detectChanges = { it.readReceiptPolicy != readReceiptPolicy },
             updateData = { it.copy(readReceiptPolicy = readReceiptPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate(
                 readReceiptPolicy,
                 identity,
@@ -753,7 +767,7 @@ class ContactModel(
             detectChanges = { it.typingIndicatorPolicy != typingIndicatorPolicy },
             updateData = { it.copy(typingIndicatorPolicy = typingIndicatorPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -768,7 +782,7 @@ class ContactModel(
             detectChanges = { it.typingIndicatorPolicy != typingIndicatorPolicy },
             updateData = { it.copy(typingIndicatorPolicy = typingIndicatorPolicy) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate(
                 typingIndicatorPolicy,
                 identity,
@@ -781,6 +795,8 @@ class ContactModel(
 
     /**
      * Update or remove the contact's Android contact lookup key.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun setAndroidLookupKey(lookupKey: String) {
         this.updateFields(
@@ -788,7 +804,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.androidContactLookupKey != lookupKey },
             updateData = { originalData -> originalData.copy(androidContactLookupKey = lookupKey) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -804,7 +820,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.androidContactLookupKey != null },
             updateData = { originalData -> originalData.copy(androidContactLookupKey = null) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated
         )
 
         // Change verification level if it is server verified. Note that we do not use
@@ -815,7 +831,7 @@ class ContactModel(
             detectChanges = { originalData -> originalData.verificationLevel == VerificationLevel.SERVER_VERIFIED },
             updateData = { originalData -> originalData.copy(verificationLevel = VerificationLevel.UNVERIFIED) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners,
+            onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate(
                 VerificationLevel.UNVERIFIED,
                 identity,
@@ -828,6 +844,8 @@ class ContactModel(
 
     /**
      * Update or remove the contact's local avatar expiration date.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun setLocalAvatarExpires(expiresAt: Date?) {
         this.updateFields(
@@ -835,7 +853,11 @@ class ContactModel(
             detectChanges = { originalData -> originalData.localAvatarExpires != expiresAt },
             updateData = { originalData -> originalData.copy(localAvatarExpires = expiresAt) },
             updateDatabase = ::updateDatabase,
-            onUpdated = null, // No need to notify listeners, this isn't something that will result in a UI change.
+            onUpdated = { updatedData ->
+                // No need to notify listeners, this isn't something that will result in a UI change.
+                // But keep old-service cache correct:
+                deprecatedContactService?.invalidateCache(updatedData.identity)
+            }
         )
     }
 
@@ -844,6 +866,8 @@ class ContactModel(
      *
      * This should be called once the post-restore sync steps (e.g. profile picture request)
      * have been completed.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun clearIsRestored() {
         this.updateFields(
@@ -851,7 +875,11 @@ class ContactModel(
             detectChanges = { originalData -> originalData.isRestored },
             updateData = { originalData -> originalData.copy(isRestored = false) },
             updateDatabase = ::updateDatabase,
-            onUpdated = null, // No need to notify listeners, this isn't something that will result in a UI change.
+            onUpdated = { updatedData ->
+                // No need to notify listeners, this isn't something that will result in a UI change.
+                // But keep old-service cache correct:
+                deprecatedContactService?.invalidateCache(updatedData.identity)
+            }
         )
     }
 
@@ -861,6 +889,8 @@ class ContactModel(
      * @param blobId The blobId of the latest profile picture sent to this contact, `null` if no
      *   profile-picture has been sent, or an empty array if a delete-profile-picture message has
      *   been sent.
+     *
+     * @throws [ModelDeletedException] if model is deleted.
      */
     fun setProfilePictureBlobId(blobId: ByteArray?) {
         this.updateFields(
@@ -868,7 +898,7 @@ class ContactModel(
             detectChanges = { originalData -> !originalData.profilePictureBlobId.contentEquals(blobId) },
             updateData = { originalData -> originalData.copy(profilePictureBlobId = blobId) },
             updateDatabase = ::updateDatabase,
-            onUpdated = ::notifyDeprecatedOnModifiedListeners
+            onUpdated = ::defaultOnUpdated
         )
     }
 
@@ -883,7 +913,11 @@ class ContactModel(
             detectChanges = { originalData -> originalData.isRestored != isRestored },
             updateData = { originalData -> originalData.copy(isRestored = isRestored) },
             updateDatabase = ::updateDatabase,
-            onUpdated = null,
+            onUpdated = { updatedData ->
+                // No need to notify listeners, this isn't something that will result in a UI change.
+                // But keep old-service cache correct:
+                deprecatedContactService?.invalidateCache(updatedData.identity)
+            }
         )
     }
 
@@ -929,6 +963,11 @@ class ContactModel(
      */
     private fun notifyDeprecatedOnRemovedListeners(identity: String) {
         ListenerManager.contactListeners.handle { it.onRemoved(identity) }
+    }
+
+    private fun defaultOnUpdated(updatedData: ContactModelData) {
+        deprecatedContactService?.invalidateCache(updatedData.identity)
+        notifyDeprecatedOnModifiedListeners(updatedData)
     }
 }
 

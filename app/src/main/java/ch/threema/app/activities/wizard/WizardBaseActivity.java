@@ -68,6 +68,7 @@ import ch.threema.app.fragments.wizard.WizardFragment4;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.LocaleService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.UserService;
@@ -143,6 +144,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
     private UserService userService;
     private LocaleService localeService;
     private PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
     private ThreemaSafeService threemaSafeService;
     private APIConnector apiConnector;
     private ContactModelRepository contactModelRepository;
@@ -222,6 +224,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                 userService = serviceManager.getUserService();
                 localeService = serviceManager.getLocaleService();
                 preferenceService = serviceManager.getPreferenceService();
+                notificationPreferenceService = serviceManager.getNotificationPreferenceService();
                 threemaSafeService = serviceManager.getThreemaSafeService();
                 apiConnector = serviceManager.getAPIConnector();
                 contactModelRepository = serviceManager.getModelRepositories().getContacts();
@@ -936,7 +939,7 @@ public class WizardBaseActivity extends ThreemaAppCompatActivity implements
                     return;
                 }
 
-                preferenceService.setWizardRunning(false);
+                notificationPreferenceService.setWizardRunning(false);
                 preferenceService.setLatestVersion(WizardBaseActivity.this);
 
                 // Flush conversation cache (after a restore) to ensure that the conversation list

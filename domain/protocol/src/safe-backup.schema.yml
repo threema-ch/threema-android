@@ -8,9 +8,11 @@ properties:
     properties:
       version:
         type: integer
-        description: Currently always `1`
-        enum:
-          - 1
+        description: Current version
+        anyOf:
+          - title: Version 1
+            const: 1
+          - {}
       device:
         type: string
         description: A string with device information
@@ -64,9 +66,12 @@ properties:
             type:
               type: string
               description: The link type
-              enum:
-                - mobile
-                - email
+              anyOf:
+                - title: Phone number
+                  const: mobile
+                - title: Email
+                  const: email
+                - {}
             name:
               type: string
               description: A link description, e.g. "private" or "office".
@@ -113,13 +118,15 @@ properties:
             - 1524489122916
         verification:
           type: integer
-          description: |-
-            The verification level. 0 = unverified, 1 = server verified, 2 =
-            fully verified.
-          enum:
-            - 0
-            - 1
-            - 2
+          description: The verification level
+          anyOf:
+            - title: Unverified
+              const: 0
+            - title: Server verified
+              const: 1
+            - title: Fully verified
+              const: 2
+            - {}
         workVerified:
           type: boolean
           description:
@@ -171,22 +178,26 @@ properties:
           default: 'false'
         readReceipts:
           type: integer
-          description: |-
-            Whether to send read receipts. 0 = use default, 1 = send, 2 = don't
-            send.
-          enum:
-            - 0
-            - 1
-            - 2
+          description: Whether to send read receipts
+          anyOf:
+            - title: Apply default
+              const: 0
+            - title: Send
+              const: 1
+            - title: Don't send
+              const: 2
+            - {}
         typingIndicators:
           type: integer
-          description: |-
-            Whether to send typing indicators. 0 = use default, 1 = send, 2 =
-            don't send.
-          enum:
-            - 0
-            - 1
-            - 2
+          description: Whether to send typing indicators
+          anyOf:
+            - title: Apply default
+              const: 0
+            - title: Send
+              const: 1
+            - title: Don't send
+              const: 2
+            - {}
       required:
         - identity
         - verification

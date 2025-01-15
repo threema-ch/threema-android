@@ -40,6 +40,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.services.ServicesConstants
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.SoundUtil
 import ch.threema.base.utils.LoggingUtil
@@ -450,7 +451,7 @@ object NotificationChannels {
 
     private fun getRingtoneUriFromPrefsKey(context: Context, sharedPreferences: SharedPreferences, key: Int) : Uri {
         val ringtone = sharedPreferences.getString(context.getString(key), null)
-        return if (!ringtone.isNullOrEmpty() && "null" != ringtone) Uri.parse(ringtone) else Settings.System.DEFAULT_NOTIFICATION_URI
+        return if (!ringtone.isNullOrEmpty() && ringtone != ServicesConstants.PREFERENCES_NULL) Uri.parse(ringtone) else Settings.System.DEFAULT_NOTIFICATION_URI
     }
 
     /**

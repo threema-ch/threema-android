@@ -250,8 +250,8 @@
     <string name="emoji_travel">旅行與地點</string>
     <string name="emoji_activity">活動</string>
     <string name="emoji_objects">物件</string>
-    <string name="emoji_symbols">人的符号</string>
-    <string name="emoji_flags">旗帜</string>
+    <string name="emoji_symbols">符號</string>
+    <string name="emoji_flags">旗幟</string>
     <string name="emoji_search">搜尋表情符號</string>
     <string name="emoji_search_no_result">無搜尋結果</string>
     <string name="title_lock">鎖</string>
@@ -489,7 +489,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回覆</string>
     <string name="wearable_reply_label">回覆 %s</string>
-    <string name="message_acknowledged">您對這則訊息表示「同意」。</string>
+    <string name="message_acknowledged">已發送「讚好」</string>
     <string name="push_disable_text">如果繼續，您將使用「Threema Push」代替系統內置的推播服務。雖然這能減少您的數碼足跡，但您需要允許「應用程式在背景執行」才能順利使用。如果在裝置設定中找不到相應的選項，您可能需要聯絡裝置製造商的支援以取得配置說明。</string>
     <string name="ballot_intermediate_results_show">顯示中間結果</string>
     <string name="converting_video">正在處理影片</string>
@@ -612,7 +612,7 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_storage_required">如要儲存或傳送媒體，請允許 Threema 取用儲存權限。</string>
     <string name="permission_location_required">如要傳送位置，請允許 Threema 取用您的位置的權限。</string>
     <string name="permission_contacts_required">如要傳送聯絡人，請允許 Threema 讀取聯絡人的權限。</string>
-    <string name="message_declined">您對這則訊息表示「不同意」。</string>
+    <string name="message_declined">已發送「不喜歡」</string>
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">預設設定</string>
     <string name="notifications_until">直至%s</string>
@@ -1052,7 +1052,7 @@ Threema 支援的所有表情符號。</string>
     <string name="message_was_deleted">此訊息已刪除</string>
     <string name="continue_recording">繼續錄音</string>
     <string name="whatsnew_title">%1$s %2$s 有哪些新功能？</string>
-    <string name="whatsnew_headline"><![CDATA[        <p>為了改善通知的顯示效果，在背景執行時的通知已進行了全面改進。如果某些對話已啟用個別通知設定，就需要重新設定。</p> 
+    <string name="whatsnew_headline"><![CDATA[        <p>為了改善通知的顯示效果，在背景執行時的通知已進行了全面改進。如果某些對話已啟用個別通知設定，就需要重新設定。</p>
         ]]></string>
     <string name="tap_to_start">點擊這裡立即開啟 %s。</string>
     <string name="two_years">2年</string>
@@ -1616,6 +1616,20 @@ Threema 支援的所有表情符號。</string>
     <string name="cd_message_details_container">訊息詳情</string>
     <string name="cd_enable_formatting">開啟格式化</string>
     <string name="cd_message">訊息</string>
+    <string name="reactions_on_this_message">所有表情回應</string>
+    <string name="select_emoji_content_description">在表情符號選取器內，選取要新增的表情符號</string>
+    <string name="group_emoji_reactions_partially_supported">部分使用者可能正使用舊版本的應用程式，而看不到您的表情回應。</string>
+    <string name="tab_emoji_reactions_overview_content_description">%1$s表情回應為%2$s</string>
+    <string name="emoji_reactions_compatibility_infobox_text">您收到了使用新應用程式版本的聯絡人的表情回應。除了 👍 和 👎 之外，您的應用程式版本尚未支援傳送表情符號回應。</string>
+    <string name="reaction_cannot_be_displayed">無法顯示此表情回應，這是未知的表情符號。</string>
+    <string name="emoji_reactions_unavailable_title">新增表情回應失敗</string>
+    <string name="emoji_reactions_sending_not_supported_body">您目前使用的應用程式版本尚未支援傳送表情回應。</string>
+    <string name="emoji_reactions_unavailable_body">%1$s使用的應用程式版本尚未支援此功能。</string>
+    <string name="emoji_reactions_unavailable_group_body">由於所有群組成員使用的應用程式版本都不支援表情回應功能，因此無法對訊息作出表情回應。</string>
+    <string name="emoji_reactions_cannot_remove_title">移除表情回應失敗</string>
+    <string name="emoji_reactions_cannot_remove_body">雖然%1$s使用的應用程式版本尚未支援刪除表情回應或傳送多個表情回應，但您仍然可以選擇 👍 或 👎 。</string>
+    <string name="emoji_reactions_cannot_remove_group_body">雖然所有群組成員使用的應用程式版本都未支援刪除表情回應或傳送多個表情回應，但您仍然可以選擇 👍 或 👎 。</string>
+    <string name="emoji_reactions_cannot_remove_v1_body">您目前使用的應用程式版本尚未支援移除表情回應或傳送多個表情回應。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

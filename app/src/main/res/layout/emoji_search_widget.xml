@@ -1,77 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:background="?attr/emoji_picker_background_main">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/emoji_picker_background_main">
 
-	<ch.threema.app.emojis.EmojiEditText
-		android:id="@+id/search_term"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:hint="@string/emoji_search"
-		android:inputType="text"
-		android:layout_marginStart="@dimen/emoji_search_padding"
-		android:paddingStart="@dimen/emoji_search_corner_radius"
-		android:paddingTop="@dimen/emoji_search_input_padding"
-		android:paddingBottom="@dimen/emoji_search_input_padding"
-		android:paddingEnd="32dp"
-		android:background="@drawable/emoji_search_input_background"
-		android:layout_marginTop="@dimen/emoji_search_margin"
-		android:layout_marginEnd="@dimen/emoji_search_margin"
-		android:textColor="?attr/colorOnBackground"
-		android:imeOptions="actionSearch"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintEnd_toStartOf="@id/button_show_picker"
-		app:layout_constraintStart_toStartOf="parent" />
+    <ch.threema.app.emojis.EmojiEditText
+        android:id="@+id/search_term"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/emoji_search_padding"
+        android:layout_marginTop="@dimen/emoji_search_margin"
+        android:layout_marginEnd="@dimen/emoji_search_margin"
+        android:background="@drawable/emoji_search_input_background"
+        android:hint="@string/emoji_search"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:paddingStart="@dimen/emoji_search_corner_radius"
+        android:paddingTop="@dimen/emoji_search_input_padding"
+        android:paddingEnd="32dp"
+        android:paddingBottom="@dimen/emoji_search_input_padding"
+        android:textColor="?attr/colorOnBackground"
+        app:layout_constraintEnd_toStartOf="@id/button_show_picker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-	<androidx.appcompat.widget.AppCompatImageButton
-		android:id="@+id/button_clear_search"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:src="@drawable/ic_close"
-		android:background="@null"
-		android:layout_marginEnd="@dimen/emoji_search_input_padding"
-		android:visibility="gone"
-		android:tint="?attr/colorOnSurface"
-		app:layout_constraintTop_toTopOf="@id/search_term"
-		app:layout_constraintBottom_toBottomOf="@id/search_term"
-		app:layout_constraintEnd_toEndOf="@id/search_term" />
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/button_clear_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/emoji_search_input_padding"
+        android:background="@null"
+        android:src="@drawable/ic_close"
+        android:tint="?attr/colorOnSurface"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/search_term"
+        app:layout_constraintEnd_toEndOf="@id/search_term"
+        app:layout_constraintTop_toTopOf="@id/search_term" />
 
-	<androidx.appcompat.widget.AppCompatImageButton
-		style="?android:attr/borderlessButtonStyle"
-		android:id="@+id/button_show_picker"
-		android:layout_width="@dimen/emoji_button_width"
-		android:layout_height="@dimen/emoji_button_width"
-		android:layout_marginEnd="@dimen/emoji_search_padding"
-		android:src="@drawable/ic_tag_faces_outline"
-		android:text="@string/select_emoji"
-		android:tint="?attr/colorOnSurface"
-		app:layout_constraintTop_toTopOf="@id/search_term"
-		app:layout_constraintBottom_toBottomOf="@id/search_term"
-		app:layout_constraintStart_toEndOf="@id/search_term"
-		app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/button_show_picker"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="@dimen/emoji_button_width"
+        android:layout_height="@dimen/emoji_button_width"
+        android:layout_marginEnd="@dimen/emoji_search_padding"
+        android:src="@drawable/ic_tag_faces_outline"
+        android:text="@string/select_emoji"
+        android:tint="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/search_term"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/search_term"
+        app:layout_constraintTop_toTopOf="@id/search_term" />
 
-	<TextView
-		android:id="@+id/no_search_results"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/emoji_search_no_result"
-		android:visibility="gone"
-		android:gravity="center"
-		app:layout_constraintTop_toBottomOf="@id/search_term"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/group_search_bar_with_button_show_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="search_term, button_show_picker" />
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/search_results"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		app:layout_constraintTop_toBottomOf="@id/search_term"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/no_search_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/emoji_search_no_result"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_search_bar_with_button_show_picker"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/group_search_bar_with_button_show_picker"
+        tools:itemCount="5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

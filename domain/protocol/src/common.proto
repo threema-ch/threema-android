@@ -120,6 +120,8 @@ enum CspFeatureMaskFlag {
   EDIT_MESSAGE_SUPPORT = 0x0100;
   // Supports deleting messages.
   DELETE_MESSAGE_SUPPORT = 0x0200;
+  // Supports (new-style) reactions.
+  REACTION_SUPPORT = 0x0400;
 }
 
 // E2E message type as defined by the Chat Server Protocol.
@@ -167,6 +169,8 @@ enum CspE2eMessageType {
   DELIVERY_RECEIPT = 0x80;
   // [`typing-indicator`](ref:e2e.typing-indicator)
   TYPING_INDICATOR = 0x90;
+  // `csp-e2e.Reaction`
+  REACTION = 0x82;
   // `csp-e2e.EditMessage`
   EDIT_MESSAGE = 0x91;
   // `csp-e2e.DeleteMessage`
@@ -255,6 +259,9 @@ enum CspE2eMessageType {
   // `csp-e2e.DeleteMessage` wrapped by
   // [`group-member-container`](ref:e2e.group-member-container)
   GROUP_DELETE_MESSAGE = 0x94;
+  // `csp-e2e.Reaction` wrapped by
+  // [`group-member-container`](ref:e2e.group-member-container)
+  GROUP_REACTION = 0x83;
 
   // Forward security
   // ----------------

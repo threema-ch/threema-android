@@ -34,9 +34,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.QuoteUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
+import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
@@ -438,17 +438,18 @@ public abstract class AbstractMessageModel {
 
     protected MessageDataInterface dataObject;
 
-    public @NonNull LocationDataModel getLocationData() {
+    @NonNull
+    public LocationDataModel getLocationData() {
         if (this.dataObject == null) {
-            this.dataObject = LocationDataModel.create(this.getBody());
+            this.dataObject = LocationDataModel.fromStringOrDefault(this.getBody());
         }
         return (LocationDataModel) this.dataObject;
     }
 
-    public void setLocationData(LocationDataModel locationData) {
+    public void setLocationData(@NonNull LocationDataModel locationDataModel) {
         this.setType(MessageType.LOCATION);
-        this.setBody(locationData.toString());
-        this.dataObject = locationData;
+        this.setBody(locationDataModel.toString());
+        this.dataObject = locationDataModel;
     }
 
     public @NonNull VideoDataModel getVideoData() {
@@ -592,14 +593,18 @@ public abstract class AbstractMessageModel {
         return true;
     }
 
+    @Nullable
     public String getCaption() {
         switch (this.getType()) {
             case FILE:
                 return this.getFileData().getCaption();
             case LOCATION:
-                return TestUtil.isEmptyOrNull(this.getLocationData().getPoi()) ?
-                    this.getLocationData().getAddress() :
-                    "*" + this.getLocationData().getPoi() + "*\n" + this.getLocationData().getAddress();
+                final @Nullable Poi poi = this.getLocationData().poi;
+                if (poi != null) {
+                    return poi.getCaptionOrNull();
+                } else {
+                    return null;
+                }
             default:
                 return this.caption;
         }

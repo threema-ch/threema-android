@@ -34,10 +34,13 @@ import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.d2d.ContactSyncKt
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.ConversationId
+import ch.threema.protobuf.d2d.SettingsSyncKt
 import ch.threema.protobuf.d2d.UserProfileSyncKt
 import ch.threema.protobuf.d2d.contactSync
 import ch.threema.protobuf.d2d.conversationId
+import ch.threema.protobuf.d2d.settingsSync
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
+import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile
 import ch.threema.protobuf.d2d.userProfileSync
 import ch.threema.protobuf.groupIdentity
@@ -217,6 +220,20 @@ fun getEncryptedUserProfileSyncUpdate(
                 }
             }
         )
+    }
+    return multiDeviceProperties.keys.encryptEnvelope(envelope)
+}
+
+fun getEncryptedSettingsSyncUpdate(
+    settings: Settings,
+    multiDeviceProperties: MultiDeviceProperties,
+) : MultiDeviceKeys.EncryptedEnvelopeResult {
+    val envelope = buildEnvelopeFor(multiDeviceProperties.mediatorDeviceId) {
+        settingsSync = settingsSync {
+            this.update = SettingsSyncKt.update {
+                this.settings = settings
+            }
+        }
     }
     return multiDeviceProperties.keys.encryptEnvelope(envelope)
 }

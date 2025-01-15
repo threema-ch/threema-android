@@ -66,7 +66,7 @@ class IncomingGroupSetupTask(
     private val contactService by lazy { serviceManager.contactService }
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val groupService by lazy { serviceManager.groupService }
-    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
+    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
     private val groupCallManager by lazy { serviceManager.groupCallManager }
     private val databaseService by lazy { serviceManager.databaseServiceNew }
     private val contactStore by lazy { serviceManager.contactStore }
@@ -312,6 +312,6 @@ class IncomingGroupSetupTask(
     }
 
     private fun isBlocked(identity: String): Boolean =
-        blockedContactsService.has(identity) ||
+        blockedIdentitiesService.isBlocked(identity) ||
             (contactService.getByIdentity(identity) == null && preferenceService.isBlockUnknown)
 }

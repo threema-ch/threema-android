@@ -39,8 +39,6 @@
         tools:src="@drawable/ic_baseline_hearing_24"
         tools:visibility="visible" />
 
-    <include layout="@layout/conversation_bubble_footer_groupack_recv" />
-
     <TextView
         android:id="@+id/date_view"
         style="@style/Threema.Bubble.Text.Footer"

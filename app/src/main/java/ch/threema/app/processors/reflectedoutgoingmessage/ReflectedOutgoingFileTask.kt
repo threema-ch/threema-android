@@ -54,7 +54,7 @@ internal class ReflectedOutgoingFileTask(
 
     override fun processOutgoingMessage() {
 
-        // 1: Check if the group message already exists locally (from previous run(s) of this task).
+        // 1: Check if the message already exists locally (from previous run(s) of this task).
         //    If so, cancel and accept that the download for the content(s) might not be complete.
         messageService.getContactMessageModel(
             fileMessage.messageId,

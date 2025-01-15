@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +44,6 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
@@ -81,18 +81,6 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 			new String[]{
 				apiMessageId.toString(),
 				String.valueOf(groupId),
-			});
-	}
-
-	public GroupMessageModel getByApiMessageIdAndIdentityAndIsOutbox(MessageId apiMessageId, @NonNull String recipientIdentity, boolean isOutbox) {
-		return getFirst(
-			GroupMessageModel.COLUMN_API_MESSAGE_ID + "=?"
-				+ " AND " + GroupMessageModel.COLUMN_IDENTITY + "=?"
-				+ " AND " + GroupMessageModel.COLUMN_OUTBOX + "=?",
-			new String[]{
-				apiMessageId.toString(),
-				recipientIdentity,
-				String.valueOf(isOutbox)
 			});
 	}
 
@@ -207,60 +195,60 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 		}
 	}
 
+    /**
+     * Convert a cursor's rows to a list of {@link AbstractMessageModel}s.
+     * Note that the cursor will be closed after conversion.
+     */
 	private List<AbstractMessageModel> convertAbstractList(Cursor cursor) {
-		List<AbstractMessageModel> result = new ArrayList<AbstractMessageModel>();
+		List<AbstractMessageModel> result = new ArrayList<>();
 		if(cursor != null) {
-			try {
-				while (cursor.moveToNext()) {
-					result.add(convert(cursor));
-				}
-			}
-			finally {
-				cursor.close();
-			}
+            try (cursor) {
+                while (cursor.moveToNext()) {
+                    result.add(convert(cursor));
+                }
+            }
 		}
 		return result;
 	}
 
-	private List<GroupMessageModel> convertList(Cursor c) {
+    /**
+     * Convert a cursor's rows to a list of {@link GroupMessageModel}s.
+     * Note that the cursor will be closed after conversion.
+     */
+	private List<GroupMessageModel> convertList(Cursor cursor) {
 		List<GroupMessageModel> result = new ArrayList<>();
-		if(c != null) {
-			try {
-				while (c.moveToNext()) {
-					result.add(convert(c));
-				}
-			}
-			finally {
-				c.close();
-			}
+		if(cursor != null) {
+            try (cursor) {
+                while (cursor.moveToNext()) {
+                    result.add(convert(cursor));
+                }
+            }
 		}
 		return result;
 	}
 
 	private GroupMessageModel convert(Cursor cursor) {
 		if(cursor != null && cursor.getPosition() >= 0) {
-			final GroupMessageModel c = new GroupMessageModel();
+			final GroupMessageModel groupMessageModel = new GroupMessageModel();
 
 			//convert default
-			super.convert(c, new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
-				@Override
-				public boolean next(CursorHelper cursorHelper) {
-					c.setGroupId(cursorHelper.getInt(GroupMessageModel.COLUMN_GROUP_ID));
-					String messageStates = cursorHelper.getString(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES);
-					if (messageStates != null) {
-						try {
-							Map<String, Object> messageStatesMap = JsonUtil.convertObject(messageStates);
-							c.setGroupMessageStates(messageStatesMap);
-						} catch (JSONException ignored) {
-							// map may not be available or empty
-							c.setGroupMessageStates(null);
-						}
-					}
-					return false;
-				}
-			}));
+			super.convert(groupMessageModel, new CursorHelper(cursor, columnIndexCache).current((CursorHelper.Callback) cursorHelper -> {
+                int groupId = Objects.requireNonNull(cursorHelper.getInt(GroupMessageModel.COLUMN_GROUP_ID));
+                groupMessageModel.setGroupId(groupId);
+                String messageStates = cursorHelper.getString(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES);
+                if (messageStates != null) {
+                    try {
+                        Map<String, Object> messageStatesMap = JsonUtil.convertObject(messageStates);
+                        groupMessageModel.setGroupMessageStates(messageStatesMap);
+                    } catch (JSONException ignored) {
+                        // map may not be available or empty
+                        groupMessageModel.setGroupMessageStates(null);
+                    }
+                }
+                return false;
+            }));
 
-			return c;
+			return groupMessageModel;
 		}
 
 		return null;
@@ -393,7 +381,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 				this.databaseService.getReadableDatabase(),
 				null,
 				null,
-				placeholders.toArray(new String[placeholders.size()]),
+				placeholders.toArray(new String[0]),
 				null,
 				null,
 				orderBy,
@@ -444,14 +432,11 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 		);
 
 		if(cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					return convert(cursor);
-				}
-			}
-			finally {
-				cursor.close();
-			}
+            try (cursor) {
+                if (cursor.moveToFirst()) {
+                    return convert(cursor);
+                }
+            }
 		}
 
 		return null;
@@ -507,8 +492,8 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						"`" + GroupMessageModel.COLUMN_DELETED_AT +"` DATETIME );",
 
 				//indices
+				"CREATE INDEX `group_message_uid_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_UID + "` )",
 				"CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",
-				"CREATE INDEX `groupMessageUidIdx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_UID + "` );",
 				"CREATE INDEX `m_group_message_identity_idx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_IDENTITY + "` );",
 				"CREATE INDEX `m_group_message_groupId_idx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_GROUP_ID + "` );",
 				"CREATE INDEX `groupMessageApiMessageIdIdx` ON `"+ GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` );",

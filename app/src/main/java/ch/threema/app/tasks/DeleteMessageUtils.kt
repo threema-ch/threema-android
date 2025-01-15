@@ -62,21 +62,22 @@ private fun runCommonDeleteMessageReceiveSteps(
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
 
-    // If `message` is not defined or the sender is not the original sender of
-    //  `message`, discard the message and abort these steps.
+    // 2. If `message` is not defined  or ... , discard the message and abort these steps.
     if (message == null) {
-        logger.warn("Incoming Delete Message: No message found for id: {}", apiMessageId)
+        logger.warn("Delete Message: No message found for id: {}", apiMessageId)
         return null
     }
-    if (deleteMessage.fromIdentity != message.identity) {
-        logger.warn("Incoming Delete Message: original message's sender {} does not equal deleted message's sender {}", message.identity, deleteMessage.fromIdentity)
+    // 2. If `message` is not ... or the sender is not the original sender of `message`, discard the message and abort these steps.
+    // Note: We only perform this check if the message is inbox
+    if (!message.isOutbox && deleteMessage.fromIdentity != message.identity) {
+        logger.warn("Delete Message: original message's sender {} does not equal deleted message's sender {}", message.identity, deleteMessage.fromIdentity)
         return null
     }
 
     // 3. If the `message` is not deletable because of its type, discard the message and abort these
     //    steps.
     if (!MessageUtil.canDeleteRemotely(message.type)) {
-        logger.warn("Incoming Delete Message: Message of type {} cannot be deleted", message.type)
+        logger.warn("Delete Message: Message of type {} cannot be deleted", message.type)
         return null
     }
 

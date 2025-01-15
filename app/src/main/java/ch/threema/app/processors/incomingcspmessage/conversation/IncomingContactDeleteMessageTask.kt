@@ -60,7 +60,7 @@ class IncomingContactDeleteMessageTask(
         val messageModel = runCommonDeleteMessageReceiveSteps(message, receiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
 
-        messageService.deleteMessageContentsAndEditHistory(messageModel, message.date)
+        messageService.deleteMessageContentsAndRelatedData(messageModel, message.date)
 
         return ReceiveStepsResult.SUCCESS
     }

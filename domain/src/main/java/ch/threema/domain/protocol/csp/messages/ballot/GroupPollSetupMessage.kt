@@ -100,6 +100,15 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
             }
 
         @JvmStatic
+        fun fromReflected(message: MdD2D.OutgoingMessage, fromIdentity: String): GroupPollSetupMessage =
+             fromByteArray(
+                 data = message.body.toByteArray(),
+                 fromIdentity = fromIdentity,
+             ).apply {
+                 initializeCommonProperties(message)
+             }
+
+        @JvmStatic
         fun fromByteArray(data: ByteArray, fromIdentity: String): GroupPollSetupMessage =
             fromByteArray(
                 data = data,

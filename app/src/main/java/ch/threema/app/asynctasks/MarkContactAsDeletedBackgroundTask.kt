@@ -207,7 +207,7 @@ open class MarkContactAsDeletedBackgroundTask(
 
         // Remove the old contact model from the cache to reduce the risk to it being stored to the
         // database.
-        deleteContactServices.contactService.removeFromCache(identity)
+        deleteContactServices.contactService.invalidateCache(identity)
 
         // Cancel notifications
         deleteContactServices.notificationService.cancel(identity)
@@ -276,7 +276,7 @@ open class DeleteAllContactsBackgroundTask(
      * This should only be called after the contact was successfully removed from the database.
      */
     private fun cleanContactLeftovers(identity: String) {
-        deleteContactServices.contactService.removeFromCache(identity)
+        deleteContactServices.contactService.invalidateCache(identity)
         deleteContactServices.conversationService.delete(identity)
 
         val uniqueIdString = ContactUtil.getUniqueIdString(identity)

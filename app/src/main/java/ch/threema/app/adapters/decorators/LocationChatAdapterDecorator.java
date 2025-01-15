@@ -28,14 +28,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.LocationDataModel;
@@ -43,7 +41,6 @@ import ch.threema.storage.models.data.LocationDataModel;
 import static android.view.View.GONE;
 
 public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationChatAdapterDecorator");
 
 	public LocationChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
 		super(context, messageModel, helper);
@@ -51,8 +48,8 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 
 	@SuppressLint("StaticFieldLeak")
 	@Override
-	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		final LocationDataModel location = this.getMessageModel().getLocationData();
+	protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, final int position) {
+		final LocationDataModel locationDataModel = this.getMessageModel().getLocationData();
 
 		TextView addressLine = holder.bodyTextView;
 
@@ -77,9 +74,9 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 			holder.secondaryTextView.setVisibility(GONE);
 		}
 
-		if(!TestUtil.isEmptyOrNull(location.getPoi())) {
-			if(holder.bodyTextView != null) {
-				holder.bodyTextView.setText(highlightMatches(location.getPoi(), filterString));
+		if (locationDataModel.poiNameOrNull != null) {
+			if (holder.bodyTextView != null) {
+				holder.bodyTextView.setText(highlightMatches(locationDataModel.poiNameOrNull, filterString));
 				holder.bodyTextView.setWidth(this.getThumbnailWidth());
 				holder.bodyTextView.setVisibility(View.VISIBLE);
 			}
@@ -87,20 +84,18 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 
 		if(addressLine != null) {
-			String address = location.getAddress();
-			if (address == null) {
+			final @Nullable String poiAddress = locationDataModel.poiAddressOrNull;
+            if (poiAddress != null) {
+                addressLine.setText(highlightMatches(poiAddress, filterString));
+                addressLine.setWidth(this.getThumbnailWidth());
+                addressLine.setVisibility(View.VISIBLE);
+            } else {
 				GeoLocationUtil geoLocation = new GeoLocationUtil(addressLine);
-				Location l = new Location("X");
-				l.setLatitude(location.getLatitude());
-				l.setLongitude(location.getLongitude());
-				l.setAccuracy(location.getAccuracy());
-				geoLocation.updateAddressAndModel(getContext(), l);
-			}
-
-			if (address != null) {
-				addressLine.setText(highlightMatches(address, filterString));
-				addressLine.setWidth(this.getThumbnailWidth());
-				addressLine.setVisibility(View.VISIBLE);
+				Location location = new Location("X");
+				location.setLatitude(locationDataModel.latitude);
+				location.setLongitude(locationDataModel.longitude);
+				location.setAccuracy((long) locationDataModel.accuracyOrFallback);
+				geoLocation.updateAddressAndModel(getContext(), location);
 			}
 		}
 
@@ -118,12 +113,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 		}
 
 		if (!GeoLocationUtil.viewLocation(getContext(), messageModel.getLocationData())) {
-			RuntimeUtil.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(getContext(), "Feature not available due to firmware error", Toast.LENGTH_LONG).show();
-				}
-			});
+			RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Feature not available due to firmware error", Toast.LENGTH_LONG).show());
 		}
 	}
 }

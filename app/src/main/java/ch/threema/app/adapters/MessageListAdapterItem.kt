@@ -32,7 +32,6 @@ import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.TestUtil
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.GroupModel
-import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 
 /**
@@ -120,8 +119,6 @@ class MessageListAdapterItem(
             subject
         }
     }
-    val latestMessageIsAck = latestMessage != null && latestMessage.state == MessageState.USERACK
-    val latestMessageIsDec = latestMessage != null && latestMessage.state == MessageState.USERDEC
 
     val latestMessageGroupMemberName =
         if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(getDraft())) {

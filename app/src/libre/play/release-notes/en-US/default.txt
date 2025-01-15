@@ -1,4 +1,2 @@
-- Fixed a bug that crashes the app on some motorola devices when a chat is opened
-- Fixed a bug regarding the display of voice messages on tablets
-- Changes during message processing in preparation of multi device for android
-- Reduce number of status messages when using polls
+- Overhauled appearance of the agree/disagree icons (in preparation for the upcoming emoji reactions feature)
+- Fixed a bug concerning the message status of chats containing missed calls

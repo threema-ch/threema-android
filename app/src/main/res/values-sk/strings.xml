@@ -143,7 +143,7 @@
     <string name="verify_title">Overuje sa telefónne číslo</string>
     <string name="verify_success_text">Vaše telefónne číslo bolo úspešne overené.</string>
     <string name="verify_failed">Overenie zlyhalo</string>
-    <string name="verify_failed_summary">Overenie telefónneho čísla zlyhalo. Predtým, ako to skúsite znovu sa uistite, 
+    <string name="verify_failed_summary">Overenie telefónneho čísla zlyhalo. Predtým, ako to skúsite znovu sa uistite,
         že je uvedené číslo správne a ste pripojený do mobilnej siete.</string>
     <string name="verify_failed_not_linked">Overenie telefónneho čísla zlyhalo. Proces overovania bol prerušený.</string>
     <string name="check_incoming_sms">Čaká sa na prijatie SMS správy</string>

@@ -75,6 +75,7 @@ import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.FileService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BackupUtils;
@@ -147,6 +148,7 @@ public class RestoreService extends Service {
 	private UserService userService;
 	private DatabaseServiceNew databaseServiceNew;
 	private PreferenceService preferenceService;
+    private NotificationPreferenceService notificationPreferenceService;
 	private PowerManager.WakeLock wakeLock;
 	private NotificationManagerCompat notificationManagerCompat;
 	private NonceFactory nonceFactory;
@@ -300,6 +302,7 @@ public class RestoreService extends Service {
 			conversationService = serviceManager.getConversationService();
 			userService = serviceManager.getUserService();
 			preferenceService = serviceManager.getPreferenceService();
+            notificationPreferenceService = serviceManager.getNotificationPreferenceService();
 			nonceFactory = serviceManager.getNonceFactory();
 		} catch (Exception e) {
 			logger.error("Could not instantiate all required services", e);
@@ -1900,7 +1903,7 @@ public class RestoreService extends Service {
 		cancelPersistentNotification();
 
 		if (restoreSuccess && userService.hasIdentity()) {
-			preferenceService.setWizardRunning(true);
+			notificationPreferenceService.setWizardRunning(true);
 
 			showRestoreSuccessNotification();
 

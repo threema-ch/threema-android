@@ -118,6 +118,14 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
             }
 
         @JvmStatic
+        fun fromReflected(message: MdD2D.OutgoingMessage) : GroupPollVoteMessage =
+            fromByteArray(
+                data = message.body.toByteArray()
+            ).apply {
+                initializeCommonProperties(message)
+            }
+
+        @JvmStatic
         fun fromByteArray(data: ByteArray): GroupPollVoteMessage =
             fromByteArray(
                 data = data,

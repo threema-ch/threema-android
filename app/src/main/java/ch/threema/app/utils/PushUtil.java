@@ -53,6 +53,8 @@ import ch.threema.app.push.PushRegistrationWorker;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.LockAppService;
+import ch.threema.app.services.NotificationPreferenceService;
+import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PollingHelper;
@@ -183,7 +185,7 @@ public class PushUtil {
 		);
 
 		PreferenceStore preferenceStore = new PreferenceStore(appContext, null);
-		PreferenceServiceImpl preferenceService = new PreferenceServiceImpl(appContext, preferenceStore);
+		NotificationPreferenceService preferenceService = new NotificationPreferenceServiceImpl(appContext, preferenceStore);
 
 		if (ThreemaApplication.getMasterKey() != null &&
 			ThreemaApplication.getMasterKey().isLocked() &&
@@ -211,7 +213,7 @@ public class PushUtil {
 			// (which are unencrypted).
 			//create a temporary service class (with some implementations) to use the showMasterKeyLockedNewMessageNotification
 			PreferenceStore ps = new PreferenceStore(appContext, ThreemaApplication.getMasterKey());
-			PreferenceService p = new PreferenceServiceImpl(appContext, ps);
+			NotificationPreferenceService p = new NotificationPreferenceServiceImpl(appContext, ps);
 
 			notificationService = new NotificationServiceImpl(
 				appContext,

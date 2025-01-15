@@ -6,65 +6,101 @@
 	<item
 		android:id="@+id/menu_message_quote"
 		android:icon="@drawable/ic_quote_outline"
-		android:orderInCategory="15"
+		android:orderInCategory="10"
 		android:title="@string/quote"
 		android:visible="false"
 		app:iconTint="?attr/colorPrimary"
 		app:showAsAction="always"/>
 
-	<item
-		android:id="@+id/menu_message_forward"
-		android:icon="@drawable/ic_forward_outline"
-		android:orderInCategory="17"
-		android:title="@string/forward_message"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_message_image_reply"
+        android:icon="@drawable/ic_draw_reply"
+        android:orderInCategory="15"
+        android:title="@string/draw_reply"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
 
-	<item
-		android:id="@+id/menu_message_copy"
-		android:icon="@drawable/ic_content_copy_outline"
-		android:orderInCategory="20"
-		android:title="@string/copy_message_action"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="always"/>
-	<item
-		android:id="@+id/menu_message_save"
-		android:icon="@drawable/ic_save_outline"
-		android:orderInCategory="30"
-		android:title="@string/save_message_action"
-		android:visible="false"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="ifRoom"/>
-	<item
-		android:id="@+id/menu_message_discard"
-		android:icon="@drawable/ic_delete_outline"
-		android:orderInCategory="40"
-		android:title="@string/delete"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="ifRoom"/>
-	<item
-		android:id="@+id/menu_message_qrcode"
-		android:icon="@drawable/ic_qr_code"
-		android:orderInCategory="50"
-		android:title="@string/show_as_qrcode"
-		android:visible="false"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="ifRoom"/>
-	<item
-		android:id="@+id/menu_share"
-		android:icon="@drawable/ic_share_outline"
-		android:orderInCategory="80"
-		android:title="@string/share_via"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_message_forward"
+        android:icon="@drawable/ic_forward_outline"
+        android:orderInCategory="20"
+        android:title="@string/forward_message"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
 
-	<item
-		android:id="@+id/menu_show_text"
-		android:orderInCategory="85"
-		android:title="@string/show_text"
-		android:icon="@drawable/ic_outline_text_snippet_24"
-		app:iconTint="?attr/colorPrimary"
-		android:visible="false"
-		app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_message_edit"
+        android:icon="@drawable/ic_edit_file_name"
+        android:orderInCategory="25"
+        android:title="@string/edit_message"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_message_copy"
+        android:icon="@drawable/ic_content_copy_outline"
+        android:orderInCategory="30"
+        android:title="@string/copy_message_action"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_message_qrcode"
+        android:icon="@drawable/ic_qr_code"
+        android:orderInCategory="35"
+        android:title="@string/show_as_qrcode"
+        android:visible="false"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_message_save"
+        android:icon="@drawable/ic_save_outline"
+        android:orderInCategory="40"
+        android:title="@string/save_message_action"
+        android:visible="false"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_message_discard"
+        android:icon="@drawable/ic_delete_outline"
+        android:orderInCategory="45"
+        android:title="@string/delete"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_message_star"
+        android:icon="@drawable/ic_star_outline_24dp"
+        android:orderInCategory="50"
+        android:title="@string/star_message"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_message_unstar"
+        android:icon="@drawable/star_outline_off_black_24dp"
+        android:orderInCategory="55"
+        android:title="@string/remove_star"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_info"
+        android:orderInCategory="60"
+        android:title="@string/info"
+        android:icon="@drawable/ic_info_outline"
+        app:iconTint="?attr/colorPrimary"
+        android:visible="false"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@drawable/ic_share_outline"
+        android:orderInCategory="65"
+        android:title="@string/share_via"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="ifRoom"/>
 
 </menu>

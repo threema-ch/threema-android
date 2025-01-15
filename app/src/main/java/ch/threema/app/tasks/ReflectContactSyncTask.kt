@@ -159,7 +159,7 @@ abstract class ReflectContactSyncTask<TransactionResult, TaskResult>(
     private fun ContactModelData.getSyncAcquaintanceLevel(): MdD2DSync.Contact.AcquaintanceLevel =
         when (this.acquaintanceLevel) {
             ContactModel.AcquaintanceLevel.DIRECT -> MdD2DSync.Contact.AcquaintanceLevel.DIRECT
-            ContactModel.AcquaintanceLevel.GROUP -> MdD2DSync.Contact.AcquaintanceLevel.GROUP
+            ContactModel.AcquaintanceLevel.GROUP -> MdD2DSync.Contact.AcquaintanceLevel.GROUP_OR_DELETED
         }
 
     private fun ContactModelData.getSyncActivityState(): MdD2DSync.Contact.ActivityState =

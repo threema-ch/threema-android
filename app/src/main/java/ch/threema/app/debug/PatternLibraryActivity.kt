@@ -171,9 +171,7 @@ class PatternLibraryActivity : AppCompatActivity() {
                         ColorSection(
                             "Custom",
                             listOf(
-                                MaterialTheme.customColorScheme.messageBubbleContainerReceive to "messageBubbleContainerReceive",
-                                MaterialTheme.customColorScheme.ackTint to "ackTint",
-                                MaterialTheme.customColorScheme.decTint to "decTint"
+                                MaterialTheme.customColorScheme.messageBubbleContainerReceive to "messageBubbleContainerReceive"
                             )
                         ),
                     )

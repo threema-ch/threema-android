@@ -25,9 +25,9 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.protocol.runIdentityBlockedSteps
+import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.IdListService
 import ch.threema.app.services.PreferenceService
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.Nonce
@@ -347,7 +347,7 @@ private fun OutgoingCspMessageHandle.toOutgoingCspMessageSender(
             services.contactModelRepository,
             services.contactStore,
             services.groupService,
-            services.blockedContactsService,
+            services.blockedIdentitiesService,
             services.preferenceService,
         )
         .toSet()
@@ -585,7 +585,7 @@ data class OutgoingCspMessageServices(
     val contactModelRepository: ContactModelRepository,
     val groupService: GroupService,
     val nonceFactory: NonceFactory,
-    val blockedContactsService: IdListService,
+    val blockedIdentitiesService: BlockedIdentitiesService,
     val preferenceService: PreferenceService,
     val multiDeviceManager: MultiDeviceManager,
 ) {
@@ -599,7 +599,7 @@ data class OutgoingCspMessageServices(
             modelRepositories.contacts,
             groupService,
             nonceFactory,
-            blockedContactsService,
+            blockedIdentitiesService,
             preferenceService,
             multiDeviceManager,
         )
@@ -658,7 +658,7 @@ private fun Iterable<BasicContact>.filterBlockedRecipients(
     contactModelRepository: ContactModelRepository,
     contactStore: ContactStore,
     groupService: GroupService,
-    blockedContactsService: IdListService,
+    blockedIdentitiesService: BlockedIdentitiesService,
     preferenceService: PreferenceService,
 ) = filter {
     if (abstractMessage.exemptFromBlocking()) {
@@ -670,7 +670,7 @@ private fun Iterable<BasicContact>.filterBlockedRecipients(
         contactModelRepository,
         contactStore,
         groupService,
-        blockedContactsService,
+        blockedIdentitiesService,
         preferenceService,
     ).isBlocked()
 

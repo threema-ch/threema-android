@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/emoji_reactions_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:nestedScrollingEnabled="true"
+    android:paddingVertical="8dp"
+    android:scrollbarSize="@dimen/scrollbar_size"
+    android:scrollbars="vertical" />

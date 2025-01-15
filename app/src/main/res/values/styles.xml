@@ -1203,4 +1203,51 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:fontFamily">sans-serif-condensed</item>
 	</style>
+
+	<!-- styles for emoji reactions -->
+    <style name="Threema.EmojiReactions.Button" parent="">
+        <item name="materialCardViewStyle">@style/Threema.EmojiReactions.Button.Style</item>
+    </style>
+
+	<style name="Threema.EmojiReactions.Button.Style" parent="@style/Widget.Material3.CardView.Filled">
+		<item name="android:outlineProvider">none</item>
+		<item name="android:height">@dimen/emojireactions_height</item>
+        <item name="checkedIcon">@null</item>
+		<item name="strokeWidth">@dimen/emojireactions_stroke_width</item>
+		<item name="strokeColor">?android:colorBackground</item>
+		<item name="shapeAppearanceOverlay">@style/Threema.EmojiReactions.CardView.ShapeAppearance</item>
+        <item name="cardForegroundColor">@android:color/transparent</item>
+        <item name="cardBackgroundColor">@color/emojireactions_background_colorstatelist</item>
+        <item name="cardPreventCornerOverlap">false</item>
+		<item name="contentPaddingLeft">@dimen/emojireactions_chip_padding_inside_left</item>
+		<item name="contentPaddingRight">@dimen/emojireactions_chip_padding_inside_right</item>
+		<item name="contentPaddingTop">@dimen/emojireactions_chip_padding_inside_top</item>
+		<item name="contentPaddingBottom">@dimen/emojireactions_chip_padding_inside_bottom</item>
+	</style>
+
+	<style name="Threema.EmojiReactions.CardView.ShapeAppearance" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">@dimen/emojireactions_chip_border_radius</item>
+	</style>
+
+	<style name="Threema.EmojiReactions.Text.Emoji" parent="@style/TextAppearance.Material3.BodyMedium">
+		<item name="android:textSize">15dp</item>
+		<item name="android:fontFamily">sans-serif</item>
+		<item name="android:letterSpacing">0</item>
+	</style>
+
+	<style name="Threema.EmojiReactions.Text.Count" parent="@style/TextAppearance.Material3.BodySmall">
+		<item name="android:textSize">12dp</item>
+		<item name="android:textColor">?attr/colorOnBackground</item>
+		<item name="android:fontFamily">sans-serif-condensed</item>
+		<item name="android:letterSpacing">0</item>
+	</style>
+
+    <style name="Threema.TabLayout.EmojiReactionsOverview" parent="@style/Widget.Material3.TabLayout">
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabGravity">start</item>
+        <item name="tabMode">scrollable</item>
+        <item name="tabMinWidth">64dp</item>
+    </style>
+
 </resources>

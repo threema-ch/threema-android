@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * Ensure the Call SDP does not contain any "funny" easter eggs such as silly header extensions
  * that are not encrypted and contain sensitive information.
- *
+ * <p>
  * This may need updating from time to time, so if it breaks, you will have to do some
  * research on what changed and why.
  */
@@ -68,5 +68,4 @@ public class TextUtilTest {
 		assertTrue(TextUtil.checkBadPassword(context, "apples123"));
 		assertFalse(TextUtil.checkBadPassword(context, "kajsdlfkjalskdjflkajsdfl"));
 	}
-
 }

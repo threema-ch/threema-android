@@ -489,7 +489,7 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回复</string>
     <string name="wearable_reply_label">回复 %s</string>
-    <string name="message_acknowledged">您对这条消息表示 “同意”。</string>
+    <string name="message_acknowledged">已发送 “赞”</string>
     <string name="push_disable_text">如果继续，您将使用 “Threema Push” 代替系统内置的推送服务。虽然这能减少您的数字足迹，但您需要允许 “应用程序在后台运行” 才能顺利使用。如果在设备设置中找不到相应的选项，您可能需要联系设备制造商的支持以获取配置帮助。</string>
     <string name="ballot_intermediate_results_show">显示中间结果</string>
     <string name="converting_video">正在处理影片</string>
@@ -612,7 +612,7 @@ Threema 支持的所有表情符号。</string>
     <string name="permission_storage_required">如要保存或发送媒体，请允许 Threema 访问存储权限。</string>
     <string name="permission_location_required">如要发送位置，请允许 Threema 访问您的位置的权限。</string>
     <string name="permission_contacts_required">如要发送联系人，请允许 Threema 读取联系人的权限。</string>
-    <string name="message_declined">您对这条消息表示 “不同意”。</string>
+    <string name="message_declined">已发送 “踩”</string>
     <string name="notifications_settings">通知设置</string>
     <string name="notifications_default">默认设置</string>
     <string name="notifications_until">直到%s</string>
@@ -1622,6 +1622,20 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="cd_message_details_container">消息详情</string>
     <string name="cd_enable_formatting">启用格式化</string>
     <string name="cd_message">消息</string>
+    <string name="reactions_on_this_message">所有心情表态</string>
+    <string name="select_emoji_content_description">在表情符号选择器内，选择要添加的表情符号</string>
+    <string name="group_emoji_reactions_partially_supported">部分用户可能正使用旧版本的应用程序，而看不到您的心情表态。</string>
+    <string name="tab_emoji_reactions_overview_content_description">%1$s心情表态为%2$s</string>
+    <string name="emoji_reactions_compatibility_infobox_text">您收到了使用新应用版本的联系人的心情表态。除了 👍 和 👎 外，您的应用版本还不支持发送心情表态。</string>
+    <string name="reaction_cannot_be_displayed">无法显示此心情表态，这是未知的表情符号。</string>
+    <string name="emoji_reactions_unavailable_title">添加心情表态失败</string>
+    <string name="emoji_reactions_sending_not_supported_body">您当前使用的应用版本尚不支持发送心情表态。</string>
+    <string name="emoji_reactions_unavailable_body">%1$s使用的应用程序版本尚不支持此功能。</string>
+    <string name="emoji_reactions_unavailable_group_body">由于所有群组成员使用的应用版本都不支持心情表态功能，因此无法对消息进行心情表态。</string>
+    <string name="emoji_reactions_cannot_remove_title">移除心情表态失败</string>
+    <string name="emoji_reactions_cannot_remove_body">虽然%1$s使用的应用版本尚不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
+    <string name="emoji_reactions_cannot_remove_group_body">虽然所有群组成员使用的应用版本都不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
+    <string name="emoji_reactions_cannot_remove_v1_body">您当前使用的应用版本尚不支持删除心情表态或发送多个心情表态。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

@@ -174,7 +174,7 @@ public class WorkUserListFragment extends RecipientListFragment {
 					null,
 					checkedItemPositions,
 					contactService,
-					blockedContactsService,
+                    blockedIdentitiesService,
 					hiddenChatsListService,
 					preferenceService,
 					WorkUserListFragment.this,

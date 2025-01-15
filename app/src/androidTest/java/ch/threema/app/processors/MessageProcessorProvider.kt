@@ -402,7 +402,10 @@ open class MessageProcessorProvider {
         )
 
         // Unblock contacts
-        serviceManager.blockedContactsService.removeAll()
+        val blockedIdentitiesService = serviceManager.blockedIdentitiesService
+        blockedIdentitiesService.getAllBlockedIdentities().forEach { blockedIdentity ->
+            blockedIdentitiesService.unblockIdentity(blockedIdentity)
+        }
     }
 
     private fun setTaskManager(taskManager: TaskManager) {

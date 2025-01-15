@@ -63,6 +63,7 @@ import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DeadlineListService;
@@ -95,7 +96,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 	protected DistributionListService distributionListService;
 	protected ConversationService conversationService;
 	protected PreferenceService preferenceService;
-	protected IdListService blockedContactsService;
+	protected BlockedIdentitiesService blockedIdentitiesService;
 	protected DeadlineListService hiddenChatsListService;
 	protected FragmentActivity activity;
 	protected Parcelable listInstanceState;
@@ -119,7 +120,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 			contactService = serviceManager.getContactService();
 			groupService = serviceManager.getGroupService();
 			distributionListService = serviceManager.getDistributionListService();
-			blockedContactsService = serviceManager.getBlockedContactsService();
+			blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
 			conversationService = serviceManager.getConversationService();
 			preferenceService = serviceManager.getPreferenceService();
 			hiddenChatsListService = serviceManager.getHiddenChatsListService();

@@ -189,7 +189,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 		} else if (intent.getData() != null) {
 			LocationDataModel locationData = GeoLocationUtil.getLocationDataFromGeoUri(intent.getData());
 			if (locationData != null) {
-				markerPosition = new LatLng(locationData.getLatitude(), locationData.getLongitude());
+				markerPosition = new LatLng(locationData.latitude, locationData.longitude);
 				isShowingExternalLocation = true;
 			} else {
 				Toast.makeText(this, R.string.cannot_display_location, Toast.LENGTH_LONG).show();

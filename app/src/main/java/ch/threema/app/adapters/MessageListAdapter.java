@@ -42,7 +42,6 @@ import java.util.Map;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -170,8 +169,6 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
 
 		messageListItemParams = new MessageListViewHolder.MessageListItemParams(
 			ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface),
-			ContextCompat.getColor(context, R.color.material_green),
-			ContextCompat.getColor(context, R.color.material_orange),
 			ConfigUtils.getColorFromAttribute(context, android.R.attr.colorBackground),
 			ConfigUtils.isTabletLayout(),
 			emojiMarkupUtil,

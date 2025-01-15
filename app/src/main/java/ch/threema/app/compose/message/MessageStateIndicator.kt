@@ -25,34 +25,18 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import ch.threema.app.activities.AckUiModel
-import ch.threema.app.activities.ContactAckUiModel
-import ch.threema.app.activities.GroupAckUiModel
 
 @Composable
 fun MessageStateIndicator(
-    ackUiModel: AckUiModel? = null,
     @DrawableRes deliveryIconRes: Int? = null,
     @StringRes deliveryIconContentDescriptionRes: Int? = null,
     deliveryIndicatorTintColor: Color? = null
 ) {
-    when (ackUiModel) {
-        is ContactAckUiModel -> {
-            ContactAckDecIndicator(ackUiModel.ackDecState)
-        }
-        is GroupAckUiModel -> {
-            GroupAckDecIndicator(ackUiModel.ackState, ackUiModel.decState)
-        }
-
-        null -> {
-            if (deliveryIconRes != null && deliveryIconContentDescriptionRes != null) {
-                DeliveryIndicator(
-                    deliveryIconRes = deliveryIconRes,
-                    deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
-                    tintColor = deliveryIndicatorTintColor
-                )
-            }
-        }
+    if (deliveryIconRes != null && deliveryIconContentDescriptionRes != null) {
+        DeliveryIndicator(
+            deliveryIconRes = deliveryIconRes,
+            deliveryIconContentDescriptionRes = deliveryIconContentDescriptionRes,
+            tintColor = deliveryIndicatorTintColor
+        )
     }
-
 }

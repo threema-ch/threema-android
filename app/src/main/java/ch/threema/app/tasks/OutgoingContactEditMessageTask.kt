@@ -54,7 +54,14 @@ class OutgoingContactEditMessageTask(
             )
         )
 
-        sendContactMessage(editMessage, null, toIdentity, messageId, editedAt, handle)
+        sendContactMessage(
+            editMessage,
+            null,
+            toIdentity,
+            messageId,
+            editedAt,
+            handle
+        )
     }
 
     override fun serialize(): SerializableTaskData = OutgoingContactEditMessageData(

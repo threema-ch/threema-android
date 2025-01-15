@@ -340,6 +340,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="synchronize_contact">接続する端末の連絡先</string>
     <string name="exclude_contact">自動同期から除外する</string>
     <string name="prefs_header_lists">リスト</string>
+    <string name="prefs_title_blocked_contacts">ブロックした連絡先</string>
     <string name="prefs_sum_blocked_contacts">指定の ID からのメッセージを無視します</string>
     <string name="verified">認証済み</string>
     <string name="want_to_add_to_exclude_list">この連絡先は、携帯電話のアドレス帳に紐付けされています。Threemaで削除しても、連絡先の同期後に再び表示されます。</string>
@@ -424,6 +425,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="add_group_description">グループの説明を追加</string>
     <string name="read_more">続きを読む</string>
     <string name="read_less">軽く把握する</string>
+    <string name="changed_group_desc_date">最終変更: \u0020</string>
     <string name="num_items_sected">%s 件を選択中</string>
     <string name="really_delete_media">本当に %d メディアメッセージを削除したいですか？</string>
     <string name="check_updates">アップデートを確認する</string>
@@ -749,6 +751,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="edit">編集</string>
     <string name="edit_message">メッセージを編集</string>
     <string name="edited">編集済</string>
+    <string name="edit_history">履歴を編集</string>
     <string name="discard_changes">変更を削除しますか？</string>
     <string name="prefs_title_network">ネットワーク</string>
     <string name="prefs_title_ipv6_preferred">メッセージに IPv6 を使用</string>
@@ -1016,6 +1019,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="system_default">システム設定</string>
     <string name="open_in_maps_app">マップアプリで開く</string>
     <string name="delete">削除</string>
+    <string name="delete_from_this_device">この端末から削除</string>
     <string name="delete_for_all">全員から削除</string>
     <string name="message_was_deleted">このメッセージは削除されました</string>
     <string name="continue_recording">録音を続ける</string>
@@ -1506,6 +1510,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="md_link_device_qr_scan_message">QRコードを読み取ってください</string>
     <string name="directory_request_failed">ディレクトリ要求に失敗しました。もう一度試してください。</string>
     <string name="add_shortcut_exists">この対象のためのショートカットは既に存在します。</string>
+    <string name="scan_qr_code">QRコードをスキャンする</string>
+    <string name="trust_new_device">新しい端末を信頼する</string>
+    <string name="sending_data">データを送信中…</string>
     <string name="resend_message_dialog_title">グループメッセージを再送信しますか？</string>
     <string name="work_lost_credentials_help">資格情報を忘れましたか？%1$sの管理者に連絡してください。</string>
     <string name="problemsolver_intro">以下の指示に従ってこれらの問題を解決することによって、%sが正しく動作することを妨げる可能性のあるシステム設定の問題を修正してください。</string>

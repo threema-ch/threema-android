@@ -1,4 +1,2 @@
-- Behebung eines Fehlers der zu einem Crash auf einigen Motorola Geräten führt, wenn ein Chat geöffnet wird
-- Behebung eines Fehlers bei der Darstellung von Sprachnachrichten auf Tablets
-- Änderungen bei der Verarbeitung von Nachrichten als Vorbereitung für Multi Device auf Android
-- Weniger Statusnachrichten bei Umfragen
+- Überarbeitete Darstellung der Zustimmen-/Ablehnen-Icons (in Vorbereitung auf kommende Emoji-Reaktionen)
+- Behebung eines Fehlers bzgl. dem Nachrichten-Status von Chats mit verpassten Anrufen

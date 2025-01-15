@@ -113,6 +113,14 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
             }
 
         @JvmStatic
+        fun fromReflected(message: MdD2D.OutgoingMessage): PollVoteMessage =
+            fromByteArray(
+                data = message.body.toByteArray()
+            ).apply {
+                initializeCommonProperties(message)
+            }
+
+        @JvmStatic
         fun fromByteArray(data: ByteArray): PollVoteMessage =
             fromByteArray(
                 data = data,

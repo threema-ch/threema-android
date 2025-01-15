@@ -25,13 +25,11 @@ import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import ch.threema.app.services.MessageService;
@@ -43,7 +41,6 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
-import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
@@ -179,29 +176,33 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         }
     }
 
+    /**
+     * Convert a cursor's rows to a list of {@link AbstractMessageModel}s.
+     * Note that the cursor will be closed after conversion.
+     */
     private List<AbstractMessageModel> convertAbstractList(Cursor cursor) {
-        List<AbstractMessageModel> result = new ArrayList<AbstractMessageModel>();
+        List<AbstractMessageModel> result = new ArrayList<>();
         if (cursor != null) {
-            try {
+            try (cursor) {
                 while (cursor.moveToNext()) {
                     result.add(convert(cursor));
                 }
-            } finally {
-                cursor.close();
             }
         }
         return result;
     }
 
-    private List<MessageModel> convertList(Cursor c) {
+    /**
+     * Convert a cursor's rows to a list of {@link MessageModel}s.
+     * Note that the cursor will be closed after conversion.
+     */
+    private List<MessageModel> convertList(Cursor cursor) {
         List<MessageModel> result = new ArrayList<>();
-        if (c != null) {
-            try {
-                while (c.moveToNext()) {
-                    result.add(convert(c));
+        if (cursor != null) {
+            try (cursor) {
+                while (cursor.moveToNext()) {
+                    result.add(convert(cursor));
                 }
-            } finally {
-                c.close();
             }
         }
         return result;
@@ -246,27 +247,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         ));
     }
 
-    /**
-     * Get the number of contact messages that are currently in rejected state. Only messages up to
-     * two weeks old are considered.
-     *
-     * @return the number of recent messages that have been rejected
-     */
-    public long countRecentForwardSecurityFailedMessages() {
-        long currentDate = new Date().getTime();
-        long twoWeeks = 2 * DateUtils.WEEK_IN_MILLIS;
 
-        return DatabaseUtil.count(databaseService.getReadableDatabase().rawQuery(
-                "SELECT COUNT(*) FROM " + getTableName()
-                    + " WHERE " + AbstractMessageModel.COLUMN_STATE + "=?"
-                    + " AND " + AbstractMessageModel.COLUMN_CREATED_AT + ">?",
-                new String[]{
-                    MessageState.FS_KEY_MISMATCH.toString(),
-                    String.valueOf(currentDate - twoWeeks)
-                }
-            )
-        );
-    }
 
     public List<MessageModel> getUnreadMessages(String identity) {
         return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
@@ -296,12 +277,10 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
             "1");
 
         if (cursor != null) {
-            try {
+            try (cursor) {
                 if (cursor.moveToFirst()) {
                     return convert(cursor);
                 }
-            } finally {
-                cursor.close();
             }
         }
 
@@ -397,7 +376,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
             this.databaseService.getReadableDatabase(),
             null,
             null,
-            placeholders.toArray(new String[placeholders.size()]),
+            placeholders.toArray(new String[0]),
             null,
             null,
             orderBy,
@@ -463,25 +442,19 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
     private MessageModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = null;
+        Cursor cursor = this.databaseService.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        );
 
-        try {
-            cursor = this.databaseService.getReadableDatabase().query(
-                this.getTableName(),
-                null,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-            );
-
+        try (cursor) {
             if (cursor != null && cursor.moveToFirst()) {
                 return convert(cursor);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
         return null;
@@ -524,7 +497,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                 "`" + MessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
             //indices
-            "CREATE INDEX `messageUidIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
+	        "CREATE INDEX `contact_message_uid_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
             "CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_IDENTITY + "` )",
             "CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_API_MESSAGE_ID + "` )",
             "CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_OUTBOX + "` )",

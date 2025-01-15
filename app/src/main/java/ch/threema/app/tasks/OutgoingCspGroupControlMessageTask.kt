@@ -36,7 +36,7 @@ import java.util.Date
 abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
     OutgoingCspMessageTask(serviceManager) {
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val blockedContactsService by lazy { serviceManager.blockedContactsService }
+    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
     private val apiConnector by lazy { serviceManager.apiConnector }
 
     protected abstract val messageId: MessageId
@@ -73,7 +73,7 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
                 contactModelRepository,
                 groupService,
                 nonceFactory,
-                blockedContactsService,
+                blockedIdentitiesService,
                 preferenceService,
                 multiDeviceManager
             )
