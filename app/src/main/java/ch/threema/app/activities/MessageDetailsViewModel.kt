@@ -31,6 +31,7 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.app.utils.StateBitmapUtil
+import ch.threema.data.repositories.EmojiReactionsRepository
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.DistributionListMessageModel
@@ -45,7 +46,7 @@ import java.util.Date
 class MessageDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     messageService: MessageService,
-    private val myIdentity: String,
+    private val emojiReactionsRepository: EmojiReactionsRepository,
 ) : StateFlowViewModel() {
 
     companion object {
@@ -56,16 +57,16 @@ class MessageDetailsViewModel(
         fun provideFactory(
             messageId: Int,
             messageType: String?,
-            myIdentity: String,
         ) = viewModelFactory {
             initializer {
+                val serviceManager = ThreemaApplication.requireServiceManager()
                 MessageDetailsViewModel(
                     this.createSavedStateHandle().apply {
                         set(MESSAGE_ID, messageId)
                         set(MESSAGE_TYPE, messageType)
                     },
-                    ThreemaApplication.requireServiceManager().messageService,
-                    myIdentity,
+                    serviceManager.messageService,
+                    serviceManager.modelRepositories.emojiReaction,
                 )
             }
         }
@@ -76,13 +77,21 @@ class MessageDetailsViewModel(
         val messageType = checkNotNull(savedStateHandle[MESSAGE_TYPE]) as String
         val message = messageService.getMessageModelFromId(messageId, messageType)
         MutableStateFlow(
-            ChatMessageDetailsUiState(message.toUiModel(myIdentity), true)
+            ChatMessageDetailsUiState(
+                message = message.toUiModel(),
+                hasReactions = message.hasReactions(),
+                shouldMarkupText = true,
+            )
         )
     }
-    val uiState: StateFlow<ChatMessageDetailsUiState> = _uiState.stateInViewModel(initialValue = _uiState.value)
+    val uiState: StateFlow<ChatMessageDetailsUiState> =
+        _uiState.stateInViewModel(initialValue = _uiState.value)
+
+    private fun AbstractMessageModel.hasReactions(): Boolean =
+        emojiReactionsRepository.safeGetReactionsByMessage(this).isNotEmpty()
 
     fun refreshMessage(updatedMessage: AbstractMessageModel) {
-        _uiState.update { it.copy(message = updatedMessage.toUiModel(myIdentity)) }
+        _uiState.update { it.copy(message = updatedMessage.toUiModel()) }
     }
 
     fun markupText(value: Boolean) {
@@ -92,7 +101,8 @@ class MessageDetailsViewModel(
 
 data class ChatMessageDetailsUiState(
     val message: MessageUiModel,
-    val shouldMarkupText: Boolean
+    val hasReactions: Boolean,
+    val shouldMarkupText: Boolean,
 )
 
 // TODO(ANDR-3195): Move MessageModel mappings from ChatMessageDetailsViewModel to data models
@@ -146,7 +156,7 @@ data class MessageDetailsUiModel(
     }
 }
 
-fun AbstractMessageModel.toUiModel(myIdentity: String) = MessageUiModel(
+fun AbstractMessageModel.toUiModel() = MessageUiModel(
     uid = this.uid,
     text = QuoteUtil.getMessageBody(this, false) ?: "",
     createdAt = this.createdAt,

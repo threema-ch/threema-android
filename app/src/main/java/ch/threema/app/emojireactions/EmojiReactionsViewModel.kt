@@ -30,6 +30,8 @@ import ch.threema.app.services.MessageService
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.repositories.EmojiReactionsRepository
+import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier
+import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier.TargetMessageType
 import ch.threema.storage.models.AbstractMessageModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,17 +45,19 @@ class EmojiReactionsViewModel(
     private var emojiReactionsModel: EmojiReactionsModel? = null
 
     companion object {
-        private const val MESSAGE_UID = "messageUid"
+        private const val MESSAGE_ID = "messageId"
+        private const val MESSAGE_TYPE = "messageType"
 
         fun provideFactory(
             emojiReactionsRepository: EmojiReactionsRepository,
             messageService: MessageService,
-            messageId: String
+            reactionMessageIdentifier: ReactionMessageIdentifier
         ) = viewModelFactory {
             initializer {
                 EmojiReactionsViewModel(
                     this.createSavedStateHandle().apply {
-                        set(MESSAGE_UID, messageId)
+                        set(MESSAGE_ID, reactionMessageIdentifier.messageId)
+                        set(MESSAGE_TYPE, reactionMessageIdentifier.messageType)
                     },
                     emojiReactionsRepository,
                     messageService
@@ -62,7 +66,12 @@ class EmojiReactionsViewModel(
         }
     }
 
-    private val messageUid = checkNotNull(savedStateHandle[MESSAGE_UID]) as String
+    private val reactionMessageIdentifier by lazy {
+        ReactionMessageIdentifier(
+            messageId = checkNotNull(savedStateHandle.get<Int>(MESSAGE_ID)),
+            messageType = checkNotNull(savedStateHandle.get<TargetMessageType>(MESSAGE_TYPE)),
+        )
+    }
 
     val emojiReactionsUiState: StateFlow<EmojiReactionsUiState> =
         getMessageModel()?.let {
@@ -73,8 +82,9 @@ class EmojiReactionsViewModel(
         } ?: MutableStateFlow(EmojiReactionsUiState(emptyList()))
 
 
-    private fun getMessageModel(): AbstractMessageModel? {
-        return messageService.getGroupMessageModel(messageUid) ?: messageService.getContactMessageModel(messageUid)
+    private fun getMessageModel(): AbstractMessageModel? = when (reactionMessageIdentifier.messageType) {
+        TargetMessageType.ONE_TO_ONE -> messageService.getContactMessageModel(reactionMessageIdentifier.messageId)
+        TargetMessageType.GROUP -> messageService.getGroupMessageModel(reactionMessageIdentifier.messageId)
     }
 
     data class EmojiReactionsUiState(

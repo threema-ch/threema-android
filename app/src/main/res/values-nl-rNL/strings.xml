@@ -477,7 +477,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="back">Terug</string>
     <string name="wearable_reply">Antwoorden</string>
     <string name="wearable_reply_label">Antwoorden aan %s</string>
-    <string name="message_acknowledged">\"Duimen omhoog\" verstuurd</string>
     <string name="push_disable_text">Als u doorgaat, wordt \"Threema Push\" gebruikt in plaats van de push-dienst van het systeem. Dit helpt bij het verminderen van uw digitale voetafdruk, maar uw telefoon moet wel geconfigureerd zijn zodat de app op de achtergrond kan draaien. Als u de overeenkomende opties niet kunt vinden in de apparaatinstellingen, kunt u contact opnemen met het ondersteuningsteam van de fabrikant voor hulp bij de configuratie.</string>
     <string name="ballot_intermediate_results_show">Tussentijdse resultaten tonen</string>
     <string name="converting_video">Video verwerken</string>
@@ -595,7 +594,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="permission_storage_required">Geeft Threema toegang tot uw opslag om media te kunnen versturen.</string>
     <string name="permission_location_required">Geef Threema toegang tot uw locatie om een locatie te kunnen versturen.</string>
     <string name="permission_contacts_required">Geef Threema leestoegang tot uw contactpersonen om contactpersonen te kunnen versturen.</string>
-    <string name="message_declined">\"Duimen omlaag\" verzonden</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Duimen omhoog\" verstuurd</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Duimen omlaag\" verzonden</string>
     <string name="notifications_settings">Meldingsinstellingen</string>
     <string name="notifications_default">Standaardinstellingen</string>
     <string name="notifications_until">Tot %s</string>

@@ -39,6 +39,10 @@ public class EmojiUtil {
 	public static final String REPLACEMENT_CHARACTER = "\uFFFD";
 	public static final String THUMBS_UP_SEQUENCE = "\uD83D\uDC4D";
 	public static final String THUMBS_DOWN_SEQUENCE = "\uD83D\uDC4E";
+	public static final String HEART_SEQUENCE = "\u2764\uFE0F"; // ❤️
+	public static final String TEARS_OF_JOY_SEQUENCE = "\uD83D\uDE02"; // 😂
+	public static final String CRYING_SEQUENCE = "\uD83D\uDE22"; // 😢
+	public static final String FOLDED_HANDS_SEQUENCE = "\uD83D\uDE4F"; // 🙏
 
 	private static final Set<String> THUMBS_UP_VARIANTS = Set.of(
 		"\ud83d\udc4d",

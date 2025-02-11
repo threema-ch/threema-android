@@ -153,17 +153,27 @@ open class AddOrUpdateWorkContactBackgroundTask(
     }
 
     private fun updateContact(contactModel: ContactModel) {
-        val data = contactModel.data.value ?: run {
+        val currentContactModelData: ContactModelData = contactModel.data.value ?: run {
             logger.error("Contact has already been deleted")
             return
         }
 
         // Update first and last name if the contact is not synchronized
         if (
-            data.androidContactLookupKey == null
+            currentContactModelData.androidContactLookupKey == null
             && (workContact.firstName != null || workContact.lastName != null)
         ) {
             contactModel.setNameFromLocal(workContact.firstName ?: "", workContact.lastName ?: "")
+        }
+
+        // Update jobTitle if it changed
+        if (currentContactModelData.jobTitle != workContact.jobTitle) {
+            contactModel.setJobTitleFromLocal(workContact.jobTitle)
+        }
+
+        // Update department if it changed
+        if (currentContactModelData.department != workContact.department) {
+            contactModel.setDepartmentFromLocal(workContact.department)
         }
 
         // Update work verification level
@@ -173,7 +183,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
         contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT)
 
         // Update verification level (except it would be a downgrade)
-        if (data.verificationLevel == VerificationLevel.UNVERIFIED) {
+        if (currentContactModelData.verificationLevel == VerificationLevel.UNVERIFIED) {
             contactModel.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED)
         }
     }

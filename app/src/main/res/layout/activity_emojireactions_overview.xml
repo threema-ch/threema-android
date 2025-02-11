@@ -33,7 +33,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- TODO(ANDR-3492): Remove -->
+        <!-- TODO(ANDR-3585): Remove -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/infobox"
             android:layout_width="match_parent"

@@ -476,7 +476,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="back">Voltar</string>
     <string name="wearable_reply">Responder</string>
     <string name="wearable_reply_label">Responder a %s</string>
-    <string name="message_acknowledged">“Polegar para cima” enviado</string>
     <string name="push_disable_text">Se continuar, o \"Push do Threema\" será usado em vez do serviço de push do sistema. Isso ajuda a reduzir sua pegada digital, mas requer que seu telefone seja configurado de modo a permitir que o aplicativo opere em segundo plano. É recomendado entrar em contato com o suporte do fabricante do seu dispositivo para auxílio com a configuração se as opções correspondentes não puderem ser encontradas nas configurações do dispositivo.</string>
     <string name="ballot_intermediate_results_show">Mostrar resultados intermediários</string>
     <string name="converting_video">Processando vídeo</string>
@@ -595,7 +594,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="permission_storage_required">Para enviar mídia, permita que o Threema acesse o armazenamento.</string>
     <string name="permission_location_required">Para enviar uma localização, permita que o Threema acesse sua posição.</string>
     <string name="permission_contacts_required">Para enviar contatos, permita que o Threema leia os contatos.</string>
-    <string name="message_declined">“polegar para baixo” enviado</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">“Polegar para cima” enviado</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">“polegar para baixo” enviado</string>
     <string name="notifications_settings">Configurações de notificação</string>
     <string name="notifications_default">Configurações padrão</string>
     <string name="notifications_until">Até %s</string>

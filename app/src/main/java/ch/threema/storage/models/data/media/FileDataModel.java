@@ -251,8 +251,10 @@ public class FileDataModel implements MediaMessageDataInterface {
     @Nullable
     public Float getMetaDataFloat(String metaDataKey) {
         if (this.metaData != null && this.metaData.containsKey(metaDataKey)) {
-
-            Object value = this.metaData.get(metaDataKey);
+            final @Nullable Object value = this.metaData.get(metaDataKey);
+            if (value == null) {
+                return null;
+            }
             if (value instanceof Number) {
                 if (value instanceof Double) {
                     return ((Double) value).floatValue();
@@ -293,18 +295,19 @@ public class FileDataModel implements MediaMessageDataInterface {
     }
 
     /**
-     * Return the duration in MILLISECONDS as set in the metadata field.
-     * <p>
      * Note: Floats are converted to long integers. No rounding.
+     *
+     * @return The value in the meta-data-map for key {@code d} converted to milliseconds or {@code 0L} as fallback.
      */
     public long getDurationMs() {
         try {
-            Float durationF = getMetaDataFloat(METADATA_KEY_DURATION);
+            @Nullable Float durationF = getMetaDataFloat(METADATA_KEY_DURATION);
             if (durationF != null) {
                 durationF *= 1000F;
                 return durationF.longValue();
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            logger.warn("Ignored exception", exception);
         }
         return 0L;
     }

@@ -655,7 +655,6 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 					adapter.updateCaptureStates()
 				}
 			}
-
 		}
 	}
 

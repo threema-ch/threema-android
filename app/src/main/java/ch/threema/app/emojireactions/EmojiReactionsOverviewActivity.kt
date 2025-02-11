@@ -22,15 +22,16 @@
 package ch.threema.app.emojireactions
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration.ORIENTATION_LANDSCAPE
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewTreeObserver
+import android.view.WindowInsets
+import android.view.WindowMetrics
 import android.widget.TextView
-import android.graphics.Color
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
@@ -50,6 +51,7 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.EmojiReactionData
+import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier
 import ch.threema.storage.models.AbstractMessageModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
@@ -59,7 +61,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
-import kotlin.math.roundToInt
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
 
@@ -94,6 +95,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
@@ -104,21 +106,20 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
         messageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService)
         messageModel?.let { message ->
+
+            val reactionMessageIdentifier: ReactionMessageIdentifier = ReactionMessageIdentifier.fromMessageModel(message) ?: run {
+                logger.error("Closing emoji overview for unsupported message model type of {}", message::class.java.simpleName)
+                return false
+            }
+
             initialItem = intent.getStringExtra(EXTRA_INITIAL_EMOJI)
 
             val emojiReactionsViewModel: EmojiReactionsViewModel by viewModels {
                 EmojiReactionsViewModel.provideFactory(
-                    emojiReactionsRepository,
-                    messageService,
-                    messageId = message.uid
+                    emojiReactionsRepository = emojiReactionsRepository,
+                    messageService = messageService,
+                    reactionMessageIdentifier = reactionMessageIdentifier
                 )
-            }
-
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    emojiReactionsViewModel.emojiReactionsUiState
-                        .collect { uiState -> onUiStateChanged(uiState, emojiReactionsViewModel, message) }
-                }
             }
 
             if (!super.initActivity(savedInstanceState)) {
@@ -131,6 +132,14 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
             setupParentLayout()
             setupViewPager()
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    emojiReactionsViewModel.emojiReactionsUiState
+                        .collect { uiState -> onUiStateChanged(uiState, emojiReactionsViewModel, message) }
+                }
+            }
+
         } ?: run {
             logger.error("No message model found")
             finish()
@@ -232,18 +241,12 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 BottomSheetBehavior.STATE_HIDDEN
             )
         }
-        parentLayout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                parentLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
-                    bottomSheetBehavior.peekHeight = parentLayout.height / 2
-                } else {
-                    bottomSheetBehavior.peekHeight = (parentLayout.height * 0.4).roundToInt()
-                }
-                bottomSheetBehavior.maxHeight = parentLayout.height - ConfigUtils.getStatusBarHeight(this@EmojiReactionsOverviewActivity)
-                bottomSheetBehavior.state = STATE_COLLAPSED
-            }
-        })
+
+        determineAvailableDrawingHeight { availableHeight ->
+            bottomSheetBehavior.maxHeight = availableHeight
+            bottomSheetBehavior.peekHeight = (availableHeight * 0.4).toInt()
+            bottomSheetBehavior.state = STATE_COLLAPSED
+        }
     }
 
     private fun setupViewPager() {
@@ -306,7 +309,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     /**
      * Setup bottom sheet and set callback for state changes
      */
-    private fun setupBottomSheet(bottomSheetLayout: ConstraintLayout) : BottomSheetBehavior<ConstraintLayout> {
+    private fun setupBottomSheet(bottomSheetLayout: ConstraintLayout): BottomSheetBehavior<ConstraintLayout> {
         val dragHandle = findViewById<View>(R.id.drag_handle)
 
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLayout)
@@ -389,6 +392,29 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         } catch (ignored: Exception) {
             // ignore
         }
+    }
+
+    private fun determineAvailableDrawingHeight(onAvailable: (Int) -> Unit) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+            onAvailable(determineAvailableDrawingHeightApi30Impl())
+        } else {
+            val statusBarHeight = ConfigUtils.getStatusBarHeight(this)
+            val navigationBarHeight = ConfigUtils.getNavigationBarHeight(this)
+            val screenHeightWithoutTopInsets = resources.displayMetrics.heightPixels - statusBarHeight + navigationBarHeight
+            onAvailable(screenHeightWithoutTopInsets.coerceAtLeast(0))
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun determineAvailableDrawingHeightApi30Impl(): Int {
+        val metrics: WindowMetrics = windowManager.currentWindowMetrics
+        val windowInsets: WindowInsets = metrics.getWindowInsets()
+        val insetsTop = windowInsets.getInsets(
+            WindowInsets.Type.statusBars() or WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar()
+        )
+        val insetsHeightTop = insetsTop.top + insetsTop.bottom
+
+        return (metrics.bounds.height() - insetsHeightTop).coerceAtLeast(0)
     }
 
     companion object {

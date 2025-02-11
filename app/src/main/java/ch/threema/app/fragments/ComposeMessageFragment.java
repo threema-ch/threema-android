@@ -1395,6 +1395,12 @@ public class ComposeMessageFragment extends Fragment implements
 		}
 	}
 
+    private void hideEmojiPopupIfShown() {
+        if (emojiReactionsPopup != null && emojiReactionsPopup.isShowing()) {
+            emojiReactionsPopup.dismiss();
+        }
+    }
+
 	private void showEmojiPicker() {
 		logger.debug("Emoji button clicked");
 
@@ -3589,8 +3595,8 @@ public class ComposeMessageFragment extends Fragment implements
 						Toast.makeText(getContext().getApplicationContext(), R.string.quoted_message_deleted, Toast.LENGTH_SHORT).show();
 					}
 				}
-			} else if (messageModel.getType() == MessageType.TEXT && !messageModel.isStatusMessage() && !messageModel.isDeleted()) {
-				showTextChatBubble(messageModel);
+			} else if ((messageModel.getType() == MessageType.TEXT && !messageModel.isStatusMessage()) || messageModel.isDeleted()) {
+				showMessageDetailScreen(messageModel);
 			}
 		}
 	}
@@ -4821,7 +4827,11 @@ public class ComposeMessageFragment extends Fragment implements
 			boolean canStarMessage = isSingleMessage && MessageUtil.canStarMessage(selectedMessages.get(0));
 
 			if (selectedMessages.stream().anyMatch(AbstractMessageModel::isDeleted)) {
-				onlyShowItems(menu, R.id.menu_message_discard);
+                if (isSingleMessage) {
+                    onlyShowItems(menu, R.id.menu_message_discard, R.id.menu_info);
+                } else {
+                    onlyShowItems(menu, R.id.menu_message_discard);
+                }
 				return;
 			}
 
@@ -5027,7 +5037,7 @@ public class ComposeMessageFragment extends Fragment implements
 				showQuotePopup(null);
 				mode.finish();
 			} else if (id == R.id.menu_info) {
-				showTextChatBubble(selectedMessages.get(0));
+				showMessageDetailScreen(selectedMessages.get(0));
 				mode.finish();
 			} else if (id == R.id.menu_message_star || id == R.id.menu_message_unstar) {
 				toggleStar(selectedMessages.get(0));
@@ -5127,8 +5137,7 @@ public class ComposeMessageFragment extends Fragment implements
 
 			ComposeJavaBridge.INSTANCE.setEditModeMessageBubble(
                 editMessageBubbleComposeView,
-                messageModel,
-                userService.getIdentity()
+                messageModel
             );
 			editMessageBubbleContainer.setVisibility(View.VISIBLE);
 
@@ -5260,7 +5269,7 @@ public class ComposeMessageFragment extends Fragment implements
         }
 	}
 
-	private void showTextChatBubble(AbstractMessageModel messageModel) {
+	private void showMessageDetailScreen(AbstractMessageModel messageModel) {
 		Intent intent = new Intent(getContext(), MessageDetailsActivity.class);
 		IntentDataUtil.append(messageModel, intent);
 		activity.startActivity(intent);
@@ -5724,6 +5733,7 @@ public class ComposeMessageFragment extends Fragment implements
 		super.onConfigurationChanged(newConfig);
 
 		hideEmojiPickerIfShown();
+        hideEmojiPopupIfShown();
 		EditTextUtil.hideSoftKeyboard(this.messageText);
 		dismissQuotePopup();
 		dismissMentionPopup();

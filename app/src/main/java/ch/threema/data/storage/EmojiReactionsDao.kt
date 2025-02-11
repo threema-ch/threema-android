@@ -39,7 +39,7 @@ interface EmojiReactionsDao {
     /**
      * Remove an emoji reaction from the database
      */
-    fun remove(entry: DbEmojiReaction)
+    fun remove(entry: DbEmojiReaction, messageModel: AbstractMessageModel)
 
     /**
      * Delete all reactions referred to by the specified message id

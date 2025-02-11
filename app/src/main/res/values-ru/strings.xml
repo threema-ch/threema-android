@@ -475,7 +475,6 @@
     <string name="back">Назад</string>
     <string name="wearable_reply">Ответить</string>
     <string name="wearable_reply_label">Ответить %s</string>
-    <string name="message_acknowledged">«Одобрение» отправлено</string>
     <string name="push_disable_text">Если продолжить, вместо службы push-уведомлений системы будет использоваться функция Threema Push. Это помогает сократить «цифровой след», но требует настройки телефона таким образом, чтобы приложение могло работать в фоновом режиме. Если соответствующие параметры не удаётся найти в настройках устройства, попробуйте обратиться в службу поддержки производителя вашего устройства за помощью с настройкой.</string>
     <string name="ballot_intermediate_results_show">Показать промежуточные результаты</string>
     <string name="converting_video">Обработка видео</string>
@@ -592,7 +591,8 @@
     <string name="permission_storage_required">Чтобы отправлять медиа, разрешите Threema доступ к хранилищу.</string>
     <string name="permission_location_required">Чтобы отправлять местоположение, разрешите Threema доступ к службе геопозиционирования.</string>
     <string name="permission_contacts_required">Чтобы отправлять контакты, разрешите Threema чтение контактов.</string>
-    <string name="message_declined">«Неодобрение» отправлено</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">«Одобрение» отправлено</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">«Неодобрение» отправлено</string>
     <string name="notifications_settings">Настройки уведомлений</string>
     <string name="notifications_default">Настройки по умолчанию</string>
     <string name="notifications_until">До %s</string>

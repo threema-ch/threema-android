@@ -634,8 +634,13 @@ public class MessageServiceImpl implements MessageService {
 
 	@WorkerThread
 	@Override
-	public synchronized boolean sendEmojiReaction(@NonNull AbstractMessageModel message, @NonNull String emojiSequence, @NonNull MessageReceiver receiver, boolean markAsRead) throws ThreemaException {
-		logger.debug("Send emoji reaction to message {}", message.getApiMessageId());
+	public synchronized boolean sendEmojiReaction(
+        @NonNull AbstractMessageModel message,
+        @NonNull String emojiSequence,
+        @NonNull MessageReceiver receiver,
+        boolean markAsRead
+    ) throws ThreemaException {
+		logger.debug("Send emoji reaction to message {} (id={})", message.getApiMessageId(), message.getId());
 		logger.trace("Reaction: '{}'", emojiSequence);
 
         if (!EmojiUtil.isFullyQualifiedEmoji(emojiSequence)) {
@@ -650,7 +655,15 @@ public class MessageServiceImpl implements MessageService {
         final int reactionSupport = receiver.getEmojiReactionSupport();
 
 		if (reactionSupport != MessageReceiver.Reactions_NONE) {
-			final String myIdentity = identityStore.getIdentity();
+
+            if (markAsRead) {
+                markAsRead(
+                    /* message */ message,
+                    /* silent */ true
+                );
+            }
+
+            final String myIdentity = identityStore.getIdentity();
 			List<EmojiReactionData> emojiReactionData = emojiReactionsRepository.safeGetReactionsByMessage(message);
 
 			Reaction.ActionCase actionCase = Reaction.ActionCase.APPLY;
@@ -706,7 +719,7 @@ public class MessageServiceImpl implements MessageService {
 					logger.error("Unable to send dec message");
 				}
 			} else {
-				// TODO(ANDR-3492): Remove else branch and probably set method's return type to `void`
+				// TODO(ANDR-3585): Remove else branch and probably set method's return type to `void`
 				// unsupported emoji sequence (V1 to V2)
 				return false;
 			}

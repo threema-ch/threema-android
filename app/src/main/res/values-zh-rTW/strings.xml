@@ -489,7 +489,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回覆</string>
     <string name="wearable_reply_label">回覆 %s</string>
-    <string name="message_acknowledged">已發送「讚好」</string>
     <string name="push_disable_text">如果繼續，您將使用「Threema Push」代替系統內置的推播服務。雖然這能減少您的數碼足跡，但您需要允許「應用程式在背景執行」才能順利使用。如果在裝置設定中找不到相應的選項，您可能需要聯絡裝置製造商的支援以取得配置說明。</string>
     <string name="ballot_intermediate_results_show">顯示中間結果</string>
     <string name="converting_video">正在處理影片</string>
@@ -612,7 +611,8 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_storage_required">如要儲存或傳送媒體，請允許 Threema 取用儲存權限。</string>
     <string name="permission_location_required">如要傳送位置，請允許 Threema 取用您的位置的權限。</string>
     <string name="permission_contacts_required">如要傳送聯絡人，請允許 Threema 讀取聯絡人的權限。</string>
-    <string name="message_declined">已發送「不喜歡」</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">已發送「讚好」</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">已發送「不喜歡」</string>
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">預設設定</string>
     <string name="notifications_until">直至%s</string>
@@ -1427,7 +1427,7 @@ Threema 支援的所有表情符號。</string>
     <string name="last_added_contact">最後新增</string>
     <string name="directory_explain_text">在公司目錄中搜尋任何尚未列在您的聯絡人清單中的員工。</string>
     <string name="cannot_display_location">無法顯示此位置。</string>
-    <string name="draw_reply">隨機回覆</string>
+    <string name="draw_reply">繪製回覆圖片</string>
     <string name="drawing">繪圖</string>
     <string name="background_color">背景顏色</string>
     <string name="send_video_muted">從影片中刪除音效</string>

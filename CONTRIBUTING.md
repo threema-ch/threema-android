@@ -13,6 +13,6 @@ team through [threema.ch/support](https://threema.ch/support).
 
 ## Translations
 
-We manage our app translations through OneSky. If you're interested in
+We manage our app translations on Crowdin. If you’re interested in
 improving translations, or if you would like to translate Threema to a new
-language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
+language, please contact us at `support at threema dot ch`.

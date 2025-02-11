@@ -1,2 +1,2 @@
-- Überarbeitete Darstellung der Zustimmen-/Ablehnen-Icons (in Vorbereitung auf kommende Emoji-Reaktionen)
-- Behebung eines Fehlers bzgl. dem Nachrichten-Status von Chats mit verpassten Anrufen
+- Neu: Auf Nachrichten kann mit Emoji reagiert werden
+- Behebung eines Fehlers bezüglich Profilbildern in Gruppenanrufen

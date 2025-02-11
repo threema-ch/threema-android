@@ -106,7 +106,12 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
             try {
                 val workManager = WorkManager.getInstance(context)
-                val policy = if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, schedulePeriodMs)) {
+                val policy = if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
+                        workManager,
+                        ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                        schedulePeriodMs
+                    )
+                ) {
                     ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
                 } else {
                     ExistingPeriodicWorkPolicy.KEEP
@@ -125,13 +130,13 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
         private fun buildOneTimeWorkRequest(refreshRestrictionsOnly: Boolean, forceUpdate: Boolean, tag: String?): OneTimeWorkRequest {
             val data = Data.Builder()
-                    .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, refreshRestrictionsOnly)
-                    .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
-                    .build()
+                .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, refreshRestrictionsOnly)
+                .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
+                .build()
 
             val builder = OneTimeWorkRequestBuilder<WorkSyncWorker>()
-                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .apply { setInputData(data) }
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .apply { setInputData(data) }
 
             tag?.let {
                 builder.addTag(tag)
@@ -245,11 +250,11 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 for (n in allContacts.indices) {
                     identities[n] = allContacts[n].identity
                 }
-                workData = apiConnector
-                        .fetchWorkData(
-                                credentials.username,
-                                credentials.password,
-                                identities)
+                workData = apiConnector.fetchWorkData(
+                    /* username = */ credentials.username,
+                    /* password = */ credentials.password,
+                    /* identities = */ identities
+                )
             } catch (e: Exception) {
                 logger.error("Failed to fetch2 work data from API", e)
                 notificationService.cancelWorkSyncProgress()
@@ -271,17 +276,18 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             val fetchedWorkIdentities = workData.workContacts.map { it.threemaId }.toSet()
 
             // Create or update work contacts
-            val refreshedWorkIdentities = workData.workContacts.mapNotNull { workContact ->
-                AddOrUpdateWorkContactBackgroundTask(
-                    workContact,
-                    userService.identity,
-                    contactModelRepository,
-                ).runSynchronously()
-            }.map { it.identity }
+            val refreshedWorkIdentities = workData.workContacts
+                .mapNotNull { workContact ->
+                    AddOrUpdateWorkContactBackgroundTask(
+                        workContact = workContact,
+                        myIdentity = userService.identity,
+                        contactModelRepository = contactModelRepository,
+                    ).runSynchronously()
+                }.map { it.identity }
 
             val newWorkIdentities = refreshedWorkIdentities - existingWorkIdentities
             newWorkContacts.addAll(
-                newWorkIdentities.mapNotNull { contactModelRepository.getByIdentity(it) }
+                newWorkIdentities.mapNotNull(contactModelRepository::getByIdentity)
             )
 
             // Downgrade work contacts
@@ -297,30 +303,32 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 }
             }
 
-            // update applogos
+            // update app-logos
             // start a new thread to lazy download the app icons
             logger.trace("Updating app logos in new thread")
-            Thread(UpdateAppLogoRoutine(
-                    this.fileService,
-                    this.preferenceService,
-                    workData.logoLight,
-                    workData.logoDark,
-                    forceUpdate
-            ), "UpdateAppIcon").start()
+            Thread(
+                UpdateAppLogoRoutine(
+                    /* fileService = */ this.fileService,
+                    /* preferenceService = */ this.preferenceService,
+                    /* lightUrl = */ workData.logoLight,
+                    /* darkUrl = */ workData.logoDark,
+                    /* forceUpdate = */ forceUpdate
+                ), "UpdateAppIcon"
+            ).start()
             preferenceService.customSupportUrl = workData.supportUrl
             if (workData.mdm.parameters != null) {
                 // Save the Mini-MDM Parameters to a local file
                 AppRestrictionService.getInstance()
-                        .storeWorkMDMSettings(workData.mdm)
+                    .storeWorkMDMSettings(workData.mdm)
             }
 
             // update work info
             UpdateWorkInfoRoutine(
-                    context,
-                    apiConnector,
-                    identityStore,
-                    null,
-                    licenseService
+                /* context = */ context,
+                /* apiConnector = */ apiConnector,
+                /* identityStore = */ identityStore,
+                /* deviceService = */ null,
+                /* licenseService = */ licenseService
             ).run()
             preferenceService.workDirectoryEnabled = workData.directory.enabled
             preferenceService.workDirectoryCategories = workData.directory.categories
@@ -338,17 +346,19 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
         logger.info("Refreshing work data successfully finished")
 
-        return serviceManager?.let {
-            if (newWorkContacts.isEmpty() || ContactUpdateWorker.fetchAndUpdateContactModels(
-                contactModels = newWorkContacts,
-                apiConnector = apiConnector,
-                preferenceService = preferenceService,
-            )) {
-                return Result.success()
-            } else {
-                return Result.failure()
-            }
-        } ?: Result.success()
+        if (newWorkContacts.isEmpty()) {
+            return Result.success()
+        }
+        val wasSuccessful = ContactUpdateWorker.fetchAndUpdateContactModels(
+            contactModels = newWorkContacts,
+            apiConnector = apiConnector,
+            preferenceService = preferenceService,
+        )
+        return if (wasSuccessful) {
+            Result.success()
+        } else {
+            Result.failure()
+        }
     }
 
     private fun resetRestrictions() {
@@ -362,7 +372,11 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 applyBooleanRestriction(editor, R.string.restriction__disable_screenshots, R.string.preferences__hide_screenshots) { it }
                 applyBooleanRestriction(editor, R.string.restriction__disable_save_to_gallery, R.string.preferences__save_media) { !it }
                 applyBooleanRestriction(editor, R.string.restriction__disable_message_preview, R.string.preferences__notification_preview) { !it }
-                applyBooleanRestrictionMapToInt(editor, R.string.restriction__disable_send_profile_picture, R.string.preferences__profile_pic_release) {
+                applyBooleanRestrictionMapToInt(
+                    editor,
+                    R.string.restriction__disable_send_profile_picture,
+                    R.string.preferences__profile_pic_release
+                ) {
                     if (it) {
                         PreferenceService.PROFILEPIC_RELEASE_NOBODY
                     } else {
@@ -381,27 +395,38 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
 
     override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
         val notification = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
-                .setSound(null)
-                .setSmallIcon(R.drawable.ic_sync_notification)
-                .setContentTitle(context.getString(R.string.wizard1_sync_work))
-                .setProgress(0, 0, true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setAutoCancel(true)
-                .setLocalOnly(true)
-                .setOnlyAlertOnce(true)
-                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                .build()
+            .setSound(null)
+            .setSmallIcon(R.drawable.ic_sync_notification)
+            .setContentTitle(context.getString(R.string.wizard1_sync_work))
+            .setProgress(0, 0, true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setAutoCancel(true)
+            .setLocalOnly(true)
+            .setOnlyAlertOnce(true)
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+            .build()
 
         return Futures.immediateFuture(ForegroundInfo(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID, notification))
     }
 
-    private fun applyBooleanRestriction(editor: Editor, @StringRes restrictionKeyRes: Int, @StringRes settingKeyRes: Int, mapper: (Boolean) -> Boolean) {
+    private fun applyBooleanRestriction(
+        editor: Editor,
+        @StringRes restrictionKeyRes: Int,
+        @StringRes settingKeyRes: Int,
+        mapper: (Boolean) -> Boolean
+    ) {
         AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
             editor.putBoolean(context.getString(settingKeyRes), mapper(it))
         }
     }
 
-    private fun applyBooleanRestrictionMapToInt(editor: Editor, @StringRes restrictionKeyRes: Int, @StringRes settingKeyRes: Int, mapper: (Boolean) -> Int) {
+    @Suppress("SameParameterValue")
+    private fun applyBooleanRestrictionMapToInt(
+        editor: Editor,
+        @StringRes restrictionKeyRes: Int,
+        @StringRes settingKeyRes: Int,
+        mapper: (Boolean) -> Int
+    ) {
         AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
             editor.putInt(context.getString(settingKeyRes), mapper(it))
         }

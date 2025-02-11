@@ -357,8 +357,9 @@ class GroupCallViewModel(application: Application) : AndroidViewModel(applicatio
 	@UiThread
 	private fun observeParticipants() {
 		viewModelScope.launch {
-			callController.participants
-				.collect { eglBaseAndParticipants.value = callController.eglBase to it }
+			callController.participants.collect { participants ->
+                eglBaseAndParticipants.value = callController.eglBase to participants
+            }
 		}
 	}
 

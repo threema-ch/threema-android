@@ -489,7 +489,6 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="back">返回</string>
     <string name="wearable_reply">回复</string>
     <string name="wearable_reply_label">回复 %s</string>
-    <string name="message_acknowledged">已发送 “赞”</string>
     <string name="push_disable_text">如果继续，您将使用 “Threema Push” 代替系统内置的推送服务。虽然这能减少您的数字足迹，但您需要允许 “应用程序在后台运行” 才能顺利使用。如果在设备设置中找不到相应的选项，您可能需要联系设备制造商的支持以获取配置帮助。</string>
     <string name="ballot_intermediate_results_show">显示中间结果</string>
     <string name="converting_video">正在处理影片</string>
@@ -612,7 +611,8 @@ Threema 支持的所有表情符号。</string>
     <string name="permission_storage_required">如要保存或发送媒体，请允许 Threema 访问存储权限。</string>
     <string name="permission_location_required">如要发送位置，请允许 Threema 访问您的位置的权限。</string>
     <string name="permission_contacts_required">如要发送联系人，请允许 Threema 读取联系人的权限。</string>
-    <string name="message_declined">已发送 “踩”</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">已发送 “赞”</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">已发送 “踩”</string>
     <string name="notifications_settings">通知设置</string>
     <string name="notifications_default">默认设置</string>
     <string name="notifications_until">直到%s</string>
@@ -1433,7 +1433,7 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="last_added_contact">最后添加</string>
     <string name="directory_explain_text">在公司目录中搜索任何尚未列在您的联系人列表中的员工。</string>
     <string name="cannot_display_location">无法显示此位置。</string>
-    <string name="draw_reply">随机回复</string>
+    <string name="draw_reply">绘制回复图片</string>
     <string name="drawing">绘画</string>
     <string name="background_color">背景颜色</string>
     <string name="send_video_muted">从视频中删除声音</string>

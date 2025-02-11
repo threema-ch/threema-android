@@ -474,7 +474,6 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="back">Zpět</string>
     <string name="wearable_reply">Odpovědět</string>
     <string name="wearable_reply_label">Odpovědět %s</string>
-    <string name="message_acknowledged">Souhlas odeslán</string>
     <string name="push_disable_text">Jestliže budete pokračovat, bude použita služba „Threema Push“ namísto systémové služby push. Toto pomáhá redukovat vaši digitální stopu, ale vyžaduje to také, aby vaše zařízení bylo nakonfigurováno takovým způsobem, aby aplikace mohla stále běžet na pozadí. V případě potřeby kontaktujte podporu výrobce vašeho zařízení, aby vám pomohla s konfigurací, jestliže odpovídající možnosti nejsou k dispozici v nastavení zařízení.</string>
     <string name="ballot_intermediate_results_show">Zobrazovat průběžné výsledky</string>
     <string name="converting_video">Zpracovávání videa</string>
@@ -593,7 +592,8 @@ možné je obnovit.</string>
     <string name="permission_storage_required">Chcete‑li uložit či odeslat média, povolte aplikaci Threema oprávnění přístupu k úložišti.</string>
     <string name="permission_location_required">Chcete‑li odeslat polohu, povolte aplikaci Threema oprávnění přístupu k poloze vašeho zařízení.</string>
     <string name="permission_contacts_required">Chcete‑li odeslat kontakty, povolte aplikaci Threema oprávnění přístupu ke kontaktům.</string>
-    <string name="message_declined">Nesouhlas odeslán</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">„Palec nahoru“ odeslán</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">„Palec dolů“ odeslán</string>
     <string name="notifications_settings">Nastavení oznámení</string>
     <string name="notifications_default">Výchozí nastavení</string>
     <string name="notifications_until">Do %s</string>

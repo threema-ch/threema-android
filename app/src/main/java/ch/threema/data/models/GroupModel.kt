@@ -21,8 +21,6 @@
 
 package ch.threema.data.models
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.LoggingUtil

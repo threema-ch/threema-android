@@ -83,7 +83,6 @@ class EmojiReactionsOverviewFragment(val emojiSequence: String? = null, val mess
                 emojiReactionsViewModel.emojiReactionsUiState.collect { uiState ->
                     val emojiReactionsForSequence = uiState.emojiReactions.filter { it.emojiSequence == targetEmojiSequence }
                     emojiReactionsOverviewListAdapter.submitList(emojiReactionsForSequence)
-                    emojiReactionsOverviewListAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -91,14 +90,11 @@ class EmojiReactionsOverviewFragment(val emojiSequence: String? = null, val mess
 
     override fun onRemoveClick(data: EmojiReactionData, position: Int) {
         val messageService = ThreemaApplication.requireServiceManager().messageService
-        val messageModel = messageService.getGroupMessageModel(data.messageId) ?: messageService.getContactMessageModel(data.messageId)
-        val messageReceiver = messageService.getMessageReceiver(messageModel)
-
         CoroutineScope(Dispatchers.Default).launch {
             messageService.sendEmojiReaction(
-                messageModel as AbstractMessageModel,
+                messageModel,
                 data.emojiSequence,
-                messageReceiver,
+                messageService.getMessageReceiver(messageModel),
                 false
             )
         }

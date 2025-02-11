@@ -245,14 +245,14 @@ We accept GitHub pull requests. Please refer to
 for more information on how to contribute.
 
 Note that translation fixes should not be contributed through GitHub but
-through OneSky, see next section.
+on Crowdin, see next section.
 
 
 ## <a name="translating"></a>Translating
 
-We manage our app translations through OneSky. If you’re interested in
+We manage our app translations on Crowdin. If you’re interested in
 improving translations, or if you would like to translate Threema to a new
-language, please sign up at <https://threema.oneskyapp.com/collaboration/>.
+language, please contact us at `support at threema dot ch`.
 
 
 ## <a name="license"></a>License

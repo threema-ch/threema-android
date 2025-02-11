@@ -477,7 +477,6 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="back">Wstecz</string>
     <string name="wearable_reply">Odpowiedz</string>
     <string name="wearable_reply_label">Odpowiedz %s</string>
-    <string name="message_acknowledged">Wysłano „kciuk w górę”</string>
     <string name="push_disable_text">Jeśli będziesz kontynuować, zamiast systemowej usługi push będzie wykorzystywana usługa Threema Push. Pomaga to ograniczyć zużycie zasobów, ale wymaga określonej konfiguracji urządzenia, aby aplikacja działała w tle. Jeśli odpowiednia opcja nie jest dostępna w ustawieniach urządzenia, skontaktuj się z pomocą techniczną producenta urządzenia.</string>
     <string name="ballot_intermediate_results_show">Pokaż średnie wyniki</string>
     <string name="converting_video">Przetwarzanie filmu</string>
@@ -596,7 +595,8 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="permission_storage_required">Aby wysłać media, zezwól Threema na dostęp do pamięci.</string>
     <string name="permission_location_required">Aby wysłać swoją lokalizację, zezwól Threema na dostęp do swojego położenia.</string>
     <string name="permission_contacts_required">Aby wysłać kontakty, zezwól Threema na odczytywanie danych kontaktowych.</string>
-    <string name="message_declined">Wysłano „kciuk w dół”</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">Wysłano „kciuk w górę”</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">Wysłano „kciuk w dół”</string>
     <string name="notifications_settings">Ustawienia powiadomień</string>
     <string name="notifications_default">Ustawienia domyślne</string>
     <string name="notifications_until">Do %s</string>

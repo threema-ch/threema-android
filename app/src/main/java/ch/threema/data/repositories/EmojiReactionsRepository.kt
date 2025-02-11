@@ -35,13 +35,14 @@ import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.data.storage.EmojiReactionsDao
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
+import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsRepository")
 
 class EmojiReactionsRepository(
-    private val cache: ModelTypeCache<String, EmojiReactionsModel>,
+    private val cache: ModelTypeCache<ReactionMessageIdentifier, EmojiReactionsModel>,
     private val emojiReactionDao: EmojiReactionsDao,
     private val coreServiceManager: CoreServiceManager,
 ) {
@@ -56,7 +57,8 @@ class EmojiReactionsRepository(
     fun getReactionsByMessage(messageModel: AbstractMessageModel): EmojiReactionsModel? {
         logger.debug("Loading emoji reactions for message {}", messageModel.id)
         synchronized(cache) {
-            return cache.getOrCreate(messageModel.uid) {
+            val reactionMessageIdentifier = ReactionMessageIdentifier.fromMessageModel(messageModel) ?: return null
+            return cache.getOrCreate(reactionMessageIdentifier) {
                 val dbReactions = emojiReactionDao.findAllByMessage(messageModel)
                     .map(DbEmojiReaction::toDataType)
                 val allReactions = addAckDecReactions(messageModel, dbReactions.toMutableList())
@@ -76,19 +78,34 @@ class EmojiReactionsRepository(
     fun deleteAllReactionsForMessage(messageModel: AbstractMessageModel) {
         logger.debug("Delete all for message with uid {}", messageModel.uid)
         emojiReactionDao.deleteAllByMessage(messageModel)
-        cache.get(messageModel.uid)?.clear()
-        cache.remove(messageModel.uid)
+        ReactionMessageIdentifier.fromMessageModel(messageModel)?.let { reactionMessageIdentifier ->
+            cache.get(reactionMessageIdentifier)?.clear()
+            cache.remove(reactionMessageIdentifier)
+        }
     }
 
     /**
      * Add reactions from the old ack/dec system to an existing list of emoji reactions
      */
-    private fun addAckDecReactions(targetMessageModel: AbstractMessageModel, mutableEmojiReactions: MutableList<EmojiReactionData>): List<EmojiReactionData> {
+    private fun addAckDecReactions(
+        targetMessageModel: AbstractMessageModel,
+        mutableEmojiReactions: MutableList<EmojiReactionData>
+    ): List<EmojiReactionData> {
         if (targetMessageModel is GroupMessageModel) {
             mutableEmojiReactions += targetMessageModel.groupMessageStates?.mapNotNull { (identity, reaction) ->
                 when (reaction) {
-                    MessageState.USERACK.toString() -> createEmojiReactionData(targetMessageModel, identity, emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE)
-                    MessageState.USERDEC.toString() -> createEmojiReactionData(targetMessageModel, identity, emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE)
+                    MessageState.USERACK.toString() -> createEmojiReactionData(
+                        targetMessageModel,
+                        identity,
+                        emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE
+                    )
+
+                    MessageState.USERDEC.toString() -> createEmojiReactionData(
+                        targetMessageModel,
+                        identity,
+                        emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE
+                    )
+
                     else -> null
                 }
             } ?: emptyList()
@@ -98,8 +115,18 @@ class EmojiReactionsRepository(
             val state = targetMessageModel.state
 
             when (state) {
-                MessageState.USERACK -> mutableEmojiReactions += createEmojiReactionData(targetMessageModel, senderIdentity, emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE)
-                MessageState.USERDEC -> mutableEmojiReactions += createEmojiReactionData(targetMessageModel, senderIdentity, emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE)
+                MessageState.USERACK -> mutableEmojiReactions += createEmojiReactionData(
+                    messageModel = targetMessageModel,
+                    senderIdentity = senderIdentity,
+                    emojiSequence = EmojiUtil.THUMBS_UP_SEQUENCE
+                )
+
+                MessageState.USERDEC -> mutableEmojiReactions += createEmojiReactionData(
+                    messageModel = targetMessageModel,
+                    senderIdentity = senderIdentity,
+                    emojiSequence = EmojiUtil.THUMBS_DOWN_SEQUENCE
+                )
+
                 else -> {
                     // ignore
                 }
@@ -147,7 +174,9 @@ class EmojiReactionsRepository(
                     reactedAt = Date()
                 )
                 emojiReactionDao.create(reactionEntry, targetMessage)
-                cache.get(targetMessage.uid)?.addEntry(reactionEntry.toDataType())
+                ReactionMessageIdentifier.fromMessageModel(targetMessage)?.let { reactionMessageIdentifier ->
+                    cache.get(reactionMessageIdentifier)?.addEntry(reactionEntry.toDataType())
+                }
             } catch (exception: SQLiteException) {
                 throw EmojiReactionEntryCreateException(exception)
             }
@@ -181,7 +210,7 @@ class EmojiReactionsRepository(
                     reactedAt = Date()
                 )
 
-                emojiReactionDao.remove(reactionEntry)
+                emojiReactionDao.remove(reactionEntry, targetMessage)
 
                 // TODO(ANDR-3325): Remove ACK/DEC compatibility
                 val isThumbsUp = EmojiUtil.isThumbsUpEmoji(emojiSequence)
@@ -202,11 +231,45 @@ class EmojiReactionsRepository(
                         messageService.clearMessageState(targetMessage)
                     }
                 }
-                cache.get(targetMessage.uid)?.removeEntry(reactionEntry.toDataType())
+                ReactionMessageIdentifier.fromMessageModel(targetMessage)?.let { reactionMessageIdentifier ->
+                    cache.get(reactionMessageIdentifier)?.removeEntry(reactionEntry.toDataType())
+                }
             } catch (exception: SQLiteException) {
                 throw EmojiReactionEntryRemoveException(exception)
             }
         }
+    }
+
+    /**
+     *  We need to use this compound identifier object for emoji reactions because
+     *  the [AbstractMessageModel.id] is **not** unique across different message type db tables.
+     *
+     *  @param messageId Represents the local auto-incremented message row-id ([AbstractMessageModel.id])
+     *  @param messageType Is either [TargetMessageType.ONE_TO_ONE] or [TargetMessageType.GROUP]. Other existing
+     *  message types like for example distribution-list messages can not receive emoji reactions.
+     */
+    data class ReactionMessageIdentifier(
+        val messageId: Int,
+        val messageType: TargetMessageType
+    ) {
+
+        companion object {
+
+            /**
+             *  @return The reaction-message-identifier object or `null` if the concrete
+             *  type of [AbstractMessageModel] can not receive emoji reactions.
+             */
+            fun fromMessageModel(messageModel: AbstractMessageModel): ReactionMessageIdentifier? {
+                val messageType: TargetMessageType = when (messageModel) {
+                    is MessageModel -> TargetMessageType.ONE_TO_ONE
+                    is GroupMessageModel -> TargetMessageType.GROUP
+                    else -> return null
+                }
+                return ReactionMessageIdentifier(messageId = messageModel.id, messageType = messageType)
+            }
+        }
+
+        enum class TargetMessageType { ONE_TO_ONE, GROUP }
     }
 }
 

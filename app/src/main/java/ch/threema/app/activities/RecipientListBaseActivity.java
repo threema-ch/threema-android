@@ -188,18 +188,18 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     private final List<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
     private boolean isInternallyForwardingMediaFiles = false;
 
-	private GroupService groupService;
-	private ContactService contactService;
-	private ConversationService conversationService;
-	private DistributionListService distributionListService;
-	private MessageService messageService;
-	private FileService fileService;
-	private UserService userService;
-	private APIConnector apiConnector;
-	private ContactModelRepository contactModelRepository;
+    private GroupService groupService;
+    private ContactService contactService;
+    private ConversationService conversationService;
+    private DistributionListService distributionListService;
+    private MessageService messageService;
+    private FileService fileService;
+    private UserService userService;
+    private APIConnector apiConnector;
+    private ContactModelRepository contactModelRepository;
 
-	@NonNull
-	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    @NonNull
+    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
     private final Runnable copyExternalFilesRunnable = new Runnable() {
         @Override
@@ -853,35 +853,35 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         if (contactModel == null) {
             GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), "pro");
 
-			backgroundExecutor.get().execute(
-				new BasicAddOrUpdateContactBackgroundTask(
-					identity,
-					ContactModel.AcquaintanceLevel.DIRECT,
-					userService.getIdentity(),
-					apiConnector,
-					contactModelRepository,
-					AddContactRestrictionPolicy.CHECK,
-					RecipientListBaseActivity.this,
-					null
-				) {
-					@Override
-					public void onFinished(ContactResult result) {
-						DialogUtil.dismissDialog(getSupportFragmentManager(), "pro", true);
+            backgroundExecutor.get().execute(
+                new BasicAddOrUpdateContactBackgroundTask(
+                    identity,
+                    ContactModel.AcquaintanceLevel.DIRECT,
+                    userService.getIdentity(),
+                    apiConnector,
+                    contactModelRepository,
+                    AddContactRestrictionPolicy.CHECK,
+                    RecipientListBaseActivity.this,
+                    null
+                ) {
+                    @Override
+                    public void onFinished(ContactResult result) {
+                        DialogUtil.dismissDialog(getSupportFragmentManager(), "pro", true);
 
-						ContactModel newContactModel = contactService.getByIdentity(identity);
-						if (newContactModel == null) {
-							View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
-							Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
-						} else {
-							prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)), false);
-						}
-					}
-				}
-			);
-		} else {
-			prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
-		}
-	}
+                        ContactModel newContactModel = contactService.getByIdentity(identity);
+                        if (newContactModel == null) {
+                            View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
+                            Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
+                        } else {
+                            prepareComposeIntent(new ArrayList<>(Collections.singletonList(newContactModel)), false);
+                        }
+                    }
+                }
+            );
+        } else {
+            prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1178,6 +1178,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                     if (originalMessageModel.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT) {
                                         mediaItem.setVideoSize(PreferenceService.VideoSize_SEND_AS_FILE);
                                     }
+                                } else if (originalMessageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
+                                    mediaItem.setDurationMs(
+                                        originalMessageModel.getFileData().getDurationMs()
+                                    );
                                 }
 
                                 mappedMediaItems.add(mediaItem);
@@ -1594,7 +1598,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         final Location location = new Location("");
         location.setLatitude(locationData.latitude);
         location.setLongitude(locationData.longitude);
-        location.setAccuracy((float)locationData.accuracyOrFallback);
+        location.setAccuracy((float) locationData.accuracyOrFallback);
         final @Nullable Poi poi = locationData.poi;
         @Nullable String poiName = null;
         if (poi != null) {

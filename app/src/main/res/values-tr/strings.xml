@@ -474,7 +474,6 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="back">Geri</string>
     <string name="wearable_reply">Cevap</string>
     <string name="wearable_reply_label">%s adlı kişiye yanıt gönder</string>
-    <string name="message_acknowledged">\"Beğendi\" gönderildi</string>
     <string name="push_disable_text">Devam ederseniz, sistemin push servisi yerine “Threema Push” kullanılacaktır. Bu, dijital ayak izinizi azaltmaya yardımcı olur ancak telefonunuzun, uygulamanın arka planda çalışmasına izin verecek şekilde yapılandırılmasını gerektirir. Cihaz ayarlarında ilgili seçenekler bulunamıyorsa, yapılandırma konusunda yardım için cihaz üreticinizin desteğiyle iletişime geçmek isteyebilirsiniz.</string>
     <string name="ballot_intermediate_results_show">Ara sonuçları göster</string>
     <string name="converting_video">Video işleniyor</string>
@@ -591,7 +590,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="permission_storage_required">Medyayı kaydetmek veya göndermek için, Threema\'nın depolama alanına erişmesine izin verin.</string>
     <string name="permission_location_required">Lokasyon gönderebilmek için, Threema\'nın konumunuza erişmesine izin verin.</string>
     <string name="permission_contacts_required">Kontaklarınızı gönderebilmek için, Threema\'nın kişilerinizi okumasına izin verin.</string>
-    <string name="message_declined">\"Beğenmedi\" gönderildi</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Beğendi\" gönderildi</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Beğenmedi\" gönderildi</string>
     <string name="notifications_settings">Bildirim ayarları</string>
     <string name="notifications_default">Varsayılan ayarlar</string>
     <string name="notifications_until">%s tarihine kadar</string>

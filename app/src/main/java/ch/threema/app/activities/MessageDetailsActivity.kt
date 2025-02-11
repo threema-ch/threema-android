@@ -37,11 +37,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.compose.common.HintText
 import ch.threema.app.compose.edithistory.EditHistoryList
 import ch.threema.app.compose.edithistory.EditHistoryViewModel
 import ch.threema.app.compose.message.CompleteMessageBubble
@@ -77,7 +79,6 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
         MessageDetailsViewModel.provideFactory(
             IntentDataUtil.getAbstractMessageId(intent),
             IntentDataUtil.getAbstractMessageType(intent),
-            serviceManager.userService.identity,
         )
     }
 
@@ -170,7 +171,6 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     }
 
     private fun initScreenContent() {
-
         val editHistoryComposeView = findViewById<ComposeView>(R.id.message_details_compose_view)
         editHistoryComposeView.setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
 
@@ -207,6 +207,12 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                     isTextSelectable = true,
                                     textSelectionCallback = textSelectionCallback
                                 )
+                                if (uiState.hasReactions) {
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    HintText(
+                                        text = stringResource(R.string.emoji_reactions_message_details_hint),
+                                    )
+                                }
                             }
                             else -> Unit
                         }

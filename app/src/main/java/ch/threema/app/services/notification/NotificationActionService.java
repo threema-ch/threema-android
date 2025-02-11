@@ -152,7 +152,7 @@ public class NotificationActionService extends IntentService {
 		lifetimeService.acquireConnection(TAG);
 		try {
 			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, true);
-			notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
+            notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
 			showToast(R.string.message_acknowledged);
 		} catch (Exception e) {
 			logger.error("Failed to send emoji reaction", e);
@@ -165,8 +165,8 @@ public class NotificationActionService extends IntentService {
 		lifetimeService.acquireConnection(TAG);
 		try {
 			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, true);
-			notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
-			showToast(R.string.message_declined);
+            notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
+            showToast(R.string.message_declined);
 		} catch (Exception e) {
 			logger.error("Failed to send emoji reaction", e);
 		}

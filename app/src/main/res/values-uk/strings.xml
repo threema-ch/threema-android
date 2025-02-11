@@ -494,7 +494,6 @@
     <string name="back">Назад</string>
     <string name="wearable_reply">Відповісти</string>
     <string name="wearable_reply_label">Відповісти \"%s\"</string>
-    <string name="message_acknowledged">\"Подобається\" надіслано</string>
     <string name="push_disable_text">Якщо продовжити, замість системного сервісу push-сповіщень використовуватиметься сервіс Threema Push. Він допомагає зменшити цифровий слід, але для його роботи потрібно дозволити додатку працювати у фоновому режимі. Якщо ви не знайшли відповідні параметри в налаштуваннях системи, зверніться за допомогою до служби підтримки виробника пристрою.</string>
     <string name="ballot_intermediate_results_show">Показувати попередні результати</string>
     <string name="converting_video">Обробка відео</string>
@@ -619,7 +618,8 @@
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
     <string name="permission_location_required">Щоб надіслати розташування, надайте Threema доступ до геоданих.</string>
     <string name="permission_contacts_required">Щоб надіслати контакти, надайте Threema доступ до них.</string>
-    <string name="message_declined">\"Не подобається\" надіслано</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Подобається\" надіслано</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Не подобається\" надіслано</string>
     <string name="notifications_settings">Налаштування сповіщень</string>
     <string name="notifications_default">Налаштування за умовчанням</string>
     <string name="notifications_until">До %s</string>
@@ -1521,7 +1521,7 @@
     <string name="permission_read_phone_state">Телефон</string>
     <string name="permission_enable_in_settings_rationale">Увімкніть цей дозвіл у налаштуваннях. Виберіть \"Дозволи\" й увімкніть \"%s\".</string>
     <string name="group_name">Назва групи</string>
-    <string name="star_message">Позначити повідомлення зірочкою</string>
+    <string name="star_message">Додати зірочку</string>
     <string name="starred_message">Повідомлення із зірочкою</string>
     <string name="starred">Із зірочкою</string>
     <string name="starred_messages">Повідомлення із зірочкою</string>

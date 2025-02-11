@@ -1649,6 +1649,8 @@
     <string name="emoji_reactions_cannot_remove_body">%1$s is using an app version that does not yet support removing emoji reactions or sending more than one emoji reaction. You can still replace 👍 with 👎 or vice versa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">None of the group members is using a version of the app that supports removing emoji reactions or sending more than one emoji reaction. You can replace 👍 with 👎 or vice-versa.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Your app version does not yet support removing emoji reactions or sending more than one emoji reaction.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">This message has emoji reactions. In the chat, tap and hold any emoji bubble to view them all.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="few">%d contacts</item>

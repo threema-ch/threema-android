@@ -50,9 +50,8 @@ object ComposeJavaBridge {
     fun setEditModeMessageBubble(
         composeView: ComposeView,
         model: AbstractMessageModel,
-        myIdentity: String
     ) {
-        val messageBubbleUiState = model.toUiModel(myIdentity)
+        val messageBubbleUiState = model.toUiModel()
         composeView.setContent {
             ThreemaTheme {
                 MessageBubble(

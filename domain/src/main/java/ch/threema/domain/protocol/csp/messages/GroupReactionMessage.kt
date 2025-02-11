@@ -47,7 +47,7 @@ class GroupReactionMessage(payloadData: ReactionMessageData) : AbstractProtobufG
 
     override fun bumpLastUpdate() = false
 
-    override fun flagSendPush() = false
+    override fun flagSendPush() = true
 
     override fun reflectSentUpdate() = false
 }

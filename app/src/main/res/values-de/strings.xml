@@ -506,7 +506,6 @@
     <string name="back">Zurück</string>
     <string name="wearable_reply">Antworten</string>
     <string name="wearable_reply_label">Antwort an %s</string>
-    <string name="message_acknowledged">«Daumen hoch» gesendet</string>
     <string name="push_disable_text">Wenn Sie fortfahren, wird «Threema Push» anstelle des Push-Dienstes des Systems verwendet. Dies trägt dazu bei, Ihren digitalen Fussabdruck zu verringern, erfordert jedoch, dass Ihr Gerät so konfiguriert ist, dass die App im Hintergrund ausgeführt werden kann. Kontaktieren Sie ggf. den Support Ihres Geräteherstellers für Unterstützung bei der Konfiguration, falls die entsprechenden Optionen in den Geräte-Einstellungen nicht auffindbar sind.</string>
     <string name="ballot_intermediate_results_show">Zwischenresultate zeigen</string>
     <string name="converting_video">Video wird bearbeitet</string>
@@ -632,7 +631,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
     <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.</string>
     <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.</string>
-    <string name="message_declined">«Daumen runter» gesendet</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">«Daumen hoch» gesendet</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">«Daumen runter» gesendet</string>
     <string name="notifications_settings">Benachrichtigungseinstellungen</string>
     <string name="notifications_default">Standardeinstellung</string>
     <string name="notifications_until">Bis %s</string>
@@ -1655,6 +1655,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s verwendet eine App-Version, welche das Entfernen von Emoji-Reaktionen oder das Senden mehrerer Emoji-Reaktionen noch nicht unterstützt. 👍 und 👎 lassen sich weiterhin austauschen.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Kein Gruppenmitglied verwendet eine Version der App, welche das Entfernen von Emoji-Reaktionen oder das Senden von mehr als einer Emoji-Reaktion unterstützt. Sie können aber 👍 mit 👎 ersetzen und umgekehrt.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Ihre App-Version unterstützt das Entfernen von Emoji-Reaktionen oder das Senden mehrerer Emoji-Reaktionen noch nicht.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Diese Nachricht hat Reaktionen. Halten Sie im Chat ein Reaktions-Emoji gedrückt, um alle zu sehen.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

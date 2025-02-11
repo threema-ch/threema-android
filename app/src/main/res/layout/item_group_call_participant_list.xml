@@ -1,74 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	xmlns:tools="http://schemas.android.com/tools"
-	app:strokeWidth="0dp"
-	app:shapeAppearanceOverlay="@style/Threema.GroupCallParticipantRoundedCorner">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:shapeAppearanceOverlay="@style/Threema.GroupCallParticipantRoundedCorner"
+    app:strokeWidth="0dp">
 
-	<ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
-		android:id="@+id/video_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:visibility="gone" />
+    <ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
-	<ImageView
-		android:id="@+id/participant_avatar"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="centerCrop"
-		android:contentDescription="@string/voip_gc_participant_avatar_description" />
+    <ImageView
+        android:id="@+id/participant_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/voip_gc_participant_avatar_description"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_profile" />
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/participant_info"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/participant_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<View
-			android:id="@+id/participant_gradient"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:background="@drawable/group_call_participant_info_background_gradient"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintHeight_percent="0.25" />
+        <View
+            android:id="@+id/participant_gradient"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/group_call_participant_info_background_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.25"
+            app:layout_constraintStart_toStartOf="parent" />
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:paddingStart="@dimen/group_call_participant_margin"
-			android:paddingEnd="@dimen/group_call_participant_margin">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/group_call_participant_margin"
+            android:paddingEnd="@dimen/group_call_participant_margin">
 
-		<ImageView
-			android:id="@+id/participant_microphone_muted"
-			android:layout_width="@dimen/group_call_participant_mute_icon_size"
-			android:layout_height="@dimen/group_call_participant_mute_icon_size"
-			android:layout_marginEnd="8dp"
-			android:visibility="visible"
-			app:tint="@android:color/white"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toTopOf="@id/participant_name"
-			app:layout_constraintBottom_toBottomOf="@id/participant_name"
-			app:srcCompat="@drawable/ic_mic_off_outline"
-			android:contentDescription="@string/voip_gc_participant_mute_status_description" />
+            <ImageView
+                android:id="@+id/participant_microphone_muted"
+                android:layout_width="@dimen/group_call_participant_mute_icon_size"
+                android:layout_height="@dimen/group_call_participant_mute_icon_size"
+                android:contentDescription="@string/voip_gc_participant_mute_status_description"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@id/participant_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/participant_name"
+                app:srcCompat="@drawable/ic_mic_off_outline"
+                app:tint="@android:color/white" />
 
-		<TextView
-			android:id="@+id/participant_name"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:textColor="#ffffff"
-			android:textSize="@dimen/group_call_participant_text_size"
-			android:layout_marginBottom="@dimen/group_call_participant_margin"
-			android:maxLines="1"
-			android:ellipsize="end"
-			app:layout_constraintStart_toEndOf="@+id/participant_microphone_muted"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"
-			tools:text="Averyveryveryveryveryveryveryveryveryverylongnamesdfsdf" />
+            <TextView
+                android:id="@+id/participant_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/group_call_participant_margin"
+                android:layout_marginBottom="@dimen/group_call_participant_margin"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/group_call_participant_text_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/participant_microphone_muted"
+                tools:text="Averyveryveryveryveryveryveryveryveryverylongnamesdfsdf" />
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

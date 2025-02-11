@@ -393,6 +393,40 @@ class ContactModel(
     }
 
     /**
+     * Update the contact's jobTitle
+     *
+     * @throws ModelDeletedException if model is deleted.
+     */
+    // TODO(ANDR-3611): Reflect change to device group
+    fun setJobTitleFromLocal(jobTitle: String?) {
+        this.updateFields(
+            methodName = "setJobTitleFromLocal",
+            detectChanges = { originalData -> originalData.jobTitle != jobTitle },
+            updateData = { originalData -> originalData.copy(jobTitle = jobTitle) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+            reflectUpdateTask = null,
+        )
+    }
+
+    /**
+     * Update the contact's department
+     *
+     * @throws ModelDeletedException if model is deleted.
+     */
+    // TODO(ANDR-3611): Reflect change to device group
+    fun setDepartmentFromLocal(department: String?) {
+        this.updateFields(
+            methodName = "setDepartmentFromLocal",
+            detectChanges = { originalData -> originalData.department != department },
+            updateData = { originalData -> originalData.copy(department = department) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+            reflectUpdateTask = null,
+        )
+    }
+
+    /**
      * Update the contact's acquaintance level.
      *
      * @throws [ModelDeletedException] if model is deleted.

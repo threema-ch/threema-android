@@ -74,10 +74,10 @@ class EmojiReactionsPopup(
     private val topReactions = arrayOf(
         ReactionEntry(R.id.top_0, EmojiUtil.THUMBS_UP_SEQUENCE),
         ReactionEntry(R.id.top_1, EmojiUtil.THUMBS_DOWN_SEQUENCE),
-        ReactionEntry(R.id.top_2, "\u2764\uFE0F"),
-        ReactionEntry(R.id.top_3, "\uD83D\uDE02"),
-        ReactionEntry(R.id.top_4, "\uD83D\uDE2E"),
-        ReactionEntry(R.id.top_5, "\uD83D\uDE22")
+        ReactionEntry(R.id.top_2, EmojiUtil.HEART_SEQUENCE),
+        ReactionEntry(R.id.top_3, EmojiUtil.TEARS_OF_JOY_SEQUENCE),
+        ReactionEntry(R.id.top_4, EmojiUtil.CRYING_SEQUENCE),
+        ReactionEntry(R.id.top_5, EmojiUtil.FOLDED_HANDS_SEQUENCE),
     )
 
     private val contactService: ContactService by lazy { ThreemaApplication.requireServiceManager().contactService }

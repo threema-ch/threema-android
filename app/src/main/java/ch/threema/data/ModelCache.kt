@@ -27,6 +27,7 @@ import ch.threema.data.models.EditHistoryListModel
 import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
+import ch.threema.data.repositories.EmojiReactionsRepository
 
 /**
  * The model cache holds a [ModelTypeCache] for every model type.
@@ -44,8 +45,8 @@ class ModelCache {
     // Edit history entries are identified by their reference to a message's uid
     val editHistory = ModelTypeCache<String, EditHistoryListModel>()
 
-    // Emoji reactions are uniquely identified by a message's uid
-    val emojiReaction = ModelTypeCache<String, EmojiReactionsModel>()
+    // Emoji reactions are uniquely identified by a composition of the message's id (int) and type
+    val emojiReaction = ModelTypeCache<EmojiReactionsRepository.ReactionMessageIdentifier, EmojiReactionsModel>()
 }
 
 /**

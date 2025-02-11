@@ -51,12 +51,12 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 public class UpdateAppLogoRoutine implements Runnable {
 	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateAppLogoRoutine");
 
-	private FileService fileService;
+	private final FileService fileService;
 	private final PreferenceService preferenceService;
 	private final String lightUrl;
 	private final String darkUrl;
 	private boolean running = false;
-	private boolean forceUpdate = false;
+	private final boolean forceUpdate;
 
 	public UpdateAppLogoRoutine(FileService fileService,
 	                            PreferenceService preferenceService,
@@ -72,7 +72,7 @@ public class UpdateAppLogoRoutine implements Runnable {
 
 	@Override
 	public void run() {
-		logger.debug("start update app logo " + this.lightUrl + ", " + this.darkUrl);
+		logger.debug("start update app logo {}, {}", this.lightUrl, this.darkUrl);
 		this.running = true;
 
 		//validate instances
@@ -82,8 +82,8 @@ public class UpdateAppLogoRoutine implements Runnable {
 			return;
 		}
 
-		this.downloadLogo(this.lightUrl, ConfigUtils.THEME_LIGHT);
-		this.downloadLogo(this.darkUrl, ConfigUtils.THEME_DARK);
+		this.updateLogo(this.lightUrl, ConfigUtils.THEME_LIGHT);
+		this.updateLogo(this.darkUrl, ConfigUtils.THEME_DARK);
 		this.running = false;
 	}
 
@@ -94,14 +94,13 @@ public class UpdateAppLogoRoutine implements Runnable {
 	}
 
 	private void clearLogo(@ConfigUtils.AppThemeSetting String theme) {
+        logger.info("Clearing app logo for (forcedUpdate={}, theme={})", forceUpdate, theme);
 		this.fileService.saveAppLogo(null, theme);
 		this.preferenceService.clearAppLogo(theme);
 	}
 
-	private void downloadLogo(@Nullable String urlString, @ConfigUtils.AppThemeSetting String theme) {
-
-		logger.debug("Logo download forced = " + forceUpdate);
-
+	private void updateLogo(@Nullable String urlString, @ConfigUtils.AppThemeSetting String theme) {
+        logger.info("Update app logo (forcedUpdate={}, theme={})", forceUpdate, theme);
 		Date now = new Date();
 		//get expires date
 
@@ -109,12 +108,12 @@ public class UpdateAppLogoRoutine implements Runnable {
 			this.clearLogo(theme);
 			return;
 		}
-		//check expiry date only on force update
+		// Check expiry date only if update is not forced
 		if(!this.forceUpdate) {
 			Date expiresAt = this.preferenceService.getAppLogoExpiresAt(theme);
 
 			if (expiresAt != null && now.before(expiresAt)) {
-				logger.debug("Logo not expired");
+				logger.info("Logo not expired");
 				//do nothing!
 				return;
 			}
@@ -127,7 +126,7 @@ public class UpdateAppLogoRoutine implements Runnable {
 		Date tomorrow = tomorrowCalendar.getTime();
 
 		try {
-			logger.debug("Download " + urlString);
+			logger.info("Download {}", urlString);
 
 			URL url = new URL(urlString);
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -139,45 +138,43 @@ public class UpdateAppLogoRoutine implements Runnable {
 				final int responseCode = connection.getResponseCode();
 				if (responseCode != HttpsURLConnection.HTTP_OK) {
 					if (responseCode == HttpsURLConnection.HTTP_NOT_FOUND) {
-						logger.debug("Logo not found");
-					}
+						logger.warn("Logo not found");
+					} else {
+                        logger.warn("Connection failed with response code {}", responseCode);
+                    }
 				} else {
-					//cool, save avatar
 					logger.debug("Logo found. Start download");
 
 					File temporaryFile = this.fileService.createTempFile(MEDIA_IGNORE_FILENAME, "appicon");
 					// this will be useful to display download percentage
 					// might be -1: server did not report the length
 					int fileLength = connection.getContentLength();
-					logger.debug("size: " + fileLength);
+					logger.debug("size: {}", fileLength);
 
 					// download the file
 					try (InputStream input = connection.getInputStream()) {
 						Date expires = new Date(connection.getHeaderFieldDate("Expires", tomorrow.getTime()));
-						logger.debug("expires " + expires);
+						logger.debug("expires {}", expires);
 
 						try (FileOutputStream output = new FileOutputStream(temporaryFile.getPath())) {
 							byte[] data = new byte[4096];
 							int count;
 
 							while ((count = input.read(data)) != -1) {
-								//write to file
 								output.write(data, 0, count);
 							}
 
-							logger.debug("Logo downloaded");
+							logger.info("Logo downloaded. Expires at {}.", expires);
 							output.close();
 
-							//ok, save the app logo
 							this.setLogo(urlString, temporaryFile, expires, theme);
 
-							//remove the temporary file
 							FileUtil.deleteFileOrWarn(temporaryFile, "temporary file", logger);
 
 						} catch (IOException x) {
-							//failed to download
-							//do nothing an try again later
-							logger.error("Exception", x);
+							// Failed to download
+							// do nothing an try again later
+							logger.error("Download of app logo failed", x);
 						}
 					}
 				}
@@ -188,11 +185,11 @@ public class UpdateAppLogoRoutine implements Runnable {
 						errorStream.close();
 					}
 				} catch (IOException e) {
-					// empty
+					// Ignored
 				}
 			}
 		} catch (Exception x) {
-			logger.error("Exception", x);
+			logger.error("Update of app logo failed", x);
 		}
 
 	}

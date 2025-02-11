@@ -232,7 +232,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 			}
 			return requestBuilder.submit().get();
 		} catch (ExecutionException | InterruptedException e) {
-			logger.error("Error while getting avatar bitmap for configuration " + config, e);
+			logger.error("Error while getting avatar bitmap for configuration {}", config, e);
 			if (e instanceof InterruptedException) {
 				Thread.currentThread().interrupt();
 			}
@@ -247,7 +247,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 		@NonNull ImageView view,
 		@NonNull RequestManager requestManager
 	) {
-		logger.debug("loading avatar for config {} hires = {}", config.state, config.options.highRes);
+		logger.debug("loading avatar for config {} highRes = {}", config.state, config.options.highRes);
 		try {
 			RequestBuilder<Bitmap> requestBuilder = requestManager
 				.asBitmap()

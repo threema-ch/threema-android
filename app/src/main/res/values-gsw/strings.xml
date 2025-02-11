@@ -106,7 +106,7 @@
     <string name="wizard2_phone_linking">Handynummere mitde ID verchnüpfe</string>
     <string name="wizard3_nickname_hint">Nickname iigeh</string>
     <string name="set_nickname_title">Nickname festlegge</string>
-    <string name="ok">Ja eh</string>
+    <string name="ok">Aso guet</string>
     <string name="cancel">Abbräche</string>
     <string name="copy_message_action">Kopiere</string>
     <string name="delete_contact_action">Kontakt lösche</string>
@@ -473,7 +473,6 @@
     <string name="back">Zrugg</string>
     <string name="wearable_reply">Antworte</string>
     <string name="wearable_reply_label">Antwort a %s</string>
-    <string name="message_acknowledged">«Duume ufe» gschickt</string>
     <string name="push_disable_text">Wenn Sie wiitermached, wird «Threema Push» statt de Push-Dienst vom System bruucht. Das treit dezue bii, Ihre digital Fuessabdruck chliner z’mache, defür muess Ihres Grät so konfiguriert sii, dass d’App im Hindergrund cha usgfüehrt werde. Kontaktiered Sie ggf. de Support vo Ihrem Grätehersteller für Unterstützig bide Konfiguration, falls di entsprächende Optione ide Gräteiistellige nöd uffindbar sind.</string>
     <string name="ballot_intermediate_results_show">Zwüscheresultat zeige</string>
     <string name="converting_video">Video wird bearbeitet</string>
@@ -590,7 +589,8 @@
     <string name="permission_storage_required">Aktiviered Sie d’Speicher-Berächtigung, zum Medie z’sichere oder z’schicke.</string>
     <string name="permission_location_required">Aktiviered Sie d’Standort-Berächtigung, zum Ihri Position z’schicke.</string>
     <string name="permission_contacts_required">Aktiviered Sie d’Kontakt-Berächtigung, zum en Kontakt z’schicke.</string>
-    <string name="message_declined">«Duume abe» gschickt</string>
+    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">«Duume ufe» gschickt</string>
+    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">«Duume abe» gschickt</string>
     <string name="notifications_settings">Benachrichtigungsiistellige</string>
     <string name="notifications_default">Standardiistellig</string>
     <string name="notifications_until">Bis %s</string>

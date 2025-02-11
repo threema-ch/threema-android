@@ -47,36 +47,25 @@ class EmojiReactionsDaoImpl(
         contentValues.put(DbEmojiReaction.COLUMN_EMOJI_SEQUENCE, entry.emojiSequence)
         contentValues.put(DbEmojiReaction.COLUMN_REACTED_AT, entry.reactedAt.time)
 
-        val table = when (messageModel) {
-            is MessageModel -> ContactEmojiReactionModelFactory.TABLE
-            is GroupMessageModel -> GroupEmojiReactionModelFactory.TABLE
-            else -> throw EmojiReactionEntryCreateException(
-                IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}")
-            )
-        }
+        val table = getReactionTableForMessage(messageModel) ?: throw EmojiReactionEntryCreateException(
+            IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}")
+        )
         sqlite.writableDatabase.insert(table, SQLiteDatabase.CONFLICT_ROLLBACK, contentValues)
     }
 
-    override fun remove(entry: DbEmojiReaction) {
-        var removedEntries = sqlite.writableDatabase.delete(
-                table = GroupEmojiReactionModelFactory.TABLE,
-                whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? AND ${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} = ? AND ${DbEmojiReaction.COLUMN_SENDER_IDENTITY} = ?",
-                whereArgs = arrayOf(entry.messageId, entry.emojiSequence, entry.senderIdentity)
-            )
-        removedEntries += sqlite.writableDatabase.delete(
-                table = ContactEmojiReactionModelFactory.TABLE,
-                whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? AND ${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} = ? AND ${DbEmojiReaction.COLUMN_SENDER_IDENTITY} = ?",
-                whereArgs = arrayOf(entry.messageId, entry.emojiSequence, entry.senderIdentity)
-            )
+    override fun remove(entry: DbEmojiReaction, messageModel: AbstractMessageModel) {
+        val table = getReactionTableForMessage(messageModel) ?: return
+
+        val removedEntries = sqlite.writableDatabase.delete(
+            table = table,
+            whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? AND ${DbEmojiReaction.COLUMN_EMOJI_SEQUENCE} = ? AND ${DbEmojiReaction.COLUMN_SENDER_IDENTITY} = ?",
+            whereArgs = arrayOf(entry.messageId, entry.emojiSequence, entry.senderIdentity)
+        )
         logger.debug("{} entries removed for reaction {}", removedEntries, entry)
     }
 
     override fun deleteAllByMessage(messageModel: AbstractMessageModel) {
-        val table = when(messageModel) {
-            is GroupMessageModel -> GroupEmojiReactionModelFactory.TABLE
-            is MessageModel -> ContactEmojiReactionModelFactory.TABLE
-            else -> return
-        }
+        val table = getReactionTableForMessage(messageModel) ?: return
 
         val deletedEntries = sqlite.writableDatabase.delete(
             table = table,
@@ -87,11 +76,7 @@ class EmojiReactionsDaoImpl(
     }
 
     override fun findAllByMessage(messageModel: AbstractMessageModel): List<DbEmojiReaction> {
-        val table = when (messageModel)  {
-            is GroupMessageModel -> GroupEmojiReactionModelFactory.TABLE
-            is MessageModel -> ContactEmojiReactionModelFactory.TABLE
-            else -> return emptyList()
-        }
+        val table = getReactionTableForMessage(messageModel) ?: return emptyList()
 
         val query = "SELECT * FROM $table WHERE ${DbEmojiReaction.COLUMN_MESSAGE_ID} = ? " +
             "ORDER BY ${DbEmojiReaction.COLUMN_REACTED_AT} DESC"
@@ -103,6 +88,14 @@ class EmojiReactionsDaoImpl(
             )
 
         return cursor.use { getResult(it) }
+    }
+
+    private fun getReactionTableForMessage(messageModel: AbstractMessageModel): String? {
+        return when (messageModel) {
+            is GroupMessageModel -> GroupEmojiReactionModelFactory.TABLE
+            is MessageModel -> ContactEmojiReactionModelFactory.TABLE
+            else -> return null
+        }
     }
 
     private fun getResult(cursor: Cursor) : MutableList<DbEmojiReaction> {
