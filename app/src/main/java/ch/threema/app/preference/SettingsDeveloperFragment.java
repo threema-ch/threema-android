@@ -24,6 +24,7 @@ package ch.threema.app.preference;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -50,6 +52,7 @@ import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.preference.developer.ContentCreator;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.PreferenceService;
@@ -93,6 +96,18 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         initMdSetting();
         initConversationSetting();
 
+        // Reset reaction tooltip
+        getPref(getResources().getString(R.string.preferences__dev_reset_reaction_tooltip_shown))
+            .setOnPreferenceClickListener(this::resetReactionTooltipShown);
+
+        // Generate messages with reactions
+        final Preference generateReactionsPreference = getPref(R.string.preferences__dev_create_messages_with_reactions);
+        generateReactionsPreference.setOnPreferenceClickListener(this::generateReactionMessages);
+
+        // Generate nonces
+        final Preference generateCspNoncesPreference = getPref(R.string.preferences__dev_create_nonces);
+        generateCspNoncesPreference.setOnPreferenceClickListener(this::generateNonces);
+
         // Generate VoIP messages
         final Preference generateVoipPreference = getPref(getResources().getString(R.string.preferences__generate_voip_messages));
         generateVoipPreference.setSummary("Create the test identity " + TEST_IDENTITY_1
@@ -119,14 +134,26 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
     }
 
     @UiThread
-    private void showOk(CharSequence msg) {
-        Toast.makeText(this.getContext(), msg, Toast.LENGTH_LONG).show();
+    private void showToast(CharSequence msg) {
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     @UiThread
     private void showError(Exception e) {
         logger.error("Exception", e);
-        Toast.makeText(this.getContext(), e.toString(), Toast.LENGTH_LONG).show();
+        showToast(e.toString());
+    }
+
+    private boolean resetReactionTooltipShown(Preference ignored) {
+        logger.info("Reset emoji reaction tooltip");
+        String key = getString(R.string.preferences__tooltip_emoji_reactions_shown);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        sharedPreferences.edit()
+            .putBoolean(getString(R.string.preferences__tooltip_emoji_reactions_shown), false)
+            .putInt(getString(R.string.preferences__tooltip_emoji_reactions_shown_counter), 0)
+            .apply();
+        showToast("Reaction tooltip reset");
+        return true;
     }
 
     @WorkerThread
@@ -159,6 +186,24 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         } else {
             throw new InvalidEntryException(R.string.invalid_threema_id);
         }
+    }
+
+    @UiThread
+    private boolean generateReactionMessages(Preference ignored) {
+        ContentCreator.createReactionSpam(
+            ThreemaApplication.requireServiceManager(),
+            getParentFragmentManager()
+        );
+        return true;
+    }
+
+    @UiThread
+    private boolean generateNonces(Preference ignored) {
+        ContentCreator.createNonces(
+            ThreemaApplication.requireServiceManager(),
+            getParentFragmentManager()
+        );
+        return true;
     }
 
     @UiThread
@@ -218,7 +263,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
             @Override
             protected void onPostExecute(@Nullable Exception e) {
                 if (e == null) {
-                    showOk("Test messages created!");
+                    showToast("Test messages created!");
                 } else {
                     showError(e);
                 }
@@ -250,7 +295,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageRecursive.setToIdentity(userService.getIdentity());
                     messageRecursive.setDate(new Date());
                     messageRecursive.setMessageId(messageIdRecursive);
-                    messageRecursive.setText("> quote #" + messageIdRecursive.toString() + "\n\na quote that references itself");
+                    messageRecursive.setText("> quote #" + messageIdRecursive + "\n\na quote that references itself");
                     messageService.processIncomingContactMessage(messageRecursive);
 
                     // Create cross-chat quote
@@ -268,7 +313,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
                     messageChat1.setToIdentity(userService.getIdentity());
                     messageChat1.setDate(new Date());
                     messageChat1.setMessageId(messageIdCrossChat1);
-                    messageChat1.setText("> quote #" + messageIdCrossChat2.toString() + "\n\nOMG!");
+                    messageChat1.setText("> quote #" + messageIdCrossChat2 + "\n\nOMG!");
                     messageService.processIncomingContactMessage(messageChat1);
 
                     messageService.createStatusMessage("Done creating test quotes", receiver1);
@@ -282,7 +327,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
             @Override
             protected void onPostExecute(@Nullable Exception e) {
                 if (e == null) {
-                    showOk("Test quotes created!");
+                    showToast("Test quotes created!");
                 } else {
                     showError(e);
                 }
@@ -295,7 +340,7 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
     @SuppressLint("StaticFieldLeak")
     private boolean hideDeveloperMenu(Preference preference) {
         this.preferenceService.setShowDeveloperMenu(false);
-        this.showOk("Not everybody can be a craaazy developer!");
+        showToast("Not everybody can be a craaazy developer!");
         final Activity activity = this.getActivity();
         if (activity != null) {
             activity.finish();

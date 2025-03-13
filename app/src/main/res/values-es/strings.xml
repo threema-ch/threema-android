@@ -478,7 +478,6 @@ Introduzca una pregunta para su sondeo.</string>
     <string name="back">Volver</string>
     <string name="wearable_reply">Contestar</string>
     <string name="wearable_reply_label">Contestar a %s</string>
-    <string name="message_acknowledged">Mensaje confirmado</string>
     <string name="push_disable_text">Si continúa, se utilizará \"Threema Push\" en lugar del servicio de inserción del sistema. Esto ayuda a reducir su huella digital, pero requiere que su teléfono esté configurado de manera que permita que la aplicación se ejecute en segundo plano. Es posible que quiera ponerse en contacto con el servicio de asistencia del fabricante de su dispositivo para obtener ayuda con la configuración si no encuentra las opciones correspondientes en los ajustes del dispositivo.</string>
     <string name="ballot_intermediate_results_show">Mostrar resultados provisionales</string>
     <string name="converting_video">Procesando vídeo</string>
@@ -598,7 +597,10 @@ almacenado.</string>
     <string name="permission_storage_required">Para enviar archivos multimedia, permita a Threema acceder a su almacenamiento.</string>
     <string name="permission_location_required">Para enviar una ubicación, permita a Threema acceder a su posición.</string>
     <string name="permission_contacts_required">Para enviar contactos, permita a Threema acceder a su agenda de contactos.</string>
-    <string name="message_declined">«Rechazo» enviado</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">«Me gusta» enviado</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">«Me gusta» enviado</string>
     <string name="notifications_settings">Configuración de las notificaciones</string>
     <string name="notifications_default">Configuración por defecto</string>
     <string name="notifications_until">Hasta %s</string>
@@ -1613,6 +1615,12 @@ almacenado.</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s usa una versión de la aplicación que aún no admite la eliminación de reacciones de emojis ni el envío de más de una reacción de emojis. Aún puedes reemplazar 👍 por 👎 o viceversa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Ninguno de los miembros del grupo usa una versión de la aplicación que permita eliminar las reacciones de emojis o enviar más de una reacción de emojis. Puedes reemplazar 👍 por 👎 o viceversa.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">La versión de tu aplicación aún no admite la eliminación de reacciones de emojis ni el envío de más de una reacción de emojis.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Este mensaje tiene reacciones con emojis. En el chat, mantenga pulsada cualquier burbuja de emojis para verlas todas.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Reacción con emoji</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Este mensaje tiene reacciones con emojis. En el chat, mantenga pulsada cualquier burbuja de emojis para verlas todas.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

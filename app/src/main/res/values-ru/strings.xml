@@ -591,8 +591,10 @@
     <string name="permission_storage_required">Чтобы отправлять медиа, разрешите Threema доступ к хранилищу.</string>
     <string name="permission_location_required">Чтобы отправлять местоположение, разрешите Threema доступ к службе геопозиционирования.</string>
     <string name="permission_contacts_required">Чтобы отправлять контакты, разрешите Threema чтение контактов.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">«Одобрение» отправлено</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">«Неодобрение» отправлено</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">«Одобрение» отправлено</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">«Неодобрение» отправлено</string>
     <string name="notifications_settings">Настройки уведомлений</string>
     <string name="notifications_default">Настройки по умолчанию</string>
     <string name="notifications_until">До %s</string>
@@ -1603,6 +1605,12 @@
     <string name="emoji_reactions_cannot_remove_body">%1$s использует версию приложения, которая не поддерживает удаление эмоциональных реакций или отправку нескольких. Вы можете поменять 👍 на 👎 или наоборот.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Ни один из участников группы не использует версию приложения, которая поддерживает удаление эмоциональных реакций или отправку нескольких. Вы можете поменять 👍 на 👎 или наоборот.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Ваша версия приложения не поддерживает удаление эмоциональных реакций или отправку нескольких.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">В этом сообщении есть эмоциональные реакции. Долгим нажатием на любую эмоцию в чате можно просмотреть их все.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Реакции эмоцией</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">В этом сообщении есть эмоциональные реакции. Долгим нажатием на любую эмоцию в чате можно просмотреть их все.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакта</item>

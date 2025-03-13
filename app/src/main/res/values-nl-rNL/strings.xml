@@ -594,8 +594,10 @@ Voer een vraag in voor uw poll.</string>
     <string name="permission_storage_required">Geeft Threema toegang tot uw opslag om media te kunnen versturen.</string>
     <string name="permission_location_required">Geef Threema toegang tot uw locatie om een locatie te kunnen versturen.</string>
     <string name="permission_contacts_required">Geef Threema leestoegang tot uw contactpersonen om contactpersonen te kunnen versturen.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Duimen omhoog\" verstuurd</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Duimen omlaag\" verzonden</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">\"Duimen omhoog\" verstuurd</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">\"Duimen omlaag\" verzonden</string>
     <string name="notifications_settings">Meldingsinstellingen</string>
     <string name="notifications_default">Standaardinstellingen</string>
     <string name="notifications_until">Tot %s</string>
@@ -1605,6 +1607,12 @@ Weet u zeker dat u Threema anoniem wil gebruiken?</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s gebruikt een app-versie die het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie nog niet ondersteunt. Je kunt 👍 nog steeds vervangen door 👎 of andersom.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Geen van de groepsleden gebruikt een versie van de app die het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie ondersteunt. Je kunt 👍 vervangen door 👎 of andersom.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Je app-versie ondersteunt nog niet het verwijderen van emoji-reacties of het verzenden van meer dan één emoji-reactie.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Dit bericht heeft emoji-reacties. Tik in de chat op een emoji-ballon en houd deze vast om ze allemaal te bekijken.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Emoji-reactie</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Dit bericht heeft emoji-reacties. Tik in de chat op een emoji-ballon en houd deze vast om ze allemaal te bekijken.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>

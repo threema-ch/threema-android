@@ -30,7 +30,9 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.PopupWindow
+import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -54,7 +56,8 @@ class EmojiReactionsPopup(
     val context: Context,
     private val parentView: View,
     val fragmentManager: FragmentManager,
-    private val isSendingReactionsAllowed: Boolean
+    private val isSendingReactionsAllowed: Boolean,
+    private val shouldHideUnsupportedReactions: Boolean,
 ) :
     PopupWindow(context), View.OnClickListener {
 
@@ -92,12 +95,12 @@ class EmojiReactionsPopup(
         addReactionButton.tag = topReactions.size
         addReactionButton.setOnClickListener(this)
         if (!isSendingReactionsAllowed) {
-            if (ConfigUtils.canSendEmojiReactions()) {
+            if (ConfigUtils.canSendEmojiReactions() && !shouldHideUnsupportedReactions) {
                 // V2 clients: display implausible buttons as disabled but still clickable
                 addReactionButton.alpha = FAKE_DISABLE_ALPHA
             } else {
-                // V1 clients: do not display implausible buttons
-                addReactionButton.visibility = View.GONE
+                // V1 clients, or gateway chat: do not display implausible buttons
+                addReactionButton.isVisible = false
             }
         }
 
@@ -114,7 +117,7 @@ class EmojiReactionsPopup(
     }
 
     private fun setupTopReactions() {
-        for ((index, topReaction) in topReactions.withIndex()) {
+        topReactions.forEachIndexed { index, topReaction ->
             val emojiItemView: EmojiItemView = contentView.findViewById(topReaction.resourceId)
 
             applyEmojiDiversity(topReaction)
@@ -122,13 +125,13 @@ class EmojiReactionsPopup(
             emojiItemView.setOnClickListener(this)
             emojiItemView.setEmoji(topReaction.emojiSequence, false, 0)
 
-            if (isDisabledButton(index)) {
-                if (ConfigUtils.canSendEmojiReactions()) {
+            if (isDisabledOrHiddenButton(index)) {
+                if (ConfigUtils.canSendEmojiReactions() && !shouldHideUnsupportedReactions) {
                     // V2 clients: display implausible buttons as disabled but still clickable
                     emojiItemView.alpha = FAKE_DISABLE_ALPHA
                 } else {
                     // V1 clients: do not display implausible buttons
-                    emojiItemView.visibility = View.GONE
+                    emojiItemView.isVisible = false
                 }
             }
 
@@ -189,9 +192,9 @@ class EmojiReactionsPopup(
                         } else {
                             topReaction.emojiItemView?.setBackgroundColor(backgroundColor)
                         }
-                        AnimationUtil.bubbleAnimate(addReactionButton, animationDelay)
                     }
                 }
+                AnimationUtil.bubbleAnimate(addReactionButton, animationDelay)
             }
         })
     }
@@ -204,11 +207,11 @@ class EmojiReactionsPopup(
     }
 
     /**
-     * Check if the button with the supplied index should be fake-disabled
+     * Check if the button with the supplied index is unsupported and
+     * should therefore be fake-disabled or hidden
      */
-    private fun isDisabledButton(index: Int): Boolean {
-        return !isSendingReactionsAllowed && index >= 2
-    }
+    private fun isDisabledOrHiddenButton(index: Int): Boolean =
+        !isSendingReactionsAllowed && index >= 2
 
     override fun dismiss() {
         if (isDismissing) {
@@ -227,7 +230,7 @@ class EmojiReactionsPopup(
     override fun onClick(v: View) {
         emojiReactionsPopupListener?.let { listener ->
             this.messageModel?.let { message ->
-                if (isDisabledButton(v.tag as Int)) {
+                if (isDisabledOrHiddenButton(v.tag as Int)) {
                     onDisabledButtonClicked()
                     return
                 } else {
@@ -283,7 +286,7 @@ class EmojiReactionsPopup(
         )?.show(fragmentManager, "imp")
     }
 
-    private fun createAlertDialogIfBodySet(titleResId: Int, body: String?): SimpleStringAlertDialog? {
+    private fun createAlertDialogIfBodySet(@StringRes titleResId: Int, body: String?): SimpleStringAlertDialog? {
         return body?.let {
             SimpleStringAlertDialog.newInstance(titleResId, it)
         }

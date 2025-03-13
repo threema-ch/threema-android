@@ -611,8 +611,10 @@ Threema 支持的所有表情符号。</string>
     <string name="permission_storage_required">如要保存或发送媒体，请允许 Threema 访问存储权限。</string>
     <string name="permission_location_required">如要发送位置，请允许 Threema 访问您的位置的权限。</string>
     <string name="permission_contacts_required">如要发送联系人，请允许 Threema 读取联系人的权限。</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">已发送 “赞”</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">已发送 “踩”</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">已发送 “赞”</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">已发送 “踩”</string>
     <string name="notifications_settings">通知设置</string>
     <string name="notifications_default">默认设置</string>
     <string name="notifications_until">直到%s</string>
@@ -1636,6 +1638,12 @@ Threema ID。您将不会出现在朋友的联系人列表中。您确定要
     <string name="emoji_reactions_cannot_remove_body">虽然%1$s使用的应用版本尚不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
     <string name="emoji_reactions_cannot_remove_group_body">虽然所有群组成员使用的应用版本都不支持删除心情表态或发送多个心情表态，但您仍然可以选择 👍 或 👎 。</string>
     <string name="emoji_reactions_cannot_remove_v1_body">您当前使用的应用版本尚不支持删除心情表态或发送多个心情表态。</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">有人为此消息添加了心情表态。在会话內，长按任意表情符号气泡即可查看所有心情表态。</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">心情表态</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">有人为此消息添加了心情表态。在会话內，长按任意表情符号气泡即可查看所有心情表态。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

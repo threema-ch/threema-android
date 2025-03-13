@@ -103,6 +103,17 @@ public class MentionSpan extends ReplacementSpan {
 		if (!TestUtil.isBlankOrNull(text) && end - start == 11) {
 			String labelText = getMentionLabelText(text, start, end);
 			if (!TestUtil.isEmptyOrNull(labelText)) {
+				if (fm != null) {
+					// The span is not rendered if it spans the entire text and no height is set. Therefore, we need to apply the font metrics
+					// here such that a height can be calculated.
+					final Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+					fm.ascent = (int) fontMetrics.ascent;
+					fm.bottom = (int) fontMetrics.bottom;
+					fm.descent = (int) fontMetrics.descent;
+					fm.leading = (int) fontMetrics.leading;
+					fm.top = (int) fontMetrics.top;
+				}
+
 				width = (int) paint.measureText(MENTION_INDICATOR + labelText) + (PADDING * 2);
 				return width;
 			}

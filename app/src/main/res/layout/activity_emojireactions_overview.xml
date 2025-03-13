@@ -67,7 +67,8 @@
                     android:paddingLeft="8dp"
                     android:clickable="false"
                     android:importantForAccessibility="no"
-                    app:srcCompat="@drawable/ic_info_outline" />
+                    app:srcCompat="@drawable/ic_info_outline"
+                    app:tint="?attr/colorOnBackground" />
 
                 <ch.threema.app.emojis.EmojiTextView
                     android:id="@+id/infobox_text"

@@ -252,12 +252,12 @@ class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListe
 							R.string.preferences__tooltip_gc_camera,
 							this
 						).show(
-							this,
-							views.buttonToggleCamera,
-							getString(R.string.tooltip_voip_turn_on_camera),
-							TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT,
-							location,
-							2500
+							activity = this,
+							anchor = views.buttonToggleCamera,
+							text = getString(R.string.tooltip_voip_turn_on_camera),
+							alignment = TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT,
+							originLocation = location,
+							timeoutMs = 2500,
 						)
 						viewModel.toggleCameraTooltipShown = true
 					}

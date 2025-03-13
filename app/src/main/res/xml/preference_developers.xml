@@ -15,6 +15,14 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="Hints">
+        <Preference
+            android:key="@string/preferences__dev_reset_reaction_tooltip_shown"
+            android:title="Reset reaction tooltip"
+            android:summary="Reset the reaction tooltip shown state." />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="pref_key_conversation"
         android:title="Conversations">
         <CheckBoxPreference
@@ -27,6 +35,14 @@
     <PreferenceCategory
         android:key="pref_key_generate"
         android:title="Generate Data">
+        <Preference
+            android:key="@string/preferences__dev_create_messages_with_reactions"
+            android:title="Create messages with reactions"
+            android:summary="Create messages galore with reactions/ack/dec in contact and group chats (local only, nothing will be sent)" />
+        <Preference
+            android:key="@string/preferences__dev_create_nonces"
+            android:title="Create nonces"
+            android:summary="A fair amount of random nonces will be created and stored" />
         <Preference
             android:key="@string/preferences__generate_voip_messages"
             android:title="Generate VoIP Messages" />

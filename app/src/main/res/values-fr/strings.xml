@@ -594,8 +594,10 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="permission_storage_required">Pour envoyer des médias, autorisez Threema à accéder à l\'espace de stockage.</string>
     <string name="permission_location_required">Pour envoyer un emplacement, autorisez Threema à accéder à votre position.</string>
     <string name="permission_contacts_required">Pour envoyer des contacts, autorisez Threema à accéder aux contacts.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">Envoi d’un « pouce en l’air »</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">Envoi d’un « pouce vers le bas »</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">Envoi d’un « pouce en l’air »</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">Envoi d’un « pouce vers le bas »</string>
     <string name="notifications_settings">Réglages des notifications</string>
     <string name="notifications_default">Réglages par défaut</string>
     <string name="notifications_until">Jusqu\'à %s</string>
@@ -640,7 +642,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="new_wizard_info_sync_contacts">Si vous activez cette option, Threema chiffrera de façon unidirectionnelle (hachage) les adresses e-mail et les numéros de téléphone avant de les envoyer au serveur pour chercher des contacts correspondants. Nous ne stockons pas les données du carnet d\'adresses.</string>
     <string name="new_wizard_info_sync_contacts_dialog">La synchronisation des contacts peut vous aider à retrouver automatiquement vos amis. Si vous acceptez, les numéros de téléphone et les adresses e-mail de votre carnet d\'adresses seront chiffrés avant d\'être envoyés à notre serveur pour rechercher des contacts correspondants. Absolument aucune donnée ne sera stockée ou partagée.\n\nVoulez-vous activer la synchronisation des contacts ?</string>
     <string name="new_wizard_info_link">En nous donnant votre numéro de téléphone et votre adresse e-mail, nous pouvons aider vos amis à vous trouver automatiquement sur Threema. Ces informations seront stockées de façon sécurisée et anonyme. Si vous ignorez cette étape, vous utiliserez Threema de façon complètement anonyme.</string>
-    <string name="new_wizard_info_link_phone_only">En donnant votre numéro de téléphone, Theema peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d’adresses. Le numéro sera stocké de manière chiffrée (hashée) sur notre serveur. Vous pouvez simplement passer cette étape si vous souhaitez utiliser Threema de manière complètement anonyme.</string>
+    <string name="new_wizard_info_link_phone_only">En donnant votre numéro de téléphone, Threema peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d’adresses. Le numéro sera stocké de manière chiffrée (hashée) sur notre serveur. Vous pouvez simplement passer cette étape si vous souhaitez utiliser Threema de manière complètement anonyme.</string>
     <string name="new_wizard_info_nickname">Le surnom est utilisé dans les notifications push sur certains appareils, ou comme moyen supplémentaire de vous identifier auprès des utilisateurs dont vous n\'êtes pas encore dans le carnet d\'adresse. Nous vous recommandons de ne donner que votre prénom ou un pseudo. Si vous ne définissez pas de surnom, nous utiliserons par défaut votre ID Threema.</string>
     <string name="not_linked">non lié</string>
     <string name="linked">lié</string>
@@ -851,7 +853,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="switched_off">Désactivée</string>
     <string name="switched_on">Activée</string>
     <string name="title_tab_work_users">Utilisateurs Threema Work</string>
-    <string name="no_matching_work_contacts">Aucun contact Theema Work vérifié par un administrateur n\'a été trouvé</string>
+    <string name="no_matching_work_contacts">Aucun contact Threema Work vérifié par un administrateur n\'a été trouvé</string>
     <string name="all">Tous</string>
     <string name="webclient_session_stop_all">Tout fermer</string>
     <string name="passphrase_service_name">Service de phrase secrète</string>
@@ -1604,6 +1606,12 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s utilise une version de l’application qui ne prend pas encore en charge la suppression des réactions emoji ou l’envoi de plus d’une réaction emoji. Vous pouvez toujours remplacer 👍 par 👎 ou vice versa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Aucun membre du groupe n’utilise une version de l’application qui permet de supprimer des réactions emoji ou d’envoyer plus d’une réaction emoji. Vous pouvez remplacer 👍 par 👎 ou vice-versa.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">La version de votre application ne permet pas encore de supprimer les réactions emoji ou d’envoyer plus d’une réaction emoji.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Ce message a reçu des réactions emoji. Dans le chat, appuyez sur une bulle d’emoji et maintenez-la enfoncée pour les afficher toutes.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Réaction d\'émoji</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Ce message a reçu des réactions d\'émojis. Dans le chat, appuyez sur une bulle d’émojis et maintenez-la enfoncée pour les afficher toutes.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

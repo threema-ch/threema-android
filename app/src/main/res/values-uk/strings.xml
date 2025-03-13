@@ -618,8 +618,10 @@
     <string name="permission_storage_required">Щоб зберігати та надсилати медіафайли, надайте Threema доступ до сховища.</string>
     <string name="permission_location_required">Щоб надіслати розташування, надайте Threema доступ до геоданих.</string>
     <string name="permission_contacts_required">Щоб надіслати контакти, надайте Threema доступ до них.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Подобається\" надіслано</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Не подобається\" надіслано</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">\"Подобається\" надіслано</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">\"Не подобається\" надіслано</string>
     <string name="notifications_settings">Налаштування сповіщень</string>
     <string name="notifications_default">Налаштування за умовчанням</string>
     <string name="notifications_until">До %s</string>
@@ -1647,6 +1649,12 @@
     <string name="emoji_reactions_cannot_remove_body">%1$s використовує версію додатка, яка наразі не підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно. Проте ви можете замінити 👍 на 👎 чи навпаки.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Жоден із учасників групи не використовує версію додатка, яка підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно. Проте ви можете замінити 👍 на 👎 або навпаки.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Ваша версія додатка наразі не підтримує вилучення емодзі-реакцій або надсилання кількох реакцій одночасно.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">У цього повідомлення є емодзі-реакції. Щоб переглянути їх, натисніть і утримуйте будь-яку бульбашку емодзі в чаті.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Емодзі-реакція</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">У цього повідомлення є емодзі-реакції. Щоб переглянути їх, натисніть і утримуйте будь-яку бульбашку емодзі в чаті.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

@@ -611,8 +611,10 @@ Threema 支援的所有表情符號。</string>
     <string name="permission_storage_required">如要儲存或傳送媒體，請允許 Threema 取用儲存權限。</string>
     <string name="permission_location_required">如要傳送位置，請允許 Threema 取用您的位置的權限。</string>
     <string name="permission_contacts_required">如要傳送聯絡人，請允許 Threema 讀取聯絡人的權限。</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">已發送「讚好」</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">已發送「不喜歡」</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">已發送「讚好」</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">已發送「不喜歡」</string>
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">預設設定</string>
     <string name="notifications_until">直至%s</string>
@@ -1630,6 +1632,12 @@ Threema 支援的所有表情符號。</string>
     <string name="emoji_reactions_cannot_remove_body">雖然%1$s使用的應用程式版本尚未支援刪除表情回應或傳送多個表情回應，但您仍然可以選擇 👍 或 👎 。</string>
     <string name="emoji_reactions_cannot_remove_group_body">雖然所有群組成員使用的應用程式版本都未支援刪除表情回應或傳送多個表情回應，但您仍然可以選擇 👍 或 👎 。</string>
     <string name="emoji_reactions_cannot_remove_v1_body">您目前使用的應用程式版本尚未支援移除表情回應或傳送多個表情回應。</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">有人對此訊息新增了表情回應。在對話內，長按任意表情符號氣泡即可檢視所有表情回應。</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">表情回應</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">有人對此訊息新增了表情回應。在對話內，長按任意表情符號氣泡即可檢視所有表情回應。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

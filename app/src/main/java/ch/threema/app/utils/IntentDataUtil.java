@@ -43,7 +43,6 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.HomeActivity;
-import ch.threema.app.backuprestore.BackupRestoreDataService;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
@@ -101,18 +100,12 @@ public class IntentDataUtil {
 	public static final String INTENT_DATA_WEB_CLIENT_SESSION_MODEL_ID = "session_model_id";
 	public static final String INTENT_DATA_PAYLOAD = "payload";
 
-	private static final String INTENT_DATA_BACKUP_FILE = "backup_file";
-
 	private static final String INTENT_HIDE_AFTER_UNLOCK = "hide_after_unlock";
 	private static final String INTENT_DATA_BALLOT_ID = "ballot_id";
 	private static final String INTENT_DATA_BALLOT_CHOICE_ID = "ballot_choide_id";
 
 	public static final int PENDING_INTENT_FLAG_IMMUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? FLAG_IMMUTABLE : 0;
 	public static final int PENDING_INTENT_FLAG_MUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? FLAG_MUTABLE : 0;
-
-	public static void append(BackupRestoreDataService.BackupData backupData, Intent intent) {
-		intent.putExtra(INTENT_DATA_BACKUP_FILE, backupData.getFile().getPath());
-	}
 
 	public static void append(byte[] payload, Intent intent) {
 		intent.putExtra(INTENT_DATA_PAYLOAD, payload);

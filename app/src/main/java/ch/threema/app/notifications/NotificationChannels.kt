@@ -37,6 +37,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
@@ -137,7 +138,9 @@ object NotificationChannels {
                 logger.info("Upgrading notification channels and groups from version {} to {}", previousVersion, CHANNEL_SETUP_VERSION)
                 upgradeGroupsAndChannelsToVersion1(appContext, notificationManagerCompat)
             }
-            sharedPreferences.edit().putInt(appContext.getString(R.string.preferences__notification_channels_version), CHANNEL_SETUP_VERSION).apply()
+            sharedPreferences.edit {
+                putInt(appContext.getString(R.string.preferences__notification_channels_version), CHANNEL_SETUP_VERSION)
+            }
         }
 
         createOrRefreshChannelsAndGroups(appContext, notificationManagerCompat)

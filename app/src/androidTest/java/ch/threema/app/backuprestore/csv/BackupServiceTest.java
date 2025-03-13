@@ -237,7 +237,6 @@ public class BackupServiceTest {
 			.setBackupAvatars(false)
 			.setBackupMedia(false)
 			.setBackupThumbnails(false)
-			.setBackupVideoAndFiles(false)
 			.setBackupNonces(false));
 
 		try {
@@ -291,7 +290,6 @@ public class BackupServiceTest {
             .setBackupAvatars(false)
             .setBackupMedia(false)
             .setBackupThumbnails(false)
-            .setBackupVideoAndFiles(false)
 	        .setBackupNonces(false));
 
         try {

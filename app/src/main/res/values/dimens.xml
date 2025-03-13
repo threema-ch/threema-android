@@ -219,6 +219,7 @@
 	<dimen name="tooltip_popup_arrow_inset">10dp</dimen>
 	<dimen name="tooltip_layout_margin_left">2dp</dimen>
 	<dimen name="tooltip_layout_margin_right">8dp</dimen>
+	<dimen name="tooltip_title_size">15sp</dimen>
 	<dimen name="tooltip_text_size">15sp</dimen>
 
 	<dimen name="compose_title_avatar_size">40dp</dimen>

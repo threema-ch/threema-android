@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">色を選択</string>
     <!-- Content description for a color square. -->
     <!-- Content description for a selected color square. -->
+    <string name="color_swatch_description_selected" tools:ignore="PluralsCandidate">色<xliff:g id="color_index" example="14">%1$d</xliff:g>選択済</string>
 </resources>

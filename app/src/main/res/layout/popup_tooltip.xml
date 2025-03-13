@@ -4,6 +4,7 @@
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginRight="@dimen/tooltip_layout_margin_right"
@@ -40,15 +41,33 @@
                 android:layout_marginRight="8dp"
                 app:srcCompat="@drawable/ic_badge_work_24dp" />
 
-            <ch.threema.app.emojis.EmojiTextView
-                android:id="@+id/label"
-                style="@style/Threema.TextAppearance.BodyMedium"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
-                android:layout_weight="1"
-                android:textColor="?colorOnTertiaryContainer"
-                android:textSize="@dimen/tooltip_text_size" />
+                android:layout_weight="1">
+
+                <ch.threema.app.emojis.EmojiTextView
+                    android:id="@+id/title"
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?colorOnTertiaryContainer"
+                    android:textSize="@dimen/tooltip_title_size"
+                    android:textStyle="bold"
+                    tools:text="Tooltip Title" />
+
+                <ch.threema.app.emojis.EmojiTextView
+                    android:id="@+id/label"
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?colorOnTertiaryContainer"
+                    android:textSize="@dimen/tooltip_text_size"
+                    tools:text="Tooltip Text"/>
+
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Threema.MaterialButton.Minimal"

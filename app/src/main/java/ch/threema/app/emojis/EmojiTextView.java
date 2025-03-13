@@ -31,8 +31,6 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 public class EmojiTextView extends AppCompatTextView {
 
-	protected final EmojiMarkupUtil emojiMarkupUtil;
-
 	public EmojiTextView(Context context) {
 		this(context, null);
 	}
@@ -43,17 +41,11 @@ public class EmojiTextView extends AppCompatTextView {
 
 	public EmojiTextView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-
-		emojiMarkupUtil = EmojiMarkupUtil.getInstance();
 	}
 
 	@Override
 	public void setText(@Nullable CharSequence text, BufferType type) {
-		if (emojiMarkupUtil != null) {
-			super.setText(emojiMarkupUtil.addTextSpans(getContext(), text, this, true, true, false, true), type);
-		} else {
-			super.setText(text, type);
-		}
+		super.setText(EmojiMarkupUtil.getInstance().addTextSpans(getContext(), text, this, true, true, false, true), type);
 	}
 
 	/**
@@ -64,8 +56,8 @@ public class EmojiTextView extends AppCompatTextView {
 	 * @return the text that was actually set
 	 */
 	public CharSequence setSingleEmojiSequence(@Nullable CharSequence emojiSequence) {
-		if (emojiMarkupUtil != null && EmojiUtil.isFullyQualifiedEmoji(emojiSequence)) {
-			CharSequence emojifiedSequence = emojiMarkupUtil.addTextSpans(getContext(), emojiSequence, this, true, true, false, true);
+		if (EmojiUtil.isFullyQualifiedEmoji(emojiSequence)) {
+			CharSequence emojifiedSequence = EmojiMarkupUtil.getInstance().addTextSpans(getContext(), emojiSequence, this, true, true, false, true);
             super.setText(emojifiedSequence, BufferType.SPANNABLE);
             return getText();
 		}

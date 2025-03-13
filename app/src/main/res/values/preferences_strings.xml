@@ -163,6 +163,8 @@
 	<string name="preferences__working_days_enable" translatable="false">pref_working_days_enable</string>
 	<string name="preferences__generate_test_quotes" translatable="false">pref_key_generate_test_quotes</string>
 	<string name="preferences__tooltip_work_hint_shown" translatable="false">pref_tooltip_work_hint_shown</string>
+	<string name="preferences__tooltip_emoji_reactions_shown" translatable="false">pref_tooltip_emoji_reactions_shown</string>
+	<string name="preferences__tooltip_emoji_reactions_shown_counter" translatable="false">pref_tooltip_emoji_reactions_shown_counter</string>
 	<string name="preferences__camera_flash_mode" translatable="false">pref_camera_flash_mode</string>
 	<string name="preferences__camera_lens_facing" translatable="false">pref_camera_lens_facing</string>
 	<string name="preferences__pip_position" translatable="false">pref_pip_position</string>
@@ -221,4 +223,7 @@
     <string name="preferences__notification_channels_version" translatable="false">pref_notification_channels_version</string>
     <string name="preferences__last_shortcut_update_date" translatable="false">pref_last_shortcut_update_date</string>
     <string name="preferences__last_notification_request_timestamp" translatable="false">pref_last_notification_request_timestamp</string>
+    <string name="preferences__dev_reset_reaction_tooltip_shown" translatable="false">pref_dev_reset_reaction_tooltip_shown</string>
+    <string name="preferences__dev_create_messages_with_reactions" translatable="false">pref_dev_create_create_messages_with_reactions</string>
+    <string name="preferences__dev_create_nonces" translatable="false">pref_dev_create_nonces</string>
 </resources>

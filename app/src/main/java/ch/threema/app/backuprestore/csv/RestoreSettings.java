@@ -25,58 +25,59 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RestoreSettings {
-	/**
-	 *
-	 * 7: Added local contact avatar
-	 * 8: Add file message support
-	 * 9: add queued field to every message
-	 * 10: add captions to message model
-	 * 11: add profile pics
-	 * 12: voip status messages (not implemented)
-	 * 13: add hidden flag to contacts
-	 * 15: add quoted message id to messages
-	 * 16: added read and delivered date
-	 * 17: group message states (ack / dec) and group descriptions
-	 * 18: contact forward security flag
-	 * 19: add random contact id
-	 * 20: add message display type (starred etc.)
-	 * 21: refactored group status messages
-	 * 22: add lastUpdate and remove isQueued flag
-	 * 23: add editedAt
-	 * 24: add deletedAt
-	 * 25: add group user state
-	 */
-	public static final int CURRENT_VERSION = 25;
-	private int version;
+    /**
+     *
+     * 7: Added local contact avatar
+     * 8: Add file message support
+     * 9: add queued field to every message
+     * 10: add captions to message model
+     * 11: add profile pics
+     * 12: voip status messages (not implemented)
+     * 13: add hidden flag to contacts
+     * 15: add quoted message id to messages
+     * 16: added read and delivered date
+     * 17: group message states (ack / dec) and group descriptions
+     * 18: contact forward security flag
+     * 19: add random contact id
+     * 20: add message display type (starred etc.)
+     * 21: refactored group status messages
+     * 22: add lastUpdate and remove isQueued flag
+     * 23: add editedAt
+     * 24: add deletedAt
+     * 25: add group user state
+     * 26: add reactions
+     */
+    public static final int CURRENT_VERSION = 26;
+    private int version;
 
-	public RestoreSettings(int version) {
-		this.version = version;
-	}
+    public RestoreSettings(int version) {
+        this.version = version;
+    }
 
-	public RestoreSettings() {
-		this(1);
-	}
+    public RestoreSettings() {
+        this(1);
+    }
 
-	public boolean isUnsupportedVersion() {
-		return version > CURRENT_VERSION;
-	}
+    public boolean isUnsupportedVersion() {
+        return version > CURRENT_VERSION;
+    }
 
-	public int getVersion() {
-		return this.version;
-	}
-	public void parse(List<String[]> strings) {
-		for(String[] row: strings) {
-			if(row.length == 2) {
-				if(row[0].equals(Tags.TAG_INFO_VERSION)) {
-					this.version = Integer.parseInt(row[1]);
-				}
-			}
-		}
-	}
+    public int getVersion() {
+        return this.version;
+    }
+    public void parse(List<String[]> strings) {
+        for(String[] row: strings) {
+            if(row.length == 2) {
+                if(row[0].equals(Tags.TAG_INFO_VERSION)) {
+                    this.version = Integer.parseInt(row[1]);
+                }
+            }
+        }
+    }
 
-	public List<String[]> toList() {
-		List<String[]> l = new ArrayList<>();
-		l.add(new String[]{Tags.TAG_INFO_VERSION, String.valueOf(this.version)});
-		return l;
-	}
+    public List<String[]> toList() {
+        List<String[]> l = new ArrayList<>();
+        l.add(new String[]{Tags.TAG_INFO_VERSION, String.valueOf(this.version)});
+        return l;
+    }
 }

@@ -101,6 +101,7 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
+import ch.threema.app.utils.RingtoneChecker;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SecureDeleteUtil;
@@ -183,42 +184,15 @@ public class FileServiceImpl implements FileService {
 		}
 	}
 
-	/*
-	 * Check if current ringtone prefs point to a valid ringtone or if an update is needed
-	 */
-	private boolean needRingtonePreferencesUpdate(ContentResolver contentResolver) {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context);
-		String uriString = sharedPreferences.getString(this.context.getString(R.string.preferences__voip_ringtone), null);
-
-		// check if we need to update preferences to point to new file
-		if (TestUtil.isEmptyOrNull(uriString)) {
-			// silent ringtone -> OK
-			return false;
-		} else if (uriString.equals(ServicesConstants.PREFERENCES_NULL)) {
-			Uri oldUri = Uri.parse(uriString);
-			if (oldUri.toString().equals("content://settings/system/ringtone")) {
-				// default system ringtone -> OK
-				return false;
-			}
-
-			String[] projection = {MediaStore.MediaColumns.DATA, MediaStore.Audio.Media.IS_RINGTONE};
-			try (Cursor cursor = contentResolver.query(oldUri, projection, null, null, null)) {
-				if (cursor != null) {
-					if (cursor.moveToFirst()) {
-						String path = cursor.getString(0);
-						int isRingtone = cursor.getInt(1);
-						// if preferences point to a valid file -> OK
-						if (path != null && new File(path).exists() && isRingtone == 1) {
-							return false;
-						}
-					}
-				}
-			} catch (Exception e) {
-				// continue by resetting ringtone prefs
-			}
-		}
-		return true;
-	}
+    /*
+     * Check if current ringtone prefs point to a valid ringtone or if an update is needed
+     */
+    private boolean needRingtonePreferencesUpdate(ContentResolver contentResolver) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context);
+        String uriString = sharedPreferences.getString(this.context.getString(R.string.preferences__voip_ringtone), null);
+        RingtoneChecker ringtoneChecker = new RingtoneChecker(contentResolver);
+        return !ringtoneChecker.isValidRingtoneUri(uriString);
+    }
 
 	@Deprecated
 	public File getBackupPath() {

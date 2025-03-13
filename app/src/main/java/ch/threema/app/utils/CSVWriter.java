@@ -33,7 +33,7 @@ public class CSVWriter extends au.com.bytecode.opencsv.CSVWriter {
 	public CSVWriter(Writer writer, String[] header) {
 		super(writer);
 		this.header = header;
-		//write directly
+		// write directly
 		this.writeNext(this.header);
 	}
 

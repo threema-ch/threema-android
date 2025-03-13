@@ -1,2 +1,2 @@
-- New: You can now react to messages with emoji
-- Fixed a bug concerning profile pictures in group calls
+- Emoji reactions are now included in the data backup
+- Fixed a bug that caused custom ringtones to be reset when starting the app

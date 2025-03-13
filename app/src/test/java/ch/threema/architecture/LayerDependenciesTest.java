@@ -38,8 +38,8 @@ import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
+import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.ListReader;
-import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.logging.LoggerManager;
 import ch.threema.logging.backend.DebugLogFileBackend;
@@ -135,7 +135,7 @@ public class LayerDependenciesTest {
         .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
         .ignoreDependency(DebugLogFileBackend.class, FileService.class)
         .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
-        .ignoreDependency(DebugLogFileBackend.class, ZipUtil.class)
+        .ignoreDependency(DebugLogFileBackend.class, FileHandlingZipOutputStream.class)
         .ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
 
     @ArchTest

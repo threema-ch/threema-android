@@ -303,7 +303,6 @@ når den første meldingen mottas.</string>
     <string name="state_dialog_posted">Sendt</string>
     <string name="state_dialog_modified">Oppdatert</string>
     <string name="state_dialog_status">Status</string>
-    <string name="title_tab_recent">Nylig</string>
     <string name="no_recent_conversations">Ingen samtaler funnet</string>
     <string name="save_changes">Lagre</string>
     <string name="group_created_confirm">Gruppen ble opprettet</string>
@@ -463,7 +462,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="back">Tilbake</string>
     <string name="wearable_reply">Svar</string>
     <string name="wearable_reply_label">Svar til %s</string>
-    <string name="message_acknowledged">\"Enig\" sendt</string>
     <string name="push_disable_text">Om du fortsetter, så vil \"Threema Push\" bli brukt istedenfor push-tjenesten til systemet. Dette hjelper til å redusere ditt digitale fotavtrykk, men krever at telefonen er satt opp til å tillate å kjøre i bakgrunnen. Du må kanskje kontakte brukerstøtten til produsenten av din telefon for hjelp til konfigurasjon om du ikke finner denne innstillingen.</string>
     <string name="ballot_intermediate_results_show">Vis midlertidige resultater</string>
     <string name="converting_video">Behandler video</string>
@@ -579,7 +577,8 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="permission_storage_required">For å lagre eller sende media, gi Threema tilgang til lagring på enheten.</string>
     <string name="permission_location_required">For å sende en posisjon til andre, gi Threema tilgang til din posisjon.</string>
     <string name="permission_contacts_required">For å sende en kontakt, gi Threema tilgang til å se kontakter.</string>
-    <string name="message_declined">\"Uenig\" sendt</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">Varsler</string>
     <string name="notifications_default">Standard innstillinger</string>
     <string name="notifications_until">Frem til %s</string>
@@ -1521,6 +1520,9 @@ Om du ikke har brukt din Threema ID på en annen enhet eller brukt en eldre vers
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
     <!-- accessibility -->
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>

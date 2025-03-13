@@ -15,7 +15,7 @@
     <string name="new_wizard_welcome">Bienvenue sur Threema Work !</string>
     <string name="new_wizard_info_fingerprint">En déplaçant votre doigt, vous créez des données aléatoires (appelées entropie), qui sont utilisées pour générer une paire de clés associées à votre nouvel ID Threema unique.
 La paire de clés comprend une <b>clé publie</b> distribuée à vos contacts et une <b>clé privée</b> stockée de manière sécurisée sur votre téléphone. Vos contacts chiffreront les messages qui vous sont destinés avec votre clé publique. Seul le propriétaire de la clé privée peut déchiffrer ces messages.</string>
-    <string name="new_wizard_info_link">En donnant votre numéro de téléphone et votre adresse e-mail, Theema Work peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d\'adresses. Les adresses e-mail seront stockées de manière chiffrée sur notre serveur. Vous pouvez passer cette étape si vous souhaitez utiliser Threema Work de manière anonyme.</string>
+    <string name="new_wizard_info_link">En donnant votre numéro de téléphone et votre adresse e-mail, Threema Work peut aider vos amis à vous trouver automatiquement si vous vous trouvez dans leur carnet d\'adresses. Les adresses e-mail seront stockées de manière chiffrée sur notre serveur. Vous pouvez passer cette étape si vous souhaitez utiliser Threema Work de manière anonyme.</string>
     <string name="threema_contact">Contact Threema Work</string>
     <string name="menu_about">À propos de Threema Work</string>
     <string name="directory_search">Rechercher dans le répertoire</string>

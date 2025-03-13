@@ -27,6 +27,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.work.Constraints
 import androidx.work.Data
@@ -364,18 +365,15 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     private fun resetRestrictions() {
         /* note that PreferenceService may not be available at this time */
         logger.debug("Reset Restrictions")
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        if (sharedPreferences != null) {
-            val editor = sharedPreferences.edit()
-            if (editor != null) {
-                applyBooleanRestriction(editor, R.string.restriction__block_unknown, R.string.preferences__block_unknown) { it }
-                applyBooleanRestriction(editor, R.string.restriction__disable_screenshots, R.string.preferences__hide_screenshots) { it }
-                applyBooleanRestriction(editor, R.string.restriction__disable_save_to_gallery, R.string.preferences__save_media) { !it }
-                applyBooleanRestriction(editor, R.string.restriction__disable_message_preview, R.string.preferences__notification_preview) { !it }
+        (PreferenceManager.getDefaultSharedPreferences(context) ?: return)
+            .edit {
+                applyBooleanRestriction(R.string.restriction__block_unknown, R.string.preferences__block_unknown) { it }
+                applyBooleanRestriction(R.string.restriction__disable_screenshots, R.string.preferences__hide_screenshots) { it }
+                applyBooleanRestriction(R.string.restriction__disable_save_to_gallery, R.string.preferences__save_media) { !it }
+                applyBooleanRestriction(R.string.restriction__disable_message_preview, R.string.preferences__notification_preview) { !it }
                 applyBooleanRestrictionMapToInt(
-                    editor,
                     R.string.restriction__disable_send_profile_picture,
-                    R.string.preferences__profile_pic_release
+                    R.string.preferences__profile_pic_release,
                 ) {
                     if (it) {
                         PreferenceService.PROFILEPIC_RELEASE_NOBODY
@@ -383,14 +381,12 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                         PreferenceService.PROFILEPIC_RELEASE_EVERYONE
                     }
                 }
-                applyBooleanRestriction(editor, R.string.restriction__disable_calls, R.string.preferences__voip_enable) { !it }
-                applyBooleanRestriction(editor, R.string.restriction__disable_video_calls, R.string.preferences__voip_video_enable) { !it }
-                applyBooleanRestriction(editor, R.string.restriction__disable_group_calls, R.string.preferences__group_calls_enable) { !it }
-                applyBooleanRestriction(editor, R.string.restriction__hide_inactive_ids, R.string.preferences__show_inactive_contacts) { !it }
-                editor.apply()
-                applyNicknameRestriction()
+                applyBooleanRestriction(R.string.restriction__disable_calls, R.string.preferences__voip_enable) { !it }
+                applyBooleanRestriction(R.string.restriction__disable_video_calls, R.string.preferences__voip_video_enable) { !it }
+                applyBooleanRestriction(R.string.restriction__disable_group_calls, R.string.preferences__group_calls_enable) { !it }
+                applyBooleanRestriction(R.string.restriction__hide_inactive_ids, R.string.preferences__show_inactive_contacts) { !it }
             }
-        }
+        applyNicknameRestriction()
     }
 
     override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
@@ -409,26 +405,24 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         return Futures.immediateFuture(ForegroundInfo(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID, notification))
     }
 
-    private fun applyBooleanRestriction(
-        editor: Editor,
+    private fun Editor.applyBooleanRestriction(
         @StringRes restrictionKeyRes: Int,
         @StringRes settingKeyRes: Int,
         mapper: (Boolean) -> Boolean
     ) {
         AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
-            editor.putBoolean(context.getString(settingKeyRes), mapper(it))
+            putBoolean(context.getString(settingKeyRes), mapper(it))
         }
     }
 
     @Suppress("SameParameterValue")
-    private fun applyBooleanRestrictionMapToInt(
-        editor: Editor,
+    private fun Editor.applyBooleanRestrictionMapToInt(
         @StringRes restrictionKeyRes: Int,
         @StringRes settingKeyRes: Int,
         mapper: (Boolean) -> Int
     ) {
         AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))?.let {
-            editor.putInt(context.getString(settingKeyRes), mapper(it))
+            putInt(context.getString(settingKeyRes), mapper(it))
         }
     }
 

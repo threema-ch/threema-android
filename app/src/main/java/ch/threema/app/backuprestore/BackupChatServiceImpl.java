@@ -24,8 +24,6 @@ package ch.threema.app.backuprestore;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import net.lingala.zip4j.io.outputstream.ZipOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -39,12 +37,12 @@ import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.ZipUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -55,163 +53,163 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 public class BackupChatServiceImpl implements BackupChatService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupChatServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupChatServiceImpl");
 
-	private final Context context;
-	private final FileService fileService;
-	private final MessageService messageService;
-	private final ContactService contactService;
-	private boolean isCanceled;
+    private final Context context;
+    private final FileService fileService;
+    private final MessageService messageService;
+    private final ContactService contactService;
+    private boolean isCanceled;
 
-	public BackupChatServiceImpl(Context context, FileService fileService, MessageService messageService, ContactService contactService) {
-		this.context = context;
-		this.fileService = fileService;
-		this.messageService = messageService;
-		this.contactService = contactService;
-	}
+    public BackupChatServiceImpl(Context context, FileService fileService, MessageService messageService, ContactService contactService) {
+        this.context = context;
+        this.fileService = fileService;
+        this.messageService = messageService;
+        this.contactService = contactService;
+    }
 
-	private boolean buildThread(ConversationModel conversationModel, ZipOutputStream zipOutputStream, StringBuilder messageBody, boolean includeMedia) {
-		AbstractMessageModel m;
+    private boolean buildThread(ConversationModel conversationModel, FileHandlingZipOutputStream zipOutputStream, StringBuilder messageBody, boolean includeMedia) {
+        AbstractMessageModel m;
 
-		isCanceled = false;
+        isCanceled = false;
 
-		List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(conversationModel.getReceiver());
-		ListIterator<AbstractMessageModel> listIter = messages.listIterator(messages.size());
-		while (listIter.hasPrevious()) {
-			m = listIter.previous();
+        List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(conversationModel.getReceiver());
+        ListIterator<AbstractMessageModel> listIter = messages.listIterator(messages.size());
+        while (listIter.hasPrevious()) {
+            m = listIter.previous();
 
-			if (isCanceled) {
-				break;
-			}
+            if (isCanceled) {
+                break;
+            }
 
-			if (m.isStatusMessage()) {
-				continue;
-			}
+            if (m.isStatusMessage()) {
+                continue;
+            }
 
-			if (m.getType() == MessageType.GROUP_CALL_STATUS || m.getType() == MessageType.FORWARD_SECURITY_STATUS) {
-				continue;
-			}
+            if (m.getType() == MessageType.GROUP_CALL_STATUS || m.getType() == MessageType.FORWARD_SECURITY_STATUS) {
+                continue;
+            }
 
-			String filename = "";
-			String messageLine = "";
+            String filename = "";
+            String messageLine = "";
 
-			if (!conversationModel.isGroupConversation()) {
-				messageLine = m.isOutbox() ? this.context.getString(R.string.me_myself_and_i) : NameUtil.getDisplayNameOrNickname(this.contactService.getByIdentity(m.getIdentity()), true);
-				messageLine += ": ";
-			}
+            if (!conversationModel.isGroupConversation()) {
+                messageLine = m.isOutbox() ? this.context.getString(R.string.me_myself_and_i) : NameUtil.getDisplayNameOrNickname(this.contactService.getByIdentity(m.getIdentity()), true);
+                messageLine += ": ";
+            }
 
-			messageLine += messageService.getMessageString(m, 0).getRawMessage();
+            messageLine += messageService.getMessageString(m, 0).getRawMessage();
 
-			// add media file to zip
-			try {
-				boolean saveMedia = false;
-				String extension = "";
+            // add media file to zip
+            try {
+                boolean saveMedia = false;
+                String extension = "";
 
-				switch (m.getType()) {
-					case IMAGE:
-						saveMedia = true;
-						extension = ".jpg";
-						break;
-					case VIDEO:
-						VideoDataModel videoDataModel = m.getVideoData();
-						saveMedia = videoDataModel != null && videoDataModel.isDownloaded();
-						extension = ".mp4";
-						break;
-					case VOICEMESSAGE:
-						AudioDataModel audioDataModel = m.getAudioData();
-						saveMedia = audioDataModel != null && audioDataModel.isDownloaded();
-						extension = VoiceRecorderActivity.VOICEMESSAGE_FILE_EXTENSION;
-						break;
-					case FILE:
-						FileDataModel fileDataModel = m.getFileData();
-						saveMedia = fileDataModel.isDownloaded();
-						filename = TestUtil.isEmptyOrNull(fileDataModel.getFileName()) ?
-							FileUtil.getDefaultFilename(fileDataModel.getMimeType()) :
-							(m.getApiMessageId() != null ? m.getApiMessageId() : m.getId()) +
-							"-" + fileDataModel.getFileName();
-						extension = "";
-						break;
-					case LOCATION:
-						messageLine += " <" + GeoLocationUtil.getLocationUri(m) + ">";
-						break;
-					case VOIP_STATUS:
-						if (m.getVoipStatusData() != null && m.getVoipStatusData().getDuration() != null) {
-							messageLine += " <" + StringConversionUtil.secondsToString(
-								m.getVoipStatusData().getDuration(),
-								false) + ">";
-						}
-						break;
-					default:
-				}
+                switch (m.getType()) {
+                    case IMAGE:
+                        saveMedia = true;
+                        extension = ".jpg";
+                        break;
+                    case VIDEO:
+                        VideoDataModel videoDataModel = m.getVideoData();
+                        saveMedia = videoDataModel.isDownloaded();
+                        extension = ".mp4";
+                        break;
+                    case VOICEMESSAGE:
+                        AudioDataModel audioDataModel = m.getAudioData();
+                        saveMedia = audioDataModel.isDownloaded();
+                        extension = VoiceRecorderActivity.VOICEMESSAGE_FILE_EXTENSION;
+                        break;
+                    case FILE:
+                        FileDataModel fileDataModel = m.getFileData();
+                        saveMedia = fileDataModel.isDownloaded();
+                        filename = TestUtil.isEmptyOrNull(fileDataModel.getFileName()) ?
+                            FileUtil.getDefaultFilename(fileDataModel.getMimeType()) :
+                            (m.getApiMessageId() != null ? m.getApiMessageId() : m.getId()) +
+                                "-" + fileDataModel.getFileName();
+                        extension = "";
+                        break;
+                    case LOCATION:
+                        messageLine += " <" + GeoLocationUtil.getLocationUri(m) + ">";
+                        break;
+                    case VOIP_STATUS:
+                        if (m.getVoipStatusData() != null && m.getVoipStatusData().getDuration() != null) {
+                            messageLine += " <" + StringConversionUtil.secondsToString(
+                                m.getVoipStatusData().getDuration(),
+                                false) + ">";
+                        }
+                        break;
+                    default:
+                }
 
-				if (saveMedia) {
-					if (TestUtil.isEmptyOrNull(filename)) {
-						filename = m.getUid() + extension;
-					}
+                if (saveMedia) {
+                    if (TestUtil.isEmptyOrNull(filename)) {
+                        filename = m.getUid() + extension;
+                    }
 
-					if (includeMedia) {
-						try (InputStream is = fileService.getDecryptedMessageStream(m)) {
-							if (is != null) {
-								ZipUtil.addZipStream(zipOutputStream, is, filename, false);
-							} else {
-								// if media is missing, try thumbnail
-								try (InputStream tis = fileService.getDecryptedMessageThumbnailStream(m)) {
-									if (tis != null) {
-										ZipUtil.addZipStream(zipOutputStream, tis, filename, false);
-									}
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				//do not abort, its only a media :-)
-				logger.error("Exception", e);
-			}
+                    if (includeMedia) {
+                        try (InputStream is = fileService.getDecryptedMessageStream(m)) {
+                            if (is != null) {
+                                zipOutputStream.addFileFromInputStream(is, filename, false);
+                            } else {
+                                // if media is missing, try thumbnail
+                                try (InputStream thumbnailInputStream = fileService.getDecryptedMessageThumbnailStream(m)) {
+                                    if (thumbnailInputStream != null) {
+                                        zipOutputStream.addFileFromInputStream(thumbnailInputStream, filename, false);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                //do not abort, its only a media :-)
+                logger.error("Exception", e);
+            }
 
-			if (!TestUtil.isEmptyOrNull(filename)) {
-				messageLine += " <" + filename + ">";
-			}
+            if (!TestUtil.isEmptyOrNull(filename)) {
+                messageLine += " <" + filename + ">";
+            }
 
-			String messageDate = DateUtils.formatDateTime(context, m.getPostedAt().getTime(),
-					DateUtils.FORMAT_ABBREV_ALL |
-							DateUtils.FORMAT_SHOW_YEAR |
-							DateUtils.FORMAT_SHOW_DATE |
-							DateUtils.FORMAT_NUMERIC_DATE |
-							DateUtils.FORMAT_SHOW_TIME);
-			if (!TestUtil.isEmptyOrNull(messageLine)) {
-				messageBody.append("[");
-				messageBody.append(messageDate);
-				messageBody.append("] ");
-				messageBody.append(messageLine);
-				messageBody.append("\n");
-			}
-		}
-		return !isCanceled;
-	}
+            String messageDate = DateUtils.formatDateTime(context, m.getPostedAt().getTime(),
+                DateUtils.FORMAT_ABBREV_ALL |
+                    DateUtils.FORMAT_SHOW_YEAR |
+                    DateUtils.FORMAT_SHOW_DATE |
+                    DateUtils.FORMAT_NUMERIC_DATE |
+                    DateUtils.FORMAT_SHOW_TIME);
+            if (!TestUtil.isEmptyOrNull(messageLine)) {
+                messageBody.append("[");
+                messageBody.append(messageDate);
+                messageBody.append("] ");
+                messageBody.append(messageLine);
+                messageBody.append("\n");
+            }
+        }
+        return !isCanceled;
+    }
 
-	@Override
-	public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia) {
-		StringBuilder messageBody = new StringBuilder();
+    @Override
+    public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia) {
+        StringBuilder messageBody = new StringBuilder();
 
-		try(final ZipOutputStream zipOutputStream = ZipUtil.initializeZipOutputStream(outputFile, password)) {
-			if (buildThread(conversationModel, zipOutputStream, messageBody, includeMedia)) {
-				ZipUtil.addZipStream(zipOutputStream, IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt", true);
-			}
-			return true;
+        try(final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputFile, password)) {
+            if (buildThread(conversationModel, zipOutputStream, messageBody, includeMedia)) {
+                zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt", true);
+            }
+            return true;
 
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		} finally {
-			if (isCanceled) {
-				FileUtil.deleteFileOrWarn(outputFile, "output file", logger);
-			}
-		}
-		return false;
-	}
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        } finally {
+            if (isCanceled) {
+                FileUtil.deleteFileOrWarn(outputFile, "output file", logger);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void cancel() {
-		isCanceled = true;
-	}
+    @Override
+    public void cancel() {
+        isCanceled = true;
+    }
 }

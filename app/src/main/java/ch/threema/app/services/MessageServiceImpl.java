@@ -2765,9 +2765,6 @@ public class MessageServiceImpl implements MessageService {
 				AbstractMessageModel m = messageModels.get(n);
 
 				if(m != null) {
-					if (m.isDeleted()) {
-						continue;
-					}
 					if(m.isOutbox()) {
 						break;
 					}

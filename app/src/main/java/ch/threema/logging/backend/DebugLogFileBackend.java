@@ -26,7 +26,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
-import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.model.enums.CompressionLevel;
 import net.lingala.zip4j.model.enums.CompressionMethod;
@@ -44,7 +43,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.FileService;
-import ch.threema.app.utils.ZipUtil;
+import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.LogLevel;
@@ -52,11 +51,8 @@ import java8.util.concurrent.CompletableFuture;
 
 /**
  * A logging backend that logs to the debug log file.
- *
  * This backend is only enabled if the user enabled the debug log.
- *
  * The log file is deleted when calling `setEnabled(false)`.
- *
  * A zipped log file can be requested with `getZipFile()`.
  */
 public class DebugLogFileBackend implements LogBackend {
@@ -117,9 +113,7 @@ public class DebugLogFileBackend implements LogBackend {
 
 	/**
 	 * Enable or disable logging to the debug log file.
-	 *
 	 * By default, it is disabled.
-	 *
 	 * When disabling the logging, then the file is deleted if it already exists.
 	 */
 	public synchronized static void setEnabled(boolean enabled) {
@@ -152,9 +146,8 @@ public class DebugLogFileBackend implements LogBackend {
 	}
 
 	/**
-	 * Return a `File` instance pointing to the debug log file.
-	 *
-	 * Returns `null` if the log file directory could not be created.
+	 * @return a {@link File} instance pointing to the debug log file or `null` if the log file
+     *         directory could not be created.
 	 */
 	@Nullable
 	private static File getLogFile() {
@@ -173,9 +166,7 @@ public class DebugLogFileBackend implements LogBackend {
 
 	/**
 	 * If the logger is enabled, write the log asynchronously to the log file.
-	 *
 	 * I/O is dispatched to the handler thread.
-	 *
 	 * A CompletableFuture is returned, which resolves once processing is finished.
 	 * The returned value is TRUE if the log was written successfully,
 	 * FALSE if writing the log failed, and null if the logger was not enabled.
@@ -262,7 +253,6 @@ public class DebugLogFileBackend implements LogBackend {
 
 	/**
 	 * If the logger is enabled, write the log to the log file.
-	 *
 	 * Note: I/O is done asynchronously, so the log may not yet be fully written
 	 * to storage when this method returns!
 	 *
@@ -311,7 +301,7 @@ public class DebugLogFileBackend implements LogBackend {
 		// Create and return ZIP
 		try (
 			final FileInputStream inputStream = new FileInputStream(logFile);
-			final ZipOutputStream zipOutputStream = ZipUtil.initializeZipOutputStream(tempDebugLogArchive, null)
+			final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(tempDebugLogArchive, null)
 		) {
 			final ZipParameters parameters = createZipParameters(logFile.getName());
 			zipOutputStream.putNextEntry(parameters);

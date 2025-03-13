@@ -498,8 +498,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 			location[0] += workIcon.getWidth() / 2;
 			location[1] += workIcon.getHeight();
 
-			final TooltipPopup workTooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_work_hint_shown, this, new Intent(this, WorkExplainActivity.class), R.drawable.ic_badge_work_24dp);
-			workTooltipPopup.show(this, workIcon, getString(R.string.tooltip_work_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_LEFT, location, 0);
+			final TooltipPopup workTooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_work_hint_shown, this, R.drawable.ic_badge_work_24dp);
+			workTooltipPopup.setListener(new TooltipPopup.TooltipPopupListener() {
+				@Override
+				public void onClicked(@NonNull TooltipPopup tooltipPopup) {
+					startActivity(new Intent(ContactDetailActivity.this, WorkExplainActivity.class));
+				}
+			});
+			workTooltipPopup.show(this, workIcon, null, getString(R.string.tooltip_work_hint), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_LEFT, location, 0);
 
 			final AppBarLayout appBarLayout = findViewById(R.id.appbar);
 			if (appBarLayout != null) {

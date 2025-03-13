@@ -601,11 +601,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 			List<EmojiReactionData> reactions = emojiReactionsRepository.safeGetReactionsByMessage(messageModel);
 			if (!reactions.isEmpty()) {
 				final EmojiReactionGroup group = holder.emojiReactionGroup;
-				if (false) {
-					group.setMessageModel(decoratorHelper.getMessageReceiver(), messageModel, reactions);
-				} else {
-					group.post(() -> group.setMessageModel(decoratorHelper.getMessageReceiver(), messageModel, reactions));
-				}
+				group.post(() -> group.setMessageModel(decoratorHelper.getMessageReceiver(), messageModel, reactions));
 				holder.emojiReactionGroup.setOnEmojiReactionGroupClickListener(this);
 				holder.emojiReactionGroup.setVisibility(View.VISIBLE);
 			} else {

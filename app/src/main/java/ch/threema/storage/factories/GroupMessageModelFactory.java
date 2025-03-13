@@ -271,8 +271,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 						+ " AND " + GroupMessageModel.COLUMN_OUTBOX + "=0"
 						+ " AND " + GroupMessageModel.COLUMN_IS_SAVED + "=1"
 						+ " AND " + GroupMessageModel.COLUMN_IS_READ + "=0"
-						+ " AND " + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
-						+ " AND " + GroupMessageModel.COLUMN_DELETED_AT + " IS NULL",
+						+ " AND " + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
 				new String[]{
 						String.valueOf(groupId)
 				}

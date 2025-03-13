@@ -224,7 +224,7 @@
     <string name="file_too_large">O arquivo excede o tamanho máximo de %1$d MB</string>
     <string name="deleting_thread">Excluindo conversa</string>
     <string name="enter_serial_body"><![CDATA[Digite a sua chave da licença de compra. Você pode <a href="https://shop.threema.ch/">adquirir</a> uma licença ou <a href="https://shop.threema.ch/retrieve_keys">recuperar</a> as suas chaves caso já tenha adquirido uma licença anteriormente.]]></string>
-    <string name="enter_serial_title">Desbloquear o Threma</string>
+    <string name="enter_serial_title">Desbloquear o Threema</string>
     <string name="serial_required_want_exit">A chave de licença é inválida. Gostaria de tentar novamente ou sair do Threema?</string>
     <string name="checking_serial">Verificando licença</string>
     <string name="update_available">Atualização disponível</string>
@@ -594,8 +594,10 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="permission_storage_required">Para enviar mídia, permita que o Threema acesse o armazenamento.</string>
     <string name="permission_location_required">Para enviar uma localização, permita que o Threema acesse sua posição.</string>
     <string name="permission_contacts_required">Para enviar contatos, permita que o Threema leia os contatos.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">“Polegar para cima” enviado</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">“polegar para baixo” enviado</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">“Polegar para cima” enviado</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">“polegar para baixo” enviado</string>
     <string name="notifications_settings">Configurações de notificação</string>
     <string name="notifications_default">Configurações padrão</string>
     <string name="notifications_until">Até %s</string>
@@ -1605,6 +1607,12 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s está usando uma versão do aplicativo que ainda não suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji. Você ainda pode substituir 👍 por 👎 ou vice-versa.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Nenhum dos membros do grupo está usando uma versão do aplicativo que suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji. Você pode substituir 👍 por 👎 ou vice-versa.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Sua versão do aplicativo ainda não suporta a remoção de reações de emoji ou o envio de mais de uma reação de emoji.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Esta mensagem tem reações de emoji. No chat, toque e segure qualquer balão de emoji para ver todos eles.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Reação de emoji</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Esta mensagem tem reações de emoji. No chat, toque e segure qualquer balão de emoji para ver todos eles.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>

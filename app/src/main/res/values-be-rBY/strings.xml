@@ -311,7 +311,6 @@
     <string name="state_dialog_edited">Адрэд.</string>
     <string name="state_dialog_deleted">Выдалена</string>
     <string name="state_dialog_status">Статус</string>
-    <string name="title_tab_recent">Апошні</string>
     <string name="no_recent_conversations">Размовы не знойдзены</string>
     <string name="save_changes">Захаваць</string>
     <string name="group_created_confirm">Суполка паспяхова створана</string>
@@ -473,7 +472,6 @@
     <string name="back">Назад</string>
     <string name="wearable_reply">Адказаць</string>
     <string name="wearable_reply_label">Адказаць %s</string>
-    <string name="message_acknowledged">Згодзен</string>
     <string name="push_disable_text">Калі працягнуць, замест службы push-апавяшчэнняў сістэмы будзе выкарыстоўвацца функцыя Threema Push.  Гэта дапамагае скараціць «лічбавы след», але патрабуе настройкі тэлефона такім чынам, каб праграма магла працаваць у фонавым рэжыме.  Калі адпаведныя параметры не ўдаецца знайсці ў настройках прылады, паспрабуйце звярнуцца ў службу падтрымкі вытворцы вашай прылады за дапамогай з настройкай.</string>
     <string name="ballot_intermediate_results_show">Паказаць прамежкавыя вынікі</string>
     <string name="converting_video">Апрацоўка відэа</string>
@@ -590,7 +588,6 @@
     <string name="permission_storage_required">Каб адпраўляць медыя, дазвольце Threema доступ да сховішча.</string>
     <string name="permission_location_required">Каб адправіць месцазнаходжанне, дазвольце Threema атрымаць доступ да вашай пазіцыі.</string>
     <string name="permission_contacts_required">Каб адпраўляць кантакты, дазвольце Threema чытанне кантактаў.</string>
-    <string name="message_declined">Не згодны</string>
     <string name="notifications_settings">Налады апавяшчэнняў</string>
     <string name="notifications_default">Прадвызначаны налады</string>
     <string name="notifications_until">Да% s</string>

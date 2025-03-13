@@ -317,7 +317,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="state_dialog_edited">編集済</string>
     <string name="state_dialog_deleted">削除済</string>
     <string name="state_dialog_status">状態</string>
-    <string name="title_tab_recent">最近</string>
     <string name="no_recent_conversations">トークが見つかりません</string>
     <string name="save_changes">保存</string>
     <string name="group_created_confirm">グループが作成されました</string>
@@ -479,7 +478,6 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="back">戻る</string>
     <string name="wearable_reply">返信</string>
     <string name="wearable_reply_label">%s に返信</string>
-    <string name="message_acknowledged">«賛成» 送信</string>
     <string name="push_disable_text">続行すると、システムのプッシュサービスの代わりに、「Threemaプッシュ」が使用されます。これはデジタルフットプリントを減らすのに役に立ちますが、アプリをバックグラウンドで実行できるように端末を設定する必要があります。端末の設定で対応するオプションが見つからない場合、端末の製造元のサポートと連絡を取り、設定のサポートを受けてください。</string>
     <string name="ballot_intermediate_results_show">途中経過を表示</string>
     <string name="converting_video">動画を処理中</string>
@@ -596,7 +594,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="permission_storage_required">メディアを保存したり送信したりするには、Threemaにストレージへのアクセス許可をしてください。</string>
     <string name="permission_location_required">位置情報を送信するには、Threemaに自分の位置情報へのアクセスを許可をしてください。</string>
     <string name="permission_contacts_required">連絡先を送信するには、Threemaに自分の連絡先へのアクセスを許可する必要があります。</string>
-    <string name="message_declined">«反対» 送信</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">通知設定</string>
     <string name="notifications_default">デフォルト設定</string>
     <string name="notifications_until">%s まで</string>
@@ -1410,8 +1409,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="read_phone_state_short_message">通話の最中であるかどうかの確認のために、Threemaに電話へのアクセスを許可してください。</string>
     <string name="prefs_title_read_phone_state">電話へのアクセス許可</string>
     <string name="prefs_title_hibernation">使用されていないアプリの設定</string>
-    <string name="prefs_summary_hibernation_api_32">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「権限を削除して空き容量を増やす」を無効にしてください。</string>
-    <string name="prefs_summary_hibernation_api">長期の不使用後に、Theemaがシステムによって中断されるのを防ぐために、システム設定の「使用していないアプリを一時停止する」を無効にしてください。</string>
+    <string name="prefs_summary_hibernation_api_32">長期の不使用後に、Threemaがシステムによって中断されるのを防ぐために、システム設定の「権限を削除して空き容量を増やす」を無効にしてください。</string>
+    <string name="prefs_summary_hibernation_api">長期の不使用後に、Threemaがシステムによって中断されるのを防ぐために、システム設定の「使用していないアプリを一時停止する」を無効にしてください。</string>
     <string name="unable_to_fetch_configuration">設定サーバーからデータを取得できません。後でもう一度お試しください。</string>
     <string name="rogue_device_warning"><![CDATA[異なるデバイスからの接続が、同じThreema IDで検出されました。最近、別の端末であなたのThreema IDを使用しましたか？&lt;br&gt;&lt;br&gt;もし使用したのであれば、このメッセージは無視してください。&lt;br&gt;&lt;br&gt;もし使用していないのであれば、あなたのプライベートキーが不正利用されている可能性があります。新しいIDを作成する前に、<a href="https://threema.ch/en/faq/another_connection">私たちの提案に従って</a>、あなたの端末とデータを保護してください。]]></string>
     <string name="fetch2_failure">プロビジョニングサーバーとの同期に失敗しました。</string>
@@ -1536,6 +1535,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="unsupported_image_type">サポート外の画像形式: %s</string>
     <string name="add_contact_failed">連絡先の追加が失敗しました</string>
     <!-- accessibility -->
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>

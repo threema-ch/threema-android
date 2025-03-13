@@ -44,6 +44,7 @@ import com.google.android.material.button.MaterialButton;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
@@ -139,7 +140,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 			setupForWorkBuild();
 		}
 
-		handleUrlIntent();
+		handleUrlIntent(getIntent());
 	}
 
 	private void checkForValidCredentialsInBackground() {
@@ -210,10 +211,9 @@ public class EnterSerialActivity extends ThreemaActivity {
 		this.enableLogin(true);
 	}
 
-	private void handleUrlIntent() {
+	private void handleUrlIntent(@Nullable Intent intent) {
 		String scheme = null;
 		Uri data = null;
-		Intent intent = getIntent();
 		if (intent != null) {
 			data = intent.getData();
 			if (data != null) {
@@ -460,5 +460,11 @@ public class EnterSerialActivity extends ThreemaActivity {
 		// We override this method to avoid restarting the entire
 		// activity when the keyboard is opened or orientation changes
 		super.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	protected void onNewIntent(@NonNull Intent intent) {
+		super.onNewIntent(intent);
+		handleUrlIntent(intent);
 	}
 }

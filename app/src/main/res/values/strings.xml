@@ -618,8 +618,10 @@
     <string name="permission_storage_required">To save or send media, allow Threema permission to access storage.</string>
     <string name="permission_location_required">To send a location, allow Threema permission to access your position.</string>
     <string name="permission_contacts_required">To send contacts, allow Threema permission to read contacts.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">“Thumbs up” sent</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">“Thumbs down” sent</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">“Thumbs up” sent</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">“Thumbs down” sent</string>
     <string name="notifications_settings">Notification settings</string>
     <string name="notifications_default">Default settings</string>
     <string name="notifications_until">Until %s</string>
@@ -1651,6 +1653,10 @@
     <string name="emoji_reactions_cannot_remove_v1_body">Your app version does not yet support removing emoji reactions or sending more than one emoji reaction.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">This message has emoji reactions. In the chat, tap and hold any emoji bubble to view them all.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Emoji Reaction</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">This message has emoji reactions. In the chat, tap and hold any emoji bubble to view them all.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="few">%d contacts</item>

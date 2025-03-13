@@ -592,8 +592,10 @@ možné je obnovit.</string>
     <string name="permission_storage_required">Chcete‑li uložit či odeslat média, povolte aplikaci Threema oprávnění přístupu k úložišti.</string>
     <string name="permission_location_required">Chcete‑li odeslat polohu, povolte aplikaci Threema oprávnění přístupu k poloze vašeho zařízení.</string>
     <string name="permission_contacts_required">Chcete‑li odeslat kontakty, povolte aplikaci Threema oprávnění přístupu ke kontaktům.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">„Palec nahoru“ odeslán</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">„Palec dolů“ odeslán</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">„Palec nahoru“ odeslán</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">„Palec dolů“ odeslán</string>
     <string name="notifications_settings">Nastavení oznámení</string>
     <string name="notifications_default">Výchozí nastavení</string>
     <string name="notifications_until">Do %s</string>
@@ -1604,6 +1606,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="emoji_reactions_cannot_remove_body">Kontakt %1$s používá verzi aplikace, která prozatím nepodporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce. Stále můžete nahradit 👍 za 👎 a naopak.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Žádný ze členů skupiny nepoužívá verzi aplikace, která podporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce. Stále však můžete nahradit 👍 za 👎 a naopak.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Verze vaší aplikace prozatím nepodporuje odstraňování emoji reakcí nebo odesílání více než jedné emoji reakce.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Tato zpráva obsahuje emoji reakce. Chcete-li je zobrazit všechny, dlouze klepněte v konverzaci na jakoukoliv emoji bublinu.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Emoji reakce</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Tato zpráva obsahuje emoji reakce. Chcete-li je zobrazit všechny, dlouze klepněte na jakoukoliv emoji bublinu v konverzaci.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

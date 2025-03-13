@@ -24,15 +24,19 @@ package ch.threema.app.dialogs;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import ch.threema.app.R;
+import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
@@ -112,8 +116,19 @@ public class SimpleStringAlertDialog extends ThreemaDialogFragment {
 		} else {
 			builder.setMessage(message);
 		}
+		AlertDialog alertDialog = builder.create();
+		alertDialog.setOnShowListener((dialog) -> applyEmojis(alertDialog));
+		return alertDialog;
+	}
 
-		return builder.create();
+	private void applyEmojis(AlertDialog alertDialog) {
+		View messageView = alertDialog.findViewById(android.R.id.message);
+		if (messageView instanceof TextView) {
+			TextView textView = (TextView) messageView;
+			textView.setText(
+					EmojiMarkupUtil.getInstance().addTextSpans(getContext(), textView.getText(), textView, true, true, false, false)
+			);
+		}
 	}
 
 	public SimpleStringAlertDialog setOnDismissRunnable(Runnable onDismissRunnable) {

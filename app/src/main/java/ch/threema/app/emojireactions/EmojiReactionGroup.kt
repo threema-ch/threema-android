@@ -53,6 +53,8 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
     var onEmojiReactionGroupClickListener: OnEmojiReactionGroupClickListener? = null
     val userService = ThreemaApplication.requireServiceManager().userService
     var reactions: List<EmojiReactionData> = ArrayList()
+    var firstReactionButton: View? = null
+        private set
     private var listViewWidth = -1
     private var messageBubbleWidth = -1
     private val buttonWidth = resources.getDimensionPixelSize(R.dimen.emojireactions_width)
@@ -143,6 +145,7 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
 
                 removeAllViewsInLayout()
 
+                var firstButton: View? = null
                 var usedWidth = 0
                 for ((index, buttonInfo) in newButtonInfoList.withIndex()) {
                     val emojiReactionButton = createEmojiReactionButton(buttonInfo)
@@ -157,14 +160,19 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
                         break
                     }
 
+                    if (firstButton == null) {
+                        firstButton = emojiReactionButton
+                    }
+
                     emojiReactionButton.onEmojiReactionButtonClickListener = this
                     addViewInLayout(emojiReactionButton, -1, emojiReactionButton.layoutParams)
                 }
+                firstReactionButton = firstButton
 
-                messageReceiver?.
-                    takeIf { it.emojiReactionSupport != MessageReceiver.Reactions_NONE }?.
-                    takeIf { newButtonInfoList.isNotEmpty() }?.
-                    let {
+                messageReceiver
+                    ?.takeIf { it.emojiReactionSupport != MessageReceiver.Reactions_NONE }
+                    ?.takeIf { newButtonInfoList.isNotEmpty() }
+                    ?.let {
                         createAndAddSelectEmojiButton()
                     }
 

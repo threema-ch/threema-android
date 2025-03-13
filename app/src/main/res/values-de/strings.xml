@@ -631,8 +631,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
     <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.</string>
     <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">«Daumen hoch» gesendet</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">«Daumen runter» gesendet</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">«Daumen hoch» gesendet</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">«Daumen runter» gesendet</string>
     <string name="notifications_settings">Benachrichtigungseinstellungen</string>
     <string name="notifications_default">Standardeinstellung</string>
     <string name="notifications_until">Bis %s</string>
@@ -1657,6 +1659,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Ihre App-Version unterstützt das Entfernen von Emoji-Reaktionen oder das Senden mehrerer Emoji-Reaktionen noch nicht.</string>
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <string name="emoji_reactions_message_details_hint">Diese Nachricht hat Reaktionen. Halten Sie im Chat ein Reaktions-Emoji gedrückt, um alle zu sehen.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Emoji-Reaktion</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Diese Nachricht hat Emoji-Reaktionen. Tippen Sie die Emojis an und halten Sie sie gedrückt, um alle zu sehen.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

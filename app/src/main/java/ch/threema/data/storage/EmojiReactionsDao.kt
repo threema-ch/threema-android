@@ -22,6 +22,7 @@
 package ch.threema.data.storage
 
 import android.database.sqlite.SQLiteException
+import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.storage.models.AbstractMessageModel
 
 interface EmojiReactionsDao {
@@ -50,4 +51,53 @@ interface EmojiReactionsDao {
      * Find all reactions referred to by the specified message id
      */
     fun findAllByMessage(messageModel: AbstractMessageModel): List<DbEmojiReaction>
+
+    /**
+     * Delete all reactions from the database.
+     */
+    fun deleteAll()
+
+    fun getContactReactionsCount(): Long
+
+    fun getGroupReactionsCount(): Long
+
+    /**
+     * Iteration is ordered by the id of the referenced messages.
+     */
+    fun iterateAllContactBackupReactions(consumer: ThrowingConsumer<BackupContactReaction>)
+
+    /**
+     * Iteration is ordered by the id of the referenced messages.
+     */
+    fun iterateAllGroupBackupReactions(consumer: ThrowingConsumer<BackupGroupReaction>)
+
+    fun insertContactReactionsInTransaction(block: TransactionalReactionInsertScope)
+
+    fun insertGroupReactionsInTransaction(block: TransactionalReactionInsertScope)
+
+    data class BackupContactReaction(
+        val contactIdentity: String,
+        val apiMessageId: String,
+        val senderIdentity: String,
+        val emojiSequence: String,
+        val reactedAt: Long
+    )
+
+    data class BackupGroupReaction(
+        val apiGroupId: String,
+        val groupCreatorIdentity: String,
+        val apiMessageId: String,
+        val senderIdentity: String,
+        val emojiSequence: String,
+        val reactedAt: Long
+    )
+
+    fun interface ReactionInsertHandle {
+        fun insert(entry: DbEmojiReaction)
+    }
+
+    fun interface TransactionalReactionInsertScope {
+        @Throws(Exception::class)
+        fun runInserts(handle: ReactionInsertHandle)
+    }
 }

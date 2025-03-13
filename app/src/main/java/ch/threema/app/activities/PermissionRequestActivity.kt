@@ -39,6 +39,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
@@ -138,8 +139,9 @@ class PermissionRequestActivity : ThreemaActivity() {
             }
 
             logger.info("Save do-not-ask again setting for {}", currentPermissionState.title)
-            preferences.edit().putBoolean(currentPermissionState.ignorePermissionPreference, true)
-                .apply()
+            preferences.edit {
+                putBoolean(currentPermissionState.ignorePermissionPreference, true)
+            }
 
             currentPermissionState.asked = true
 
@@ -366,7 +368,9 @@ class PermissionRequestActivity : ThreemaActivity() {
             // This means that the permission will be requested again, once the user denies the
             // permission.
             if (request.ignorePermissionPreference != null && request.granted) {
-                preferences.edit().putBoolean(request.ignorePermissionPreference, false).apply()
+                preferences.edit {
+                    putBoolean(request.ignorePermissionPreference, false)
+                }
             }
         }
     }

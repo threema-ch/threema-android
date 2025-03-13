@@ -132,7 +132,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 				location[1] += menuItemView.getHeight();
 
 				tooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_export_id_shown, this);
-				tooltipPopup.show(this, menuItemView, getString(R.string.tooltip_export_id), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 5000);
+				tooltipPopup.show(this, menuItemView, null, getString(R.string.tooltip_export_id), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT, location, 5000);
 			}, 1000);
 		}
 	}

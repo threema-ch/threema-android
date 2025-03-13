@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteException
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelTypeCache
@@ -82,6 +83,37 @@ class EmojiReactionsRepository(
             cache.get(reactionMessageIdentifier)?.clear()
             cache.remove(reactionMessageIdentifier)
         }
+    }
+
+    /**
+     * This deletes all reactions from the database.
+     */
+    fun deleteAllReactions() {
+        emojiReactionDao.deleteAll()
+    }
+
+    fun getContactReactionsCount(): Long {
+        return emojiReactionDao.getContactReactionsCount()
+    }
+
+    fun getGroupReactionsCount(): Long {
+        return emojiReactionDao.getGroupReactionsCount()
+    }
+
+    /**
+     * This method is only intended for backup creation.
+     * Iteration is ordered by id of the referenced messages.
+     */
+    fun iterateAllContactReactionsForBackup(consumer: ThrowingConsumer<EmojiReactionsDao.BackupContactReaction>) {
+        emojiReactionDao.iterateAllContactBackupReactions(consumer)
+    }
+
+    /**
+     * This method is only intended for backup creation.
+     * Iteration is ordered by id of the referenced messages.
+     */
+    fun iterateAllGroupReactionsForBackup(consumer: ThrowingConsumer<EmojiReactionsDao.BackupGroupReaction>) {
+        emojiReactionDao.iterateAllGroupBackupReactions(consumer)
     }
 
     /**
@@ -181,6 +213,16 @@ class EmojiReactionsRepository(
                 throw EmojiReactionEntryCreateException(exception)
             }
         }
+    }
+
+    @Throws(Exception::class)
+    fun restoreContactReactions(block: EmojiReactionsDao.TransactionalReactionInsertScope) {
+        emojiReactionDao.insertContactReactionsInTransaction(block)
+    }
+
+    @Throws(Exception::class)
+    fun restoreGroupReactions(block: EmojiReactionsDao.TransactionalReactionInsertScope) {
+        emojiReactionDao.insertGroupReactionsInTransaction(block)
     }
 
     /**

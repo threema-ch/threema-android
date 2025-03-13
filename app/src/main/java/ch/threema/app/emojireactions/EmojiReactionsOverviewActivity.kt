@@ -37,6 +37,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -176,13 +177,11 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
      * Show an infobox if there are new-style emoji reactions but we can't send them (V1)
      */
     private fun setupInfoBox() {
-        if (!ConfigUtils.canSendEmojiReactions() && items.isNotEmpty()) {
-
-            val count = items.filter { item ->
-                item.emojiSequence != EmojiUtil.THUMBS_UP_SEQUENCE && item.emojiSequence != EmojiUtil.THUMBS_DOWN_SEQUENCE
+        if (!ConfigUtils.canSendEmojiReactions()) {
+            infoBox.isVisible = items.any { item ->
+                item.emojiSequence != EmojiUtil.THUMBS_UP_SEQUENCE &&
+                        item.emojiSequence != EmojiUtil.THUMBS_DOWN_SEQUENCE
             }
-
-            infoBox.visibility = if (count.isEmpty()) View.GONE else View.VISIBLE
         }
     }
 

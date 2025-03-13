@@ -595,8 +595,10 @@ Wprowadź pytanie do swojej ankiety.</string>
     <string name="permission_storage_required">Aby wysłać media, zezwól Threema na dostęp do pamięci.</string>
     <string name="permission_location_required">Aby wysłać swoją lokalizację, zezwól Threema na dostęp do swojego położenia.</string>
     <string name="permission_contacts_required">Aby wysłać kontakty, zezwól Threema na odczytywanie danych kontaktowych.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">Wysłano „kciuk w górę”</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">Wysłano „kciuk w dół”</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">Wysłano „kciuk w górę”</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">Wysłano „kciuk w dół”</string>
     <string name="notifications_settings">Ustawienia powiadomień</string>
     <string name="notifications_default">Ustawienia domyślne</string>
     <string name="notifications_until">Do %s</string>
@@ -1620,6 +1622,12 @@ anonimowo?</string>
     <string name="emoji_reactions_cannot_remove_body">%1$s używa wersji aplikacji, która na razie nie obsługuje usuwania reakcji w formie emoji ani wysyłania więcej niż jednej takiej reakcji. Nadal możesz zastąpić 👍 emoji 👎 lub na odwrót.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Żaden z członków grupy nie używa wersji aplikacji, która obsługuje usuwanie reakcji w formie emoji lub wysyłanie więcej niż jednej takiej reakcji. Możesz zastąpić 👍 emoji 👎 lub na odwrót.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Używana przez Ciebie wersja aplikacji nie obsługuje na razie usuwania reakcji w formie emoji ani wysyłania więcej niż jednej takiej reakcji.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Ta wiadomość zawiera reakcje w formie emoji. Aby wyświetlić wszystkie, na czacie stuknij i przytrzymaj dowolny dymek z emoji.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Reakcja w formie emoji</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Ta wiadomość zawiera reakcje w formie emoji. Aby wyświetlić wszystkie, na czacie stuknij i przytrzymaj dowolny dymek z emoji.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

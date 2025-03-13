@@ -21,6 +21,7 @@
 
 package ch.threema.app.tasks
 
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.managers.ServiceManager
@@ -67,12 +68,12 @@ class SendPushTokenTask(
         }
 
         PreferenceManager.getDefaultSharedPreferences(serviceManager.context)
-            .edit()
-            .putLong(
-                serviceManager.context.getString(R.string.preferences__token_sent_date),
-                sentTime
-            )
-            .apply()
+            .edit {
+                putLong(
+                    serviceManager.context.getString(R.string.preferences__token_sent_date),
+                    sentTime,
+                )
+            }
 
         // Used in the Webclient Sessions
         serviceManager.getPreferenceService().setPushToken(token)

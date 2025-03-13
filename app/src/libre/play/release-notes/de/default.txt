@@ -1,2 +1,2 @@
-- Neu: Auf Nachrichten kann mit Emoji reagiert werden
-- Behebung eines Fehlers bezüglich Profilbildern in Gruppenanrufen
+- Emoji-Reaktionen sind nun im Daten-Backup enthalten
+- Behebung eines Fehlers, wodurch eigene Klingeltöne beim Öffnen der App zurückgesetzt wurden

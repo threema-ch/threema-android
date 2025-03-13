@@ -590,8 +590,10 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="permission_storage_required">Medyayı kaydetmek veya göndermek için, Threema\'nın depolama alanına erişmesine izin verin.</string>
     <string name="permission_location_required">Lokasyon gönderebilmek için, Threema\'nın konumunuza erişmesine izin verin.</string>
     <string name="permission_contacts_required">Kontaklarınızı gönderebilmek için, Threema\'nın kişilerinizi okumasına izin verin.</string>
-    <string name="message_acknowledged" comment="&quot;Thumbs up&quot; should be translated by the name of the emoji 👍">\"Beğendi\" gönderildi</string>
-    <string name="message_declined" comment="&quot;Thumbs down&quot; should be translated by the name of the emoji 👎">\"Beğenmedi\" gönderildi</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <string name="message_acknowledged">\"Beğendi\" gönderildi</string>
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
+    <string name="message_declined">\"Beğenmedi\" gönderildi</string>
     <string name="notifications_settings">Bildirim ayarları</string>
     <string name="notifications_default">Varsayılan ayarlar</string>
     <string name="notifications_until">%s tarihine kadar</string>
@@ -1600,6 +1602,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="emoji_reactions_cannot_remove_body">%1$s, henüz simge tepkilerinin kaldırılmasını veya birden fazla simge tepkisi gönderilmesini desteklemeyen bir uygulama sürümü kullanıyor. 👍 yine 👎 ile değiştirebilirsiniz veya tam tersi de mümkündür.</string>
     <string name="emoji_reactions_cannot_remove_group_body">Grup üyelerinden hiçbiri uygulamanın simge tepkilerini kaldırmayı veya birden fazla simge tepkisi göndermeyi destekleyen bir sürümünü kullanmıyor. 👍 👎 ile değiştirebilirsiniz veya tam tersi de mümkündür.</string>
     <string name="emoji_reactions_cannot_remove_v1_body">Uygulama sürümün henüz simge tepkilerinin kaldırılmasını veya birden fazla simge tepkisi gönderilmesini desteklemiyor.</string>
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <string name="emoji_reactions_message_details_hint">Bu mesajda simge tepkileri var. Sohbette, tümünü görüntülemek için herhangi bir simge balonuna dokunup basılı tutun.</string>
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_title">Simge Tepkisi</string>
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <string name="emoji_reactions_popup_hint_text">Bu mesajda simge tepkileri var. Sohbette, tümünü görüntülemek için herhangi bir simge balonuna dokunup basılı tutun.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

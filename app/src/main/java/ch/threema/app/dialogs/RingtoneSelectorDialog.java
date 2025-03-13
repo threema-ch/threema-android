@@ -266,7 +266,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 				extras.addRow(new String[]{CURSOR_DEFAULT_ID, defaultUriString});
 			}
 
-			if (showSilent && existingUri != null && existingUri.toString().equals("")) {
+			if (showSilent && existingUri != null && existingUri.toString().isEmpty()) {
 				// silent default
 				selectedIndex = 0;
 			} else {

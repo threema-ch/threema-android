@@ -535,8 +535,8 @@ public class CallActivity extends ThreemaActivity implements
 											int[] location = new int[2];
 											commonViews.audioSelectorButton.getLocationInWindow(location);
 											location[0] += (commonViews.audioSelectorButton.getWidth() / 2);
-											audioSelectorTooltip = new TooltipPopup(CallActivity.this, R.string.preferences__tooltip_audio_selector_hint,CallActivity.this);
-											audioSelectorTooltip.show(CallActivity.this, commonViews.audioSelectorButton, getString(R.string.tooltip_voip_enable_speakerphone), TooltipPopup.ALIGN_ABOVE_ANCHOR_ARROW_RIGHT, location, 5000);
+											audioSelectorTooltip = new TooltipPopup(CallActivity.this, R.string.preferences__tooltip_audio_selector_hint, CallActivity.this);
+											audioSelectorTooltip.show(CallActivity.this, commonViews.audioSelectorButton, null, getString(R.string.tooltip_voip_enable_speakerphone), TooltipPopup.Alignment.ABOVE_ANCHOR_ARROW_RIGHT, location, 5000);
 											audioSelectorTooltipShown = true;
 										}
 									}
@@ -556,8 +556,8 @@ public class CallActivity extends ThreemaActivity implements
 												commonViews.toggleOutgoingVideoButton.getLocationInWindow(location);
 												location[0] += (commonViews.toggleOutgoingVideoButton.getWidth() / 2);
 												location[1]	+= commonViews.toggleOutgoingVideoButton.getHeight();
-												toggleVideoTooltip = new TooltipPopup(CallActivity.this, 0, CallActivity.this);
-												toggleVideoTooltip.show(CallActivity.this, commonViews.toggleOutgoingVideoButton, getString(R.string.tooltip_voip_other_party_video_on), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
+												toggleVideoTooltip = new TooltipPopup(CallActivity.this, 0, CallActivity.this, 0, false);
+												toggleVideoTooltip.show(CallActivity.this, commonViews.toggleOutgoingVideoButton, null, getString(R.string.tooltip_voip_other_party_video_on), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT, location, 6000);
 												toggleVideoTooltipShown = true;
 											}
 										}
@@ -1416,8 +1416,8 @@ public class CallActivity extends ThreemaActivity implements
 						v.getLocationInWindow(location);
 						location[0] += (v.getWidth() / 2);
 						location[1]	+= v.getHeight();
-						TooltipPopup tooltipPopup = new TooltipPopup(CallActivity.this, 0, CallActivity.this);
-						tooltipPopup.show(CallActivity.this, v, getString(R.string.tooltip_voip_other_party_video_disabled), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_RIGHT, location, 3000);
+						TooltipPopup tooltipPopup = new TooltipPopup(CallActivity.this, 0, CallActivity.this, 0, false);
+						tooltipPopup.show(CallActivity.this, v, null, getString(R.string.tooltip_voip_other_party_video_disabled), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT, location, 3000);
 					}
 					return;
 				}

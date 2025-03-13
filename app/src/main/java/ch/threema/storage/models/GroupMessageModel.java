@@ -31,6 +31,9 @@ public class GroupMessageModel extends AbstractMessageModel {
 	public static final String COLUMN_GROUP_MESSAGE_STATES = "groupMessageStates";
 
 	private int groupId;
+
+    // TODO(ANDR-3325): This is only used for group ack/dec and can therefore be removed
+    //  when the database is migrated.
 	private Map<String, Object> groupMessageStates;
 
 	public GroupMessageModel() {

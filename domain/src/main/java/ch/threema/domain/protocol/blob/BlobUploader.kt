@@ -53,6 +53,8 @@ import kotlin.concurrent.Volatile
 
 private val logger: Logger = LoggingUtil.getThreemaLogger("BlobUploader")
 
+private const val PROGRESS_UPDATE_STEP_SIZE = 10
+
 // TODO (ANDR-2869): Rework exception handling (and maybe return types)
 /**
  * Helper class that uploads a blob (image, video) to the blob server and returns the assigned blob
@@ -159,7 +161,7 @@ class BlobUploader private constructor(
 
         val blobUploadUrl = getBlobUploadUrl()
 
-        val okHttpClientUpload : OkHttpClient = baseOkhttpClient.newBuilder().apply {
+        val okHttpClientUpload: OkHttpClient = baseOkhttpClient.newBuilder().apply {
             connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
             readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.toLong(), TimeUnit.SECONDS)
             if (shouldLogHttp) {
@@ -332,7 +334,10 @@ class BlobUploader private constructor(
                     // Compute rounded progress in percent
                     val newRoundedProgress = (100 * (progress.toDouble() / blobLength)).toInt()
                     // Only trigger listener if there is an update
-                    if (newRoundedProgress != roundedProgress) {
+                    if (
+                        newRoundedProgress - roundedProgress >= PROGRESS_UPDATE_STEP_SIZE ||
+                        newRoundedProgress == 100
+                    ) {
                         progressListener?.updateProgress(newRoundedProgress)
                         roundedProgress = newRoundedProgress
                     }

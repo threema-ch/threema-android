@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
@@ -46,6 +47,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.app.ui.MentionSpan;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 
@@ -57,14 +59,12 @@ public class EmojiMarkupUtil {
 	protected static final String MENTION_REGEX = MENTION_INDICATOR + "\\[[0-9A-Z*@]{8}\\]";
 	private final Pattern mention;
 
-	// Singleton stuff
-	private static EmojiMarkupUtil sInstance = null;
+	@NonNull
+	private static final LazyProperty<EmojiMarkupUtil> instance = new LazyProperty<>(EmojiMarkupUtil::new);
 
-	public static synchronized EmojiMarkupUtil getInstance() {
-		if (sInstance == null) {
-			sInstance = new EmojiMarkupUtil();
-		}
-		return sInstance;
+	@NonNull
+	public static EmojiMarkupUtil getInstance() {
+		return instance.get();
 	}
 
 	private EmojiMarkupUtil() {
@@ -119,7 +119,18 @@ public class EmojiMarkupUtil {
 	 * @return CharSequence with spans applied, if any
 	 */
     @NonNull
-	public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean ignoreMentions, boolean singleScale, boolean overrideEmojiStyleSetting) {
+	public CharSequence addTextSpans(
+			@Nullable
+			Context context,
+			@Nullable
+			CharSequence text,
+			@Nullable
+			TextView textView,
+			boolean ignoreMarkup,
+			boolean ignoreMentions,
+			boolean singleScale,
+			boolean overrideEmojiStyleSetting
+	) {
 		if (text == null) {
 			return "";
 		}

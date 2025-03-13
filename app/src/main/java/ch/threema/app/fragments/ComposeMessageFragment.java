@@ -167,6 +167,7 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.ResendGroupMessageDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.emojireactions.EmojiHintPopupManager;
 import ch.threema.app.emojireactions.EmojiReactionsOverviewActivity;
 import ch.threema.app.emojireactions.EmojiReactionsPickerActivity;
 import ch.threema.app.emojireactions.EmojiReactionsPopup;
@@ -308,6 +309,7 @@ import static androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_M
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.activities.HomeActivity.THREEMA_CHANNEL_IDENTITY;
 import static ch.threema.app.adapters.ComposeMessageAdapter.MIN_CONSTRAINT_LENGTH;
+import static ch.threema.app.messagereceiver.MessageReceiverExtensionsKt.isGatewayChat;
 import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_AUDIORECORDER;
 import static ch.threema.app.services.messageplayer.MessagePlayer.SOURCE_LIFECYCLE;
@@ -520,6 +522,11 @@ public class ComposeMessageFragment extends Fragment implements
 	private OngoingCallNoticeView ongoingCallNotice;
 	private GroupCallObserver groupCallObserver;
 	private ScrollButtonManager scrollButtonManager;
+	private final EmojiHintPopupManager emojiHintPopupManager = new EmojiHintPopupManager(
+			getAppContext(),
+			() -> activity,
+			() -> convListView
+	);
 
 	@SuppressLint("SimpleDateFormat")
 	private final SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -1293,6 +1300,8 @@ public class ComposeMessageFragment extends Fragment implements
 			}
 		}
 
+		emojiHintPopupManager.showOrDismissIfNecessary();
+
 		return this.fragmentView;
 	}
 
@@ -1661,6 +1670,7 @@ public class ComposeMessageFragment extends Fragment implements
 			if (scrollButtonManager != null) {
 				scrollButtonManager.hideAllButtons();
 			}
+			emojiHintPopupManager.onDestroy();
 
 			dismissTooltipPopup(workTooltipPopup, true);
 			workTooltipPopup = null;
@@ -1757,6 +1767,9 @@ public class ComposeMessageFragment extends Fragment implements
 						scrollButtonManager.hideButton(ScrollButtonManager.TYPE_UP);
 					}
 				}
+				emojiHintPopupManager.setScrolling(
+						scrollState != AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+				);
 			}
 
 			@Override
@@ -2235,8 +2248,14 @@ public class ComposeMessageFragment extends Fragment implements
 									location[0] += actionBarAvatarView.getWidth() / 2;
 									location[1] += actionBarAvatarView.getHeight();
 
-									workTooltipPopup = new TooltipPopup(getActivity(), R.string.preferences__tooltip_work_hint_shown, this, new Intent(getActivity(), WorkExplainActivity.class), R.drawable.ic_badge_work_24dp);
-									workTooltipPopup.show(getActivity(), actionBarAvatarView, getString(R.string.tooltip_work_hint), TooltipPopup.ALIGN_BELOW_ANCHOR_ARROW_LEFT, location, 4000);
+									workTooltipPopup = new TooltipPopup(getActivity(), R.string.preferences__tooltip_work_hint_shown, this, R.drawable.ic_badge_work_24dp);
+									workTooltipPopup.setListener(new TooltipPopup.TooltipPopupListener() {
+										@Override
+										public void onClicked(@NonNull TooltipPopup tooltipPopup) {
+											startActivity(new Intent(getActivity(), WorkExplainActivity.class));
+										}
+									});
+									workTooltipPopup.show(getActivity(), actionBarAvatarView, null, getString(R.string.tooltip_work_hint), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_LEFT, location, 4000);
 								}
 							}, 1000);
 						}
@@ -3717,7 +3736,15 @@ public class ComposeMessageFragment extends Fragment implements
 			return;
 		}
 
-		emojiReactionsPopup = new EmojiReactionsPopup(requireContext(), convListView, getParentFragmentManager(), !isReactionsSupportNone);
+		boolean isGatewayChat = isGatewayChat(messageReceiver);
+		boolean isSendingReactionsAllowed = !isReactionsSupportNone && !isGatewayChat;
+		emojiReactionsPopup = new EmojiReactionsPopup(
+				requireContext(),
+				convListView,
+				getParentFragmentManager(),
+				isSendingReactionsAllowed,
+				isGatewayChat
+		);
 		emojiReactionsPopup.setListener(new EmojiReactionsPopup.EmojiReactionsPopupListener() {
 			@Override
 			public void onTopReactionClicked(@NonNull final AbstractMessageModel messageModel, @NonNull final String emojiSequence) {

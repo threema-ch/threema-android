@@ -22,6 +22,7 @@
 package ch.threema.app.push
 
 import android.content.Context
+import ch.threema.app.BuildFlavor
 import ch.threema.base.utils.LoggingUtil
 import com.huawei.agconnect.AGConnectOptionsBuilder
 
@@ -33,10 +34,19 @@ object HmsTokenUtil {
 
     private const val APP_ID_CONFIG_FIELD = "client/app_id"
 
+    // TODO(ANDR-3192): Remove hardcoded app-ids when plugin can read them from json config again
+    private val appIdHardcoded: String?
+        get() = when (BuildFlavor.current) {
+            is BuildFlavor.Hms -> "103713829"
+            is BuildFlavor.HmsWork -> "103858571"
+            else -> null
+        }
+
     /**
-     * Obtain the app ID from the agconnect-services.json file.
+     * Obtain the app ID from the `agconnect-services.json` file.
      *
-     * @return The app id or null if it could not be obtained
+     * @return The app id from json config file, or hardcoded value if
+     * it could not be obtained from file.
      */
     @JvmStatic
     fun getHmsAppId(context: Context): String? {
@@ -44,9 +54,10 @@ object HmsTokenUtil {
             AGConnectOptionsBuilder()
                 .build(context)
                 .getString(APP_ID_CONFIG_FIELD)
+                ?: appIdHardcoded
         } catch (e: Exception) {
-            logger.error("Could not obtain HMS app id", e)
-            null
+            logger.error("Could not obtain HMS-App-ID from config file. Fallback to hardcoded ID.", e)
+            appIdHardcoded
         }
     }
 

@@ -304,7 +304,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="state_dialog_posted">Enviat</string>
     <string name="state_dialog_modified">Actualitzat</string>
     <string name="state_dialog_status">Estat</string>
-    <string name="title_tab_recent">Recent</string>
     <string name="no_recent_conversations">No s\'han trobat xats</string>
     <string name="save_changes">Desar</string>
     <string name="group_created_confirm">Grup creat correctament</string>
@@ -460,7 +459,6 @@ de contacte</string>
     <string name="back">Tornar</string>
     <string name="wearable_reply">Respondre</string>
     <string name="wearable_reply_label">Respondre a %s</string>
-    <string name="message_acknowledged">«Acord» enviat</string>
     <string name="push_disable_text">Si continueu, es desactivaran els missatges push i Threema comprovarà si hi ha missatges nous cada 15 minuts.</string>
     <string name="ballot_intermediate_results_show">Mostrar resultats intermedis</string>
     <string name="converting_video">Processant el vídeo</string>
@@ -568,7 +566,8 @@ de contacte</string>
     <string name="permission_storage_required">Per desar o enviar multimèdia, doneu a Threema permís per accedir a l\'emmagatzematge.</string>
     <string name="permission_location_required">Per enviar una localització, doneu a Threema permís per accedir a la vostra posició.</string>
     <string name="permission_contacts_required">Per enviar contactes, doneu a Threema permís per llegir els contactes.</string>
-    <string name="message_declined">«En desacord» enviat</string>
+    <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
+    <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
     <string name="notifications_settings">Configuració de les notificacions</string>
     <string name="notifications_default">Configuració del sistema</string>
     <string name="notifications_until">Fins %s</string>
@@ -1312,6 +1311,9 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="organization_type">Organització</string>
     <string name="messages_cannot_be_recovered">No podreu recuperar els missatges.</string>
     <!-- accessibility -->
+    <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
+    <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
+    <!-- Message shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
         <item quantity="other">%d contactes</item>

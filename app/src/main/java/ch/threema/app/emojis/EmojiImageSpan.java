@@ -38,7 +38,7 @@ public class EmojiImageSpan extends ImageSpan {
 		this.scale = scale;
 
 		fm = tv.getPaint().getFontMetricsInt();
-		size = fm != null ? (Math.abs(fm.descent) + Math.abs(fm.ascent)) * scale: 64 * scale;
+		size = fm != null ? (Math.abs(fm.descent) + Math.abs(fm.ascent)) * scale : 64 * scale;
 		getDrawable().setBounds(0, 0, size, size);
 	}
 

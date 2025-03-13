@@ -22,6 +22,7 @@
 package ch.threema.app.preference
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 import androidx.core.os.LocaleListCompat
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
@@ -108,7 +109,9 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
                         DynamicColors.applyToActivitiesIfAvailable(requireActivity().application, dynamicColorsOptions)
 
                         // we need to set the new preference synchronously here because we exit the app before returning the result of this listener
-                        sharedPreferences?.edit()?.putBoolean(getString(R.string.preferences__dynamic_color), newCheckedValue)?.commit()
+                        sharedPreferences?.edit(commit = true) {
+                            putBoolean(getString(R.string.preferences__dynamic_color), newCheckedValue)
+                        }
 
                         ConfigUtils.recreateActivity(requireActivity())
                         Runtime.getRuntime().exit(0)

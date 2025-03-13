@@ -39,8 +39,6 @@ import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.backuprestore.BackupChatServiceImpl;
-import ch.threema.app.backuprestore.BackupRestoreDataService;
-import ch.threema.app.backuprestore.csv.BackupRestoreDataServiceImpl;
 import ch.threema.app.connection.CspD2mDualConnectionSupplier;
 import ch.threema.app.emojis.EmojiRecent;
 import ch.threema.app.emojis.EmojiService;
@@ -205,8 +203,6 @@ public class ServiceManager {
     private AvatarCacheService avatarCacheService;
     @Nullable
     private LicenseService licenseService;
-    @Nullable
-    private BackupRestoreDataService backupRestoreDataService;
     @Nullable
     private GroupService groupService;
     @Nullable
@@ -583,17 +579,6 @@ public class ServiceManager {
         }
 
         return this.avatarCacheService;
-    }
-
-    /**
-     * @return service to backup or restore data (conversations and contacts)
-     */
-    public @NonNull BackupRestoreDataService getBackupRestoreDataService() throws FileSystemNotPresentException {
-        if (this.backupRestoreDataService == null) {
-            this.backupRestoreDataService = new BackupRestoreDataServiceImpl(this.getFileService());
-        }
-
-        return this.backupRestoreDataService;
     }
 
     @NonNull

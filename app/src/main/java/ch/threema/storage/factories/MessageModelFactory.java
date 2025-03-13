@@ -239,8 +239,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                 + " AND " + MessageModel.COLUMN_OUTBOX + "=0"
                 + " AND " + MessageModel.COLUMN_IS_SAVED + "=1"
                 + " AND " + MessageModel.COLUMN_IS_READ + "=0"
-                + " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0"
-                + " AND " + MessageModel.COLUMN_DELETED_AT + " IS NULL",
+                + " AND " + MessageModel.COLUMN_IS_STATUS_MESSAGE + "=0",
             new String[]{
                 identity
             }
