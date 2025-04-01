@@ -81,7 +81,11 @@ class IncomingMessageTask(
     private val preferenceService by lazy { serviceManager.preferenceService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    private val incomingForwardSecurityPreProcessor by lazy { IncomingForwardSecurityProcessor(serviceManager) }
+    private val incomingForwardSecurityPreProcessor by lazy {
+        IncomingForwardSecurityProcessor(
+            serviceManager
+        )
+    }
 
     override suspend fun run(handle: ActiveTaskCodec) {
         suspend {
@@ -222,7 +226,12 @@ class IncomingMessageTask(
         updateReceivedTimestamp(message, receivedTimestamp ?: Date().time.toULong())
 
         // Acknowledge the message
-        acknowledgeMessage(messageBox, message.protectAgainstReplay(), peerRatchetIdentifier, handle)
+        acknowledgeMessage(
+            messageBox,
+            message.protectAgainstReplay(),
+            peerRatchetIdentifier,
+            handle
+        )
 
         // If the message type requires automatic delivery receipts and the message does not contain
         // the no delivery receipt flag, send a delivery receipt

@@ -1,46 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.google.android.material.appbar.MaterialToolbar
-		xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
-		android:id="@+id/main_toolbar"
-		android:layout_height="?attr/actionBarSize"
-		android:layout_width="match_parent"
-		android:paddingLeft="@dimen/navigation_icon_padding"
-		app:navigationIcon="@drawable/ic_account_circle_black_24dp"
-		app:layout_scrollFlags="enterAlways">
+<com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_toolbar"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_width="match_parent"
+    android:paddingLeft="@dimen/navigation_icon_padding"
+    app:navigationIcon="@drawable/ic_account_circle_black_24dp"
+    app:layout_scrollFlags="enterAlways">
 
-	<androidx.appcompat.widget.AppCompatImageButton
-		style="?android:attr/borderlessButtonStyle"
-		android:id="@+id/toolbar_warning"
-		android:layout_width="36dp"
-		android:layout_height="36dp"
-		android:layout_marginRight="8dp"
-		android:padding="0dp"
-		android:drawablePadding="0dp"
-		android:layout_gravity="start"
-		android:clickable="true"
-		android:focusable="true"
-		android:background="@drawable/selector_compose_button"
-		android:contentDescription="@string/warning"
-		android:tooltipText="@string/warning"
-		app:srcCompat="@drawable/ic_warning"
-		app:tint="@color/material_red"
-		android:visibility="gone" />
+    <androidx.appcompat.widget.AppCompatImageButton
+        style="?android:attr/borderlessButtonStyle"
+        android:id="@+id/toolbar_warning"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginRight="8dp"
+        android:padding="0dp"
+        android:drawablePadding="0dp"
+        android:layout_gravity="start"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@drawable/selector_compose_button"
+        android:contentDescription="@string/warning"
+        android:tooltipText="@string/warning"
+        app:srcCompat="@drawable/ic_warning"
+        app:tint="@color/material_red"
+        android:visibility="gone" />
 
-	<FrameLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
-		<androidx.appcompat.widget.AppCompatImageView
-			android:id="@+id/toolbar_logo_main"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:scaleType="centerCrop"
-			android:adjustViewBounds="true"
-			android:foreground="?android:selectableItemBackground"
-			/>
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/toolbar_logo_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:foreground="?android:selectableItemBackground" />
 
-	</FrameLayout>
+    </FrameLayout>
 
 </com.google.android.material.appbar.MaterialToolbar>

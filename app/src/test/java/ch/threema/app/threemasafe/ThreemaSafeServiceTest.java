@@ -81,47 +81,47 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.crypto.*")
 public class ThreemaSafeServiceTest {
-	@Mock
-	private	Context contextMock;
-	@Mock
-	private	PreferenceService preferenceServiceMock;
-	@Mock
-	private	UserService userServiceMock;
-	@Mock
-	private	ContactService contactServiceMock;
-	@Mock
-	private GroupService groupServiceMock;
-	@Mock
-	private DistributionListService distributionListServiceMock;
-	@Mock
-	private	LocaleService localeServiceMock;
-	@Mock
-	private	FileService fileServiceMock;
-	@Mock
-	private	DatabaseServiceNew databaseServiceNewMock;
-	@Mock
-	private	IdentityStore identityStoreMock;
-	@Mock
-	private ApiService apiService;
-	@Mock
-	private	APIConnector apiConnectorMock;
-	@Mock
-	private IdListService profilePicRecipientsServiceMock;
-	@Mock
-	private BlockedIdentitiesService blockedIdentitiesServiceMock;
-	@Mock
-	private IdListService excludedSyncIdentitiesServiceMock;
-	@Mock
-	private DeadlineListService hiddenContactsListMock;
-	@Mock
-	private ServerAddressProvider serverAddressProviderMock;
-	@Mock
-	private PreferenceStoreInterface preferenceStoreMock;
-	private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
-	private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
-	private final ContactModelRepository contactModelRepository = new ContactModelRepository(
-		new ModelTypeCache<>(), databaseBackendMock, coreServiceManagerMock
-	);
+    @Mock
+    private Context contextMock;
+    @Mock
+    private PreferenceService preferenceServiceMock;
+    @Mock
+    private UserService userServiceMock;
+    @Mock
+    private ContactService contactServiceMock;
+    @Mock
+    private GroupService groupServiceMock;
+    @Mock
+    private DistributionListService distributionListServiceMock;
+    @Mock
+    private LocaleService localeServiceMock;
+    @Mock
+    private FileService fileServiceMock;
+    @Mock
+    private DatabaseServiceNew databaseServiceNewMock;
+    @Mock
+    private IdentityStore identityStoreMock;
+    @Mock
+    private ApiService apiService;
+    @Mock
+    private APIConnector apiConnectorMock;
+    @Mock
+    private IdListService profilePicRecipientsServiceMock;
+    @Mock
+    private BlockedIdentitiesService blockedIdentitiesServiceMock;
+    @Mock
+    private IdListService excludedSyncIdentitiesServiceMock;
+    @Mock
+    private DeadlineListService hiddenContactsListMock;
+    @Mock
+    private ServerAddressProvider serverAddressProviderMock;
+    @Mock
+    private PreferenceStoreInterface preferenceStoreMock;
+    private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
+    private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
+    private final ContactModelRepository contactModelRepository = new ContactModelRepository(
+        new ModelTypeCache<>(), databaseBackendMock, coreServiceManagerMock
+    );
 
     // Test vector: Password "shootdeathstar" and salt "ECHOECHO" should result in this master key
     private static final String MASTER_KEY_HEX = "066384d3695fbbd9f31a7d533900fd0cd8d1373beb6a28678522d2a49980c9c351c3d8d752fb6e1fd3199ead7f0895d6e3893ff691f2a5ee1976ed0897fc2f66";
@@ -137,17 +137,17 @@ public class ThreemaSafeServiceTest {
     private Date testDate1, testDate2;
     private long testDate1Timestamp, testDate2Timestamp;
 
-	private ThreemaSafeServiceImpl getServiceImpl() {
-		return new ThreemaSafeServiceImpl(
-			contextMock, preferenceServiceMock, userServiceMock,
-			contactServiceMock, groupServiceMock, distributionListServiceMock,
-			localeServiceMock, fileServiceMock,
+    private ThreemaSafeServiceImpl getServiceImpl() {
+        return new ThreemaSafeServiceImpl(
+            contextMock, preferenceServiceMock, userServiceMock,
+            contactServiceMock, groupServiceMock, distributionListServiceMock,
+            localeServiceMock, fileServiceMock,
             blockedIdentitiesServiceMock, excludedSyncIdentitiesServiceMock, profilePicRecipientsServiceMock,
-			databaseServiceNewMock, identityStoreMock, apiService, apiConnectorMock,
-			hiddenContactsListMock, serverAddressProviderMock, preferenceStoreMock,
-			contactModelRepository
-		);
-	}
+            databaseServiceNewMock, identityStoreMock, apiService, apiConnectorMock,
+            hiddenContactsListMock, serverAddressProviderMock, preferenceStoreMock,
+            contactModelRepository
+        );
+    }
 
     private ThreemaSafeService getService() {
         return getServiceImpl();
@@ -170,7 +170,8 @@ public class ThreemaSafeServiceTest {
         TimeZone.setDefault(testTimeZone);
         Locale.setDefault(LocaleUtils.toLocale("de_CH"));
 
-        Locale.setDefault(LocaleUtils.toLocale("de_CH"));testDate1 = new Date(2020 - 1900, 11, 1, 13, 14, 15);
+        Locale.setDefault(LocaleUtils.toLocale("de_CH"));
+        testDate1 = new Date(2020 - 1900, 11, 1, 13, 14, 15);
         testDate2 = new Date(2021 - 1900, 11, 1, 13, 14, 15);
         testDate1Timestamp = 1606824855000L;
         testDate2Timestamp = 1638360855000L;

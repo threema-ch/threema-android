@@ -44,83 +44,87 @@ import ch.threema.storage.models.WebClientSessionModel;
 
 /**
  * Handling the WebClient battery status subscription.
- *
+ * <p>
  * On change, the BatteryStatusListeners will be notified.
  */
 @WorkerThread
 public class BatteryStatusServiceImpl implements BatteryStatusService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusServiceImpl");
 
-	// State
-	@NonNull private final Context appContext;
-	@NonNull private final List<Integer> acquiredSessionIds = new ArrayList<>();
-	private boolean subscribed = false;
+    // State
+    @NonNull
+    private final Context appContext;
+    @NonNull
+    private final List<Integer> acquiredSessionIds = new ArrayList<>();
+    private boolean subscribed = false;
 
-	/**
-	 * Battery status broadcast receiver.
-	 */
-	@NonNull private final BroadcastReceiver batteryStatusReceiver = new BroadcastReceiver() {
-		// Battery info
-		private int batteryPercent = -1;
-		@Nullable private Boolean isCharging = null;
+    /**
+     * Battery status broadcast receiver.
+     */
+    @NonNull
+    private final BroadcastReceiver batteryStatusReceiver = new BroadcastReceiver() {
+        // Battery info
+        private int batteryPercent = -1;
+        @Nullable
+        private Boolean isCharging = null;
 
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// Process data
-			final Boolean charging = BatteryStatusUtil.isCharging(intent);
-			final Integer percent = BatteryStatusUtil.getPercent(intent);
-			if (charging == null || percent == null) {
-				return;
-			}
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Process data
+            final Boolean charging = BatteryStatusUtil.isCharging(intent);
+            final Integer percent = BatteryStatusUtil.getPercent(intent);
+            if (charging == null || percent == null) {
+                return;
+            }
 
-			// Determine whether there was a relative change
-			final boolean percentChanged = (percent != this.batteryPercent);
-			final boolean isChargingChanged = (charging != this.isCharging);
+            // Determine whether there was a relative change
+            final boolean percentChanged = (percent != this.batteryPercent);
+            final boolean isChargingChanged = (charging != this.isCharging);
 
-			// If it is, notify listeners
-			if (percentChanged || isChargingChanged) {
-				WebClientListenerManager.batteryStatusListener.handle(
-					listener -> listener.onChange(percent, charging));
-				this.batteryPercent = percent;
-				this.isCharging = charging;
-			}
-		}
-	};
+            // If it is, notify listeners
+            if (percentChanged || isChargingChanged) {
+                WebClientListenerManager.batteryStatusListener.handle(
+                    listener -> listener.onChange(percent, charging));
+                this.batteryPercent = percent;
+                this.isCharging = charging;
+            }
+        }
+    };
 
-	@AnyThread
-	public BatteryStatusServiceImpl(@NonNull Context appContext) {
-		this.appContext = appContext;
-	}
+    @AnyThread
+    public BatteryStatusServiceImpl(@NonNull Context appContext) {
+        this.appContext = appContext;
+    }
 
-	/**
-	 * Subscribe to the battery status broadcast.
-	 */
-	@Override
+    /**
+     * Subscribe to the battery status broadcast.
+     */
+    @Override
     public void acquire(WebClientSessionModel session) {
-		logger.debug("Acquire webclient battery status subscription for session {}", session.getId());
-		if (!this.acquiredSessionIds.contains(session.getId())) {
-			this.acquiredSessionIds.add(session.getId());
-		}
-		this.execute();
-	}
+        logger.debug("Acquire webclient battery status subscription for session {}", session.getId());
+        if (!this.acquiredSessionIds.contains(session.getId())) {
+            this.acquiredSessionIds.add(session.getId());
+        }
+        this.execute();
+    }
 
-	/**
-	 * Unsubscribe from the battery status broadcast.
-	 */
-	@Override
+    /**
+     * Unsubscribe from the battery status broadcast.
+     */
+    @Override
     public void release(WebClientSessionModel session) {
-		logger.debug("Release webclient battery status subscription for session {}", session.getId());
-		if (this.acquiredSessionIds.contains(session.getId())) {
-			this.acquiredSessionIds.remove((Integer)session.getId());
-		}
-		this.execute();
-	}
+        logger.debug("Release webclient battery status subscription for session {}", session.getId());
+        if (this.acquiredSessionIds.contains(session.getId())) {
+            this.acquiredSessionIds.remove((Integer) session.getId());
+        }
+        this.execute();
+    }
 
-	private void execute() {
-		if (!this.acquiredSessionIds.isEmpty()) {
-			if (this.subscribed) {
-				logger.debug("Already subscribed");
-			} else {
+    private void execute() {
+        if (!this.acquiredSessionIds.isEmpty()) {
+            if (this.subscribed) {
+                logger.debug("Already subscribed");
+            } else {
                 ContextCompat.registerReceiver(
                     this.appContext,
                     this.batteryStatusReceiver,
@@ -130,30 +134,30 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
                     ContextCompat.RECEIVER_NOT_EXPORTED
                 );
                 this.subscribed = true;
-				logger.debug("Subscribed");
-			}
-		} else {
-			if (this.subscribed) {
-				this.appContext.unregisterReceiver(this.batteryStatusReceiver);
-				this.subscribed = false;
-				logger.debug("Unsubscribed");
-			} else {
-				logger.debug("Already unsubscribed");
-			}
-		}
-	}
+                logger.debug("Subscribed");
+            }
+        } else {
+            if (this.subscribed) {
+                this.appContext.unregisterReceiver(this.batteryStatusReceiver);
+                this.subscribed = false;
+                logger.debug("Unsubscribed");
+            } else {
+                logger.debug("Already unsubscribed");
+            }
+        }
+    }
 
-	/**
-	 * Return the intent filter for subscribing to battery changes.
-	 */
-	public static IntentFilter getBatteryStatusIntentFilter() {
-		final IntentFilter batteryStatusFilter = new IntentFilter();
-		batteryStatusFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-		batteryStatusFilter.addAction(Intent.ACTION_POWER_CONNECTED);
-		batteryStatusFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-		batteryStatusFilter.addAction(Intent.ACTION_BATTERY_LOW);
-		batteryStatusFilter.addAction(Intent.ACTION_BATTERY_OKAY);
-		return batteryStatusFilter;
-	}
+    /**
+     * Return the intent filter for subscribing to battery changes.
+     */
+    public static IntentFilter getBatteryStatusIntentFilter() {
+        final IntentFilter batteryStatusFilter = new IntentFilter();
+        batteryStatusFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        batteryStatusFilter.addAction(Intent.ACTION_POWER_CONNECTED);
+        batteryStatusFilter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+        batteryStatusFilter.addAction(Intent.ACTION_BATTERY_LOW);
+        batteryStatusFilter.addAction(Intent.ACTION_BATTERY_OKAY);
+        return batteryStatusFilter;
+    }
 
 }

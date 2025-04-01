@@ -29,12 +29,21 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
-class GroupAvatarLoader(private val context: Context) : ModelLoader<AvatarCacheServiceImpl.GroupAvatarConfig, Bitmap> {
+class GroupAvatarLoader(private val context: Context) :
+    ModelLoader<AvatarCacheServiceImpl.GroupAvatarConfig, Bitmap> {
     private val groupService = ThreemaApplication.getServiceManager()?.groupService
     private val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
 
-    override fun buildLoadData(config: AvatarCacheServiceImpl.GroupAvatarConfig, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
-        return ModelLoader.LoadData(ObjectKey(config), GroupAvatarFetcher(context, groupService, config, preferenceService))
+    override fun buildLoadData(
+        config: AvatarCacheServiceImpl.GroupAvatarConfig,
+        width: Int,
+        height: Int,
+        options: Options
+    ): ModelLoader.LoadData<Bitmap> {
+        return ModelLoader.LoadData(
+            ObjectKey(config),
+            GroupAvatarFetcher(context, groupService, config, preferenceService)
+        )
     }
 
     override fun handles(model: AvatarCacheServiceImpl.GroupAvatarConfig) = true

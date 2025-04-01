@@ -38,98 +38,100 @@ import ch.threema.app.locationpicker.Poi;
 import ch.threema.app.services.PreferenceService;
 
 public class LocationUtil {
-	public static int getPlaceDrawableRes(@NonNull Context context, @NonNull Poi poi, boolean returnDefault) {
-		int id = 0;
-		String defPackage = context.getPackageName();
-		String type = poi.getType();
+    public static int getPlaceDrawableRes(@NonNull Context context, @NonNull Poi poi, boolean returnDefault) {
+        int id = 0;
+        String defPackage = context.getPackageName();
+        String type = poi.getType();
 
-		if (!TestUtil.isEmptyOrNull(poi.getType())) {
-			id = context.getResources().getIdentifier("ic_places_" + type, "drawable", defPackage);
-		}
+        if (!TestUtil.isEmptyOrNull(poi.getType())) {
+            id = context.getResources().getIdentifier("ic_places_" + type, "drawable", defPackage);
+        }
 
-		if (id > 0) {
-			return id;
-		}
-		if (returnDefault) {
-			return R.drawable.ic_location_on_filled;
-		} else {
-			return R.drawable.ic_stop_filled;
-		}
-	}
+        if (id > 0) {
+            return id;
+        }
+        if (returnDefault) {
+            return R.drawable.ic_location_on_filled;
+        } else {
+            return R.drawable.ic_stop_filled;
+        }
+    }
 
-	/**
-	 * Get the marker icon to be used on a MapBox map that represents the given Point of Interest
-	 * @param context The Context
-	 * @param poi The Point of Interest
-	 * @return A MapBox icon
-	 */
-	public static @NonNull Icon getMarkerIcon(@NonNull Context context, @NonNull Poi poi) {
-		int innerIconSize = context.getResources().getDimensionPixelSize(R.dimen.lp_marker_inner_icon_size);
+    /**
+     * Get the marker icon to be used on a MapBox map that represents the given Point of Interest
+     *
+     * @param context The Context
+     * @param poi     The Point of Interest
+     * @return A MapBox icon
+     */
+    public static @NonNull Icon getMarkerIcon(@NonNull Context context, @NonNull Poi poi) {
+        int innerIconSize = context.getResources().getDimensionPixelSize(R.dimen.lp_marker_inner_icon_size);
 
-		Drawable bgDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_map_marker_solid_red_32dp);
-		DrawableCompat.setTint(bgDrawable, context.getResources().getColor("natural".equals(poi.getCategory()) ? R.color.material_green : R.color.material_red));
+        Drawable bgDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_map_marker_solid_red_32dp);
+        DrawableCompat.setTint(bgDrawable, context.getResources().getColor("natural".equals(poi.getCategory()) ? R.color.material_green : R.color.material_red));
 
-		Drawable fgDrawable = AppCompatResources.getDrawable(context, getPlaceDrawableRes(context, poi, false));
-		DrawableCompat.setTint(fgDrawable, context.getResources().getColor(R.color.lp_marker_icon));
+        Drawable fgDrawable = AppCompatResources.getDrawable(context, getPlaceDrawableRes(context, poi, false));
+        DrawableCompat.setTint(fgDrawable, context.getResources().getColor(R.color.lp_marker_icon));
 
-		Bitmap bitmap = Bitmap.createBitmap(bgDrawable.getIntrinsicWidth(), bgDrawable.getIntrinsicHeight() * 2, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(bgDrawable.getIntrinsicWidth(), bgDrawable.getIntrinsicHeight() * 2, Bitmap.Config.ARGB_8888);
 
-		Canvas canvas = new Canvas(bitmap);
+        Canvas canvas = new Canvas(bitmap);
 
-		bgDrawable.setBounds(0, 0, canvas.getWidth(), bgDrawable.getIntrinsicHeight());
+        bgDrawable.setBounds(0, 0, canvas.getWidth(), bgDrawable.getIntrinsicHeight());
 
-		int left = (canvas.getWidth() - innerIconSize) / 2;
-		int top = (bgDrawable.getIntrinsicHeight() - innerIconSize) / 3;
-		int right = left + innerIconSize;
-		int bottom = top + innerIconSize;
+        int left = (canvas.getWidth() - innerIconSize) / 2;
+        int top = (bgDrawable.getIntrinsicHeight() - innerIconSize) / 3;
+        int right = left + innerIconSize;
+        int bottom = top + innerIconSize;
 
-		fgDrawable.setBounds(left, top, right, bottom);
+        fgDrawable.setBounds(left, top, right, bottom);
 
-		bgDrawable.draw(canvas);
-		fgDrawable.draw(canvas);
+        bgDrawable.draw(canvas);
+        fgDrawable.draw(canvas);
 
-		return IconFactory.getInstance(context).fromBitmap(bitmap);
-	}
-
-
-	// URL for Threema POI server
-	private static final String POI_HOST = "poi.threema.ch";
-
-	private static @NonNull String getPoiHost(@NonNull PreferenceService preferenceService) {
-		if (BuildConfig.DEBUG) {
-			final String hostOverride = preferenceService.getPoiServerHostOverride();
-			if (hostOverride != null) {
-				return hostOverride;
-			}
-		}
-		return POI_HOST;
-	}
-
-	/**
-	 * Return the URL template for the "names" POI server lookup.
-	 */
-	public static @NonNull String getPlacesUrl(@NonNull PreferenceService preferenceService) {
-		return "https://" + getPoiHost(preferenceService) + "/names/%f/%f/%s/";
-	}
-
-	/**
-	 * Return the URL template for the "around" POI server lookup.
-	 */
-	public static @NonNull String getPoiUrl(@NonNull PreferenceService preferenceService) {
-		return "https://" + getPoiHost(preferenceService) + "/around/%f/%f/%d/";
-	}
+        return IconFactory.getInstance(context).fromBitmap(bitmap);
+    }
 
 
-	/**
-	 * Move marker bitmap up so its bottom will be at the center of the resulting bitmap
-	 * This is necessary because MapBox references the center of the marker image
-	 * @return The resulting bitmap. Will have twice the height of the originating bitmap
-	 */
-	public static Bitmap moveMarker(Bitmap inBitmap) {
-		Bitmap outBitmap = Bitmap.createBitmap(inBitmap.getWidth(), inBitmap.getHeight() * 2, Bitmap.Config.ARGB_8888);
-		Canvas bitmapCanvas = new Canvas(outBitmap);
-		Bitmap tempBitmap = inBitmap.copy(Bitmap.Config.ARGB_8888, false);
-		bitmapCanvas.drawBitmap(tempBitmap, 0, 0, null);
-		return outBitmap;
-	}
+    // URL for Threema POI server
+    private static final String POI_HOST = "poi.threema.ch";
+
+    private static @NonNull String getPoiHost(@NonNull PreferenceService preferenceService) {
+        if (BuildConfig.DEBUG) {
+            final String hostOverride = preferenceService.getPoiServerHostOverride();
+            if (hostOverride != null) {
+                return hostOverride;
+            }
+        }
+        return POI_HOST;
+    }
+
+    /**
+     * Return the URL template for the "names" POI server lookup.
+     */
+    public static @NonNull String getPlacesUrl(@NonNull PreferenceService preferenceService) {
+        return "https://" + getPoiHost(preferenceService) + "/names/%f/%f/%s/";
+    }
+
+    /**
+     * Return the URL template for the "around" POI server lookup.
+     */
+    public static @NonNull String getPoiUrl(@NonNull PreferenceService preferenceService) {
+        return "https://" + getPoiHost(preferenceService) + "/around/%f/%f/%d/";
+    }
+
+
+    /**
+     * Move marker bitmap up so its bottom will be at the center of the resulting bitmap
+     * This is necessary because MapBox references the center of the marker image
+     *
+     * @return The resulting bitmap. Will have twice the height of the originating bitmap
+     */
+    public static Bitmap moveMarker(Bitmap inBitmap) {
+        Bitmap outBitmap = Bitmap.createBitmap(inBitmap.getWidth(), inBitmap.getHeight() * 2, Bitmap.Config.ARGB_8888);
+        Canvas bitmapCanvas = new Canvas(outBitmap);
+        Bitmap tempBitmap = inBitmap.copy(Bitmap.Config.ARGB_8888, false);
+        bitmapCanvas.drawBitmap(tempBitmap, 0, 0, null);
+        return outBitmap;
+    }
 }

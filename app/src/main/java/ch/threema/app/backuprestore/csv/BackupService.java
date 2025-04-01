@@ -358,15 +358,15 @@ public class BackupService extends Service {
         return this.config.backupMedia()
             ? MEDIA_STEP_FACTOR_VIDEOS_AND_FILES
             : this.config.backupThumbnails()
-                ? MEDIA_STEP_FACTOR_THUMBNAILS
-                : 1;
+            ? MEDIA_STEP_FACTOR_THUMBNAILS
+            : 1;
     }
 
     private boolean backup() {
         String identity = userService.getIdentity();
 
-        try(final OutputStream outputStream = getContentResolver().openOutputStream(backupFile.getUri());
-            final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputStream, config.getPassword())) {
+        try (final OutputStream outputStream = getContentResolver().openOutputStream(backupFile.getUri());
+             final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputStream, config.getPassword())) {
             logger.debug("Creating zip file {}", backupFile.getUri());
 
             // save settings
@@ -377,8 +377,7 @@ public class BackupService extends Service {
                 CSVWriter settingsCsv = new CSVWriter(new OutputStreamWriter(settingsBuffer));
                 settingsCsv.writeAll(settings.toList());
                 settingsCsv.close();
-            }
-            finally {
+            } finally {
                 if (settingsBuffer != null) {
                     try {
                         settingsBuffer.close();
@@ -952,7 +951,7 @@ public class BackupService extends Service {
         @NonNull FileHandlingZipOutputStream zipOutputStream
     ) throws ThreemaException {
         logger.info("Write reaction counts (contactReactions={}, groupReactions={})", contactReactionCount, groupReactionCount);
-        final String[] reactionCountsHeader = new String[]{ Tags.TAG_REACTION_COUNT_CONTACTS, Tags.TAG_REACTION_COUNT_GROUPS };
+        final String[] reactionCountsHeader = new String[]{Tags.TAG_REACTION_COUNT_CONTACTS, Tags.TAG_REACTION_COUNT_GROUPS};
 
         zipOutputStream.addFile(
             Tags.REACTION_COUNTS_FILE + Tags.CSV_FILE_POSTFIX,
@@ -1289,7 +1288,7 @@ public class BackupService extends Service {
         @NonNull FileHandlingZipOutputStream zipOutputStream
     ) throws IOException, ThreemaException {
         logger.info("Write nonce counts to backup (CSP: {}, D2D: {})", nonceCountCsp, nonceCountD2d);
-        final String[] nonceCountHeader = new String[]{ Tags.TAG_NONCE_COUNT_CSP, Tags.TAG_NONCE_COUNT_D2D };
+        final String[] nonceCountHeader = new String[]{Tags.TAG_NONCE_COUNT_CSP, Tags.TAG_NONCE_COUNT_D2D};
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             try (
                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
@@ -1701,7 +1700,7 @@ public class BackupService extends Service {
         }
 
         Intent backupIntent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
             new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
@@ -1710,7 +1709,7 @@ public class BackupService extends Service {
                 .setContentTitle(getString(R.string.backup_or_restore_error))
                 .setContentText(contentText)
                 .setContentIntent(pendingIntent)
-                .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
                 .setAutoCancel(false);
@@ -1731,7 +1730,7 @@ public class BackupService extends Service {
         String text;
 
         Intent backupIntent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
             new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
@@ -1739,7 +1738,7 @@ public class BackupService extends Service {
                 .setTicker(getString(R.string.backup_or_restore_success_body))
                 .setContentTitle(getString(R.string.app_name))
                 .setContentIntent(pendingIntent)
-                .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setAutoCancel(true);
 
@@ -1786,6 +1785,7 @@ public class BackupService extends Service {
 
     /**
      * Return a string representation of the next value in randomIterator
+     *
      * @return a 10 character string
      */
     @NonNull

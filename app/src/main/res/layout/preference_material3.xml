@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
@@ -13,7 +12,7 @@
     android:clipToPadding="false"
     android:baselineAligned="false">
 
-    <include layout="@layout/preferences_icon_frame_material3"/>
+    <include layout="@layout/preferences_icon_frame_material3" />
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -28,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:ellipsize="marquee"/>
+            android:ellipsize="marquee" />
 
         <TextView
             style="@style/Threema.MaterialPreference.Summary"
@@ -40,7 +39,7 @@
             android:layout_alignStart="@android:id/title"
             android:layout_gravity="start"
             android:textAlignment="viewStart"
-            android:maxLines="10"/>
+            android:maxLines="10" />
 
     </RelativeLayout>
 
@@ -54,6 +53,6 @@
         android:paddingStart="16dp"
         android:paddingRight="0dp"
         android:paddingEnd="0dp"
-        android:orientation="vertical"/>
+        android:orientation="vertical" />
 
 </LinearLayout>

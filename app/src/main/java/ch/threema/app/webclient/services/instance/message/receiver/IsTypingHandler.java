@@ -38,38 +38,38 @@ import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class IsTypingHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("IsTypingHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("IsTypingHandler");
 
-	@NonNull
-	private final ContactService contactService;
+    @NonNull
+    private final ContactService contactService;
 
-	@AnyThread
-	public IsTypingHandler(@NonNull ContactService userService) {
-		super(Protocol.SUB_TYPE_TYPING);
-		this.contactService = userService;
-	}
+    @AnyThread
+    public IsTypingHandler(@NonNull ContactService userService) {
+        super(Protocol.SUB_TYPE_TYPING);
+        this.contactService = userService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received typing update");
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received typing update");
 
-		// Get args
-		final Map<String, Value> args = this.getArguments(message, false, new String[]{
-			Protocol.ARGUMENT_RECEIVER_ID,
-		});
-		final String identity = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        // Get args
+        final Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_ID,
+        });
+        final String identity = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
 
-		// Get data
-		final Map<String, Value> data = this.getData(message, false, new String[]{
-			Protocol.ARGUMENT_IS_TYPING,
-		});
-		boolean isTyping = data.get(Protocol.ARGUMENT_IS_TYPING).asBooleanValue().getBoolean();
+        // Get data
+        final Map<String, Value> data = this.getData(message, false, new String[]{
+            Protocol.ARGUMENT_IS_TYPING,
+        });
+        boolean isTyping = data.get(Protocol.ARGUMENT_IS_TYPING).asBooleanValue().getBoolean();
 
-		this.contactService.sendTypingIndicator(identity, isTyping);
-	}
+        this.contactService.sendTypingIndicator(identity, isTyping);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return true;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return true;
+    }
 }

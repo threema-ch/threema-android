@@ -53,11 +53,11 @@ fun HintText(text: String) {
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
         )
-       ThemedText(
-           modifier = Modifier.weight(1f),
-           text = text,
-           style = AppTypography.bodySmall,
-       )
+        ThemedText(
+            modifier = Modifier.weight(1f),
+            text = text,
+            style = AppTypography.bodySmall,
+        )
     }
 }
 

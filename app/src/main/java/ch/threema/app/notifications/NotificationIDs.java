@@ -25,8 +25,8 @@ package ch.threema.app.notifications;
  * Notification IDs.
  */
 public class NotificationIDs {
-	/**
-	 * Used for `BackgroundErrorNotification` notifications.
-	 */
-	public static int BACKGROUND_ERROR = 439873;
+    /**
+     * Used for `BackgroundErrorNotification` notifications.
+     */
+    public static int BACKGROUND_ERROR = 439873;
 }

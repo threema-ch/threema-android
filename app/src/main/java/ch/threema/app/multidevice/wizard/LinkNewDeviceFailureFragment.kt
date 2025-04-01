@@ -28,14 +28,16 @@ import android.widget.TextView
 import ch.threema.app.R
 import com.google.android.material.button.MaterialButton
 
-class LinkNewDeviceFailureFragment: LinkNewDeviceMessageFragment() {
+class LinkNewDeviceFailureFragment : LinkNewDeviceMessageFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<ImageView>(R.id.emoji).setImageResource(R.drawable.ic_error)
-        view.findViewById<ImageView>(R.id.emoji).setColorFilter(resources.getColor(R.color.material_red))
+        view.findViewById<ImageView>(R.id.emoji)
+            .setColorFilter(resources.getColor(R.color.material_red))
         view.findViewById<TextView>(R.id.title).text = getString(R.string.device_linking_failed)
-        view.findViewById<TextView>(R.id.body).text = getString(R.string.device_linking_failed_explain, viewModel.failureReason)
+        view.findViewById<TextView>(R.id.body).text =
+            getString(R.string.device_linking_failed_explain, viewModel.failureReason)
         view.findViewById<MaterialButton>(R.id.button).text = getString(R.string.close)
         view.findViewById<MaterialButton>(R.id.button).setOnClickListener {
             viewModel.switchToFragment(null)

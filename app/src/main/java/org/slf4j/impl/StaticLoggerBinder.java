@@ -29,21 +29,22 @@ import org.slf4j.spi.LoggerFactoryBinder;
  * {@link org.slf4j.ILoggerFactory} is performed using information returned by this class.
  */
 public class StaticLoggerBinder implements LoggerFactoryBinder {
-	private static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();
-	public static StaticLoggerBinder getSingleton() {
-		return SINGLETON;
-	}
+    private static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();
 
-	private final String loggerFactoryClassStr = ThreemaLoggerFactory.class.getName();
-	private final ILoggerFactory loggerFactory = new ThreemaLoggerFactory();
+    public static StaticLoggerBinder getSingleton() {
+        return SINGLETON;
+    }
 
-	@Override
-	public ILoggerFactory getLoggerFactory() {
-		return loggerFactory;
-	}
+    private final String loggerFactoryClassStr = ThreemaLoggerFactory.class.getName();
+    private final ILoggerFactory loggerFactory = new ThreemaLoggerFactory();
 
-	@Override
-	public String getLoggerFactoryClassStr() {
-		return loggerFactoryClassStr;
-	}
+    @Override
+    public ILoggerFactory getLoggerFactory() {
+        return loggerFactory;
+    }
+
+    @Override
+    public String getLoggerFactoryClassStr() {
+        return loggerFactoryClassStr;
+    }
 }

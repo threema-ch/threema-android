@@ -37,69 +37,69 @@ import ch.threema.protobuf.csp.e2e.fs.Reject;
 
 public abstract class ForwardSecurityData implements ProtobufDataInterface<Envelope> {
 
-	private final @NonNull DHSessionId sessionId;
+    private final @NonNull DHSessionId sessionId;
 
-	protected ForwardSecurityData(@NonNull DHSessionId sessionId) {
-		this.sessionId = sessionId;
-	}
+    protected ForwardSecurityData(@NonNull DHSessionId sessionId) {
+        this.sessionId = sessionId;
+    }
 
-	@NonNull
-	public DHSessionId getSessionId() {
-		return sessionId;
-	}
+    @NonNull
+    public DHSessionId getSessionId() {
+        return sessionId;
+    }
 
-	@NonNull
-	public static ForwardSecurityData fromProtobuf(@NonNull byte[] rawProtobufMessage) throws BadMessageException {
-		try {
-			Envelope protobufMessage = Envelope.parseFrom(rawProtobufMessage);
+    @NonNull
+    public static ForwardSecurityData fromProtobuf(@NonNull byte[] rawProtobufMessage) throws BadMessageException {
+        try {
+            Envelope protobufMessage = Envelope.parseFrom(rawProtobufMessage);
 
-			DHSessionId sessionId = new DHSessionId(protobufMessage.getSessionId().toByteArray());
+            DHSessionId sessionId = new DHSessionId(protobufMessage.getSessionId().toByteArray());
 
-			switch (protobufMessage.getContentCase()) {
-				case INIT: {
-					final Init init = protobufMessage.getInit();
-					return new ForwardSecurityDataInit(sessionId, init.getSupportedVersion(), init.getFssk().toByteArray());
-				}
-				case ACCEPT: {
-					final Accept accept = protobufMessage.getAccept();
-					return new ForwardSecurityDataAccept(sessionId, accept.getSupportedVersion(), accept.getFssk().toByteArray());
-				}
-				case REJECT: {
-					final Reject reject = protobufMessage.getReject();
-					return new ForwardSecurityDataReject(
-						sessionId,
-						new MessageId(reject.getMessageId()),
-						reject.getGroupIdentity(),
-						reject.getCause()
-					);
-				}
-				case TERMINATE:
-					return new ForwardSecurityDataTerminate(sessionId, protobufMessage.getTerminate().getCause());
-				case ENCAPSULATED: {
-					final Encapsulated encapsulated = protobufMessage.getEncapsulated();
-					return new ForwardSecurityDataMessage(sessionId,
-						encapsulated.getDhType(),
-						encapsulated.getCounter(),
-						encapsulated.getOfferedVersion(),
-						encapsulated.getAppliedVersion(),
-						encapsulated.hasGroupIdentity() ? encapsulated.getGroupIdentity() : null,
-						encapsulated.getEncryptedInner().toByteArray());
-				}
-				default:
-					throw new BadMessageException("Unknown forward security message type");
-			}
-		} catch (InvalidProtocolBufferException e) {
-			throw new BadMessageException("Invalid forward security message protobuf data");
-		} catch (DHSessionId.InvalidDHSessionIdException e) {
-			throw new BadMessageException("Bad forward security session ID length");
-		} catch (InvalidEphemeralPublicKeyException e) {
-			throw new BadMessageException("Bad ephemeral public key length");
-		}
-	}
+            switch (protobufMessage.getContentCase()) {
+                case INIT: {
+                    final Init init = protobufMessage.getInit();
+                    return new ForwardSecurityDataInit(sessionId, init.getSupportedVersion(), init.getFssk().toByteArray());
+                }
+                case ACCEPT: {
+                    final Accept accept = protobufMessage.getAccept();
+                    return new ForwardSecurityDataAccept(sessionId, accept.getSupportedVersion(), accept.getFssk().toByteArray());
+                }
+                case REJECT: {
+                    final Reject reject = protobufMessage.getReject();
+                    return new ForwardSecurityDataReject(
+                        sessionId,
+                        new MessageId(reject.getMessageId()),
+                        reject.getGroupIdentity(),
+                        reject.getCause()
+                    );
+                }
+                case TERMINATE:
+                    return new ForwardSecurityDataTerminate(sessionId, protobufMessage.getTerminate().getCause());
+                case ENCAPSULATED: {
+                    final Encapsulated encapsulated = protobufMessage.getEncapsulated();
+                    return new ForwardSecurityDataMessage(sessionId,
+                        encapsulated.getDhType(),
+                        encapsulated.getCounter(),
+                        encapsulated.getOfferedVersion(),
+                        encapsulated.getAppliedVersion(),
+                        encapsulated.hasGroupIdentity() ? encapsulated.getGroupIdentity() : null,
+                        encapsulated.getEncryptedInner().toByteArray());
+                }
+                default:
+                    throw new BadMessageException("Unknown forward security message type");
+            }
+        } catch (InvalidProtocolBufferException e) {
+            throw new BadMessageException("Invalid forward security message protobuf data");
+        } catch (DHSessionId.InvalidDHSessionIdException e) {
+            throw new BadMessageException("Bad forward security session ID length");
+        } catch (InvalidEphemeralPublicKeyException e) {
+            throw new BadMessageException("Bad ephemeral public key length");
+        }
+    }
 
-	public static class InvalidEphemeralPublicKeyException extends ThreemaException {
-		public InvalidEphemeralPublicKeyException(final String msg) {
-			super(msg);
-		}
-	}
+    public static class InvalidEphemeralPublicKeyException extends ThreemaException {
+        public InvalidEphemeralPublicKeyException(final String msg) {
+            super(msg);
+        }
+    }
 }

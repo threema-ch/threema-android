@@ -51,11 +51,19 @@ internal class TestIdentityStore : IdentityStoreInterface {
             .computeIfAbsent(publicKey) { NaCl(ckSecret, it) }
     }
 
-    override fun encryptData(plaintext: ByteArray, nonce: ByteArray, receiverPublicKey: ByteArray): ByteArray {
+    override fun encryptData(
+        plaintext: ByteArray,
+        nonce: ByteArray,
+        receiverPublicKey: ByteArray
+    ): ByteArray {
         return getFromCache(receiverPublicKey).encrypt(plaintext, nonce)
     }
 
-    override fun decryptData(ciphertext: ByteArray, nonce: ByteArray, senderPublicKey: ByteArray): ByteArray {
+    override fun decryptData(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        senderPublicKey: ByteArray
+    ): ByteArray {
         return getFromCache(senderPublicKey).decrypt(ciphertext, nonce)
     }
 
@@ -77,7 +85,12 @@ internal class TestIdentityStore : IdentityStoreInterface {
 
     override fun getPublicNickname(): String = "Test"
 
-    override fun storeIdentity(identity: String, serverGroup: String, publicKey: ByteArray, privateKey: ByteArray) {
+    override fun storeIdentity(
+        identity: String,
+        serverGroup: String,
+        publicKey: ByteArray,
+        privateKey: ByteArray
+    ) {
         MUST_NOT_BE_CALLED()
     }
 }
@@ -117,22 +130,71 @@ internal class TestServerAddressProvider(
     }
 
     // The following methods should not be used by the connection
-    override fun getDirectoryServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getWorkServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobBaseUrlMirrorServer(multiDevicePropertyProvider: MultiDevicePropertyProvider): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerDownloadUrl(useIpV6: Boolean, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerUploadUrl(useIpV6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobServerDoneUrl(useIpV6: Boolean, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobMirrorServerDownloadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobMirrorServerUploadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): String { MUST_NOT_BE_CALLED() }
-    override fun getBlobMirrorServerDoneUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider, blobId: ByteArray): String { MUST_NOT_BE_CALLED() }
+    override fun getDirectoryServerUrl(ipv6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
 
-    override fun getAvatarServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getSafeServerUrl(ipv6: Boolean): String { MUST_NOT_BE_CALLED() }
-    override fun getWebServerUrl(): String { MUST_NOT_BE_CALLED() }
-    override fun getWebOverrideSaltyRtcHost(): String { MUST_NOT_BE_CALLED() }
-    override fun getWebOverrideSaltyRtcPort(): Int { MUST_NOT_BE_CALLED() }
-    override fun getThreemaPushPublicKey(): ByteArray? { MUST_NOT_BE_CALLED() }
+    override fun getWorkServerUrl(ipv6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobBaseUrlMirrorServer(multiDevicePropertyProvider: MultiDevicePropertyProvider): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobServerDownloadUrl(useIpV6: Boolean, blobId: ByteArray): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobServerUploadUrl(useIpV6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobServerDoneUrl(useIpV6: Boolean, blobId: ByteArray): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobMirrorServerDownloadUrl(
+        multiDevicePropertyProvider: MultiDevicePropertyProvider,
+        blobId: ByteArray
+    ): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobMirrorServerUploadUrl(multiDevicePropertyProvider: MultiDevicePropertyProvider): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getBlobMirrorServerDoneUrl(
+        multiDevicePropertyProvider: MultiDevicePropertyProvider,
+        blobId: ByteArray
+    ): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getAvatarServerUrl(ipv6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getSafeServerUrl(ipv6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getWebServerUrl(): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getWebOverrideSaltyRtcHost(): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getWebOverrideSaltyRtcPort(): Int {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getThreemaPushPublicKey(): ByteArray? {
+        MUST_NOT_BE_CALLED()
+    }
 
 }
 
@@ -193,8 +255,13 @@ internal class TestChatServerAddressProvider : ChatServerAddressProvider {
 
 internal class TestNoopDeviceCookieManager : DeviceCookieManager {
     override fun obtainDeviceCookie() = ByteArray(16)
-    override fun changeIndicationReceived() { MUST_NOT_BE_CALLED() }
-    override fun deleteDeviceCookie() { MUST_NOT_BE_CALLED() }
+    override fun changeIndicationReceived() {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun deleteDeviceCookie() {
+        MUST_NOT_BE_CALLED()
+    }
 }
 
 fun getFromOutboundMessage(message: OutboundMessage): MessageBox? {

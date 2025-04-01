@@ -44,10 +44,22 @@ class ContactAvatarFetcher(
     private val contactService: ContactService?,
     private val contactAvatarConfig: AvatarCacheServiceImpl.ContactAvatarConfig,
     private val preferenceService: PreferenceService?
-    ) : AvatarFetcher(context) {
+) : AvatarFetcher(context) {
 
-    private val contactDefaultAvatar: VectorDrawableCompat? by lazy { VectorDrawableCompat.create(context.resources, R.drawable.ic_contact, null) }
-    private val contactBusinessAvatar: VectorDrawableCompat? by lazy { VectorDrawableCompat.create(context.resources, R.drawable.ic_business, null) }
+    private val contactDefaultAvatar: VectorDrawableCompat? by lazy {
+        VectorDrawableCompat.create(
+            context.resources,
+            R.drawable.ic_contact,
+            null
+        )
+    }
+    private val contactBusinessAvatar: VectorDrawableCompat? by lazy {
+        VectorDrawableCompat.create(
+            context.resources,
+            R.drawable.ic_business,
+            null
+        )
+    }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         val contactModel = contactAvatarConfig.model
@@ -64,11 +76,13 @@ class ContactAvatarFetcher(
                 defaultAvatar = false
                 returnDefaultIfNone = true
             }
+
             AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR -> {
                 profilePicReceive = true
                 defaultAvatar = false
                 returnDefaultIfNone = false
             }
+
             AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR -> {
                 profilePicReceive = false
                 defaultAvatar = true
@@ -80,13 +94,25 @@ class ContactAvatarFetcher(
         val avatar = if (defaultAvatar) {
             buildDefaultAvatar(contactModel, highRes, backgroundColor)
         } else {
-            loadContactAvatar(contactModel, highRes, profilePicReceive, returnDefaultIfNone, backgroundColor)
+            loadContactAvatar(
+                contactModel,
+                highRes,
+                profilePicReceive,
+                returnDefaultIfNone,
+                backgroundColor
+            )
         }
 
         callback.onDataReady(avatar)
     }
 
-    private fun loadContactAvatar(contactModel: ContactModel?, highRes: Boolean, profilePicReceive: Boolean, returnDefaultIfNone: Boolean, backgroundColor: Int): Bitmap? {
+    private fun loadContactAvatar(
+        contactModel: ContactModel?,
+        highRes: Boolean,
+        profilePicReceive: Boolean,
+        returnDefaultIfNone: Boolean,
+        backgroundColor: Int
+    ): Bitmap? {
         if (contactModel == null) {
             return buildDefaultAvatar(null, highRes, backgroundColor)
         }
@@ -108,10 +134,17 @@ class ContactAvatarFetcher(
             return it
         }
 
-        return if (returnDefaultIfNone) buildDefaultAvatar(contactModel, highRes, backgroundColor) else null
+        return if (returnDefaultIfNone) buildDefaultAvatar(
+            contactModel,
+            highRes,
+            backgroundColor
+        ) else null
     }
 
-    private fun getContactDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
+    private fun getContactDefinedProfilePicture(
+        contactModel: ContactModel,
+        highRes: Boolean
+    ): Bitmap? {
         try {
             val result = fileService?.getContactDefinedProfilePicture(contactModel.identity)
             if (result != null && !highRes) {
@@ -123,7 +156,10 @@ class ContactAvatarFetcher(
         }
     }
 
-    private fun getUserDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
+    private fun getUserDefinedProfilePicture(
+        contactModel: ContactModel,
+        highRes: Boolean
+    ): Bitmap? {
         return try {
             var result = fileService?.getUserDefinedProfilePicture(contactModel.identity)
             if (result != null && !highRes) {
@@ -135,8 +171,13 @@ class ContactAvatarFetcher(
         }
     }
 
-    private fun getAndroidDefinedProfilePicture(contactModel: ContactModel, highRes: Boolean): Bitmap? {
-        if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance().getAndroidContactUri(contactModel) == null) {
+    private fun getAndroidDefinedProfilePicture(
+        contactModel: ContactModel,
+        highRes: Boolean
+    ): Bitmap? {
+        if (ContactUtil.isGatewayContact(contactModel) || AndroidContactUtil.getInstance()
+                .getAndroidContactUri(contactModel) == null
+        ) {
             return null
         }
         // regular contacts
@@ -151,10 +192,15 @@ class ContactAvatarFetcher(
         }
     }
 
-    private fun buildDefaultAvatar(contactModel: ContactModel?, highRes: Boolean, backgroundColor: Int): Bitmap {
+    private fun buildDefaultAvatar(
+        contactModel: ContactModel?,
+        highRes: Boolean,
+        backgroundColor: Int
+    ): Bitmap {
         val color = contactService?.getAvatarColor(contactModel)
             ?: ColorUtil.getInstance().getCurrentThemeGray(context)
-        val drawable = if (ContactUtil.isGatewayContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
+        val drawable =
+            if (ContactUtil.isGatewayContact(contactModel)) contactBusinessAvatar else contactDefaultAvatar
         return if (highRes) {
             buildDefaultAvatarHighRes(drawable, color, backgroundColor)
         } else {

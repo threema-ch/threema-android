@@ -1,86 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2018-2024 Threema GmbH
   ~ All rights reserved.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/root_view"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:fillViewport="true"
-			android:background="?android:attr/colorBackground">
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="?android:attr/colorBackground">
 
-	<ImageView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="centerCrop"
-		android:importantForAccessibility="no"
-		android:alpha="0.6"
-		android:src="?attr/whatsnew_wallpaper_drawable"/>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:importantForAccessibility="no"
+        android:alpha="0.6"
+        android:src="?attr/whatsnew_wallpaper_drawable" />
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-		<ScrollView
-			android:id="@+id/scroll_container"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1.0"
-			android:background="@android:color/transparent">
+        <ScrollView
+            android:id="@+id/scroll_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.0"
+            android:background="@android:color/transparent">
 
-			<LinearLayout
-				android:id="@+id/linearLayout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				android:paddingBottom="16dp"
-				android:paddingLeft="18dp"
-				android:paddingRight="18dp"
-				android:paddingTop="16dp">
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="18dp"
+                android:paddingTop="16dp">
 
-				<TextView
-					style="@style/Threema.TextAppearance.Title"
-					android:id="@+id/whatsnew_title"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="16dp"
-					android:text="@string/whatsnew_title" />
+                <TextView
+                    style="@style/Threema.TextAppearance.Title"
+                    android:id="@+id/whatsnew_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/whatsnew_title" />
 
-				<ch.threema.app.emojis.EmojiTextView
-					style="@style/Threema.TextAppearance.BodyLarge"
-					android:id="@+id/whatsnew_body"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="16dp"
-					android:text="@string/whatsnew_headline" />
+                <ch.threema.app.emojis.EmojiTextView
+                    style="@style/Threema.TextAppearance.BodyLarge"
+                    android:id="@+id/whatsnew_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/whatsnew_headline" />
 
-			</LinearLayout>
+            </LinearLayout>
 
-		</ScrollView>
+        </ScrollView>
 
-		<LinearLayout
-			android:id="@+id/button_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="16dp"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			android:layout_marginTop="16dp"
-			android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical">
 
-			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.MaterialButton.Action"
-				android:id="@+id/next_text"
-				android:layout_gravity="center_horizontal"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/ok"
-				/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Threema.MaterialButton.Action"
+                android:id="@+id/next_text"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ok" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

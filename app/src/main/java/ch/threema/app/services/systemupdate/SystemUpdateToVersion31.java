@@ -23,41 +23,42 @@ package ch.threema.app.services.systemupdate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.preference.PreferenceManager;
 
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion31 implements UpdateSystemService.SystemUpdate {
 
-	private final Context context;
+    private final Context context;
 
-	public SystemUpdateToVersion31(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion31(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//keep it simple, just remove key if possible
-		//remove key from settings
-		String key = "pref_key_routine_check_identity_states_time";
+    @Override
+    public boolean runDirectly() {
+        //keep it simple, just remove key if possible
+        //remove key from settings
+        String key = "pref_key_routine_check_identity_states_time";
 
 
-		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this.context);
-		if(p != null) {
-			SharedPreferences.Editor e = p.edit();
-			e.remove(key);
-			e.commit();
-		}
-		return true;
-	}
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this.context);
+        if (p != null) {
+            SharedPreferences.Editor e = p.edit();
+            e.remove(key);
+            e.commit();
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 31";
-	}
+    @Override
+    public String getText() {
+        return "version 31";
+    }
 }

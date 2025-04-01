@@ -27,32 +27,32 @@ import ch.threema.domain.protocol.api.APIConnector;
 
 public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredentials> {
 
-	public LicenseServiceSerial(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
-		super(apiConnector, preferenceService, deviceId);
-	}
+    public LicenseServiceSerial(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
+        super(apiConnector, preferenceService, deviceId);
+    }
 
-	@Override
-	public boolean hasCredentials() {
-		return !TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber());
-	}
+    @Override
+    public boolean hasCredentials() {
+        return !TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber());
+    }
 
-	@Override
-	protected  APIConnector.CheckLicenseResult checkLicense(SerialCredentials credentials, String deviceId) throws Exception {
-		return this.apiConnector.checkLicense(credentials.licenseKey, deviceId);
-	}
+    @Override
+    protected APIConnector.CheckLicenseResult checkLicense(SerialCredentials credentials, String deviceId) throws Exception {
+        return this.apiConnector.checkLicense(credentials.licenseKey, deviceId);
+    }
 
-	@Override
-	public void saveCredentials(SerialCredentials credentials) {
-		this.preferenceService.setSerialNumber(credentials.licenseKey);
-	}
+    @Override
+    public void saveCredentials(SerialCredentials credentials) {
+        this.preferenceService.setSerialNumber(credentials.licenseKey);
+    }
 
-	@Override
-	public SerialCredentials loadCredentials() {
-		String licenseKey = this.preferenceService.getSerialNumber();
+    @Override
+    public SerialCredentials loadCredentials() {
+        String licenseKey = this.preferenceService.getSerialNumber();
 
-		if(!TestUtil.isEmptyOrNull(licenseKey)) {
-			return new SerialCredentials(licenseKey);
-		}
-		return null;
-	}
+        if (!TestUtil.isEmptyOrNull(licenseKey)) {
+            return new SerialCredentials(licenseKey);
+        }
+        return null;
+    }
 }

@@ -41,7 +41,8 @@ class ModelRepositories(
     val contacts = ContactModelRepository(cache.contacts, databaseBackend, coreServiceManager)
     val groups = GroupModelRepository(cache.groups, databaseBackend, coreServiceManager)
     val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao, coreServiceManager)
-    val emojiReaction = EmojiReactionsRepository(cache.emojiReaction, emojiReactionDao, coreServiceManager)
+    val emojiReaction =
+        EmojiReactionsRepository(cache.emojiReaction, emojiReactionDao, coreServiceManager)
 
     init {
         logger.debug("Created")

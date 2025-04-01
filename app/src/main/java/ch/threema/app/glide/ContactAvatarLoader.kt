@@ -29,12 +29,21 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
-class ContactAvatarLoader(val context: Context) : ModelLoader<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> {
+class ContactAvatarLoader(val context: Context) :
+    ModelLoader<AvatarCacheServiceImpl.ContactAvatarConfig, Bitmap> {
     private val contactService = ThreemaApplication.getServiceManager()?.contactService
     private val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
 
-    override fun buildLoadData(config: AvatarCacheServiceImpl.ContactAvatarConfig, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
-        return ModelLoader.LoadData(ObjectKey(config), ContactAvatarFetcher(context, contactService, config, preferenceService))
+    override fun buildLoadData(
+        config: AvatarCacheServiceImpl.ContactAvatarConfig,
+        width: Int,
+        height: Int,
+        options: Options
+    ): ModelLoader.LoadData<Bitmap> {
+        return ModelLoader.LoadData(
+            ObjectKey(config),
+            ContactAvatarFetcher(context, contactService, config, preferenceService)
+        )
     }
 
     override fun handles(model: AvatarCacheServiceImpl.ContactAvatarConfig) = true

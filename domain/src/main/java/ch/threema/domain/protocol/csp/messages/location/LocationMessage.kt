@@ -71,7 +71,8 @@ class LocationMessage(private val locationMessageData: LocationMessageData) : Ab
 
     override fun bumpLastUpdate(): Boolean = true
 
-    override fun getBody(): ByteArray = locationMessageData.toBodyString().toByteArray(StandardCharsets.UTF_8)
+    override fun getBody(): ByteArray =
+        locationMessageData.toBodyString().toByteArray(StandardCharsets.UTF_8)
 
     companion object {
 
@@ -100,7 +101,8 @@ class LocationMessage(private val locationMessageData: LocationMessageData) : Ab
         }
 
         @JvmStatic
-        private fun fromByteArray(data: ByteArray): LocationMessage = fromByteArray(data, 0, data.size)
+        private fun fromByteArray(data: ByteArray): LocationMessage =
+            fromByteArray(data, 0, data.size)
 
         /**
          * Build an instance of [LocationMessage] from the given [data] bytes. Note that

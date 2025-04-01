@@ -32,38 +32,39 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion20 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion20(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion20(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM m_group LIMIT 0", null).getColumnNames();
+    @Override
+    public boolean runDirectly() {
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM m_group LIMIT 0", null).getColumnNames();
 
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("synchronizedAt");
-			}
-		}) != null;
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("synchronizedAt");
+            }
+        }) != null;
 
 
-		if(!hasField) {
-			sqLiteDatabase.execSQL("ALTER TABLE m_group ADD COLUMN synchronizedAt LONG DEFAULT 0");
-		}
+        if (!hasField) {
+            sqLiteDatabase.execSQL("ALTER TABLE m_group ADD COLUMN synchronizedAt LONG DEFAULT 0");
+        }
 
-		return true;
-	}
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 20";
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return "version 20";
+    }
 }

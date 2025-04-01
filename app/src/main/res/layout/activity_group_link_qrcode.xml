@@ -1,75 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/main_content"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<com.google.android.material.appbar.MaterialToolbar
-		android:id="@id/toolbar"
-		android:layout_width="match_parent"
-		android:layout_height="?attr/actionBarSize"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:menu="@menu/activity_group_link_qrcode"/>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/activity_group_link_qrcode" />
 
-	<ScrollView
-		android:id="@+id/qr_container_backup"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:fillViewport="true"
-		android:visibility="visible"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/toolbar">
+    <ScrollView
+        android:id="@+id/qr_container_backup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:paddingBottom="16dp"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/qr_code_container"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:paddingLeft="@dimen/qrcode_min_margin"
-				android:paddingRight="@dimen/qrcode_min_margin"
-				android:paddingTop="@dimen/qrcode_min_margin"
-				android:paddingBottom="@dimen/qrcode_min_margin">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/qr_code_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="@dimen/qrcode_min_margin"
+                android:paddingRight="@dimen/qrcode_min_margin"
+                android:paddingTop="@dimen/qrcode_min_margin"
+                android:paddingBottom="@dimen/qrcode_min_margin">
 
-				<ch.threema.app.ui.SquareImageView
-					android:id="@+id/thumbnail_view"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:adjustViewBounds="true"
-					android:scaleType="fitCenter"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintRight_toRightOf="parent"
-					app:layout_constraintTop_toTopOf="parent" />
+                <ch.threema.app.ui.SquareImageView
+                    android:id="@+id/thumbnail_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-			</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-			<TextView
-				android:id="@+id/qr_code_description"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:paddingTop="2dp"
-				android:textColor="?attr/colorOnBackground"
-				android:textSize="16sp"
-				android:textStyle="normal" />
+            <TextView
+                android:id="@+id/qr_code_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingTop="2dp"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp"
+                android:textStyle="normal" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</ScrollView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

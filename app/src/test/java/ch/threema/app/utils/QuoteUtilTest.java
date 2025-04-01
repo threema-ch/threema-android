@@ -48,278 +48,278 @@ import static org.junit.Assert.assertTrue;
 
 public class QuoteUtilTest {
 
-	// Quotes V1
+    // Quotes V1
 
-	@Test
-	public void testParseQuoteV1Invalid() {
-		assertNull(QuoteUtil.parseQuoteV1(""));
-		assertNull(QuoteUtil.parseQuoteV1("asdf"));
-		assertNull(QuoteUtil.parseQuoteV1("> asdf"));
-		assertNull(QuoteUtil.parseQuoteV1("> ABCDEFG: Quote\n\nBody"));
-		assertNull(QuoteUtil.parseQuoteV1("> ABCDEFGHI: Quote\n\nBody"));
-	}
+    @Test
+    public void testParseQuoteV1Invalid() {
+        assertNull(QuoteUtil.parseQuoteV1(""));
+        assertNull(QuoteUtil.parseQuoteV1("asdf"));
+        assertNull(QuoteUtil.parseQuoteV1("> asdf"));
+        assertNull(QuoteUtil.parseQuoteV1("> ABCDEFG: Quote\n\nBody"));
+        assertNull(QuoteUtil.parseQuoteV1("> ABCDEFGHI: Quote\n\nBody"));
+    }
 
-	private void testQuoteV1(
-		@Nullable QuoteContent content,
-		String expectedIdentity,
-		String expectedQuotedText,
-		String expectedBodyText
-	) {
-		assertNotNull(content);
-		assertTrue(content.isQuoteV1());
-		assertFalse(content.isQuoteV2());
-		assertEquals(expectedIdentity, content.identity);
-		assertEquals(expectedQuotedText, content.quotedText);
-		assertEquals(expectedBodyText, content.bodyText);
-		assertNull(content.icon);
-		assertNull(content.thumbnail);
-		assertNull(content.quotedMessageId);
-		assertNull(content.quotedMessageModel);
-		assertNull(content.messageReceiver);
-	}
+    private void testQuoteV1(
+        @Nullable QuoteContent content,
+        String expectedIdentity,
+        String expectedQuotedText,
+        String expectedBodyText
+    ) {
+        assertNotNull(content);
+        assertTrue(content.isQuoteV1());
+        assertFalse(content.isQuoteV2());
+        assertEquals(expectedIdentity, content.identity);
+        assertEquals(expectedQuotedText, content.quotedText);
+        assertEquals(expectedBodyText, content.bodyText);
+        assertNull(content.icon);
+        assertNull(content.thumbnail);
+        assertNull(content.quotedMessageId);
+        assertNull(content.quotedMessageModel);
+        assertNull(content.messageReceiver);
+    }
 
-	@Test
-	public void testParseQuoteV1() {
-		QuoteContent content = QuoteUtil.parseQuoteV1("> ABCDEFGH: hello\n> goodbye\n\nyes indeed!");
-		testQuoteV1(content, "ABCDEFGH", "hello\ngoodbye", "yes indeed!");
-	}
+    @Test
+    public void testParseQuoteV1() {
+        QuoteContent content = QuoteUtil.parseQuoteV1("> ABCDEFGH: hello\n> goodbye\n\nyes indeed!");
+        testQuoteV1(content, "ABCDEFGH", "hello\ngoodbye", "yes indeed!");
+    }
 
-	@Test
-	public void testParseQuoteV1NoEmptyLine() {
-		QuoteContent content = QuoteUtil.parseQuoteV1("> ABCDEFGH: hello\ngoodbye\n\nyes indeed!");
-		testQuoteV1(content, "ABCDEFGH", "hello", "goodbye\n\nyes indeed!");
-	}
+    @Test
+    public void testParseQuoteV1NoEmptyLine() {
+        QuoteContent content = QuoteUtil.parseQuoteV1("> ABCDEFGH: hello\ngoodbye\n\nyes indeed!");
+        testQuoteV1(content, "ABCDEFGH", "hello", "goodbye\n\nyes indeed!");
+    }
 
-	@Test
-	public void testParseQuoteV1GatewayId() {
-		QuoteContent content = QuoteUtil.parseQuoteV1("> *THREEMA: hello\n> goodbye\n\nyes indeed!");
-		testQuoteV1(content, "*THREEMA", "hello\ngoodbye", "yes indeed!");
-	}
+    @Test
+    public void testParseQuoteV1GatewayId() {
+        QuoteContent content = QuoteUtil.parseQuoteV1("> *THREEMA: hello\n> goodbye\n\nyes indeed!");
+        testQuoteV1(content, "*THREEMA", "hello\ngoodbye", "yes indeed!");
+    }
 
-	// Quotes V2
+    // Quotes V2
 
-	private final MessageReceiver mockContactReceiver = Mockito.mock(MessageReceiver.class);
+    private final MessageReceiver mockContactReceiver = Mockito.mock(MessageReceiver.class);
 
-	@Before
-	public void initMockReceiver() {
-		Mockito.when(mockContactReceiver.getType()).thenReturn(MessageReceiver.Type_CONTACT);
-	}
+    @Before
+    public void initMockReceiver() {
+        Mockito.when(mockContactReceiver.getType()).thenReturn(MessageReceiver.Type_CONTACT);
+    }
 
-	/**
-	 * Helper function for v2 quotes.
-	 *
-	 * @param quoterModel The model that contains the quote.
-	 * @param quotedModel The quoted model.
-	 */
-	private static QuoteContent extractQuoteV2(
-		@NonNull AbstractMessageModel quoterModel,
-		@Nullable AbstractMessageModel quotedModel,
-		boolean includeMessageModel,
-		MessageReceiver receiver
-	) {
-		// Mocks
-		final Context mockContext = Mockito.mock(Context.class);
-		final MessageService mockMessageService = Mockito.mock(MessageService.class);
-		final UserService mockUserService = Mockito.mock(UserService.class);
-		final FileService mockFileService = Mockito.mock(FileService.class);
+    /**
+     * Helper function for v2 quotes.
+     *
+     * @param quoterModel The model that contains the quote.
+     * @param quotedModel The quoted model.
+     */
+    private static QuoteContent extractQuoteV2(
+        @NonNull AbstractMessageModel quoterModel,
+        @Nullable AbstractMessageModel quotedModel,
+        boolean includeMessageModel,
+        MessageReceiver receiver
+    ) {
+        // Mocks
+        final Context mockContext = Mockito.mock(Context.class);
+        final MessageService mockMessageService = Mockito.mock(MessageService.class);
+        final UserService mockUserService = Mockito.mock(UserService.class);
+        final FileService mockFileService = Mockito.mock(FileService.class);
 
-		// Ensure that message service returns the correct models
-		Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quoterModel.getApiMessageId(), receiver))
-			.thenReturn(quoterModel);
-		if (quotedModel != null) {
-			Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quotedModel.getApiMessageId(), receiver))
-				.thenReturn(quotedModel);
-		}
+        // Ensure that message service returns the correct models
+        Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quoterModel.getApiMessageId(), receiver))
+            .thenReturn(quoterModel);
+        if (quotedModel != null) {
+            Mockito.when(mockMessageService.getMessageModelByApiMessageIdAndReceiver(quotedModel.getApiMessageId(), receiver))
+                .thenReturn(quotedModel);
+        }
 
-		// Ensure that certain strings used by the quote can be returned
-		Mockito.when(mockContext.getString(R.string.video_placeholder)).thenReturn("Video");
-		Mockito.when(mockContext.getString(R.string.quoted_message_deleted)).thenReturn("Deleted");
-		Mockito.when(mockContext.getString(R.string.quote_not_found)).thenReturn("NoReceiverMatch");
+        // Ensure that certain strings used by the quote can be returned
+        Mockito.when(mockContext.getString(R.string.video_placeholder)).thenReturn("Video");
+        Mockito.when(mockContext.getString(R.string.quoted_message_deleted)).thenReturn("Deleted");
+        Mockito.when(mockContext.getString(R.string.quote_not_found)).thenReturn("NoReceiverMatch");
 
-		// Return quote contents
-		return QuoteUtil.extractQuoteV2(
-			quoterModel, receiver, includeMessageModel, null,
-			mockContext, mockMessageService, mockUserService, mockFileService
-		);
-	}
+        // Return quote contents
+        return QuoteUtil.extractQuoteV2(
+            quoterModel, receiver, includeMessageModel, null,
+            mockContext, mockMessageService, mockUserService, mockFileService
+        );
+    }
 
-	@Test
-	public void testExtractQuoteV2TextNoIncludeMessageModel() {
-		// Test data
-		final String quoterIdentity = "AABBCCDD";
-		final String quotedIdentity = "AABBCCDD";
-		final String quotedMessageId = "0011223344556677";
-		final String quoteMessageId = "8899889988998899";
-		final String quotedBody = "Shall we eat lunch?";
-		final String quoteComment = "That's a great idea!";
+    @Test
+    public void testExtractQuoteV2TextNoIncludeMessageModel() {
+        // Test data
+        final String quoterIdentity = "AABBCCDD";
+        final String quotedIdentity = "AABBCCDD";
+        final String quotedMessageId = "0011223344556677";
+        final String quoteMessageId = "8899889988998899";
+        final String quotedBody = "Shall we eat lunch?";
+        final String quoteComment = "That's a great idea!";
 
-		// Create quoted model
-		final AbstractMessageModel quotedModel = new MessageModel(false);
-		quotedModel.setApiMessageId(quotedMessageId);
-		quotedModel.setIdentity(quotedIdentity);
-		quotedModel.setBody(quotedBody);
-		quotedModel.setType(MessageType.TEXT);
+        // Create quoted model
+        final AbstractMessageModel quotedModel = new MessageModel(false);
+        quotedModel.setApiMessageId(quotedMessageId);
+        quotedModel.setIdentity(quotedIdentity);
+        quotedModel.setBody(quotedBody);
+        quotedModel.setType(MessageType.TEXT);
 
-		// Create quoter model
-		final AbstractMessageModel quoterModel = new MessageModel(false);
-		quoterModel.setApiMessageId(quoteMessageId);
-		quoterModel.setIdentity(quoterIdentity);
-		quoterModel.setQuotedMessageId(quotedMessageId);
-		quoterModel.setBody(quoteComment);
-		quoterModel.setType(MessageType.TEXT);
+        // Create quoter model
+        final AbstractMessageModel quoterModel = new MessageModel(false);
+        quoterModel.setApiMessageId(quoteMessageId);
+        quoterModel.setIdentity(quoterIdentity);
+        quoterModel.setQuotedMessageId(quotedMessageId);
+        quoterModel.setBody(quoteComment);
+        quoterModel.setType(MessageType.TEXT);
 
-		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
-		assertNotNull(content);
-		assertTrue(content.isQuoteV2());
-		assertFalse(content.isQuoteV1());
-		assertEquals(quotedBody, content.quotedText);
-		assertEquals(quoteComment, content.bodyText);
-		assertEquals(quotedIdentity, content.identity);
-		assertEquals(quotedMessageId, content.quotedMessageId);
-		assertEquals(mockContactReceiver, content.messageReceiver);
-		assertNull(content.quotedMessageModel);
-		assertNull(content.thumbnail);
-		assertNull(content.icon);
-	}
+        // Verify
+        final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
+        assertNotNull(content);
+        assertTrue(content.isQuoteV2());
+        assertFalse(content.isQuoteV1());
+        assertEquals(quotedBody, content.quotedText);
+        assertEquals(quoteComment, content.bodyText);
+        assertEquals(quotedIdentity, content.identity);
+        assertEquals(quotedMessageId, content.quotedMessageId);
+        assertEquals(mockContactReceiver, content.messageReceiver);
+        assertNull(content.quotedMessageModel);
+        assertNull(content.thumbnail);
+        assertNull(content.icon);
+    }
 
-	@Test
-	public void testExtractQuoteV2TextNoIncludeMessageModelNoReceiverMatch() {
-		// Test data
-		final String quoterIdentity = "AABBCCDD";
-		final String quotedIdentity = "CCDDEEFF";
-		final String quotedMessageId = "0011223344556677";
-		final String quoteMessageId = "8899889988998899";
-		final String quotedBody = "Shall we eat lunch?";
-		final String quoteComment = "That's a great idea!";
+    @Test
+    public void testExtractQuoteV2TextNoIncludeMessageModelNoReceiverMatch() {
+        // Test data
+        final String quoterIdentity = "AABBCCDD";
+        final String quotedIdentity = "CCDDEEFF";
+        final String quotedMessageId = "0011223344556677";
+        final String quoteMessageId = "8899889988998899";
+        final String quotedBody = "Shall we eat lunch?";
+        final String quoteComment = "That's a great idea!";
 
-		// Create quoted model
-		final AbstractMessageModel quotedModel = new MessageModel(false);
-		quotedModel.setApiMessageId(quotedMessageId);
-		quotedModel.setIdentity(quotedIdentity);
-		quotedModel.setBody(quotedBody);
-		quotedModel.setType(MessageType.TEXT);
+        // Create quoted model
+        final AbstractMessageModel quotedModel = new MessageModel(false);
+        quotedModel.setApiMessageId(quotedMessageId);
+        quotedModel.setIdentity(quotedIdentity);
+        quotedModel.setBody(quotedBody);
+        quotedModel.setType(MessageType.TEXT);
 
-		// Create quoter model
-		final AbstractMessageModel quoterModel = new MessageModel(false);
-		quoterModel.setApiMessageId(quoteMessageId);
-		quoterModel.setIdentity(quoterIdentity);
-		quoterModel.setQuotedMessageId(quotedMessageId);
-		quoterModel.setBody(quoteComment);
-		quoterModel.setType(MessageType.TEXT);
+        // Create quoter model
+        final AbstractMessageModel quoterModel = new MessageModel(false);
+        quoterModel.setApiMessageId(quoteMessageId);
+        quoterModel.setIdentity(quoterIdentity);
+        quoterModel.setQuotedMessageId(quotedMessageId);
+        quoterModel.setBody(quoteComment);
+        quoterModel.setType(MessageType.TEXT);
 
-		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
-		assertNotNull(content);
-		assertTrue(content.isQuoteV2());
-		assertFalse(content.isQuoteV1());
-		assertEquals(content.quotedText, "NoReceiverMatch");
-		assertEquals(content.bodyText, quoteComment);
-		assertEquals(content.quotedMessageId, quotedMessageId);
-		assertNotEquals(content.identity, quotedIdentity);
-		assertNull(content.messageReceiver);
-		assertNull(content.quotedMessageModel);
-		assertNull(content.thumbnail);
-		assertNull(content.icon);
-	}
+        // Verify
+        final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, false, mockContactReceiver);
+        assertNotNull(content);
+        assertTrue(content.isQuoteV2());
+        assertFalse(content.isQuoteV1());
+        assertEquals(content.quotedText, "NoReceiverMatch");
+        assertEquals(content.bodyText, quoteComment);
+        assertEquals(content.quotedMessageId, quotedMessageId);
+        assertNotEquals(content.identity, quotedIdentity);
+        assertNull(content.messageReceiver);
+        assertNull(content.quotedMessageModel);
+        assertNull(content.thumbnail);
+        assertNull(content.icon);
+    }
 
-	@Test
-	public void testExtractQuoteV2VideoIncludeMessageModel() {
-		// Test data
-		final String quoterIdentity = "AABBCCDD";
-		final String quotedIdentity = "AABBCCDD";
-		final String quotedMessageId = "0011223344556677";
-		final String quoteMessageId = "8899889988998899";
-		final String quoteComment = "That's a great idea!";
+    @Test
+    public void testExtractQuoteV2VideoIncludeMessageModel() {
+        // Test data
+        final String quoterIdentity = "AABBCCDD";
+        final String quotedIdentity = "AABBCCDD";
+        final String quotedMessageId = "0011223344556677";
+        final String quoteMessageId = "8899889988998899";
+        final String quoteComment = "That's a great idea!";
 
-		// Create quoted model
-		final AbstractMessageModel quotedModel = new MessageModel(false);
-		quotedModel.setApiMessageId(quotedMessageId);
-		quotedModel.setIdentity(quotedIdentity);
-		quotedModel.setType(MessageType.VIDEO);
-		quotedModel.setBody("");
+        // Create quoted model
+        final AbstractMessageModel quotedModel = new MessageModel(false);
+        quotedModel.setApiMessageId(quotedMessageId);
+        quotedModel.setIdentity(quotedIdentity);
+        quotedModel.setType(MessageType.VIDEO);
+        quotedModel.setBody("");
 
-		// Create quoter model
-		final AbstractMessageModel quoterModel = new MessageModel(false);
-		quoterModel.setApiMessageId(quoteMessageId);
-		quoterModel.setIdentity(quoterIdentity);
-		quoterModel.setQuotedMessageId(quotedMessageId);
-		quoterModel.setBody(quoteComment);
-		quoterModel.setType(MessageType.TEXT);
+        // Create quoter model
+        final AbstractMessageModel quoterModel = new MessageModel(false);
+        quoterModel.setApiMessageId(quoteMessageId);
+        quoterModel.setIdentity(quoterIdentity);
+        quoterModel.setQuotedMessageId(quotedMessageId);
+        quoterModel.setBody(quoteComment);
+        quoterModel.setType(MessageType.TEXT);
 
-		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, true, mockContactReceiver);
-		assertNotNull(content);
-		assertTrue(content.isQuoteV2());
-		assertFalse(content.isQuoteV1());
-		assertEquals("Video", content.quotedText);
-		assertEquals(quoteComment, content.bodyText);
-		assertEquals(quotedIdentity, content.identity);
-		assertEquals(quotedMessageId, content.quotedMessageId);
-		assertEquals(quotedModel, content.quotedMessageModel);
-		assertEquals(mockContactReceiver, content.messageReceiver);
-		assertNull(content.thumbnail);
-		assertEquals((Integer) R.drawable.ic_movie_filled, content.icon);
-	}
+        // Verify
+        final QuoteContent content = extractQuoteV2(quoterModel, quotedModel, true, mockContactReceiver);
+        assertNotNull(content);
+        assertTrue(content.isQuoteV2());
+        assertFalse(content.isQuoteV1());
+        assertEquals("Video", content.quotedText);
+        assertEquals(quoteComment, content.bodyText);
+        assertEquals(quotedIdentity, content.identity);
+        assertEquals(quotedMessageId, content.quotedMessageId);
+        assertEquals(quotedModel, content.quotedMessageModel);
+        assertEquals(mockContactReceiver, content.messageReceiver);
+        assertNull(content.thumbnail);
+        assertEquals((Integer) R.drawable.ic_movie_filled, content.icon);
+    }
 
-	@Test
-	public void testExtractQuoteV2Deleted() {
-		// Test data
-		final String quoterIdentity = "AABBCCDD";
-		final String quotedMessageId = "0000000000000000";
-		final String quoteMessageId = "8899889988998899";
-		final String quoteComment = "That's a great idea!";
+    @Test
+    public void testExtractQuoteV2Deleted() {
+        // Test data
+        final String quoterIdentity = "AABBCCDD";
+        final String quotedMessageId = "0000000000000000";
+        final String quoteMessageId = "8899889988998899";
+        final String quoteComment = "That's a great idea!";
 
-		// Create quoter model with an invalid message id
-		final AbstractMessageModel quoterModel = new MessageModel(false);
-		quoterModel.setApiMessageId(quoteMessageId);
-		quoterModel.setIdentity(quoterIdentity);
-		quoterModel.setQuotedMessageId(quotedMessageId);
-		quoterModel.setBody(quoteComment);
-		quoterModel.setType(MessageType.TEXT);
+        // Create quoter model with an invalid message id
+        final AbstractMessageModel quoterModel = new MessageModel(false);
+        quoterModel.setApiMessageId(quoteMessageId);
+        quoterModel.setIdentity(quoterIdentity);
+        quoterModel.setQuotedMessageId(quotedMessageId);
+        quoterModel.setBody(quoteComment);
+        quoterModel.setType(MessageType.TEXT);
 
-		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, null, true, mockContactReceiver);
-		assertNotNull(content);
-		assertTrue(content.isQuoteV2());
-		assertFalse(content.isQuoteV1());
-		assertEquals("Deleted", content.quotedText);
-		assertEquals(quoteComment, content.bodyText);
-		assertNull(content.identity);
-		assertEquals(quotedMessageId, content.quotedMessageId);
-		assertNull(content.quotedMessageModel);
-		assertNull(content.messageReceiver);
-		assertNull(content.thumbnail);
-		assertNull(content.icon);
-	}
+        // Verify
+        final QuoteContent content = extractQuoteV2(quoterModel, null, true, mockContactReceiver);
+        assertNotNull(content);
+        assertTrue(content.isQuoteV2());
+        assertFalse(content.isQuoteV1());
+        assertEquals("Deleted", content.quotedText);
+        assertEquals(quoteComment, content.bodyText);
+        assertNull(content.identity);
+        assertEquals(quotedMessageId, content.quotedMessageId);
+        assertNull(content.quotedMessageModel);
+        assertNull(content.messageReceiver);
+        assertNull(content.thumbnail);
+        assertNull(content.icon);
+    }
 
-	@Test
-	public void testExtractQuoteV2Recursive() {
-		// Test data
-		final String quoterIdentity = "AABBCCDD";
-		final String quoteMessageId = "8899889988998899";
-		final String quoteComment = "That's a great idea!";
+    @Test
+    public void testExtractQuoteV2Recursive() {
+        // Test data
+        final String quoterIdentity = "AABBCCDD";
+        final String quoteMessageId = "8899889988998899";
+        final String quoteComment = "That's a great idea!";
 
-		// Create model where the quote references itself
-		final AbstractMessageModel quoterModel = new MessageModel(false);
-		quoterModel.setApiMessageId(quoteMessageId);
-		quoterModel.setIdentity(quoterIdentity);
-		quoterModel.setQuotedMessageId(quoteMessageId);
-		quoterModel.setBody(quoteComment);
-		quoterModel.setType(MessageType.TEXT);
+        // Create model where the quote references itself
+        final AbstractMessageModel quoterModel = new MessageModel(false);
+        quoterModel.setApiMessageId(quoteMessageId);
+        quoterModel.setIdentity(quoterIdentity);
+        quoterModel.setQuotedMessageId(quoteMessageId);
+        quoterModel.setBody(quoteComment);
+        quoterModel.setType(MessageType.TEXT);
 
-		// Verify
-		final QuoteContent content = extractQuoteV2(quoterModel, null, false, mockContactReceiver);
-		assertNotNull(content);
-		assertTrue(content.isQuoteV2());
-		assertFalse(content.isQuoteV1());
-		assertEquals(content.quotedText, quoteComment);
-		assertEquals(content.bodyText, quoteComment);
-		assertEquals(content.identity, quoterIdentity);
-		assertEquals(content.quotedMessageId, quoteMessageId);
-		assertNull(content.quotedMessageModel);
-		assertEquals(content.messageReceiver, mockContactReceiver);
-		assertNull(content.thumbnail);
-		assertNull(content.icon);
-	}
+        // Verify
+        final QuoteContent content = extractQuoteV2(quoterModel, null, false, mockContactReceiver);
+        assertNotNull(content);
+        assertTrue(content.isQuoteV2());
+        assertFalse(content.isQuoteV1());
+        assertEquals(content.quotedText, quoteComment);
+        assertEquals(content.bodyText, quoteComment);
+        assertEquals(content.identity, quoterIdentity);
+        assertEquals(content.quotedMessageId, quoteMessageId);
+        assertNull(content.quotedMessageModel);
+        assertEquals(content.messageReceiver, mockContactReceiver);
+        assertNull(content.thumbnail);
+        assertNull(content.icon);
+    }
 }

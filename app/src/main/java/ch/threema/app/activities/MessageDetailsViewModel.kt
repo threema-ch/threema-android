@@ -130,7 +130,7 @@ data class MessageTimestampsUiModel(
     val editedAt: Date? = null,
     val deletedAt: Date? = null
 ) {
-   fun hasProperties(): Boolean {
+    fun hasProperties(): Boolean {
         return createdAt != null
             || sentAt != null
             || receivedAt != null
@@ -164,7 +164,8 @@ fun AbstractMessageModel.toUiModel() = MessageUiModel(
     isDeleted = this.isDeleted,
     isOutbox = this.isOutbox,
     deliveryIconRes = StateBitmapUtil.getInstance()?.getStateDrawable(this.state),
-    deliveryIconContentDescriptionRes = StateBitmapUtil.getInstance()?.getStateDescription(this.state),
+    deliveryIconContentDescriptionRes = StateBitmapUtil.getInstance()
+        ?.getStateDescription(this.state),
     messageTimestampsUiModel = this.toMessageTimestampsUiModel(),
     messageDetailsUiModel = this.toMessageDetailsUiModel(),
     type = this.type,
@@ -177,18 +178,23 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
     if (this.isStatusMessage) {
         return MessageTimestampsUiModel(createdAt = this.createdAt)
     } else if (this.type == MessageType.GROUP_CALL_STATUS) {
-        return MessageTimestampsUiModel(sentAt = this.createdAt, deliveredAt = if (!this.isOutbox) this.deliveredAt else null)
+        return MessageTimestampsUiModel(
+            sentAt = this.createdAt,
+            deliveredAt = if (!this.isOutbox) this.deliveredAt else null
+        )
     }
 
     return if (this.isOutbox) {
-        val shouldShowAdditionalTimestamps = this.state != MessageState.SENT && !(this.type == MessageType.BALLOT && this is GroupMessageModel)
+        val shouldShowAdditionalTimestamps =
+            this.state != MessageState.SENT && !(this.type == MessageType.BALLOT && this is GroupMessageModel)
 
         val shouldShowPostedAt =
             (this.state != MessageState.SENDING && this.state != MessageState.SENDFAILED && this.state != MessageState.FS_KEY_MISMATCH && this.state != MessageState.PENDING)
                 || this.type == MessageType.BALLOT
 
-        val shouldShowModifiedAt = !(this.state == MessageState.READ && this.modifiedAt == this.readAt)
-            && !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt)
+        val shouldShowModifiedAt =
+            !(this.state == MessageState.READ && this.modifiedAt == this.readAt)
+                && !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt)
 
         MessageTimestampsUiModel(
             createdAt = this.createdAt,
@@ -222,9 +228,11 @@ fun AbstractMessageModel?.toMessageDetailsUiModel(): MessageDetailsUiModel {
     } else {
         null
     }
-    val mimeType: String? = if (this.type == MessageType.FILE) this.fileData.mimeType.takeIf(String::isNotBlank) else null
+    val mimeType: String? =
+        if (this.type == MessageType.FILE) this.fileData.mimeType.takeIf(String::isNotBlank) else null
     val messageId: String? = this.apiMessageId?.takeIf(String::isNotBlank)
-    val pfsState: ForwardSecurityMode? = if (this !is DistributionListMessageModel) this.forwardSecurityMode else null
+    val pfsState: ForwardSecurityMode? =
+        if (this !is DistributionListMessageModel) this.forwardSecurityMode else null
 
     return MessageDetailsUiModel(
         mimeType = mimeType,

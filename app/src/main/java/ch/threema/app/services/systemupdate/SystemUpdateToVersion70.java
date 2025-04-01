@@ -31,33 +31,37 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class SystemUpdateToVersion70 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 70;
-	public static final String VERSION_STRING = "version " + VERSION;
+    public static final int VERSION = 70;
+    public static final String VERSION_STRING = "version " + VERSION;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion70(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion70(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runAsync() { return true; }
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		//update displayType column if not present already
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM " + BallotModel.TABLE + " LIMIT 1", null).getColumnNames();
+    @Override
+    public boolean runDirectly() throws SQLException {
+        //update displayType column if not present already
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM " + BallotModel.TABLE + " LIMIT 1", null).getColumnNames();
 
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), type -> type.equals(BallotModel.COLUMN_DISPLAY_TYPE)) != null;
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), type -> type.equals(BallotModel.COLUMN_DISPLAY_TYPE)) != null;
 
 
-		if(!hasField) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + BallotModel.TABLE + " ADD COLUMN " + BallotModel.COLUMN_DISPLAY_TYPE + " VARCHAR");
-		}
+        if (!hasField) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + BallotModel.TABLE + " ADD COLUMN " + BallotModel.COLUMN_DISPLAY_TYPE + " VARCHAR");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() { return VERSION_STRING; }
+    @Override
+    public String getText() {
+        return VERSION_STRING;
+    }
 }

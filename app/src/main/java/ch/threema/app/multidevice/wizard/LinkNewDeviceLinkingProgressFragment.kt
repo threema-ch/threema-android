@@ -30,9 +30,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import ch.threema.app.R
 
-class LinkNewDeviceLinkingProgressFragment: LinkNewDeviceFragment() {
+class LinkNewDeviceLinkingProgressFragment : LinkNewDeviceFragment() {
 
-    private lateinit var bodyTextView : TextView
+    private lateinit var bodyTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +46,9 @@ class LinkNewDeviceLinkingProgressFragment: LinkNewDeviceFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         bodyTextView = view.findViewById(R.id.body)
-        view.findViewById<LinearLayout>(R.id.explain_layout).layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+        view.findViewById<LinearLayout>(R.id.explain_layout).layoutTransition.enableTransitionType(
+            LayoutTransition.CHANGING
+        )
 
         viewModel.linkingProgressStringRes.observe(viewLifecycleOwner) { stringRes ->
             bodyTextView.text = getString(stringRes)

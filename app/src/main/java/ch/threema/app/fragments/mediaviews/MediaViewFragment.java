@@ -65,343 +65,349 @@ import ch.threema.storage.models.MessageType;
 import static ch.threema.storage.models.data.MessageContentsType.VOICE_MESSAGE;
 
 abstract public class MediaViewFragment extends Fragment {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewFragment");
 
-	// enums are evil
-	private final int ImageState_NONE = 0;
-	private final int ImageState_THUMBNAIL = 1;
-	private final int ImageState_DECRYPTED = 2;
+    // enums are evil
+    private final int ImageState_NONE = 0;
+    private final int ImageState_THUMBNAIL = 1;
+    private final int ImageState_DECRYPTED = 2;
 
-	public interface OnMediaLoadListener {
-		void decrypting();
-		void decrypted(boolean success);
-		void loaded(File file);
-		void thumbnailLoaded(Drawable bitmap);
-	}
+    public interface OnMediaLoadListener {
+        void decrypting();
 
-	private AbstractMessageModel messageModel;
+        void decrypted(boolean success);
 
-	private Future threadFullDecrypt;
-	private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
-	protected FileService fileService;
-	protected MessageService messageService;
-	private File[] decryptedFileCache;
-	private OnMediaLoadListener onMediaLoadListener;
-	private File decryptedFile;
-	private int imageState = ImageState_NONE;
-	private WeakReference<TextView> emptyTextViewReference;
-	WeakReference<ViewGroup> rootViewReference;
+        void loaded(File file);
 
-	private Activity activity;
-	private int position;
+        void thumbnailLoaded(Drawable bitmap);
+    }
 
-	private static final int KEEP_ALIVE_DELAY = 20000;
-	private final static Handler keepAliveHandler = new Handler();
-	private final Runnable keepAliveTask = new Runnable() {
-		@Override
-		public void run() {
-			if (getActivity() != null) {
-				ThreemaApplication.activityUserInteract(getActivity());
-				keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
-			}
-		}
-	};
+    private AbstractMessageModel messageModel;
 
-	public MediaViewFragment() {
-		super();
-	}
+    private Future threadFullDecrypt;
+    private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
+    protected FileService fileService;
+    protected MessageService messageService;
+    private File[] decryptedFileCache;
+    private OnMediaLoadListener onMediaLoadListener;
+    private File decryptedFile;
+    private int imageState = ImageState_NONE;
+    private WeakReference<TextView> emptyTextViewReference;
+    WeakReference<ViewGroup> rootViewReference;
 
-	private void processBundle(Bundle bundle) {
-		if (bundle != null) {
-			this.position = bundle.getInt("position", 0);
+    private Activity activity;
+    private int position;
 
-			this.messageModel = ((MediaViewerActivity) this.activity).getMessageModel(this.position);
-			this.decryptedFileCache = ((MediaViewerActivity) this.activity).getDecryptedFileCache();
-		}
-	}
+    private static final int KEEP_ALIVE_DELAY = 20000;
+    private final static Handler keepAliveHandler = new Handler();
+    private final Runnable keepAliveTask = new Runnable() {
+        @Override
+        public void run() {
+            if (getActivity() != null) {
+                ThreemaApplication.activityUserInteract(getActivity());
+                keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
+            }
+        }
+    };
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+    public MediaViewFragment() {
+        super();
+    }
 
-		this.activity = activity;
-	}
+    private void processBundle(Bundle bundle) {
+        if (bundle != null) {
+            this.position = bundle.getInt("position", 0);
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+            this.messageModel = ((MediaViewerActivity) this.activity).getMessageModel(this.position);
+            this.decryptedFileCache = ((MediaViewerActivity) this.activity).getDecryptedFileCache();
+        }
+    }
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			return null;
-		}
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		try {
-			this.fileService = serviceManager.getFileService();
-			this.messageService = serviceManager.getMessageService();
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-			return null;
-		}
+        this.activity = activity;
+    }
 
-		ViewGroup rootView = (ViewGroup) inflater.inflate(this.getFragmentResourceId(), container, false);
-		if (rootView != null) {
-			// keep a reference to the textview
-			this.rootViewReference = new WeakReference<>(rootView);
-			this.emptyTextViewReference = new WeakReference<>(rootView.findViewById(R.id.empty_text));
-		}
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		processBundle(getArguments());
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            return null;
+        }
 
-		this.created(savedInstanceState);
-		this.decryptThumbnail();
+        try {
+            this.fileService = serviceManager.getFileService();
+            this.messageService = serviceManager.getMessageService();
+        } catch (ThreemaException e) {
+            logger.error("Exception", e);
+            return null;
+        }
 
-		if (messageModel.getType() == MessageType.FILE) {
-			handleMimeCategory(MimeUtil.getMimeCategory(messageModel.getFileData().getMimeType()));
+        ViewGroup rootView = (ViewGroup) inflater.inflate(this.getFragmentResourceId(), container, false);
+        if (rootView != null) {
+            // keep a reference to the textview
+            this.rootViewReference = new WeakReference<>(rootView);
+            this.emptyTextViewReference = new WeakReference<>(rootView.findViewById(R.id.empty_text));
+        }
 
-			handleFileName(messageModel.getFileData().getFileName());
-		}
+        processBundle(getArguments());
 
-		return rootView;
-	}
+        this.created(savedInstanceState);
+        this.decryptThumbnail();
 
-	protected AbstractMessageModel getMessageModel() {
-		return this.messageModel;
-	}
+        if (messageModel.getType() == MessageType.FILE) {
+            handleMimeCategory(MimeUtil.getMimeCategory(messageModel.getFileData().getMimeType()));
 
-	public void setOnImageLoaded(OnMediaLoadListener onMediaLoadListener) {
-		this.onMediaLoadListener = onMediaLoadListener;
+            handleFileName(messageModel.getFileData().getFileName());
+        }
 
-		//if image already loaded!
-		this.fireLoadedFile();
-	}
+        return rootView;
+    }
 
-	public void killDecryptThread() {
-		if(this.threadFullDecrypt != null) {
-			this.threadFullDecrypt.cancel(true);
-			this.threadFullDecrypt = null;
-		}
-	}
+    protected AbstractMessageModel getMessageModel() {
+        return this.messageModel;
+    }
 
-	private void fireLoadedFile() {
-		if(TestUtil.required(this.onMediaLoadListener, this.decryptedFile)) {
-			this.onMediaLoadListener.loaded(this.decryptedFile);
-		}
-	}
+    public void setOnImageLoaded(OnMediaLoadListener onMediaLoadListener) {
+        this.onMediaLoadListener = onMediaLoadListener;
 
-	private void decryptThumbnail() {
-		if(TestUtil.required(this.messageModel, this.fileService)) {
-			logger.debug("show thumbnail of " + this.position);
-			Drawable thumbnail = null;
-			try {
-				Bitmap messageThumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
-				if (messageThumbnail != null) {
-					thumbnail = new BitmapDrawable(getResources(), messageThumbnail);
-				}
-			} catch (Exception e) {
-				// no thumbnail file
-			}
+        //if image already loaded!
+        this.fireLoadedFile();
+    }
 
-			if (thumbnail == null) {
-				if (messageModel.getMessageContentsType() == VOICE_MESSAGE) {
-					thumbnail = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_keyboard_voice_outline);
-					if (thumbnail != null) {
-						thumbnail.setTint(ContextCompat.getColor(requireContext(), R.color.material_dark_grey));
-					}
-				} else if (messageModel.getType() == MessageType.FILE) {
-					thumbnail = new BitmapDrawable(getResources(), fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), true, ContextCompat.getColor(requireContext(), R.color.material_dark_grey)));
-				}
-			}
+    public void killDecryptThread() {
+        if (this.threadFullDecrypt != null) {
+            this.threadFullDecrypt.cancel(true);
+            this.threadFullDecrypt = null;
+        }
+    }
 
-			if (thumbnail != null) {
-				this.showThumbnail(thumbnail);
+    private void fireLoadedFile() {
+        if (TestUtil.required(this.onMediaLoadListener, this.decryptedFile)) {
+            this.onMediaLoadListener.loaded(this.decryptedFile);
+        }
+    }
 
-				this.imageState = ImageState_THUMBNAIL;
-				if(this.onMediaLoadListener != null) {
-					this.onMediaLoadListener.thumbnailLoaded(thumbnail);
-				}
-			}
-			else {
-				this.showBrokenImage();
-			}
-		}
-	}
+    private void decryptThumbnail() {
+        if (TestUtil.required(this.messageModel, this.fileService)) {
+            logger.debug("show thumbnail of " + this.position);
+            Drawable thumbnail = null;
+            try {
+                Bitmap messageThumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
+                if (messageThumbnail != null) {
+                    thumbnail = new BitmapDrawable(getResources(), messageThumbnail);
+                }
+            } catch (Exception e) {
+                // no thumbnail file
+            }
 
-	public void destroy() {
-		if(TestUtil.required(this.messageModel)) {
-			logger.debug("destroy decrypted image in fragment " + this.position);
-		}
+            if (thumbnail == null) {
+                if (messageModel.getMessageContentsType() == VOICE_MESSAGE) {
+                    thumbnail = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_keyboard_voice_outline);
+                    if (thumbnail != null) {
+                        thumbnail.setTint(ContextCompat.getColor(requireContext(), R.color.material_dark_grey));
+                    }
+                } else if (messageModel.getType() == MessageType.FILE) {
+                    thumbnail = new BitmapDrawable(getResources(), fileService.getDefaultMessageThumbnailBitmap(getContext(), messageModel, null, messageModel.getFileData().getMimeType(), true, ContextCompat.getColor(requireContext(), R.color.material_dark_grey)));
+                }
+            }
 
-		this.killDecryptThread();
-	}
+            if (thumbnail != null) {
+                this.showThumbnail(thumbnail);
 
-	public void hide() {
-		if(TestUtil.required(this.messageModel)) {
-			logger.debug("hide fragment " + this.position);
-		}
-		this.killDecryptThread();
-		this.decryptThumbnail();
-	}
+                this.imageState = ImageState_THUMBNAIL;
+                if (this.onMediaLoadListener != null) {
+                    this.onMediaLoadListener.thumbnailLoaded(thumbnail);
+                }
+            } else {
+                this.showBrokenImage();
+            }
+        }
+    }
 
-	public void showDecrypted() {
-		this.killDecryptThread();
+    public void destroy() {
+        if (TestUtil.required(this.messageModel)) {
+            logger.debug("destroy decrypted image in fragment " + this.position);
+        }
 
-		logger.debug("showDecrypted " + position + " imageState = " + this.imageState);
+        this.killDecryptThread();
+    }
 
-		//already decrypted
-		if(this.imageState == ImageState_DECRYPTED) {
-			this.fireLoadedFile();
-			return;
-		}
+    public void hide() {
+        if (TestUtil.required(this.messageModel)) {
+            logger.debug("hide fragment " + this.position);
+        }
+        this.killDecryptThread();
+        this.decryptThumbnail();
+    }
 
-		this.handleDecryptingFile();
-		//use cached files!
-		if(this.decryptedFileCache[this.position] != null && this.decryptedFileCache[this.position].exists()) {
-			this.fileDecrypted(this.decryptedFileCache[this.position]);
-			return;
-		}
+    public void showDecrypted() {
+        this.killDecryptThread();
 
-		//load decrypted image
-		if(TestUtil.required(this.messageModel, this.fileService)) {
-			this.killDecryptThread();
+        logger.debug("showDecrypted " + position + " imageState = " + this.imageState);
 
-			this.threadFullDecrypt = threadPoolExecutor.submit(() -> {
-				try {
-					logger.debug("show decrypted of " + position);
-					final File decrypted = fileService.getDecryptedMessageFile(messageModel);
-					if (!TestUtil.required(decrypted) || !decrypted.exists()) {
-						throw new Exception("Decrypted file not found");
-					}
+        //already decrypted
+        if (this.imageState == ImageState_DECRYPTED) {
+            this.fireLoadedFile();
+            return;
+        }
 
-					// TODO: If the fragment has been destroyed in the meantime, stop calling any callbacks!
-					RuntimeUtil.runOnUiThread(() -> {
-						fileDecrypted(decrypted);
+        this.handleDecryptingFile();
+        //use cached files!
+        if (this.decryptedFileCache[this.position] != null && this.decryptedFileCache[this.position].exists()) {
+            this.fileDecrypted(this.decryptedFileCache[this.position]);
+            return;
+        }
 
-						if(TestUtil.required(onMediaLoadListener)) {
-							onMediaLoadListener.decrypted(true);
-						}
-					});
+        //load decrypted image
+        if (TestUtil.required(this.messageModel, this.fileService)) {
+            this.killDecryptThread();
 
-				} catch (Exception x) {
-					logger.error("Exception", x);
-					RuntimeUtil.runOnUiThread(() -> {
-						if(TestUtil.required(onMediaLoadListener)) {
-							onMediaLoadListener.decrypted(false);
-						}
+            this.threadFullDecrypt = threadPoolExecutor.submit(() -> {
+                try {
+                    logger.debug("show decrypted of " + position);
+                    final File decrypted = fileService.getDecryptedMessageFile(messageModel);
+                    if (!TestUtil.required(decrypted) || !decrypted.exists()) {
+                        throw new Exception("Decrypted file not found");
+                    }
 
-						//reload thumbnail, if failed, show broken image!
-						decryptThumbnail();
-						handleDecryptFailure();
-					});
-				}
-			});
-		}
-	}
+                    // TODO: If the fragment has been destroyed in the meantime, stop calling any callbacks!
+                    RuntimeUtil.runOnUiThread(() -> {
+                        fileDecrypted(decrypted);
 
-	protected void showBrokenImage() {
-		//TODO
-		logger.debug("show broken image on position " + this.position);
-		if (this.emptyTextViewReference != null && this.emptyTextViewReference.get() != null) {
-			this.emptyTextViewReference.get().setText(R.string.media_file_not_found);
-			this.emptyTextViewReference.get().setVisibility(View.VISIBLE);
-		}
-		this.imageState = ImageState_NONE;
-	}
+                        if (TestUtil.required(onMediaLoadListener)) {
+                            onMediaLoadListener.decrypted(true);
+                        }
+                    });
 
-	private void fileDecrypted(File file) {
-		if(!TestUtil.required(file) || !file.exists()) {
-			return;
-		}
-		logger.debug( "file decrypted " + this.position);
-		this.decryptedFile = file;
-		this.decryptedFileCache[this.position] = this.decryptedFile;
+                } catch (Exception x) {
+                    logger.error("Exception", x);
+                    RuntimeUtil.runOnUiThread(() -> {
+                        if (TestUtil.required(onMediaLoadListener)) {
+                            onMediaLoadListener.decrypted(false);
+                        }
 
-		if (this.emptyTextViewReference != null && this.emptyTextViewReference.get() != null) {
-			this.emptyTextViewReference.get().setVisibility(View.GONE);
-		}
+                        //reload thumbnail, if failed, show broken image!
+                        decryptThumbnail();
+                        handleDecryptFailure();
+                    });
+                }
+            });
+        }
+    }
 
-		this.handleDecryptedFile(file);
-		this.imageState = ImageState_DECRYPTED;
-		this.fireLoadedFile();
-	}
+    protected void showBrokenImage() {
+        //TODO
+        logger.debug("show broken image on position " + this.position);
+        if (this.emptyTextViewReference != null && this.emptyTextViewReference.get() != null) {
+            this.emptyTextViewReference.get().setText(R.string.media_file_not_found);
+            this.emptyTextViewReference.get().setVisibility(View.VISIBLE);
+        }
+        this.imageState = ImageState_NONE;
+    }
 
-	protected void keepScreenOn(boolean value) {
-		if (value) {
-			getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
-		} else {
-			getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-			keepAliveHandler.removeCallbacks(keepAliveTask);
-		}
-	}
+    private void fileDecrypted(File file) {
+        if (!TestUtil.required(file) || !file.exists()) {
+            return;
+        }
+        logger.debug("file decrypted " + this.position);
+        this.decryptedFile = file;
+        this.decryptedFileCache[this.position] = this.decryptedFile;
 
-	protected void showUi(boolean show) {
-		if (isAdded() && getActivity() != null) {
-			if (show) {
-				((MediaViewerActivity) getActivity()).showUi();
-			} else {
-				((MediaViewerActivity) getActivity()).hideUi();
-			}
-		}
-	}
+        if (this.emptyTextViewReference != null && this.emptyTextViewReference.get() != null) {
+            this.emptyTextViewReference.get().setVisibility(View.GONE);
+        }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+        this.handleDecryptedFile(file);
+        this.imageState = ImageState_DECRYPTED;
+        this.fireLoadedFile();
+    }
 
-		keepAliveHandler.removeCallbacksAndMessages(null);
-	}
+    protected void keepScreenOn(boolean value) {
+        if (value) {
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
+        } else {
+            getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            keepAliveHandler.removeCallbacks(keepAliveTask);
+        }
+    }
 
-	protected abstract void created(Bundle savedInstanceState);
-	protected abstract int getFragmentResourceId();
+    protected void showUi(boolean show) {
+        if (isAdded() && getActivity() != null) {
+            if (show) {
+                ((MediaViewerActivity) getActivity()).showUi();
+            } else {
+                ((MediaViewerActivity) getActivity()).hideUi();
+            }
+        }
+    }
 
-	/**
-	 * This method is called with a thumbnail when the fragment is created. It can be overridden to
-	 * set the thumbnail. Otherwise no thumbnail is shown. The given thumbnail has low quality,
-	 * therefore it is only recommended to use as thumbnail.
-	 *
-	 * @param thumbnail the thumbnail of the displayed file
-	 */
-	protected void showThumbnail(@NonNull Drawable thumbnail) {
-		// nothing to do
-	}
-	protected abstract void handleDecryptingFile();
-	protected abstract void handleDecryptFailure();
-	abstract protected void handleDecryptedFile(File file);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
-	/**
-	 * This method is called with the mime category when the fragment is created. If a subclass needs
-	 * the mime category, this method can be overridden.
-	 * Note that this is only called for messages of type MessageType.FILE
-	 *
-	 * @param category the mime category of the displayed file
-	 */
-	protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
-		// nothing to do
-	}
+        keepAliveHandler.removeCallbacksAndMessages(null);
+    }
 
-	/**
-	 * This method is called with the filename when the fragment is created. If a subclass needs the
-	 * filename, this method can be overridden.
-	 * Note that this is only called for messages of type MessageType.FILE
-	 *
-	 * @param filename the filename of the displayed file
-	 */
-	protected void handleFileName(@Nullable String filename) {
-		// nothing to do
-	}
+    protected abstract void created(Bundle savedInstanceState);
 
-	@Override
-	public void onPause() {
-		setUserVisibleHint(false);
-		super.onPause();
-	}
+    protected abstract int getFragmentResourceId();
 
-	@Override
-	public void setMenuVisibility(boolean menuVisible) {
-		super.setMenuVisibility(menuVisible);
-		if (!menuVisible) {
-			setUserVisibleHint(false);
-		}
-	}
+    /**
+     * This method is called with a thumbnail when the fragment is created. It can be overridden to
+     * set the thumbnail. Otherwise no thumbnail is shown. The given thumbnail has low quality,
+     * therefore it is only recommended to use as thumbnail.
+     *
+     * @param thumbnail the thumbnail of the displayed file
+     */
+    protected void showThumbnail(@NonNull Drawable thumbnail) {
+        // nothing to do
+    }
+
+    protected abstract void handleDecryptingFile();
+
+    protected abstract void handleDecryptFailure();
+
+    abstract protected void handleDecryptedFile(File file);
+
+    /**
+     * This method is called with the mime category when the fragment is created. If a subclass needs
+     * the mime category, this method can be overridden.
+     * Note that this is only called for messages of type MessageType.FILE
+     *
+     * @param category the mime category of the displayed file
+     */
+    protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
+        // nothing to do
+    }
+
+    /**
+     * This method is called with the filename when the fragment is created. If a subclass needs the
+     * filename, this method can be overridden.
+     * Note that this is only called for messages of type MessageType.FILE
+     *
+     * @param filename the filename of the displayed file
+     */
+    protected void handleFileName(@Nullable String filename) {
+        // nothing to do
+    }
+
+    @Override
+    public void onPause() {
+        setUserVisibleHint(false);
+        super.onPause();
+    }
+
+    @Override
+    public void setMenuVisibility(boolean menuVisible) {
+        super.setMenuVisibility(menuVisible);
+        if (!menuVisible) {
+            setUserVisibleHint(false);
+        }
+    }
 }

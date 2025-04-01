@@ -26,4 +26,5 @@ import java.util.concurrent.Executor;
 /**
  * Guarantees execution on a single thread.
  */
-public interface SingleThreadExecutor extends Executor {}
+public interface SingleThreadExecutor extends Executor {
+}

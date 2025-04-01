@@ -62,8 +62,9 @@ class IncomingContactEditMessageTask(
         }
 
         val fromReceiver: ContactMessageReceiver = contactService.createReceiver(contactModel)
-        val editedMessage: AbstractMessageModel = runCommonEditMessageReceiveSteps(message, fromReceiver, messageService)
-            ?: return ReceiveStepsResult.DISCARD
+        val editedMessage: AbstractMessageModel =
+            runCommonEditMessageReceiveSteps(message, fromReceiver, messageService)
+                ?: return ReceiveStepsResult.DISCARD
 
         messageService.saveEditedMessageText(editedMessage, message.data.text, message.date)
 

@@ -29,7 +29,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.nio.charset.StandardCharsets
 
-internal data class PersistedMultiDeviceProperties (
+internal data class PersistedMultiDeviceProperties(
     val registrationTime: ULong?,
     val deviceLabel: String,
     val mediatorDeviceId: DeviceId,
@@ -44,11 +44,11 @@ internal data class PersistedMultiDeviceProperties (
         fun deserialize(byteArray: ByteArray): PersistedMultiDeviceProperties {
             val minimalPropertiesSize = (
                 Long.SIZE_BYTES // registration time
-                + Int.SIZE_BYTES  // device label size
-                + Long.SIZE_BYTES // mediator device id
-                + Long.SIZE_BYTES // csp device id
-                + D2mProtocolDefines.DGK_LENGTH_BYTES // dgk
-            )
+                    + Int.SIZE_BYTES  // device label size
+                    + Long.SIZE_BYTES // mediator device id
+                    + Long.SIZE_BYTES // csp device id
+                    + D2mProtocolDefines.DGK_LENGTH_BYTES // dgk
+                )
 
             if (byteArray.size < minimalPropertiesSize) {
                 throw DeserializeException("Invalid data size. expected >= $minimalPropertiesSize, actual=${byteArray.size}")

@@ -40,34 +40,34 @@ import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ShareTargetUpdateWorker extends Worker {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ShareTargetUpdateWorker");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ShareTargetUpdateWorker");
 
-	public ShareTargetUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-		super(context, workerParams);
-	}
+    public ShareTargetUpdateWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
+    }
 
-	@NonNull
-	@Override
-	public Result doWork() {
-		logger.info("Updating share target shortcuts");
+    @NonNull
+    @Override
+    public Result doWork() {
+        logger.info("Updating share target shortcuts");
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			UserService userService = serviceManager.getUserService();
-			if (userService != null && userService.hasIdentity()) {
-				if (!BackupService.isRunning()) {
-					ShortcutUtil.publishRecentChatsAsShareTargets();
-				}
-			}
-		}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            UserService userService = serviceManager.getUserService();
+            if (userService != null && userService.hasIdentity()) {
+                if (!BackupService.isRunning()) {
+                    ShortcutUtil.publishRecentChatsAsShareTargets();
+                }
+            }
+        }
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-			UsageStatsManager usageStatsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
-			if (usageStatsManager != null) {
-				logger.info("Is inactive = {}; Standby bucket = {} (should be <= 10)", usageStatsManager.isAppInactive(BuildConfig.APPLICATION_ID), usageStatsManager.getAppStandbyBucket());
-			}
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            UsageStatsManager usageStatsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);
+            if (usageStatsManager != null) {
+                logger.info("Is inactive = {}; Standby bucket = {} (should be <= 10)", usageStatsManager.isAppInactive(BuildConfig.APPLICATION_ID), usageStatsManager.getAppStandbyBucket());
+            }
+        }
 
-		return Result.success();
-	}
+        return Result.success();
+    }
 }

@@ -39,7 +39,8 @@ private val logger: Logger = LoggingUtil.getThreemaLogger("GroupLocationMessage"
  *
  * Coordinates are in WGS 84, accuracy is in meters.
  */
-class GroupLocationMessage(private val locationMessageData: LocationMessageData) : AbstractGroupMessage() {
+class GroupLocationMessage(private val locationMessageData: LocationMessageData) :
+    AbstractGroupMessage() {
 
     val latitude: Double
         get() = locationMessageData.latitude
@@ -146,7 +147,8 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
 
 
             var positionIndex = offset
-            val groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+            val groupCreator =
+                String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
             positionIndex += ProtocolDefines.IDENTITY_LEN
 
             val apiGroupId = GroupId(data, positionIndex)

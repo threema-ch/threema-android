@@ -39,119 +39,119 @@ import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.DEFAULT_FAL
 
 public interface AvatarService<M extends ReceiverModel> {
 
-	/**
-	 * Get the avatar with the given avatar options of the given model as bitmap.
-	 *
-	 * @param model   the model of which the avatar is returned
-	 * @param options the options for loading the avatar
-	 * @return the avatar of the given model
-	 */
-	@Nullable
-	@AnyThread
-	Bitmap getAvatar(@Nullable M model, @NonNull AvatarOptions options);
+    /**
+     * Get the avatar with the given avatar options of the given model as bitmap.
+     *
+     * @param model   the model of which the avatar is returned
+     * @param options the options for loading the avatar
+     * @return the avatar of the given model
+     */
+    @Nullable
+    @AnyThread
+    Bitmap getAvatar(@Nullable M model, @NonNull AvatarOptions options);
 
 
-	/**
-	 * Get the bitmap of the given model. This method can be called from any thread.
-	 *
-	 * @param model   the model of which the avatar is returned
-	 * @param highRes if true, the high resolution avatar is returned, the low resolution avatar otherwise
-	 * @return the avatar of the given model in high or low resolution
-	 */
-	@Nullable
-	@AnyThread
-	default Bitmap getAvatar(@Nullable M model, boolean highRes) {
-		return getAvatar(model, highRes, true);
-	}
+    /**
+     * Get the bitmap of the given model. This method can be called from any thread.
+     *
+     * @param model   the model of which the avatar is returned
+     * @param highRes if true, the high resolution avatar is returned, the low resolution avatar otherwise
+     * @return the avatar of the given model in high or low resolution
+     */
+    @Nullable
+    @AnyThread
+    default Bitmap getAvatar(@Nullable M model, boolean highRes) {
+        return getAvatar(model, highRes, true);
+    }
 
-	/**
-	 * Get the avatar of the given model.
-	 *
-	 * @param model                     if the model is null, the default avatar is returned
-	 * @param highResolution            if true, the high resolution avatar is loaded
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given model, otherwise null is returned
-	 * @return the avatar of the given model
-	 */
-	@AnyThread
-	@Nullable
-	default Bitmap getAvatar(@Nullable M model, boolean highResolution, boolean returnDefaultAvatarIfNone) {
-		return getAvatar(model, highResolution, returnDefaultAvatarIfNone, false);
-	}
+    /**
+     * Get the avatar of the given model.
+     *
+     * @param model                     if the model is null, the default avatar is returned
+     * @param highResolution            if true, the high resolution avatar is loaded
+     * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given model, otherwise null is returned
+     * @return the avatar of the given model
+     */
+    @AnyThread
+    @Nullable
+    default Bitmap getAvatar(@Nullable M model, boolean highResolution, boolean returnDefaultAvatarIfNone) {
+        return getAvatar(model, highResolution, returnDefaultAvatarIfNone, false);
+    }
 
-	/**
-	 * Get the avatar of the given model.
-	 *
-	 * @param model                     if the model is null, the default avatar is returned
-	 * @param highResolution            if true, the high resolution avatar is loaded
-	 * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given model, otherwise null is returned
-	 * @param darkerBackground if true, the background will be darker than white, otherwise it will be white
-	 * @return the avatar of the given model
-	 */
-	@AnyThread
-	@Nullable
-	default Bitmap getAvatar(@Nullable M model, boolean highResolution, boolean returnDefaultAvatarIfNone, boolean darkerBackground) {
-		return getAvatar(model, new AvatarOptions.Builder()
-			.setHighRes(highResolution)
-			.setReturnPolicy(returnDefaultAvatarIfNone ? DEFAULT_FALLBACK : CUSTOM_AVATAR)
-			.setDarkerBackground(darkerBackground)
-			.toOptions()
-		);
-	}
+    /**
+     * Get the avatar of the given model.
+     *
+     * @param model                     if the model is null, the default avatar is returned
+     * @param highResolution            if true, the high resolution avatar is loaded
+     * @param returnDefaultAvatarIfNone if true, the default avatar is returned if no custom avatar is set for the given model, otherwise null is returned
+     * @param darkerBackground          if true, the background will be darker than white, otherwise it will be white
+     * @return the avatar of the given model
+     */
+    @AnyThread
+    @Nullable
+    default Bitmap getAvatar(@Nullable M model, boolean highResolution, boolean returnDefaultAvatarIfNone, boolean darkerBackground) {
+        return getAvatar(model, new AvatarOptions.Builder()
+            .setHighRes(highResolution)
+            .setReturnPolicy(returnDefaultAvatarIfNone ? DEFAULT_FALLBACK : CUSTOM_AVATAR)
+            .setDarkerBackground(darkerBackground)
+            .toOptions()
+        );
+    }
 
-	/**
-	 * Load the avatar of the given model into the provided image view. The avatar bitmap is loaded
-	 * asynchronously and the default avatar is shown as a placeholder.
-	 *
-	 * @param model       the conversation model
-	 * @param imageView   the image view
-	 * @param options     the options for loading the image
-	 */
-	@AnyThread
-	void loadAvatarIntoImage(
-		@NonNull M model,
-		@NonNull ImageView imageView,
-		@NonNull AvatarOptions options,
-		@NonNull RequestManager requestManager
-	);
+    /**
+     * Load the avatar of the given model into the provided image view. The avatar bitmap is loaded
+     * asynchronously and the default avatar is shown as a placeholder.
+     *
+     * @param model     the conversation model
+     * @param imageView the image view
+     * @param options   the options for loading the image
+     */
+    @AnyThread
+    void loadAvatarIntoImage(
+        @NonNull M model,
+        @NonNull ImageView imageView,
+        @NonNull AvatarOptions options,
+        @NonNull RequestManager requestManager
+    );
 
-	/**
-	 * Get the default avatar even if a custom avatar is set for the given model.
-	 *
-	 * @param model            if the model is null, the default color is used for the avatar
-	 * @param highResolution   if true, the high resolution avatar is loaded
-	 * @param darkerBackground if true, the background will be darker than white, otherwise it will be white
-	 * @return the default avatar for the model type M
-	 */
-	@AnyThread
-	@Nullable
-	default Bitmap getDefaultAvatar(@Nullable M model, boolean highResolution, boolean darkerBackground) {
-		return getAvatar(model, new AvatarOptions.Builder()
-			.setHighRes(highResolution)
-			.setReturnPolicy(DEFAULT_AVATAR)
-			.setDarkerBackground(darkerBackground)
-			.toOptions()
-		);
-	}
+    /**
+     * Get the default avatar even if a custom avatar is set for the given model.
+     *
+     * @param model            if the model is null, the default color is used for the avatar
+     * @param highResolution   if true, the high resolution avatar is loaded
+     * @param darkerBackground if true, the background will be darker than white, otherwise it will be white
+     * @return the default avatar for the model type M
+     */
+    @AnyThread
+    @Nullable
+    default Bitmap getDefaultAvatar(@Nullable M model, boolean highResolution, boolean darkerBackground) {
+        return getAvatar(model, new AvatarOptions.Builder()
+            .setHighRes(highResolution)
+            .setReturnPolicy(DEFAULT_AVATAR)
+            .setDarkerBackground(darkerBackground)
+            .toOptions()
+        );
+    }
 
-	/**
-	 * Get the neutral avatar with the default color.
-	 *
-	 * @param options the options for loading the avatar
-	 * @return the neutral avatar
-	 */
-	@AnyThread
-	@Nullable
-	default Bitmap getNeutralAvatar(@Nullable AvatarOptions options) {
-		return getAvatar(null, options != null ? options : AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
-	}
+    /**
+     * Get the neutral avatar with the default color.
+     *
+     * @param options the options for loading the avatar
+     * @return the neutral avatar
+     */
+    @AnyThread
+    @Nullable
+    default Bitmap getNeutralAvatar(@Nullable AvatarOptions options) {
+        return getAvatar(null, options != null ? options : AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE);
+    }
 
-	/**
-	 * Get the color of the avatar. This method considers the "isDefaultContactPictureColored" setting.
-	 *
-	 * @param model the model where the avatar color is determined. If null, the default color is returned
-	 * @return the color of the given model, or the default color if the model is null
-	 */
-	@AnyThread
-	@ColorInt
-	int getAvatarColor(@Nullable M model);
+    /**
+     * Get the color of the avatar. This method considers the "isDefaultContactPictureColored" setting.
+     *
+     * @param model the model where the avatar color is determined. If null, the default color is returned
+     * @return the color of the given model, or the default color if the model is null
+     */
+    @AnyThread
+    @ColorInt
+    int getAvatarColor(@Nullable M model);
 }

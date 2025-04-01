@@ -28,13 +28,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 // Frontend to call the app's media settings directly from notification or system settings
 public class SettingsMediaDummyActivity extends AppCompatActivity {
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		Intent intent = new Intent(this, SettingsActivity.class);
-		intent.putExtra(SettingsActivity.EXTRA_SHOW_MEDIA_FRAGMENT, true);
-		startActivity(intent);
-		finish();
-	}
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_MEDIA_FRAGMENT, true);
+        startActivity(intent);
+        finish();
+    }
 }

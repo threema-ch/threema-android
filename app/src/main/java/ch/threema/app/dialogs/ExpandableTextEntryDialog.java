@@ -54,244 +54,246 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
-	private ExpandableTextEntryDialogClickListener callback;
-	private Activity activity;
-	private ComposeEditText captionEditText;
-	private ComposeEditText.MentionPopupData mentionPopupData;
-	private AlertDialog alertDialog;
+    private ExpandableTextEntryDialogClickListener callback;
+    private Activity activity;
+    private ComposeEditText captionEditText;
+    private ComposeEditText.MentionPopupData mentionPopupData;
+    private AlertDialog alertDialog;
 
-	public static ExpandableTextEntryDialog newInstance(String title, int hint, int positive, int negative, boolean expandable) {
-		ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putInt("message", hint);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("expandable", expandable);
+    public static ExpandableTextEntryDialog newInstance(String title, int hint, int positive, int negative, boolean expandable) {
+        ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putInt("message", hint);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("expandable", expandable);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static ExpandableTextEntryDialog newInstance(String title, int hint, String preset, int positive, int negative, boolean expandable) {
-		ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putString("preset", preset);
-		args.putInt("message", hint);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("expandable", expandable);
+    public static ExpandableTextEntryDialog newInstance(String title, int hint, String preset, int positive, int negative, boolean expandable) {
+        ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("preset", preset);
+        args.putInt("message", hint);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("expandable", expandable);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static ExpandableTextEntryDialog newInstance(String title, String subtitle, int hint, String preset, int positive, int negative, boolean expandable) {
-		ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putString("subtitle", subtitle);
-		args.putString("preset", preset);
-		args.putInt("message", hint);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("expandable", expandable);
+    public static ExpandableTextEntryDialog newInstance(String title, String subtitle, int hint, String preset, int positive, int negative, boolean expandable) {
+        ExpandableTextEntryDialog dialog = new ExpandableTextEntryDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("subtitle", subtitle);
+        args.putString("preset", preset);
+        args.putInt("message", hint);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("expandable", expandable);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface ExpandableTextEntryDialogClickListener {
-		void onYes(String tag, Object data, String text);
-		void onNo(String tag);
-	}
+    public interface ExpandableTextEntryDialogClickListener {
+        void onYes(String tag, Object data, String text);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
+    }
 
-		if (callback == null) {
-			try {
-				callback = (ExpandableTextEntryDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if (activity instanceof ExpandableTextEntryDialogClickListener) {
-					callback = (ExpandableTextEntryDialogClickListener) activity;
-				}
-			}
-		}
-	}
+        if (callback == null) {
+            try {
+                callback = (ExpandableTextEntryDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+            // called from an activity rather than a fragment
+            if (callback == null) {
+                if (activity instanceof ExpandableTextEntryDialogClickListener) {
+                    callback = (ExpandableTextEntryDialogClickListener) activity;
+                }
+            }
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = getArguments().getString("title");
-		String subtitle = getArguments().getString("subtitle");
-		String preset = getArguments().getString("preset", null);
-		int message = getArguments().getInt("message");
-		int positive = getArguments().getInt("positive");
-		int negative = getArguments().getInt("negative");
-		boolean expandable = getArguments().getBoolean("expandable");
+        this.activity = activity;
+    }
 
-		final String tag = this.getTag();
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        String title = getArguments().getString("title");
+        String subtitle = getArguments().getString("subtitle");
+        String preset = getArguments().getString("preset", null);
+        int message = getArguments().getInt("message");
+        int positive = getArguments().getInt("positive");
+        int negative = getArguments().getInt("negative");
+        boolean expandable = getArguments().getBoolean("expandable");
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry_expandable, null);
+        final String tag = this.getTag();
 
-		final ComposeEditText editText = dialogView.findViewById(R.id.caption_edittext);
-		final TextInputLayout editTextContainer = dialogView.findViewById(R.id.edittext_container);
-		final TextView addCaptionText = dialogView.findViewById(R.id.add_caption_text);
-		final TextView subtitleText = dialogView.findViewById(R.id.subtitle_text);
-		final ImageView expandButton = dialogView.findViewById(R.id.expand_button);
-		final LinearLayout addCaptionLayout = dialogView.findViewById(R.id.add_caption_intro);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry_expandable, null);
 
-		addCaptionLayout.setClickable(true);
-		addCaptionLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				toggleLayout(expandButton, editTextContainer);
-			}
-		});
+        final ComposeEditText editText = dialogView.findViewById(R.id.caption_edittext);
+        final TextInputLayout editTextContainer = dialogView.findViewById(R.id.edittext_container);
+        final TextView addCaptionText = dialogView.findViewById(R.id.add_caption_text);
+        final TextView subtitleText = dialogView.findViewById(R.id.subtitle_text);
+        final ImageView expandButton = dialogView.findViewById(R.id.expand_button);
+        final LinearLayout addCaptionLayout = dialogView.findViewById(R.id.add_caption_intro);
 
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        addCaptionLayout.setClickable(true);
+        addCaptionLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleLayout(expandButton, editTextContainer);
+            }
+        });
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				ThreemaApplication.activityUserInteract(activity);
-			}
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ThreemaApplication.activityUserInteract(activity);
+            }
 
-		if (mentionPopupData != null) {
-			this.captionEditText = editText;
-			this.captionEditText.enableMentionPopup(mentionPopupData, editTextContainer);
-			editText.setOnKeyListener((v, keyCode, event) -> {
-				if (keyCode == KeyEvent.KEYCODE_BACK) {
-					ExpandableTextEntryDialog.this.captionEditText.dismissMentionPopup();
-					return true;
-				}
-				return false;
-			});
-		}
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity,  getTheme());
-		builder.setView(dialogView);
+        if (mentionPopupData != null) {
+            this.captionEditText = editText;
+            this.captionEditText.enableMentionPopup(mentionPopupData, editTextContainer);
+            editText.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    ExpandableTextEntryDialog.this.captionEditText.dismissMentionPopup();
+                    return true;
+                }
+                return false;
+            });
+        }
 
-		if (!TestUtil.isEmptyOrNull(title)) {
-			builder.setTitle(title);
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity, getTheme());
+        builder.setView(dialogView);
 
-		if (!TestUtil.isEmptyOrNull(subtitle)) {
-			subtitleText.setText(subtitle);
-		} else {
-			subtitleText.setVisibility(View.GONE);
-		}
+        if (!TestUtil.isEmptyOrNull(title)) {
+            builder.setTitle(title);
+        }
 
-		if (message != 0) {
-			addCaptionText.setText(message);
-		}
+        if (!TestUtil.isEmptyOrNull(subtitle)) {
+            subtitleText.setText(subtitle);
+        } else {
+            subtitleText.setVisibility(View.GONE);
+        }
 
-		if (!TestUtil.isEmptyOrNull(preset)) {
-			editText.setText(preset);
-			if (expandable) {
-				toggleLayout(expandButton, editTextContainer);
-			}
-		}
+        if (message != 0) {
+            addCaptionText.setText(message);
+        }
 
-		if (!expandable) {
-			addCaptionLayout.setVisibility(View.GONE);
-		}
+        if (!TestUtil.isEmptyOrNull(preset)) {
+            editText.setText(preset);
+            if (expandable) {
+                toggleLayout(expandButton, editTextContainer);
+            }
+        }
 
-		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onYes(tag, object, editText.getText().toString());
-							}
-				}
-		);
-		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onNo(tag);
-							}
-						}
-				);
-		alertDialog = builder.create();
-		setCancelable(false);
+        if (!expandable) {
+            addCaptionLayout.setVisibility(View.GONE);
+        }
 
-		return alertDialog;
-	}
+        builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onYes(tag, object, editText.getText().toString());
+                }
+            }
+        );
+        builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onNo(tag);
+                }
+            }
+        );
+        alertDialog = builder.create();
+        setCancelable(false);
 
-	/**
-	 * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
-	 *
-	 * @param mentionPopupData the required data to enable mentions, if this is null, mentions are not enabled
-	 */
-	public void enableMentionPopup(@Nullable ComposeEditText.MentionPopupData mentionPopupData) {
-		this.mentionPopupData = mentionPopupData;
-	}
+        return alertDialog;
+    }
 
-	/**
-	 * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
-	 */
-	public void enableMentionPopup(
-		@NonNull Activity activity,
-		@NonNull GroupService groupService,
-		@NonNull ContactService contactService,
-		@NonNull UserService userService,
-		@NonNull PreferenceService preferenceService,
-		@NonNull GroupModel groupModel
-	) {
-		mentionPopupData = new ComposeEditText.MentionPopupData(
-			activity,
-			groupService,
-			contactService,
-			userService,
-			preferenceService,
-			groupModel
-		);
-	}
+    /**
+     * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
+     *
+     * @param mentionPopupData the required data to enable mentions, if this is null, mentions are not enabled
+     */
+    public void enableMentionPopup(@Nullable ComposeEditText.MentionPopupData mentionPopupData) {
+        this.mentionPopupData = mentionPopupData;
+    }
 
-	public void dismissMentionPopup() {
-		captionEditText.dismissMentionPopup();
-	}
+    /**
+     * Enable mention popup on the caption edit text. This needs to be called before the dialog is shown/created.
+     */
+    public void enableMentionPopup(
+        @NonNull Activity activity,
+        @NonNull GroupService groupService,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull GroupModel groupModel
+    ) {
+        mentionPopupData = new ComposeEditText.MentionPopupData(
+            activity,
+            groupService,
+            contactService,
+            userService,
+            preferenceService,
+            groupModel
+        );
+    }
 
-	private void toggleLayout(ImageView button, View v) {
-		InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-		EditText editText = v.findViewById(R.id.caption_edittext);
+    public void dismissMentionPopup() {
+        captionEditText.dismissMentionPopup();
+    }
 
-		if(v.isShown()){
-			AnimationUtil.slideUp(activity, v);
-			v.setVisibility(View.GONE);
-			button.setRotation(0);
-			if (imm != null && editText != null) {
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-			}
-		}
-		else{
-			v.setVisibility(View.VISIBLE);
-			AnimationUtil.slideDown(activity, v, () -> {
-				if (editText != null) {
-					editText.requestFocus();
-					if (imm != null) {
-						imm.showSoftInput(editText, 0);
-					}
-				}
-			});
-			button.setRotation(90);
-		}
-	}
+    private void toggleLayout(ImageView button, View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        EditText editText = v.findViewById(R.id.caption_edittext);
+
+        if (v.isShown()) {
+            AnimationUtil.slideUp(activity, v);
+            v.setVisibility(View.GONE);
+            button.setRotation(0);
+            if (imm != null && editText != null) {
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        } else {
+            v.setVisibility(View.VISIBLE);
+            AnimationUtil.slideDown(activity, v, () -> {
+                if (editText != null) {
+                    editText.requestFocus();
+                    if (imm != null) {
+                        imm.showSoftInput(editText, 0);
+                    }
+                }
+            });
+            button.setRotation(90);
+        }
+    }
 }

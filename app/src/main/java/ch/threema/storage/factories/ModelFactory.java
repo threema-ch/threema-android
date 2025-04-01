@@ -31,52 +31,52 @@ import ch.threema.storage.ColumnIndexCache;
 import ch.threema.storage.DatabaseServiceNew;
 
 public abstract class ModelFactory {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ModelFactory");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ModelFactory");
 
-	protected static final String NO_RECORD_MSG = "Update of model failed, no records matched for id=";
+    protected static final String NO_RECORD_MSG = "Update of model failed, no records matched for id=";
 
-	final DatabaseServiceNew databaseService;
-	private final String tableName;
-	protected final ColumnIndexCache columnIndexCache = new ColumnIndexCache();
+    final DatabaseServiceNew databaseService;
+    private final String tableName;
+    protected final ColumnIndexCache columnIndexCache = new ColumnIndexCache();
 
-	ModelFactory(DatabaseServiceNew databaseService, String tableName) {
-		this.databaseService = databaseService;
-		this.tableName = tableName;
-		logger.debug("instantiate {}", getClass());
-	}
+    ModelFactory(DatabaseServiceNew databaseService, String tableName) {
+        this.databaseService = databaseService;
+        this.tableName = tableName;
+        logger.debug("instantiate {}", getClass());
+    }
 
-	/**
-	 * Returns the table and index creation statements for a model.
-	 *
-	 * @return list of SQL statements
-	 */
-	public abstract String[] getStatements();
+    /**
+     * Returns the table and index creation statements for a model.
+     *
+     * @return list of SQL statements
+     */
+    public abstract String[] getStatements();
 
-	public void dropTable() {
-		this.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + this.getTableName());
-	}
+    public void dropTable() {
+        this.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + this.getTableName());
+    }
 
-	public final void deleteAll() {
-		this.getWritableDatabase().execSQL("DELETE FROM " + this.getTableName());
-	}
+    public final void deleteAll() {
+        this.getWritableDatabase().execSQL("DELETE FROM " + this.getTableName());
+    }
 
-	public final long count() {
-		return DatabaseUtils.queryNumEntries(this.getReadableDatabase(), this.getTableName());
-	}
+    public final long count() {
+        return DatabaseUtils.queryNumEntries(this.getReadableDatabase(), this.getTableName());
+    }
 
-	public String getTableName() {
-		return this.tableName;
-	}
+    public String getTableName() {
+        return this.tableName;
+    }
 
-	protected SQLiteDatabase getReadableDatabase() {
-		return this.databaseService.getReadableDatabase();
-	}
+    protected SQLiteDatabase getReadableDatabase() {
+        return this.databaseService.getReadableDatabase();
+    }
 
-	protected SQLiteDatabase getWritableDatabase() {
-		return this.databaseService.getWritableDatabase();
-	}
+    protected SQLiteDatabase getWritableDatabase() {
+        return this.databaseService.getWritableDatabase();
+    }
 
-	protected ColumnIndexCache getColumnIndexCache() {
-		return this.columnIndexCache;
-	}
+    protected ColumnIndexCache getColumnIndexCache() {
+        return this.columnIndexCache;
+    }
 }

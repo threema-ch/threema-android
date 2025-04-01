@@ -45,101 +45,101 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
 
-	private static final String DIALOG_TAG_CREATING_GROUP = "groupCreate";
-	private static final String BUNDLE_GROUP_IDENTITIES = "grId";
+    private static final String DIALOG_TAG_CREATING_GROUP = "groupCreate";
+    private static final String BUNDLE_GROUP_IDENTITIES = "grId";
 
-	private String[] groupIdentities;
+    private String[] groupIdentities;
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_group_add2;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_group_add2;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        logger.debug("onCreate");
+        super.onCreate(savedInstanceState);
 
-		final ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setTitle("");
-		}
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle("");
+        }
 
-		if (getIntent() != null) {
-			this.groupIdentities = IntentDataUtil.getContactIdentities(getIntent());
-		}
+        if (getIntent() != null) {
+            this.groupIdentities = IntentDataUtil.getContactIdentities(getIntent());
+        }
 
-		if (savedInstanceState == null) {
-			launchGroupSetNameAndAvatarDialog();
-		} else {
-			groupIdentities = savedInstanceState.getStringArray(BUNDLE_GROUP_IDENTITIES);
-		}
-	}
+        if (savedInstanceState == null) {
+            launchGroupSetNameAndAvatarDialog();
+        } else {
+            groupIdentities = savedInstanceState.getStringArray(BUNDLE_GROUP_IDENTITIES);
+        }
+    }
 
-	private void createGroup(final String groupName, final Set<String> groupIdentities, final File avatarFile) {
-		new AsyncTask<Void, Void, GroupModel>() {
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.creating_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP);
-			}
+    private void createGroup(final String groupName, final Set<String> groupIdentities, final File avatarFile) {
+        new AsyncTask<Void, Void, GroupModel>() {
+            @Override
+            protected void onPreExecute() {
+                GenericProgressDialog.newInstance(R.string.creating_group, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP);
+            }
 
-			@Override
-			protected GroupModel doInBackground(Void... params) {
-				try {
-					Bitmap avatar = avatarFile != null ? BitmapFactory.decodeFile(avatarFile.getPath()) : null;
-					return groupService.createGroupFromLocal(
-							groupName,
-							groupIdentities,
-							avatar
-					);
-				} catch (Exception x) {
-					logger.error("Exception", x);
-				}
-				return null;
-			}
+            @Override
+            protected GroupModel doInBackground(Void... params) {
+                try {
+                    Bitmap avatar = avatarFile != null ? BitmapFactory.decodeFile(avatarFile.getPath()) : null;
+                    return groupService.createGroupFromLocal(
+                        groupName,
+                        groupIdentities,
+                        avatar
+                    );
+                } catch (Exception x) {
+                    logger.error("Exception", x);
+                }
+                return null;
+            }
 
-			@Override
-			protected void onPostExecute(GroupModel newModel) {
-				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP, true);
+            @Override
+            protected void onPostExecute(GroupModel newModel) {
+                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATING_GROUP, true);
 
-				if (newModel != null) {
-					creatingGroupDone(newModel);
-				} else {
-					Toast.makeText(GroupAdd2Activity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
-					setResult(RESULT_CANCELED);
-					finish();
-				}
-			}
-		}.execute();
-	}
+                if (newModel != null) {
+                    creatingGroupDone(newModel);
+                } else {
+                    Toast.makeText(GroupAdd2Activity.this, getString(R.string.error_creating_group) + ": " + getString(R.string.internet_connection_required), Toast.LENGTH_LONG).show();
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
+            }
+        }.execute();
+    }
 
-	private void creatingGroupDone(GroupModel newModel) {
-		Toast.makeText(ThreemaApplication.getAppContext(),
-			getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
+    private void creatingGroupDone(GroupModel newModel) {
+        Toast.makeText(ThreemaApplication.getAppContext(),
+            getString(R.string.group_created_confirm), Toast.LENGTH_LONG).show();
 
-		Intent intent = new Intent(this, ComposeMessageActivity.class);
-		intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());
-		setResult(RESULT_OK);
-		startActivity(intent);
-		finish();
-	}
+        Intent intent = new Intent(this, ComposeMessageActivity.class);
+        intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, newModel.getId());
+        setResult(RESULT_OK);
+        startActivity(intent);
+        finish();
+    }
 
-	@Override
-	public void onYes(String tag, String text1, String text2, @Nullable File avatarFile) {
-		createGroup(text1, Set.of(this.groupIdentities), avatarFile);
-	}
+    @Override
+    public void onYes(String tag, String text1, String text2, @Nullable File avatarFile) {
+        createGroup(text1, Set.of(this.groupIdentities), avatarFile);
+    }
 
-	@Override
-	public void onNo(String tag) {
-		finish();
-	}
+    @Override
+    public void onNo(String tag) {
+        finish();
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable(BUNDLE_GROUP_IDENTITIES, groupIdentities);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BUNDLE_GROUP_IDENTITIES, groupIdentities);
 
-		super.onSaveInstanceState(outState);
-	}
+        super.onSaveInstanceState(outState);
+    }
 }

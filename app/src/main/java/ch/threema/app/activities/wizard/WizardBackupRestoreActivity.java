@@ -70,309 +70,309 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implements GenericAlertDialog.DialogClickListener,
-	PasswordEntryDialog.PasswordEntryDialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackupRestoreActivity");
+    PasswordEntryDialog.PasswordEntryDialogClickListener {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackupRestoreActivity");
 
-	private static final String DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM = "de";
-	private static final String DIALOG_TAG_DOWNLOADING_BACKUP = "dwnldBkp";
-	private static final String DIALOG_TAG_NO_INTERNET = "nin";
-	private static final String DIALOG_TAG_ERROR_TMP_FILE_DIR = "tmpFileDialog";
+    private static final String DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM = "de";
+    private static final String DIALOG_TAG_DOWNLOADING_BACKUP = "dwnldBkp";
+    private static final String DIALOG_TAG_NO_INTERNET = "nin";
+    private static final String DIALOG_TAG_ERROR_TMP_FILE_DIR = "tmpFileDialog";
 
-	public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 541;
+    public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 541;
 
-	private ThreemaSafeMDMConfig safeMDMConfig;
-	private FileService fileService;
-	private UserService userService;
-	private PreferenceService preferenceService;
+    private ThreemaSafeMDMConfig safeMDMConfig;
+    private FileService fileService;
+    private UserService userService;
+    private PreferenceService preferenceService;
     private NotificationPreferenceService notificationPreferenceService;
-	private File backupFile;
-	private String backupPassword;
+    private File backupFile;
+    private String backupPassword;
 
-	private final ActivityResultLauncher<String> permissionLauncher =
-		registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-			// Restore backup even if permission is not granted as we do not strictly require the
-			// notification permission.
-			startRestore();
-		});
+    private final ActivityResultLauncher<String> permissionLauncher =
+        registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            // Restore backup even if permission is not granted as we do not strictly require the
+            // notification permission.
+            startRestore();
+        });
 
-	@Override
-	protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// directly forward to ID restore activity
-		Intent intent = getIntent();
-		if (intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP) &&
-			intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW)) {
+        // directly forward to ID restore activity
+        Intent intent = getIntent();
+        if (intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP) &&
+            intent.hasExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW)) {
 
-			restoreIDExport(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP),
-				intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW));
-		}
+            restoreIDExport(intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP),
+                intent.getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW));
+        }
 
-		initServices();
-		initLayout();
-		initListeners();
-	}
+        initServices();
+        initLayout();
+        initListeners();
+    }
 
-	@Override
-	protected void onPause() {
-		ThreemaApplication.activityPaused(this);
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        ThreemaApplication.activityPaused(this);
+        super.onPause();
+    }
 
-	@Override
-	protected void onResume() {
-		ThreemaApplication.activityResumed(this);
-		super.onResume();
-	}
+    @Override
+    protected void onResume() {
+        ThreemaApplication.activityResumed(this);
+        super.onResume();
+    }
 
-	@Override
-	public void onUserInteraction() {
-		ThreemaApplication.activityUserInteract(this);
-		super.onUserInteraction();
-	}
+    @Override
+    public void onUserInteraction() {
+        ThreemaApplication.activityUserInteract(this);
+        super.onUserInteraction();
+    }
 
-	private void initServices() {
-		this.safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
+    private void initServices() {
+        this.safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
 
-		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager != null) {
-				fileService = serviceManager.getFileService();
-				userService = serviceManager.getUserService();
-				preferenceService = serviceManager.getPreferenceService();
+        try {
+            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager != null) {
+                fileService = serviceManager.getFileService();
+                userService = serviceManager.getUserService();
+                preferenceService = serviceManager.getPreferenceService();
                 notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-			}
-		} catch (Exception e) {
-			logger.error("Exception ", e);
-			finish();
-		}
-	}
+            }
+        } catch (Exception e) {
+            logger.error("Exception ", e);
+            finish();
+        }
+    }
 
-	private void initLayout() {
-		setContentView(R.layout.activity_backup_restore);
+    private void initLayout() {
+        setContentView(R.layout.activity_backup_restore);
 
-		String faqURL = String.format(getString(R.string.backup_faq_url), LocaleUtil.getAppLanguage());
-		TextView backupSubtitle = findViewById(R.id.backup_restore_subtitle);
-		backupSubtitle.setText(Html.fromHtml(
-			String.format(getString(R.string.backup_restore_type), faqURL))
-		);
-		backupSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
+        String faqURL = String.format(getString(R.string.backup_faq_url), LocaleUtil.getAppLanguage());
+        TextView backupSubtitle = findViewById(R.id.backup_restore_subtitle);
+        backupSubtitle.setText(Html.fromHtml(
+            String.format(getString(R.string.backup_restore_type), faqURL))
+        );
+        backupSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
 
-		if (ConfigUtils.isWorkRestricted()) {
-			if (safeMDMConfig.isRestoreDisabled()) {
-				findViewById(R.id.safe_backup).setVisibility(View.GONE);
-			}
-		}
-	}
+        if (ConfigUtils.isWorkRestricted()) {
+            if (safeMDMConfig.isRestoreDisabled()) {
+                findViewById(R.id.safe_backup).setVisibility(View.GONE);
+            }
+        }
+    }
 
-	private void initListeners() {
-		findViewById(R.id.safe_backup).setOnClickListener(v -> restoreSafe());
-		findViewById(R.id.data_backup).setOnClickListener(v -> showDisableEnergySaveDialog());
-		findViewById(R.id.id_backup).setOnClickListener(v -> restoreIDExport(null, null));
-		findViewById(R.id.cancel).setOnClickListener(v -> finish());
-	}
+    private void initListeners() {
+        findViewById(R.id.safe_backup).setOnClickListener(v -> restoreSafe());
+        findViewById(R.id.data_backup).setOnClickListener(v -> showDisableEnergySaveDialog());
+        findViewById(R.id.id_backup).setOnClickListener(v -> restoreIDExport(null, null));
+        findViewById(R.id.cancel).setOnClickListener(v -> finish());
+    }
 
-	private void restoreSafe() {
-		startActivity(new Intent(this, WizardSafeRestoreActivity.class));
-		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-	}
+    private void restoreSafe() {
+        startActivity(new Intent(this, WizardSafeRestoreActivity.class));
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
 
-	private void restoreIDExport(String backupString, String backupPassword) {
-		Intent intent = new Intent(this, WizardIDRestoreActivity.class);
+    private void restoreIDExport(String backupString, String backupPassword) {
+        Intent intent = new Intent(this, WizardIDRestoreActivity.class);
 
-		if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
-			intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
-			intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
-		}
-		startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_RESTORE_KEY);
-		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-	}
+        if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
+            intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP, backupString);
+            intent.putExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP_PW, backupPassword);
+        }
+        startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_RESTORE_KEY);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
 
-	private void restoreBackup(final Uri uri) {
-		if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme()) && this.fileService != null) {
-			// copy "file" to cache directory first
-			GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
+    private void restoreBackup(final Uri uri) {
+        if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme()) && this.fileService != null) {
+            // copy "file" to cache directory first
+            GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
 
-			new Thread(() -> {
-				final File file;
-				final File externalFile = fileService.copyUriToTempFile(uri, "file", "zip", true);
-				if (externalFile != null) {
-					file = externalFile;
-				} else {
-					logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
-					file = fileService.copyUriToTempFile(uri, "file", "zip", false);
-				}
+            new Thread(() -> {
+                final File file;
+                final File externalFile = fileService.copyUriToTempFile(uri, "file", "zip", true);
+                if (externalFile != null) {
+                    file = externalFile;
+                } else {
+                    logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
+                    file = fileService.copyUriToTempFile(uri, "file", "zip", false);
+                }
 
-				RuntimeUtil.runOnUiThread(() -> {
-					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP, true);
+                RuntimeUtil.runOnUiThread(() -> {
+                    DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP, true);
 
-					if (file != null) {
-						restoreBackupFile(file);
-						file.deleteOnExit();
-					} else {
-						SimpleStringAlertDialog.newInstance(R.string.an_error_occurred, R.string.missing_permission_external_storage).show(getSupportFragmentManager(), DIALOG_TAG_ERROR_TMP_FILE_DIR);
-					}
-				});
-			}).start();
+                    if (file != null) {
+                        restoreBackupFile(file);
+                        file.deleteOnExit();
+                    } else {
+                        SimpleStringAlertDialog.newInstance(R.string.an_error_occurred, R.string.missing_permission_external_storage).show(getSupportFragmentManager(), DIALOG_TAG_ERROR_TMP_FILE_DIR);
+                    }
+                });
+            }).start();
 
-		} else {
-			String path = FileUtil.getRealPathFromURI(this, uri);
-			if (path != null && !path.isEmpty()) {
-				File file = new File(path);
-				if (file.exists()) {
-					restoreBackupFile(file);
-				}
-			}
-		}
-	}
+        } else {
+            String path = FileUtil.getRealPathFromURI(this, uri);
+            if (path != null && !path.isEmpty()) {
+                File file = new File(path);
+                if (file.exists()) {
+                    restoreBackupFile(file);
+                }
+            }
+        }
+    }
 
-	private void restoreBackupFile(File file) {
-		if (file.exists()) {
+    private void restoreBackupFile(File file) {
+        if (file.exists()) {
 //			try {
 // Zipfile validity check is sometimes wrong
 //				ZipFile zipFile = new ZipFile(file);
 //				if (zipFile.isValidZipFile()) {
-			ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-			NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-			if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()) {
-				showNoInternetDialog(file);
-			} else {
-				confirmRestore(file);
-			}
-			return;
-		}
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()) {
+                showNoInternetDialog(file);
+            } else {
+                confirmRestore(file);
+            }
+            return;
+        }
 //				}
 //			} catch (ZipException e) {
 //				logger.error("Exception", e);
 //			}
-		logger.error(getString(R.string.invalid_backup), this);
-	}
+        logger.error(getString(R.string.invalid_backup), this);
+    }
 
-	private void showDisableEnergySaveDialog() {
-		GenericAlertDialog.newInstance(R.string.menu_restore, R.string.restore_disable_energy_saving, R.string.ok, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM);
-	}
+    private void showDisableEnergySaveDialog() {
+        GenericAlertDialog.newInstance(R.string.menu_restore, R.string.restore_disable_energy_saving, R.string.ok, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM);
+    }
 
-	private void confirmRestore(File file) {
-		PasswordEntryDialog dialogFragment = PasswordEntryDialog.newInstance(
-			R.string.backup_data_title,
-			R.string.restore_data_password_msg,
-			R.string.password_hint,
-			R.string.ok,
-			R.string.cancel,
-			ThreemaApplication.MIN_PW_LENGTH_BACKUP,
-			ThreemaApplication.MAX_PW_LENGTH_BACKUP,
-			0, 0, 0, PasswordEntryDialog.ForgotHintType.PIN_PASSPHRASE);
-		dialogFragment.setData(file);
-		dialogFragment.show(getSupportFragmentManager(), "restorePW");
-	}
+    private void confirmRestore(File file) {
+        PasswordEntryDialog dialogFragment = PasswordEntryDialog.newInstance(
+            R.string.backup_data_title,
+            R.string.restore_data_password_msg,
+            R.string.password_hint,
+            R.string.ok,
+            R.string.cancel,
+            ThreemaApplication.MIN_PW_LENGTH_BACKUP,
+            ThreemaApplication.MAX_PW_LENGTH_BACKUP,
+            0, 0, 0, PasswordEntryDialog.ForgotHintType.PIN_PASSPHRASE);
+        dialogFragment.setData(file);
+        dialogFragment.show(getSupportFragmentManager(), "restorePW");
+    }
 
-	private void startRestore() {
-		Intent intent = new Intent(this, RestoreService.class);
-		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_FILE, backupFile);
-		intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_PASSWORD, backupPassword);
-		ContextCompat.startForegroundService(this, intent);
+    private void startRestore() {
+        Intent intent = new Intent(this, RestoreService.class);
+        intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_FILE, backupFile);
+        intent.putExtra(RestoreService.EXTRA_RESTORE_BACKUP_PASSWORD, backupPassword);
+        ContextCompat.startForegroundService(this, intent);
 
-		setResult(Activity.RESULT_OK);
-		finish();
-	}
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
 
-	@UiThread
-	private void showNoInternetDialog(File file) {
-		GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.menu_restore, R.string.new_wizard_need_internet, R.string.retry, R.string.cancel);
-		dialog.setData(file);
-		dialog.show(getSupportFragmentManager(), DIALOG_TAG_NO_INTERNET);
-	}
+    @UiThread
+    private void showNoInternetDialog(File file) {
+        GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.menu_restore, R.string.new_wizard_need_internet, R.string.retry, R.string.cancel);
+        dialog.setData(file);
+        dialog.show(getSupportFragmentManager(), DIALOG_TAG_NO_INTERNET);
+    }
 
-	// start generic alert dialog callbacks
-	@Override
-	public void onYes(String tag, Object data) {
-		switch (tag) {
-			case DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM:
-				Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.restore));
-				intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_WIZARD, true);
-				startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
-				break;
-			case DIALOG_TAG_NO_INTERNET:
-				restoreBackupFile((File) data);
-				break;
-		}
-	}
+    // start generic alert dialog callbacks
+    @Override
+    public void onYes(String tag, Object data) {
+        switch (tag) {
+            case DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM:
+                Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
+                intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.restore));
+                intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_WIZARD, true);
+                startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
+                break;
+            case DIALOG_TAG_NO_INTERNET:
+                restoreBackupFile((File) data);
+                break;
+        }
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		if (safeMDMConfig.isRestoreDisabled()) {
-			finish();
-		}
-	}
-	// end generic alert dialog callbacks
+    @Override
+    public void onNo(String tag, Object data) {
+        if (safeMDMConfig.isRestoreDisabled()) {
+            finish();
+        }
+    }
+    // end generic alert dialog callbacks
 
-	// start password dialog callbacks
-	@Override
-	public void onYes(String tag, String text, boolean isChecked, Object data) {
-		this.backupFile = (File) data;
-		this.backupPassword = text;
+    // start password dialog callbacks
+    @Override
+    public void onYes(String tag, String text, boolean isChecked, Object data) {
+        this.backupFile = (File) data;
+        this.backupPassword = text;
 
-		// If the notification permission is already granted, then start the restore directly
-		if (ConfigUtils.requestNotificationPermission(this, permissionLauncher, preferenceService)) {
-			startRestore();
-		}
-	}
+        // If the notification permission is already granted, then start the restore directly
+        if (ConfigUtils.requestNotificationPermission(this, permissionLauncher, preferenceService)) {
+            startRestore();
+        }
+    }
 
-	@Override
-	public void onNo(String tag) {
-		if (safeMDMConfig.isRestoreDisabled()) {
-			finish();
-		}
-	}
-	// end password dialog callbacks
+    @Override
+    public void onNo(String tag) {
+        if (safeMDMConfig.isRestoreDisabled()) {
+            finish();
+        }
+    }
+    // end password dialog callbacks
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-		if (resultCode != RESULT_OK) {
-			if (requestCode != REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS && requestCode != ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER) {
-				if (safeMDMConfig.isRestoreDisabled()) {
-					finish();
-				}
-			}
-		}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode != RESULT_OK) {
+            if (requestCode != REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS && requestCode != ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER) {
+                if (safeMDMConfig.isRestoreDisabled()) {
+                    finish();
+                }
+            }
+        }
 
-		switch (requestCode) {
-			case REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS:
-				FileUtil.selectFile(WizardBackupRestoreActivity.this, null, new String[]{MimeUtil.MIME_TYPE_ZIP}, ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER, false, 0, fileService.getBackupPath().getPath());
-				break;
+        switch (requestCode) {
+            case REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS:
+                FileUtil.selectFile(WizardBackupRestoreActivity.this, null, new String[]{MimeUtil.MIME_TYPE_ZIP}, ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER, false, 0, fileService.getBackupPath().getPath());
+                break;
 
-			case ThreemaActivity.ACTIVITY_ID_RESTORE_KEY:
-				if (resultCode == RESULT_OK) {
-					setResult(RESULT_OK);
-					startNextWizard();
-				}
-				break;
+            case ThreemaActivity.ACTIVITY_ID_RESTORE_KEY:
+                if (resultCode == RESULT_OK) {
+                    setResult(RESULT_OK);
+                    startNextWizard();
+                }
+                break;
 
-			case ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER:
-				if (resultCode == RESULT_OK) {
-					setResult(RESULT_OK);
-					if (resultData != null) {
-						Uri uri;
+            case ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER:
+                if (resultCode == RESULT_OK) {
+                    setResult(RESULT_OK);
+                    if (resultData != null) {
+                        Uri uri;
 
-						uri = resultData.getData();
-						if (uri != null) {
-							restoreBackup(uri);
-						}
-					}
-				}
-				break;
-		}
-		super.onActivityResult(requestCode, resultCode, resultData);
-	}
+                        uri = resultData.getData();
+                        if (uri != null) {
+                            restoreBackup(uri);
+                        }
+                    }
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, resultData);
+    }
 
-	private void startNextWizard() {
-		if (this.userService.hasIdentity()) {
-			this.notificationPreferenceService.setWizardRunning(true);
-			startActivity(new Intent(this, WizardBaseActivity.class));
-			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-			finish();
-		}
-	}
+    private void startNextWizard() {
+        if (this.userService.hasIdentity()) {
+            this.notificationPreferenceService.setWizardRunning(true);
+            startActivity(new Intent(this, WizardBaseActivity.class));
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
+        }
+    }
 }

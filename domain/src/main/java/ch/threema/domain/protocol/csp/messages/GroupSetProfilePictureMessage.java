@@ -36,108 +36,108 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  */
 public class GroupSetProfilePictureMessage extends AbstractGroupMessage {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupSetPhotoMessage");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupSetPhotoMessage");
 
-	private byte[] blobId;
-	private int size;
-	private byte[] encryptionKey;
+    private byte[] blobId;
+    private int size;
+    private byte[] encryptionKey;
 
-	public GroupSetProfilePictureMessage() {
-		super();
-	}
+    public GroupSetProfilePictureMessage() {
+        super();
+    }
 
-	@Override
-	public int getType() {
-		return ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO;
-	}
+    @Override
+    public int getType() {
+        return ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO;
+    }
 
-	@Override
-	@Nullable
-	public Version getMinimumRequiredForwardSecurityVersion() {
-		return Version.V1_2;
-	}
+    @Override
+    @Nullable
+    public Version getMinimumRequiredForwardSecurityVersion() {
+        return Version.V1_2;
+    }
 
-	@Override
-	public boolean allowUserProfileDistribution() {
-		return false;
-	}
+    @Override
+    public boolean allowUserProfileDistribution() {
+        return false;
+    }
 
-	@Override
-	public boolean exemptFromBlocking() {
-		return true;
-	}
+    @Override
+    public boolean exemptFromBlocking() {
+        return true;
+    }
 
-	@Override
-	public boolean createImplicitlyDirectContact() {
-		return false;
-	}
+    @Override
+    public boolean createImplicitlyDirectContact() {
+        return false;
+    }
 
-	@Override
-	public boolean protectAgainstReplay() {
-		return true;
-	}
+    @Override
+    public boolean protectAgainstReplay() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectIncoming() {
-		return true;
-	}
+    @Override
+    public boolean reflectIncoming() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectOutgoing() {
-		return true;
-	}
+    @Override
+    public boolean reflectOutgoing() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectSentUpdate() {
-		return false;
-	}
+    @Override
+    public boolean reflectSentUpdate() {
+        return false;
+    }
 
-	@Override
-	public boolean sendAutomaticDeliveryReceipt() {
-		return false;
-	}
+    @Override
+    public boolean sendAutomaticDeliveryReceipt() {
+        return false;
+    }
 
-	@Override
-	public boolean bumpLastUpdate() {
-		return false;
-	}
+    @Override
+    public boolean bumpLastUpdate() {
+        return false;
+    }
 
-	@Override
-	public byte[] getBody() {
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getApiGroupId().getGroupId());
-			bos.write(blobId);
-			EndianUtils.writeSwappedInteger(bos, size);
-			bos.write(encryptionKey);
-			return bos.toByteArray();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
-		}
-	}
+    @Override
+    public byte[] getBody() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bos.write(getApiGroupId().getGroupId());
+            bos.write(blobId);
+            EndianUtils.writeSwappedInteger(bos, size);
+            bos.write(encryptionKey);
+            return bos.toByteArray();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
 
-	public byte[] getBlobId() {
-		return blobId;
-	}
+    public byte[] getBlobId() {
+        return blobId;
+    }
 
-	public void setBlobId(byte[] blobId) {
-		this.blobId = blobId;
-	}
+    public void setBlobId(byte[] blobId) {
+        this.blobId = blobId;
+    }
 
-	public int getSize() {
-		return size;
-	}
+    public int getSize() {
+        return size;
+    }
 
-	public void setSize(int size) {
-		this.size = size;
-	}
+    public void setSize(int size) {
+        this.size = size;
+    }
 
-	public byte[] getEncryptionKey() {
-		return encryptionKey;
-	}
+    public byte[] getEncryptionKey() {
+        return encryptionKey;
+    }
 
-	public void setEncryptionKey(byte[] encryptionKey) {
-		this.encryptionKey = encryptionKey;
-	}
+    public void setEncryptionKey(byte[] encryptionKey) {
+        this.encryptionKey = encryptionKey;
+    }
 }

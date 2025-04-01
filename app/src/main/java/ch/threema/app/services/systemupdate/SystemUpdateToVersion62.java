@@ -34,34 +34,34 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion62 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion62(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion62(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
+    @Override
+    public boolean runDirectly() throws SQLException {
 
-		// add new messageFlags field to message model table
-		for(String table: new String[]{"message", "m_group_message", "distribution_list_message"}) {
-			if(!fieldExists(this.sqLiteDatabase, table, "messageFlags")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN messageFlags INT DEFAULT 0");
-			}
-		}
+        // add new messageFlags field to message model table
+        for (String table : new String[]{"message", "m_group_message", "distribution_list_message"}) {
+            if (!fieldExists(this.sqLiteDatabase, table, "messageFlags")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN messageFlags INT DEFAULT 0");
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 62 (messageFlags)";
-	}
+    @Override
+    public String getText() {
+        return "version 62 (messageFlags)";
+    }
 }

@@ -169,7 +169,8 @@ class ContactModelRepository(
     @Synchronized
     fun getByIdentity(identity: String): ContactModel? {
         return cache.getOrCreate(identity) {
-            val dbContact = databaseBackend.getContactByIdentity(identity) ?: return@getOrCreate null
+            val dbContact =
+                databaseBackend.getContactByIdentity(identity) ?: return@getOrCreate null
             ContactModel(
                 identity = identity,
                 data = ContactModelDataFactory.toDataType(dbContact),

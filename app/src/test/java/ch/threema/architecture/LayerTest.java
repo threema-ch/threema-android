@@ -40,25 +40,27 @@ import static ch.threema.architecture.ArchitectureDefinitions.THREEMA_ROOT_PACKA
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 @RunWith(ArchUnitRunner.class)
-@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = { ArchitectureTestUtils.DoNotIncludeAndroidTests.class })
+@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
 public class LayerTest {
-	/** @noinspection unused*/
-	@ArchTest
-	public static final ArchRule classesInPredefinedLayers = classes().should().resideInAnyPackage(
-		PACKAGE_ANNOTATION,
-		PACKAGE_APP + "..",
-		PACKAGE_BASE + "..",
-		PACKAGE_DATA + "..",
-		PACKAGE_DOMAIN + "..",
-		PACKAGE_LOCALCRYPTO + "..",
-		PACKAGE_LOGGING + "..",
-		PACKAGE_STORAGE + ".."
-	).orShould().resideInAnyPackage(
-		"ch.threema.protobuf..",
-		"ch.threema.webrtc..",
-		"ch.threema.taskmanager..",
-		"ch.threema.testhelpers..",
-		"ch.threema.libthreema.."
-	);
+    /**
+     * @noinspection unused
+     */
+    @ArchTest
+    public static final ArchRule classesInPredefinedLayers = classes().should().resideInAnyPackage(
+        PACKAGE_ANNOTATION,
+        PACKAGE_APP + "..",
+        PACKAGE_BASE + "..",
+        PACKAGE_DATA + "..",
+        PACKAGE_DOMAIN + "..",
+        PACKAGE_LOCALCRYPTO + "..",
+        PACKAGE_LOGGING + "..",
+        PACKAGE_STORAGE + ".."
+    ).orShould().resideInAnyPackage(
+        "ch.threema.protobuf..",
+        "ch.threema.webrtc..",
+        "ch.threema.taskmanager..",
+        "ch.threema.testhelpers..",
+        "ch.threema.libthreema.."
+    );
 
 }

@@ -70,10 +70,16 @@ class IncomingGroupReactionMessageTask(
         val receiver = groupService.createReceiver(groupModel)
         val targetMessage = runCommonReactionMessageReceiveSteps(message, receiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
-        val emojiSequence = runCommonReactionMessageReceiveEmojiSequenceConversion(message.data.emojiSequenceBytes)
-            ?: return ReceiveStepsResult.DISCARD
+        val emojiSequence =
+            runCommonReactionMessageReceiveEmojiSequenceConversion(message.data.emojiSequenceBytes)
+                ?: return ReceiveStepsResult.DISCARD
 
-        messageService.saveEmojiReactionMessage(targetMessage, message.fromIdentity, message.data.actionCase, emojiSequence)
+        messageService.saveEmojiReactionMessage(
+            targetMessage,
+            message.fromIdentity,
+            message.data.actionCase,
+            emojiSequence
+        )
 
         return ReceiveStepsResult.SUCCESS
     }

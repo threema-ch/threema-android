@@ -53,5 +53,5 @@ internal class D2mController(configuration: D2mConnectionConfiguration) :
 
     override val ioProcessingStoppedSignal = CompletableDeferred<Unit>()
 
-    override val reflectionQueueDry  = CompletableDeferred<Unit>()
+    override val reflectionQueueDry = CompletableDeferred<Unit>()
 }

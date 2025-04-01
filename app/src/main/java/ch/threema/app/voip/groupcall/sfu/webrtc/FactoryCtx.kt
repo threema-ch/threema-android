@@ -28,8 +28,8 @@ import org.webrtc.*
 import org.webrtc.audio.JavaAudioDeviceModule
 
 class FactoryCtx(
-        context: Context,
-        val parameters: Parameters,
+    context: Context,
+    val parameters: Parameters,
 ) {
     data class Parameters(
         val acousticEchoCancelerMode: AecMode,
@@ -61,9 +61,9 @@ class FactoryCtx(
     init {
         // Apply audio device settings
         val audioDeviceModule = JavaAudioDeviceModule.builder(context)
-                .setUseHardwareAcousticEchoCanceler(parameters.acousticEchoCancelerMode == Parameters.AecMode.HARDWARE)
-                .setUseHardwareNoiseSuppressor(true)
-                .createAudioDeviceModule()
+            .setUseHardwareAcousticEchoCanceler(parameters.acousticEchoCancelerMode == Parameters.AecMode.HARDWARE)
+            .setUseHardwareNoiseSuppressor(true)
+            .createAudioDeviceModule()
 
         // Determine video encoder/decoder factories
         val (encoder, decoder) = parameters.hardwareVideoCodecs.let { hardwareVideoCodecs ->
@@ -88,11 +88,12 @@ class FactoryCtx(
             }
         }
         logger.trace("Creating peer connection factory")
-        _factory = checkNotNull(PeerConnectionFactory.builder()
-            .setAudioDeviceModule(audioDeviceModule)
-            .setVideoEncoderFactory(encoder)
-            .setVideoDecoderFactory(decoder)
-            .createPeerConnectionFactory()
+        _factory = checkNotNull(
+            PeerConnectionFactory.builder()
+                .setAudioDeviceModule(audioDeviceModule)
+                .setVideoEncoderFactory(encoder)
+                .setVideoDecoderFactory(decoder)
+                .createPeerConnectionFactory()
         )
         audioDeviceModule.release()
 

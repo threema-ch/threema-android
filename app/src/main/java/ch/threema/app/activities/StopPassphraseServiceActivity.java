@@ -40,43 +40,43 @@ import ch.threema.localcrypto.MasterKey;
  * Simple activity to stop passphrase service, lock master key and finish the app removing it from recents list - to be used from the persistent notification
  */
 public class StopPassphraseServiceActivity extends Activity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("StopPassphraseServiceActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("StopPassphraseServiceActivity");
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		MasterKey masterKey = ThreemaApplication.getMasterKey();
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		ServerConnection connection = null;
-		NotificationService notificationService = null;
+        MasterKey masterKey = ThreemaApplication.getMasterKey();
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        ServerConnection connection = null;
+        NotificationService notificationService = null;
 
-		if (serviceManager != null) {
-			connection = serviceManager.getConnection();
-			notificationService = serviceManager.getNotificationService();
-		}
+        if (serviceManager != null) {
+            connection = serviceManager.getConnection();
+            notificationService = serviceManager.getNotificationService();
+        }
 
-		if (masterKey.isProtected()) {
-			if (!masterKey.isLocked()) {
-				if (connection != null && connection.isRunning()) {
-					try {
-						connection.stop();
-					} catch (InterruptedException e) {
-						logger.error("Interrupted in onCreate while stopping threema connection", e);
-						Thread.currentThread().interrupt();
-					}
-				}
+        if (masterKey.isProtected()) {
+            if (!masterKey.isLocked()) {
+                if (connection != null && connection.isRunning()) {
+                    try {
+                        connection.stop();
+                    } catch (InterruptedException e) {
+                        logger.error("Interrupted in onCreate while stopping threema connection", e);
+                        Thread.currentThread().interrupt();
+                    }
+                }
 
-				if (notificationService != null){
-					notificationService.cancelConversationNotificationsOnLockApp();
-				}
+                if (notificationService != null) {
+                    notificationService.cancelConversationNotificationsOnLockApp();
+                }
 
-				masterKey.lock();
-				PassphraseService.stop(this);
-				ConfigUtils.scheduleAppRestart(this, 2000, null);
-			}
-		}
+                masterKey.lock();
+                PassphraseService.stop(this);
+                ConfigUtils.scheduleAppRestart(this, 2000, null);
+            }
+        }
 
-		finishAndRemoveTask();
-	}
+        finishAndRemoveTask();
+    }
 }

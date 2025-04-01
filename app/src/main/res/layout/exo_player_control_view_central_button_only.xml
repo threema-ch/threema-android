@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<LinearLayout
-		android:id="@id/exo_center_controls"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:background="@android:color/transparent"
-		android:gravity="center"
-		android:padding="@dimen/exo_styled_controls_padding"
-		android:clipToPadding="false"
-		android:layoutDirection="ltr">
+    <LinearLayout
+        android:id="@id/exo_center_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:padding="@dimen/exo_styled_controls_padding"
+        android:clipToPadding="false"
+        android:layoutDirection="ltr">
 
-	<ImageButton android:id="@id/exo_play_pause"
-		style="@style/ExoStyledControls.Button.Center.PlayPause"/>
+        <ImageButton
+            android:id="@id/exo_play_pause"
+            style="@style/ExoStyledControls.Button.Center.PlayPause" />
 
-	</LinearLayout>
+    </LinearLayout>
 
 </merge>

@@ -24,25 +24,25 @@ package ch.threema.domain.onprem;
 import java.util.Date;
 
 public class OnPremLicense {
-	private final String id;
-	private final Date expires;
-	private final int count;
+    private final String id;
+    private final Date expires;
+    private final int count;
 
-	public OnPremLicense(String id, Date expires, int count) {
-		this.id = id;
-		this.expires = expires;
-		this.count = count;
-	}
+    public OnPremLicense(String id, Date expires, int count) {
+        this.id = id;
+        this.expires = expires;
+        this.count = count;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public Date getExpires() {
-		return expires;
-	}
+    public Date getExpires() {
+        return expires;
+    }
 
-	public int getCount() {
-		return count;
-	}
+    public int getCount() {
+        return count;
+    }
 }

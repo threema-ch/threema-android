@@ -45,53 +45,53 @@ import ch.threema.domain.stores.IdentityStoreInterface;
  * Send (only in work build) the infos to the work info resource
  */
 public class UpdateWorkInfoRoutine implements Runnable {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateWorkInfoRoutine");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateWorkInfoRoutine");
 
-	private final APIConnector apiConnector;
-	private final IdentityStoreInterface identityStore;
-	private final DeviceService deviceService;
-	private final LicenseService licenseService;
-	private final Context context;
+    private final APIConnector apiConnector;
+    private final IdentityStoreInterface identityStore;
+    private final DeviceService deviceService;
+    private final LicenseService licenseService;
+    private final Context context;
 
-	public UpdateWorkInfoRoutine(
-		Context context,
-		APIConnector apiConnector,
-		IdentityStoreInterface identityStore,
-		DeviceService deviceService,
-		LicenseService licenseService
-	) {
-		this.context = context;
-		this.apiConnector = apiConnector;
-		this.identityStore = identityStore;
-		this.deviceService = deviceService;
-		this.licenseService = licenseService;
-	}
+    public UpdateWorkInfoRoutine(
+        Context context,
+        APIConnector apiConnector,
+        IdentityStoreInterface identityStore,
+        DeviceService deviceService,
+        LicenseService licenseService
+    ) {
+        this.context = context;
+        this.apiConnector = apiConnector;
+        this.identityStore = identityStore;
+        this.deviceService = deviceService;
+        this.licenseService = licenseService;
+    }
 
-	@Override
-	public void run() {
-		if(!ConfigUtils.isWorkBuild()) {
-			//ignore on a not-work build
-			return;
-		}
+    @Override
+    public void run() {
+        if (!ConfigUtils.isWorkBuild()) {
+            //ignore on a not-work build
+            return;
+        }
 
-		if (this.deviceService == null || this.deviceService.isOnline()) {
-			logger.info("Update work info");
+        if (this.deviceService == null || this.deviceService.isOnline()) {
+            logger.info("Update work info");
 
-			UserCredentials userCredentials = ((LicenseServiceUser) this.licenseService).loadCredentials();
+            UserCredentials userCredentials = ((LicenseServiceUser) this.licenseService).loadCredentials();
 
-			if(userCredentials == null) {
-				logger.error("no credentials found");
-				return;
-			}
+            if (userCredentials == null) {
+                logger.error("no credentials found");
+                return;
+            }
 
-			try {
-				String mdmFirstName = AppRestrictionUtil.getStringRestriction(this.context.getString(
-					R.string.restriction__firstname
-				));
+            try {
+                String mdmFirstName = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                    R.string.restriction__firstname
+                ));
 
-				String mdmLastName = AppRestrictionUtil.getStringRestriction(this.context.getString(
-					R.string.restriction__lastname
-				));
+                String mdmLastName = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                    R.string.restriction__lastname
+                ));
 
                 String mdmJobTitle = AppRestrictionUtil.getStringRestriction(this.context.getString(
                     R.string.restriction__job_title
@@ -102,73 +102,72 @@ public class UpdateWorkInfoRoutine implements Runnable {
                 ));
 
                 String mdmCSI = AppRestrictionUtil.getStringRestriction(this.context.getString(
-					R.string.restriction__csi
-				));
+                    R.string.restriction__csi
+                ));
 
-				String mdmCategory= AppRestrictionUtil.getStringRestriction(this.context.getString(
-					R.string.restriction__category
-				));
+                String mdmCategory = AppRestrictionUtil.getStringRestriction(this.context.getString(
+                    R.string.restriction__category
+                ));
 
-				if (this.apiConnector.updateWorkInfo(
-						userCredentials.username,
-						userCredentials.password,
-						this.identityStore,
-						mdmFirstName,
-						mdmLastName,
-                        mdmJobTitle,
-                        mdmDepartment,
-						mdmCSI,
-						mdmCategory,
-						AppRestrictionService.getInstance().getMdmSource()
-				)) {
-					logger.debug("work info successfully updated");
-				}
-				else {
-					logger.error("failed to update work info");
-				}
-			} catch (Exception x) {
-				logger.error("Exception", x);
-			}
-		}
-		else {
-			logger.error("device is not online");
-		}
-	}
+                if (this.apiConnector.updateWorkInfo(
+                    userCredentials.username,
+                    userCredentials.password,
+                    this.identityStore,
+                    mdmFirstName,
+                    mdmLastName,
+                    mdmJobTitle,
+                    mdmDepartment,
+                    mdmCSI,
+                    mdmCategory,
+                    AppRestrictionService.getInstance().getMdmSource()
+                )) {
+                    logger.debug("work info successfully updated");
+                } else {
+                    logger.error("failed to update work info");
+                }
+            } catch (Exception x) {
+                logger.error("Exception", x);
+            }
+        } else {
+            logger.error("device is not online");
+        }
+    }
 
-	/**
-	 * start a update in a new thread
-	 * @return the new created thread or null if the thread could not be created
-	 */
-	@Nullable
-	public static Thread start() {
-		UpdateWorkInfoRoutine updateWorkInfoRoutine = create();
-		if (updateWorkInfoRoutine != null) {
-			Thread t = new Thread(updateWorkInfoRoutine);
-			t.start();
-			return t;
-		} else {
-			return null;
-		}
-	}
+    /**
+     * start a update in a new thread
+     *
+     * @return the new created thread or null if the thread could not be created
+     */
+    @Nullable
+    public static Thread start() {
+        UpdateWorkInfoRoutine updateWorkInfoRoutine = create();
+        if (updateWorkInfoRoutine != null) {
+            Thread t = new Thread(updateWorkInfoRoutine);
+            t.start();
+            return t;
+        } else {
+            return null;
+        }
+    }
 
-	@Nullable
-	public static UpdateWorkInfoRoutine create() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+    @Nullable
+    public static UpdateWorkInfoRoutine create() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if(serviceManager == null) {
-			return null;
-		}
-		try {
-			return new UpdateWorkInfoRoutine(
-				serviceManager.getContext(),
-				serviceManager.getAPIConnector(),
-				serviceManager.getIdentityStore(),
-				serviceManager.getDeviceService(),
-				serviceManager.getLicenseService()
-			);
-		} catch (FileSystemNotPresentException e) {
-			logger.error("File system not present", e);
-			return null;
-		}
-	}
+        if (serviceManager == null) {
+            return null;
+        }
+        try {
+            return new UpdateWorkInfoRoutine(
+                serviceManager.getContext(),
+                serviceManager.getAPIConnector(),
+                serviceManager.getIdentityStore(),
+                serviceManager.getDeviceService(),
+                serviceManager.getLicenseService()
+            );
+        } catch (FileSystemNotPresentException e) {
+            logger.error("File system not present", e);
+            return null;
+        }
+    }
 }

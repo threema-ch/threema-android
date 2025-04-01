@@ -34,30 +34,30 @@ import androidx.annotation.WorkerThread;
  */
 @WorkerThread
 abstract public class MessageReceiver extends MessageHandler {
-	@AnyThread
-	public MessageReceiver(String subType) {
-		super(subType);
-	}
+    @AnyThread
+    public MessageReceiver(String subType) {
+        super(subType);
+    }
 
-	protected abstract void receive(Map<String, Value> message) throws MessagePackException;
+    protected abstract void receive(Map<String, Value> message) throws MessagePackException;
 
-	protected boolean receive(String subType, Map<String, Value> message) throws MessagePackException {
-		// Are we receiving this sub type?
-		if (subType.equals(this.subType)) {
-			this.receive(message);
-			return true;
-		} else {
-			return false;
-		}
-	}
+    protected boolean receive(String subType, Map<String, Value> message) throws MessagePackException {
+        // Are we receiving this sub type?
+        if (subType.equals(this.subType)) {
+            this.receive(message);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * If this method returns `true`, then after processing the data the dispatcher will check
-	 * whether any outgoing messages have been enqueued. If there are outgoing messages in the queue
-	 * and the app is disconnected, the connection will be opened to send those messages.
-	 *
-	 * A handler like the `TextMessageCreateHandler` should return `true`, while a handler like
-	 * `BatteryStatusRequestHandler` should return `false`.
-	 */
-	protected abstract boolean maybeNeedsConnection();
+    /**
+     * If this method returns `true`, then after processing the data the dispatcher will check
+     * whether any outgoing messages have been enqueued. If there are outgoing messages in the queue
+     * and the app is disconnected, the connection will be opened to send those messages.
+     * <p>
+     * A handler like the `TextMessageCreateHandler` should return `true`, while a handler like
+     * `BatteryStatusRequestHandler` should return `false`.
+     */
+    protected abstract boolean maybeNeedsConnection();
 }

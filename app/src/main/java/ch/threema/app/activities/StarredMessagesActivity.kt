@@ -70,7 +70,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener, SelectorDialog.SelectorDialogClickListener,
+class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener,
+    SelectorDialog.SelectorDialogClickListener,
     GenericAlertDialog.DialogClickListener {
     private val STARRED_MESSSAGES_SEARCH_QUERY_TIMEOUT_MS: Long = 500
     private var chatsAdapter: GlobalSearchAdapter? = null
@@ -88,13 +89,19 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
     private var queryText: String? = null
     private val queryHandler = Handler(Looper.getMainLooper())
     private val queryTask = Runnable {
-        globalSearchViewModel?.onQueryChanged(queryText, filterFlags, true, sortOrder == PreferenceService.StarredMessagesSortOrder_DATE_ASCENDING)
+        globalSearchViewModel?.onQueryChanged(
+            queryText,
+            filterFlags,
+            true,
+            sortOrder == PreferenceService.StarredMessagesSortOrder_DATE_ASCENDING
+        )
         chatsAdapter?.onQueryChanged(queryText)
     }
-    private val showMessageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
-        // starred status may have changed when returning from ComposeMessageFragment
-        globalSearchViewModel?.onDataChanged()
-    }
+    private val showMessageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
+            // starred status may have changed when returning from ComposeMessageFragment
+            globalSearchViewModel?.onDataChanged()
+        }
 
     override fun onQueryTextSubmit(query: String): Boolean {
         return true
@@ -106,7 +113,12 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
         if (queryText?.isNotEmpty() == true) {
             queryHandler.postDelayed(queryTask, STARRED_MESSSAGES_SEARCH_QUERY_TIMEOUT_MS)
         } else {
-            globalSearchViewModel?.onQueryChanged(null, filterFlags, true, sortOrder == PreferenceService.StarredMessagesSortOrder_DATE_ASCENDING)
+            globalSearchViewModel?.onQueryChanged(
+                null,
+                filterFlags,
+                true,
+                sortOrder == PreferenceService.StarredMessagesSortOrder_DATE_ASCENDING
+            )
             chatsAdapter?.onQueryChanged(null)
         }
         return true
@@ -134,7 +146,8 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
             return false
         }
 
-        sortOrder = preferenceService?.starredMessagesSortOrder ?: PreferenceService.StarredMessagesSortOrder_DATE_DESCENDING
+        sortOrder = preferenceService?.starredMessagesSortOrder
+            ?: PreferenceService.StarredMessagesSortOrder_DATE_DESCENDING
 
         if (supportActionBar != null) {
             searchBar = toolbar as SearchBar
@@ -159,7 +172,11 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
             50
         )
         chatsAdapter?.setOnClickItemListener(object : GlobalSearchAdapter.OnClickItemListener {
-            override fun onClick(messageModel: AbstractMessageModel?, itemView: View, position: Int) {
+            override fun onClick(
+                messageModel: AbstractMessageModel?,
+                itemView: View,
+                position: Int
+            ) {
                 if (actionMode != null) {
                     chatsAdapter?.toggleChecked(position)
                     if ((chatsAdapter?.checkedItemsCount ?: 0) > 0) {
@@ -199,13 +216,15 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
         emptyView.setLoading(true)
         recyclerView.adapter = chatsAdapter
 
-        globalSearchViewModel = ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
-            globalSearchViewModel.messageModels.observe(this) { messages ->
-                emptyView.setLoading(false)
-                chatsAdapter?.setMessageModels(messages)
-                removeStarsMenuItem?.isVisible = messages.isNotEmpty() && (searchView?.isIconified ?: false)
+        globalSearchViewModel =
+            ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
+                globalSearchViewModel.messageModels.observe(this) { messages ->
+                    emptyView.setLoading(false)
+                    chatsAdapter?.setMessageModels(messages)
+                    removeStarsMenuItem?.isVisible =
+                        messages.isNotEmpty() && (searchView?.isIconified ?: false)
+                }
             }
-        }
 
         onQueryTextChange(null)
         return true
@@ -248,7 +267,12 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
 
         removeStarsMenuItem = menu.findItem(R.id.menu_remove_stars)
         removeStarsMenuItem?.setOnMenuItemClickListener {
-            GenericAlertDialog.newInstance(R.string.remove_all_stars, R.string.really_remove_all_stars, R.string.yes, R.string.no)
+            GenericAlertDialog.newInstance(
+                R.string.remove_all_stars,
+                R.string.really_remove_all_stars,
+                R.string.yes,
+                R.string.no
+            )
                 .show(supportFragmentManager, "rem")
             false
         }
@@ -291,7 +315,11 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
 
                 }
 
-                ListenerManager.messageListeners.handle { listener -> listener.onModified(checkedItems) }
+                ListenerManager.messageListeners.handle { listener ->
+                    listener.onModified(
+                        checkedItems
+                    )
+                }
                 checkedItems.clear()
 
                 withContext(Dispatchers.Main) {
@@ -368,6 +396,7 @@ class StarredMessagesActivity : ThreemaToolbarActivity(), SearchView.OnQueryText
     companion object {
         private val logger = LoggingUtil.getThreemaLogger("StarredMessagesActivity")
         private const val DIALOG_TAG_SORT_BY = "sortBy"
-        private const val filterFlags = FILTER_STARRED_ONLY or FILTER_GROUPS or FILTER_CHATS or FILTER_INCLUDE_ARCHIVED
+        private const val filterFlags =
+            FILTER_STARRED_ONLY or FILTER_GROUPS or FILTER_CHATS or FILTER_INCLUDE_ARCHIVED
     }
 }

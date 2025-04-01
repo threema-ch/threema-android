@@ -101,7 +101,8 @@ class GroupCallParticipantsAdapter(
         var participant: Participant? = null
         val videoView: ParticipantSurfaceViewRenderer = itemView.findViewById(R.id.video_view)
 
-        private val microphoneMuted: ImageView = itemView.findViewById(R.id.participant_microphone_muted)
+        private val microphoneMuted: ImageView =
+            itemView.findViewById(R.id.participant_microphone_muted)
         private var subscribeCameraJob: Job? = null
 
         private val eglBaseContext = eglBase.eglBaseContext
@@ -352,7 +353,8 @@ class GroupCallParticipantsAdapter(
 
     @UiThread
     private fun hasItemHeightChanged(previousCount: Int, newCount: Int): Boolean {
-        return STABLE_HEIGHT_RANGES[orientation]?.any { previousCount in it && newCount !in it } ?: true
+        return STABLE_HEIGHT_RANGES[orientation]?.any { previousCount in it && newCount !in it }
+            ?: true
     }
 
     @UiThread

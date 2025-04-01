@@ -91,409 +91,403 @@ import static ch.threema.app.utils.StreamUtilKt.toByteArray;
 /**
  * This service class handle all user actions (db/identity....)
  */
-public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface  {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("UserServiceImpl");
+public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("UserServiceImpl");
 
     @NonNull
-	private final Context context;
+    private final Context context;
     @NonNull
-	private final PreferenceStoreInterface preferenceStore;
+    private final PreferenceStoreInterface preferenceStore;
     @NonNull
-	private final IdentityStore identityStore;
+    private final IdentityStore identityStore;
     @NonNull
-	private final APIConnector apiConnector;
+    private final APIConnector apiConnector;
     @NonNull
     private final ApiService apiService;
     @NonNull
     private final FileService fileService;
     @NonNull
-	private final LocaleService localeService;
+    private final LocaleService localeService;
     @NonNull
-	private final PreferenceService preferenceService;
+    private final PreferenceService preferenceService;
     @NonNull
-	private final TaskManager taskManager;
+    private final TaskManager taskManager;
     @NonNull
     private final TaskCreator taskCreator;
     @NonNull
     private final MultiDeviceManager multiDeviceManager;
-	private String policyResponseData;
-	private String policySignature;
-	private int policyErrorCode;
+    private String policyResponseData;
+    private String policySignature;
+    private int policyErrorCode;
     private LicenseService.Credentials credentials;
-	private Account account;
+    private Account account;
 
-	// TODO(ANDR-2519): Remove when md allows fs
-	private boolean isFsEnabled = true;
+    // TODO(ANDR-2519): Remove when md allows fs
+    private boolean isFsEnabled = true;
 
-	public UserServiceImpl(
-		@NonNull Context context,
-		@NonNull PreferenceStoreInterface preferenceStore,
-		@NonNull LocaleService localeService,
-		@NonNull APIConnector apiConnector,
+    public UserServiceImpl(
+        @NonNull Context context,
+        @NonNull PreferenceStoreInterface preferenceStore,
+        @NonNull LocaleService localeService,
+        @NonNull APIConnector apiConnector,
         @NonNull ApiService apiService,
         @NonNull FileService fileService,
-		@NonNull IdentityStore identityStore,
-		@NonNull PreferenceService preferenceService,
+        @NonNull IdentityStore identityStore,
+        @NonNull PreferenceService preferenceService,
         @NonNull TaskManager taskManager,
         @NonNull TaskCreator taskCreator,
         @NonNull MultiDeviceManager multiDeviceManager
-	) {
-		this.context = context;
-		this.preferenceStore = preferenceStore;
-		this.localeService = localeService;
-		this.identityStore = identityStore;
-		this.apiConnector = apiConnector;
+    ) {
+        this.context = context;
+        this.preferenceStore = preferenceStore;
+        this.localeService = localeService;
+        this.identityStore = identityStore;
+        this.apiConnector = apiConnector;
         this.apiService = apiService;
         this.fileService = fileService;
-		this.preferenceService = preferenceService;
+        this.preferenceService = preferenceService;
         this.taskCreator = taskCreator;
         this.taskManager = taskManager;
         this.multiDeviceManager = multiDeviceManager;
-	}
+    }
 
-	@Override
-	public void createIdentity(byte[] newRandomSeed) throws Exception {
-		if (this.hasIdentity()) {
-			throw new ThreemaException("please remove your existing identity " + this.getIdentity());
-		}
+    @Override
+    public void createIdentity(byte[] newRandomSeed) throws Exception {
+        if (this.hasIdentity()) {
+            throw new ThreemaException("please remove your existing identity " + this.getIdentity());
+        }
 
-		// no need to send a request if we have no licence
-		// note that CheckLicenseRoutine may not have received an upstream response yet.
-		if (policySignature == null && policyResponseData == null && credentials == null
-			&& !(BuildFlavor.getCurrent().getLicenseType().equals(BuildFlavor.LicenseType.NONE))
-		) {
-			throw new ThreemaException(context.getString(R.string.missing_app_licence) + "\n" + context.getString(R.string.app_store_error_code, policyErrorCode));    /* Create identity phase 1 unsuccessful:*/
-		}
-		else {
-			this.apiConnector.createIdentity(
-				this.identityStore,
-				newRandomSeed,
-				this
-			);
-		}
+        // no need to send a request if we have no licence
+        // note that CheckLicenseRoutine may not have received an upstream response yet.
+        if (policySignature == null && policyResponseData == null && credentials == null
+            && !(BuildFlavor.getCurrent().getLicenseType().equals(BuildFlavor.LicenseType.NONE))
+        ) {
+            throw new ThreemaException(context.getString(R.string.missing_app_licence) + "\n" + context.getString(R.string.app_store_error_code, policyErrorCode));    /* Create identity phase 1 unsuccessful:*/
+        } else {
+            this.apiConnector.createIdentity(
+                this.identityStore,
+                newRandomSeed,
+                this
+            );
+        }
 
-		// identity has been successfully created. set push token
-		PushUtil.enqueuePushTokenUpdate(context, false, false);
-	}
+        // identity has been successfully created. set push token
+        PushUtil.enqueuePushTokenUpdate(context, false, false);
+    }
 
-	@Override
-	public void removeIdentity() throws Exception {
-		if (!this.hasIdentity()) {
-			throw new ThreemaException("no identity to remove");
-		}
-		this.removeAccount();
-		this.identityStore.clear();
-	}
+    @Override
+    public void removeIdentity() throws Exception {
+        if (!this.hasIdentity()) {
+            throw new ThreemaException("no identity to remove");
+        }
+        this.removeAccount();
+        this.identityStore.clear();
+    }
 
-	@Override
-	public Account getAccount() {
-		return this.getAccount(false);
-	}
+    @Override
+    public Account getAccount() {
+        return this.getAccount(false);
+    }
 
-	@Override
-	public Account getAccount(boolean createIfNotExists) {
-		if (this.account == null) {
-			AccountManager accountManager = AccountManager.get(this.context);
+    @Override
+    public Account getAccount(boolean createIfNotExists) {
+        if (this.account == null) {
+            AccountManager accountManager = AccountManager.get(this.context);
 
-			try {
-				this.account = Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true);
-			} catch (SecurityException e) {
-				logger.error("Could not get account", e);
-			}
+            try {
+                this.account = Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true);
+            } catch (SecurityException e) {
+                logger.error("Could not get account", e);
+            }
 
-			//if sync enabled, create one!
-			if(this.account == null && (createIfNotExists || this.preferenceService.isSyncContacts())) {
-				this.account = new Account(context.getString(R.string.app_name), context.getString(R.string.package_name));
-				// TODO: crashes on some phones after update! java.lang.SecurityException: caller uid 10025 is different than the authenticator's uid
-				// This method requires the caller to have the same UID as the added account's authenticator.
-				try {
-					accountManager.addAccountExplicitly(this.account, "", null);
-					//auto enable sync
-					ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
-					if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
-						ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-					}
-				} catch (SecurityException e) {
-					logger.error("Could not add account", e);
-				}
-			}
+            //if sync enabled, create one!
+            if (this.account == null && (createIfNotExists || this.preferenceService.isSyncContacts())) {
+                this.account = new Account(context.getString(R.string.app_name), context.getString(R.string.package_name));
+                // TODO: crashes on some phones after update! java.lang.SecurityException: caller uid 10025 is different than the authenticator's uid
+                // This method requires the caller to have the same UID as the added account's authenticator.
+                try {
+                    accountManager.addAccountExplicitly(this.account, "", null);
+                    //auto enable sync
+                    ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
+                    if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
+                        ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                    }
+                } catch (SecurityException e) {
+                    logger.error("Could not add account", e);
+                }
+            }
 
-		}
-		return this.account;
-	}
+        }
+        return this.account;
+    }
 
-	@Override
-	public boolean checkAccount() {
-		AccountManager accountManager = AccountManager.get(this.context);
-		return Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true) != null;
-	}
+    @Override
+    public boolean checkAccount() {
+        AccountManager accountManager = AccountManager.get(this.context);
+        return Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true) != null;
+    }
 
-	@Override
-	public boolean enableAccountAutoSync(boolean enable) {
-		Account account = this.getAccount();
-		if(account != null) {
-			if(enable != ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
-				ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, enable);
-			}
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean enableAccountAutoSync(boolean enable) {
+        Account account = this.getAccount();
+        if (account != null) {
+            if (enable != ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
+                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, enable);
+            }
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public void removeAccount() {
-		this.removeAccount(null);
-	}
+    @Override
+    public void removeAccount() {
+        this.removeAccount(null);
+    }
 
-	@Override
-	public boolean removeAccount(AccountManagerCallback<Boolean> callback) {
-		Account a = this.getAccount(false);
-		if(a != null) {
-			AccountManager accountManager = AccountManager.get(this.context);
-			try {
-				accountManager.removeAccount(a, callback, null);
-			} catch (Exception e) {
-				logger.error("Unable to remove account", e);
-				return false;
-			}
-			this.account = null;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+    @Override
+    public boolean removeAccount(AccountManagerCallback<Boolean> callback) {
+        Account a = this.getAccount(false);
+        if (a != null) {
+            AccountManager accountManager = AccountManager.get(this.context);
+            try {
+                accountManager.removeAccount(a, callback, null);
+            } catch (Exception e) {
+                logger.error("Unable to remove account", e);
+                return false;
+            }
+            this.account = null;
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	@Override
-	public boolean hasIdentity() {
-		return this.getIdentity() != null;
-	}
+    @Override
+    public boolean hasIdentity() {
+        return this.getIdentity() != null;
+    }
 
-	@Override
-	public String getIdentity() {
-		return this.identityStore.getIdentity();
-	}
+    @Override
+    public String getIdentity() {
+        return this.identityStore.getIdentity();
+    }
 
-	@Override
-	public boolean isMe(@Nullable String identity) {
-		return identity != null && identity.equals(this.getIdentity());
-	}
+    @Override
+    public boolean isMe(@Nullable String identity) {
+        return identity != null && identity.equals(this.getIdentity());
+    }
 
-	@Override
-	public byte[] getPublicKey() {
-		return this.identityStore.getPublicKey();
-	}
+    @Override
+    public byte[] getPublicKey() {
+        return this.identityStore.getPublicKey();
+    }
 
-	@Override
-	public byte[] getPrivateKey() {
-		return this.identityStore.getPrivateKey();
-	}
+    @Override
+    public byte[] getPrivateKey() {
+        return this.identityStore.getPrivateKey();
+    }
 
-	@Override
-	public String getLinkedEmail() {
-		String email = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL);
-		return email!=null?email:"";
-	}
+    @Override
+    public String getLinkedEmail() {
+        String email = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL);
+        return email != null ? email : "";
+    }
 
-	@Override
-	public void linkWithEmail(String email) throws Exception {
-		boolean pending = this.apiConnector.linkEmail(
-				email,
-				this.getLanguage(),
-				this.identityStore);
+    @Override
+    public void linkWithEmail(String email) throws Exception {
+        boolean pending = this.apiConnector.linkEmail(
+            email,
+            this.getLanguage(),
+            this.identityStore);
 
-		this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, email);
-		this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL_PENDING, pending);
-	}
+        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, email);
+        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL_PENDING, pending);
+    }
 
-	@Override
-	public void unlinkEmail() throws Exception {
-		String email = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL);
-		if (email == null) {
-			throw new ThreemaException("no email linked");
-		}
+    @Override
+    public void unlinkEmail() throws Exception {
+        String email = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL);
+        if (email == null) {
+            throw new ThreemaException("no email linked");
+        }
 
-		this.apiConnector.linkEmail("", this.getLanguage(), this.identityStore);
-		this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL);
-		this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
-	}
+        this.apiConnector.linkEmail("", this.getLanguage(), this.identityStore);
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL);
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
+    }
 
-	@Override
-	public int getEmailLinkingState() {
-		if(this.preferenceStore.getBoolean(PreferenceStore.PREFS_LINKED_EMAIL_PENDING)) {
-			return LinkingState_PENDING;
-		}
-		else if(this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL) != null) {
-			return LinkingState_LINKED;
-		}
-		else {
-			return LinkingState_NONE;
-		}
-	}
+    @Override
+    public int getEmailLinkingState() {
+        if (this.preferenceStore.getBoolean(PreferenceStore.PREFS_LINKED_EMAIL_PENDING)) {
+            return LinkingState_PENDING;
+        } else if (this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_EMAIL) != null) {
+            return LinkingState_LINKED;
+        } else {
+            return LinkingState_NONE;
+        }
+    }
 
-	@Override
-	public void checkEmailLinkState() {
-		if(this.getEmailLinkingState() == LinkingState_PENDING) {
-			try {
-				if(this.apiConnector.linkEmailCheckStatus(this.getLinkedEmail(), this.identityStore)) {
-					this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
-				}
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    @Override
+    public void checkEmailLinkState() {
+        if (this.getEmailLinkingState() == LinkingState_PENDING) {
+            try {
+                if (this.apiConnector.linkEmailCheckStatus(this.getLinkedEmail(), this.identityStore)) {
+                    this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_EMAIL_PENDING);
+                }
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	@Override
-	public Date linkWithMobileNumber(String number) throws Exception {
-		Date linkWithMobileTime = new Date();
-		String normalizedMobileNo = this.localeService.getNormalizedPhoneNumber(number);
+    @Override
+    public Date linkWithMobileNumber(String number) throws Exception {
+        Date linkWithMobileTime = new Date();
+        String normalizedMobileNo = this.localeService.getNormalizedPhoneNumber(number);
 
-		if(normalizedMobileNo != null && normalizedMobileNo.length() > 0 && normalizedMobileNo.startsWith("+")) {
-			normalizedMobileNo = normalizedMobileNo.substring(1);
-		}
+        if (normalizedMobileNo != null && normalizedMobileNo.length() > 0 && normalizedMobileNo.startsWith("+")) {
+            normalizedMobileNo = normalizedMobileNo.substring(1);
+        }
 
-		String verificationId = this.apiConnector.linkMobileNo(
-				normalizedMobileNo,
-				this.getLanguage(),
-				this.identityStore,
-				(BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
-                    BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.HMS_WORK)
-					? "threemawork" : null
-		);
+        String verificationId = this.apiConnector.linkMobileNo(
+            normalizedMobileNo,
+            this.getLanguage(),
+            this.identityStore,
+            (BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.GOOGLE_WORK ||
+                BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.HMS_WORK)
+                ? "threemawork" : null
+        );
 
-		this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, number);
+        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, number);
 
-		if (verificationId == null) {
-			throw new ThreemaException(this.context.getResources().getString(R.string.mobile_already_linked));
-		}
+        if (verificationId == null) {
+            throw new ThreemaException(this.context.getResources().getString(R.string.mobile_already_linked));
+        }
 
-		this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, System.currentTimeMillis());
-		this.preferenceStore.save(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID, verificationId);
+        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, System.currentTimeMillis());
+        this.preferenceStore.save(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID, verificationId);
 
-		ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerificationStarted);
+        ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerificationStarted);
 
-		return linkWithMobileTime;
-	}
+        return linkWithMobileTime;
+    }
 
-	@Override
-	public void makeMobileLinkCall() throws Exception {
-		if(this.getMobileLinkingState() != LinkingState_PENDING) {
-			throw new ThreemaException("no verification in progress");
-		}
+    @Override
+    public void makeMobileLinkCall() throws Exception {
+        if (this.getMobileLinkingState() != LinkingState_PENDING) {
+            throw new ThreemaException("no verification in progress");
+        }
 
-		this.apiConnector.linkMobileNoCall(getCurrentMobileNumberVerificationId());
-	}
+        this.apiConnector.linkMobileNoCall(getCurrentMobileNumberVerificationId());
+    }
 
-	private String getCurrentMobileNumberVerificationId() {
-		return this.preferenceStore.getString(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
-	}
+    private String getCurrentMobileNumberVerificationId() {
+        return this.preferenceStore.getString(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
+    }
 
-	private String getCurrentMobileNumber() {
-		return this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
-	}
+    private String getCurrentMobileNumber() {
+        return this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
+    }
 
-	@Override
-	public void unlinkMobileNumber() throws Exception {
-		String mobileNumber = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
-		if (mobileNumber == null) {
+    @Override
+    public void unlinkMobileNumber() throws Exception {
+        String mobileNumber = this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
+        if (mobileNumber == null) {
 
-			String currentMobileNumber = getCurrentMobileNumber();
-			if(currentMobileNumber == null || currentMobileNumber.length() == 0) {
-				throw new ThreemaException("no mobile number linked");
-			}
-		}
+            String currentMobileNumber = getCurrentMobileNumber();
+            if (currentMobileNumber == null || currentMobileNumber.length() == 0) {
+                throw new ThreemaException("no mobile number linked");
+            }
+        }
 
-		this.apiConnector.linkMobileNo("", this.getLanguage(), this.identityStore);
-		this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE);
-		this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
-		this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
+        this.apiConnector.linkMobileNo("", this.getLanguage(), this.identityStore);
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE);
+        this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
+        this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
 
-		ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
-	}
+        ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
+    }
 
-	@Override
-	public boolean verifyMobileNumber(String code) throws Exception {
-		if (this.getMobileLinkingState() == LinkingState_PENDING) {
-			this.apiConnector.linkMobileNoVerify(getCurrentMobileNumberVerificationId(), code);
+    @Override
+    public boolean verifyMobileNumber(String code) throws Exception {
+        if (this.getMobileLinkingState() == LinkingState_PENDING) {
+            this.apiConnector.linkMobileNoVerify(getCurrentMobileNumberVerificationId(), code);
 
-			//verification ok, save phone number
-			this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
-			this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
+            //verification ok, save phone number
+            this.preferenceStore.remove(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
+            this.preferenceStore.remove(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID);
 
-			ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
-			return true;
-		}
+            ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerified);
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public String getLinkedMobileE164() {
-		return this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
-	}
+    @Override
+    public String getLinkedMobileE164() {
+        return this.preferenceStore.getString(PreferenceStore.PREFS_LINKED_MOBILE);
+    }
 
-	@Override
-	public String getLinkedMobile() {
-		String linkedMobile = getLinkedMobileE164();
+    @Override
+    public String getLinkedMobile() {
+        String linkedMobile = getLinkedMobileE164();
 
-		if (PHONE_LINKED_PLACEHOLDER.equals(linkedMobile)) {
-			return linkedMobile;
-		}
+        if (PHONE_LINKED_PLACEHOLDER.equals(linkedMobile)) {
+            return linkedMobile;
+        }
 
-		if (TestUtil.isEmptyOrNull(linkedMobile)) {
-			return null;
-		}
-		return "+" + linkedMobile;
-	}
+        if (TestUtil.isEmptyOrNull(linkedMobile)) {
+            return null;
+        }
+        return "+" + linkedMobile;
+    }
 
-	@Override
-	public String getLinkedMobile(boolean returnPendingNumber) {
-		String currentMobileNumber = getCurrentMobileNumber();
-		if(currentMobileNumber != null && currentMobileNumber.length() > 0) {
-			return currentMobileNumber;
-		}
+    @Override
+    public String getLinkedMobile(boolean returnPendingNumber) {
+        String currentMobileNumber = getCurrentMobileNumber();
+        if (currentMobileNumber != null && currentMobileNumber.length() > 0) {
+            return currentMobileNumber;
+        }
 
-		return this.getLinkedMobile();
-	}
+        return this.getLinkedMobile();
+    }
 
-	@Override
-	public int getMobileLinkingState() {
-		if(this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING) > 0) {
-			return LinkingState_PENDING;
-		}
-		else if(this.getLinkedMobile() != null) {
-			return LinkingState_LINKED;
-		}
-		else {
-			return LinkingState_NONE;
-		}
-	}
+    @Override
+    public int getMobileLinkingState() {
+        if (this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING) > 0) {
+            return LinkingState_PENDING;
+        } else if (this.getLinkedMobile() != null) {
+            return LinkingState_LINKED;
+        } else {
+            return LinkingState_NONE;
+        }
+    }
 
-	@Override
-	public long getMobileLinkingTime() {
-		return this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
-	}
+    @Override
+    public long getMobileLinkingTime() {
+        return this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
+    }
 
-	@Override
-	public String getPublicNickname() {
-		return this.identityStore.getPublicNickname();
-	}
+    @Override
+    public String getPublicNickname() {
+        return this.identityStore.getPublicNickname();
+    }
 
-	@Override
-	public String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource) {
+    @Override
+    public String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource) {
         final @NonNull String oldNickname = this.identityStore.getPublicNickname();
-		// truncate string into a 32 byte length string
-		// fix #ANDR-530
-		final @Nullable String publicNicknameTruncated = Utils.truncateUTF8String(
+        // truncate string into a 32 byte length string
+        // fix #ANDR-530
+        final @Nullable String publicNicknameTruncated = Utils.truncateUTF8String(
             publicNickname,
             ProtocolDefines.PUSH_FROM_LEN
         );
-		this.identityStore.persistPublicNickname(publicNicknameTruncated);
-		// run update work info (only if the app is the work version)
-		if (ConfigUtils.isWorkBuild()) {
-			UpdateWorkInfoRoutine.start();
-		}
+        this.identityStore.persistPublicNickname(publicNicknameTruncated);
+        // run update work info (only if the app is the work version)
+        if (ConfigUtils.isWorkBuild()) {
+            UpdateWorkInfoRoutine.start();
+        }
         if (publicNicknameTruncated != null && !publicNicknameTruncated.equals(oldNickname)
             && multiDeviceManager.isMultiDeviceActive()
             && triggerSource != TriggerSource.SYNC) {
@@ -504,8 +498,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
                 )
             );
         }
-		return publicNicknameTruncated;
-	}
+        return publicNicknameTruncated;
+    }
 
     @Override
     @Nullable
@@ -524,7 +518,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
             onUserProfilePictureChanged();
             if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
-               taskCreator.scheduleReflectUserProfilePictureTask();
+                taskCreator.scheduleReflectUserProfilePictureTask();
             }
             return true;
         } catch (Exception e) {
@@ -642,232 +636,228 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     private String getLanguage() {
-		return LocaleUtil.getLanguage();
-	}
+        return LocaleUtil.getLanguage();
+    }
 
-	@Override
-	public boolean restoreIdentity(final String backupString, final String password) throws Exception {
-		final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(backupString);
-		if(!identityBackupDecoder.decode(password)) {
-			return false;
-		}
+    @Override
+    public boolean restoreIdentity(final String backupString, final String password) throws Exception {
+        final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(backupString);
+        if (!identityBackupDecoder.decode(password)) {
+            return false;
+        }
 
-		return restoreIdentity(identityBackupDecoder.getIdentity(), identityBackupDecoder.getPrivateKey(), identityBackupDecoder.getPublicKey());
-	}
+        return restoreIdentity(identityBackupDecoder.getIdentity(), identityBackupDecoder.getPrivateKey(), identityBackupDecoder.getPublicKey());
+    }
 
-	@Override
-	public boolean restoreIdentity(@NonNull String identity, @NonNull byte[] privateKey, @NonNull byte[] publicKey) throws Exception {
-		IdentityStoreInterface temporaryIdentityStore = new IdentityStore(new PreferenceStoreInterfaceDevNullImpl());
-		//store identity without server group
-		temporaryIdentityStore.storeIdentity(
-				identity,
-				"",
-				publicKey,
-				privateKey
-		);
-		//fetching identity group
-		APIConnector.FetchIdentityPrivateResult result = this.apiConnector.fetchIdentityPrivate(temporaryIdentityStore);
+    @Override
+    public boolean restoreIdentity(@NonNull String identity, @NonNull byte[] privateKey, @NonNull byte[] publicKey) throws Exception {
+        IdentityStoreInterface temporaryIdentityStore = new IdentityStore(new PreferenceStoreInterfaceDevNullImpl());
+        //store identity without server group
+        temporaryIdentityStore.storeIdentity(
+            identity,
+            "",
+            publicKey,
+            privateKey
+        );
+        //fetching identity group
+        APIConnector.FetchIdentityPrivateResult result = this.apiConnector.fetchIdentityPrivate(temporaryIdentityStore);
 
-		if(result == null) {
-			throw new ThreemaException("fetching private identity data failed");
-		}
+        if (result == null) {
+            throw new ThreemaException("fetching private identity data failed");
+        }
 
-		this.removeAccount();
+        this.removeAccount();
 
-		//store to the REAL identity store!
-		this.identityStore.storeIdentity(
-				identity,
-				result.serverGroup,
-				publicKey,
-				privateKey
-		);
+        //store to the REAL identity store!
+        this.identityStore.storeIdentity(
+            identity,
+            result.serverGroup,
+            publicKey,
+            privateKey
+        );
 
-		if(result.email != null && result.email.length() > 0) {
-			this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, result.email);
-		}
-		if(result.mobileNo!= null && result.mobileNo.length() > 0) {
-			this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, result.mobileNo);
-		}
+        if (result.email != null && result.email.length() > 0) {
+            this.preferenceStore.save(PreferenceStore.PREFS_LINKED_EMAIL, result.email);
+        }
+        if (result.mobileNo != null && result.mobileNo.length() > 0) {
+            this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE, result.mobileNo);
+        }
 
-		// identity has been successfully restored. set push token
-		PushUtil.enqueuePushTokenUpdate(context, false, false);
+        // identity has been successfully restored. set push token
+        PushUtil.enqueuePushTokenUpdate(context, false, false);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public void setPolicyResponse(String responseData, String signature, int policyErrorCode) {
-		this.policyResponseData = responseData;
-		this.policySignature = signature;
-		this.policyErrorCode = policyErrorCode;
-	}
+    @Override
+    public void setPolicyResponse(String responseData, String signature, int policyErrorCode) {
+        this.policyResponseData = responseData;
+        this.policySignature = signature;
+        this.policyErrorCode = policyErrorCode;
+    }
 
 
-	@Override
+    @Override
     public void setCredentials(LicenseService.Credentials credentials) {
         this.credentials = credentials;
     }
 
-	@Override
-	public boolean sendFeatureMask() {
-		boolean success = false;
-		try {
-			long featureMask = getMyFeatureMask();
-			if (!shouldUpdateFeatureMask(featureMask)) {
-				logger.info("No feature mask update necessary ({})", featureMask);
-				return true;
-			}
+    @Override
+    public boolean sendFeatureMask() {
+        boolean success = false;
+        try {
+            long featureMask = getMyFeatureMask();
+            if (!shouldUpdateFeatureMask(featureMask)) {
+                logger.info("No feature mask update necessary ({})", featureMask);
+                return true;
+            }
 
-			logger.info("Sending feature mask {}", featureMask);
-			this.apiConnector.setFeatureMask(featureMask, this.identityStore);
-			this.preferenceService.setTransmittedFeatureMask(featureMask);
-			this.preferenceService.setLastFeatureMaskTransmission(new Date().getTime());
-			logger.info("Successfully sent feature mask");
-			success = true;
-		} catch (Exception e) {
-			logger.error("Could not send feature mask", e);
-		}
+            logger.info("Sending feature mask {}", featureMask);
+            this.apiConnector.setFeatureMask(featureMask, this.identityStore);
+            this.preferenceService.setTransmittedFeatureMask(featureMask);
+            this.preferenceService.setLastFeatureMaskTransmission(new Date().getTime());
+            logger.info("Successfully sent feature mask");
+            success = true;
+        } catch (Exception e) {
+            logger.error("Could not send feature mask", e);
+        }
 
-		return success;
-	}
+        return success;
+    }
 
-	private long getMyFeatureMask() {
-		ThreemaFeature.Builder builder = (new ThreemaFeature.Builder())
-			.audio(true)
-			.group(true)
-			.ballot(true)
-			.file(true)
-			.voip(true)
-			.videocalls(true)
-			.forwardSecurity(isFsEnabled)
-			.groupCalls(true)
-			.editMessages(true)
-			.deleteMessages(true)
-			.emojiReactions(true);
+    private long getMyFeatureMask() {
+        ThreemaFeature.Builder builder = (new ThreemaFeature.Builder())
+            .audio(true)
+            .group(true)
+            .ballot(true)
+            .file(true)
+            .voip(true)
+            .videocalls(true)
+            .forwardSecurity(isFsEnabled)
+            .groupCalls(true)
+            .editMessages(true)
+            .deleteMessages(true)
+            .emojiReactions(true);
 
-		return builder.build();
-	}
+        return builder.build();
+    }
 
-	private boolean shouldUpdateFeatureMask(long actualFeatureMask) {
-		long transmittedFeatureMask = preferenceService.getTransmittedFeatureMask();
-		if (transmittedFeatureMask != actualFeatureMask) {
-			logger.info("Feature mask update necessary: {} -> {}", transmittedFeatureMask, actualFeatureMask);
-			return true;
-		}
+    private boolean shouldUpdateFeatureMask(long actualFeatureMask) {
+        long transmittedFeatureMask = preferenceService.getTransmittedFeatureMask();
+        if (transmittedFeatureMask != actualFeatureMask) {
+            logger.info("Feature mask update necessary: {} -> {}", transmittedFeatureMask, actualFeatureMask);
+            return true;
+        }
 
-		long lastFeatureMaskTransmission = preferenceService.getLastFeatureMaskTransmission();
-		long timeThreshold = new Date().getTime() - DateUtils.DAY_IN_MILLIS;
-		return lastFeatureMaskTransmission < timeThreshold;
-	}
+        long lastFeatureMaskTransmission = preferenceService.getLastFeatureMaskTransmission();
+        long timeThreshold = new Date().getTime() - DateUtils.DAY_IN_MILLIS;
+        return lastFeatureMaskTransmission < timeThreshold;
+    }
 
-	@Override
-	public void setForwardSecurityEnabled(boolean isFsEnabled) {
-		this.isFsEnabled = isFsEnabled;
-	}
+    @Override
+    public void setForwardSecurityEnabled(boolean isFsEnabled) {
+        this.isFsEnabled = isFsEnabled;
+    }
 
-	@Override
-	public boolean setRevocationKey(String revocationKey) {
-		APIConnector.SetRevocationKeyResult result;
-		try {
-			result = this.apiConnector.setRevocationKey(this.identityStore, revocationKey);
-			if (!result.success) {
-				logger.error("set revocation key failed: {}", result.error);
-				return false;
-			}
-			else {
-				//update
-				this.checkRevocationKey(true);
-			}
+    @Override
+    public boolean setRevocationKey(String revocationKey) {
+        APIConnector.SetRevocationKeyResult result;
+        try {
+            result = this.apiConnector.setRevocationKey(this.identityStore, revocationKey);
+            if (!result.success) {
+                logger.error("set revocation key failed: {}", result.error);
+                return false;
+            } else {
+                //update
+                this.checkRevocationKey(true);
+            }
 
-			return true;
-		} catch (Exception e) {
-			logger.error("Could not set revocation key", e);
-		}
-		return false;
-	}
+            return true;
+        } catch (Exception e) {
+            logger.error("Could not set revocation key", e);
+        }
+        return false;
+    }
 
-	@Override
-	public Date getLastRevocationKeySet() {
-		return this.preferenceStore.getDate(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET);
-	}
+    @Override
+    public Date getLastRevocationKeySet() {
+        return this.preferenceStore.getDate(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET);
+    }
 
-	@Override
-	public void checkRevocationKey(boolean force) {
-		logger.debug("checkRevocationKey (force={})", force);
-		Date lastSet = null;
-		try {
-			//check if force = true or PREFS_REVOCATION_KEY_CHECKED is false or not set
-			boolean check = force
-				||!this.preferenceStore.getBoolean(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED);
+    @Override
+    public void checkRevocationKey(boolean force) {
+        logger.debug("checkRevocationKey (force={})", force);
+        Date lastSet = null;
+        try {
+            //check if force = true or PREFS_REVOCATION_KEY_CHECKED is false or not set
+            boolean check = force
+                || !this.preferenceStore.getBoolean(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED);
 
 
-			logger.debug("checkRevocationKey (check={})", check);
-			if(check) {
-				APIConnector.CheckRevocationKeyResult result = this.apiConnector.checkRevocationKey(this.identityStore);
-				if (result != null) {
-					if (result.isSet) {
-						lastSet = result.lastChanged;
-					}
+            logger.debug("checkRevocationKey (check={})", check);
+            if (check) {
+                APIConnector.CheckRevocationKeyResult result = this.apiConnector.checkRevocationKey(this.identityStore);
+                if (result != null) {
+                    if (result.isSet) {
+                        lastSet = result.lastChanged;
+                    }
 
-					logger.debug("checkRevocationKey (result={})", result.isSet);
-					//update new state
-					this.preferenceStore.save(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET, lastSet);
+                    logger.debug("checkRevocationKey (result={})", result.isSet);
+                    //update new state
+                    this.preferenceStore.save(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET, lastSet);
 
-					//update checked state
-					this.preferenceStore.save(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED, true);
-				} else {
-					logger.debug("checkRevocationKey (result is null)");
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-	}
+                    //update checked state
+                    this.preferenceStore.save(PreferenceStore.PREFS_REVOCATION_KEY_CHECKED, true);
+                } else {
+                    logger.debug("checkRevocationKey (result is null)");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	public JSONObject createIdentityRequestDataJSON() throws JSONException {
-		JSONObject baseObject = new JSONObject();
+    @Override
+    public JSONObject createIdentityRequestDataJSON() throws JSONException {
+        JSONObject baseObject = new JSONObject();
 
-		BuildFlavor.LicenseType licenseType = BuildFlavor.getCurrent().getLicenseType();
-		String deviceId = DeviceIdUtil.getDeviceId(this.context);
+        BuildFlavor.LicenseType licenseType = BuildFlavor.getCurrent().getLicenseType();
+        String deviceId = DeviceIdUtil.getDeviceId(this.context);
 
-		baseObject.put("deviceId", deviceId);
+        baseObject.put("deviceId", deviceId);
 
-		if (licenseType == BuildFlavor.LicenseType.GOOGLE) {
-			baseObject.put("lvlResponseData", policyResponseData);
-			baseObject.put("lvlSignature", policySignature);
-		}
-		else if (licenseType == BuildFlavor.LicenseType.HMS) {
-			baseObject.put("hmsResponseData", policyResponseData);
-			baseObject.put("hmsSignature", policySignature);
-		}
-		else {
-			String licenseKey = null;
-			String licenseUsername = null;
-			String licensePassword = null;
+        if (licenseType == BuildFlavor.LicenseType.GOOGLE) {
+            baseObject.put("lvlResponseData", policyResponseData);
+            baseObject.put("lvlSignature", policySignature);
+        } else if (licenseType == BuildFlavor.LicenseType.HMS) {
+            baseObject.put("hmsResponseData", policyResponseData);
+            baseObject.put("hmsSignature", policySignature);
+        } else {
+            String licenseKey = null;
+            String licenseUsername = null;
+            String licensePassword = null;
 
-			if(this.credentials != null) {
-				if(this.credentials instanceof SerialCredentials) {
-					licenseKey = ((SerialCredentials)this.credentials).licenseKey;
-				}
-				else if(this.credentials instanceof UserCredentials) {
-					licenseUsername = ((UserCredentials)this.credentials).username;
-					licensePassword = ((UserCredentials)this.credentials).password;
-				}
-			}
-			if (licenseKey != null) {
-				baseObject.put("licenseKey", licenseKey);
-			}
+            if (this.credentials != null) {
+                if (this.credentials instanceof SerialCredentials) {
+                    licenseKey = ((SerialCredentials) this.credentials).licenseKey;
+                } else if (this.credentials instanceof UserCredentials) {
+                    licenseUsername = ((UserCredentials) this.credentials).username;
+                    licensePassword = ((UserCredentials) this.credentials).password;
+                }
+            }
+            if (licenseKey != null) {
+                baseObject.put("licenseKey", licenseKey);
+            }
 
-			if (licenseUsername != null) {
-				baseObject.put("licenseUsername", licenseUsername);
-			}
+            if (licenseUsername != null) {
+                baseObject.put("licenseUsername", licenseUsername);
+            }
 
-			if (licensePassword != null) {
-				baseObject.put("licensePassword", licensePassword);
-			}
-		}
+            if (licensePassword != null) {
+                baseObject.put("licensePassword", licensePassword);
+            }
+        }
 
-		return baseObject;
-	}
+        return baseObject;
+    }
 }

@@ -24,7 +24,12 @@ package ch.threema.app.listeners;
 import androidx.annotation.AnyThread;
 
 public interface ProfileListener {
-	@AnyThread void onAvatarChanged();
-	@AnyThread void onAvatarRemoved();
-	@AnyThread void onNicknameChanged(String newNickname);
+    @AnyThread
+    void onAvatarChanged();
+
+    @AnyThread
+    void onAvatarRemoved();
+
+    @AnyThread
+    void onNicknameChanged(String newNickname);
 }

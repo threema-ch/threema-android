@@ -27,5 +27,6 @@ import ch.threema.storage.models.ConversationModel;
 
 public interface BackupChatService {
     boolean backupChatToZip(ConversationModel conversationModel, File outputFile, String password, boolean includeMedia);
+
     void cancel();
 }

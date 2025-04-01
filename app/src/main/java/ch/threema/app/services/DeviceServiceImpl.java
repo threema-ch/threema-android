@@ -25,22 +25,22 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-public class  DeviceServiceImpl implements DeviceService {
-	private Context context;
-	private boolean isCanMakeCalls;
-	private boolean isCanMakeCallsSet = false;
+public class DeviceServiceImpl implements DeviceService {
+    private Context context;
+    private boolean isCanMakeCalls;
+    private boolean isCanMakeCallsSet = false;
 
-	public DeviceServiceImpl(Context context) {
-		this.context = context;
-	}
+    public DeviceServiceImpl(Context context) {
+        this.context = context;
+    }
 
-	public boolean isOnline() {
-		ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		if (cm != null) {
-			NetworkInfo netInfo = cm.getActiveNetworkInfo();
-			return netInfo != null
-					&& netInfo.isConnectedOrConnecting();
-		}
-		return false;
-	}
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            return netInfo != null
+                && netInfo.isConnectedOrConnecting();
+        }
+        return false;
+    }
 }

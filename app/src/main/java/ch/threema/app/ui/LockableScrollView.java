@@ -28,49 +28,49 @@ import android.widget.ScrollView;
 
 public class LockableScrollView extends ScrollView {
 
-	private boolean enableScrolling = true;
+    private boolean enableScrolling = true;
 
-	public LockableScrollView(Context context) {
-		super(context);
-	}
+    public LockableScrollView(Context context) {
+        super(context);
+    }
 
-	public LockableScrollView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public LockableScrollView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public LockableScrollView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	}
+    public LockableScrollView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-	public void setScrollingEnabled(boolean enabled) {
-		this.enableScrolling = enabled;
-	}
+    public void setScrollingEnabled(boolean enabled) {
+        this.enableScrolling = enabled;
+    }
 
-	public boolean isScrollable() {
-		return this.enableScrolling;
-	}
+    public boolean isScrollable() {
+        return this.enableScrolling;
+    }
 
-	@Override
-	public boolean onTouchEvent(MotionEvent ev) {
-		switch (ev.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				// if we can scroll pass the event to the superclass
-				if (this.enableScrolling) {
-					return super.onTouchEvent(ev);
-				}
-				return this.enableScrolling;
-			default:
-				return super.onTouchEvent(ev);
-		}
-	}
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // if we can scroll pass the event to the superclass
+                if (this.enableScrolling) {
+                    return super.onTouchEvent(ev);
+                }
+                return this.enableScrolling;
+            default:
+                return super.onTouchEvent(ev);
+        }
+    }
 
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		if (!this.enableScrolling) {
-			return false;
-		} else {
-			return super.onInterceptTouchEvent(ev);
-		}
-	}
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!this.enableScrolling) {
+            return false;
+        } else {
+            return super.onInterceptTouchEvent(ev);
+        }
+    }
 
 }

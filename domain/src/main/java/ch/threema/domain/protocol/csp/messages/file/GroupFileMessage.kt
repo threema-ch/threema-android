@@ -135,13 +135,15 @@ open class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
             val groupFileMessage = GroupFileMessage()
 
             var positionIndex = offset
-            groupFileMessage.groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+            groupFileMessage.groupCreator =
+                String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
             positionIndex += ProtocolDefines.IDENTITY_LEN
 
             groupFileMessage.apiGroupId = GroupId(data, positionIndex)
             positionIndex += ProtocolDefines.GROUP_ID_LEN
 
-            val jsonObjectString = String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8)
+            val jsonObjectString =
+                String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8)
             groupFileMessage.fileData = FileData.parse(jsonObjectString)
 
             return groupFileMessage

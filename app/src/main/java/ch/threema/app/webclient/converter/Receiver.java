@@ -33,63 +33,63 @@ import ch.threema.storage.models.GroupModel;
 
 @AnyThread
 public class Receiver extends Converter {
-	public final static String TYPE = "type";
-	public final static String ID = "id";
-	public final static String DISPLAY_NAME = "displayName";
-	public final static String COLOR = "color";
-	public final static String DISABLED = "disabled";
-	public final static String ACCESS = "access";
-	public final static String CAN_DELETE= "canDelete";
-	public final static String LOCKED = "locked";
-	public final static String VISIBLE = "visible";
+    public final static String TYPE = "type";
+    public final static String ID = "id";
+    public final static String DISPLAY_NAME = "displayName";
+    public final static String COLOR = "color";
+    public final static String DISABLED = "disabled";
+    public final static String ACCESS = "access";
+    public final static String CAN_DELETE = "canDelete";
+    public final static String LOCKED = "locked";
+    public final static String VISIBLE = "visible";
 
-	/**
-	 * Assembles and converts a list of contacts, groups and distribution lists.
-	 */
-	public static MsgpackObjectBuilder convert(List<ContactModel> contacts,
-	                                           List<GroupModel> groups,
-	                                           List<DistributionListModel> distributionLists)
-			throws ConversionException {
-		MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-		try {
-			builder.put(Type.CONTACT, Contact.convert(contacts));
-			builder.put(Type.GROUP, Group.convert(groups));
-			builder.put(Type.DISTRIBUTION_LIST, DistributionList.convert(distributionLists));
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-		return builder;
-	}
+    /**
+     * Assembles and converts a list of contacts, groups and distribution lists.
+     */
+    public static MsgpackObjectBuilder convert(List<ContactModel> contacts,
+                                               List<GroupModel> groups,
+                                               List<DistributionListModel> distributionLists)
+        throws ConversionException {
+        MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+        try {
+            builder.put(Type.CONTACT, Contact.convert(contacts));
+            builder.put(Type.GROUP, Group.convert(groups));
+            builder.put(Type.DISTRIBUTION_LIST, DistributionList.convert(distributionLists));
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+        return builder;
+    }
 
-	public static Utils.ModelWrapper getModel(String type, String id) throws ConversionException {
-		return new Utils.ModelWrapper(type, id);
-	}
+    public static Utils.ModelWrapper getModel(String type, String id) throws ConversionException {
+        return new Utils.ModelWrapper(type, id);
+    }
 
-	public static MessageReceiver getReceiver(String type, String id) throws ConversionException {
-		return getModel(type, id).getReceiver();
-	}
+    public static MessageReceiver getReceiver(String type, String id) throws ConversionException {
+        return getModel(type, id).getReceiver();
+    }
 
-	public static MsgpackObjectBuilder getArguments(MessageReceiver receiver) throws ConversionException {
-		Utils.ModelWrapper model = Utils.ModelWrapper.getModel(receiver);
-		return getArguments(model);
-	}
+    public static MsgpackObjectBuilder getArguments(MessageReceiver receiver) throws ConversionException {
+        Utils.ModelWrapper model = Utils.ModelWrapper.getModel(receiver);
+        return getArguments(model);
+    }
 
-	public static MsgpackObjectBuilder getArguments(Utils.ModelWrapper model) throws ConversionException {
-		MsgpackObjectBuilder args = new MsgpackObjectBuilder();
-		args.put(TYPE, model.getType());
-		args.put(ID, model.getId());
-		return args;
-	}
+    public static MsgpackObjectBuilder getArguments(Utils.ModelWrapper model) throws ConversionException {
+        MsgpackObjectBuilder args = new MsgpackObjectBuilder();
+        args.put(TYPE, model.getType());
+        args.put(ID, model.getId());
+        return args;
+    }
 
-	public static MsgpackObjectBuilder getArguments(String type) {
-		MsgpackObjectBuilder args = new MsgpackObjectBuilder();
-		args.put(TYPE, type);
-		return args;
-	}
+    public static MsgpackObjectBuilder getArguments(String type) {
+        MsgpackObjectBuilder args = new MsgpackObjectBuilder();
+        args.put(TYPE, type);
+        return args;
+    }
 
-	public class Type {
-		public final static String CONTACT = "contact";
-		public final static String GROUP = "group";
-		public final static String DISTRIBUTION_LIST = "distributionList";
-	}
+    public class Type {
+        public final static String CONTACT = "contact";
+        public final static String GROUP = "group";
+        public final static String DISTRIBUTION_LIST = "distributionList";
+    }
 }

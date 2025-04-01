@@ -34,74 +34,74 @@ import ch.threema.app.utils.ExponentialBackOffUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MessageSendingServiceExponentialBackOff implements MessageSendingService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSendingServiceExponentialBackOff");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSendingServiceExponentialBackOff");
 
-	private final MessageSendingServiceState messageSendingServiceState;
-	private final HashMap<String, Future<?>> backoffFutures = new HashMap<>();
+    private final MessageSendingServiceState messageSendingServiceState;
+    private final HashMap<String, Future<?>> backoffFutures = new HashMap<>();
 
-	public MessageSendingServiceExponentialBackOff(MessageSendingServiceState messageSendingServiceState) {
-		this.messageSendingServiceState = messageSendingServiceState;
-	}
+    public MessageSendingServiceExponentialBackOff(MessageSendingServiceState messageSendingServiceState) {
+        this.messageSendingServiceState = messageSendingServiceState;
+    }
 
-	@Override
-	public void addToQueue(final MessageSendingProcess process) {
-		logger.debug("{} Add message to queue", process.getMessageModel().getUid());
-		Future<?> backoffFuture = ExponentialBackOffUtil.getInstance().run(new ExponentialBackOffUtil.BackOffRunnable() {
-			@Override
-			public void run(int currentRetry) throws Exception {
-				try {
-					process.send();
-				} catch (Exception x) {
-					logger.error("Sending message failed", x);
-					messageSendingServiceState.exception(x, 0);
-					if (x instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
-						ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-						if (serviceManager != null) {
-							logger.info("Invalidating auth token");
-							serviceManager.getApiService().invalidateAuthToken();
-						}
-					}
-					throw x;
-				}
-			}
+    @Override
+    public void addToQueue(final MessageSendingProcess process) {
+        logger.debug("{} Add message to queue", process.getMessageModel().getUid());
+        Future<?> backoffFuture = ExponentialBackOffUtil.getInstance().run(new ExponentialBackOffUtil.BackOffRunnable() {
+            @Override
+            public void run(int currentRetry) throws Exception {
+                try {
+                    process.send();
+                } catch (Exception x) {
+                    logger.error("Sending message failed", x);
+                    messageSendingServiceState.exception(x, 0);
+                    if (x instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
+                        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+                        if (serviceManager != null) {
+                            logger.info("Invalidating auth token");
+                            serviceManager.getApiService().invalidateAuthToken();
+                        }
+                    }
+                    throw x;
+                }
+            }
 
-			@Override
-			public void finished(int currentRetry) {
-				synchronized (backoffFutures) {
-					backoffFutures.remove(process.getMessageModel().getUid());
-				}
-				logger.debug("{} Exponential backoff finished successfully", process.getMessageModel().getUid());
-			}
+            @Override
+            public void finished(int currentRetry) {
+                synchronized (backoffFutures) {
+                    backoffFutures.remove(process.getMessageModel().getUid());
+                }
+                logger.debug("{} Exponential backoff finished successfully", process.getMessageModel().getUid());
+            }
 
-			@Override
-			public void exception(Exception e, int currentRetry) {
-				synchronized (backoffFutures) {
-					backoffFutures.remove(process.getMessageModel().getUid());
-				}
-				logger.debug("{} Exponential backoff failed", process.getMessageModel().getUid());
+            @Override
+            public void exception(Exception e, int currentRetry) {
+                synchronized (backoffFutures) {
+                    backoffFutures.remove(process.getMessageModel().getUid());
+                }
+                logger.debug("{} Exponential backoff failed", process.getMessageModel().getUid());
 
-				messageSendingServiceState.processingFailed(process.getMessageModel(), process.getReceiver());
-			}
-		}, 5, process.getMessageModel().getUid());
+                messageSendingServiceState.processingFailed(process.getMessageModel(), process.getReceiver());
+            }
+        }, 5, process.getMessageModel().getUid());
 
-		if (backoffFuture != null) {
-			synchronized (backoffFutures) {
-				backoffFutures.put(process.getMessageModel().getUid(), backoffFuture);
-			}
-		}
-	}
+        if (backoffFuture != null) {
+            synchronized (backoffFutures) {
+                backoffFutures.put(process.getMessageModel().getUid(), backoffFuture);
+            }
+        }
+    }
 
-	@Override
-	public void abort(String messageUid) {
-		synchronized (backoffFutures) {
-			Future<?> backoffFuture = backoffFutures.get(messageUid);
-			if (backoffFuture != null) {
-				if (!backoffFuture.isCancelled() && !backoffFuture.isDone()) {
-					logger.debug("{} Cancelling backoff", messageUid);
-					backoffFuture.cancel(true);
-				}
-				backoffFutures.remove(messageUid);
-			}
-		}
-	}
+    @Override
+    public void abort(String messageUid) {
+        synchronized (backoffFutures) {
+            Future<?> backoffFuture = backoffFutures.get(messageUid);
+            if (backoffFuture != null) {
+                if (!backoffFuture.isCancelled() && !backoffFuture.isDone()) {
+                    logger.debug("{} Cancelling backoff", messageUid);
+                    backoffFuture.cancel(true);
+                }
+                backoffFutures.remove(messageUid);
+            }
+        }
+    }
 }

@@ -31,6 +31,7 @@ import com.DrmSDK.util.DeviceSession;
 public class Drm {
 
     private static final String TAG = "DrmLite";
+
     /**
      * Checking whether user has purchased this application or not.
      *

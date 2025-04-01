@@ -29,41 +29,42 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
+
 import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 /**
  * Create forwardSecurityMode field in group and distribution list message model.
  */
 public class SystemUpdateToVersion74 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 74;
+    public static final int VERSION = 74;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion74(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion74(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, GroupMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + GroupMessageModel.TABLE + " ADD COLUMN " +
-				AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
-		}
-		if (!fieldExists(this.sqLiteDatabase, DistributionListMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + DistributionListMessageModel.TABLE + " ADD COLUMN " +
-				AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, GroupMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + GroupMessageModel.TABLE + " ADD COLUMN " +
+                AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
+        }
+        if (!fieldExists(this.sqLiteDatabase, DistributionListMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + DistributionListMessageModel.TABLE + " ADD COLUMN " +
+                AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 74 (forwardSecurity 2)";
-	}
+    @Override
+    public String getText() {
+        return "version 74 (forwardSecurity 2)";
+    }
 }

@@ -45,87 +45,87 @@ import ch.threema.app.adapters.StickerSelectorAdapter;
 import ch.threema.base.utils.LoggingUtil;
 
 public class StickerSelectorActivity extends ThreemaToolbarActivity implements LoaderManager.LoaderCallbacks<String[]> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("StickerSelectorActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("StickerSelectorActivity");
 
-	private static final String STICKER_DIRECTORY = "emojione";
-	private static final String STICKER_INDEX = STICKER_DIRECTORY + "/contents.txt";
-	public static final String EXTRA_STICKER_PATH = "spath";
-	private GridView gridView;
-	private StickerSelectorAdapter adapter;
+    private static final String STICKER_DIRECTORY = "emojione";
+    private static final String STICKER_INDEX = STICKER_DIRECTORY + "/contents.txt";
+    public static final String EXTRA_STICKER_PATH = "spath";
+    private GridView gridView;
+    private StickerSelectorAdapter adapter;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		gridView = findViewById(R.id.grid_view);
-		gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				if (adapter != null) {
-					Intent intent = new Intent();
-					intent.putExtra(EXTRA_STICKER_PATH, adapter.getItem(i));
-					setResult(RESULT_OK, intent);
-					finish();
-				}
-			}
-		});
+        gridView = findViewById(R.id.grid_view);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (adapter != null) {
+                    Intent intent = new Intent();
+                    intent.putExtra(EXTRA_STICKER_PATH, adapter.getItem(i));
+                    setResult(RESULT_OK, intent);
+                    finish();
+                }
+            }
+        });
 
-		getLoaderManager().initLoader(0, null, this).forceLoad();
-	}
+        getLoaderManager().initLoader(0, null, this).forceLoad();
+    }
 
-	private static class StickerLoader extends AsyncTaskLoader<String[]> {
-		StickerLoader(Context context) {
-			super(context);
-		}
+    private static class StickerLoader extends AsyncTaskLoader<String[]> {
+        StickerLoader(Context context) {
+            super(context);
+        }
 
-		@Override
-		public String[] loadInBackground() {
-			// AssetManager.getAssets().list is notoriously slow on some phones, so we use a list file to get the filenames quickly
-			try {
-				try (BufferedReader reader = new BufferedReader(new InputStreamReader((getContext().getAssets().open(STICKER_INDEX))))) {
-					List<String> files = new ArrayList<>();
+        @Override
+        public String[] loadInBackground() {
+            // AssetManager.getAssets().list is notoriously slow on some phones, so we use a list file to get the filenames quickly
+            try {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader((getContext().getAssets().open(STICKER_INDEX))))) {
+                    List<String> files = new ArrayList<>();
 
-					String line;
-					while((line =reader.readLine()) != null) {
-						files.add(STICKER_DIRECTORY + "/" + line);
-					}
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        files.add(STICKER_DIRECTORY + "/" + line);
+                    }
 
-					return files.toArray(new String[0]);
-				}
-			} catch (IOException e) {
-				logger.error("Exception", e);
-			}
-			return new String[0];
-		}
-	}
+                    return files.toArray(new String[0]);
+                }
+            } catch (IOException e) {
+                logger.error("Exception", e);
+            }
+            return new String[0];
+        }
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_sticker_selector;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_sticker_selector;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return false;
+    }
 
-	@Override
-	public Loader<String[]> onCreateLoader(int id, Bundle args) {
-		return new StickerLoader(getApplicationContext());
-	}
+    @Override
+    public Loader<String[]> onCreateLoader(int id, Bundle args) {
+        return new StickerLoader(getApplicationContext());
+    }
 
-	@Override
-	public void onLoadFinished(Loader<String[]> loader, String[] data) {
-		adapter = new StickerSelectorAdapter(this, data);
-		gridView.setAdapter(adapter);
-	}
+    @Override
+    public void onLoadFinished(Loader<String[]> loader, String[] data) {
+        adapter = new StickerSelectorAdapter(this, data);
+        gridView.setAdapter(adapter);
+    }
 
-	@Override
-	public void onLoaderReset(Loader<String[]> loader) {
-		gridView.setAdapter(null);
-	}
+    @Override
+    public void onLoaderReset(Loader<String[]> loader) {
+        gridView.setAdapter(null);
+    }
 }

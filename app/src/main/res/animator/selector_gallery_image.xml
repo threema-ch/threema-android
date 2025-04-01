@@ -1,40 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:state_checked="true">
-		<set>
-			<objectAnimator
-				android:duration="150"
-				android:propertyName="scaleX"
-				android:valueFrom="1f"
-				android:valueTo="0.85f"
-				android:valueType="floatType"/>
-			<objectAnimator
-				android:duration="150"
-				android:propertyName="scaleY"
-				android:valueFrom="1f"
-				android:valueTo="0.85f"
-				android:valueType="floatType"/>
-		</set>
-	</item>
-	<item>
-		<set>
-			<objectAnimator
-				android:duration="150"
-				android:propertyName="scaleX"
-				android:valueFrom="0.85f"
-				android:valueTo="1f"
-				android:valueType="floatType"/>
-			<objectAnimator
-				android:duration="150"
-				android:propertyName="scaleY"
-				android:valueFrom="0.85f"
-				android:valueTo="1f"
-				android:valueType="floatType"/>
-		</set>
-	</item>
+    <item android:state_checked="true">
+        <set>
+            <objectAnimator
+                android:duration="150"
+                android:propertyName="scaleX"
+                android:valueFrom="1f"
+                android:valueTo="0.85f"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="150"
+                android:propertyName="scaleY"
+                android:valueFrom="1f"
+                android:valueTo="0.85f"
+                android:valueType="floatType" />
+        </set>
+    </item>
+    <item>
+        <set>
+            <objectAnimator
+                android:duration="150"
+                android:propertyName="scaleX"
+                android:valueFrom="0.85f"
+                android:valueTo="1f"
+                android:valueType="floatType" />
+            <objectAnimator
+                android:duration="150"
+                android:propertyName="scaleY"
+                android:valueFrom="0.85f"
+                android:valueTo="1f"
+                android:valueType="floatType" />
+        </set>
+    </item>
 </selector>

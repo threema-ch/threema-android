@@ -31,36 +31,37 @@ import ch.threema.storage.factories.ModelFactory;
 
 public class SystemUpdateToVersion8 implements UpdateSystemService.SystemUpdate {
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion8(DatabaseServiceNew databaseServiceNew, SQLiteDatabase sqLiteDatabase) {
-		this.databaseService = databaseServiceNew;
+    public SystemUpdateToVersion8(DatabaseServiceNew databaseServiceNew, SQLiteDatabase sqLiteDatabase) {
+        this.databaseService = databaseServiceNew;
 
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		for(ModelFactory f: new ModelFactory[]{
-				this.databaseService.getGroupModelFactory(),
-				this.databaseService.getGroupMemberModelFactory(),
-				this.databaseService.getGroupMessageModelFactory()
-		}){
-			for(String s: f.getStatements()) {
-				this.sqLiteDatabase.execSQL(s);
-			}
-		};
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        for (ModelFactory f : new ModelFactory[]{
+            this.databaseService.getGroupModelFactory(),
+            this.databaseService.getGroupMemberModelFactory(),
+            this.databaseService.getGroupMessageModelFactory()
+        }) {
+            for (String s : f.getStatements()) {
+                this.sqLiteDatabase.execSQL(s);
+            }
+        }
+        ;
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 8";
-	}
+    @Override
+    public String getText() {
+        return "version 8";
+    }
 }

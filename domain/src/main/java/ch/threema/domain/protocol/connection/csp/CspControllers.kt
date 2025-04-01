@@ -27,7 +27,8 @@ import ch.threema.domain.protocol.connection.util.MainConnectionController
 import ch.threema.domain.protocol.connection.util.ServerConnectionController
 import ch.threema.domain.protocol.connection.util.ServerConnectionControllers
 
-internal class CspControllers(cspConnectionConfiguration: CspConnectionConfiguration) : ServerConnectionControllers {
+internal class CspControllers(cspConnectionConfiguration: CspConnectionConfiguration) :
+    ServerConnectionControllers {
     private val cspController = CspController(cspConnectionConfiguration)
 
     override val serverConnectionController: ServerConnectionController = cspController

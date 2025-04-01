@@ -39,233 +39,235 @@ import ch.threema.base.utils.LoggingUtil;
 
 /**
  * Encapsulate information required for rendering video.
- *
+ * <p>
  * Instances of this class live in `VoipStateService`.
  */
 public class VideoContext {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoContext");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoContext");
 
-	// Camera orientation for VideoContext
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({CAMERA_FRONT, CAMERA_BACK})
-	public @interface CameraOrientation {}
-	public final static int CAMERA_FRONT = 0;
-	public final static int CAMERA_BACK = 1;
+    // Camera orientation for VideoContext
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({CAMERA_FRONT, CAMERA_BACK})
+    public @interface CameraOrientation {
+    }
 
-	// Local state
-	private @Nullable EglBase eglBase;
-	private @Nullable CameraVideoCapturer cameraVideoCapturer;
-	private volatile String frontCameraName;
-	private volatile String backCameraName;
-	private @CameraOrientation int cameraOrientation;
-	private @Nullable ProxyVideoSink localVideoSink;
-	private @Nullable ProxyVideoSink remoteVideoSink;
-	private int frameWidth, frameHeight;
+    public final static int CAMERA_FRONT = 0;
+    public final static int CAMERA_BACK = 1;
 
-	//region 0 Setup, teardown
+    // Local state
+    private @Nullable EglBase eglBase;
+    private @Nullable CameraVideoCapturer cameraVideoCapturer;
+    private volatile String frontCameraName;
+    private volatile String backCameraName;
+    private @CameraOrientation int cameraOrientation;
+    private @Nullable ProxyVideoSink localVideoSink;
+    private @Nullable ProxyVideoSink remoteVideoSink;
+    private int frameWidth, frameHeight;
 
-	public VideoContext() {
-		this(EglBase.create());
-	}
+    //region 0 Setup, teardown
 
-	public VideoContext(@Nullable EglBase eglBase) {
-		logger.trace("Constructor");
-		this.eglBase = eglBase;
-		this.localVideoSink = new ProxyVideoSink("Local");
-		this.remoteVideoSink = new ProxyVideoSink("Remote");
-	}
+    public VideoContext() {
+        this(EglBase.create());
+    }
 
-	/**
-	 * Release resources associated with this context instance.
-	 *
-	 * After calling `release()`, the instance should not be used anymore.
-	 * It's safe to call this method multiple times though.
-	 */
-	public void release() {
-		if (this.localVideoSink != null) {
-			this.localVideoSink.setTarget(null);
-			this.localVideoSink = null;
-		}
+    public VideoContext(@Nullable EglBase eglBase) {
+        logger.trace("Constructor");
+        this.eglBase = eglBase;
+        this.localVideoSink = new ProxyVideoSink("Local");
+        this.remoteVideoSink = new ProxyVideoSink("Remote");
+    }
 
-		if (this.remoteVideoSink != null) {
-			this.remoteVideoSink.setTarget(null);
-			this.remoteVideoSink = null;
-		}
+    /**
+     * Release resources associated with this context instance.
+     * <p>
+     * After calling `release()`, the instance should not be used anymore.
+     * It's safe to call this method multiple times though.
+     */
+    public void release() {
+        if (this.localVideoSink != null) {
+            this.localVideoSink.setTarget(null);
+            this.localVideoSink = null;
+        }
 
-		if (this.eglBase != null) {
-			this.eglBase.release();
-			this.eglBase = null;
-		}
-	}
+        if (this.remoteVideoSink != null) {
+            this.remoteVideoSink.setTarget(null);
+            this.remoteVideoSink = null;
+        }
 
-	//endregion
+        if (this.eglBase != null) {
+            this.eglBase.release();
+            this.eglBase = null;
+        }
+    }
 
-	//region 1 Getters and setters
+    //endregion
 
-	public @CameraOrientation int getCameraOrientation() {
-		return cameraOrientation;
-	}
+    //region 1 Getters and setters
 
-	public void setCameraOrientation(@CameraOrientation int cameraOrientation) {
-		this.cameraOrientation = cameraOrientation;
-	}
+    public @CameraOrientation int getCameraOrientation() {
+        return cameraOrientation;
+    }
 
-	public @Nullable String getFrontCameraName() {
-		return frontCameraName;
-	}
+    public void setCameraOrientation(@CameraOrientation int cameraOrientation) {
+        this.cameraOrientation = cameraOrientation;
+    }
 
-	public @Nullable String getBackCameraName() {
-		return backCameraName;
-	}
+    public @Nullable String getFrontCameraName() {
+        return frontCameraName;
+    }
 
-	public void setFrontCameraName(@Nullable String frontCameraName) {
-		this.frontCameraName = frontCameraName;
-	}
+    public @Nullable String getBackCameraName() {
+        return backCameraName;
+    }
 
-	public void setBackCameraName(@Nullable String backCameraName) {
-		this.backCameraName = backCameraName;
-	}
+    public void setFrontCameraName(@Nullable String frontCameraName) {
+        this.frontCameraName = frontCameraName;
+    }
 
-	@NonNull
-	public EglBase.Context getEglBaseContext() throws IllegalStateException {
-		if (this.eglBase == null) {
-			throw new IllegalStateException("VideoContext resources have already been released!");
-		}
-		return this.eglBase.getEglBaseContext();
-	}
+    public void setBackCameraName(@Nullable String backCameraName) {
+        this.backCameraName = backCameraName;
+    }
 
-	public void setCameraVideoCapturer(@Nullable CameraVideoCapturer capturer) {
-		this.cameraVideoCapturer = capturer;
-	}
+    @NonNull
+    public EglBase.Context getEglBaseContext() throws IllegalStateException {
+        if (this.eglBase == null) {
+            throw new IllegalStateException("VideoContext resources have already been released!");
+        }
+        return this.eglBase.getEglBaseContext();
+    }
 
-	@Nullable
-	public CameraVideoCapturer getCameraVideoCapturer() {
-		return this.cameraVideoCapturer;
-	}
+    public void setCameraVideoCapturer(@Nullable CameraVideoCapturer capturer) {
+        this.cameraVideoCapturer = capturer;
+    }
 
-	public boolean hasMultipleCameras() {
-		return frontCameraName != null && backCameraName != null;
-	}
+    @Nullable
+    public CameraVideoCapturer getCameraVideoCapturer() {
+        return this.cameraVideoCapturer;
+    }
 
-	/**
-	 * Return the local video sink.
-	 */
-	@Nullable
-	VideoSink getLocalVideoSinkProxy() {
-		return this.localVideoSink;
-	}
+    public boolean hasMultipleCameras() {
+        return frontCameraName != null && backCameraName != null;
+    }
 
-	/**
-	 * Set or overwrite the local video sink target.
-	 */
-	public void setLocalVideoSinkTarget(@Nullable VideoSink videoSink) {
-		logger.debug("Setting local video sink target: {}",
-			videoSink != null ? videoSink.getClass().getName() : null);
-		if (this.localVideoSink != null) {
-			this.localVideoSink.setTarget(videoSink);
-		}
-	}
+    /**
+     * Return the local video sink.
+     */
+    @Nullable
+    VideoSink getLocalVideoSinkProxy() {
+        return this.localVideoSink;
+    }
 
-	/**
-	 * Return the remote video sink.
-	 */
-	@Nullable
-	VideoSink getRemoteVideoSinkProxy() {
-		return this.remoteVideoSink;
-	}
+    /**
+     * Set or overwrite the local video sink target.
+     */
+    public void setLocalVideoSinkTarget(@Nullable VideoSink videoSink) {
+        logger.debug("Setting local video sink target: {}",
+            videoSink != null ? videoSink.getClass().getName() : null);
+        if (this.localVideoSink != null) {
+            this.localVideoSink.setTarget(videoSink);
+        }
+    }
 
-	/**
-	 * Convert a byte array to a direct ByteBuffer.
-	 * */
-	private static ByteBuffer toByteBuffer(byte[] array) {
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(array.length);
-		buffer.put(array);
-		buffer.rewind();
-		return buffer;
-	}
+    /**
+     * Return the remote video sink.
+     */
+    @Nullable
+    VideoSink getRemoteVideoSinkProxy() {
+        return this.remoteVideoSink;
+    }
 
-	/**
-	 * Clear the remote video sink by sending a single black frame.
-	 */
-	public void clearRemoteVideoSinkProxy() {
-		if (this.remoteVideoSink != null) {
-			logger.trace("clearRemoteVideoSinkProxy");
+    /**
+     * Convert a byte array to a direct ByteBuffer.
+     */
+    private static ByteBuffer toByteBuffer(byte[] array) {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(array.length);
+        buffer.put(array);
+        buffer.rewind();
+        return buffer;
+    }
 
-			// A black 2x2 pixel YUV frame
-			final ByteBuffer y = toByteBuffer(new byte[]{0, 0, 0, 0});
-			final ByteBuffer u = toByteBuffer(new byte[]{(byte) 0x80});
-			final ByteBuffer v = toByteBuffer(new byte[]{(byte) 0x80});
-			final VideoFrame.I420Buffer i420Buffer = JavaI420Buffer.wrap(
-				2, 2,
-				y, 2,
-				u, 2,
-				v, 2,
-				null
-			);
-			this.remoteVideoSink.onFrame(new VideoFrame(i420Buffer, 0, 0));
-		}
-	}
+    /**
+     * Clear the remote video sink by sending a single black frame.
+     */
+    public void clearRemoteVideoSinkProxy() {
+        if (this.remoteVideoSink != null) {
+            logger.trace("clearRemoteVideoSinkProxy");
 
-	/**
-	 * Set or overwrite the remote video sink target.
-	 */
-	public void setRemoteVideoSinkTarget(@Nullable VideoSink videoSink) {
-		logger.debug("Setting remote video sink target: {}",
-			videoSink != null ? videoSink.getClass().getName() : null);
-		if (this.remoteVideoSink != null) {
-			this.remoteVideoSink.setTarget(videoSink);
-		}
-	}
+            // A black 2x2 pixel YUV frame
+            final ByteBuffer y = toByteBuffer(new byte[]{0, 0, 0, 0});
+            final ByteBuffer u = toByteBuffer(new byte[]{(byte) 0x80});
+            final ByteBuffer v = toByteBuffer(new byte[]{(byte) 0x80});
+            final VideoFrame.I420Buffer i420Buffer = JavaI420Buffer.wrap(
+                2, 2,
+                y, 2,
+                u, 2,
+                v, 2,
+                null
+            );
+            this.remoteVideoSink.onFrame(new VideoFrame(i420Buffer, 0, 0));
+        }
+    }
 
-	public void setFrameDimensions(int width, int height) {
-		this.frameWidth = width;
-		this.frameHeight = height;
-	}
+    /**
+     * Set or overwrite the remote video sink target.
+     */
+    public void setRemoteVideoSinkTarget(@Nullable VideoSink videoSink) {
+        logger.debug("Setting remote video sink target: {}",
+            videoSink != null ? videoSink.getClass().getName() : null);
+        if (this.remoteVideoSink != null) {
+            this.remoteVideoSink.setTarget(videoSink);
+        }
+    }
 
-	public int getFrameWidth() {
-		return frameWidth;
-	}
+    public void setFrameDimensions(int width, int height) {
+        this.frameWidth = width;
+        this.frameHeight = height;
+    }
 
-	public int getFrameHeight() {
-		return frameHeight;
-	}
+    public int getFrameWidth() {
+        return frameWidth;
+    }
 
-	//endregion
+    public int getFrameHeight() {
+        return frameHeight;
+    }
 
-	//region Helper classes
+    //endregion
 
-	/**
-	 * Proxy class that forwards video frames to a specified target.
-	 * If no target is set using the `setTarget` method, drop frames.
-	 */
-	private static class ProxyVideoSink implements VideoSink {
-		private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyVideoSink");
+    //region Helper classes
 
-		private @Nullable VideoSink target;
-		private final @NonNull String label;
+    /**
+     * Proxy class that forwards video frames to a specified target.
+     * If no target is set using the `setTarget` method, drop frames.
+     */
+    private static class ProxyVideoSink implements VideoSink {
+        private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyVideoSink");
 
-		public ProxyVideoSink(@NonNull String label) {
-			this.label = label;
-		}
+        private @Nullable VideoSink target;
+        private final @NonNull String label;
 
-		@Override
-		public void onFrame(VideoFrame videoFrame) {
-			// Note: The access to `target` is not synchronized here, because `onFrame` is called
-			// many times per second. Synchronization is expensive in that case, while the
-			// consequence of a data race would be a very small amount of dropped frames (not
-			// noticeable to the user).
-			//logger.trace(this.label + ": onFrame");
-			if (this.target == null) {
-				logger.trace("{}: Dropping frame in proxy because target is null", this.label);
-				return;
-			}
-			target.onFrame(videoFrame);
-		}
+        public ProxyVideoSink(@NonNull String label) {
+            this.label = label;
+        }
 
-		synchronized public void setTarget(@Nullable VideoSink target) {
-			this.target = target;
-		}
-	}
+        @Override
+        public void onFrame(VideoFrame videoFrame) {
+            // Note: The access to `target` is not synchronized here, because `onFrame` is called
+            // many times per second. Synchronization is expensive in that case, while the
+            // consequence of a data race would be a very small amount of dropped frames (not
+            // noticeable to the user).
+            //logger.trace(this.label + ": onFrame");
+            if (this.target == null) {
+                logger.trace("{}: Dropping frame in proxy because target is null", this.label);
+                return;
+            }
+            target.onFrame(videoFrame);
+        }
 
-	//endregion
+        synchronized public void setTarget(@Nullable VideoSink target) {
+            this.target = target;
+        }
+    }
+
+    //endregion
 }

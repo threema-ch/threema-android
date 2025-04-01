@@ -48,7 +48,8 @@ class EmojiReactionsOverviewAdapter(
             fragmentActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.emojiReactionsUiState.collect { uiState ->
                     items.clear()
-                    val reactions: MutableList<EmojiReactionData> = uiState.emojiReactions.toMutableList()
+                    val reactions: MutableList<EmojiReactionData> =
+                        uiState.emojiReactions.toMutableList()
                     if (reactions.isNotEmpty()) {
                         val sortedList = reactions.groupingBy { it.emojiSequence }
                             .eachCount()

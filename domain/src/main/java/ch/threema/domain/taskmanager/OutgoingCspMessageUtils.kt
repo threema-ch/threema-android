@@ -47,8 +47,8 @@ fun AbstractMessage.toCspMessage(
 
     // For the sake of efficiency: simply deduct overhead size
     val overhead = (ProtocolDefines.OVERHEAD_MSG_HDR
-            + ProtocolDefines.OVERHEAD_NACL_BOX
-            + ProtocolDefines.OVERHEAD_PKT_HDR)
+        + ProtocolDefines.OVERHEAD_NACL_BOX
+        + ProtocolDefines.OVERHEAD_PKT_HDR)
     if (messageBox.box != null && messageBox.box.size > ProtocolDefines.MAX_PKT_LEN - overhead) {
         throw MessageTooLongException()
     }

@@ -178,7 +178,10 @@ class EmojiHintPopupManager(
         if (!newLocation.contentEquals(originalLocation)) {
             dismiss()
         } else {
-            handler.postDelayed({ pollAnchorLocation(view, originalLocation) }, ANCHOR_MOVEMENT_POLL_INTERVAL)
+            handler.postDelayed(
+                { pollAnchorLocation(view, originalLocation) },
+                ANCHOR_MOVEMENT_POLL_INTERVAL
+            )
         }
     }
 

@@ -1,97 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	tools:context=".camera.QRScannerActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".camera.QRScannerActivity">
 
-	<androidx.camera.view.PreviewView
-		android:id="@+id/camera_preview"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+    <androidx.camera.view.PreviewView
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-	<View
-		android:id="@+id/border_frame_top"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:background="@color/qrscanner_masking_color"
-		app:layout_constraintBottom_toTopOf="@+id/camera_preview_container"
-		app:layout_constraintTop_toTopOf="parent" />
+    <View
+        android:id="@+id/border_frame_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/qrscanner_masking_color"
+        app:layout_constraintBottom_toTopOf="@+id/camera_preview_container"
+        app:layout_constraintTop_toTopOf="parent" />
 
-	<View
-		android:id="@+id/border_frame_bottom"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:background="@color/qrscanner_masking_color"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/camera_preview_container" />
+    <View
+        android:id="@+id/border_frame_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/qrscanner_masking_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/camera_preview_container" />
 
-	<View
-		android:id="@+id/border_frame_left"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:background="@color/qrscanner_masking_color"
-		app:layout_constraintBottom_toTopOf="@id/border_frame_bottom"
-		app:layout_constraintEnd_toStartOf="@+id/camera_preview_container"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/border_frame_top" />
+    <View
+        android:id="@+id/border_frame_left"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/qrscanner_masking_color"
+        app:layout_constraintBottom_toTopOf="@id/border_frame_bottom"
+        app:layout_constraintEnd_toStartOf="@+id/camera_preview_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/border_frame_top" />
 
-	<View
-		android:id="@+id/border_frame_right"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:background="@color/qrscanner_masking_color"
-		app:layout_constraintBottom_toTopOf="@id/border_frame_bottom"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/camera_preview_container"
-		app:layout_constraintTop_toBottomOf="@id/border_frame_top" />
+    <View
+        android:id="@+id/border_frame_right"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/qrscanner_masking_color"
+        app:layout_constraintBottom_toTopOf="@id/border_frame_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/camera_preview_container"
+        app:layout_constraintTop_toBottomOf="@id/border_frame_top" />
 
-	<ImageView
-		android:id="@+id/camera_viewfinder"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_marginTop="-8dp"
-		android:layout_marginLeft="-8dp"
-		android:layout_marginRight="-8dp"
-		android:layout_marginBottom="-8dp"
-		android:src="@drawable/ic_qr_scanner_viewfinder"
-		app:layout_constraintLeft_toLeftOf="@+id/camera_preview_container"
-		app:layout_constraintTop_toTopOf="@+id/camera_preview_container"
-		app:layout_constraintBottom_toBottomOf="@+id/camera_preview_container"
-		app:layout_constraintRight_toRightOf="@+id/camera_preview_container"
-		android:importantForAccessibility="no"
-		/>
+    <ImageView
+        android:id="@+id/camera_viewfinder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="-8dp"
+        android:layout_marginLeft="-8dp"
+        android:layout_marginRight="-8dp"
+        android:layout_marginBottom="-8dp"
+        android:src="@drawable/ic_qr_scanner_viewfinder"
+        app:layout_constraintLeft_toLeftOf="@+id/camera_preview_container"
+        app:layout_constraintTop_toTopOf="@+id/camera_preview_container"
+        app:layout_constraintBottom_toBottomOf="@+id/camera_preview_container"
+        app:layout_constraintRight_toRightOf="@+id/camera_preview_container"
+        android:importantForAccessibility="no" />
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/camera_preview_container"
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:layout_marginTop="@dimen/qrscanner_masking_margin_top"
-		android:layout_marginBottom="@dimen/qrscanner_masking_margin_bottom"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintDimensionRatio="1:1">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/camera_preview_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/qrscanner_masking_margin_top"
+        android:layout_marginBottom="@dimen/qrscanner_masking_margin_bottom"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintDimensionRatio="1:1">
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-	<TextView
-		android:id="@+id/hint_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:textAlignment="center"
-		android:gravity="center_horizontal"
-		android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
-		android:textColor="@android:color/white"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/camera_preview_container"
-		/>
+    <TextView
+        android:id="@+id/hint_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/camera_preview_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

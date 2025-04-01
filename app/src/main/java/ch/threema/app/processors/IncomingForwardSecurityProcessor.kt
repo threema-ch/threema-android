@@ -63,9 +63,24 @@ class IncomingForwardSecurityProcessor(
         return when (val data = envelopeMessage.data) {
             is ForwardSecurityDataInit -> IncomingForwardSecurityInitTask(fsmp, sender, data)
             is ForwardSecurityDataAccept -> IncomingForwardSecurityAcceptTask(fsmp, sender, data)
-            is ForwardSecurityDataReject -> IncomingForwardSecurityRejectTask(sender, data, serviceManager)
-            is ForwardSecurityDataTerminate -> IncomingForwardSecurityTerminateTask(fsmp, sender, data)
-            is ForwardSecurityDataMessage -> IncomingForwardSecurityMessageTask(fsmp, sender, envelopeMessage)
+            is ForwardSecurityDataReject -> IncomingForwardSecurityRejectTask(
+                sender,
+                data,
+                serviceManager
+            )
+
+            is ForwardSecurityDataTerminate -> IncomingForwardSecurityTerminateTask(
+                fsmp,
+                sender,
+                data
+            )
+
+            is ForwardSecurityDataMessage -> IncomingForwardSecurityMessageTask(
+                fsmp,
+                sender,
+                envelopeMessage
+            )
+
             else -> throw UnknownMessageTypeException("Unsupported message type")
         }.run(handle)
     }

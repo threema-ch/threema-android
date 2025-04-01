@@ -25,7 +25,7 @@ import ch.threema.protobuf.groupcall.SfuHttpResponse
 
 typealias PeekResponse = SfuResponse<PeekResponseBody>
 
-data class PeekResponseBody (
+data class PeekResponseBody(
     val startedAt: ULong,
     val maxParticipants: UInt,
     val encryptedCallState: ByteArray?
@@ -33,7 +33,13 @@ data class PeekResponseBody (
     companion object {
         fun fromSfuResponseBytes(bytes: ByteArray): PeekResponseBody {
             return SfuHttpResponse.Peek.parseFrom(bytes)
-                .let { PeekResponseBody(it.startedAt.toULong(), it.maxParticipants.toUInt(), it.encryptedCallState?.toByteArray()) }
+                .let {
+                    PeekResponseBody(
+                        it.startedAt.toULong(),
+                        it.maxParticipants.toUInt(),
+                        it.encryptedCallState?.toByteArray()
+                    )
+                }
         }
     }
 

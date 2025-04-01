@@ -48,12 +48,12 @@ public class ReportUtils {
      * KEY:DRM(26) + checkSign(02) + success(01)
      */
     public static final String KEY_CHECK_SIGN_SUCCESS = DRM + CHECK_SIGN
-            + SUCCESS;
+        + SUCCESS;
     /**
      * KEY:DRM(26) + checkSign(02) + failed(02)
      */
     public static final String KEY_CHECK_SIGN_FAILED = DRM + CHECK_SIGN
-            + FAILED;
+        + FAILED;
     /**
      * 操作类型：获取签名
      * Operation type: Obtain signature

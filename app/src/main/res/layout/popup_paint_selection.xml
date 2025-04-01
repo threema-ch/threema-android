@@ -1,104 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:orientation="horizontal"
-	android:background="@android:color/transparent"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@android:color/transparent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<androidx.cardview.widget.CardView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="@dimen/emoji_popup_cardview_margin_bottom"
-		android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
-		android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
-		android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
-		app:cardCornerRadius="6dp"
-		app:cardElevation="4dp">
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/emoji_popup_cardview_margin_bottom"
+        android:layout_marginTop="@dimen/emoji_popup_cardview_margin_top"
+        android:layout_marginLeft="@dimen/emoji_popup_cardview_margin_horizontal"
+        android:layout_marginRight="@dimen/emoji_popup_cardview_margin_horizontal"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="4dp">
 
-		<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="8dp"
-			android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
 
-			<ImageView
-				android:id="@+id/remove_paint"
-				android:layout_width="@dimen/reaction_popup_emoji_size"
-				android:layout_height="@dimen/reaction_popup_emoji_size"
-				android:padding="@dimen/reaction_popup_content_margin"
-				android:src="@drawable/ic_delete_outline"
-				android:contentDescription="@string/delete"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				android:clickable="true"
-				android:focusable="true"
-				app:tint="?attr/colorOnSurface" />
+            <ImageView
+                android:id="@+id/remove_paint"
+                android:layout_width="@dimen/reaction_popup_emoji_size"
+                android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:src="@drawable/ic_delete_outline"
+                android:contentDescription="@string/delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
 
-			<View
-				android:id="@+id/flip_separator"
-				android:layout_width="1dp"
-				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
-				android:layout_marginRight="@dimen/reaction_popup_content_margin"
-				android:background="@color/file_picker_divider_color"
-				/>
+            <View
+                android:id="@+id/flip_separator"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+                android:layout_marginRight="@dimen/reaction_popup_content_margin"
+                android:background="@color/file_picker_divider_color" />
 
-			<ImageView
-				android:id="@+id/flip_paint"
-				android:layout_width="@dimen/reaction_popup_emoji_size"
-				android:layout_height="@dimen/reaction_popup_emoji_size"
-				android:padding="@dimen/reaction_popup_content_margin"
-				android:src="@drawable/ic_flip_outline"
-				android:contentDescription="@string/flip"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				android:clickable="true"
-				android:focusable="true"
-				app:tint="?attr/colorOnSurface" />
+            <ImageView
+                android:id="@+id/flip_paint"
+                android:layout_width="@dimen/reaction_popup_emoji_size"
+                android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:src="@drawable/ic_flip_outline"
+                android:contentDescription="@string/flip"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
 
-			<View
-				android:id="@+id/bring_to_front_separator"
-				android:layout_width="1dp"
-				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
-				android:layout_marginRight="@dimen/reaction_popup_content_margin"
-				android:background="@color/file_picker_divider_color"
-				/>
+            <View
+                android:id="@+id/bring_to_front_separator"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+                android:layout_marginRight="@dimen/reaction_popup_content_margin"
+                android:background="@color/file_picker_divider_color" />
 
-			<ImageView
-				android:id="@+id/bring_to_front_paint"
-				android:layout_width="@dimen/reaction_popup_emoji_size"
-				android:layout_height="@dimen/reaction_popup_emoji_size"
-				android:padding="@dimen/reaction_popup_content_margin"
-				android:src="@drawable/ic_bring_to_front"
-				android:contentDescription="@string/to_front"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				android:clickable="true"
-				android:focusable="true"
-				app:tint="?attr/colorOnSurface" />
+            <ImageView
+                android:id="@+id/bring_to_front_paint"
+                android:layout_width="@dimen/reaction_popup_emoji_size"
+                android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:src="@drawable/ic_bring_to_front"
+                android:contentDescription="@string/to_front"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
 
-			<View
-				android:id="@+id/color_separator"
-				android:layout_width="1dp"
-				android:layout_height="match_parent"
-				android:layout_marginLeft="@dimen/reaction_popup_content_margin"
-				android:layout_marginRight="@dimen/reaction_popup_content_margin"
-				android:background="@color/file_picker_divider_color"
-				/>
+            <View
+                android:id="@+id/color_separator"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/reaction_popup_content_margin"
+                android:layout_marginRight="@dimen/reaction_popup_content_margin"
+                android:background="@color/file_picker_divider_color" />
 
-			<ImageView
-				android:id="@+id/color_paint"
-				android:layout_width="@dimen/reaction_popup_emoji_size"
-				android:layout_height="@dimen/reaction_popup_emoji_size"
-				android:padding="@dimen/reaction_popup_content_margin"
-				android:src="@drawable/ic_color_lens_24px"
-				android:contentDescription="@string/palette"
-				android:background="?attr/selectableItemBackgroundBorderless"
-				android:clickable="true"
-				android:focusable="true"
-				app:tint="?attr/colorOnSurface" />
+            <ImageView
+                android:id="@+id/color_paint"
+                android:layout_width="@dimen/reaction_popup_emoji_size"
+                android:layout_height="@dimen/reaction_popup_emoji_size"
+                android:padding="@dimen/reaction_popup_content_margin"
+                android:src="@drawable/ic_color_lens_24px"
+                android:contentDescription="@string/palette"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </FrameLayout>

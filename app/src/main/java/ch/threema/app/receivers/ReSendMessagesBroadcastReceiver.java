@@ -50,72 +50,72 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageModel;
 
 public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ReSendMessagesBroadcastReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ReSendMessagesBroadcastReceiver");
 
-	@Override
-	@SuppressLint("StaticFieldLeak")
-	public void onReceive(final Context context, final Intent intent) {
-		final PendingResult pendingResult = goAsync();
+    @Override
+    @SuppressLint("StaticFieldLeak")
+    public void onReceive(final Context context, final Intent intent) {
+        final PendingResult pendingResult = goAsync();
 
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... params) {
-				ArrayList<AbstractMessageModel> failedMessages = IntentDataUtil.getAbstractMessageModels(intent, messageService);
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                ArrayList<AbstractMessageModel> failedMessages = IntentDataUtil.getAbstractMessageModels(intent, messageService);
 
-				NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-				notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                notificationManager.cancel(ThreemaApplication.UNSENT_MESSAGE_NOTIFICATION_ID);
 
-				if (failedMessages.size() > 0) {
-					// we need to make sure there's a connection during delivery
-					lifetimeService.acquireConnection(TAG);
+                if (failedMessages.size() > 0) {
+                    // we need to make sure there's a connection during delivery
+                    lifetimeService.acquireConnection(TAG);
 
-					for (AbstractMessageModel failedMessage : failedMessages) {
-						MessageReceiver messageReceiver = getMessageReceiverFromMessageModel(failedMessage);
-						if (messageReceiver == null) {
-							logger.warn("Message receiver is null for failed message {}", failedMessage.getApiMessageId());
-							continue;
-						}
-						List<String> receiverIdentities = new ArrayList<>();
-						if (failedMessage instanceof GroupMessageModel) {
-							GroupMessageModel failedGroupMessage = (GroupMessageModel) failedMessage;
-							GroupModel group = groupService.getById(failedGroupMessage.getGroupId());
-							if (group == null) {
-								logger.warn("Group model not found for failed message {}", failedGroupMessage.getApiMessageId());
-								continue;
-							}
-							receiverIdentities.addAll(Arrays.asList(groupService.getGroupIdentities(group)));
-						} else {
-							receiverIdentities.add(failedMessage.getIdentity());
-						}
-						try {
-							messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities, new MessageId(), TriggerSource.LOCAL);
-							notificationService.cancel(messageReceiver);
-						} catch (Exception e) {
-							RuntimeUtil.runOnUiThread(new Runnable() {
-								@Override
-								public void run() {
-									Toast.makeText(context, R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show();
-								}
-							});
-							logger.error("Exception", e);
-						}
-					}
-					lifetimeService.releaseConnectionLinger(TAG, WEARABLE_CONNECTION_LINGER);
-				}
-				pendingResult.finish();
-				return null;
-			}
-		}.execute();
-	}
+                    for (AbstractMessageModel failedMessage : failedMessages) {
+                        MessageReceiver messageReceiver = getMessageReceiverFromMessageModel(failedMessage);
+                        if (messageReceiver == null) {
+                            logger.warn("Message receiver is null for failed message {}", failedMessage.getApiMessageId());
+                            continue;
+                        }
+                        List<String> receiverIdentities = new ArrayList<>();
+                        if (failedMessage instanceof GroupMessageModel) {
+                            GroupMessageModel failedGroupMessage = (GroupMessageModel) failedMessage;
+                            GroupModel group = groupService.getById(failedGroupMessage.getGroupId());
+                            if (group == null) {
+                                logger.warn("Group model not found for failed message {}", failedGroupMessage.getApiMessageId());
+                                continue;
+                            }
+                            receiverIdentities.addAll(Arrays.asList(groupService.getGroupIdentities(group)));
+                        } else {
+                            receiverIdentities.add(failedMessage.getIdentity());
+                        }
+                        try {
+                            messageService.resendMessage(failedMessage, messageReceiver, null, receiverIdentities, new MessageId(), TriggerSource.LOCAL);
+                            notificationService.cancel(messageReceiver);
+                        } catch (Exception e) {
+                            RuntimeUtil.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, R.string.original_file_no_longer_avilable, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            logger.error("Exception", e);
+                        }
+                    }
+                    lifetimeService.releaseConnectionLinger(TAG, WEARABLE_CONNECTION_LINGER);
+                }
+                pendingResult.finish();
+                return null;
+            }
+        }.execute();
+    }
 
-	private MessageReceiver getMessageReceiverFromMessageModel(AbstractMessageModel messageModel) {
-		if (messageModel instanceof MessageModel) {
-			return contactService.createReceiver(contactService.getByIdentity(messageModel.getIdentity()));
-		} else if (messageModel instanceof GroupMessageModel) {
-			return groupService.createReceiver(groupService.getById(((GroupMessageModel) messageModel).getGroupId()));
-		} else if (messageModel instanceof DistributionListMessageModel) {
-			return distributionListService.createReceiver(distributionListService.getById(((DistributionListMessageModel) messageModel).getDistributionListId()));
-		}
-		return null;
-	}
+    private MessageReceiver getMessageReceiverFromMessageModel(AbstractMessageModel messageModel) {
+        if (messageModel instanceof MessageModel) {
+            return contactService.createReceiver(contactService.getByIdentity(messageModel.getIdentity()));
+        } else if (messageModel instanceof GroupMessageModel) {
+            return groupService.createReceiver(groupService.getById(((GroupMessageModel) messageModel).getGroupId()));
+        } else if (messageModel instanceof DistributionListMessageModel) {
+            return distributionListService.createReceiver(distributionListService.getById(((DistributionListMessageModel) messageModel).getDistributionListId()));
+        }
+        return null;
+    }
 }

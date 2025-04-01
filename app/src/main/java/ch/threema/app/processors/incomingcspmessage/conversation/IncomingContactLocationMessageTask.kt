@@ -36,12 +36,15 @@ class IncomingContactLocationMessageTask(
 
     private val messageService by lazy { serviceManager.messageService }
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processLocationMessage()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processLocationMessage()
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processLocationMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processLocationMessage()
 
     private fun processLocationMessage(): ReceiveStepsResult {
-        val processedMessageSuccessfully = messageService.processIncomingContactMessage(locationMessage)
+        val processedMessageSuccessfully =
+            messageService.processIncomingContactMessage(locationMessage)
         return if (processedMessageSuccessfully) ReceiveStepsResult.SUCCESS else ReceiveStepsResult.DISCARD
     }
 }

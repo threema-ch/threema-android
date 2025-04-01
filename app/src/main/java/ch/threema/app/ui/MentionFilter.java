@@ -34,39 +34,39 @@ import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MentionFilter implements InputFilter {
-	Context context;
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionFilter");
+    Context context;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionFilter");
 
-	public MentionFilter(Context context) {
-		super();
-		this.context = context;
-	}
+    public MentionFilter(Context context) {
+        super();
+        this.context = context;
+    }
 
-	@Override
-	public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-		char[] buffer = new char[end - start];
-		TextUtils.getChars(source, start, end, buffer, 0);
+    @Override
+    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+        char[] buffer = new char[end - start];
+        TextUtils.getChars(source, start, end, buffer, 0);
 
-		String insertText = new String(buffer);
+        String insertText = new String(buffer);
 
-		// Check whether a mention is inserted within a strikethrough span
-		boolean isStrikeThrough = false;
-		    for (StrikethroughSpan s : dest.getSpans(0, source.length(), StrikethroughSpan.class)) {
-				if (dest.getSpanStart(s) <= dstart && dest.getSpanEnd(s) >= dend) {
-					isStrikeThrough = true;
-					break;
-				}
-			}
+        // Check whether a mention is inserted within a strikethrough span
+        boolean isStrikeThrough = false;
+        for (StrikethroughSpan s : dest.getSpans(0, source.length(), StrikethroughSpan.class)) {
+            if (dest.getSpanStart(s) <= dstart && dest.getSpanEnd(s) >= dend) {
+                isStrikeThrough = true;
+                break;
+            }
+        }
 
-		try {
-			Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText, isStrikeThrough);
-			if (source instanceof Spanned && spannable != null) {
-				TextUtils.copySpansFrom((Spanned) source, start, end, null, spannable, 0);
-			}
-			return spannable;
-		} catch (Exception e) {
-			logger.error("Spannable exception", e);
-		}
-		return source;
-	}
+        try {
+            Spannable spannable = (Spannable) EmojiMarkupUtil.getInstance().addMentionMarkup(context, insertText, isStrikeThrough);
+            if (source instanceof Spanned && spannable != null) {
+                TextUtils.copySpansFrom((Spanned) source, start, end, null, spannable, 0);
+            }
+            return spannable;
+        } catch (Exception e) {
+            logger.error("Spannable exception", e);
+        }
+        return source;
+    }
 }

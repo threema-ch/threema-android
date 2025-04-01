@@ -29,14 +29,15 @@ import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
 
 public interface GroupJoinResponseService {
 
-	// TODO(ANDR-2607): integrate properly in tasks
-	@NonNull boolean process(
-		GroupJoinResponseMessage message
-	) throws ThreemaException;
+    // TODO(ANDR-2607): integrate properly in tasks
+    @NonNull
+    boolean process(
+        GroupJoinResponseMessage message
+    ) throws ThreemaException;
 
-	void send(
-		@NonNull String identity,
-		@NonNull GroupInviteToken token,
-		@NonNull GroupJoinResponseData.Response response
-	) throws ThreemaException;
+    void send(
+        @NonNull String identity,
+        @NonNull GroupInviteToken token,
+        @NonNull GroupJoinResponseData.Response response
+    ) throws ThreemaException;
 }

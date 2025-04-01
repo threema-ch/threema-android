@@ -32,41 +32,41 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion10 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion10(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion10(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
+    @Override
+    public boolean runDirectly() {
 
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
-
-
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("isGroupCapable");
-			}
-		}) != null;
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
 
 
-		if(!hasField) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isGroupCapable TINYINT(1) DEFAULT 0");
-		}
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("isGroupCapable");
+            }
+        }) != null;
 
-		return true;
-	}
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+        if (!hasField) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isGroupCapable TINYINT(1) DEFAULT 0");
+        }
 
-	@Override
-	public String getText() {
-		return "version 10 (set group capable)";
-	}
+        return true;
+    }
+
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return "version 10 (set group capable)";
+    }
 }

@@ -35,7 +35,7 @@ import kotlin.concurrent.withLock
 
 class ChatServerAddressProviderImpl(
     configuration: CspConnectionConfiguration,
-    ) : ChatServerAddressProvider {
+) : ChatServerAddressProvider {
     private val identityStore: IdentityStoreInterface = configuration.identityStore
     private val serverAddressProvider: ServerAddressProvider = configuration.serverAddressProvider
     private val hostResolver: HostResolver = configuration.hostResolver
@@ -80,7 +80,11 @@ class ChatServerAddressProviderImpl(
     override fun update(): Unit = lock.withLock {
         val serverHost = getServerHost()
 
-        val addresses = if (ProxyAwareSocketFactory.shouldUseProxy(serverHost, serverAddressProvider.chatServerPorts[0])) {
+        val addresses = if (ProxyAwareSocketFactory.shouldUseProxy(
+                serverHost,
+                serverAddressProvider.chatServerPorts[0]
+            )
+        ) {
             getAddressesWithProxy(serverHost)
         } else {
             getAddressesWithoutProxy(serverHost)
@@ -92,18 +96,20 @@ class ChatServerAddressProviderImpl(
         }
     }
 
-    private fun hasChangedAddresses(addresses: List<InetSocketAddress>): Boolean = addresses.withIndex().any {
-        val newAddress = it.value.address
-        val previousAddress = serverSocketAddresses[it.index].address
-        (newAddress == null && previousAddress != null)
-            || (newAddress != null && previousAddress == null)
-            || (newAddress != null && !newAddress.hostAddress.equals(previousAddress.hostAddress))
-    }
+    private fun hasChangedAddresses(addresses: List<InetSocketAddress>): Boolean =
+        addresses.withIndex().any {
+            val newAddress = it.value.address
+            val previousAddress = serverSocketAddresses[it.index].address
+            (newAddress == null && previousAddress != null)
+                || (newAddress != null && previousAddress == null)
+                || (newAddress != null && !newAddress.hostAddress.equals(previousAddress.hostAddress))
+        }
 
     private fun getServerHost(): String {
         val serverNamePrefix = serverAddressProvider.getChatServerNamePrefix(ipv6)
         val serverHost = if (serverNamePrefix.isNotEmpty()) {
-            val serverGroup = if (serverAddressProvider.chatServerUseServerGroups) identityStore.serverGroup else "."
+            val serverGroup =
+                if (serverAddressProvider.chatServerUseServerGroups) identityStore.serverGroup else "."
             "$serverNamePrefix$serverGroup"
         } else {
             ""
@@ -121,8 +127,8 @@ class ChatServerAddressProviderImpl(
         if (inetAddresses.isEmpty()) {
             throw UnknownHostException()
         }
-        inetAddresses.sortWith {
-            o1, o2 -> when {
+        inetAddresses.sortWith { o1, o2 ->
+            when {
                 o1 is Inet6Address && o2 is Inet6Address -> o1.hostAddress.compareTo(o2.hostAddress)
                 o1 is Inet6Address -> -1
                 o2 is Inet4Address -> o1.hostAddress.compareTo(o2.hostAddress)

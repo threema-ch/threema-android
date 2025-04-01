@@ -28,84 +28,88 @@ import ch.threema.app.services.ballot.BallotService;
 import ch.threema.storage.models.ballot.BallotModel;
 
 abstract class BallotDetailActivity extends ThreemaToolbarActivity {
-	private BallotModel ballotModel = null;
+    private BallotModel ballotModel = null;
 
-	interface ServiceCall {
-		boolean call(BallotService service);
-	}
+    interface ServiceCall {
+        boolean call(BallotService service);
+    }
 
-	protected boolean setBallotModel(final BallotModel ballotModel) {
-		this.ballotModel = ballotModel;
-		this.updateViewState();
+    protected boolean setBallotModel(final BallotModel ballotModel) {
+        this.ballotModel = ballotModel;
+        this.updateViewState();
 
-		return this.ballotModel != null;
-	}
+        return this.ballotModel != null;
+    }
 
-	protected BallotModel getBallotModel() {
-		return this.ballotModel;
-	}
+    protected BallotModel getBallotModel() {
+        return this.ballotModel;
+    }
 
-	protected Integer getBallotModelId() {
-		if(this.ballotModel != null) {
-			return this.ballotModel.getId();
-		}
+    protected Integer getBallotModelId() {
+        if (this.ballotModel != null) {
+            return this.ballotModel.getId();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private void updateViewState() {
-		if(this.ballotModel != null) {
-			this.callService(new ServiceCall() {
-				@Override
-				public boolean call(BallotService service) {
-					service.viewingBallot(ballotModel, true);
-					return true;
-				}
-			});
-		}
-	}
-	@Override
-	public void onResume() {
-		super.onResume();
-		if(this.ballotModel != null) {
-			this.callService(new ServiceCall() {
-				@Override
-				public boolean call(BallotService service) {
-					service.viewingBallot(ballotModel, true);
-					return true;
-				}
-			});
-		}
-	}
+    private void updateViewState() {
+        if (this.ballotModel != null) {
+            this.callService(new ServiceCall() {
+                @Override
+                public boolean call(BallotService service) {
+                    service.viewingBallot(ballotModel, true);
+                    return true;
+                }
+            });
+        }
+    }
 
-	@Override
-	public void onPause() {
-		if(this.ballotModel != null) {
-			this.callService(new ServiceCall() {
-				@Override
-				public boolean call(BallotService service) {
-					service.viewingBallot(ballotModel, false);
-					return true;
-				}
-			});
-		}
-		super.onPause();
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (this.ballotModel != null) {
+            this.callService(new ServiceCall() {
+                @Override
+                public boolean call(BallotService service) {
+                    service.viewingBallot(ballotModel, true);
+                    return true;
+                }
+            });
+        }
+    }
 
-	private boolean callService(ServiceCall serviceCall) {
-		if(serviceCall != null) {
-			BallotService s = this.getBallotService();
-			if (s != null) {
-				return serviceCall.call(s);
-			}
-		}
+    @Override
+    public void onPause() {
+        if (this.ballotModel != null) {
+            this.callService(new ServiceCall() {
+                @Override
+                public boolean call(BallotService service) {
+                    service.viewingBallot(ballotModel, false);
+                    return true;
+                }
+            });
+        }
+        super.onPause();
+    }
 
-		return false;
-	}
+    private boolean callService(ServiceCall serviceCall) {
+        if (serviceCall != null) {
+            BallotService s = this.getBallotService();
+            if (s != null) {
+                return serviceCall.call(s);
+            }
+        }
 
-	abstract BallotService getBallotService();
-	abstract ContactService getContactService();
-	abstract GroupService getGroupService();
-	abstract String getIdentity();
+        return false;
+    }
+
+    abstract BallotService getBallotService();
+
+    abstract ContactService getContactService();
+
+    abstract GroupService getGroupService();
+
+    abstract String getIdentity();
 
 }

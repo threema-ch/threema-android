@@ -35,62 +35,62 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.HttpProxySocket;
 
 public class ProxyAwareSocketFactory {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyAwareSocketFactory");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyAwareSocketFactory");
 
-	public static boolean shouldUseProxy(String hostname, int port) {
-		List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + hostname + ":" + port + "/"));
-		if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
-			return false;
-		}
-		return true;
-	}
+    public static boolean shouldUseProxy(String hostname, int port) {
+        List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + hostname + ":" + port + "/"));
+        if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
+            return false;
+        }
+        return true;
+    }
 
-	@NonNull
-	public static Socket makeSocket(InetSocketAddress address) {
-		List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + address.getHostName() + ":" + address.getPort() + "/"));
-		if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
-			// No proxy
-			logger.info("No proxy configured");
-			return new Socket();
-		}
+    @NonNull
+    public static Socket makeSocket(InetSocketAddress address) {
+        List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + address.getHostName() + ":" + address.getPort() + "/"));
+        if (proxies.size() == 0 || proxies.get(0) == Proxy.NO_PROXY || proxies.get(0).type() == Proxy.Type.DIRECT) {
+            // No proxy
+            logger.info("No proxy configured");
+            return new Socket();
+        }
 
-		// Look for a SOCKS proxy first, as we prefer that
-		Proxy chosenProxy = null;
-		for (Proxy proxy : proxies) {
-			if (proxy.type() == Proxy.Type.SOCKS) {
-				chosenProxy = proxy;
-				break;
-			}
-		}
+        // Look for a SOCKS proxy first, as we prefer that
+        Proxy chosenProxy = null;
+        for (Proxy proxy : proxies) {
+            if (proxy.type() == Proxy.Type.SOCKS) {
+                chosenProxy = proxy;
+                break;
+            }
+        }
 
-		if (chosenProxy == null) {
-			// Fall back to the first HTTP proxy
-			for (Proxy proxy : proxies) {
-				if (proxy.type() == Proxy.Type.HTTP) {
-					chosenProxy = proxy;
-					break;
-				}
-			}
-		}
+        if (chosenProxy == null) {
+            // Fall back to the first HTTP proxy
+            for (Proxy proxy : proxies) {
+                if (proxy.type() == Proxy.Type.HTTP) {
+                    chosenProxy = proxy;
+                    break;
+                }
+            }
+        }
 
-		if (chosenProxy == null) {
-			logger.info("No proxy chosen");
-			return new Socket();
-		}
+        if (chosenProxy == null) {
+            logger.info("No proxy chosen");
+            return new Socket();
+        }
 
-		// Check if the chosen proxy supports SOCKS or HTTP. For SOCKS, we can directly
-		// create a Socket with the proxy configuration. For HTTP, we need to supply our own
-		// implementation as JDK 7 does not support HTTP for Socket.
-		logger.info("Using proxy: " + chosenProxy);
-		switch (chosenProxy.type()) {
-			case SOCKS:
-				return new Socket(chosenProxy);
-			case HTTP:
-				return new HttpProxySocket(chosenProxy);
-			default:
-				// This should actually not be reachable as only Sockets with type SOCKS or HTTP are
-				// considered.
-				throw new RuntimeException("Invalid proxy type '" + chosenProxy.type() + "' set");
-		}
-	}
+        // Check if the chosen proxy supports SOCKS or HTTP. For SOCKS, we can directly
+        // create a Socket with the proxy configuration. For HTTP, we need to supply our own
+        // implementation as JDK 7 does not support HTTP for Socket.
+        logger.info("Using proxy: " + chosenProxy);
+        switch (chosenProxy.type()) {
+            case SOCKS:
+                return new Socket(chosenProxy);
+            case HTTP:
+                return new HttpProxySocket(chosenProxy);
+            default:
+                // This should actually not be reachable as only Sockets with type SOCKS or HTTP are
+                // considered.
+                throw new RuntimeException("Invalid proxy type '" + chosenProxy.type() + "' set");
+        }
+    }
 }

@@ -29,20 +29,20 @@ import androidx.annotation.StringRes;
 import ch.threema.app.ui.BottomSheetItem;
 
 public class BottomSheetGridDialog extends BottomSheetAbstractDialog {
-	public static BottomSheetGridDialog newInstance(@StringRes int title, ArrayList<BottomSheetItem> items) {
-		BottomSheetGridDialog dialog = new BottomSheetGridDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putParcelableArrayList("items", items);
-		dialog.setArguments(args);
-		return dialog;
-	}
+    public static BottomSheetGridDialog newInstance(@StringRes int title, ArrayList<BottomSheetItem> items) {
+        BottomSheetGridDialog dialog = new BottomSheetGridDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putParcelableArrayList("items", items);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	/* Hack to prevent TransactionTooLargeException when hosting activity goes into the background */
-	@Override
-	public void onPause() {
-		dismiss();
+    /* Hack to prevent TransactionTooLargeException when hosting activity goes into the background */
+    @Override
+    public void onPause() {
+        dismiss();
 
-		super.onPause();
-	}
+        super.onPause();
+    }
 }

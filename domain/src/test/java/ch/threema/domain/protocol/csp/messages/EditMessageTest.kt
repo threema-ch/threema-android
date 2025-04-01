@@ -157,7 +157,8 @@ class EditMessageTest {
 
         // arrange
         val offset = 5
-        val bytesMessageDataContainingOffsetAndJunk = nextBytes(offset) + bytesProtoMessageData + nextBytes(10)
+        val bytesMessageDataContainingOffsetAndJunk =
+            nextBytes(offset) + bytesProtoMessageData + nextBytes(10)
 
         // act
         val editMessage = EditMessage.fromByteArray(

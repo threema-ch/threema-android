@@ -42,78 +42,78 @@ import static android.view.View.GONE;
 
 public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 
-	public LocationChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-		super(context, messageModel, helper);
-	}
+    public LocationChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
+        super(context, messageModel, helper);
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, final int position) {
-		final LocationDataModel locationDataModel = this.getMessageModel().getLocationData();
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, final int position) {
+        final LocationDataModel locationDataModel = this.getMessageModel().getLocationData();
 
-		TextView addressLine = holder.bodyTextView;
+        TextView addressLine = holder.bodyTextView;
 
-		this.setOnClickListener(v -> {
-			if (
-				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
-				getMessageModel().getState() != MessageState.SENDFAILED
-			) {
-				if(!isInChoiceMode()) {
-					viewLocation(getMessageModel());
-				}
-			}
-		}, holder.messageBlockView);
+        this.setOnClickListener(v -> {
+            if (
+                getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
+                    getMessageModel().getState() != MessageState.SENDFAILED
+            ) {
+                if (!isInChoiceMode()) {
+                    viewLocation(getMessageModel());
+                }
+            }
+        }, holder.messageBlockView);
 
-		//clear texts
-		if(holder.bodyTextView != null) {
-			holder.bodyTextView.setText("");
-		}
+        //clear texts
+        if (holder.bodyTextView != null) {
+            holder.bodyTextView.setText("");
+        }
 
-		if(holder.secondaryTextView != null) {
-			holder.secondaryTextView.setText("");
-			holder.secondaryTextView.setVisibility(GONE);
-		}
+        if (holder.secondaryTextView != null) {
+            holder.secondaryTextView.setText("");
+            holder.secondaryTextView.setVisibility(GONE);
+        }
 
-		if (locationDataModel.poiNameOrNull != null) {
-			if (holder.bodyTextView != null) {
-				holder.bodyTextView.setText(highlightMatches(locationDataModel.poiNameOrNull, filterString));
-				holder.bodyTextView.setWidth(this.getThumbnailWidth());
-				holder.bodyTextView.setVisibility(View.VISIBLE);
-			}
-			addressLine = holder.secondaryTextView;
-		}
+        if (locationDataModel.poiNameOrNull != null) {
+            if (holder.bodyTextView != null) {
+                holder.bodyTextView.setText(highlightMatches(locationDataModel.poiNameOrNull, filterString));
+                holder.bodyTextView.setWidth(this.getThumbnailWidth());
+                holder.bodyTextView.setVisibility(View.VISIBLE);
+            }
+            addressLine = holder.secondaryTextView;
+        }
 
-		if(addressLine != null) {
-			final @Nullable String poiAddress = locationDataModel.poiAddressOrNull;
+        if (addressLine != null) {
+            final @Nullable String poiAddress = locationDataModel.poiAddressOrNull;
             if (poiAddress != null) {
                 addressLine.setText(highlightMatches(poiAddress, filterString));
                 addressLine.setWidth(this.getThumbnailWidth());
                 addressLine.setVisibility(View.VISIBLE);
             } else {
-				GeoLocationUtil geoLocation = new GeoLocationUtil(addressLine);
-				Location location = new Location("X");
-				location.setLatitude(locationDataModel.latitude);
-				location.setLongitude(locationDataModel.longitude);
-				location.setAccuracy((long) locationDataModel.accuracyOrFallback);
-				geoLocation.updateAddressAndModel(getContext(), location);
-			}
-		}
+                GeoLocationUtil geoLocation = new GeoLocationUtil(addressLine);
+                Location location = new Location("X");
+                location.setLatitude(locationDataModel.latitude);
+                location.setLongitude(locationDataModel.longitude);
+                location.setAccuracy((long) locationDataModel.accuracyOrFallback);
+                geoLocation.updateAddressAndModel(getContext(), location);
+            }
+        }
 
-		if (position == holder.position) {
-			holder.controller.setBackgroundImage(null);
-			holder.controller.setIconResource(R.drawable.ic_map_marker_outline);
-		}
+        if (position == holder.position) {
+            holder.controller.setBackgroundImage(null);
+            holder.controller.setIconResource(R.drawable.ic_map_marker_outline);
+        }
 
-		RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));
-	}
+        RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));
+    }
 
-	private void viewLocation(AbstractMessageModel messageModel) {
-		if (messageModel == null) {
-			return;
-		}
+    private void viewLocation(AbstractMessageModel messageModel) {
+        if (messageModel == null) {
+            return;
+        }
 
-		if (!GeoLocationUtil.viewLocation(getContext(), messageModel.getLocationData())) {
-			RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Feature not available due to firmware error", Toast.LENGTH_LONG).show());
-		}
-	}
+        if (!GeoLocationUtil.viewLocation(getContext(), messageModel.getLocationData())) {
+            RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Feature not available due to firmware error", Toast.LENGTH_LONG).show());
+        }
+    }
 }

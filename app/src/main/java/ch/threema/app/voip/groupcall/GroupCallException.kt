@@ -30,7 +30,11 @@ open class GroupCallException : ThreemaException {
         this.callDescription = callDescription
     }
 
-    constructor(msg: String, cause: Throwable, callDescription: GroupCallDescription? = null) : super(msg, cause) {
+    constructor(
+        msg: String,
+        cause: Throwable,
+        callDescription: GroupCallDescription? = null
+    ) : super(msg, cause) {
         this.callDescription = callDescription
     }
 }

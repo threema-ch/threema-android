@@ -1,110 +1,108 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:id="@+id/video_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/video_parent">
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-		android:id="@+id/video_loading_progress_bar"
-		android:indeterminate="true"
-		android:layout_gravity="center"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/video_loading_progress_bar"
+        android:indeterminate="true"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-	<androidx.media3.ui.PlayerView
-		android:id="@+id/video_view"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical"
-		app:surface_type="texture_view"
-		app:controller_layout_id="@layout/exo_player_control_view_central_button_only"/>
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        app:surface_type="texture_view"
+        app:controller_layout_id="@layout/exo_player_control_view_central_button_only" />
 
-	<GridLayout
-		android:id="@+id/video_timeline"
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/video_timeline_item_size"
-		android:layout_marginLeft="@dimen/video_timeline_marginLeftRight"
-		android:layout_marginRight="@dimen/video_timeline_marginLeftRight"
-		android:layout_marginTop="@dimen/video_timeline_marginTop"
-		android:gravity="top"
-		android:alignmentMode="alignBounds"
-		android:rowCount="1" />
+    <GridLayout
+        android:id="@+id/video_timeline"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/video_timeline_item_size"
+        android:layout_marginLeft="@dimen/video_timeline_marginLeftRight"
+        android:layout_marginRight="@dimen/video_timeline_marginLeftRight"
+        android:layout_marginTop="@dimen/video_timeline_marginTop"
+        android:gravity="top"
+        android:alignmentMode="alignBounds"
+        android:rowCount="1" />
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.MediaViewerCaption"
-		android:id="@+id/start_container"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="@dimen/video_timeline_marginLeftRight"
-		android:layout_marginTop="60dp"
-		app:contentPaddingBottom="4dp"
-		app:contentPaddingLeft="8dp"
-		app:contentPaddingRight="8dp"
-		app:contentPaddingTop="4dp">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.MediaViewerCaption"
+        android:id="@+id/start_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/video_timeline_marginLeftRight"
+        android:layout_marginTop="60dp"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingLeft="8dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="4dp">
 
-		<TextView
-			android:id="@+id/start"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:text="0:00"
-			android:textColor="@android:color/white"
-			android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0:00"
+            android:textColor="@android:color/white"
+            android:textSize="12dp" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.MediaViewerCaption"
-		android:id="@+id/size_container"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="60dp"
-		android:layout_gravity="center_horizontal"
-		app:contentPaddingBottom="4dp"
-		app:contentPaddingLeft="8dp"
-		app:contentPaddingRight="8dp"
-		app:contentPaddingTop="4dp">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.MediaViewerCaption"
+        android:id="@+id/size_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_gravity="center_horizontal"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingLeft="8dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="4dp">
 
-		<TextView
-			android:id="@+id/size"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:text="0 MB"
-			android:textColor="@android:color/white"
-			android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0 MB"
+            android:textColor="@android:color/white"
+            android:textSize="12dp" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.MediaViewerCaption"
-		android:id="@+id/end_container"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginRight="@dimen/video_timeline_marginLeftRight"
-		android:layout_marginTop="60dp"
-		android:layout_gravity="right|top"
-		app:contentPaddingBottom="4dp"
-		app:contentPaddingLeft="8dp"
-		app:contentPaddingRight="8dp"
-		app:contentPaddingTop="4dp">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.MediaViewerCaption"
+        android:id="@+id/end_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/video_timeline_marginLeftRight"
+        android:layout_marginTop="60dp"
+        android:layout_gravity="right|top"
+        app:contentPaddingBottom="4dp"
+        app:contentPaddingLeft="8dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="4dp">
 
-		<TextView
-			android:id="@+id/end"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:text="0:00"
-			android:textColor="@android:color/white"
-			android:textSize="12dp"/>
+        <TextView
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="0:00"
+            android:textColor="@android:color/white"
+            android:textSize="12dp" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>
 

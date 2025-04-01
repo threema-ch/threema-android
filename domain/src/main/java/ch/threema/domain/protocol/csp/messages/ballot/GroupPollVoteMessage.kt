@@ -118,7 +118,7 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
             }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage) : GroupPollVoteMessage =
+        fun fromReflected(message: MdD2D.OutgoingMessage): GroupPollVoteMessage =
             fromByteArray(
                 data = message.body.toByteArray()
             ).apply {
@@ -156,19 +156,36 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
             return GroupPollVoteMessage().apply {
 
                 var positionIndex = offset
-                groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+                groupCreator = String(
+                    data,
+                    positionIndex,
+                    ProtocolDefines.IDENTITY_LEN,
+                    StandardCharsets.US_ASCII
+                )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
                 apiGroupId = GroupId(data, positionIndex)
                 positionIndex += ProtocolDefines.GROUP_ID_LEN
 
-                ballotCreatorIdentity = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+                ballotCreatorIdentity = String(
+                    data,
+                    positionIndex,
+                    ProtocolDefines.IDENTITY_LEN,
+                    StandardCharsets.US_ASCII
+                )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
                 ballotId = BallotId(data, positionIndex)
                 positionIndex += ProtocolDefines.BALLOT_ID_LEN
 
-                parseVotes(String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8))
+                parseVotes(
+                    String(
+                        data,
+                        positionIndex,
+                        length + offset - positionIndex,
+                        StandardCharsets.UTF_8
+                    )
+                )
             }
         }
     }

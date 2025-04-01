@@ -33,29 +33,29 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
 
 public class SystemUpdateToVersion44 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion44(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion44(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_TYPE)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-					+ " ADD COLUMN " + ContactModel.COLUMN_TYPE + " INT DEFAULT 0");
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_TYPE)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
+                + " ADD COLUMN " + ContactModel.COLUMN_TYPE + " INT DEFAULT 0");
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 44";
-	}
+    @Override
+    public String getText() {
+        return "version 44";
+    }
 }

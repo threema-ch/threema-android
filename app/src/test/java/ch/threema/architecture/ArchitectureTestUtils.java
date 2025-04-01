@@ -31,19 +31,19 @@ import static com.google.common.base.Predicates.not;
 
 public class ArchitectureTestUtils {
 
-	static final Predicate<String> UNIT_TEST_PATTERN = input -> {
-		if(input == null) return false;
-		return Pattern.compile(".*/build/intermediates/[^/]*/[^/]*UnitTest/.*").matcher(input).matches();
-	};
-	static final Predicate<String> NOT_UNIT_TEST_PATTERN = not(UNIT_TEST_PATTERN);
+    static final Predicate<String> UNIT_TEST_PATTERN = input -> {
+        if (input == null) return false;
+        return Pattern.compile(".*/build/intermediates/[^/]*/[^/]*UnitTest/.*").matcher(input).matches();
+    };
+    static final Predicate<String> NOT_UNIT_TEST_PATTERN = not(UNIT_TEST_PATTERN);
 
-	/**
-	 * Ignore class files that stem from the unit test folder.
-	 */
-	static final class DoNotIncludeAndroidTests implements ImportOption {
-		@Override
-		public boolean includes(Location location) {
-			return NOT_UNIT_TEST_PATTERN.apply(location.toString());
-		}
-	}
+    /**
+     * Ignore class files that stem from the unit test folder.
+     */
+    static final class DoNotIncludeAndroidTests implements ImportOption {
+        @Override
+        public boolean includes(Location location) {
+            return NOT_UNIT_TEST_PATTERN.apply(location.toString());
+        }
+    }
 }

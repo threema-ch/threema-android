@@ -201,10 +201,11 @@ open class GroupPollSetupMessageTest {
         }
 
         // act
-        val resultGroupPollSetupMessage: GroupPollSetupMessage = GroupPollSetupMessage.fromReflected(
-            message = incomingD2DMessage,
-            fromIdentity = fromIdentity
-        )
+        val resultGroupPollSetupMessage: GroupPollSetupMessage =
+            GroupPollSetupMessage.fromReflected(
+                message = incomingD2DMessage,
+                fromIdentity = fromIdentity
+            )
 
         // assert
         assertEquals(resultGroupPollSetupMessage.messageId, MessageId(incomingMessageId))
@@ -226,10 +227,11 @@ open class GroupPollSetupMessageTest {
         }
 
         // act
-        val resultGroupPollSetupMessage: GroupPollSetupMessage = GroupPollSetupMessage.fromReflected(
-            message = outgoingD2DMessage,
-            fromIdentity = fromIdentity
-        )
+        val resultGroupPollSetupMessage: GroupPollSetupMessage =
+            GroupPollSetupMessage.fromReflected(
+                message = outgoingD2DMessage,
+                fromIdentity = fromIdentity
+            )
 
         // assert
         assertEquals(outgoingMessageId, resultGroupPollSetupMessage.messageId)
@@ -266,19 +268,37 @@ open class GroupPollSetupMessageTest {
         assertEquals(groupPollSetupMessage.groupCreator, actual.groupCreator)
         assertEquals(groupPollSetupMessage.apiGroupId, actual.apiGroupId)
         assertEquals(groupPollSetupMessage.ballotCreatorIdentity, actual.ballotCreatorIdentity)
-        assertEquals(groupPollSetupMessage.ballotData!!.description, actual.ballotData!!.description)
+        assertEquals(
+            groupPollSetupMessage.ballotData!!.description,
+            actual.ballotData!!.description
+        )
         assertEquals(groupPollSetupMessage.ballotData!!.state, actual.ballotData!!.state)
-        assertEquals(groupPollSetupMessage.ballotData!!.assessmentType, actual.ballotData!!.assessmentType)
+        assertEquals(
+            groupPollSetupMessage.ballotData!!.assessmentType,
+            actual.ballotData!!.assessmentType
+        )
         assertEquals(groupPollSetupMessage.ballotData!!.type, actual.ballotData!!.type)
         assertEquals(groupPollSetupMessage.ballotData!!.choiceType, actual.ballotData!!.choiceType)
-        assertContentEquals(groupPollSetupMessage.ballotData!!.participants, actual.ballotData!!.participants)
-        assertEquals(groupPollSetupMessage.ballotData!!.displayType, actual.ballotData!!.displayType)
-        assertEquals(groupPollSetupMessage.ballotData!!.choiceList.size, actual.ballotData!!.choiceList.size)
+        assertContentEquals(
+            groupPollSetupMessage.ballotData!!.participants,
+            actual.ballotData!!.participants
+        )
+        assertEquals(
+            groupPollSetupMessage.ballotData!!.displayType,
+            actual.ballotData!!.displayType
+        )
+        assertEquals(
+            groupPollSetupMessage.ballotData!!.choiceList.size,
+            actual.ballotData!!.choiceList.size
+        )
         groupPollSetupMessage.ballotData!!.choiceList.forEachIndexed { index, value ->
             assertEquals(value.id, actual.ballotData!!.choiceList[index].id)
             assertEquals(value.name, actual.ballotData!!.choiceList[index].name)
             assertEquals(value.order, actual.ballotData!!.choiceList[index].order)
-            assertContentEquals(value.ballotDataChoiceResults, actual.ballotData!!.choiceList[index].ballotDataChoiceResults)
+            assertContentEquals(
+                value.ballotDataChoiceResults,
+                actual.ballotData!!.choiceList[index].ballotDataChoiceResults
+            )
             assertEquals(value.totalVotes, actual.ballotData!!.choiceList[index].totalVotes)
         }
     }

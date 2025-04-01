@@ -37,7 +37,11 @@ class IncomingGroupDeleteProfilePictureTask(
     message: GroupDeleteProfilePictureMessage,
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
-) : IncomingCspMessageSubTask<GroupDeleteProfilePictureMessage>(message, triggerSource, serviceManager) {
+) : IncomingCspMessageSubTask<GroupDeleteProfilePictureMessage>(
+    message,
+    triggerSource,
+    serviceManager
+) {
     private val fileService by lazy { serviceManager.fileService }
     private val avatarCacheService by lazy { serviceManager.avatarCacheService }
     private val groupService by lazy { serviceManager.groupService }

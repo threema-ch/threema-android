@@ -63,288 +63,288 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class FilePickerActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("FilePickerActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("FilePickerActivity");
 
-	private static final int PERMISSION_STORAGE = 1;
+    private static final int PERMISSION_STORAGE = 1;
 
-	public static final String INTENT_DATA_DEFAULT_PATH = "defpath";
+    public static final String INTENT_DATA_DEFAULT_PATH = "defpath";
 
-	private String currentFolder;
-	private FilePickerAdapter fileArrayListAdapter;
-	private FileFilter fileFilter;
-	private ListView listView;
-	private ArrayList<String> extensions;
-	private final ArrayList<String> rootPaths = new ArrayList<>(2);
-	private ActionBar actionBar;
-	private DrawerLayout drawerLayout;
-	private Comparator<FileInfo> comparator;
-	private int currentRoot = 0;
+    private String currentFolder;
+    private FilePickerAdapter fileArrayListAdapter;
+    private FileFilter fileFilter;
+    private ListView listView;
+    private ArrayList<String> extensions;
+    private final ArrayList<String> rootPaths = new ArrayList<>(2);
+    private ActionBar actionBar;
+    private DrawerLayout drawerLayout;
+    private Comparator<FileInfo> comparator;
+    private int currentRoot = 0;
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_filepicker;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_filepicker;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		boolean result = super.initActivity(savedInstanceState);
+    @Override
+    protected boolean initActivity(Bundle savedInstanceState) {
+        boolean result = super.initActivity(savedInstanceState);
 
-		if (getConnectionIndicator() != null) {
-			getConnectionIndicator().setVisibility(View.INVISIBLE);
-		}
+        if (getConnectionIndicator() != null) {
+            getConnectionIndicator().setVisibility(View.INVISIBLE);
+        }
 
-		String defaultPath = null;
+        String defaultPath = null;
 
-		actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			if (extras.getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS) != null) {
-				extensions = extras
-					.getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS);
-				fileFilter = pathname -> ((pathname.isDirectory()) ||
-					(pathname.getName().contains(".") &&
-						extensions.contains(pathname.getName().substring(pathname.getName().lastIndexOf(".")))));
-			}
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if (extras.getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS) != null) {
+                extensions = extras
+                    .getStringArrayList(Constants.KEY_FILTER_FILES_EXTENSIONS);
+                fileFilter = pathname -> ((pathname.isDirectory()) ||
+                    (pathname.getName().contains(".") &&
+                        extensions.contains(pathname.getName().substring(pathname.getName().lastIndexOf(".")))));
+            }
 
-			defaultPath = extras.getString(INTENT_DATA_DEFAULT_PATH, null);
-			if (defaultPath != null && !(new File(defaultPath)).exists()) {
-				defaultPath = null;
-			}
-		}
+            defaultPath = extras.getString(INTENT_DATA_DEFAULT_PATH, null);
+            if (defaultPath != null && !(new File(defaultPath)).exists()) {
+                defaultPath = null;
+            }
+        }
 
-		listView = findViewById(android.R.id.list);
-		if (listView == null) {
-			Toast.makeText(this, "Unable to inflate layout", Toast.LENGTH_LONG).show();
-			finish();
-			return false;
-		}
+        listView = findViewById(android.R.id.list);
+        if (listView == null) {
+            Toast.makeText(this, "Unable to inflate layout", Toast.LENGTH_LONG).show();
+            finish();
+            return false;
+        }
 
-		listView.setOnItemClickListener(this);
-		listView.setDivider(getResources().getDrawable(R.drawable.divider_listview));
-		listView.setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_height));
+        listView.setOnItemClickListener(this);
+        listView.setDivider(getResources().getDrawable(R.drawable.divider_listview));
+        listView.setDividerHeight(getResources().getDimensionPixelSize(R.dimen.list_divider_height));
 
-		if (getRootPaths() == 0) {
-			Toast.makeText(this, "No storage found", Toast.LENGTH_LONG).show();
-			finish();
-			return false;
-		};
+        if (getRootPaths() == 0) {
+            Toast.makeText(this, "No storage found", Toast.LENGTH_LONG).show();
+            finish();
+            return false;
+        }
+        ;
 
-		drawerLayout = findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
-			drawerLayout, getToolbar(), R.string.open_navdrawer, R.string.close);
-		toggle.setDrawerIndicatorEnabled(true);
-		toggle.setDrawerSlideAnimationEnabled(true);
-		toggle.syncState();
-		drawerLayout.addDrawerListener(toggle);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+            drawerLayout, getToolbar(), R.string.open_navdrawer, R.string.close);
+        toggle.setDrawerIndicatorEnabled(true);
+        toggle.setDrawerSlideAnimationEnabled(true);
+        toggle.syncState();
+        drawerLayout.addDrawerListener(toggle);
 
 
-		if (defaultPath != null) {
-			currentRoot = 0;
-			currentFolder = defaultPath;
-			for (int i=0; i < rootPaths.size(); i++) {
-				if (currentFolder.startsWith(rootPaths.get(i))) {
-					currentRoot = i;
-					break;
-				}
-			}
+        if (defaultPath != null) {
+            currentRoot = 0;
+            currentFolder = defaultPath;
+            for (int i = 0; i < rootPaths.size(); i++) {
+                if (currentFolder.startsWith(rootPaths.get(i))) {
+                    currentRoot = i;
+                    break;
+                }
+            }
 
-			// sort by date (most recent first)
-			comparator = new Comparator<FileInfo>() {
-				@Override
-				public int compare(FileInfo f1, FileInfo f2) {
-					return f1.getLastModified() == f2.getLastModified() ? 0 :
-						f1.getLastModified() < f2.getLastModified() ? 1 :
-							-1;
-				}
-			};
-		} else {
-			currentFolder = rootPaths.get(0);
-			currentRoot = 0;
-			// sort by filename
-			comparator = new Comparator<FileInfo>() {
-				@Override
-				public int compare(FileInfo f1, FileInfo f2) {
-					return f1.getName().compareTo(f2.getName());
-				}
-			};
-		}
+            // sort by date (most recent first)
+            comparator = new Comparator<FileInfo>() {
+                @Override
+                public int compare(FileInfo f1, FileInfo f2) {
+                    return f1.getLastModified() == f2.getLastModified() ? 0 :
+                        f1.getLastModified() < f2.getLastModified() ? 1 :
+                            -1;
+                }
+            };
+        } else {
+            currentFolder = rootPaths.get(0);
+            currentRoot = 0;
+            // sort by filename
+            comparator = new Comparator<FileInfo>() {
+                @Override
+                public int compare(FileInfo f1, FileInfo f2) {
+                    return f1.getName().compareTo(f2.getName());
+                }
+            };
+        }
 
-		NavigationView navigationView = findViewById(R.id.nav_view);
-		if (navigationView != null) {
-			setupDrawerContent(navigationView);
-		}
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
 
-		setResult(RESULT_CANCELED);
+        setResult(RESULT_CANCELED);
 
-		if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_STORAGE)) {
-			scanFiles(currentFolder);
-		}
+        if (ConfigUtils.requestStoragePermissions(this, null, PERMISSION_STORAGE)) {
+            scanFiles(currentFolder);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private int getRootPaths() {
-		// Internal storage - should always be around
-		rootPaths.addAll(Arrays.asList(StorageUtil.getStorageDirectories(this)));
-		return rootPaths.size();
-	}
+    private int getRootPaths() {
+        // Internal storage - should always be around
+        rootPaths.addAll(Arrays.asList(StorageUtil.getStorageDirectories(this)));
+        return rootPaths.size();
+    }
 
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			setResult(Activity.RESULT_CANCELED);
-			finish();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
-	private void scanFiles(String path) {
-		File f = new File(path);
-		File[] folders;
-		if (fileFilter != null)
-			folders = f.listFiles(fileFilter);
-		else
-			folders = f.listFiles();
+    private void scanFiles(String path) {
+        File f = new File(path);
+        File[] folders;
+        if (fileFilter != null)
+            folders = f.listFiles(fileFilter);
+        else
+            folders = f.listFiles();
 
-		if (f.getName().equalsIgnoreCase(
-				Environment.getExternalStorageDirectory().getName())) {
-			actionBar.setTitle(R.string.internal_storage);
-		}
-		else {
-			actionBar.setTitle(f.getName());
-		}
+        if (f.getName().equalsIgnoreCase(
+            Environment.getExternalStorageDirectory().getName())) {
+            actionBar.setTitle(R.string.internal_storage);
+        } else {
+            actionBar.setTitle(f.getName());
+        }
 
-		List<FileInfo> dirs = new ArrayList<FileInfo>();
-		List<FileInfo> files = new ArrayList<FileInfo>();
-		try {
-			for (File file : folders) {
-				if (file.isDirectory() && !file.isHidden()) {
-					dirs.add(new FileInfo(file.getName(),
-						Constants.FOLDER, file.getAbsolutePath(),
-						file.lastModified(),
-						true, false));
-				} else {
-					if (!file.isHidden())
-						files.add(new FileInfo(file.getName(),
-								Formatter.formatFileSize(this, file.length()),
-								file.getAbsolutePath(),
-								file.lastModified(), false, false));
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		Collections.sort(dirs);
-		Collections.sort(files, comparator);
-		dirs.addAll(files);
+        List<FileInfo> dirs = new ArrayList<FileInfo>();
+        List<FileInfo> files = new ArrayList<FileInfo>();
+        try {
+            for (File file : folders) {
+                if (file.isDirectory() && !file.isHidden()) {
+                    dirs.add(new FileInfo(file.getName(),
+                        Constants.FOLDER, file.getAbsolutePath(),
+                        file.lastModified(),
+                        true, false));
+                } else {
+                    if (!file.isHidden())
+                        files.add(new FileInfo(file.getName(),
+                            Formatter.formatFileSize(this, file.length()),
+                            file.getAbsolutePath(),
+                            file.lastModified(), false, false));
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+        Collections.sort(dirs);
+        Collections.sort(files, comparator);
+        dirs.addAll(files);
 
-		String canonicalFilePath = null;
-		try {
-			canonicalFilePath = f.getCanonicalPath();
-		} catch (IOException e) {
-			logger.error("Exception", e);
-		}
+        String canonicalFilePath = null;
+        try {
+            canonicalFilePath = f.getCanonicalPath();
+        } catch (IOException e) {
+            logger.error("Exception", e);
+        }
 
-		if (!TestUtil.isEmptyOrNull(canonicalFilePath) && !isTop(canonicalFilePath)) {
-			if (f.getParentFile() != null)
-				dirs.add(0, new FileInfo("..",
-						Constants.PARENT_FOLDER, f.getParent(), 0,
-						false, true));
-		}
+        if (!TestUtil.isEmptyOrNull(canonicalFilePath) && !isTop(canonicalFilePath)) {
+            if (f.getParentFile() != null)
+                dirs.add(0, new FileInfo("..",
+                    Constants.PARENT_FOLDER, f.getParent(), 0,
+                    false, true));
+        }
 
-		fileArrayListAdapter = new FilePickerAdapter(FilePickerActivity.this,
-				R.layout.item_filepicker, dirs);
+        fileArrayListAdapter = new FilePickerAdapter(FilePickerActivity.this,
+            R.layout.item_filepicker, dirs);
 
-		listView.setAdapter(fileArrayListAdapter);
-	}
+        listView.setAdapter(fileArrayListAdapter);
+    }
 
-	private boolean isTop(String path) {
-		for(String rootPath : rootPaths) {
-			File file = new File(rootPath);
-			try {
-				if (file.getCanonicalPath().equalsIgnoreCase(path)) {
-					return true;
-				}
-			} catch (IOException e) {
-				logger.error("Exception", e);
-			}
-		}
-		return false;
-	}
+    private boolean isTop(String path) {
+        for (String rootPath : rootPaths) {
+            File file = new File(rootPath);
+            try {
+                if (file.getCanonicalPath().equalsIgnoreCase(path)) {
+                    return true;
+                }
+            } catch (IOException e) {
+                logger.error("Exception", e);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		FileInfo fileDescriptor = fileArrayListAdapter.getItem(position);
-		if (fileDescriptor.isFolder() || fileDescriptor.isParent()) {
-			currentFolder = fileDescriptor.getPath();
-			scanFiles(currentFolder);
-		} else {
-			File fileSelected = new File(fileDescriptor.getPath());
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        FileInfo fileDescriptor = fileArrayListAdapter.getItem(position);
+        if (fileDescriptor.isFolder() || fileDescriptor.isParent()) {
+            currentFolder = fileDescriptor.getPath();
+            scanFiles(currentFolder);
+        } else {
+            File fileSelected = new File(fileDescriptor.getPath());
 
-			Intent intent = new Intent();
-			intent.setData(Uri.fromFile(fileSelected));
-			setResult(Activity.RESULT_OK, intent);
-			finish();
-		}
-	}
+            Intent intent = new Intent();
+            intent.setData(Uri.fromFile(fileSelected));
+            setResult(Activity.RESULT_OK, intent);
+            finish();
+        }
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				if (drawerLayout != null) {
-					drawerLayout.openDrawer(GravityCompat.START);
-				}
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (drawerLayout != null) {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	private void setupDrawerContent(final NavigationView navigationView) {
-		Menu menu = navigationView.getMenu();
-		if (rootPaths.size() > 1) {
-			for (int i = 1; i < rootPaths.size(); i++) {
-				File file = new File(rootPaths.get(i));
-				MenuItem item = menu.add(R.id.main_group, Menu.NONE, i, file.getName()).setIcon(R.drawable.ic_sd_card_black_24dp);
-				if (i == currentRoot) {
-					item.setChecked(true);
-				}
-			}
-		}
-		menu.setGroupCheckable(R.id.main_group, true, true);
+    private void setupDrawerContent(final NavigationView navigationView) {
+        Menu menu = navigationView.getMenu();
+        if (rootPaths.size() > 1) {
+            for (int i = 1; i < rootPaths.size(); i++) {
+                File file = new File(rootPaths.get(i));
+                MenuItem item = menu.add(R.id.main_group, Menu.NONE, i, file.getName()).setIcon(R.drawable.ic_sd_card_black_24dp);
+                if (i == currentRoot) {
+                    item.setChecked(true);
+                }
+            }
+        }
+        menu.setGroupCheckable(R.id.main_group, true, true);
 
-		if (currentRoot == 0) {
-			MenuItem menuItem = menu.findItem(R.id.internal_storage);
-			menuItem.setChecked(true);
-		}
+        if (currentRoot == 0) {
+            MenuItem menuItem = menu.findItem(R.id.internal_storage);
+            menuItem.setChecked(true);
+        }
 
-		navigationView.setNavigationItemSelectedListener(
-			menuItem -> {
-				currentFolder = rootPaths.get(menuItem.getOrder());
-				currentRoot = menuItem.getOrder();
-				scanFiles(currentFolder);
-				drawerLayout.closeDrawers();
-				menuItem.setChecked(true);
-				return true;
-			});
-	}
+        navigationView.setNavigationItemSelectedListener(
+            menuItem -> {
+                currentFolder = rootPaths.get(menuItem.getOrder());
+                currentRoot = menuItem.getOrder();
+                scanFiles(currentFolder);
+                drawerLayout.closeDrawers();
+                menuItem.setChecked(true);
+                return true;
+            });
+    }
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode,
-										   @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		switch (requestCode) {
-			case PERMISSION_STORAGE:
-				if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					scanFiles(currentFolder);
-				} else {
-					finish();
-				}
-		}
-	}
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_STORAGE:
+                if (grantResults.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    scanFiles(currentFolder);
+                } else {
+                    finish();
+                }
+        }
+    }
 }

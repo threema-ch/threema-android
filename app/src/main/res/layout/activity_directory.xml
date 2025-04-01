@@ -3,136 +3,135 @@
   ~ All rights reserved.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/parent_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="?android:attr/colorBackground">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
-	<LinearLayout
-		android:id="@+id/initial_layout"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <LinearLayout
+        android:id="@+id/initial_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-		<ImageView
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:layout_marginTop="32dp"
-			android:layout_marginBottom="32dp"
-			android:src="@drawable/ic_contacts_outline"
-			app:tint="?attr/colorOnSurface"
-			android:layout_gravity="center_horizontal" />
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:src="@drawable/ic_contacts_outline"
+            app:tint="?attr/colorOnSurface"
+            android:layout_gravity="center_horizontal" />
 
-		<TextView
-			android:id="@+id/explain_text"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:textAlignment="center"
-			android:gravity="center_horizontal"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"
-			android:text="@string/directory_explain_text"
-			android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
+        <TextView
+            android:id="@+id/explain_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/directory_explain_text"
+            android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:id="@+id/results_layout"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="vertical"
-		android:visibility="gone"
-		android:background="?android:attr/colorBackground"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <LinearLayout
+        android:id="@+id/results_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="?android:attr/colorBackground"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-		<HorizontalScrollView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:scrollbarSize="0dp"
-			android:scrollbars="none"
-			android:requiresFadingEdge="horizontal"
-			android:fadingEdgeLength="40dp">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbarSize="0dp"
+            android:scrollbars="none"
+            android:requiresFadingEdge="horizontal"
+            android:fadingEdgeLength="40dp">
 
-			<com.google.android.material.chip.ChipGroup
-				android:id="@+id/chip_group"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingBottom="10dp"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:paddingTop="14dp"
-				android:visibility="gone"
-				app:chipSpacingHorizontal="4dp"
-				app:chipSpacingVertical="0dp"
-				app:singleLine="true"
-				android:animateLayoutChanges="true"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="14dp"
+                android:visibility="gone"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="0dp"
+                app:singleLine="true"
+                android:animateLayoutChanges="true" />
 
-		</HorizontalScrollView>
+        </HorizontalScrollView>
 
-		<FrameLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+            android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-			<TextView
-				android:id="@+id/empty_text"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="32dp"
-				android:textAlignment="center"
-				android:gravity="center_horizontal"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:text=""
-				android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
+            <TextView
+                android:id="@+id/empty_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:textAlignment="center"
+                android:gravity="center_horizontal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text=""
+                android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
 
-			<ch.threema.app.ui.EmptyRecyclerView
-				android:id="@+id/recycler"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:layout_marginTop="4dp" />
+            <ch.threema.app.ui.EmptyRecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="4dp" />
 
-		</FrameLayout>
+        </FrameLayout>
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		app:liftOnScroll="true"
-		app:liftOnScrollTargetViewId="@+id/recycler">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@+id/recycler">
 
-		<FrameLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-			<com.google.android.material.search.SearchBar
-				android:id="@+id/toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="16dp"
-				android:layout_marginRight="16dp"
-				app:defaultMarginsEnabled="true"
-				app:navigationIcon="@drawable/ic_arrow_left" />
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:defaultMarginsEnabled="true"
+                app:navigationIcon="@drawable/ic_arrow_left" />
 
-			<include layout="@layout/connection_indicator"/>
+            <include layout="@layout/connection_indicator" />
 
-		</FrameLayout>
+        </FrameLayout>
 
-	</com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-	<com.google.android.material.progressindicator.LinearProgressIndicator
-		android:id="@+id/progress_bar"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:indeterminate="true"/>
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

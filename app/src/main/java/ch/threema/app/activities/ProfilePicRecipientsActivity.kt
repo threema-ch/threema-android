@@ -71,7 +71,9 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
 
     override fun menuNext(selectedContacts: List<ContactModel?>) {
         val oldAllowedIdentities: Array<String> = profilePicRecipientsService.all
-        val newAllowedIdentities: Array<String> = selectedContacts.mapNotNull { contactModel -> contactModel?.identity }.toTypedArray<String>()
+        val newAllowedIdentities: Array<String> =
+            selectedContacts.mapNotNull { contactModel -> contactModel?.identity }
+                .toTypedArray<String>()
         profilePicRecipientsService.replaceAll(newAllowedIdentities)
 
         // If data changed:

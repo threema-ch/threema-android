@@ -80,8 +80,8 @@ fun hasEarpiece(audioManager: AudioManager, context: Context): Boolean {
  */
 fun getDefaultAudioDevice(audioDevices: Set<AudioDevice>): AudioDevice {
     return listOf(
-            AudioDevice.BLUETOOTH,
-            AudioDevice.WIRED_HEADSET,
-            AudioDevice.EARPIECE
+        AudioDevice.BLUETOOTH,
+        AudioDevice.WIRED_HEADSET,
+        AudioDevice.EARPIECE
     ).firstOrNull { it in audioDevices } ?: AudioDevice.SPEAKER_PHONE
 }

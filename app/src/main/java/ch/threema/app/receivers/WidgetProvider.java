@@ -43,72 +43,72 @@ import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class WidgetProvider extends AppWidgetProvider {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetProvider");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetProvider");
 
-	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		logger.debug("onUpdate");
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        logger.debug("onUpdate");
 
-		final String ACTION_OPEN = context.getPackageName() + ".ACTION_OPEN";
+        final String ACTION_OPEN = context.getPackageName() + ".ACTION_OPEN";
 
-		// Perform this loop procedure for each App Widget that belongs to this provider
-		for (int i = 0; i < appWidgetIds.length; i++) {
-			int appWidgetId = appWidgetIds[i];
+        // Perform this loop procedure for each App Widget that belongs to this provider
+        for (int i = 0; i < appWidgetIds.length; i++) {
+            int appWidgetId = appWidgetIds[i];
 
-			Intent intent = new Intent(context, RecipientListBaseActivity.class);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
+            Intent intent = new Intent(context, RecipientListBaseActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
 
-			Intent titleIntent = new Intent(context, HomeActivity.class);
-			PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PENDING_INTENT_FLAG_IMMUTABLE);
+            Intent titleIntent = new Intent(context, HomeActivity.class);
+            PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PENDING_INTENT_FLAG_IMMUTABLE);
 
-			// Get the layout for the App Widget and attach an on-click listener
-			// to the button
-			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_messages);
-			views.setOnClickPendingIntent(R.id.widget_edit, pendingIntent);
-			views.setOnClickPendingIntent(R.id.widget_title, titlePendingIntent);
+            // Get the layout for the App Widget and attach an on-click listener
+            // to the button
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_messages);
+            views.setOnClickPendingIntent(R.id.widget_edit, pendingIntent);
+            views.setOnClickPendingIntent(R.id.widget_title, titlePendingIntent);
 
-			// Set up the RemoteViews object to use a RemoteViews adapter.
-			// This adapter connects
-			// to a RemoteViewsService  through the specified intent.
-			// This is how you populate the data.
-			Intent svcIntent = new Intent(context, WidgetService.class);
-			svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			svcIntent.setData(Uri.parse(svcIntent.toUri(Intent.URI_INTENT_SCHEME)));
+            // Set up the RemoteViews object to use a RemoteViews adapter.
+            // This adapter connects
+            // to a RemoteViewsService  through the specified intent.
+            // This is how you populate the data.
+            Intent svcIntent = new Intent(context, WidgetService.class);
+            svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            svcIntent.setData(Uri.parse(svcIntent.toUri(Intent.URI_INTENT_SCHEME)));
 
-			logger.debug("setRemoteAdapter");
-			views.setRemoteAdapter(R.id.widget_list, svcIntent);
+            logger.debug("setRemoteAdapter");
+            views.setRemoteAdapter(R.id.widget_list, svcIntent);
 
-			// The empty view is displayed when the collection has no items.
-			// It should be in the same layout used to instantiate the RemoteViews
-			// object above.
-			views.setEmptyView(R.id.widget_list, R.id.empty_view);
+            // The empty view is displayed when the collection has no items.
+            // It should be in the same layout used to instantiate the RemoteViews
+            // object above.
+            views.setEmptyView(R.id.widget_list, R.id.empty_view);
 
-			Intent itemIntent = new Intent(context, ComposeMessageActivity.class);
-			itemIntent.setAction(ACTION_OPEN);
-			itemIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			itemIntent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
-			itemIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-			PendingIntent itemPendingIntent = PendingIntent.getActivity(context, 0, itemIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_MUTABLE);
-			views.setPendingIntentTemplate(R.id.widget_list, itemPendingIntent);
+            Intent itemIntent = new Intent(context, ComposeMessageActivity.class);
+            itemIntent.setAction(ACTION_OPEN);
+            itemIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            itemIntent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
+            itemIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent itemPendingIntent = PendingIntent.getActivity(context, 0, itemIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_MUTABLE);
+            views.setPendingIntentTemplate(R.id.widget_list, itemPendingIntent);
 
-			// Tell the AppWidgetManager to perform an update on the current app widget
-			appWidgetManager.updateAppWidget(appWidgetId, views);
-		}
+            // Tell the AppWidgetManager to perform an update on the current app widget
+            appWidgetManager.updateAppWidget(appWidgetId, views);
+        }
 
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
-	}
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+    }
 
-	/*
-	 * This is called when an instance the App Widget is created for the first time. For example,
-	 * if the user adds two instances of your App Widget, this is only called the first time.
-	 * If you need to open a new database or perform other setup that only needs to occur once for
-	 * all App Widget instances, then this is a good place to do it.
-	 */
+    /*
+     * This is called when an instance the App Widget is created for the first time. For example,
+     * if the user adds two instances of your App Widget, this is only called the first time.
+     * If you need to open a new database or perform other setup that only needs to occur once for
+     * all App Widget instances, then this is a good place to do it.
+     */
 
-	@Override
-	public void onEnabled(Context context) {
-		logger.debug("onEnabled");
+    @Override
+    public void onEnabled(Context context) {
+        logger.debug("onEnabled");
 
-		super.onEnabled(context);
-	}
+        super.onEnabled(context);
+    }
 }

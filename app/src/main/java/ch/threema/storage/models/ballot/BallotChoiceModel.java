@@ -25,111 +25,114 @@ package ch.threema.storage.models.ballot;
 import java.util.Date;
 
 public class BallotChoiceModel {
-	public static final String TABLE = "ballot_choice";
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_BALLOT_ID = "ballotId";
-	public static final String COLUMN_API_CHOICE_ID = "apiBallotChoiceId";
-	public static final String COLUMN_TYPE = "type";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_VOTE_COUNT = "voteCount";
-	public static final String COLUMN_ORDER = "order";
-	public static final String COLUMN_CREATED_AT= "createdAt";
-	public static final String COLUMN_MODIFIED_AT= "modifiedAt";
+    public static final String TABLE = "ballot_choice";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_BALLOT_ID = "ballotId";
+    public static final String COLUMN_API_CHOICE_ID = "apiBallotChoiceId";
+    public static final String COLUMN_TYPE = "type";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_VOTE_COUNT = "voteCount";
+    public static final String COLUMN_ORDER = "order";
+    public static final String COLUMN_CREATED_AT = "createdAt";
+    public static final String COLUMN_MODIFIED_AT = "modifiedAt";
 
 
-	public enum Type {
-		Text
-	};
+    public enum Type {
+        Text
+    }
 
-	private int id;
-	private int ballotId;
-	private int apiBallotChoiceId;
-	private Type type;
-	private String name;
-	private int voteCount;
-	private int order;
-	private Date createdAt;
-	private Date modifiedAt;
+    ;
+
+    private int id;
+    private int ballotId;
+    private int apiBallotChoiceId;
+    private Type type;
+    private String name;
+    private int voteCount;
+    private int order;
+    private Date createdAt;
+    private Date modifiedAt;
 
 
-	public int getId() {
-		return id;
-	}
-	public BallotChoiceModel setId(int id) {
-		this.id = id;
-		return this;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public int getBallotId() {
-		return ballotId;
-	}
+    public BallotChoiceModel setId(int id) {
+        this.id = id;
+        return this;
+    }
 
-	public BallotChoiceModel setBallotId(int ballotId) {
-		this.ballotId = ballotId;
-		return this;
-	}
+    public int getBallotId() {
+        return ballotId;
+    }
 
-	public int getApiBallotChoiceId() {
-		return apiBallotChoiceId;
-	}
+    public BallotChoiceModel setBallotId(int ballotId) {
+        this.ballotId = ballotId;
+        return this;
+    }
 
-	public BallotChoiceModel setApiBallotChoiceId(int apiBallotChoiceId) {
-		this.apiBallotChoiceId = apiBallotChoiceId;
-		return this;
-	}
+    public int getApiBallotChoiceId() {
+        return apiBallotChoiceId;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public BallotChoiceModel setApiBallotChoiceId(int apiBallotChoiceId) {
+        this.apiBallotChoiceId = apiBallotChoiceId;
+        return this;
+    }
 
-	public BallotChoiceModel setType(Type type) {
-		this.type = type;
-		return this;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public BallotChoiceModel setType(Type type) {
+        this.type = type;
+        return this;
+    }
 
-	public BallotChoiceModel setName(String name) {
-		this.name = name;
-		return this;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getVoteCount() {
-		return voteCount;
-	}
+    public BallotChoiceModel setName(String name) {
+        this.name = name;
+        return this;
+    }
 
-	public BallotChoiceModel setVoteCount(int voteCount) {
-		this.voteCount = voteCount;
-		return this;
-	}
+    public int getVoteCount() {
+        return voteCount;
+    }
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
+    public BallotChoiceModel setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+        return this;
+    }
 
-	public BallotChoiceModel setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-		return this;
-	}
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-	public Date getModifiedAt() {
-		return modifiedAt;
-	}
+    public BallotChoiceModel setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
 
-	public BallotChoiceModel setModifiedAt(Date modifiedAt) {
-		this.modifiedAt = modifiedAt;
-		return this;
-	}
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
 
-	public int getOrder() {
-		return order;
-	}
+    public BallotChoiceModel setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+        return this;
+    }
 
-	public BallotChoiceModel setOrder(int order) {
-		this.order = order;
-		return this;
-	}
+    public int getOrder() {
+        return order;
+    }
+
+    public BallotChoiceModel setOrder(int order) {
+        this.order = order;
+        return this;
+    }
 
 }

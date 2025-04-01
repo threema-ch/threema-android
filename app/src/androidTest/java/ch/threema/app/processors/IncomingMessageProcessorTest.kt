@@ -230,7 +230,10 @@ class IncomingMessageProcessorTest : MessageProcessorProvider() {
         if (expectDeliveryReceiptSent) {
             val deliveryReceiptMessage = sentMessagesInsideTask.poll()
             if (deliveryReceiptMessage is DeliveryReceiptMessage) {
-                assertArrayEquals(messageId.messageId, deliveryReceiptMessage.receiptMessageIds[0].messageId)
+                assertArrayEquals(
+                    messageId.messageId,
+                    deliveryReceiptMessage.receiptMessageIds[0].messageId
+                )
                 assertEquals(DELIVERYRECEIPT_MSGRECEIVED, deliveryReceiptMessage.receiptType)
             } else {
                 fail("Instead of delivery receipt we got $deliveryReceiptMessage")

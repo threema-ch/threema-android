@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="32dp"
-             android:layout_height="wrap_content"
-			 android:animateLayoutChanges="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="32dp"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
-<ImageView
-	android:id="@+id/search_button"
-	android:layout_width="32dp"
-	android:layout_height="?attr/actionBarSize"
-	android:layout_gravity="center_vertical"
-	android:minWidth="40dp"
-	android:minHeight="?attr/actionBarSize"
-	android:scaleType="centerInside"
-	android:padding="0dp"
-	android:clickable="true"
-	app:srcCompat="@drawable/ic_keyboard_arrow_down_outline"
-	app:tint="?attr/colorOnSurface"
-	android:background="?attr/selectableItemBackground"
-	android:visibility="invisible">
+    <ImageView
+        android:id="@+id/search_button"
+        android:layout_width="32dp"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="center_vertical"
+        android:minWidth="40dp"
+        android:minHeight="?attr/actionBarSize"
+        android:scaleType="centerInside"
+        android:padding="0dp"
+        android:clickable="true"
+        app:srcCompat="@drawable/ic_keyboard_arrow_down_outline"
+        app:tint="?attr/colorOnSurface"
+        android:background="?attr/selectableItemBackground"
+        android:visibility="invisible">
 
-</ImageView>
+    </ImageView>
 
-<com.google.android.material.progressindicator.CircularProgressIndicator
-	android:id="@+id/next_progress"
-	android:layout_width="32dp"
-	android:layout_height="?attr/actionBarSize"
-	android:maxHeight="24dp"
-	android:maxWidth="24dp"
-	android:layout_gravity="left|center_vertical"
-	android:gravity="left|center_vertical"
-	android:visibility="gone"
-	android:indeterminate="true"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/next_progress"
+        android:layout_width="32dp"
+        android:layout_height="?attr/actionBarSize"
+        android:maxHeight="24dp"
+        android:maxWidth="24dp"
+        android:layout_gravity="left|center_vertical"
+        android:gravity="left|center_vertical"
+        android:visibility="gone"
+        android:indeterminate="true" />
 
 </FrameLayout>

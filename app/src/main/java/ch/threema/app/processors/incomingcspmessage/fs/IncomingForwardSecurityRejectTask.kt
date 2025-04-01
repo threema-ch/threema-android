@@ -179,7 +179,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.LOCATION,
             MessageType.FILE,
             MessageType.BALLOT,
-            -> {
+                -> {
                 // Mark the message with 're-send requested'. Note that we use the fs key mismatch
                 // state to represent the 're-send requested'-mark.
                 messageService.updateOutgoingMessageState(
@@ -199,7 +199,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.VIDEO,
             MessageType.VOICEMESSAGE,
             MessageType.CONTACT,
-            -> logger.warn("Received a reject for a deprecated message")
+                -> logger.warn("Received a reject for a deprecated message")
 
             MessageType.STATUS,
             MessageType.VOIP_STATUS,
@@ -207,7 +207,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.GROUP_CALL_STATUS,
             MessageType.FORWARD_SECURITY_STATUS,
             MessageType.GROUP_STATUS,
-            -> logger.warn("Received a reject for a status message")
+                -> logger.warn("Received a reject for a status message")
         }
     }
 
@@ -218,7 +218,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.LOCATION,
             MessageType.FILE,
             MessageType.BALLOT,
-            -> {
+                -> {
                 // Mark the message with 're-send requested'. Note that we use the fs key mismatch
                 // state to represent the 're-send requested'-mark.
                 messageService.updateOutgoingMessageState(
@@ -242,7 +242,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.VIDEO,
             MessageType.VOICEMESSAGE,
             MessageType.CONTACT,
-            -> logger.warn("Received a reject for a deprecated message")
+                -> logger.warn("Received a reject for a deprecated message")
 
             MessageType.STATUS,
             MessageType.VOIP_STATUS,
@@ -250,7 +250,7 @@ class IncomingForwardSecurityRejectTask(
             MessageType.GROUP_CALL_STATUS,
             MessageType.FORWARD_SECURITY_STATUS,
             MessageType.GROUP_STATUS,
-            -> logger.warn("Received a reject for a status message")
+                -> logger.warn("Received a reject for a status message")
         }
     }
 

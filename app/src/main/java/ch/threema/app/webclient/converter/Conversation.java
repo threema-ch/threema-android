@@ -34,86 +34,87 @@ import ch.threema.storage.models.TagModel;
 
 @AnyThread
 public class Conversation extends Converter {
-	public final static String POSITION = "position";
-	public final static String MESSAGE_COUNT = "messageCount";
-	public final static String UNREAD_COUNT = "unreadCount";
-	public final static String LATEST_MESSAGE = "latestMessage";
-	public final static String NOTIFICATIONS = "notifications";
-	public final static String IS_STARRED = "isStarred";
-	public final static String IS_UNREAD = "isUnread";
+    public final static String POSITION = "position";
+    public final static String MESSAGE_COUNT = "messageCount";
+    public final static String UNREAD_COUNT = "unreadCount";
+    public final static String LATEST_MESSAGE = "latestMessage";
+    public final static String NOTIFICATIONS = "notifications";
+    public final static String IS_STARRED = "isStarred";
+    public final static String IS_UNREAD = "isUnread";
 
-	public interface Append {
-		void append(MsgpackObjectBuilder builder, ConversationModel conversation, Utils.ModelWrapper modelWrapper);
-	}
+    public interface Append {
+        void append(MsgpackObjectBuilder builder, ConversationModel conversation, Utils.ModelWrapper modelWrapper);
+    }
 
-	/**
-	 * Converts multiple conversations to MsgpackObjectBuilder instances.
-	 */
-	public static List<MsgpackBuilder> convert(List<ConversationModel> conversations, Append append) throws ConversionException {
-		List<MsgpackBuilder> list = new ArrayList<>();
-		for (ConversationModel conversation : conversations) {
-			list.add(convert(conversation, append));
-		}
-		return list;
-	}
+    /**
+     * Converts multiple conversations to MsgpackObjectBuilder instances.
+     */
+    public static List<MsgpackBuilder> convert(List<ConversationModel> conversations, Append append) throws ConversionException {
+        List<MsgpackBuilder> list = new ArrayList<>();
+        for (ConversationModel conversation : conversations) {
+            list.add(convert(conversation, append));
+        }
+        return list;
+    }
 
-	/**
-	 * Converts a conversation to a MsgpackObjectBuilder.
-	 */
-	public static MsgpackBuilder convert(ConversationModel conversation) throws ConversionException {
-		return convert(conversation, null);
-	}
-	/**
-	 * Converts a conversation to a MsgpackObjectBuilder.
-	 */
-	public static MsgpackBuilder convert(ConversationModel conversation, Append append) throws ConversionException {
-		MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-		final ServiceManager serviceManager = getServiceManager();
-		if (serviceManager == null) {
-			throw new ConversionException("Service manager is null");
-		}
-		try {
-			final Utils.ModelWrapper model = Utils.ModelWrapper.getModel(conversation);
-			builder.put(Receiver.TYPE, model.getType());
-			builder.put(Receiver.ID, model.getId());
-			builder.put(POSITION, conversation.getPosition());
-			builder.put(MESSAGE_COUNT, conversation.getMessageCount());
-			builder.put(UNREAD_COUNT, conversation.getUnreadCount());
-			maybePutLatestMessage(builder, LATEST_MESSAGE, conversation);
+    /**
+     * Converts a conversation to a MsgpackObjectBuilder.
+     */
+    public static MsgpackBuilder convert(ConversationModel conversation) throws ConversionException {
+        return convert(conversation, null);
+    }
 
-			builder.put(NOTIFICATIONS, NotificationSettings.convert(conversation));
+    /**
+     * Converts a conversation to a MsgpackObjectBuilder.
+     */
+    public static MsgpackBuilder convert(ConversationModel conversation, Append append) throws ConversionException {
+        MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+        final ServiceManager serviceManager = getServiceManager();
+        if (serviceManager == null) {
+            throw new ConversionException("Service manager is null");
+        }
+        try {
+            final Utils.ModelWrapper model = Utils.ModelWrapper.getModel(conversation);
+            builder.put(Receiver.TYPE, model.getType());
+            builder.put(Receiver.ID, model.getId());
+            builder.put(POSITION, conversation.getPosition());
+            builder.put(MESSAGE_COUNT, conversation.getMessageCount());
+            builder.put(UNREAD_COUNT, conversation.getUnreadCount());
+            maybePutLatestMessage(builder, LATEST_MESSAGE, conversation);
 
-			final TagModel starTagModel = serviceManager.getConversationTagService()
-				.getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
-			final boolean isStarred = serviceManager.getConversationTagService()
-				.isTaggedWith(conversation, starTagModel);
-			if (isStarred) {
-				builder.put(IS_STARRED, isStarred);
-			}
+            builder.put(NOTIFICATIONS, NotificationSettings.convert(conversation));
 
-			final TagModel unreadTagModel = serviceManager.getConversationTagService()
-				.getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
-			final boolean isUnread = serviceManager.getConversationTagService()
-				.isTaggedWith(conversation, unreadTagModel);
-			builder.put(IS_UNREAD, isUnread);
+            final TagModel starTagModel = serviceManager.getConversationTagService()
+                .getTagModel(ConversationTagServiceImpl.FIXED_TAG_PIN);
+            final boolean isStarred = serviceManager.getConversationTagService()
+                .isTaggedWith(conversation, starTagModel);
+            if (isStarred) {
+                builder.put(IS_STARRED, isStarred);
+            }
 
-			if(append != null) {
-				append.append(builder, conversation, model);
-			}
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-		return builder;
-	}
+            final TagModel unreadTagModel = serviceManager.getConversationTagService()
+                .getTagModel(ConversationTagServiceImpl.FIXED_TAG_UNREAD);
+            final boolean isUnread = serviceManager.getConversationTagService()
+                .isTaggedWith(conversation, unreadTagModel);
+            builder.put(IS_UNREAD, isUnread);
 
-	private static void maybePutLatestMessage(
-		MsgpackObjectBuilder builder,
-		String field,
-		ConversationModel conversation
-	) throws ConversionException {
-		AbstractMessageModel message = conversation.getLatestMessage();
-		if (message != null) {
-			builder.put(field, Message.convert(message, conversation.getReceiver(), false, Message.DETAILS_NO_QUOTE));
-		}
-	}
+            if (append != null) {
+                append.append(builder, conversation, model);
+            }
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+        return builder;
+    }
+
+    private static void maybePutLatestMessage(
+        MsgpackObjectBuilder builder,
+        String field,
+        ConversationModel conversation
+    ) throws ConversionException {
+        AbstractMessageModel message = conversation.getLatestMessage();
+        if (message != null) {
+            builder.put(field, Message.convert(message, conversation.getReceiver(), false, Message.DETAILS_NO_QUOTE));
+        }
+    }
 }

@@ -63,7 +63,7 @@ public class BackupRestoreDataConfig implements Serializable {
     }
 
     public boolean backupBallots() {
-        return  this.backupContactAndMessages();
+        return this.backupContactAndMessages();
     }
 
     public BackupRestoreDataConfig setBackupContactAndMessages(boolean backupContactAndMessages) {

@@ -34,63 +34,63 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  */
 public class IdentityValue {
 
-	private final byte[] value;
+    private final byte[] value;
 
-	private IdentityValue(byte[] value) throws InvalidIdentityException {
-		if (value.length != ProtocolDefines.IDENTITY_LEN) {
-			throw new InvalidIdentityException("Invalid Identity length" + value.length);
-		}
-		this.value = value;
-	}
+    private IdentityValue(byte[] value) throws InvalidIdentityException {
+        if (value.length != ProtocolDefines.IDENTITY_LEN) {
+            throw new InvalidIdentityException("Invalid Identity length" + value.length);
+        }
+        this.value = value;
+    }
 
 
-	public static @NonNull
-	IdentityValue fromByteArray(@NonNull byte[] value) throws InvalidIdentityException {
-		return new IdentityValue(value);
-	}
+    public static @NonNull
+    IdentityValue fromByteArray(@NonNull byte[] value) throws InvalidIdentityException {
+        return new IdentityValue(value);
+    }
 
-	/**
-	 * @param value little endian encoded Threema ID
-	 * @throws InvalidIdentityException if the long value is not a valid Threema ID
-	 */
-	public static @NonNull IdentityValue fromLong(long value) throws InvalidIdentityException {
-		return new IdentityValue(Utils.longToByteArrayBigEndian(value));
-	}
+    /**
+     * @param value little endian encoded Threema ID
+     * @throws InvalidIdentityException if the long value is not a valid Threema ID
+     */
+    public static @NonNull IdentityValue fromLong(long value) throws InvalidIdentityException {
+        return new IdentityValue(Utils.longToByteArrayBigEndian(value));
+    }
 
-	public static @NonNull IdentityValue fromHexString(@NonNull String value) throws InvalidIdentityException {
-		return new IdentityValue(Utils.hexStringToByteArray(value));
-	}
+    public static @NonNull IdentityValue fromHexString(@NonNull String value) throws InvalidIdentityException {
+        return new IdentityValue(Utils.hexStringToByteArray(value));
+    }
 
-	public byte[] toByteArray() {
-		return this.value;
-	}
+    public byte[] toByteArray() {
+        return this.value;
+    }
 
-	@Override
-	public String toString() {
-		return Utils.byteArrayToHexString(this.value).toUpperCase(Locale.ROOT);
-	}
+    @Override
+    public String toString() {
+        return Utils.byteArrayToHexString(this.value).toUpperCase(Locale.ROOT);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (obj.getClass() != this.getClass())
-			return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != this.getClass())
+            return false;
 
-		return Arrays.equals(this.value, ((IdentityValue)obj).value);
-	}
+        return Arrays.equals(this.value, ((IdentityValue) obj).value);
+    }
 
-	@Override
-	public int hashCode() {
-		/* Identities are usually random, so just taking the first four bytes is fine */
-		return this.value[0] << 24 | (this.value[1] & 0xFF) << 16 | (this.value[2] & 0xFF) << 8 | (this.value[3] & 0xFF);
-	}
+    @Override
+    public int hashCode() {
+        /* Identities are usually random, so just taking the first four bytes is fine */
+        return this.value[0] << 24 | (this.value[1] & 0xFF) << 16 | (this.value[2] & 0xFF) << 8 | (this.value[3] & 0xFF);
+    }
 
-	public static class InvalidIdentityException extends ThreemaException {
-		public InvalidIdentityException(final String msg) {
-			super(msg);
-		}
-	}
+    public static class InvalidIdentityException extends ThreemaException {
+        public InvalidIdentityException(final String msg) {
+            super(msg);
+        }
+    }
 }

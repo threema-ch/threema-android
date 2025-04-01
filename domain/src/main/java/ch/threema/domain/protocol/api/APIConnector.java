@@ -93,17 +93,17 @@ public class APIConnector {
 
     // HMAC-SHA256 keys for contact matching
     private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50
-		    , (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d,
-		    (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90,
-		    (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88,
-		    (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62,
-		    (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
+        , (byte) 0x0f, (byte) 0xed, (byte) 0x97, (byte) 0x01, (byte) 0xfa, (byte) 0x6d,
+        (byte) 0xef, (byte) 0xdb, (byte) 0x61, (byte) 0x08, (byte) 0x41, (byte) 0x90,
+        (byte) 0x0f, (byte) 0xeb, (byte) 0xb8, (byte) 0xe4, (byte) 0x30, (byte) 0x88,
+        (byte) 0x1f, (byte) 0x7a, (byte) 0xd8, (byte) 0x16, (byte) 0x82, (byte) 0x62,
+        (byte) 0x64, (byte) 0xec, (byte) 0x09, (byte) 0xba, (byte) 0xd7};
     private static final byte[] MOBILENO_HMAC_KEY = new byte[]{(byte) 0x85, (byte) 0xad,
-		    (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9,
-		    (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29,
-		    (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8,
-		    (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8,
-		    (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
+        (byte) 0xf8, (byte) 0x22, (byte) 0x69, (byte) 0x53, (byte) 0xf3, (byte) 0xd9,
+        (byte) 0x6c, (byte) 0xfd, (byte) 0x5d, (byte) 0x09, (byte) 0xbf, (byte) 0x29,
+        (byte) 0x55, (byte) 0x5e, (byte) 0xb9, (byte) 0x55, (byte) 0xfc, (byte) 0xd8,
+        (byte) 0xaa, (byte) 0x5e, (byte) 0xc4, (byte) 0xf9, (byte) 0xfc, (byte) 0xd8,
+        (byte) 0x69, (byte) 0xe2, (byte) 0x58, (byte) 0x37, (byte) 0x07, (byte) 0x23};
 
     private static final int DEFAULT_MATCH_CHECK_INTERVAL = 86400;
     private static final int RESPONSE_LEN = 32;
@@ -232,7 +232,7 @@ public class APIConnector {
      * @throws NetworkException        on network error
      */
     public FetchIdentityResult fetchIdentity(String identity) throws ThreemaException,
-		    NetworkException, HttpConnectionException {
+        NetworkException, HttpConnectionException {
         try {
             String responseStr = doGet(getServerUrl() + "identity/" + identity);
             JSONObject jsonResponse = new JSONObject(responseStr);
@@ -434,7 +434,7 @@ public class APIConnector {
      */
     public String linkMobileNo(String mobileNo, String language,
                                IdentityStoreInterface identityStore) throws LinkMobileNoException
-		    , Exception {
+        , Exception {
         return this.linkMobileNo(mobileNo, language, identityStore, null);
     }
 
@@ -592,7 +592,7 @@ public class APIConnector {
         for (Map.Entry<String, ?> entry : emails.entrySet()) {
             String normalizedEmail = entry.getKey().toLowerCase().trim();
             byte[] emailHash =
-		            emailMac.doFinal(normalizedEmail.getBytes(StandardCharsets.US_ASCII));
+                emailMac.doFinal(normalizedEmail.getBytes(StandardCharsets.US_ASCII));
             emailHashes.put(Base64.encodeBytes(emailHash), entry.getValue());
 
             // Gmail address? If so, hash with the other domain as well
@@ -605,7 +605,7 @@ public class APIConnector {
 
             if (normalizedEmailAlt != null) {
                 byte[] emailHashAlt =
-		                emailMac.doFinal(normalizedEmailAlt.getBytes(StandardCharsets.US_ASCII));
+                    emailMac.doFinal(normalizedEmailAlt.getBytes(StandardCharsets.US_ASCII));
                 emailHashes.put(Base64.encodeBytes(emailHashAlt), entry.getValue());
             }
         }
@@ -626,16 +626,16 @@ public class APIConnector {
                 String normalizedMobileNo;
                 if (phoneNumberUtil != null) {
                     Phonenumber.PhoneNumber phoneNumber = phoneNumberUtil.parse(entry.getKey(),
-		                    userCountry);
+                        userCountry);
                     String normalizedMobileNoWithPlus = phoneNumberUtil.format(phoneNumber,
-		                    PhoneNumberUtil.PhoneNumberFormat.E164);
+                        PhoneNumberUtil.PhoneNumberFormat.E164);
                     normalizedMobileNo = normalizedMobileNoWithPlus.replace("+", "");
                 } else {
                     normalizedMobileNo = entry.getKey().replaceAll("[^0-9]", "");
                 }
 
                 byte[] mobileNoHash =
-		                mobileNoMac.doFinal(normalizedMobileNo.getBytes(StandardCharsets.US_ASCII));
+                    mobileNoMac.doFinal(normalizedMobileNo.getBytes(StandardCharsets.US_ASCII));
                 mobileNoHashes.put(Base64.encodeBytes(mobileNoHash), entry.getValue());
             } catch (NumberParseException e) {
                 // Skip/ignore this number
@@ -644,7 +644,7 @@ public class APIConnector {
         }
 
         return matchIdentitiesHashed(emailHashes, mobileNoHashes, includeInactive, identityStore,
-		        matchTokenStore);
+            matchTokenStore);
     }
 
     public Map<String, MatchIdentityResult> matchIdentitiesHashed(
@@ -657,13 +657,13 @@ public class APIConnector {
         String matchToken = obtainMatchToken(identityStore, matchTokenStore, false);
         try {
             return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive,
-		            matchToken);
+                matchToken);
         } catch (Exception e) {
             // Match token may be invalid/expired, refresh and try again
             logger.debug("Match failed", e);
             matchToken = obtainMatchToken(identityStore, matchTokenStore, true);
             return matchIdentitiesHashedToken(emailHashes, mobileNoHashes, includeInactive,
-		            matchToken);
+                matchToken);
         }
     }
 
@@ -690,7 +690,7 @@ public class APIConnector {
 
         JSONObject result = new JSONObject(postJson(url, request));
         logger.debug(String.format("Match identities: response from server: %s",
-		        result.toString()));
+            result.toString()));
 
         matchCheckInterval = result.getInt("checkInterval");
         logger.debug("Server requested check interval of {} seconds", matchCheckInterval);
@@ -1126,14 +1126,14 @@ public class APIConnector {
 
         String[] turnUrls = jsonArrayToStringArray(p2Result.getJSONArray("turnUrls"));
         String[] turnUrlsDualStack = jsonArrayToStringArray(p2Result.getJSONArray(
-				"turnUrlsDualStack"));
+            "turnUrlsDualStack"));
         String turnUsername = p2Result.getString("turnUsername");
         String turnPassword = p2Result.getString("turnPassword");
         int expiration = p2Result.getInt("expiration");
         Date expirationDate = new Date(new Date().getTime() + expiration * 1000L);
 
         return new TurnServerInfo(turnUrls, turnUrlsDualStack, turnUsername, turnPassword,
-		        expirationDate);
+            expirationDate);
     }
 
     /**
@@ -1273,7 +1273,7 @@ public class APIConnector {
         request.put("contacts", identityArray);
 
         PostJsonResult postJsonResult = this.postJsonWithResult(getWorkServerUrl() + "fetch2",
-		        request);
+            request);
         if (postJsonResult.responseCode > 0 || postJsonResult.responseBody == null || postJsonResult.responseBody.length() == 0) {
             workData.responseCode = postJsonResult.responseCode;
             return workData;
@@ -1312,9 +1312,9 @@ public class APIConnector {
                             contact.has("first") ? contact.getString("first") : null,
                             contact.has("last") ? contact.getString("last") : null,
                             contact.has(JSON_FIELD_JOB_TITLE) ?
-		                            contact.getString(JSON_FIELD_JOB_TITLE) : null,
+                                contact.getString(JSON_FIELD_JOB_TITLE) : null,
                             contact.has(JSON_FIELD_DEPARTMENT) ?
-		                            contact.getString(JSON_FIELD_DEPARTMENT) : null
+                                contact.getString(JSON_FIELD_DEPARTMENT) : null
                         )
                     );
                 }
@@ -1344,7 +1344,7 @@ public class APIConnector {
         if (jsonResponseOrganization != null) {
             workData.organization.name =
                 jsonResponseOrganization.isNull("name") ? null :
-		                jsonResponseOrganization.optString("name");
+                    jsonResponseOrganization.optString("name");
         }
 
         JSONObject directory = jsonResponse.optJSONObject("directory");
@@ -1417,9 +1417,9 @@ public class APIConnector {
                             contact.isNull("first") ? null : contact.getString("first"),
                             contact.isNull("last") ? null : contact.getString("last"),
                             contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
-		                            contact.getString(JSON_FIELD_JOB_TITLE),
+                                contact.getString(JSON_FIELD_JOB_TITLE),
                             contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
-		                            contact.getString(JSON_FIELD_DEPARTMENT)
+                                contact.getString(JSON_FIELD_DEPARTMENT)
                         )
                     );
                 }
@@ -1525,26 +1525,26 @@ public class APIConnector {
                         contact.getString("id"),
                         Base64.decode(contact.getString("pk")),
                         contact.has("first") ? (contact.isNull("first") ? null :
-		                        contact.optString("first")) : null,
+                            contact.optString("first")) : null,
                         contact.has("last") ? (contact.isNull("last") ? null : contact.optString(
-								"last")) : null,
+                            "last")) : null,
                         contact.has("csi") ? (contact.isNull("csi") ? null : contact.optString(
-								"csi")) : null,
+                            "csi")) : null,
                         contact.has(JSON_FIELD_JOB_TITLE) ?
-		                        (contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
-				                        contact.optString(JSON_FIELD_JOB_TITLE)) : null,
+                            (contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
+                                contact.optString(JSON_FIELD_JOB_TITLE)) : null,
                         contact.has(JSON_FIELD_DEPARTMENT) ?
-		                        (contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
-				                        contact.optString(JSON_FIELD_DEPARTMENT)) : null
+                            (contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
+                                contact.optString(JSON_FIELD_DEPARTMENT)) : null
                     );
 
                     if (!contact.isNull("org")) {
                         JSONObject jsonResponseOrganization = contact.optJSONObject("org");
 
                         if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull(
-								"name")) {
+                            "name")) {
                             directoryContact.organization.name =
-		                            jsonResponseOrganization.optString("name");
+                                jsonResponseOrganization.optString("name");
                         }
                     }
 
@@ -1686,7 +1686,7 @@ public class APIConnector {
         urlConnection.setReadTimeout(ProtocolDefines.API_REQUEST_TIMEOUT * 1000);
         urlConnection.setRequestMethod("GET");
         urlConnection.setRequestProperty("User-Agent",
-		        ProtocolStrings.USER_AGENT + "/" + version.getVersionString());
+            ProtocolStrings.USER_AGENT + "/" + version.getVersionString());
         if (language != null) {
             urlConnection.setRequestProperty("Accept-Language", language);
         }
@@ -1752,7 +1752,7 @@ public class APIConnector {
         urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("Content-Type", "application/json");
         urlConnection.setRequestProperty("User-Agent",
-		        ProtocolStrings.USER_AGENT + "/" + this.version.getVersionString());
+            ProtocolStrings.USER_AGENT + "/" + this.version.getVersionString());
         if (this.language != null) {
             urlConnection.setRequestProperty("Accept-Language", this.language);
         }
@@ -1765,7 +1765,7 @@ public class APIConnector {
         try {
             // Send request
             try (OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream(),
-		            StandardCharsets.UTF_8)) {
+                StandardCharsets.UTF_8)) {
                 osw.write(body.toString());
             }
 

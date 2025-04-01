@@ -114,2044 +114,2045 @@ import ch.threema.base.utils.LoggingUtil;
  * outside Exif, will favor the XMP data inside Exif over the one outside.
  */
 public class ExifInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ExifInterface");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ExifInterface");
 
-	private static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     // The Exif tag names. See JEITA CP-3451C specifications (Exif 2.3) Section 3-8.
     // A. Tags related to image data structure
     /**
-     *  <p>The number of columns of image data, equal to the number of pixels per row. In JPEG
-     *  compressed data, this tag shall not be used because a JPEG marker is used instead of it.</p>
+     * <p>The number of columns of image data, equal to the number of pixels per row. In JPEG
+     * compressed data, this tag shall not be used because a JPEG marker is used instead of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 256</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 256</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_IMAGE_WIDTH = "ImageWidth";
     /**
-     *  <p>The number of rows of image data. In JPEG compressed data, this tag shall not be used
-     *  because a JPEG marker is used instead of it.</p>
+     * <p>The number of rows of image data. In JPEG compressed data, this tag shall not be used
+     * because a JPEG marker is used instead of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 257</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 257</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_IMAGE_LENGTH = "ImageLength";
     /**
-     *  <p>The number of bits per image component. In this standard each component of the image is
-     *  8 bits, so the value for this tag is 8. See also {@link #TAG_SAMPLES_PER_PIXEL}. In JPEG
-     *  compressed data, this tag shall not be used because a JPEG marker is used instead of it.</p>
+     * <p>The number of bits per image component. In this standard each component of the image is
+     * 8 bits, so the value for this tag is 8. See also {@link #TAG_SAMPLES_PER_PIXEL}. In JPEG
+     * compressed data, this tag shall not be used because a JPEG marker is used instead of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 258</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = {@link #BITS_PER_SAMPLE_RGB}</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 258</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = {@link #BITS_PER_SAMPLE_RGB}</li>
+     * </ul>
      */
     public static final String TAG_BITS_PER_SAMPLE = "BitsPerSample";
     /**
-     *  <p>The compression scheme used for the image data. When a primary image is JPEG compressed,
-     *  this designation is not necessary. So, this tag shall not be recorded. When thumbnails use
-     *  JPEG compression, this tag value is set to 6.</p>
+     * <p>The compression scheme used for the image data. When a primary image is JPEG compressed,
+     * this designation is not necessary. So, this tag shall not be recorded. When thumbnails use
+     * JPEG compression, this tag value is set to 6.</p>
      *
-     *  <ul>
-     *      <li>Tag = 259</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #DATA_UNCOMPRESSED
-     *  @see #DATA_JPEG
+     * <ul>
+     *     <li>Tag = 259</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #DATA_UNCOMPRESSED
+     * @see #DATA_JPEG
      */
     public static final String TAG_COMPRESSION = "Compression";
     /**
-     *  <p>The pixel composition. In JPEG compressed data, this tag shall not be used because a JPEG
-     *  marker is used instead of it.</p>
+     * <p>The pixel composition. In JPEG compressed data, this tag shall not be used because a JPEG
+     * marker is used instead of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 262</li>
-     *      <li>Type = SHORT</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #PHOTOMETRIC_INTERPRETATION_RGB
-     *  @see #PHOTOMETRIC_INTERPRETATION_YCBCR
+     * <ul>
+     *     <li>Tag = 262</li>
+     *     <li>Type = SHORT</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #PHOTOMETRIC_INTERPRETATION_RGB
+     * @see #PHOTOMETRIC_INTERPRETATION_YCBCR
      */
     public static final String TAG_PHOTOMETRIC_INTERPRETATION = "PhotometricInterpretation";
     /**
-     *  <p>The image orientation viewed in terms of rows and columns.</p>
+     * <p>The image orientation viewed in terms of rows and columns.</p>
      *
-     *  <ul>
-     *      <li>Tag = 274</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #ORIENTATION_NORMAL}</li>
-     *  </ul>
-     *
-     *  @see #ORIENTATION_UNDEFINED
-     *  @see #ORIENTATION_NORMAL
-     *  @see #ORIENTATION_FLIP_HORIZONTAL
-     *  @see #ORIENTATION_ROTATE_180
-     *  @see #ORIENTATION_FLIP_VERTICAL
-     *  @see #ORIENTATION_TRANSPOSE
-     *  @see #ORIENTATION_ROTATE_90
-     *  @see #ORIENTATION_TRANSVERSE
-     *  @see #ORIENTATION_ROTATE_270
+     * <ul>
+     *     <li>Tag = 274</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #ORIENTATION_NORMAL}</li>
+     * </ul>
+     * <p>
+     * @see #ORIENTATION_UNDEFINED
+     * @see #ORIENTATION_NORMAL
+     * @see #ORIENTATION_FLIP_HORIZONTAL
+     * @see #ORIENTATION_ROTATE_180
+     * @see #ORIENTATION_FLIP_VERTICAL
+     * @see #ORIENTATION_TRANSPOSE
+     * @see #ORIENTATION_ROTATE_90
+     * @see #ORIENTATION_TRANSVERSE
+     * @see #ORIENTATION_ROTATE_270
      */
     public static final String TAG_ORIENTATION = "Orientation";
     /**
-     *  <p>The number of components per pixel. Since this standard applies to RGB and YCbCr images,
-     *  the value set for this tag is 3. In JPEG compressed data, this tag shall not be used because
-     *  a JPEG marker is used instead of it.</p>
+     * <p>The number of components per pixel. Since this standard applies to RGB and YCbCr images,
+     * the value set for this tag is 3. In JPEG compressed data, this tag shall not be used because
+     * a JPEG marker is used instead of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 277</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = 3</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 277</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = 3</li>
+     * </ul>
      */
     public static final String TAG_SAMPLES_PER_PIXEL = "SamplesPerPixel";
     /**
-     *  <p>Indicates whether pixel components are recorded in chunky or planar format. In JPEG
-     *  compressed data, this tag shall not be used because a JPEG marker is used instead of it.
-     *  If this field does not exist, the TIFF default, {@link #FORMAT_CHUNKY}, is assumed.</p>
+     * <p>Indicates whether pixel components are recorded in chunky or planar format. In JPEG
+     * compressed data, this tag shall not be used because a JPEG marker is used instead of it.
+     * If this field does not exist, the TIFF default, {@link #FORMAT_CHUNKY}, is assumed.</p>
      *
-     *  <ul>
-     *      <li>Tag = 284</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *  </ul>
-     *
-     *  @see #FORMAT_CHUNKY
-     *  @see #FORMAT_PLANAR
+     * <ul>
+     *     <li>Tag = 284</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     * </ul>
+     * <p>
+     * @see #FORMAT_CHUNKY
+     * @see #FORMAT_PLANAR
      */
     public static final String TAG_PLANAR_CONFIGURATION = "PlanarConfiguration";
     /**
-     *  <p>The sampling ratio of chrominance components in relation to the luminance component.
-     *  In JPEG compressed data a JPEG marker is used instead of this tag. So, this tag shall not
-     *  be recorded.</p>
+     * <p>The sampling ratio of chrominance components in relation to the luminance component.
+     * In JPEG compressed data a JPEG marker is used instead of this tag. So, this tag shall not
+     * be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 530</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 2</li>
-     *      <ul>
-     *          <li>[2, 1] = YCbCr4:2:2</li>
-     *          <li>[2, 2] = YCbCr4:2:0</li>
-     *          <li>Other = reserved</li>
-     *      </ul>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 530</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 2</li>
+     *     <ul>
+     *         <li>[2, 1] = YCbCr4:2:2</li>
+     *         <li>[2, 2] = YCbCr4:2:0</li>
+     *         <li>Other = reserved</li>
+     *     </ul>
+     * </ul>
      */
     public static final String TAG_Y_CB_CR_SUB_SAMPLING = "YCbCrSubSampling";
     /**
-     *  <p>The position of chrominance components in relation to the luminance component. This field
-     *  is designated only for JPEG compressed data or uncompressed YCbCr data. The TIFF default is
-     *  {@link #Y_CB_CR_POSITIONING_CENTERED}; but when Y:Cb:Cr = 4:2:2 it is recommended in this
-     *  standard that {@link #Y_CB_CR_POSITIONING_CO_SITED} be used to record data, in order to
-     *  improve the image quality when viewed on TV systems. When this field does not exist,
-     *  the reader shall assume the TIFF default. In the case of Y:Cb:Cr = 4:2:0, the TIFF default
-     *  ({@link #Y_CB_CR_POSITIONING_CENTERED}) is recommended. If the Exif/DCF reader does not
-     *  have the capability of supporting both kinds of positioning, it shall follow the TIFF
-     *  default regardless of the value in this field. It is preferable that readers can support
-     *  both centered and co-sited positioning.</p>
+     * <p>The position of chrominance components in relation to the luminance component. This field
+     * is designated only for JPEG compressed data or uncompressed YCbCr data. The TIFF default is
+     * {@link #Y_CB_CR_POSITIONING_CENTERED}; but when Y:Cb:Cr = 4:2:2 it is recommended in this
+     * standard that {@link #Y_CB_CR_POSITIONING_CO_SITED} be used to record data, in order to
+     * improve the image quality when viewed on TV systems. When this field does not exist,
+     * the reader shall assume the TIFF default. In the case of Y:Cb:Cr = 4:2:0, the TIFF default
+     * ({@link #Y_CB_CR_POSITIONING_CENTERED}) is recommended. If the Exif/DCF reader does not
+     * have the capability of supporting both kinds of positioning, it shall follow the TIFF
+     * default regardless of the value in this field. It is preferable that readers can support
+     * both centered and co-sited positioning.</p>
      *
-     *  <ul>
-     *      <li>Tag = 531</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #Y_CB_CR_POSITIONING_CENTERED}</li>
-     *  </ul>
-     *
-     *  @see #Y_CB_CR_POSITIONING_CENTERED
-     *  @see #Y_CB_CR_POSITIONING_CO_SITED
+     * <ul>
+     *     <li>Tag = 531</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #Y_CB_CR_POSITIONING_CENTERED}</li>
+     * </ul>
+     * <p>
+     * @see #Y_CB_CR_POSITIONING_CENTERED
+     * @see #Y_CB_CR_POSITIONING_CO_SITED
      */
     public static final String TAG_Y_CB_CR_POSITIONING = "YCbCrPositioning";
     /**
-     *  <p>The number of pixels per {@link #TAG_RESOLUTION_UNIT} in the {@link #TAG_IMAGE_WIDTH}
-     *  direction. When the image resolution is unknown, 72 [dpi] shall be designated.</p>
+     * <p>The number of pixels per {@link #TAG_RESOLUTION_UNIT} in the {@link #TAG_IMAGE_WIDTH}
+     * direction. When the image resolution is unknown, 72 [dpi] shall be designated.</p>
      *
-     *  <ul>
-     *      <li>Tag = 282</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = 72</li>
-     *  </ul>
-     *
-     *  @see #TAG_Y_RESOLUTION
-     *  @see #TAG_RESOLUTION_UNIT
+     * <ul>
+     *     <li>Tag = 282</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = 72</li>
+     * </ul>
+     * <p>
+     * @see #TAG_Y_RESOLUTION
+     * @see #TAG_RESOLUTION_UNIT
      */
     public static final String TAG_X_RESOLUTION = "XResolution";
     /**
-     *  <p>The number of pixels per {@link #TAG_RESOLUTION_UNIT} in the {@link #TAG_IMAGE_WIDTH}
-     *  direction. The same value as {@link #TAG_X_RESOLUTION} shall be designated.</p>
+     * <p>The number of pixels per {@link #TAG_RESOLUTION_UNIT} in the {@link #TAG_IMAGE_WIDTH}
+     * direction. The same value as {@link #TAG_X_RESOLUTION} shall be designated.</p>
      *
-     *  <ul>
-     *      <li>Tag = 283</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = 72</li>
-     *  </ul>
-     *
-     *  @see #TAG_X_RESOLUTION
-     *  @see #TAG_RESOLUTION_UNIT
+     * <ul>
+     *     <li>Tag = 283</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = 72</li>
+     * </ul>
+     * <p>
+     * @see #TAG_X_RESOLUTION
+     * @see #TAG_RESOLUTION_UNIT
      */
     public static final String TAG_Y_RESOLUTION = "YResolution";
     /**
-     *  <p>The unit for measuring {@link #TAG_X_RESOLUTION} and {@link #TAG_Y_RESOLUTION}. The same
-     *  unit is used for both {@link #TAG_X_RESOLUTION} and {@link #TAG_Y_RESOLUTION}. If the image
-     *  resolution is unknown, {@link #RESOLUTION_UNIT_INCHES} shall be designated.</p>
+     * <p>The unit for measuring {@link #TAG_X_RESOLUTION} and {@link #TAG_Y_RESOLUTION}. The same
+     * unit is used for both {@link #TAG_X_RESOLUTION} and {@link #TAG_Y_RESOLUTION}. If the image
+     * resolution is unknown, {@link #RESOLUTION_UNIT_INCHES} shall be designated.</p>
      *
-     *  <ul>
-     *      <li>Tag = 296</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
-     *  </ul>
-     *
-     *  @see #RESOLUTION_UNIT_INCHES
-     *  @see #RESOLUTION_UNIT_CENTIMETERS
-     *  @see #TAG_X_RESOLUTION
-     *  @see #TAG_Y_RESOLUTION
+     * <ul>
+     *     <li>Tag = 296</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
+     * </ul>
+     * <p>
+     * @see #RESOLUTION_UNIT_INCHES
+     * @see #RESOLUTION_UNIT_CENTIMETERS
+     * @see #TAG_X_RESOLUTION
+     * @see #TAG_Y_RESOLUTION
      */
     public static final String TAG_RESOLUTION_UNIT = "ResolutionUnit";
 
     // B. Tags related to recording offset
     /**
-     *  <p>For each strip, the byte offset of that strip. It is recommended that this be selected
-     *  so the number of strip bytes does not exceed 64 KBytes.In the case of JPEG compressed data,
-     *  this designation is not necessary. So, this tag shall not be recorded.</p>
+     * <p>For each strip, the byte offset of that strip. It is recommended that this be selected
+     * so the number of strip bytes does not exceed 64 KBytes.In the case of JPEG compressed data,
+     * this designation is not necessary. So, this tag shall not be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 273</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = StripsPerImage (for {@link #FORMAT_CHUNKY})
-     *               or {@link #TAG_SAMPLES_PER_PIXEL} * StripsPerImage
-     *               (for {@link #FORMAT_PLANAR})</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 273</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = StripsPerImage (for {@link #FORMAT_CHUNKY})
+     *              or {@link #TAG_SAMPLES_PER_PIXEL} * StripsPerImage
+     *              (for {@link #FORMAT_PLANAR})</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>StripsPerImage = floor(({@link #TAG_IMAGE_LENGTH} + {@link #TAG_ROWS_PER_STRIP} - 1)
-     *  / {@link #TAG_ROWS_PER_STRIP})</p>
-     *
-     *  @see #TAG_ROWS_PER_STRIP
-     *  @see #TAG_STRIP_BYTE_COUNTS
+     * <p>StripsPerImage = floor(({@link #TAG_IMAGE_LENGTH} + {@link #TAG_ROWS_PER_STRIP} - 1)
+     * / {@link #TAG_ROWS_PER_STRIP})</p>
+     * <p>
+     * @see #TAG_ROWS_PER_STRIP
+     * @see #TAG_STRIP_BYTE_COUNTS
      */
     public static final String TAG_STRIP_OFFSETS = "StripOffsets";
     /**
-     *  <p>The number of rows per strip. This is the number of rows in the image of one strip when
-     *  an image is divided into strips. In the case of JPEG compressed data, this designation is
-     *  not necessary. So, this tag shall not be recorded.</p>
+     * <p>The number of rows per strip. This is the number of rows in the image of one strip when
+     * an image is divided into strips. In the case of JPEG compressed data, this designation is
+     * not necessary. So, this tag shall not be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 278</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #TAG_STRIP_OFFSETS
-     *  @see #TAG_STRIP_BYTE_COUNTS
+     * <ul>
+     *     <li>Tag = 278</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #TAG_STRIP_OFFSETS
+     * @see #TAG_STRIP_BYTE_COUNTS
      */
     public static final String TAG_ROWS_PER_STRIP = "RowsPerStrip";
     /**
-     *  <p>The total number of bytes in each strip. In the case of JPEG compressed data, this
-     *  designation is not necessary. So, this tag shall not be recorded.</p>
+     * <p>The total number of bytes in each strip. In the case of JPEG compressed data, this
+     * designation is not necessary. So, this tag shall not be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 279</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = StripsPerImage (when using {@link #FORMAT_CHUNKY})
-     *               or {@link #TAG_SAMPLES_PER_PIXEL} * StripsPerImage
-     *               (when using {@link #FORMAT_PLANAR})</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 279</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = StripsPerImage (when using {@link #FORMAT_CHUNKY})
+     *              or {@link #TAG_SAMPLES_PER_PIXEL} * StripsPerImage
+     *              (when using {@link #FORMAT_PLANAR})</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>StripsPerImage = floor(({@link #TAG_IMAGE_LENGTH} + {@link #TAG_ROWS_PER_STRIP} - 1)
-     *  / {@link #TAG_ROWS_PER_STRIP})</p>
+     * <p>StripsPerImage = floor(({@link #TAG_IMAGE_LENGTH} + {@link #TAG_ROWS_PER_STRIP} - 1)
+     * / {@link #TAG_ROWS_PER_STRIP})</p>
      */
     public static final String TAG_STRIP_BYTE_COUNTS = "StripByteCounts";
     /**
-     *  <p>The offset to the start byte (SOI) of JPEG compressed thumbnail data. This shall not be
-     *  used for primary image JPEG data.</p>
+     * <p>The offset to the start byte (SOI) of JPEG compressed thumbnail data. This shall not be
+     * used for primary image JPEG data.</p>
      *
-     *  <ul>
-     *      <li>Tag = 513</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 513</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_JPEG_INTERCHANGE_FORMAT = "JPEGInterchangeFormat";
     /**
-     *  <p>The number of bytes of JPEG compressed thumbnail data. This is not used for primary image
-     *  JPEG data. JPEG thumbnails are not divided but are recorded as a continuous JPEG bitstream
-     *  from SOI to EOI. APPn and COM markers should not be recorded. Compressed thumbnails shall be
-     *  recorded in no more than 64 KBytes, including all other data to be recorded in APP1.</p>
+     * <p>The number of bytes of JPEG compressed thumbnail data. This is not used for primary image
+     * JPEG data. JPEG thumbnails are not divided but are recorded as a continuous JPEG bitstream
+     * from SOI to EOI. APPn and COM markers should not be recorded. Compressed thumbnails shall be
+     * recorded in no more than 64 KBytes, including all other data to be recorded in APP1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 514</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 514</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_JPEG_INTERCHANGE_FORMAT_LENGTH = "JPEGInterchangeFormatLength";
 
     // C. Tags related to Image Data Characteristics
     /**
-     *  <p>A transfer function for the image, described in tabular style. Normally this tag need not
-     *  be used, since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
+     * <p>A transfer function for the image, described in tabular style. Normally this tag need not
+     * be used, since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 301</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 3 * 256</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 301</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 3 * 256</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_TRANSFER_FUNCTION = "TransferFunction";
     /**
-     *  <p>The chromaticity of the white point of the image. Normally this tag need not be used,
-     *  since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
+     * <p>The chromaticity of the white point of the image. Normally this tag need not be used,
+     * since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 318</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 2</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 318</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 2</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_WHITE_POINT = "WhitePoint";
     /**
-     *  <p>The chromaticity of the three primary colors of the image. Normally this tag need not
-     *  be used, since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
+     * <p>The chromaticity of the three primary colors of the image. Normally this tag need not
+     * be used, since color space is specified in {@link #TAG_COLOR_SPACE}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 319</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 6</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 319</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 6</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_PRIMARY_CHROMATICITIES = "PrimaryChromaticities";
     /**
-     *  <p>The matrix coefficients for transformation from RGB to YCbCr image data. About
-     *  the default value, please refer to JEITA CP-3451C Spec, Annex D.</p>
+     * <p>The matrix coefficients for transformation from RGB to YCbCr image data. About
+     * the default value, please refer to JEITA CP-3451C Spec, Annex D.</p>
      *
-     *  <ul>
-     *      <li>Tag = 529</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 529</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     * </ul>
      */
     public static final String TAG_Y_CB_CR_COEFFICIENTS = "YCbCrCoefficients";
     /**
-     *  <p>The reference black point value and reference white point value. No defaults are given
-     *  in TIFF, but the values below are given as defaults here. The color space is declared in
-     *  a color space information tag, with the default being the value that gives the optimal image
-     *  characteristics Interoperability these conditions</p>
+     * <p>The reference black point value and reference white point value. No defaults are given
+     * in TIFF, but the values below are given as defaults here. The color space is declared in
+     * a color space information tag, with the default being the value that gives the optimal image
+     * characteristics Interoperability these conditions</p>
      *
-     *  <ul>
-     *      <li>Tag = 532</li>
-     *      <li>Type = RATIONAL</li>
-     *      <li>Count = 6</li>
-     *      <li>Default = [0, 255, 0, 255, 0, 255] (when {@link #TAG_PHOTOMETRIC_INTERPRETATION}
-     *                 is {@link #PHOTOMETRIC_INTERPRETATION_RGB})
-     *                 or [0, 255, 0, 128, 0, 128] (when {@link #TAG_PHOTOMETRIC_INTERPRETATION}
-     *                 is {@link #PHOTOMETRIC_INTERPRETATION_YCBCR})</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 532</li>
+     *     <li>Type = RATIONAL</li>
+     *     <li>Count = 6</li>
+     *     <li>Default = [0, 255, 0, 255, 0, 255] (when {@link #TAG_PHOTOMETRIC_INTERPRETATION}
+     *                is {@link #PHOTOMETRIC_INTERPRETATION_RGB})
+     *                or [0, 255, 0, 128, 0, 128] (when {@link #TAG_PHOTOMETRIC_INTERPRETATION}
+     *                is {@link #PHOTOMETRIC_INTERPRETATION_YCBCR})</li>
+     * </ul>
      */
     public static final String TAG_REFERENCE_BLACK_WHITE = "ReferenceBlackWhite";
 
     // D. Other tags
     /**
-     *  <p>The date and time of image creation. In this standard it is the date and time the file
-     *  was changed. The format is "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format, and
-     *  the date and time separated by one blank character ({@code 0x20}). When the date and time
-     *  are unknown, all the character spaces except colons (":") should be filled with blank
-     *  characters, or else the Interoperability field should be filled with blank characters.
-     *  The character string length is 20 Bytes including NULL for termination. When the field is
-     *  left blank, it is treated as unknown.</p>
+     * <p>The date and time of image creation. In this standard it is the date and time the file
+     * was changed. The format is "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format, and
+     * the date and time separated by one blank character ({@code 0x20}). When the date and time
+     * are unknown, all the character spaces except colons (":") should be filled with blank
+     * characters, or else the Interoperability field should be filled with blank characters.
+     * The character string length is 20 Bytes including NULL for termination. When the field is
+     * left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 306</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 19</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 306</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 19</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
-     *  however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
-     *  format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
+     * <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
+     * however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
+     * format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
      */
     public static final String TAG_DATETIME = "DateTime";
     /**
-     *  <p>An ASCII string giving the title of the image. It is possible to be added a comment
-     *  such as "1988 company picnic" or the like. Two-byte character codes cannot be used. When
-     *  a 2-byte code is necessary, {@link #TAG_USER_COMMENT} is to be used.</p>
+     * <p>An ASCII string giving the title of the image. It is possible to be added a comment
+     * such as "1988 company picnic" or the like. Two-byte character codes cannot be used. When
+     * a 2-byte code is necessary, {@link #TAG_USER_COMMENT} is to be used.</p>
      *
-     *  <ul>
-     *      <li>Tag = 270</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 270</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_IMAGE_DESCRIPTION = "ImageDescription";
     /**
-     *  <p>The manufacturer of the recording equipment. This is the manufacturer of the DSC,
-     *  scanner, video digitizer or other equipment that generated the image. When the field is left
-     *  blank, it is treated as unknown.</p>
+     * <p>The manufacturer of the recording equipment. This is the manufacturer of the DSC,
+     * scanner, video digitizer or other equipment that generated the image. When the field is left
+     * blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 271</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 271</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_MAKE = "Make";
     /**
-     *  <p>The model name or model number of the equipment. This is the model name of number of
-     *  the DSC, scanner, video digitizer or other equipment that generated the image. When
-     *  the field is left blank, it is treated as unknown.</p>
+     * <p>The model name or model number of the equipment. This is the model name of number of
+     * the DSC, scanner, video digitizer or other equipment that generated the image. When
+     * the field is left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 272</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 272</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_MODEL = "Model";
     /**
-     *  <p>This tag records the name and version of the software or firmware of the camera or image
-     *  input device used to generate the image. The detailed format is not specified, but it is
-     *  recommended that the example shown below be followed. When the field is left blank, it is
-     *  treated as unknown.</p>
+     * <p>This tag records the name and version of the software or firmware of the camera or image
+     * input device used to generate the image. The detailed format is not specified, but it is
+     * recommended that the example shown below be followed. When the field is left blank, it is
+     * treated as unknown.</p>
      *
-     *  <p>Ex.) "Exif Software Version 1.00a".</p>
+     * <p>Ex.) "Exif Software Version 1.00a".</p>
      *
-     *  <ul>
-     *      <li>Tag = 305</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 305</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SOFTWARE = "Software";
     /**
-     *  <p>This tag records the name of the camera owner, photographer or image creator.
-     *  The detailed format is not specified, but it is recommended that the information be written
-     *  as in the example below for ease of Interoperability. When the field is left blank, it is
-     *  treated as unknown.</p>
+     * <p>This tag records the name of the camera owner, photographer or image creator.
+     * The detailed format is not specified, but it is recommended that the information be written
+     * as in the example below for ease of Interoperability. When the field is left blank, it is
+     * treated as unknown.</p>
      *
-     *  <p>Ex.) "Camera owner, John Smith; Photographer, Michael Brown; Image creator,
-     *  Ken James"</p>
+     * <p>Ex.) "Camera owner, John Smith; Photographer, Michael Brown; Image creator,
+     * Ken James"</p>
      *
-     *  <ul>
-     *      <li>Tag = 315</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 315</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_ARTIST = "Artist";
     /**
-     *  <p>Copyright information. In this standard the tag is used to indicate both the photographer
-     *  and editor copyrights. It is the copyright notice of the person or organization claiming
-     *  rights to the image. The Interoperability copyright statement including date and rights
-     *  should be written in this field; e.g., "Copyright, John Smith, 19xx. All rights reserved."
-     *  In this standard the field records both the photographer and editor copyrights, with each
-     *  recorded in a separate part of the statement. When there is a clear distinction between
-     *  the photographer and editor copyrights, these are to be written in the order of photographer
-     *  followed by editor copyright, separated by NULL (in this case, since the statement also ends
-     *  with a NULL, there are two NULL codes) (see example 1). When only the photographer copyright
-     *  is given, it is terminated by one NULL code (see example 2). When only the editor copyright
-     *  is given, the photographer copyright part consists of one space followed by a terminating
-     *  NULL code, then the editor copyright is given (see example 3). When the field is left blank,
-     *  it is treated as unknown.</p>
+     * <p>Copyright information. In this standard the tag is used to indicate both the photographer
+     * and editor copyrights. It is the copyright notice of the person or organization claiming
+     * rights to the image. The Interoperability copyright statement including date and rights
+     * should be written in this field; e.g., "Copyright, John Smith, 19xx. All rights reserved."
+     * In this standard the field records both the photographer and editor copyrights, with each
+     * recorded in a separate part of the statement. When there is a clear distinction between
+     * the photographer and editor copyrights, these are to be written in the order of photographer
+     * followed by editor copyright, separated by NULL (in this case, since the statement also ends
+     * with a NULL, there are two NULL codes) (see example 1). When only the photographer copyright
+     * is given, it is terminated by one NULL code (see example 2). When only the editor copyright
+     * is given, the photographer copyright part consists of one space followed by a terminating
+     * NULL code, then the editor copyright is given (see example 3). When the field is left blank,
+     * it is treated as unknown.</p>
      *
-     *  <p>Ex. 1) When both the photographer copyright and editor copyright are given.
-     *  <ul><li>Photographer copyright + NULL + editor copyright + NULL</li></ul></p>
-     *  <p>Ex. 2) When only the photographer copyright is given.
-     *  <ul><li>Photographer copyright + NULL</li></ul></p>
-     *  <p>Ex. 3) When only the editor copyright is given.
-     *  <ul><li>Space ({@code 0x20}) + NULL + editor copyright + NULL</li></ul></p>
+     * <p>Ex. 1) When both the photographer copyright and editor copyright are given.
+     * <ul><li>Photographer copyright + NULL + editor copyright + NULL</li></ul></p>
+     * <p>Ex. 2) When only the photographer copyright is given.
+     * <ul><li>Photographer copyright + NULL</li></ul></p>
+     * <p>Ex. 3) When only the editor copyright is given.
+     * <ul><li>Space ({@code 0x20}) + NULL + editor copyright + NULL</li></ul></p>
      *
-     *  <ul>
-     *      <li>Tag = 315</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 315</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_COPYRIGHT = "Copyright";
 
     // Exif IFD Attribute Information
     // A. Tags related to version
     /**
-     *  <p>The version of this standard supported. Nonexistence of this field is taken to mean
-     *  nonconformance to the standard. In according with conformance to this standard, this tag
-     *  shall be recorded like "0230” as 4-byte ASCII.</p>
+     * <p>The version of this standard supported. Nonexistence of this field is taken to mean
+     * nonconformance to the standard. In according with conformance to this standard, this tag
+     * shall be recorded like "0230” as 4-byte ASCII.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36864</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Length = 4</li>
-     *      <li>Default = "0230"</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36864</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Length = 4</li>
+     *     <li>Default = "0230"</li>
+     * </ul>
      */
     public static final String TAG_EXIF_VERSION = "ExifVersion";
     /**
-     *  <p>The Flashpix format version supported by a FPXR file. If the FPXR function supports
-     *  Flashpix format Ver. 1.0, this is indicated similarly to {@link #TAG_EXIF_VERSION} by
-     *  recording "0100" as 4-byte ASCII.</p>
+     * <p>The Flashpix format version supported by a FPXR file. If the FPXR function supports
+     * Flashpix format Ver. 1.0, this is indicated similarly to {@link #TAG_EXIF_VERSION} by
+     * recording "0100" as 4-byte ASCII.</p>
      *
-     *  <ul>
-     *      <li>Tag = 40960</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Length = 4</li>
-     *      <li>Default = "0100"</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 40960</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Length = 4</li>
+     *     <li>Default = "0100"</li>
+     * </ul>
      */
     public static final String TAG_FLASHPIX_VERSION = "FlashpixVersion";
 
     // B. Tags related to image data characteristics
     /**
-     *  <p>The color space information tag is always recorded as the color space specifier.
-     *  Normally {@link #COLOR_SPACE_S_RGB} is used to define the color space based on the PC
-     *  monitor conditions and environment. If a color space other than {@link #COLOR_SPACE_S_RGB}
-     *  is used, {@link #COLOR_SPACE_UNCALIBRATED} is set. Image data recorded as
-     *  {@link #COLOR_SPACE_UNCALIBRATED} may be treated as {@link #COLOR_SPACE_S_RGB} when it is
-     *  converted to Flashpix.</p>
+     * <p>The color space information tag is always recorded as the color space specifier.
+     * Normally {@link #COLOR_SPACE_S_RGB} is used to define the color space based on the PC
+     * monitor conditions and environment. If a color space other than {@link #COLOR_SPACE_S_RGB}
+     * is used, {@link #COLOR_SPACE_UNCALIBRATED} is set. Image data recorded as
+     * {@link #COLOR_SPACE_UNCALIBRATED} may be treated as {@link #COLOR_SPACE_S_RGB} when it is
+     * converted to Flashpix.</p>
      *
-     *  <ul>
-     *      <li>Tag = 40961</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *  </ul>
-     *
-     *  @see #COLOR_SPACE_S_RGB
-     *  @see #COLOR_SPACE_UNCALIBRATED
+     * <ul>
+     *     <li>Tag = 40961</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     * </ul>
+     * <p>
+     * @see #COLOR_SPACE_S_RGB
+     * @see #COLOR_SPACE_UNCALIBRATED
      */
     public static final String TAG_COLOR_SPACE = "ColorSpace";
     /**
-     *  <p>Indicates the value of coefficient gamma. The formula of transfer function used for image
-     *  reproduction is expressed as follows.</p>
+     * <p>Indicates the value of coefficient gamma. The formula of transfer function used for image
+     * reproduction is expressed as follows.</p>
      *
-     *  <p>(Reproduced value) = (Input value) ^ gamma</p>
+     * <p>(Reproduced value) = (Input value) ^ gamma</p>
      *
-     *  <p>Both reproduced value and input value indicate normalized value, whose minimum value is
-     *  0 and maximum value is 1.</p>
+     * <p>Both reproduced value and input value indicate normalized value, whose minimum value is
+     * 0 and maximum value is 1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42240</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42240</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GAMMA = "Gamma";
 
     // C. Tags related to image configuration
     /**
-     *  <p>Information specific to compressed data. When a compressed file is recorded, the valid
-     *  width of the meaningful image shall be recorded in this tag, whether or not there is padding
-     *  data or a restart marker. This tag shall not exist in an uncompressed file.</p>
+     * <p>Information specific to compressed data. When a compressed file is recorded, the valid
+     * width of the meaningful image shall be recorded in this tag, whether or not there is padding
+     * data or a restart marker. This tag shall not exist in an uncompressed file.</p>
      *
-     *  <ul>
-     *      <li>Tag = 40962</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 40962</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_PIXEL_X_DIMENSION = "PixelXDimension";
     /**
-     *  <p>Information specific to compressed data. When a compressed file is recorded, the valid
-     *  height of the meaningful image shall be recorded in this tag, whether or not there is
-     *  padding data or a restart marker. This tag shall not exist in an uncompressed file.
-     *  Since data padding is unnecessary in the vertical direction, the number of lines recorded
-     *  in this valid image height tag will in fact be the same as that recorded in the SOF.</p>
+     * <p>Information specific to compressed data. When a compressed file is recorded, the valid
+     * height of the meaningful image shall be recorded in this tag, whether or not there is
+     * padding data or a restart marker. This tag shall not exist in an uncompressed file.
+     * Since data padding is unnecessary in the vertical direction, the number of lines recorded
+     * in this valid image height tag will in fact be the same as that recorded in the SOF.</p>
      *
-     *  <ul>
-     *      <li>Tag = 40963</li>
-     *      <li>Type = Unsigned short or Unsigned long</li>
-     *      <li>Count = 1</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 40963</li>
+     *     <li>Type = Unsigned short or Unsigned long</li>
+     *     <li>Count = 1</li>
+     * </ul>
      */
     public static final String TAG_PIXEL_Y_DIMENSION = "PixelYDimension";
     /**
-     *  <p>Information specific to compressed data. The channels of each component are arranged
-     *  in order from the 1st component to the 4th. For uncompressed data the data arrangement is
-     *  given in the {@link #TAG_PHOTOMETRIC_INTERPRETATION}. However, since
-     *  {@link #TAG_PHOTOMETRIC_INTERPRETATION} can only express the order of Y, Cb and Cr, this tag
-     *  is provided for cases when compressed data uses components other than Y, Cb, and Cr and to
-     *  enable support of other sequences.</p>
+     * <p>Information specific to compressed data. The channels of each component are arranged
+     * in order from the 1st component to the 4th. For uncompressed data the data arrangement is
+     * given in the {@link #TAG_PHOTOMETRIC_INTERPRETATION}. However, since
+     * {@link #TAG_PHOTOMETRIC_INTERPRETATION} can only express the order of Y, Cb and Cr, this tag
+     * is provided for cases when compressed data uses components other than Y, Cb, and Cr and to
+     * enable support of other sequences.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37121</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Length = 4</li>
-     *      <li>Default = 4 5 6 0 (if RGB uncompressed) or 1 2 3 0 (other cases)</li>
-     *      <ul>
-     *          <li>0 = does not exist</li>
-     *          <li>1 = Y</li>
-     *          <li>2 = Cb</li>
-     *          <li>3 = Cr</li>
-     *          <li>4 = R</li>
-     *          <li>5 = G</li>
-     *          <li>6 = B</li>
-     *          <li>other = reserved</li>
-     *      </ul>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37121</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Length = 4</li>
+     *     <li>Default = 4 5 6 0 (if RGB uncompressed) or 1 2 3 0 (other cases)</li>
+     *     <ul>
+     *         <li>0 = does not exist</li>
+     *         <li>1 = Y</li>
+     *         <li>2 = Cb</li>
+     *         <li>3 = Cr</li>
+     *         <li>4 = R</li>
+     *         <li>5 = G</li>
+     *         <li>6 = B</li>
+     *         <li>other = reserved</li>
+     *     </ul>
+     * </ul>
      */
     public static final String TAG_COMPONENTS_CONFIGURATION = "ComponentsConfiguration";
     /**
-     *  <p>Information specific to compressed data. The compression mode used for a compressed image
-     *  is indicated in unit bits per pixel.</p>
+     * <p>Information specific to compressed data. The compression mode used for a compressed image
+     * is indicated in unit bits per pixel.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37122</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37122</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_COMPRESSED_BITS_PER_PIXEL = "CompressedBitsPerPixel";
 
     // D. Tags related to user information
     /**
-     *  <p>A tag for manufacturers of Exif/DCF writers to record any desired information.
-     *  The contents are up to the manufacturer, but this tag shall not be used for any other than
-     *  its intended purpose.</p>
+     * <p>A tag for manufacturers of Exif/DCF writers to record any desired information.
+     * The contents are up to the manufacturer, but this tag shall not be used for any other than
+     * its intended purpose.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37500</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37500</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_MAKER_NOTE = "MakerNote";
     /**
-     *  <p>A tag for Exif users to write keywords or comments on the image besides those in
-     *  {@link #TAG_IMAGE_DESCRIPTION}, and without the character code limitations of it.</p>
+     * <p>A tag for Exif users to write keywords or comments on the image besides those in
+     * {@link #TAG_IMAGE_DESCRIPTION}, and without the character code limitations of it.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37510</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37510</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_USER_COMMENT = "UserComment";
 
     // E. Tags related to related file information
     /**
-     *  <p>This tag is used to record the name of an audio file related to the image data. The only
-     *  relational information recorded here is the Exif audio file name and extension (an ASCII
-     *  string consisting of 8 characters + '.' + 3 characters). The path is not recorded.</p>
+     * <p>This tag is used to record the name of an audio file related to the image data. The only
+     * relational information recorded here is the Exif audio file name and extension (an ASCII
+     * string consisting of 8 characters + '.' + 3 characters). The path is not recorded.</p>
      *
-     *  <p>When using this tag, audio files shall be recorded in conformance to the Exif audio
-     *  format. Writers can also store the data such as Audio within APP2 as Flashpix extension
-     *  stream data. Audio files shall be recorded in conformance to the Exif audio format.</p>
+     * <p>When using this tag, audio files shall be recorded in conformance to the Exif audio
+     * format. Writers can also store the data such as Audio within APP2 as Flashpix extension
+     * stream data. Audio files shall be recorded in conformance to the Exif audio format.</p>
      *
-     *  <ul>
-     *      <li>Tag = 40964</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 12</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 40964</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 12</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_RELATED_SOUND_FILE = "RelatedSoundFile";
 
     // F. Tags related to date and time
     /**
-     *  <p>The date and time when the original image data was generated. For a DSC the date and time
-     *  the picture was taken are recorded. The format is "YYYY:MM:DD HH:MM:SS" with time shown in
-     *  24-hour format, and the date and time separated by one blank character ({@code 0x20}).
-     *  When the date and time are unknown, all the character spaces except colons (":") should be
-     *  filled with blank characters, or else the Interoperability field should be filled with blank
-     *  characters. When the field is left blank, it is treated as unknown.</p>
+     * <p>The date and time when the original image data was generated. For a DSC the date and time
+     * the picture was taken are recorded. The format is "YYYY:MM:DD HH:MM:SS" with time shown in
+     * 24-hour format, and the date and time separated by one blank character ({@code 0x20}).
+     * When the date and time are unknown, all the character spaces except colons (":") should be
+     * filled with blank characters, or else the Interoperability field should be filled with blank
+     * characters. When the field is left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36867</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 19</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36867</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 19</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
-     *  however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
-     *  format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
+     * <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
+     * however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
+     * format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
      */
     public static final String TAG_DATETIME_ORIGINAL = "DateTimeOriginal";
     /**
-     *  <p>The date and time when the image was stored as digital data. If, for example, an image
-     *  was captured by DSC and at the same time the file was recorded, then
-     *  {@link #TAG_DATETIME_ORIGINAL} and this tag will have the same contents. The format is
-     *  "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format, and the date and time separated by
-     *  one blank character ({@code 0x20}). When the date and time are unknown, all the character
-     *  spaces except colons (":")should be filled with blank characters, or else
-     *  the Interoperability field should be filled with blank characters. When the field is left
-     *  blank, it is treated as unknown.</p>
+     * <p>The date and time when the image was stored as digital data. If, for example, an image
+     * was captured by DSC and at the same time the file was recorded, then
+     * {@link #TAG_DATETIME_ORIGINAL} and this tag will have the same contents. The format is
+     * "YYYY:MM:DD HH:MM:SS" with time shown in 24-hour format, and the date and time separated by
+     * one blank character ({@code 0x20}). When the date and time are unknown, all the character
+     * spaces except colons (":")should be filled with blank characters, or else
+     * the Interoperability field should be filled with blank characters. When the field is left
+     * blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36868</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 19</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36868</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 19</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
-     *  however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
-     *  format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
+     * <p>Note: The format "YYYY-MM-DD HH:MM:SS" is also supported for reading. For writing,
+     * however, calling {@link #setAttribute(String, String)} with the "YYYY-MM-DD HH:MM:SS"
+     * format will automatically convert it to the primary format, "YYYY:MM:DD HH:MM:SS".
      */
     public static final String TAG_DATETIME_DIGITIZED = "DateTimeDigitized";
     /**
-     *  <p>A tag used to record the offset from UTC (the time difference from Universal Time
-     *  Coordinated including daylight saving time) of the time of DateTime tag. The format when
-     *  recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
-     *  the offsets are unknown, all the character spaces except colons (":") should be filled
-     *  with blank characters, or else the Interoperability field should be filled with blank
-     *  characters. The character string length is 7 Bytes including NULL for termination. When
-     *  the field is left blank, it is treated as unknown.</p>
+     * <p>A tag used to record the offset from UTC (the time difference from Universal Time
+     * Coordinated including daylight saving time) of the time of DateTime tag. The format when
+     * recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
+     * the offsets are unknown, all the character spaces except colons (":") should be filled
+     * with blank characters, or else the Interoperability field should be filled with blank
+     * characters. The character string length is 7 Bytes including NULL for termination. When
+     * the field is left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36880</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 7</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36880</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 7</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_OFFSET_TIME = "OffsetTime";
     /**
-     *  <p>A tag used to record the offset from UTC (the time difference from Universal Time
-     *  Coordinated including daylight saving time) of the time of DateTimeOriginal tag. The format
-     *  when recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
-     *  the offsets are unknown, all the character spaces except colons (":") should be filled
-     *  with blank characters, or else the Interoperability field should be filled with blank
-     *  characters. The character string length is 7 Bytes including NULL for termination. When
-     *  the field is left blank, it is treated as unknown.</p>
+     * <p>A tag used to record the offset from UTC (the time difference from Universal Time
+     * Coordinated including daylight saving time) of the time of DateTimeOriginal tag. The format
+     * when recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
+     * the offsets are unknown, all the character spaces except colons (":") should be filled
+     * with blank characters, or else the Interoperability field should be filled with blank
+     * characters. The character string length is 7 Bytes including NULL for termination. When
+     * the field is left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36881</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 7</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36881</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 7</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_OFFSET_TIME_ORIGINAL = "OffsetTimeOriginal";
     /**
-     *  <p>A tag used to record the offset from UTC (the time difference from Universal Time
-     *  Coordinated including daylight saving time) of the time of DateTimeDigitized tag. The format
-     *  when recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
-     *  the offsets are unknown, all the character spaces except colons (":") should be filled
-     *  with blank characters, or else the Interoperability field should be filled with blank
-     *  characters. The character string length is 7 Bytes including NULL for termination. When
-     *  the field is left blank, it is treated as unknown.</p>
+     * <p>A tag used to record the offset from UTC (the time difference from Universal Time
+     * Coordinated including daylight saving time) of the time of DateTimeDigitized tag. The format
+     * when recording the offset is "±HH:MM". The part of "±" shall be recorded as "+" or "-". When
+     * the offsets are unknown, all the character spaces except colons (":") should be filled
+     * with blank characters, or else the Interoperability field should be filled with blank
+     * characters. The character string length is 7 Bytes including NULL for termination. When
+     * the field is left blank, it is treated as unknown.</p>
      *
-     *  <ul>
-     *      <li>Tag = 36882</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 7</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 36882</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 7</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_OFFSET_TIME_DIGITIZED = "OffsetTimeDigitized";
     /**
-     *  <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME}.</p>
+     * <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37520</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37520</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SUBSEC_TIME = "SubSecTime";
     /**
-     *  <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME_ORIGINAL}.</p>
+     * <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME_ORIGINAL}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37521</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37521</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SUBSEC_TIME_ORIGINAL = "SubSecTimeOriginal";
     /**
-     *  <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME_DIGITIZED}.</p>
+     * <p>A tag used to record fractions of seconds for {@link #TAG_DATETIME_DIGITIZED}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37522</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37522</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SUBSEC_TIME_DIGITIZED = "SubSecTimeDigitized";
 
     // G. Tags related to picture-taking condition
     /**
-     *  <p>Exposure time, given in seconds.</p>
+     * <p>Exposure time, given in seconds.</p>
      *
-     *  <ul>
-     *      <li>Tag = 33434</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 33434</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_EXPOSURE_TIME = "ExposureTime";
     /**
-     *  <p>The F number.</p>
+     * <p>The F number.</p>
      *
-     *  <ul>
-     *      <li>Tag = 33437</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 33437</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_F_NUMBER = "FNumber";
     /**
-     *  <p>TThe class of the program used by the camera to set exposure when the picture is taken.
-     *  The tag values are as follows.</p>
+     * <p>TThe class of the program used by the camera to set exposure when the picture is taken.
+     * The tag values are as follows.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34850</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #EXPOSURE_PROGRAM_NOT_DEFINED}</li>
-     *  </ul>
-     *
-     *  @see #EXPOSURE_PROGRAM_NOT_DEFINED
-     *  @see #EXPOSURE_PROGRAM_MANUAL
-     *  @see #EXPOSURE_PROGRAM_NORMAL
-     *  @see #EXPOSURE_PROGRAM_APERTURE_PRIORITY
-     *  @see #EXPOSURE_PROGRAM_SHUTTER_PRIORITY
-     *  @see #EXPOSURE_PROGRAM_CREATIVE
-     *  @see #EXPOSURE_PROGRAM_ACTION
-     *  @see #EXPOSURE_PROGRAM_PORTRAIT_MODE
-     *  @see #EXPOSURE_PROGRAM_LANDSCAPE_MODE
+     * <ul>
+     *     <li>Tag = 34850</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #EXPOSURE_PROGRAM_NOT_DEFINED}</li>
+     * </ul>
+     * <p>
+     * @see #EXPOSURE_PROGRAM_NOT_DEFINED
+     * @see #EXPOSURE_PROGRAM_MANUAL
+     * @see #EXPOSURE_PROGRAM_NORMAL
+     * @see #EXPOSURE_PROGRAM_APERTURE_PRIORITY
+     * @see #EXPOSURE_PROGRAM_SHUTTER_PRIORITY
+     * @see #EXPOSURE_PROGRAM_CREATIVE
+     * @see #EXPOSURE_PROGRAM_ACTION
+     * @see #EXPOSURE_PROGRAM_PORTRAIT_MODE
+     * @see #EXPOSURE_PROGRAM_LANDSCAPE_MODE
      */
     public static final String TAG_EXPOSURE_PROGRAM = "ExposureProgram";
     /**
-     *  <p>Indicates the spectral sensitivity of each channel of the camera used. The tag value is
-     *  an ASCII string compatible with the standard developed by the ASTM Technical committee.</p>
+     * <p>Indicates the spectral sensitivity of each channel of the camera used. The tag value is
+     * an ASCII string compatible with the standard developed by the ASTM Technical committee.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34852</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34852</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SPECTRAL_SENSITIVITY = "SpectralSensitivity";
     /**
-     *  @deprecated Use {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} instead.
-     *  @see #TAG_PHOTOGRAPHIC_SENSITIVITY
+     * @see #TAG_PHOTOGRAPHIC_SENSITIVITY
+     * @deprecated Use {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} instead.
      */
-    @Deprecated public static final String TAG_ISO_SPEED_RATINGS = "ISOSpeedRatings";
+    @Deprecated
+    public static final String TAG_ISO_SPEED_RATINGS = "ISOSpeedRatings";
     /**
-     *  <p>This tag indicates the sensitivity of the camera or input device when the image was shot.
-     *  More specifically, it indicates one of the following values that are parameters defined in
-     *  ISO 12232: standard output sensitivity (SOS), recommended exposure index (REI), or ISO
-     *  speed. Accordingly, if a tag corresponding to a parameter that is designated by
-     *  {@link #TAG_SENSITIVITY_TYPE} is recorded, the values of the tag and of this tag are
-     *  the same. However, if the value is 65535 or higher, the value of this tag shall be 65535.
-     *  When recording this tag, {@link #TAG_SENSITIVITY_TYPE} should also be recorded. In addition,
-     *  while “Count = Any”, only 1 count should be used when recording this tag.</p>
+     * <p>This tag indicates the sensitivity of the camera or input device when the image was shot.
+     * More specifically, it indicates one of the following values that are parameters defined in
+     * ISO 12232: standard output sensitivity (SOS), recommended exposure index (REI), or ISO
+     * speed. Accordingly, if a tag corresponding to a parameter that is designated by
+     * {@link #TAG_SENSITIVITY_TYPE} is recorded, the values of the tag and of this tag are
+     * the same. However, if the value is 65535 or higher, the value of this tag shall be 65535.
+     * When recording this tag, {@link #TAG_SENSITIVITY_TYPE} should also be recorded. In addition,
+     * while “Count = Any”, only 1 count should be used when recording this tag.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34855</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = Any</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34855</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = Any</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_PHOTOGRAPHIC_SENSITIVITY = "PhotographicSensitivity";
     /**
-     *  <p>Indicates the Opto-Electric Conversion Function (OECF) specified in ISO 14524. OECF is
-     *  the relationship between the camera optical input and the image values.</p>
+     * <p>Indicates the Opto-Electric Conversion Function (OECF) specified in ISO 14524. OECF is
+     * the relationship between the camera optical input and the image values.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34856</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34856</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_OECF = "OECF";
     /**
-     *  <p>This tag indicates which one of the parameters of ISO12232 is
-     *  {@link #TAG_PHOTOGRAPHIC_SENSITIVITY}. Although it is an optional tag, it should be recorded
-     *  when {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} is recorded.</p>
+     * <p>This tag indicates which one of the parameters of ISO12232 is
+     * {@link #TAG_PHOTOGRAPHIC_SENSITIVITY}. Although it is an optional tag, it should be recorded
+     * when {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} is recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34864</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #SENSITIVITY_TYPE_UNKNOWN
-     *  @see #SENSITIVITY_TYPE_SOS
-     *  @see #SENSITIVITY_TYPE_REI
-     *  @see #SENSITIVITY_TYPE_ISO_SPEED
-     *  @see #SENSITIVITY_TYPE_SOS_AND_REI
-     *  @see #SENSITIVITY_TYPE_SOS_AND_ISO
-     *  @see #SENSITIVITY_TYPE_REI_AND_ISO
-     *  @see #SENSITIVITY_TYPE_SOS_AND_REI_AND_ISO
+     * <ul>
+     *     <li>Tag = 34864</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #SENSITIVITY_TYPE_UNKNOWN
+     * @see #SENSITIVITY_TYPE_SOS
+     * @see #SENSITIVITY_TYPE_REI
+     * @see #SENSITIVITY_TYPE_ISO_SPEED
+     * @see #SENSITIVITY_TYPE_SOS_AND_REI
+     * @see #SENSITIVITY_TYPE_SOS_AND_ISO
+     * @see #SENSITIVITY_TYPE_REI_AND_ISO
+     * @see #SENSITIVITY_TYPE_SOS_AND_REI_AND_ISO
      */
     public static final String TAG_SENSITIVITY_TYPE = "SensitivityType";
     /**
-     *  <p>This tag indicates the standard output sensitivity value of a camera or input device
-     *  defined in ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
-     *  {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
+     * <p>This tag indicates the standard output sensitivity value of a camera or input device
+     * defined in ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
+     * {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34865</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34865</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_STANDARD_OUTPUT_SENSITIVITY = "StandardOutputSensitivity";
     /**
-     *  <p>This tag indicates the recommended exposure index value of a camera or input device
-     *  defined in ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
-     *  {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
+     * <p>This tag indicates the recommended exposure index value of a camera or input device
+     * defined in ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
+     * {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34866</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34866</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_RECOMMENDED_EXPOSURE_INDEX = "RecommendedExposureIndex";
     /**
-     *  <p>This tag indicates the ISO speed value of a camera or input device that is defined in
-     *  ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
-     *  {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
+     * <p>This tag indicates the ISO speed value of a camera or input device that is defined in
+     * ISO 12232. When recording this tag, {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} and
+     * {@link #TAG_SENSITIVITY_TYPE} shall also be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34867</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34867</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_ISO_SPEED = "ISOSpeed";
     /**
-     *  <p>This tag indicates the ISO speed latitude yyy value of a camera or input device that is
-     *  defined in ISO 12232. However, this tag shall not be recorded without {@link #TAG_ISO_SPEED}
-     *  and {@link #TAG_ISO_SPEED_LATITUDE_ZZZ}.</p>
+     * <p>This tag indicates the ISO speed latitude yyy value of a camera or input device that is
+     * defined in ISO 12232. However, this tag shall not be recorded without {@link #TAG_ISO_SPEED}
+     * and {@link #TAG_ISO_SPEED_LATITUDE_ZZZ}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34868</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34868</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_ISO_SPEED_LATITUDE_YYY = "ISOSpeedLatitudeyyy";
     /**
-     *  <p>This tag indicates the ISO speed latitude zzz value of a camera or input device that is
-     *  defined in ISO 12232. However, this tag shall not be recorded without {@link #TAG_ISO_SPEED}
-     *  and {@link #TAG_ISO_SPEED_LATITUDE_YYY}.</p>
+     * <p>This tag indicates the ISO speed latitude zzz value of a camera or input device that is
+     * defined in ISO 12232. However, this tag shall not be recorded without {@link #TAG_ISO_SPEED}
+     * and {@link #TAG_ISO_SPEED_LATITUDE_YYY}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 34869</li>
-     *      <li>Type = Unsigned long</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 34869</li>
+     *     <li>Type = Unsigned long</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_ISO_SPEED_LATITUDE_ZZZ = "ISOSpeedLatitudezzz";
     /**
-     *  <p>Shutter speed. The unit is the APEX setting.</p>
+     * <p>Shutter speed. The unit is the APEX setting.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37377</li>
-     *      <li>Type = Signed rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37377</li>
+     *     <li>Type = Signed rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SHUTTER_SPEED_VALUE = "ShutterSpeedValue";
     /**
-     *  <p>The lens aperture. The unit is the APEX value.</p>
+     * <p>The lens aperture. The unit is the APEX value.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37378</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37378</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_APERTURE_VALUE = "ApertureValue";
     /**
-     *  <p>The value of brightness. The unit is the APEX value. Ordinarily it is given in the range
-     *  of -99.99 to 99.99. Note that if the numerator of the recorded value is 0xFFFFFFFF,
-     *  Unknown shall be indicated.</p>
+     * <p>The value of brightness. The unit is the APEX value. Ordinarily it is given in the range
+     * of -99.99 to 99.99. Note that if the numerator of the recorded value is 0xFFFFFFFF,
+     * Unknown shall be indicated.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37379</li>
-     *      <li>Type = Signed rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37379</li>
+     *     <li>Type = Signed rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_BRIGHTNESS_VALUE = "BrightnessValue";
     /**
-     *  <p>The exposure bias. The unit is the APEX value. Ordinarily it is given in the range of
-     *  -99.99 to 99.99.</p>
+     * <p>The exposure bias. The unit is the APEX value. Ordinarily it is given in the range of
+     * -99.99 to 99.99.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37380</li>
-     *      <li>Type = Signed rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37380</li>
+     *     <li>Type = Signed rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_EXPOSURE_BIAS_VALUE = "ExposureBiasValue";
     /**
-     *  <p>The smallest F number of the lens. The unit is the APEX value. Ordinarily it is given
-     *  in the range of 00.00 to 99.99, but it is not limited to this range.</p>
+     * <p>The smallest F number of the lens. The unit is the APEX value. Ordinarily it is given
+     * in the range of 00.00 to 99.99, but it is not limited to this range.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37381</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37381</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_MAX_APERTURE_VALUE = "MaxApertureValue";
     /**
-     *  <p>The distance to the subject, given in meters. Note that if the numerator of the recorded
-     *  value is 0xFFFFFFFF, Infinity shall be indicated; and if the numerator is 0, Distance
-     *  unknown shall be indicated.</p>
+     * <p>The distance to the subject, given in meters. Note that if the numerator of the recorded
+     * value is 0xFFFFFFFF, Infinity shall be indicated; and if the numerator is 0, Distance
+     * unknown shall be indicated.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37382</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37382</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SUBJECT_DISTANCE = "SubjectDistance";
     /**
-     *  <p>The metering mode.</p>
+     * <p>The metering mode.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37383</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #METERING_MODE_UNKNOWN}</li>
-     *  </ul>
-     *
-     *  @see #METERING_MODE_UNKNOWN
-     *  @see #METERING_MODE_AVERAGE
-     *  @see #METERING_MODE_CENTER_WEIGHT_AVERAGE
-     *  @see #METERING_MODE_SPOT
-     *  @see #METERING_MODE_MULTI_SPOT
-     *  @see #METERING_MODE_PATTERN
-     *  @see #METERING_MODE_PARTIAL
-     *  @see #METERING_MODE_OTHER
+     * <ul>
+     *     <li>Tag = 37383</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #METERING_MODE_UNKNOWN}</li>
+     * </ul>
+     * <p>
+     * @see #METERING_MODE_UNKNOWN
+     * @see #METERING_MODE_AVERAGE
+     * @see #METERING_MODE_CENTER_WEIGHT_AVERAGE
+     * @see #METERING_MODE_SPOT
+     * @see #METERING_MODE_MULTI_SPOT
+     * @see #METERING_MODE_PATTERN
+     * @see #METERING_MODE_PARTIAL
+     * @see #METERING_MODE_OTHER
      */
     public static final String TAG_METERING_MODE = "MeteringMode";
     /**
-     *  <p>The kind of light source.</p>
+     * <p>The kind of light source.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37384</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #LIGHT_SOURCE_UNKNOWN}</li>
-     *  </ul>
-     *
-     *  @see #LIGHT_SOURCE_UNKNOWN
-     *  @see #LIGHT_SOURCE_DAYLIGHT
-     *  @see #LIGHT_SOURCE_FLUORESCENT
-     *  @see #LIGHT_SOURCE_TUNGSTEN
-     *  @see #LIGHT_SOURCE_FLASH
-     *  @see #LIGHT_SOURCE_FINE_WEATHER
-     *  @see #LIGHT_SOURCE_CLOUDY_WEATHER
-     *  @see #LIGHT_SOURCE_SHADE
-     *  @see #LIGHT_SOURCE_DAYLIGHT_FLUORESCENT
-     *  @see #LIGHT_SOURCE_DAY_WHITE_FLUORESCENT
-     *  @see #LIGHT_SOURCE_COOL_WHITE_FLUORESCENT
-     *  @see #LIGHT_SOURCE_WHITE_FLUORESCENT
-     *  @see #LIGHT_SOURCE_WARM_WHITE_FLUORESCENT
-     *  @see #LIGHT_SOURCE_STANDARD_LIGHT_A
-     *  @see #LIGHT_SOURCE_STANDARD_LIGHT_B
-     *  @see #LIGHT_SOURCE_STANDARD_LIGHT_C
-     *  @see #LIGHT_SOURCE_D55
-     *  @see #LIGHT_SOURCE_D65
-     *  @see #LIGHT_SOURCE_D75
-     *  @see #LIGHT_SOURCE_D50
-     *  @see #LIGHT_SOURCE_ISO_STUDIO_TUNGSTEN
-     *  @see #LIGHT_SOURCE_OTHER
+     * <ul>
+     *     <li>Tag = 37384</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #LIGHT_SOURCE_UNKNOWN}</li>
+     * </ul>
+     * <p>
+     * @see #LIGHT_SOURCE_UNKNOWN
+     * @see #LIGHT_SOURCE_DAYLIGHT
+     * @see #LIGHT_SOURCE_FLUORESCENT
+     * @see #LIGHT_SOURCE_TUNGSTEN
+     * @see #LIGHT_SOURCE_FLASH
+     * @see #LIGHT_SOURCE_FINE_WEATHER
+     * @see #LIGHT_SOURCE_CLOUDY_WEATHER
+     * @see #LIGHT_SOURCE_SHADE
+     * @see #LIGHT_SOURCE_DAYLIGHT_FLUORESCENT
+     * @see #LIGHT_SOURCE_DAY_WHITE_FLUORESCENT
+     * @see #LIGHT_SOURCE_COOL_WHITE_FLUORESCENT
+     * @see #LIGHT_SOURCE_WHITE_FLUORESCENT
+     * @see #LIGHT_SOURCE_WARM_WHITE_FLUORESCENT
+     * @see #LIGHT_SOURCE_STANDARD_LIGHT_A
+     * @see #LIGHT_SOURCE_STANDARD_LIGHT_B
+     * @see #LIGHT_SOURCE_STANDARD_LIGHT_C
+     * @see #LIGHT_SOURCE_D55
+     * @see #LIGHT_SOURCE_D65
+     * @see #LIGHT_SOURCE_D75
+     * @see #LIGHT_SOURCE_D50
+     * @see #LIGHT_SOURCE_ISO_STUDIO_TUNGSTEN
+     * @see #LIGHT_SOURCE_OTHER
      */
     public static final String TAG_LIGHT_SOURCE = "LightSource";
     /**
-     *  <p>This tag indicates the status of flash when the image was shot. Bit 0 indicates the flash
-     *  firing status, bits 1 and 2 indicate the flash return status, bits 3 and 4 indicate
-     *  the flash mode, bit 5 indicates whether the flash function is present, and bit 6 indicates
-     *  "red eye" mode.</p>
+     * <p>This tag indicates the status of flash when the image was shot. Bit 0 indicates the flash
+     * firing status, bits 1 and 2 indicate the flash return status, bits 3 and 4 indicate
+     * the flash mode, bit 5 indicates whether the flash function is present, and bit 6 indicates
+     * "red eye" mode.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37385</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *  </ul>
-     *
-     *  @see #FLAG_FLASH_FIRED
-     *  @see #FLAG_FLASH_RETURN_LIGHT_NOT_DETECTED
-     *  @see #FLAG_FLASH_RETURN_LIGHT_DETECTED
-     *  @see #FLAG_FLASH_MODE_COMPULSORY_FIRING
-     *  @see #FLAG_FLASH_MODE_COMPULSORY_SUPPRESSION
-     *  @see #FLAG_FLASH_MODE_AUTO
-     *  @see #FLAG_FLASH_NO_FLASH_FUNCTION
-     *  @see #FLAG_FLASH_RED_EYE_SUPPORTED
+     * <ul>
+     *     <li>Tag = 37385</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     * </ul>
+     * <p>
+     * @see #FLAG_FLASH_FIRED
+     * @see #FLAG_FLASH_RETURN_LIGHT_NOT_DETECTED
+     * @see #FLAG_FLASH_RETURN_LIGHT_DETECTED
+     * @see #FLAG_FLASH_MODE_COMPULSORY_FIRING
+     * @see #FLAG_FLASH_MODE_COMPULSORY_SUPPRESSION
+     * @see #FLAG_FLASH_MODE_AUTO
+     * @see #FLAG_FLASH_NO_FLASH_FUNCTION
+     * @see #FLAG_FLASH_RED_EYE_SUPPORTED
      */
     public static final String TAG_FLASH = "Flash";
     /**
-     *  <p>This tag indicates the location and area of the main subject in the overall scene.</p>
+     * <p>This tag indicates the location and area of the main subject in the overall scene.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37396</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 2 or 3 or 4</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37396</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 2 or 3 or 4</li>
+     *     <li>Default = None</li>
+     * </ul>
      *
-     *  <p>The subject location and area are defined by Count values as follows.</p>
+     * <p>The subject location and area are defined by Count values as follows.</p>
      *
-     *  <ul>
-     *      <li>Count = 2 Indicates the location of the main subject as coordinates. The first value
-     *                    is the X coordinate and the second is the Y coordinate.</li>
-     *      <li>Count = 3 The area of the main subject is given as a circle. The circular area is
-     *                    expressed as center coordinates and diameter. The first value is
-     *                    the center X coordinate, the second is the center Y coordinate, and
-     *                    the third is the diameter.</li>
-     *      <li>Count = 4 The area of the main subject is given as a rectangle. The rectangular
-     *                    area is expressed as center coordinates and area dimensions. The first
-     *                    value is the center X coordinate, the second is the center Y coordinate,
-     *                    the third is the width of the area, and the fourth is the height of
-     *                    the area.</li>
-     *  </ul>
+     * <ul>
+     *     <li>Count = 2 Indicates the location of the main subject as coordinates. The first value
+     *                   is the X coordinate and the second is the Y coordinate.</li>
+     *     <li>Count = 3 The area of the main subject is given as a circle. The circular area is
+     *                   expressed as center coordinates and diameter. The first value is
+     *                   the center X coordinate, the second is the center Y coordinate, and
+     *                   the third is the diameter.</li>
+     *     <li>Count = 4 The area of the main subject is given as a rectangle. The rectangular
+     *                   area is expressed as center coordinates and area dimensions. The first
+     *                   value is the center X coordinate, the second is the center Y coordinate,
+     *                   the third is the width of the area, and the fourth is the height of
+     *                   the area.</li>
+     * </ul>
      *
-     *  <p>Note that the coordinate values, width, and height are expressed in relation to the upper
-     *  left as origin, prior to rotation processing as per {@link #TAG_ORIENTATION}.</p>
+     * <p>Note that the coordinate values, width, and height are expressed in relation to the upper
+     * left as origin, prior to rotation processing as per {@link #TAG_ORIENTATION}.</p>
      */
     public static final String TAG_SUBJECT_AREA = "SubjectArea";
     /**
-     *  <p>The actual focal length of the lens, in mm. Conversion is not made to the focal length
-     *  of a 35mm film camera.</p>
+     * <p>The actual focal length of the lens, in mm. Conversion is not made to the focal length
+     * of a 35mm film camera.</p>
      *
-     *  <ul>
-     *      <li>Tag = 37386</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 37386</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_FOCAL_LENGTH = "FocalLength";
     /**
-     *  <p>Indicates the strobe energy at the time the image is captured, as measured in Beam Candle
-     *  Power Seconds (BCPS).</p>
+     * <p>Indicates the strobe energy at the time the image is captured, as measured in Beam Candle
+     * Power Seconds (BCPS).</p>
      *
-     *  <ul>
-     *      <li>Tag = 41483</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41483</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_FLASH_ENERGY = "FlashEnergy";
     /**
-     *  <p>This tag records the camera or input device spatial frequency table and SFR values in
-     *  the direction of image width, image height, and diagonal direction, as specified in
-     *  ISO 12233.</p>
+     * <p>This tag records the camera or input device spatial frequency table and SFR values in
+     * the direction of image width, image height, and diagonal direction, as specified in
+     * ISO 12233.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41484</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41484</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SPATIAL_FREQUENCY_RESPONSE = "SpatialFrequencyResponse";
     /**
-     *  <p>Indicates the number of pixels in the image width (X) direction per
-     *  {@link #TAG_FOCAL_PLANE_RESOLUTION_UNIT} on the camera focal plane.</p>
+     * <p>Indicates the number of pixels in the image width (X) direction per
+     * {@link #TAG_FOCAL_PLANE_RESOLUTION_UNIT} on the camera focal plane.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41486</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41486</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_FOCAL_PLANE_X_RESOLUTION = "FocalPlaneXResolution";
     /**
-     *  <p>Indicates the number of pixels in the image height (Y) direction per
-     *  {@link #TAG_FOCAL_PLANE_RESOLUTION_UNIT} on the camera focal plane.</p>
+     * <p>Indicates the number of pixels in the image height (Y) direction per
+     * {@link #TAG_FOCAL_PLANE_RESOLUTION_UNIT} on the camera focal plane.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41487</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41487</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_FOCAL_PLANE_Y_RESOLUTION = "FocalPlaneYResolution";
     /**
-     *  <p>Indicates the unit for measuring {@link #TAG_FOCAL_PLANE_X_RESOLUTION} and
-     *  {@link #TAG_FOCAL_PLANE_Y_RESOLUTION}. This value is the same as
-     *  {@link #TAG_RESOLUTION_UNIT}.</p>
+     * <p>Indicates the unit for measuring {@link #TAG_FOCAL_PLANE_X_RESOLUTION} and
+     * {@link #TAG_FOCAL_PLANE_Y_RESOLUTION}. This value is the same as
+     * {@link #TAG_RESOLUTION_UNIT}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41488</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
-     *  </ul>
-     *
-     *  @see #TAG_RESOLUTION_UNIT
-     *  @see #RESOLUTION_UNIT_INCHES
-     *  @see #RESOLUTION_UNIT_CENTIMETERS
+     * <ul>
+     *     <li>Tag = 41488</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #RESOLUTION_UNIT_INCHES}</li>
+     * </ul>
+     * <p>
+     * @see #TAG_RESOLUTION_UNIT
+     * @see #RESOLUTION_UNIT_INCHES
+     * @see #RESOLUTION_UNIT_CENTIMETERS
      */
     public static final String TAG_FOCAL_PLANE_RESOLUTION_UNIT = "FocalPlaneResolutionUnit";
     /**
-     *  <p>Indicates the location of the main subject in the scene. The value of this tag represents
-     *  the pixel at the center of the main subject relative to the left edge, prior to rotation
-     *  processing as per {@link #TAG_ORIENTATION}. The first value indicates the X column number
-     *  and second indicates the Y row number. When a camera records the main subject location,
-     *  it is recommended that {@link #TAG_SUBJECT_AREA} be used instead of this tag.</p>
+     * <p>Indicates the location of the main subject in the scene. The value of this tag represents
+     * the pixel at the center of the main subject relative to the left edge, prior to rotation
+     * processing as per {@link #TAG_ORIENTATION}. The first value indicates the X column number
+     * and second indicates the Y row number. When a camera records the main subject location,
+     * it is recommended that {@link #TAG_SUBJECT_AREA} be used instead of this tag.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41492</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 2</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41492</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 2</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_SUBJECT_LOCATION = "SubjectLocation";
     /**
-     *  <p>Indicates the exposure index selected on the camera or input device at the time the image
-     *  is captured.</p>
+     * <p>Indicates the exposure index selected on the camera or input device at the time the image
+     * is captured.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41493</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41493</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_EXPOSURE_INDEX = "ExposureIndex";
     /**
-     *  <p>Indicates the image sensor type on the camera or input device.</p>
+     * <p>Indicates the image sensor type on the camera or input device.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41495</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #SENSOR_TYPE_NOT_DEFINED
-     *  @see #SENSOR_TYPE_ONE_CHIP
-     *  @see #SENSOR_TYPE_TWO_CHIP
-     *  @see #SENSOR_TYPE_THREE_CHIP
-     *  @see #SENSOR_TYPE_COLOR_SEQUENTIAL
-     *  @see #SENSOR_TYPE_TRILINEAR
-     *  @see #SENSOR_TYPE_COLOR_SEQUENTIAL_LINEAR
+     * <ul>
+     *     <li>Tag = 41495</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #SENSOR_TYPE_NOT_DEFINED
+     * @see #SENSOR_TYPE_ONE_CHIP
+     * @see #SENSOR_TYPE_TWO_CHIP
+     * @see #SENSOR_TYPE_THREE_CHIP
+     * @see #SENSOR_TYPE_COLOR_SEQUENTIAL
+     * @see #SENSOR_TYPE_TRILINEAR
+     * @see #SENSOR_TYPE_COLOR_SEQUENTIAL_LINEAR
      */
     public static final String TAG_SENSING_METHOD = "SensingMethod";
     /**
-     *  <p>Indicates the image source. If a DSC recorded the image, this tag value always shall
-     *  be set to {@link #FILE_SOURCE_DSC}.</p>
+     * <p>Indicates the image source. If a DSC recorded the image, this tag value always shall
+     * be set to {@link #FILE_SOURCE_DSC}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41728</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #FILE_SOURCE_DSC}</li>
-     *  </ul>
-     *
-     *  @see #FILE_SOURCE_OTHER
-     *  @see #FILE_SOURCE_TRANSPARENT_SCANNER
-     *  @see #FILE_SOURCE_REFLEX_SCANNER
-     *  @see #FILE_SOURCE_DSC
+     * <ul>
+     *     <li>Tag = 41728</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #FILE_SOURCE_DSC}</li>
+     * </ul>
+     * <p>
+     * @see #FILE_SOURCE_OTHER
+     * @see #FILE_SOURCE_TRANSPARENT_SCANNER
+     * @see #FILE_SOURCE_REFLEX_SCANNER
+     * @see #FILE_SOURCE_DSC
      */
     public static final String TAG_FILE_SOURCE = "FileSource";
     /**
-     *  <p>Indicates the type of scene. If a DSC recorded the image, this tag value shall always
-     *  be set to {@link #SCENE_TYPE_DIRECTLY_PHOTOGRAPHED}.</p>
+     * <p>Indicates the type of scene. If a DSC recorded the image, this tag value shall always
+     * be set to {@link #SCENE_TYPE_DIRECTLY_PHOTOGRAPHED}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41729</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = 1</li>
-     *  </ul>
-     *
-     *  @see #SCENE_TYPE_DIRECTLY_PHOTOGRAPHED
+     * <ul>
+     *     <li>Tag = 41729</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = 1</li>
+     * </ul>
+     * <p>
+     * @see #SCENE_TYPE_DIRECTLY_PHOTOGRAPHED
      */
     public static final String TAG_SCENE_TYPE = "SceneType";
     /**
-     *  <p>Indicates the color filter array (CFA) geometric pattern of the image sensor when
-     *  a one-chip color area sensor is used. It does not apply to all sensing methods.</p>
+     * <p>Indicates the color filter array (CFA) geometric pattern of the image sensor when
+     * a one-chip color area sensor is used. It does not apply to all sensing methods.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41730</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #TAG_SENSING_METHOD
-     *  @see #SENSOR_TYPE_ONE_CHIP
+     * <ul>
+     *     <li>Tag = 41730</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #TAG_SENSING_METHOD
+     * @see #SENSOR_TYPE_ONE_CHIP
      */
     public static final String TAG_CFA_PATTERN = "CFAPattern";
     /**
-     *  <p>This tag indicates the use of special processing on image data, such as rendering geared
-     *  to output. When special processing is performed, the Exif/DCF reader is expected to disable
-     *  or minimize any further processing.</p>
+     * <p>This tag indicates the use of special processing on image data, such as rendering geared
+     * to output. When special processing is performed, the Exif/DCF reader is expected to disable
+     * or minimize any further processing.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41985</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #RENDERED_PROCESS_NORMAL}</li>
-     *  </ul>
-     *
-     *  @see #RENDERED_PROCESS_NORMAL
-     *  @see #RENDERED_PROCESS_CUSTOM
+     * <ul>
+     *     <li>Tag = 41985</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #RENDERED_PROCESS_NORMAL}</li>
+     * </ul>
+     * <p>
+     * @see #RENDERED_PROCESS_NORMAL
+     * @see #RENDERED_PROCESS_CUSTOM
      */
     public static final String TAG_CUSTOM_RENDERED = "CustomRendered";
     /**
-     *  <p>This tag indicates the exposure mode set when the image was shot.
-     *  In {@link #EXPOSURE_MODE_AUTO_BRACKET}, the camera shoots a series of frames of the same
-     *  scene at different exposure settings.</p>
+     * <p>This tag indicates the exposure mode set when the image was shot.
+     * In {@link #EXPOSURE_MODE_AUTO_BRACKET}, the camera shoots a series of frames of the same
+     * scene at different exposure settings.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41986</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #EXPOSURE_MODE_AUTO
-     *  @see #EXPOSURE_MODE_MANUAL
-     *  @see #EXPOSURE_MODE_AUTO_BRACKET
+     * <ul>
+     *     <li>Tag = 41986</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #EXPOSURE_MODE_AUTO
+     * @see #EXPOSURE_MODE_MANUAL
+     * @see #EXPOSURE_MODE_AUTO_BRACKET
      */
     public static final String TAG_EXPOSURE_MODE = "ExposureMode";
     /**
-     *  <p>This tag indicates the white balance mode set when the image was shot.</p>
+     * <p>This tag indicates the white balance mode set when the image was shot.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41987</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #WHITEBALANCE_AUTO
-     *  @see #WHITEBALANCE_MANUAL
+     * <ul>
+     *     <li>Tag = 41987</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #WHITEBALANCE_AUTO
+     * @see #WHITEBALANCE_MANUAL
      */
     public static final String TAG_WHITE_BALANCE = "WhiteBalance";
     /**
-     *  <p>This tag indicates the digital zoom ratio when the image was shot. If the numerator of
-     *  the recorded value is 0, this indicates that digital zoom was not used.</p>
+     * <p>This tag indicates the digital zoom ratio when the image was shot. If the numerator of
+     * the recorded value is 0, this indicates that digital zoom was not used.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41988</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41988</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_DIGITAL_ZOOM_RATIO = "DigitalZoomRatio";
     /**
-     *  <p>This tag indicates the equivalent focal length assuming a 35mm film camera, in mm.
-     *  A value of 0 means the focal length is unknown. Note that this tag differs from
-     *  {@link #TAG_FOCAL_LENGTH}.</p>
+     * <p>This tag indicates the equivalent focal length assuming a 35mm film camera, in mm.
+     * A value of 0 means the focal length is unknown. Note that this tag differs from
+     * {@link #TAG_FOCAL_LENGTH}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41989</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41989</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_FOCAL_LENGTH_IN_35MM_FILM = "FocalLengthIn35mmFilm";
     /**
-     *  <p>This tag indicates the type of scene that was shot. It may also be used to record
-     *  the mode in which the image was shot. Note that this differs from
-     *  {@link #TAG_SCENE_TYPE}.</p>
+     * <p>This tag indicates the type of scene that was shot. It may also be used to record
+     * the mode in which the image was shot. Note that this differs from
+     * {@link #TAG_SCENE_TYPE}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41990</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = 0</li>
-     *  </ul>
-     *
-     *  @see #SCENE_CAPTURE_TYPE_STANDARD
-     *  @see #SCENE_CAPTURE_TYPE_LANDSCAPE
-     *  @see #SCENE_CAPTURE_TYPE_PORTRAIT
-     *  @see #SCENE_CAPTURE_TYPE_NIGHT
+     * <ul>
+     *     <li>Tag = 41990</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = 0</li>
+     * </ul>
+     * <p>
+     * @see #SCENE_CAPTURE_TYPE_STANDARD
+     * @see #SCENE_CAPTURE_TYPE_LANDSCAPE
+     * @see #SCENE_CAPTURE_TYPE_PORTRAIT
+     * @see #SCENE_CAPTURE_TYPE_NIGHT
      */
     public static final String TAG_SCENE_CAPTURE_TYPE = "SceneCaptureType";
     /**
-     *  <p>This tag indicates the degree of overall image gain adjustment.</p>
+     * <p>This tag indicates the degree of overall image gain adjustment.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41991</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #GAIN_CONTROL_NONE
-     *  @see #GAIN_CONTROL_LOW_GAIN_UP
-     *  @see #GAIN_CONTROL_HIGH_GAIN_UP
-     *  @see #GAIN_CONTROL_LOW_GAIN_DOWN
-     *  @see #GAIN_CONTROL_HIGH_GAIN_DOWN
+     * <ul>
+     *     <li>Tag = 41991</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #GAIN_CONTROL_NONE
+     * @see #GAIN_CONTROL_LOW_GAIN_UP
+     * @see #GAIN_CONTROL_HIGH_GAIN_UP
+     * @see #GAIN_CONTROL_LOW_GAIN_DOWN
+     * @see #GAIN_CONTROL_HIGH_GAIN_DOWN
      */
     public static final String TAG_GAIN_CONTROL = "GainControl";
     /**
-     *  <p>This tag indicates the direction of contrast processing applied by the camera when
-     *  the image was shot.</p>
+     * <p>This tag indicates the direction of contrast processing applied by the camera when
+     * the image was shot.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41992</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #CONTRAST_NORMAL}</li>
-     *  </ul>
-     *
-     *  @see #CONTRAST_NORMAL
-     *  @see #CONTRAST_SOFT
-     *  @see #CONTRAST_HARD
+     * <ul>
+     *     <li>Tag = 41992</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #CONTRAST_NORMAL}</li>
+     * </ul>
+     * <p>
+     * @see #CONTRAST_NORMAL
+     * @see #CONTRAST_SOFT
+     * @see #CONTRAST_HARD
      */
     public static final String TAG_CONTRAST = "Contrast";
     /**
-     *  <p>This tag indicates the direction of saturation processing applied by the camera when
-     *  the image was shot.</p>
+     * <p>This tag indicates the direction of saturation processing applied by the camera when
+     * the image was shot.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41993</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #SATURATION_NORMAL}</li>
-     *  </ul>
-     *
-     *  @see #SATURATION_NORMAL
-     *  @see #SATURATION_LOW
-     *  @see #SATURATION_HIGH
+     * <ul>
+     *     <li>Tag = 41993</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #SATURATION_NORMAL}</li>
+     * </ul>
+     * <p>
+     * @see #SATURATION_NORMAL
+     * @see #SATURATION_LOW
+     * @see #SATURATION_HIGH
      */
     public static final String TAG_SATURATION = "Saturation";
     /**
-     *  <p>This tag indicates the direction of sharpness processing applied by the camera when
-     *  the image was shot.</p>
+     * <p>This tag indicates the direction of sharpness processing applied by the camera when
+     * the image was shot.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41994</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = {@link #SHARPNESS_NORMAL}</li>
-     *  </ul>
-     *
-     *  @see #SHARPNESS_NORMAL
-     *  @see #SHARPNESS_SOFT
-     *  @see #SHARPNESS_HARD
+     * <ul>
+     *     <li>Tag = 41994</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = {@link #SHARPNESS_NORMAL}</li>
+     * </ul>
+     * <p>
+     * @see #SHARPNESS_NORMAL
+     * @see #SHARPNESS_SOFT
+     * @see #SHARPNESS_HARD
      */
     public static final String TAG_SHARPNESS = "Sharpness";
     /**
-     *  <p>This tag indicates information on the picture-taking conditions of a particular camera
-     *  model. The tag is used only to indicate the picture-taking conditions in the Exif/DCF
-     *  reader.</p>
+     * <p>This tag indicates information on the picture-taking conditions of a particular camera
+     * model. The tag is used only to indicate the picture-taking conditions in the Exif/DCF
+     * reader.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41995</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 41995</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_DEVICE_SETTING_DESCRIPTION = "DeviceSettingDescription";
     /**
-     *  <p>This tag indicates the distance to the subject.</p>
+     * <p>This tag indicates the distance to the subject.</p>
      *
-     *  <ul>
-     *      <li>Tag = 41996</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #SUBJECT_DISTANCE_RANGE_UNKNOWN
-     *  @see #SUBJECT_DISTANCE_RANGE_MACRO
-     *  @see #SUBJECT_DISTANCE_RANGE_CLOSE_VIEW
-     *  @see #SUBJECT_DISTANCE_RANGE_DISTANT_VIEW
+     * <ul>
+     *     <li>Tag = 41996</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #SUBJECT_DISTANCE_RANGE_UNKNOWN
+     * @see #SUBJECT_DISTANCE_RANGE_MACRO
+     * @see #SUBJECT_DISTANCE_RANGE_CLOSE_VIEW
+     * @see #SUBJECT_DISTANCE_RANGE_DISTANT_VIEW
      */
     public static final String TAG_SUBJECT_DISTANCE_RANGE = "SubjectDistanceRange";
 
     // H. Other tags
     /**
-     *  <p>This tag indicates an identifier assigned uniquely to each image. It is recorded as
-     *  an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.</p>
+     * <p>This tag indicates an identifier assigned uniquely to each image. It is recorded as
+     * an ASCII string equivalent to hexadecimal notation and 128-bit fixed length.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42016</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 32</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42016</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 32</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_IMAGE_UNIQUE_ID = "ImageUniqueID";
     /**
-     *  <p>This tag records the owner of a camera used in photography as an ASCII string.</p>
+     * <p>This tag records the owner of a camera used in photography as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42032</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @deprecated Use {@link #TAG_CAMERA_OWNER_NAME} instead.
+     * <ul>
+     *     <li>Tag = 42032</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @deprecated Use {@link #TAG_CAMERA_OWNER_NAME} instead.
      */
     @Deprecated
     public static final String TAG_CAMARA_OWNER_NAME = "CameraOwnerName";
     /**
-     *  <p>This tag records the owner of a camera used in photography as an ASCII string.</p>
+     * <p>This tag records the owner of a camera used in photography as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42032</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42032</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_CAMERA_OWNER_NAME = "CameraOwnerName";
     /**
-     *  <p>This tag records the serial number of the body of the camera that was used in photography
-     *  as an ASCII string.</p>
+     * <p>This tag records the serial number of the body of the camera that was used in photography
+     * as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42033</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42033</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_BODY_SERIAL_NUMBER = "BodySerialNumber";
     /**
-     *  <p>This tag notes minimum focal length, maximum focal length, minimum F number in the
-     *  minimum focal length, and minimum F number in the maximum focal length, which are
-     *  specification information for the lens that was used in photography. When the minimum
-     *  F number is unknown, the notation is 0/0.</p>
+     * <p>This tag notes minimum focal length, maximum focal length, minimum F number in the
+     * minimum focal length, and minimum F number in the maximum focal length, which are
+     * specification information for the lens that was used in photography. When the minimum
+     * F number is unknown, the notation is 0/0.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42034</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 4</li>
-     *      <li>Default = None</li>
-     *      <ul>
-     *          <li>Value 1 := Minimum focal length (unit: mm)</li>
-     *          <li>Value 2 : = Maximum focal length (unit: mm)</li>
-     *          <li>Value 3 : = Minimum F number in the minimum focal length</li>
-     *          <li>Value 4 : = Minimum F number in the maximum focal length</li>
-     *      </ul>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42034</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 4</li>
+     *     <li>Default = None</li>
+     *     <ul>
+     *         <li>Value 1 := Minimum focal length (unit: mm)</li>
+     *         <li>Value 2 : = Maximum focal length (unit: mm)</li>
+     *         <li>Value 3 : = Minimum F number in the minimum focal length</li>
+     *         <li>Value 4 : = Minimum F number in the maximum focal length</li>
+     *     </ul>
+     * </ul>
      */
     public static final String TAG_LENS_SPECIFICATION = "LensSpecification";
     /**
-     *  <p>This tag records the lens manufacturer as an ASCII string.</p>
+     * <p>This tag records the lens manufacturer as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42035</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42035</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_LENS_MAKE = "LensMake";
     /**
-     *  <p>This tag records the lens’s model name and model number as an ASCII string.</p>
+     * <p>This tag records the lens’s model name and model number as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42036</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42036</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_LENS_MODEL = "LensModel";
     /**
-     *  <p>This tag records the serial number of the interchangeable lens that was used in
-     *  photography as an ASCII string.</p>
+     * <p>This tag records the serial number of the interchangeable lens that was used in
+     * photography as an ASCII string.</p>
      *
-     *  <ul>
-     *      <li>Tag = 42037</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 42037</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_LENS_SERIAL_NUMBER = "LensSerialNumber";
 
     // GPS Attribute Information
     /**
-     *  <p>Indicates the version of GPS Info IFD. The version is given as 2.3.0.0. This tag is
-     *  mandatory when GPS-related tags are present. Note that this tag is written as a different
-     *  byte than {@link #TAG_EXIF_VERSION}.</p>
+     * <p>Indicates the version of GPS Info IFD. The version is given as 2.3.0.0. This tag is
+     * mandatory when GPS-related tags are present. Note that this tag is written as a different
+     * byte than {@link #TAG_EXIF_VERSION}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 0</li>
-     *      <li>Type = Byte</li>
-     *      <li>Count = 4</li>
-     *      <li>Default = 2.3.0.0</li>
-     *      <ul>
-     *          <li>2300 = Version 2.3</li>
-     *          <li>Other = reserved</li>
-     *      </ul>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 0</li>
+     *     <li>Type = Byte</li>
+     *     <li>Count = 4</li>
+     *     <li>Default = 2.3.0.0</li>
+     *     <ul>
+     *         <li>2300 = Version 2.3</li>
+     *         <li>Other = reserved</li>
+     *     </ul>
+     * </ul>
      */
     public static final String TAG_GPS_VERSION_ID = "GPSVersionID";
     /**
-     *  <p>Indicates whether the latitude is north or south latitude.</p>
+     * <p>Indicates whether the latitude is north or south latitude.</p>
      *
-     *  <ul>
-     *      <li>Tag = 1</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #LATITUDE_NORTH
-     *  @see #LATITUDE_SOUTH
+     * <ul>
+     *     <li>Tag = 1</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #LATITUDE_NORTH
+     * @see #LATITUDE_SOUTH
      */
     public static final String TAG_GPS_LATITUDE_REF = "GPSLatitudeRef";
     /**
-     *  <p>Indicates the latitude. The latitude is expressed as three RATIONAL values giving
-     *  the degrees, minutes, and seconds, respectively. If latitude is expressed as degrees,
-     *  minutes and seconds, a typical format would be dd/1,mm/1,ss/1. When degrees and minutes are
-     *  used and, for example, fractions of minutes are given up to two decimal places, the format
-     *  would be dd/1,mmmm/100,0/1.</p>
+     * <p>Indicates the latitude. The latitude is expressed as three RATIONAL values giving
+     * the degrees, minutes, and seconds, respectively. If latitude is expressed as degrees,
+     * minutes and seconds, a typical format would be dd/1,mm/1,ss/1. When degrees and minutes are
+     * used and, for example, fractions of minutes are given up to two decimal places, the format
+     * would be dd/1,mmmm/100,0/1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 2</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 2</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_LATITUDE = "GPSLatitude";
     /**
-     *  <p>Indicates whether the longitude is east or west longitude.</p>
+     * <p>Indicates whether the longitude is east or west longitude.</p>
      *
-     *  <ul>
-     *      <li>Tag = 3</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #LONGITUDE_EAST
-     *  @see #LONGITUDE_WEST
+     * <ul>
+     *     <li>Tag = 3</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #LONGITUDE_EAST
+     * @see #LONGITUDE_WEST
      */
     public static final String TAG_GPS_LONGITUDE_REF = "GPSLongitudeRef";
     /**
-     *  <p>Indicates the longitude. The longitude is expressed as three RATIONAL values giving
-     *  the degrees, minutes, and seconds, respectively. If longitude is expressed as degrees,
-     *  minutes and seconds, a typical format would be ddd/1,mm/1,ss/1. When degrees and minutes
-     *  are used and, for example, fractions of minutes are given up to two decimal places,
-     *  the format would be ddd/1,mmmm/100,0/1.</p>
+     * <p>Indicates the longitude. The longitude is expressed as three RATIONAL values giving
+     * the degrees, minutes, and seconds, respectively. If longitude is expressed as degrees,
+     * minutes and seconds, a typical format would be ddd/1,mm/1,ss/1. When degrees and minutes
+     * are used and, for example, fractions of minutes are given up to two decimal places,
+     * the format would be ddd/1,mmmm/100,0/1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 4</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 4</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_LONGITUDE = "GPSLongitude";
     /**
-     *  <p>Indicates the altitude used as the reference altitude. If the reference is sea level
-     *  and the altitude is above sea level, 0 is given. If the altitude is below sea level,
-     *  a value of 1 is given and the altitude is indicated as an absolute value in
-     *  {@link #TAG_GPS_ALTITUDE}.</p>
+     * <p>Indicates the altitude used as the reference altitude. If the reference is sea level
+     * and the altitude is above sea level, 0 is given. If the altitude is below sea level,
+     * a value of 1 is given and the altitude is indicated as an absolute value in
+     * {@link #TAG_GPS_ALTITUDE}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 5</li>
-     *      <li>Type = Byte</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = 0</li>
-     *  </ul>
-     *
-     *  @see #ALTITUDE_ABOVE_SEA_LEVEL
-     *  @see #ALTITUDE_BELOW_SEA_LEVEL
+     * <ul>
+     *     <li>Tag = 5</li>
+     *     <li>Type = Byte</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = 0</li>
+     * </ul>
+     * <p>
+     * @see #ALTITUDE_ABOVE_SEA_LEVEL
+     * @see #ALTITUDE_BELOW_SEA_LEVEL
      */
     public static final String TAG_GPS_ALTITUDE_REF = "GPSAltitudeRef";
     /**
-     *  <p>Indicates the altitude based on the reference in {@link #TAG_GPS_ALTITUDE_REF}.
-     *  The reference unit is meters.</p>
+     * <p>Indicates the altitude based on the reference in {@link #TAG_GPS_ALTITUDE_REF}.
+     * The reference unit is meters.</p>
      *
-     *  <ul>
-     *      <li>Tag = 6</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 6</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_ALTITUDE = "GPSAltitude";
     /**
-     *  <p>Indicates the time as UTC (Coordinated Universal Time). TimeStamp is expressed as three
-     *  unsigned rational values giving the hour, minute, and second.</p>
+     * <p>Indicates the time as UTC (Coordinated Universal Time). TimeStamp is expressed as three
+     * unsigned rational values giving the hour, minute, and second.</p>
      *
-     *  <ul>
-     *      <li>Tag = 7</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 7</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_TIMESTAMP = "GPSTimeStamp";
     /**
-     *  <p>Indicates the GPS satellites used for measurements. This tag may be used to describe
-     *  the number of satellites, their ID number, angle of elevation, azimuth, SNR and other
-     *  information in ASCII notation. The format is not specified. If the GPS receiver is incapable
-     *  of taking measurements, value of the tag shall be set to {@code null}.</p>
+     * <p>Indicates the GPS satellites used for measurements. This tag may be used to describe
+     * the number of satellites, their ID number, angle of elevation, azimuth, SNR and other
+     * information in ASCII notation. The format is not specified. If the GPS receiver is incapable
+     * of taking measurements, value of the tag shall be set to {@code null}.</p>
      *
-     *  <ul>
-     *      <li>Tag = 8</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 8</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_SATELLITES = "GPSSatellites";
     /**
-     *  <p>Indicates the status of the GPS receiver when the image is recorded. 'A' means
-     *  measurement is in progress, and 'V' means the measurement is interrupted.</p>
+     * <p>Indicates the status of the GPS receiver when the image is recorded. 'A' means
+     * measurement is in progress, and 'V' means the measurement is interrupted.</p>
      *
-     *  <ul>
-     *      <li>Tag = 9</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #GPS_MEASUREMENT_IN_PROGRESS
-     *  @see #GPS_MEASUREMENT_INTERRUPTED
+     * <ul>
+     *     <li>Tag = 9</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #GPS_MEASUREMENT_IN_PROGRESS
+     * @see #GPS_MEASUREMENT_INTERRUPTED
      */
     public static final String TAG_GPS_STATUS = "GPSStatus";
     /**
-     *  <p>Indicates the GPS measurement mode. Originally it was defined for GPS, but it may
-     *  be used for recording a measure mode to record the position information provided from
-     *  a mobile base station or wireless LAN as well as GPS.</p>
+     * <p>Indicates the GPS measurement mode. Originally it was defined for GPS, but it may
+     * be used for recording a measure mode to record the position information provided from
+     * a mobile base station or wireless LAN as well as GPS.</p>
      *
-     *  <ul>
-     *      <li>Tag = 10</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #GPS_MEASUREMENT_2D
-     *  @see #GPS_MEASUREMENT_3D
+     * <ul>
+     *     <li>Tag = 10</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #GPS_MEASUREMENT_2D
+     * @see #GPS_MEASUREMENT_3D
      */
     public static final String TAG_GPS_MEASURE_MODE = "GPSMeasureMode";
     /**
-     *  <p>Indicates the GPS DOP (data degree of precision). An HDOP value is written during
-     *  two-dimensional measurement, and PDOP during three-dimensional measurement.</p>
+     * <p>Indicates the GPS DOP (data degree of precision). An HDOP value is written during
+     * two-dimensional measurement, and PDOP during three-dimensional measurement.</p>
      *
-     *  <ul>
-     *      <li>Tag = 11</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 11</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DOP = "GPSDOP";
     /**
-     *  <p>Indicates the unit used to express the GPS receiver speed of movement.</p>
+     * <p>Indicates the unit used to express the GPS receiver speed of movement.</p>
      *
-     *  <ul>
-     *      <li>Tag = 12</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #GPS_SPEED_KILOMETERS_PER_HOUR}</li>
-     *  </ul>
-     *
-     *  @see #GPS_SPEED_KILOMETERS_PER_HOUR
-     *  @see #GPS_SPEED_MILES_PER_HOUR
-     *  @see #GPS_SPEED_KNOTS
+     * <ul>
+     *     <li>Tag = 12</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #GPS_SPEED_KILOMETERS_PER_HOUR}</li>
+     * </ul>
+     * <p>
+     * @see #GPS_SPEED_KILOMETERS_PER_HOUR
+     * @see #GPS_SPEED_MILES_PER_HOUR
+     * @see #GPS_SPEED_KNOTS
      */
     public static final String TAG_GPS_SPEED_REF = "GPSSpeedRef";
     /**
-     *  <p>Indicates the speed of GPS receiver movement.</p>
+     * <p>Indicates the speed of GPS receiver movement.</p>
      *
-     *  <ul>
-     *      <li>Tag = 13</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 13</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_SPEED = "GPSSpeed";
     /**
-     *  <p>Indicates the reference for giving the direction of GPS receiver movement.</p>
+     * <p>Indicates the reference for giving the direction of GPS receiver movement.</p>
      *
-     *  <ul>
-     *      <li>Tag = 14</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
-     *  </ul>
-     *
-     *  @see #GPS_DIRECTION_TRUE
-     *  @see #GPS_DIRECTION_MAGNETIC
+     * <ul>
+     *     <li>Tag = 14</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
+     * </ul>
+     * <p>
+     * @see #GPS_DIRECTION_TRUE
+     * @see #GPS_DIRECTION_MAGNETIC
      */
     public static final String TAG_GPS_TRACK_REF = "GPSTrackRef";
     /**
-     *  <p>Indicates the direction of GPS receiver movement.
-     *  The range of values is from 0.00 to 359.99.</p>
+     * <p>Indicates the direction of GPS receiver movement.
+     * The range of values is from 0.00 to 359.99.</p>
      *
-     *  <ul>
-     *      <li>Tag = 15</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 15</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_TRACK = "GPSTrack";
     /**
-     *  <p>Indicates the reference for giving the direction of the image when it is captured.</p>
+     * <p>Indicates the reference for giving the direction of the image when it is captured.</p>
      *
-     *  <ul>
-     *      <li>Tag = 16</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
-     *  </ul>
-     *
-     *  @see #GPS_DIRECTION_TRUE
-     *  @see #GPS_DIRECTION_MAGNETIC
+     * <ul>
+     *     <li>Tag = 16</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
+     * </ul>
+     * <p>
+     * @see #GPS_DIRECTION_TRUE
+     * @see #GPS_DIRECTION_MAGNETIC
      */
     public static final String TAG_GPS_IMG_DIRECTION_REF = "GPSImgDirectionRef";
     /**
-     *  <p>ndicates the direction of the image when it was captured.
-     *  The range of values is from 0.00 to 359.99.</p>
+     * <p>ndicates the direction of the image when it was captured.
+     * The range of values is from 0.00 to 359.99.</p>
      *
-     *  <ul>
-     *      <li>Tag = 17</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 17</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_IMG_DIRECTION = "GPSImgDirection";
     /**
-     *  <p>Indicates the geodetic survey data used by the GPS receiver. If the survey data is
-     *  restricted to Japan,the value of this tag is 'TOKYO' or 'WGS-84'. If a GPS Info tag is
-     *  recorded, it is strongly recommended that this tag be recorded.</p>
+     * <p>Indicates the geodetic survey data used by the GPS receiver. If the survey data is
+     * restricted to Japan,the value of this tag is 'TOKYO' or 'WGS-84'. If a GPS Info tag is
+     * recorded, it is strongly recommended that this tag be recorded.</p>
      *
-     *  <ul>
-     *      <li>Tag = 18</li>
-     *      <li>Type = String</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 18</li>
+     *     <li>Type = String</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_MAP_DATUM = "GPSMapDatum";
     /**
-     *  <p>Indicates whether the latitude of the destination point is north or south latitude.</p>
+     * <p>Indicates whether the latitude of the destination point is north or south latitude.</p>
      *
-     *  <ul>
-     *      <li>Tag = 19</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #LATITUDE_NORTH
-     *  @see #LATITUDE_SOUTH
+     * <ul>
+     *     <li>Tag = 19</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #LATITUDE_NORTH
+     * @see #LATITUDE_SOUTH
      */
     public static final String TAG_GPS_DEST_LATITUDE_REF = "GPSDestLatitudeRef";
     /**
-     *  <p>Indicates the latitude of the destination point. The latitude is expressed as three
-     *  unsigned rational values giving the degrees, minutes, and seconds, respectively.
-     *  If latitude is expressed as degrees, minutes and seconds, a typical format would be
-     *  dd/1,mm/1,ss/1. When degrees and minutes are used and, for example, fractions of minutes
-     *  are given up to two decimal places, the format would be dd/1, mmmm/100, 0/1.</p>
+     * <p>Indicates the latitude of the destination point. The latitude is expressed as three
+     * unsigned rational values giving the degrees, minutes, and seconds, respectively.
+     * If latitude is expressed as degrees, minutes and seconds, a typical format would be
+     * dd/1,mm/1,ss/1. When degrees and minutes are used and, for example, fractions of minutes
+     * are given up to two decimal places, the format would be dd/1, mmmm/100, 0/1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 20</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 20</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DEST_LATITUDE = "GPSDestLatitude";
     /**
-     *  <p>Indicates whether the longitude of the destination point is east or west longitude.</p>
+     * <p>Indicates whether the longitude of the destination point is east or west longitude.</p>
      *
-     *  <ul>
-     *      <li>Tag = 21</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #LONGITUDE_EAST
-     *  @see #LONGITUDE_WEST
+     * <ul>
+     *     <li>Tag = 21</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #LONGITUDE_EAST
+     * @see #LONGITUDE_WEST
      */
     public static final String TAG_GPS_DEST_LONGITUDE_REF = "GPSDestLongitudeRef";
     /**
-     *  <p>Indicates the longitude of the destination point. The longitude is expressed as three
-     *  unsigned rational values giving the degrees, minutes, and seconds, respectively.
-     *  If longitude is expressed as degrees, minutes and seconds, a typical format would be ddd/1,
-     *  mm/1, ss/1. When degrees and minutes are used and, for example, fractions of minutes are
-     *  given up to two decimal places, the format would be ddd/1, mmmm/100, 0/1.</p>
+     * <p>Indicates the longitude of the destination point. The longitude is expressed as three
+     * unsigned rational values giving the degrees, minutes, and seconds, respectively.
+     * If longitude is expressed as degrees, minutes and seconds, a typical format would be ddd/1,
+     * mm/1, ss/1. When degrees and minutes are used and, for example, fractions of minutes are
+     * given up to two decimal places, the format would be ddd/1, mmmm/100, 0/1.</p>
      *
-     *  <ul>
-     *      <li>Tag = 22</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 3</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 22</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 3</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DEST_LONGITUDE = "GPSDestLongitude";
     /**
-     *  <p>Indicates the reference used for giving the bearing to the destination point.</p>
+     * <p>Indicates the reference used for giving the bearing to the destination point.</p>
      *
-     *  <ul>
-     *      <li>Tag = 23</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
-     *  </ul>
-     *
-     *  @see #GPS_DIRECTION_TRUE
-     *  @see #GPS_DIRECTION_MAGNETIC
+     * <ul>
+     *     <li>Tag = 23</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #GPS_DIRECTION_TRUE}</li>
+     * </ul>
+     * <p>
+     * @see #GPS_DIRECTION_TRUE
+     * @see #GPS_DIRECTION_MAGNETIC
      */
     public static final String TAG_GPS_DEST_BEARING_REF = "GPSDestBearingRef";
     /**
-     *  <p>Indicates the bearing to the destination point.
-     *  The range of values is from 0.00 to 359.99.</p>
+     * <p>Indicates the bearing to the destination point.
+     * The range of values is from 0.00 to 359.99.</p>
      *
-     *  <ul>
-     *      <li>Tag = 24</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 24</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DEST_BEARING = "GPSDestBearing";
     /**
-     *  <p>Indicates the unit used to express the distance to the destination point.</p>
+     * <p>Indicates the unit used to express the distance to the destination point.</p>
      *
-     *  <ul>
-     *      <li>Tag = 25</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 1</li>
-     *      <li>Default = {@link #GPS_DISTANCE_KILOMETERS}</li>
-     *  </ul>
-     *
-     *  @see #GPS_DISTANCE_KILOMETERS
-     *  @see #GPS_DISTANCE_MILES
-     *  @see #GPS_DISTANCE_NAUTICAL_MILES
+     * <ul>
+     *     <li>Tag = 25</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 1</li>
+     *     <li>Default = {@link #GPS_DISTANCE_KILOMETERS}</li>
+     * </ul>
+     * <p>
+     * @see #GPS_DISTANCE_KILOMETERS
+     * @see #GPS_DISTANCE_MILES
+     * @see #GPS_DISTANCE_NAUTICAL_MILES
      */
     public static final String TAG_GPS_DEST_DISTANCE_REF = "GPSDestDistanceRef";
     /**
-     *  <p>Indicates the distance to the destination point.</p>
+     * <p>Indicates the distance to the destination point.</p>
      *
-     *  <ul>
-     *      <li>Tag = 26</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 26</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DEST_DISTANCE = "GPSDestDistance";
     /**
-     *  <p>A character string recording the name of the method used for location finding.
-     *  The first byte indicates the character code used, and this is followed by the name of
-     *  the method.</p>
+     * <p>A character string recording the name of the method used for location finding.
+     * The first byte indicates the character code used, and this is followed by the name of
+     * the method.</p>
      *
-     *  <ul>
-     *      <li>Tag = 27</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 27</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_PROCESSING_METHOD = "GPSProcessingMethod";
     /**
-     *  <p>A character string recording the name of the GPS area. The first byte indicates
-     *  the character code used, and this is followed by the name of the GPS area.</p>
+     * <p>A character string recording the name of the GPS area. The first byte indicates
+     * the character code used, and this is followed by the name of the GPS area.</p>
      *
-     *  <ul>
-     *      <li>Tag = 28</li>
-     *      <li>Type = Undefined</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 28</li>
+     *     <li>Type = Undefined</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_AREA_INFORMATION = "GPSAreaInformation";
     /**
-     *  <p>A character string recording date and time information relative to UTC (Coordinated
-     *  Universal Time). The format is "YYYY:MM:DD".</p>
+     * <p>A character string recording date and time information relative to UTC (Coordinated
+     * Universal Time). The format is "YYYY:MM:DD".</p>
      *
-     *  <ul>
-     *      <li>Tag = 29</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 10</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 29</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 10</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_DATESTAMP = "GPSDateStamp";
     /**
-     *  <p>Indicates whether differential correction is applied to the GPS receiver.</p>
+     * <p>Indicates whether differential correction is applied to the GPS receiver.</p>
      *
-     *  <ul>
-     *      <li>Tag = 30</li>
-     *      <li>Type = Unsigned short</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
-     *
-     *  @see #GPS_MEASUREMENT_NO_DIFFERENTIAL
-     *  @see #GPS_MEASUREMENT_DIFFERENTIAL_CORRECTED
+     * <ul>
+     *     <li>Tag = 30</li>
+     *     <li>Type = Unsigned short</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
+     * <p>
+     * @see #GPS_MEASUREMENT_NO_DIFFERENTIAL
+     * @see #GPS_MEASUREMENT_DIFFERENTIAL_CORRECTED
      */
     public static final String TAG_GPS_DIFFERENTIAL = "GPSDifferential";
     /**
-     *  <p>This tag indicates horizontal positioning errors in meters.</p>
+     * <p>This tag indicates horizontal positioning errors in meters.</p>
      *
-     *  <ul>
-     *      <li>Tag = 31</li>
-     *      <li>Type = Unsigned rational</li>
-     *      <li>Count = 1</li>
-     *      <li>Default = None</li>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 31</li>
+     *     <li>Type = Unsigned rational</li>
+     *     <li>Count = 1</li>
+     *     <li>Default = None</li>
+     * </ul>
      */
     public static final String TAG_GPS_H_POSITIONING_ERROR = "GPSHPositioningError";
 
     // Interoperability IFD Attribute Information
     /**
-     *  <p>Indicates the identification of the Interoperability rule.</p>
+     * <p>Indicates the identification of the Interoperability rule.</p>
      *
-     *  <ul>
-     *      <li>Tag = 1</li>
-     *      <li>Type = String</li>
-     *      <li>Length = 4</li>
-     *      <li>Default = None</li>
-     *      <ul>
-     *          <li>"R98" = Indicates a file conforming to R98 file specification of Recommended
-     *                      Exif Interoperability Rules (Exif R 98) or to DCF basic file stipulated
-     *                      by Design Rule for Camera File System.</li>
-     *          <li>"THM" = Indicates a file conforming to DCF thumbnail file stipulated by Design
-     *                      rule for Camera File System.</li>
-     *          <li>“R03” = Indicates a file conforming to DCF Option File stipulated by Design rule
-     *                      for Camera File System.</li>
-     *      </ul>
-     *  </ul>
+     * <ul>
+     *     <li>Tag = 1</li>
+     *     <li>Type = String</li>
+     *     <li>Length = 4</li>
+     *     <li>Default = None</li>
+     *     <ul>
+     *         <li>"R98" = Indicates a file conforming to R98 file specification of Recommended
+     *                     Exif Interoperability Rules (Exif R 98) or to DCF basic file stipulated
+     *                     by Design Rule for Camera File System.</li>
+     *         <li>"THM" = Indicates a file conforming to DCF thumbnail file stipulated by Design
+     *                     rule for Camera File System.</li>
+     *         <li>“R03” = Indicates a file conforming to DCF Option File stipulated by Design rule
+     *                     for Camera File System.</li>
+     *     </ul>
+     * </ul>
      */
     public static final String TAG_INTEROPERABILITY_INDEX = "InteroperabilityIndex";
 
@@ -2170,17 +2171,29 @@ public class ExifInterface {
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static final String TAG_THUMBNAIL_ORIENTATION = "ThumbnailOrientation";
-    /** Type is int. DNG Specification 1.4.0.0. Section 4 */
+    /**
+     * Type is int. DNG Specification 1.4.0.0. Section 4
+     */
     public static final String TAG_DNG_VERSION = "DNGVersion";
-    /** Type is int. DNG Specification 1.4.0.0. Section 4 */
+    /**
+     * Type is int. DNG Specification 1.4.0.0. Section 4
+     */
     public static final String TAG_DEFAULT_CROP_SIZE = "DefaultCropSize";
-    /** Type is undefined. See Olympus MakerNote tags in http://www.exiv2.org/tags-olympus.html. */
+    /**
+     * Type is undefined. See Olympus MakerNote tags in http://www.exiv2.org/tags-olympus.html.
+     */
     public static final String TAG_ORF_THUMBNAIL_IMAGE = "ThumbnailImage";
-    /** Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html. */
+    /**
+     * Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html.
+     */
     public static final String TAG_ORF_PREVIEW_IMAGE_START = "PreviewImageStart";
-    /** Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html. */
+    /**
+     * Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html.
+     */
     public static final String TAG_ORF_PREVIEW_IMAGE_LENGTH = "PreviewImageLength";
-    /** Type is int. See Olympus Image Processing tags in http://www.exiv2.org/tags-olympus.html. */
+    /**
+     * Type is int. See Olympus Image Processing tags in http://www.exiv2.org/tags-olympus.html.
+     */
     public static final String TAG_ORF_ASPECT_FRAME = "AspectFrame";
     /**
      * Type is int. See PanasonicRaw tags in
@@ -2218,9 +2231,13 @@ public class ExifInterface {
      * Metadata Platform (XMP)</a> for details on contents.
      */
     public static final String TAG_XMP = "Xmp";
-    /** Type is int. See JEITA CP-3451C Spec Section 3: Bilevel Images. */
+    /**
+     * Type is int. See JEITA CP-3451C Spec Section 3: Bilevel Images.
+     */
     public static final String TAG_NEW_SUBFILE_TYPE = "NewSubfileType";
-    /** Type is int. See JEITA CP-3451C Spec Section 3: Bilevel Images. */
+    /**
+     * Type is int. See JEITA CP-3451C Spec Section 3: Bilevel Images.
+     */
     public static final String TAG_SUBFILE_TYPE = "SubfileType";
 
     /**
@@ -2275,10 +2292,10 @@ public class ExifInterface {
      */
     public static final int ORIENTATION_ROTATE_270 = 8;
     private static final List<Integer> ROTATION_ORDER = Arrays.asList(ORIENTATION_NORMAL,
-            ORIENTATION_ROTATE_90, ORIENTATION_ROTATE_180, ORIENTATION_ROTATE_270);
+        ORIENTATION_ROTATE_90, ORIENTATION_ROTATE_180, ORIENTATION_ROTATE_270);
     private static final List<Integer> FLIPPED_ROTATION_ORDER = Arrays.asList(
-            ORIENTATION_FLIP_HORIZONTAL, ORIENTATION_TRANSVERSE, ORIENTATION_FLIP_VERTICAL,
-            ORIENTATION_TRANSPOSE);
+        ORIENTATION_FLIP_HORIZONTAL, ORIENTATION_TRANSVERSE, ORIENTATION_FLIP_VERTICAL,
+        ORIENTATION_TRANSPOSE);
 
     /**
      * The constant used by {@link #TAG_PLANAR_CONFIGURATION} to denote Chunky format.
@@ -2657,13 +2674,15 @@ public class ExifInterface {
      *
      * @deprecated Use {@link #WHITE_BALANCE_AUTO} instead.
      */
-    @Deprecated public static final int WHITEBALANCE_AUTO = 0;
+    @Deprecated
+    public static final int WHITEBALANCE_AUTO = 0;
     /**
      * The constant used by {@link #TAG_WHITE_BALANCE} to denote the white balance is Manual.
      *
      * @deprecated Use {@link #WHITE_BALANCE_MANUAL} instead.
      */
-    @Deprecated public static final int WHITEBALANCE_MANUAL = 1;
+    @Deprecated
+    public static final int WHITEBALANCE_MANUAL = 1;
     /**
      * The constant used by {@link #TAG_WHITE_BALANCE} to denote the white balance is Auto.
      */
@@ -2919,17 +2938,17 @@ public class ExifInterface {
      * The constant used by {@link #TAG_BITS_PER_SAMPLE}.
      * See JEITA CP-3451C Spec Section 6, Differences from Palette Color Images
      */
-    public static final int[] BITS_PER_SAMPLE_RGB = new int[] { 8, 8, 8 };
+    public static final int[] BITS_PER_SAMPLE_RGB = new int[]{8, 8, 8};
     /**
      * The constant used by {@link #TAG_BITS_PER_SAMPLE}.
      * See JEITA CP-3451C Spec Section 4, Differences from Bilevel Images
      */
-    public static final int[] BITS_PER_SAMPLE_GREYSCALE_1 = new int[] { 4 };
+    public static final int[] BITS_PER_SAMPLE_GREYSCALE_1 = new int[]{4};
     /**
      * The constant used by {@link #TAG_BITS_PER_SAMPLE}.
      * See JEITA CP-3451C Spec Section 4, Differences from Bilevel Images
      */
-    public static final int[] BITS_PER_SAMPLE_GREYSCALE_2 = new int[] { 8 };
+    public static final int[] BITS_PER_SAMPLE_GREYSCALE_2 = new int[]{8};
 
     /**
      * The constant used by {@link #TAG_PHOTOMETRIC_INTERPRETATION}.
@@ -2967,7 +2986,7 @@ public class ExifInterface {
      * Constant used to indicate that the input stream contains only Exif data.
      * <p>
      * The format of the Exif-only data must follow the below structure:
-     *     Exif Identifier Code ("Exif\0\0") + TIFF header + IFD data
+     * Exif Identifier Code ("Exif\0\0") + TIFF header + IFD data
      * See JEITA CP-3451C Section 4.5.2 and 4.5.4 specifications for more details.
      */
     public static final int STREAM_TYPE_EXIF_DATA_ONLY = 1;
@@ -2975,18 +2994,19 @@ public class ExifInterface {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STREAM_TYPE_FULL_IMAGE_DATA, STREAM_TYPE_EXIF_DATA_ONLY})
-    public @interface ExifStreamType {}
+    public @interface ExifStreamType {
+    }
 
     // Maximum size for checking file type signature (see image_type_recognition_lite.cc)
     private static final int SIGNATURE_CHECK_SIZE = 5000;
 
-    static final byte[] JPEG_SIGNATURE = new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff};
+    static final byte[] JPEG_SIGNATURE = new byte[]{(byte) 0xff, (byte) 0xd8, (byte) 0xff};
     private static final String RAF_SIGNATURE = "FUJIFILMCCD-RAW";
     private static final int RAF_OFFSET_TO_JPEG_IMAGE_OFFSET = 84;
 
-    private static final byte[] HEIF_TYPE_FTYP = new byte[] {'f', 't', 'y', 'p'};
-    private static final byte[] HEIF_BRAND_MIF1 = new byte[] {'m', 'i', 'f', '1'};
-    private static final byte[] HEIF_BRAND_HEIC = new byte[] {'h', 'e', 'i', 'c'};
+    private static final byte[] HEIF_TYPE_FTYP = new byte[]{'f', 't', 'y', 'p'};
+    private static final byte[] HEIF_BRAND_MIF1 = new byte[]{'m', 'i', 'f', '1'};
+    private static final byte[] HEIF_BRAND_HEIC = new byte[]{'h', 'e', 'i', 'c'};
 
     // See http://fileformats.archiveteam.org/wiki/Olympus_ORF
     private static final short ORF_SIGNATURE_1 = 0x4f52;
@@ -2994,11 +3014,11 @@ public class ExifInterface {
     // There are two formats for Olympus Makernote Headers. Each has different identifiers and
     // offsets to the actual data.
     // See http://www.exiv2.org/makernote.html#R1
-    private static final byte[] ORF_MAKER_NOTE_HEADER_1 = new byte[] {(byte) 0x4f, (byte) 0x4c,
-            (byte) 0x59, (byte) 0x4d, (byte) 0x50, (byte) 0x00}; // "OLYMP\0"
-    private static final byte[] ORF_MAKER_NOTE_HEADER_2 = new byte[] {(byte) 0x4f, (byte) 0x4c,
-            (byte) 0x59, (byte) 0x4d, (byte) 0x50, (byte) 0x55, (byte) 0x53, (byte) 0x00,
-            (byte) 0x49, (byte) 0x49}; // "OLYMPUS\0II"
+    private static final byte[] ORF_MAKER_NOTE_HEADER_1 = new byte[]{(byte) 0x4f, (byte) 0x4c,
+        (byte) 0x59, (byte) 0x4d, (byte) 0x50, (byte) 0x00}; // "OLYMP\0"
+    private static final byte[] ORF_MAKER_NOTE_HEADER_2 = new byte[]{(byte) 0x4f, (byte) 0x4c,
+        (byte) 0x59, (byte) 0x4d, (byte) 0x50, (byte) 0x55, (byte) 0x53, (byte) 0x00,
+        (byte) 0x49, (byte) 0x49}; // "OLYMPUS\0II"
     private static final int ORF_MAKER_NOTE_HEADER_1_SIZE = 8;
     private static final int ORF_MAKER_NOTE_HEADER_2_SIZE = 12;
 
@@ -3012,27 +3032,27 @@ public class ExifInterface {
 
     // See PNG (Portable Network Graphics) Specification, Version 1.2,
     // 3.1. PNG file signature
-    private static final byte[] PNG_SIGNATURE = new byte[] {(byte) 0x89, (byte) 0x50, (byte) 0x4e,
-            (byte) 0x47, (byte) 0x0d, (byte) 0x0a, (byte) 0x1a, (byte) 0x0a};
+    private static final byte[] PNG_SIGNATURE = new byte[]{(byte) 0x89, (byte) 0x50, (byte) 0x4e,
+        (byte) 0x47, (byte) 0x0d, (byte) 0x0a, (byte) 0x1a, (byte) 0x0a};
     // See "Extensions to the PNG 1.2 Specification, Version 1.5.0",
     // 3.7. eXIf Exchangeable Image File (Exif) Profile
     private static final byte[] PNG_CHUNK_TYPE_EXIF = new byte[]{(byte) 0x65, (byte) 0x58,
-            (byte) 0x49, (byte) 0x66};
+        (byte) 0x49, (byte) 0x66};
     private static final byte[] PNG_CHUNK_TYPE_IHDR = new byte[]{(byte) 0x49, (byte) 0x48,
-            (byte) 0x44, (byte) 0x52};
+        (byte) 0x44, (byte) 0x52};
     private static final byte[] PNG_CHUNK_TYPE_IEND = new byte[]{(byte) 0x49, (byte) 0x45,
-            (byte) 0x4e, (byte) 0x44};
+        (byte) 0x4e, (byte) 0x44};
     private static final int PNG_CHUNK_TYPE_BYTE_LENGTH = 4;
     private static final int PNG_CHUNK_CRC_BYTE_LENGTH = 4;
 
     // See https://developers.google.com/speed/webp/docs/riff_container, Section "WebP File Header"
-    private static final byte[] WEBP_SIGNATURE_1 = new byte[] {'R', 'I', 'F', 'F'};
-    private static final byte[] WEBP_SIGNATURE_2 = new byte[] {'W', 'E', 'B', 'P'};
+    private static final byte[] WEBP_SIGNATURE_1 = new byte[]{'R', 'I', 'F', 'F'};
+    private static final byte[] WEBP_SIGNATURE_2 = new byte[]{'W', 'E', 'B', 'P'};
     private static final int WEBP_FILE_SIZE_BYTE_LENGTH = 4;
     private static final byte[] WEBP_CHUNK_TYPE_EXIF = new byte[]{(byte) 0x45, (byte) 0x58,
-            (byte) 0x49, (byte) 0x46};
+        (byte) 0x49, (byte) 0x46};
     private static final byte[] WEBP_VP8_SIGNATURE = new byte[]{(byte) 0x9d, (byte) 0x01,
-            (byte) 0x2a};
+        (byte) 0x2a};
     private static final byte WEBP_VP8L_SIGNATURE = (byte) 0x2f;
     private static final byte[] WEBP_CHUNK_TYPE_VP8X = "VP8X".getBytes(Charset.defaultCharset());
     private static final byte[] WEBP_CHUNK_TYPE_VP8L = "VP8L".getBytes(Charset.defaultCharset());
@@ -3078,18 +3098,18 @@ public class ExifInterface {
     private static final int SKIP_BUFFER_SIZE = 8192;
 
     // Names for the data formats for debugging purpose.
-    static final String[] IFD_FORMAT_NAMES = new String[] {
-            "", "BYTE", "STRING", "USHORT", "ULONG", "URATIONAL", "SBYTE", "UNDEFINED", "SSHORT",
-            "SLONG", "SRATIONAL", "SINGLE", "DOUBLE", "IFD"
+    static final String[] IFD_FORMAT_NAMES = new String[]{
+        "", "BYTE", "STRING", "USHORT", "ULONG", "URATIONAL", "SBYTE", "UNDEFINED", "SSHORT",
+        "SLONG", "SRATIONAL", "SINGLE", "DOUBLE", "IFD"
     };
     // Sizes of the components of each IFD value format
-    static final int[] IFD_FORMAT_BYTES_PER_FORMAT = new int[] {
-            0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8, 1
+    static final int[] IFD_FORMAT_BYTES_PER_FORMAT = new int[]{
+        0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8, 1
     };
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    static final byte[] EXIF_ASCII_PREFIX = new byte[] {
-            0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0
+    static final byte[] EXIF_ASCII_PREFIX = new byte[]{
+        0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0
     };
 
     // A class for indicating EXIF rational type.
@@ -3149,7 +3169,7 @@ public class ExifInterface {
 
         public static ExifAttribute createUShort(int[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_USHORT] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_USHORT] * values.length]);
             buffer.order(byteOrder);
             for (int value : values) {
                 buffer.putShort((short) value);
@@ -3158,12 +3178,12 @@ public class ExifInterface {
         }
 
         public static ExifAttribute createUShort(int value, ByteOrder byteOrder) {
-            return createUShort(new int[] {value}, byteOrder);
+            return createUShort(new int[]{value}, byteOrder);
         }
 
         public static ExifAttribute createULong(long[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_ULONG] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_ULONG] * values.length]);
             buffer.order(byteOrder);
             for (long value : values) {
                 buffer.putInt((int) value);
@@ -3172,12 +3192,12 @@ public class ExifInterface {
         }
 
         public static ExifAttribute createULong(long value, ByteOrder byteOrder) {
-            return createULong(new long[] {value}, byteOrder);
+            return createULong(new long[]{value}, byteOrder);
         }
 
         public static ExifAttribute createSLong(int[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SLONG] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SLONG] * values.length]);
             buffer.order(byteOrder);
             for (int value : values) {
                 buffer.putInt(value);
@@ -3188,7 +3208,7 @@ public class ExifInterface {
         public static ExifAttribute createByte(String value) {
             // Exception for GPSAltitudeRef tag
             if (value.length() == 1 && value.charAt(0) >= '0' && value.charAt(0) <= '1') {
-                final byte[] bytes = new byte[] { (byte) (value.charAt(0) - '0') };
+                final byte[] bytes = new byte[]{(byte) (value.charAt(0) - '0')};
                 return new ExifAttribute(IFD_FORMAT_BYTE, bytes.length, bytes);
             }
             final byte[] ascii = value.getBytes(ASCII);
@@ -3202,7 +3222,7 @@ public class ExifInterface {
 
         public static ExifAttribute createURational(Rational[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_URATIONAL] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_URATIONAL] * values.length]);
             buffer.order(byteOrder);
             for (Rational value : values) {
                 buffer.putInt((int) value.numerator);
@@ -3212,12 +3232,12 @@ public class ExifInterface {
         }
 
         public static ExifAttribute createURational(Rational value, ByteOrder byteOrder) {
-            return createURational(new Rational[] {value}, byteOrder);
+            return createURational(new Rational[]{value}, byteOrder);
         }
 
         public static ExifAttribute createSRational(Rational[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SRATIONAL] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SRATIONAL] * values.length]);
             buffer.order(byteOrder);
             for (Rational value : values) {
                 buffer.putInt((int) value.numerator);
@@ -3228,7 +3248,7 @@ public class ExifInterface {
 
         public static ExifAttribute createDouble(double[] values, ByteOrder byteOrder) {
             final ByteBuffer buffer = ByteBuffer.wrap(
-                    new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_DOUBLE] * values.length]);
+                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_DOUBLE] * values.length]);
             buffer.order(byteOrder);
             for (double value : values) {
                 buffer.putDouble(value);
@@ -3253,7 +3273,7 @@ public class ExifInterface {
                     case IFD_FORMAT_SBYTE: {
                         // Exception for GPSAltitudeRef tag
                         if (bytes.length == 1 && bytes[0] >= 0 && bytes[0] <= 1) {
-                            return new String(new char[] { (char) (bytes[0] + '0') });
+                            return new String(new char[]{(char) (bytes[0] + '0')});
                         }
                         return new String(bytes, ASCII);
                     }
@@ -3429,13 +3449,13 @@ public class ExifInterface {
             throw new NumberFormatException("Couldn't find a integer value");
         }
 
-		// Threema-added
-		public String getUTF8StringValue() {
-			if (bytes != null && bytes.length > 0) {
-				return new String(bytes, StandardCharsets.UTF_8);
-			}
-			return null;
-		}
+        // Threema-added
+        public String getUTF8StringValue() {
+            if (bytes != null && bytes.length > 0) {
+                return new String(bytes, StandardCharsets.UTF_8);
+            }
+            return null;
+        }
 
         public String getStringValue(ByteOrder byteOrder) {
             Object value = getValue(byteOrder);
@@ -3527,13 +3547,13 @@ public class ExifInterface {
             } else if (primaryFormat == format || secondaryFormat == format) {
                 return true;
             } else if ((primaryFormat == IFD_FORMAT_ULONG || secondaryFormat == IFD_FORMAT_ULONG)
-                    && format == IFD_FORMAT_USHORT) {
+                && format == IFD_FORMAT_USHORT) {
                 return true;
             } else if ((primaryFormat == IFD_FORMAT_SLONG || secondaryFormat == IFD_FORMAT_SLONG)
-                    && format == IFD_FORMAT_SSHORT) {
+                && format == IFD_FORMAT_SSHORT) {
                 return true;
             } else if ((primaryFormat == IFD_FORMAT_DOUBLE || secondaryFormat == IFD_FORMAT_DOUBLE)
-                    && format == IFD_FORMAT_SINGLE) {
+                && format == IFD_FORMAT_SINGLE) {
                 return true;
             }
             return false;
@@ -3541,237 +3561,237 @@ public class ExifInterface {
     }
 
     // Primary image IFD TIFF tags (See JEITA CP-3451C Section 4.6.8 Tag Support Levels)
-    private static final ExifTag[] IFD_TIFF_TAGS = new ExifTag[] {
-            // For below two, see TIFF 6.0 Spec Section 3: Bilevel Images.
-            new ExifTag(TAG_NEW_SUBFILE_TYPE, 254, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_SUBFILE_TYPE, 255, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_IMAGE_WIDTH, 256, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_IMAGE_LENGTH, 257, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_BITS_PER_SAMPLE, 258, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_COMPRESSION, 259, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_PHOTOMETRIC_INTERPRETATION, 262, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_IMAGE_DESCRIPTION, 270, IFD_FORMAT_STRING),
-            new ExifTag(TAG_MAKE, 271, IFD_FORMAT_STRING),
-            new ExifTag(TAG_MODEL, 272, IFD_FORMAT_STRING),
-            new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ORIENTATION, 274, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SAMPLES_PER_PIXEL, 277, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_ROWS_PER_STRIP, 278, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_STRIP_BYTE_COUNTS, 279, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_X_RESOLUTION, 282, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_Y_RESOLUTION, 283, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_PLANAR_CONFIGURATION, 284, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_RESOLUTION_UNIT, 296, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_TRANSFER_FUNCTION, 301, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SOFTWARE, 305, IFD_FORMAT_STRING),
-            new ExifTag(TAG_DATETIME, 306, IFD_FORMAT_STRING),
-            new ExifTag(TAG_ARTIST, 315, IFD_FORMAT_STRING),
-            new ExifTag(TAG_WHITE_POINT, 318, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_PRIMARY_CHROMATICITIES, 319, IFD_FORMAT_URATIONAL),
-            // See Adobe PageMaker® 6.0 TIFF Technical Notes, Note 1.
-            new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT, 513, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH, 514, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_Y_CB_CR_COEFFICIENTS, 529, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_Y_CB_CR_SUB_SAMPLING, 530, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_Y_CB_CR_POSITIONING, 531, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_REFERENCE_BLACK_WHITE, 532, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_COPYRIGHT, 33432, IFD_FORMAT_STRING),
-            new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
-            // RW2 file tags
-            // See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html)
-            new ExifTag(TAG_RW2_SENSOR_TOP_BORDER, 4, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RW2_SENSOR_LEFT_BORDER, 5, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RW2_SENSOR_BOTTOM_BORDER, 6, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RW2_SENSOR_RIGHT_BORDER, 7, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RW2_ISO, 23, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_RW2_JPG_FROM_RAW, 46, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_XMP, 700, IFD_FORMAT_BYTE),
+    private static final ExifTag[] IFD_TIFF_TAGS = new ExifTag[]{
+        // For below two, see TIFF 6.0 Spec Section 3: Bilevel Images.
+        new ExifTag(TAG_NEW_SUBFILE_TYPE, 254, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_SUBFILE_TYPE, 255, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_IMAGE_WIDTH, 256, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_IMAGE_LENGTH, 257, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_BITS_PER_SAMPLE, 258, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_COMPRESSION, 259, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_PHOTOMETRIC_INTERPRETATION, 262, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_IMAGE_DESCRIPTION, 270, IFD_FORMAT_STRING),
+        new ExifTag(TAG_MAKE, 271, IFD_FORMAT_STRING),
+        new ExifTag(TAG_MODEL, 272, IFD_FORMAT_STRING),
+        new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ORIENTATION, 274, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SAMPLES_PER_PIXEL, 277, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_ROWS_PER_STRIP, 278, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_STRIP_BYTE_COUNTS, 279, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_X_RESOLUTION, 282, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_Y_RESOLUTION, 283, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_PLANAR_CONFIGURATION, 284, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_RESOLUTION_UNIT, 296, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_TRANSFER_FUNCTION, 301, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SOFTWARE, 305, IFD_FORMAT_STRING),
+        new ExifTag(TAG_DATETIME, 306, IFD_FORMAT_STRING),
+        new ExifTag(TAG_ARTIST, 315, IFD_FORMAT_STRING),
+        new ExifTag(TAG_WHITE_POINT, 318, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_PRIMARY_CHROMATICITIES, 319, IFD_FORMAT_URATIONAL),
+        // See Adobe PageMaker® 6.0 TIFF Technical Notes, Note 1.
+        new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT, 513, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH, 514, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_Y_CB_CR_COEFFICIENTS, 529, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_Y_CB_CR_SUB_SAMPLING, 530, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_Y_CB_CR_POSITIONING, 531, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_REFERENCE_BLACK_WHITE, 532, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_COPYRIGHT, 33432, IFD_FORMAT_STRING),
+        new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
+        // RW2 file tags
+        // See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html)
+        new ExifTag(TAG_RW2_SENSOR_TOP_BORDER, 4, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RW2_SENSOR_LEFT_BORDER, 5, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RW2_SENSOR_BOTTOM_BORDER, 6, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RW2_SENSOR_RIGHT_BORDER, 7, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RW2_ISO, 23, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_RW2_JPG_FROM_RAW, 46, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_XMP, 700, IFD_FORMAT_BYTE),
     };
 
     // Primary image IFD Exif Private tags (See JEITA CP-3451C Section 4.6.8 Tag Support Levels)
-    private static final ExifTag[] IFD_EXIF_TAGS = new ExifTag[] {
-            new ExifTag(TAG_EXPOSURE_TIME, 33434, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_F_NUMBER, 33437, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_EXPOSURE_PROGRAM, 34850, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SPECTRAL_SENSITIVITY, 34852, IFD_FORMAT_STRING),
-            new ExifTag(TAG_PHOTOGRAPHIC_SENSITIVITY, 34855, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_OECF, 34856, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_SENSITIVITY_TYPE, 34864, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_STANDARD_OUTPUT_SENSITIVITY, 34865, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RECOMMENDED_EXPOSURE_INDEX, 34866, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ISO_SPEED, 34867, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ISO_SPEED_LATITUDE_YYY, 34868, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ISO_SPEED_LATITUDE_ZZZ, 34869, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_EXIF_VERSION, 36864, IFD_FORMAT_STRING),
-            new ExifTag(TAG_DATETIME_ORIGINAL, 36867, IFD_FORMAT_STRING),
-            new ExifTag(TAG_DATETIME_DIGITIZED, 36868, IFD_FORMAT_STRING),
-            new ExifTag(TAG_OFFSET_TIME, 36880, IFD_FORMAT_STRING),
-            new ExifTag(TAG_OFFSET_TIME_ORIGINAL, 36881, IFD_FORMAT_STRING),
-            new ExifTag(TAG_OFFSET_TIME_DIGITIZED, 36882, IFD_FORMAT_STRING),
-            new ExifTag(TAG_COMPONENTS_CONFIGURATION, 37121, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_COMPRESSED_BITS_PER_PIXEL, 37122, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_SHUTTER_SPEED_VALUE, 37377, IFD_FORMAT_SRATIONAL),
-            new ExifTag(TAG_APERTURE_VALUE, 37378, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_BRIGHTNESS_VALUE, 37379, IFD_FORMAT_SRATIONAL),
-            new ExifTag(TAG_EXPOSURE_BIAS_VALUE, 37380, IFD_FORMAT_SRATIONAL),
-            new ExifTag(TAG_MAX_APERTURE_VALUE, 37381, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_SUBJECT_DISTANCE, 37382, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_METERING_MODE, 37383, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_LIGHT_SOURCE, 37384, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_FLASH, 37385, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_FOCAL_LENGTH, 37386, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_SUBJECT_AREA, 37396, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_MAKER_NOTE, 37500, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_USER_COMMENT, 37510, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_SUBSEC_TIME, 37520, IFD_FORMAT_STRING),
-            new ExifTag(TAG_SUBSEC_TIME_ORIGINAL, 37521, IFD_FORMAT_STRING),
-            new ExifTag(TAG_SUBSEC_TIME_DIGITIZED, 37522, IFD_FORMAT_STRING),
-            new ExifTag(TAG_FLASHPIX_VERSION, 40960, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_COLOR_SPACE, 40961, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_PIXEL_X_DIMENSION, 40962, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_PIXEL_Y_DIMENSION, 40963, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_RELATED_SOUND_FILE, 40964, IFD_FORMAT_STRING),
-            new ExifTag(TAG_INTEROPERABILITY_IFD_POINTER, 40965, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_FLASH_ENERGY, 41483, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_SPATIAL_FREQUENCY_RESPONSE, 41484, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_FOCAL_PLANE_X_RESOLUTION, 41486, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_FOCAL_PLANE_Y_RESOLUTION, 41487, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_FOCAL_PLANE_RESOLUTION_UNIT, 41488, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SUBJECT_LOCATION, 41492, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_EXPOSURE_INDEX, 41493, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_SENSING_METHOD, 41495, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_FILE_SOURCE, 41728, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_SCENE_TYPE, 41729, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_CFA_PATTERN, 41730, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_CUSTOM_RENDERED, 41985, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_EXPOSURE_MODE, 41986, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_WHITE_BALANCE, 41987, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_DIGITAL_ZOOM_RATIO, 41988, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_FOCAL_LENGTH_IN_35MM_FILM, 41989, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SCENE_CAPTURE_TYPE, 41990, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_GAIN_CONTROL, 41991, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_CONTRAST, 41992, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SATURATION, 41993, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SHARPNESS, 41994, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_DEVICE_SETTING_DESCRIPTION, 41995, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_SUBJECT_DISTANCE_RANGE, 41996, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_IMAGE_UNIQUE_ID, 42016, IFD_FORMAT_STRING),
-            new ExifTag(TAG_CAMERA_OWNER_NAME, 42032, IFD_FORMAT_STRING),
-            new ExifTag(TAG_BODY_SERIAL_NUMBER, 42033, IFD_FORMAT_STRING),
-            new ExifTag(TAG_LENS_SPECIFICATION, 42034, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_LENS_MAKE, 42035, IFD_FORMAT_STRING),
-            new ExifTag(TAG_LENS_MODEL, 42036, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GAMMA, 42240, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_DNG_VERSION, 50706, IFD_FORMAT_BYTE),
-            new ExifTag(TAG_DEFAULT_CROP_SIZE, 50720, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG)
+    private static final ExifTag[] IFD_EXIF_TAGS = new ExifTag[]{
+        new ExifTag(TAG_EXPOSURE_TIME, 33434, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_F_NUMBER, 33437, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_EXPOSURE_PROGRAM, 34850, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SPECTRAL_SENSITIVITY, 34852, IFD_FORMAT_STRING),
+        new ExifTag(TAG_PHOTOGRAPHIC_SENSITIVITY, 34855, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_OECF, 34856, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_SENSITIVITY_TYPE, 34864, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_STANDARD_OUTPUT_SENSITIVITY, 34865, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RECOMMENDED_EXPOSURE_INDEX, 34866, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ISO_SPEED, 34867, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ISO_SPEED_LATITUDE_YYY, 34868, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ISO_SPEED_LATITUDE_ZZZ, 34869, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_EXIF_VERSION, 36864, IFD_FORMAT_STRING),
+        new ExifTag(TAG_DATETIME_ORIGINAL, 36867, IFD_FORMAT_STRING),
+        new ExifTag(TAG_DATETIME_DIGITIZED, 36868, IFD_FORMAT_STRING),
+        new ExifTag(TAG_OFFSET_TIME, 36880, IFD_FORMAT_STRING),
+        new ExifTag(TAG_OFFSET_TIME_ORIGINAL, 36881, IFD_FORMAT_STRING),
+        new ExifTag(TAG_OFFSET_TIME_DIGITIZED, 36882, IFD_FORMAT_STRING),
+        new ExifTag(TAG_COMPONENTS_CONFIGURATION, 37121, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_COMPRESSED_BITS_PER_PIXEL, 37122, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_SHUTTER_SPEED_VALUE, 37377, IFD_FORMAT_SRATIONAL),
+        new ExifTag(TAG_APERTURE_VALUE, 37378, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_BRIGHTNESS_VALUE, 37379, IFD_FORMAT_SRATIONAL),
+        new ExifTag(TAG_EXPOSURE_BIAS_VALUE, 37380, IFD_FORMAT_SRATIONAL),
+        new ExifTag(TAG_MAX_APERTURE_VALUE, 37381, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_SUBJECT_DISTANCE, 37382, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_METERING_MODE, 37383, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_LIGHT_SOURCE, 37384, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_FLASH, 37385, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_FOCAL_LENGTH, 37386, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_SUBJECT_AREA, 37396, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_MAKER_NOTE, 37500, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_USER_COMMENT, 37510, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_SUBSEC_TIME, 37520, IFD_FORMAT_STRING),
+        new ExifTag(TAG_SUBSEC_TIME_ORIGINAL, 37521, IFD_FORMAT_STRING),
+        new ExifTag(TAG_SUBSEC_TIME_DIGITIZED, 37522, IFD_FORMAT_STRING),
+        new ExifTag(TAG_FLASHPIX_VERSION, 40960, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_COLOR_SPACE, 40961, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_PIXEL_X_DIMENSION, 40962, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_PIXEL_Y_DIMENSION, 40963, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_RELATED_SOUND_FILE, 40964, IFD_FORMAT_STRING),
+        new ExifTag(TAG_INTEROPERABILITY_IFD_POINTER, 40965, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_FLASH_ENERGY, 41483, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_SPATIAL_FREQUENCY_RESPONSE, 41484, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_FOCAL_PLANE_X_RESOLUTION, 41486, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_FOCAL_PLANE_Y_RESOLUTION, 41487, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_FOCAL_PLANE_RESOLUTION_UNIT, 41488, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SUBJECT_LOCATION, 41492, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_EXPOSURE_INDEX, 41493, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_SENSING_METHOD, 41495, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_FILE_SOURCE, 41728, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_SCENE_TYPE, 41729, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_CFA_PATTERN, 41730, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_CUSTOM_RENDERED, 41985, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_EXPOSURE_MODE, 41986, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_WHITE_BALANCE, 41987, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_DIGITAL_ZOOM_RATIO, 41988, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_FOCAL_LENGTH_IN_35MM_FILM, 41989, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SCENE_CAPTURE_TYPE, 41990, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_GAIN_CONTROL, 41991, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_CONTRAST, 41992, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SATURATION, 41993, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SHARPNESS, 41994, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_DEVICE_SETTING_DESCRIPTION, 41995, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_SUBJECT_DISTANCE_RANGE, 41996, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_IMAGE_UNIQUE_ID, 42016, IFD_FORMAT_STRING),
+        new ExifTag(TAG_CAMERA_OWNER_NAME, 42032, IFD_FORMAT_STRING),
+        new ExifTag(TAG_BODY_SERIAL_NUMBER, 42033, IFD_FORMAT_STRING),
+        new ExifTag(TAG_LENS_SPECIFICATION, 42034, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_LENS_MAKE, 42035, IFD_FORMAT_STRING),
+        new ExifTag(TAG_LENS_MODEL, 42036, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GAMMA, 42240, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_DNG_VERSION, 50706, IFD_FORMAT_BYTE),
+        new ExifTag(TAG_DEFAULT_CROP_SIZE, 50720, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG)
     };
 
     // Primary image IFD GPS Info tags (See JEITA CP-3451C Section 4.6.6 Tag Support Levels)
-    private static final ExifTag[] IFD_GPS_TAGS = new ExifTag[] {
-            new ExifTag(TAG_GPS_VERSION_ID, 0, IFD_FORMAT_BYTE),
-            new ExifTag(TAG_GPS_LATITUDE_REF, 1, IFD_FORMAT_STRING),
-            // Allow SRATIONAL to be compatible with apps using wrong format and
-            // even if it is negative, it may be valid latitude / longitude.
-            new ExifTag(TAG_GPS_LATITUDE, 2, IFD_FORMAT_URATIONAL, IFD_FORMAT_SRATIONAL),
-            new ExifTag(TAG_GPS_LONGITUDE_REF, 3, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_LONGITUDE, 4, IFD_FORMAT_URATIONAL, IFD_FORMAT_SRATIONAL),
-            new ExifTag(TAG_GPS_ALTITUDE_REF, 5, IFD_FORMAT_BYTE),
-            new ExifTag(TAG_GPS_ALTITUDE, 6, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_TIMESTAMP, 7, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_SATELLITES, 8, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_STATUS, 9, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_MEASURE_MODE, 10, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DOP, 11, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_SPEED_REF, 12, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_SPEED, 13, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_TRACK_REF, 14, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_TRACK, 15, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_IMG_DIRECTION_REF, 16, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_IMG_DIRECTION, 17, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_MAP_DATUM, 18, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DEST_LATITUDE_REF, 19, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DEST_LATITUDE, 20, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_DEST_LONGITUDE_REF, 21, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DEST_LONGITUDE, 22, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_DEST_BEARING_REF, 23, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DEST_BEARING, 24, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_DEST_DISTANCE_REF, 25, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DEST_DISTANCE, 26, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_GPS_PROCESSING_METHOD, 27, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_GPS_AREA_INFORMATION, 28, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_GPS_DATESTAMP, 29, IFD_FORMAT_STRING),
-            new ExifTag(TAG_GPS_DIFFERENTIAL, 30, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_GPS_H_POSITIONING_ERROR, 31, IFD_FORMAT_URATIONAL)
+    private static final ExifTag[] IFD_GPS_TAGS = new ExifTag[]{
+        new ExifTag(TAG_GPS_VERSION_ID, 0, IFD_FORMAT_BYTE),
+        new ExifTag(TAG_GPS_LATITUDE_REF, 1, IFD_FORMAT_STRING),
+        // Allow SRATIONAL to be compatible with apps using wrong format and
+        // even if it is negative, it may be valid latitude / longitude.
+        new ExifTag(TAG_GPS_LATITUDE, 2, IFD_FORMAT_URATIONAL, IFD_FORMAT_SRATIONAL),
+        new ExifTag(TAG_GPS_LONGITUDE_REF, 3, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_LONGITUDE, 4, IFD_FORMAT_URATIONAL, IFD_FORMAT_SRATIONAL),
+        new ExifTag(TAG_GPS_ALTITUDE_REF, 5, IFD_FORMAT_BYTE),
+        new ExifTag(TAG_GPS_ALTITUDE, 6, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_TIMESTAMP, 7, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_SATELLITES, 8, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_STATUS, 9, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_MEASURE_MODE, 10, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DOP, 11, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_SPEED_REF, 12, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_SPEED, 13, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_TRACK_REF, 14, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_TRACK, 15, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_IMG_DIRECTION_REF, 16, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_IMG_DIRECTION, 17, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_MAP_DATUM, 18, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DEST_LATITUDE_REF, 19, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DEST_LATITUDE, 20, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_DEST_LONGITUDE_REF, 21, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DEST_LONGITUDE, 22, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_DEST_BEARING_REF, 23, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DEST_BEARING, 24, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_DEST_DISTANCE_REF, 25, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DEST_DISTANCE, 26, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_GPS_PROCESSING_METHOD, 27, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_GPS_AREA_INFORMATION, 28, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_GPS_DATESTAMP, 29, IFD_FORMAT_STRING),
+        new ExifTag(TAG_GPS_DIFFERENTIAL, 30, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_GPS_H_POSITIONING_ERROR, 31, IFD_FORMAT_URATIONAL)
     };
     // Primary image IFD Interoperability tag (See JEITA CP-3451C Section 4.6.8 Tag Support Levels)
-    private static final ExifTag[] IFD_INTEROPERABILITY_TAGS = new ExifTag[] {
-            new ExifTag(TAG_INTEROPERABILITY_INDEX, 1, IFD_FORMAT_STRING)
+    private static final ExifTag[] IFD_INTEROPERABILITY_TAGS = new ExifTag[]{
+        new ExifTag(TAG_INTEROPERABILITY_INDEX, 1, IFD_FORMAT_STRING)
     };
     // IFD Thumbnail tags (See JEITA CP-3451C Section 4.6.8 Tag Support Levels)
-    private static final ExifTag[] IFD_THUMBNAIL_TAGS = new ExifTag[] {
-            // For below two, see TIFF 6.0 Spec Section 3: Bilevel Images.
-            new ExifTag(TAG_NEW_SUBFILE_TYPE, 254, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_SUBFILE_TYPE, 255, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_THUMBNAIL_IMAGE_WIDTH, 256, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_THUMBNAIL_IMAGE_LENGTH, 257, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_BITS_PER_SAMPLE, 258, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_COMPRESSION, 259, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_PHOTOMETRIC_INTERPRETATION, 262, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_IMAGE_DESCRIPTION, 270, IFD_FORMAT_STRING),
-            new ExifTag(TAG_MAKE, 271, IFD_FORMAT_STRING),
-            new ExifTag(TAG_MODEL, 272, IFD_FORMAT_STRING),
-            new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_THUMBNAIL_ORIENTATION, 274, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SAMPLES_PER_PIXEL, 277, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_ROWS_PER_STRIP, 278, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_STRIP_BYTE_COUNTS, 279, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_X_RESOLUTION, 282, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_Y_RESOLUTION, 283, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_PLANAR_CONFIGURATION, 284, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_RESOLUTION_UNIT, 296, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_TRANSFER_FUNCTION, 301, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_SOFTWARE, 305, IFD_FORMAT_STRING),
-            new ExifTag(TAG_DATETIME, 306, IFD_FORMAT_STRING),
-            new ExifTag(TAG_ARTIST, 315, IFD_FORMAT_STRING),
-            new ExifTag(TAG_WHITE_POINT, 318, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_PRIMARY_CHROMATICITIES, 319, IFD_FORMAT_URATIONAL),
-            // See Adobe PageMaker® 6.0 TIFF Technical Notes, Note 1.
-            new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT, 513, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH, 514, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_Y_CB_CR_COEFFICIENTS, 529, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_Y_CB_CR_SUB_SAMPLING, 530, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_Y_CB_CR_POSITIONING, 531, IFD_FORMAT_USHORT),
-            new ExifTag(TAG_REFERENCE_BLACK_WHITE, 532, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_COPYRIGHT, 33432, IFD_FORMAT_STRING),
-            new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_DNG_VERSION, 50706, IFD_FORMAT_BYTE),
-            new ExifTag(TAG_DEFAULT_CROP_SIZE, 50720, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG)
+    private static final ExifTag[] IFD_THUMBNAIL_TAGS = new ExifTag[]{
+        // For below two, see TIFF 6.0 Spec Section 3: Bilevel Images.
+        new ExifTag(TAG_NEW_SUBFILE_TYPE, 254, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_SUBFILE_TYPE, 255, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_THUMBNAIL_IMAGE_WIDTH, 256, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_THUMBNAIL_IMAGE_LENGTH, 257, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_BITS_PER_SAMPLE, 258, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_COMPRESSION, 259, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_PHOTOMETRIC_INTERPRETATION, 262, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_IMAGE_DESCRIPTION, 270, IFD_FORMAT_STRING),
+        new ExifTag(TAG_MAKE, 271, IFD_FORMAT_STRING),
+        new ExifTag(TAG_MODEL, 272, IFD_FORMAT_STRING),
+        new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_THUMBNAIL_ORIENTATION, 274, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SAMPLES_PER_PIXEL, 277, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_ROWS_PER_STRIP, 278, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_STRIP_BYTE_COUNTS, 279, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_X_RESOLUTION, 282, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_Y_RESOLUTION, 283, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_PLANAR_CONFIGURATION, 284, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_RESOLUTION_UNIT, 296, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_TRANSFER_FUNCTION, 301, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_SOFTWARE, 305, IFD_FORMAT_STRING),
+        new ExifTag(TAG_DATETIME, 306, IFD_FORMAT_STRING),
+        new ExifTag(TAG_ARTIST, 315, IFD_FORMAT_STRING),
+        new ExifTag(TAG_WHITE_POINT, 318, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_PRIMARY_CHROMATICITIES, 319, IFD_FORMAT_URATIONAL),
+        // See Adobe PageMaker® 6.0 TIFF Technical Notes, Note 1.
+        new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT, 513, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH, 514, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_Y_CB_CR_COEFFICIENTS, 529, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_Y_CB_CR_SUB_SAMPLING, 530, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_Y_CB_CR_POSITIONING, 531, IFD_FORMAT_USHORT),
+        new ExifTag(TAG_REFERENCE_BLACK_WHITE, 532, IFD_FORMAT_URATIONAL),
+        new ExifTag(TAG_COPYRIGHT, 33432, IFD_FORMAT_STRING),
+        new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_DNG_VERSION, 50706, IFD_FORMAT_BYTE),
+        new ExifTag(TAG_DEFAULT_CROP_SIZE, 50720, IFD_FORMAT_USHORT, IFD_FORMAT_ULONG)
     };
 
     // RAF file tag (See piex.cc line 372)
     private static final ExifTag TAG_RAF_IMAGE_SIZE =
-            new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT);
+        new ExifTag(TAG_STRIP_OFFSETS, 273, IFD_FORMAT_USHORT);
 
     // ORF file tags (See http://www.exiv2.org/tags-olympus.html)
-    private static final ExifTag[] ORF_MAKER_NOTE_TAGS = new ExifTag[] {
-            new ExifTag(TAG_ORF_THUMBNAIL_IMAGE, 256, IFD_FORMAT_UNDEFINED),
-            new ExifTag(TAG_ORF_CAMERA_SETTINGS_IFD_POINTER, 8224, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ORF_IMAGE_PROCESSING_IFD_POINTER, 8256, IFD_FORMAT_ULONG)
+    private static final ExifTag[] ORF_MAKER_NOTE_TAGS = new ExifTag[]{
+        new ExifTag(TAG_ORF_THUMBNAIL_IMAGE, 256, IFD_FORMAT_UNDEFINED),
+        new ExifTag(TAG_ORF_CAMERA_SETTINGS_IFD_POINTER, 8224, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ORF_IMAGE_PROCESSING_IFD_POINTER, 8256, IFD_FORMAT_ULONG)
     };
-    private static final ExifTag[] ORF_CAMERA_SETTINGS_TAGS = new ExifTag[] {
-            new ExifTag(TAG_ORF_PREVIEW_IMAGE_START, 257, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ORF_PREVIEW_IMAGE_LENGTH, 258, IFD_FORMAT_ULONG)
+    private static final ExifTag[] ORF_CAMERA_SETTINGS_TAGS = new ExifTag[]{
+        new ExifTag(TAG_ORF_PREVIEW_IMAGE_START, 257, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ORF_PREVIEW_IMAGE_LENGTH, 258, IFD_FORMAT_ULONG)
     };
-    private static final ExifTag[] ORF_IMAGE_PROCESSING_TAGS = new ExifTag[] {
-            new ExifTag(TAG_ORF_ASPECT_FRAME, 4371, IFD_FORMAT_USHORT)
+    private static final ExifTag[] ORF_IMAGE_PROCESSING_TAGS = new ExifTag[]{
+        new ExifTag(TAG_ORF_ASPECT_FRAME, 4371, IFD_FORMAT_USHORT)
     };
     // PEF file tag (See http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/Pentax.html)
-    private static final ExifTag[] PEF_TAGS = new ExifTag[] {
-            new ExifTag(TAG_COLOR_SPACE, 55, IFD_FORMAT_USHORT)
+    private static final ExifTag[] PEF_TAGS = new ExifTag[]{
+        new ExifTag(TAG_COLOR_SPACE, 55, IFD_FORMAT_USHORT)
     };
 
     // See JEITA CP-3451C Section 4.6.3: Exif-specific IFD.
@@ -3781,9 +3801,10 @@ public class ExifInterface {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({IFD_TYPE_PRIMARY, IFD_TYPE_EXIF, IFD_TYPE_GPS, IFD_TYPE_INTEROPERABILITY,
-            IFD_TYPE_THUMBNAIL, IFD_TYPE_PREVIEW, IFD_TYPE_ORF_MAKER_NOTE,
-            IFD_TYPE_ORF_CAMERA_SETTINGS, IFD_TYPE_ORF_IMAGE_PROCESSING, IFD_TYPE_PEF})
-    public @interface IfdType {}
+        IFD_TYPE_THUMBNAIL, IFD_TYPE_PREVIEW, IFD_TYPE_ORF_MAKER_NOTE,
+        IFD_TYPE_ORF_CAMERA_SETTINGS, IFD_TYPE_ORF_IMAGE_PROCESSING, IFD_TYPE_PEF})
+    public @interface IfdType {
+    }
 
     static final int IFD_TYPE_PRIMARY = 0;
     private static final int IFD_TYPE_EXIF = 1;
@@ -3797,32 +3818,32 @@ public class ExifInterface {
     private static final int IFD_TYPE_PEF = 9;
 
     // List of Exif tag groups
-    static final ExifTag[][] EXIF_TAGS = new ExifTag[][] {
-            IFD_TIFF_TAGS, IFD_EXIF_TAGS, IFD_GPS_TAGS, IFD_INTEROPERABILITY_TAGS,
-            IFD_THUMBNAIL_TAGS, IFD_TIFF_TAGS, ORF_MAKER_NOTE_TAGS, ORF_CAMERA_SETTINGS_TAGS,
-            ORF_IMAGE_PROCESSING_TAGS, PEF_TAGS
+    static final ExifTag[][] EXIF_TAGS = new ExifTag[][]{
+        IFD_TIFF_TAGS, IFD_EXIF_TAGS, IFD_GPS_TAGS, IFD_INTEROPERABILITY_TAGS,
+        IFD_THUMBNAIL_TAGS, IFD_TIFF_TAGS, ORF_MAKER_NOTE_TAGS, ORF_CAMERA_SETTINGS_TAGS,
+        ORF_IMAGE_PROCESSING_TAGS, PEF_TAGS
     };
     // List of tags for pointing to the other image file directory offset.
-    private static final ExifTag[] EXIF_POINTER_TAGS = new ExifTag[] {
-            new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_INTEROPERABILITY_IFD_POINTER, 40965, IFD_FORMAT_ULONG),
-            new ExifTag(TAG_ORF_CAMERA_SETTINGS_IFD_POINTER, 8224, IFD_FORMAT_BYTE),
-            new ExifTag(TAG_ORF_IMAGE_PROCESSING_IFD_POINTER, 8256, IFD_FORMAT_BYTE)
+    private static final ExifTag[] EXIF_POINTER_TAGS = new ExifTag[]{
+        new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_INTEROPERABILITY_IFD_POINTER, 40965, IFD_FORMAT_ULONG),
+        new ExifTag(TAG_ORF_CAMERA_SETTINGS_IFD_POINTER, 8224, IFD_FORMAT_BYTE),
+        new ExifTag(TAG_ORF_IMAGE_PROCESSING_IFD_POINTER, 8256, IFD_FORMAT_BYTE)
     };
 
     // Mappings from tag number to tag name and each item represents one IFD tag group.
     @SuppressWarnings("unchecked")
     private static final HashMap<Integer, ExifTag>[] sExifTagMapsForReading =
-            new HashMap[EXIF_TAGS.length];
+        new HashMap[EXIF_TAGS.length];
     // Mappings from tag name to tag number and each item represents one IFD tag group.
     @SuppressWarnings("unchecked")
     private static final HashMap<String, ExifTag>[] sExifTagMapsForWriting =
-            new HashMap[EXIF_TAGS.length];
+        new HashMap[EXIF_TAGS.length];
     private static final HashSet<String> sTagSetForCompatibility = new HashSet<>(Arrays.asList(
-            TAG_F_NUMBER, TAG_DIGITAL_ZOOM_RATIO, TAG_EXPOSURE_TIME, TAG_SUBJECT_DISTANCE,
-            TAG_GPS_TIMESTAMP));
+        TAG_F_NUMBER, TAG_DIGITAL_ZOOM_RATIO, TAG_EXPOSURE_TIME, TAG_SUBJECT_DISTANCE,
+        TAG_GPS_TIMESTAMP));
     // Mappings from tag number to IFD type for pointer tags.
     private static final HashMap<Integer, Integer> sExifPointerTagMap = new HashMap<>();
 
@@ -3836,7 +3857,7 @@ public class ExifInterface {
     static final byte[] IDENTIFIER_EXIF_APP1 = "Exif\0\0".getBytes(ASCII);
     // Identifier for XMP APP1 segment in JPEG
     private static final byte[] IDENTIFIER_XMP_APP1 =
-            "http://ns.adobe.com/xap/1.0/\0".getBytes(ASCII);
+        "http://ns.adobe.com/xap/1.0/\0".getBytes(ASCII);
     // JPEG segment markers, that each marker consumes two bytes beginning with 0xff and ending with
     // the indicator. There is no SOF4, SOF8, SOF16 markers in JPEG and SOFx markers indicates start
     // of frame(baseline DCT) and the image size info exists in its beginning part.
@@ -3933,13 +3954,13 @@ public class ExifInterface {
     private static final Pattern NON_ZERO_TIME_PATTERN = Pattern.compile(".*[1-9].*");
     // Pattern to check gps timestamp
     private static final Pattern GPS_TIMESTAMP_PATTERN =
-            Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
+        Pattern.compile("^(\\d{2}):(\\d{2}):(\\d{2})$");
     // Pattern to check date time primary format (e.g. 2020:01:01 00:00:00)
     private static final Pattern DATETIME_PRIMARY_FORMAT_PATTERN =
-            Pattern.compile("^(\\d{4}):(\\d{2}):(\\d{2})\\s(\\d{2}):(\\d{2}):(\\d{2})$");
+        Pattern.compile("^(\\d{4}):(\\d{2}):(\\d{2})\\s(\\d{2}):(\\d{2}):(\\d{2})$");
     // Pattern to check date time secondary format (e.g. 2020-01-01 00:00:00)
     private static final Pattern DATETIME_SECONDARY_FORMAT_PATTERN =
-            Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})\\s(\\d{2}):(\\d{2}):(\\d{2})$");
+        Pattern.compile("^(\\d{4})-(\\d{2})-(\\d{2})\\s(\\d{2}):(\\d{2}):(\\d{2})$");
     private static final int DATETIME_VALUE_STRING_LENGTH = 19;
 
     /**
@@ -3947,8 +3968,8 @@ public class ExifInterface {
      *
      * @param file the file of the image data
      * @throws NullPointerException if file is null
-     * @throws IOException if an I/O error occurs while retrieving file descriptor via
-     *         {@link FileInputStream#getFD()}.
+     * @throws IOException          if an I/O error occurs while retrieving file descriptor via
+     *                              {@link FileInputStream#getFD()}.
      */
     public ExifInterface(@NonNull File file) throws IOException {
         if (file == null) {
@@ -3962,8 +3983,8 @@ public class ExifInterface {
      *
      * @param filename the name of the file of the image data
      * @throws NullPointerException if file name is null
-     * @throws IOException if an I/O error occurs while retrieving file descriptor via
-     *         {@link FileInputStream#getFD()}.
+     * @throws IOException          if an I/O error occurs while retrieving file descriptor via
+     *                              {@link FileInputStream#getFD()}.
      */
     public ExifInterface(@NonNull String filename) throws IOException {
         if (filename == null) {
@@ -3979,7 +4000,7 @@ public class ExifInterface {
      *
      * @param fileDescriptor the file descriptor of the image data
      * @throws NullPointerException if file descriptor is null
-     * @throws IOException if an error occurs while duplicating the file descriptor.
+     * @throws IOException          if an error occurs while duplicating the file descriptor.
      */
     public ExifInterface(@NonNull FileDescriptor fileDescriptor) throws IOException {
         if (fileDescriptor == null) {
@@ -4035,13 +4056,13 @@ public class ExifInterface {
      * intended to be used with an input stream that performs any networking operations.
      *
      * @param inputStream the input stream that contains the image data
-     * @param streamType the type of input stream
+     * @param streamType  the type of input stream
      * @throws NullPointerException if the input stream is null
-     * @throws IOException if an I/O error occurs while retrieving file descriptor via
-     *         {@link FileInputStream#getFD()}.
+     * @throws IOException          if an I/O error occurs while retrieving file descriptor via
+     *                              {@link FileInputStream#getFD()}.
      */
     public ExifInterface(@NonNull InputStream inputStream, @ExifStreamType int streamType)
-            throws IOException {
+        throws IOException {
         if (inputStream == null) {
             throw new NullPointerException("inputStream cannot be null");
         }
@@ -4056,7 +4077,7 @@ public class ExifInterface {
                 mAssetInputStream = (AssetManager.AssetInputStream) inputStream;
                 mSeekableFileDescriptor = null;
             } else if (inputStream instanceof FileInputStream
-                    && isSeekableFD(((FileInputStream) inputStream).getFD())) {
+                && isSeekableFD(((FileInputStream) inputStream).getFD())) {
                 mAssetInputStream = null;
                 mSeekableFileDescriptor = ((FileInputStream) inputStream).getFD();
             } else {
@@ -4116,7 +4137,7 @@ public class ExifInterface {
         if (TAG_ISO_SPEED_RATINGS.equals(tag)) {
             if (DEBUG) {
                 logger.debug("getExifAttribute: Replacing TAG_ISO_SPEED_RATINGS with "
-                        + "TAG_PHOTOGRAPHIC_SENSITIVITY.");
+                    + "TAG_PHOTOGRAPHIC_SENSITIVITY.");
             }
             tag = TAG_PHOTOGRAPHIC_SENSITIVITY;
         }
@@ -4131,21 +4152,22 @@ public class ExifInterface {
         return null;
     }
 
-	/**
-	 * Threema-added
-	 * Returns the value of the specified tag assuming it's a UTF-8 string or {@code null} if there
-	 * is no such tag in the image file.
-	 * @param tag
-	 * @return
-	 */
-	@Nullable
-	public String getUTF8StringAttribute(@NonNull String tag) {
-		ExifAttribute attribute = getExifAttribute(tag);
-		if (attribute != null) {
-			return attribute.getUTF8StringValue();
-		}
-		return null;
-	}
+    /**
+     * Threema-added
+     * Returns the value of the specified tag assuming it's a UTF-8 string or {@code null} if there
+     * is no such tag in the image file.
+     *
+     * @param tag
+     * @return
+     */
+    @Nullable
+    public String getUTF8StringAttribute(@NonNull String tag) {
+        ExifAttribute attribute = getExifAttribute(tag);
+        if (attribute != null) {
+            return attribute.getUTF8StringValue();
+        }
+        return null;
+    }
 
     /**
      * Returns the value of the specified tag or {@code null} if there
@@ -4166,7 +4188,7 @@ public class ExifInterface {
             if (tag.equals(TAG_GPS_TIMESTAMP)) {
                 // Convert the rational values to the custom formats for backwards compatibility.
                 if (attribute.format != IFD_FORMAT_URATIONAL
-                        && attribute.format != IFD_FORMAT_SRATIONAL) {
+                    && attribute.format != IFD_FORMAT_SRATIONAL) {
                     logger.warn("GPS Timestamp format is not rational. format=" + attribute.format);
                     return null;
                 }
@@ -4176,9 +4198,9 @@ public class ExifInterface {
                     return null;
                 }
                 return String.format("%02d:%02d:%02d",
-                        (int) ((float) array[0].numerator / array[0].denominator),
-                        (int) ((float) array[1].numerator / array[1].denominator),
-                        (int) ((float) array[2].numerator / array[2].denominator));
+                    (int) ((float) array[0].numerator / array[0].denominator),
+                    (int) ((float) array[1].numerator / array[1].denominator),
+                    (int) ((float) array[2].numerator / array[2].denominator));
             }
             try {
                 return Double.toString(attribute.getDoubleValue(mExifByteOrder));
@@ -4194,7 +4216,7 @@ public class ExifInterface {
      * in the image file or the value cannot be parsed as integer, return
      * <var>defaultValue</var>.
      *
-     * @param tag the name of the tag.
+     * @param tag          the name of the tag.
      * @param defaultValue the value to return if the tag is not available.
      */
     public int getAttributeInt(@NonNull String tag, int defaultValue) {
@@ -4218,7 +4240,7 @@ public class ExifInterface {
      * double-formatted value. If there is no such tag in the image file or the value cannot be
      * parsed as double, return <var>defaultValue</var>.
      *
-     * @param tag the name of the tag.
+     * @param tag          the name of the tag.
      * @param defaultValue the value to return if the tag is not available.
      */
     public double getAttributeDouble(@NonNull String tag, double defaultValue) {
@@ -4240,7 +4262,7 @@ public class ExifInterface {
     /**
      * Sets the value of the specified tag.
      *
-     * @param tag the name of the tag.
+     * @param tag   the name of the tag.
      * @param value the value of the tag.
      */
     @SuppressWarnings("deprecation")
@@ -4250,13 +4272,13 @@ public class ExifInterface {
         }
         // Validate and convert if necessary.
         if (TAG_DATETIME.equals(tag) || TAG_DATETIME_ORIGINAL.equals(tag)
-                || TAG_DATETIME_DIGITIZED.equals(tag)) {
+            || TAG_DATETIME_DIGITIZED.equals(tag)) {
             if (value != null) {
                 boolean isPrimaryFormat = DATETIME_PRIMARY_FORMAT_PATTERN.matcher(value).find();
                 boolean isSecondaryFormat = DATETIME_SECONDARY_FORMAT_PATTERN.matcher(value).find();
                 // Validate
                 if (value.length() != DATETIME_VALUE_STRING_LENGTH
-                        || (!isPrimaryFormat && !isSecondaryFormat)) {
+                    || (!isPrimaryFormat && !isSecondaryFormat)) {
                     logger.warn("Invalid value for " + tag + " : " + value);
                     return;
                 }
@@ -4274,7 +4296,7 @@ public class ExifInterface {
         if (TAG_ISO_SPEED_RATINGS.equals(tag)) {
             if (DEBUG) {
                 logger.debug("setAttribute: Replacing TAG_ISO_SPEED_RATINGS with "
-                        + "TAG_PHOTOGRAPHIC_SENSITIVITY.");
+                    + "TAG_PHOTOGRAPHIC_SENSITIVITY.");
             }
             tag = TAG_PHOTOGRAPHIC_SENSITIVITY;
         }
@@ -4287,7 +4309,7 @@ public class ExifInterface {
                     return;
                 }
                 value = Integer.parseInt(m.group(1)) + "/1," + Integer.parseInt(m.group(2)) + "/1,"
-                        + Integer.parseInt(m.group(3)) + "/1";
+                    + Integer.parseInt(m.group(3)) + "/1";
             } else {
                 try {
                     double doubleValue = Double.parseDouble(value);
@@ -4299,7 +4321,7 @@ public class ExifInterface {
             }
         }
 
-        for (int i = 0 ; i < EXIF_TAGS.length; ++i) {
+        for (int i = 0; i < EXIF_TAGS.length; ++i) {
             if (i == IFD_TYPE_THUMBNAIL && !mHasThumbnail) {
                 continue;
             }
@@ -4314,21 +4336,21 @@ public class ExifInterface {
                 if (exifTag.primaryFormat == guess.first || exifTag.primaryFormat == guess.second) {
                     dataFormat = exifTag.primaryFormat;
                 } else if (exifTag.secondaryFormat != -1 && (exifTag.secondaryFormat == guess.first
-                        || exifTag.secondaryFormat == guess.second)) {
+                    || exifTag.secondaryFormat == guess.second)) {
                     dataFormat = exifTag.secondaryFormat;
                 } else if (exifTag.primaryFormat == IFD_FORMAT_BYTE
-                        || exifTag.primaryFormat == IFD_FORMAT_UNDEFINED
-                        || exifTag.primaryFormat == IFD_FORMAT_STRING) {
+                    || exifTag.primaryFormat == IFD_FORMAT_UNDEFINED
+                    || exifTag.primaryFormat == IFD_FORMAT_STRING) {
                     dataFormat = exifTag.primaryFormat;
                 } else {
                     if (DEBUG) {
                         logger.debug("Given tag (" + tag
-                                + ") value didn't match with one of expected "
-                                + "formats: " + IFD_FORMAT_NAMES[exifTag.primaryFormat]
-                                + (exifTag.secondaryFormat == -1 ? "" : ", "
-                                + IFD_FORMAT_NAMES[exifTag.secondaryFormat]) + " (guess: "
-                                + IFD_FORMAT_NAMES[guess.first] + (guess.second == -1 ? "" : ", "
-                                + IFD_FORMAT_NAMES[guess.second]) + ")");
+                            + ") value didn't match with one of expected "
+                            + "formats: " + IFD_FORMAT_NAMES[exifTag.primaryFormat]
+                            + (exifTag.secondaryFormat == -1 ? "" : ", "
+                            + IFD_FORMAT_NAMES[exifTag.secondaryFormat]) + " (guess: "
+                            + IFD_FORMAT_NAMES[guess.first] + (guess.second == -1 ? "" : ", "
+                            + IFD_FORMAT_NAMES[guess.second]) + ")");
                     }
                     continue;
                 }
@@ -4349,7 +4371,7 @@ public class ExifInterface {
                             intArray[j] = Integer.parseInt(values[j]);
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createUShort(intArray, mExifByteOrder));
+                            ExifAttribute.createUShort(intArray, mExifByteOrder));
                         break;
                     }
                     case IFD_FORMAT_SLONG: {
@@ -4359,7 +4381,7 @@ public class ExifInterface {
                             intArray[j] = Integer.parseInt(values[j]);
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createSLong(intArray, mExifByteOrder));
+                            ExifAttribute.createSLong(intArray, mExifByteOrder));
                         break;
                     }
                     case IFD_FORMAT_ULONG: {
@@ -4369,7 +4391,7 @@ public class ExifInterface {
                             longArray[j] = Long.parseLong(values[j]);
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createULong(longArray, mExifByteOrder));
+                            ExifAttribute.createULong(longArray, mExifByteOrder));
                         break;
                     }
                     case IFD_FORMAT_URATIONAL: {
@@ -4378,10 +4400,10 @@ public class ExifInterface {
                         for (int j = 0; j < values.length; ++j) {
                             final String[] numbers = values[j].split("/", -1);
                             rationalArray[j] = new Rational((long) Double.parseDouble(numbers[0]),
-                                    (long) Double.parseDouble(numbers[1]));
+                                (long) Double.parseDouble(numbers[1]));
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createURational(rationalArray, mExifByteOrder));
+                            ExifAttribute.createURational(rationalArray, mExifByteOrder));
                         break;
                     }
                     case IFD_FORMAT_SRATIONAL: {
@@ -4390,10 +4412,10 @@ public class ExifInterface {
                         for (int j = 0; j < values.length; ++j) {
                             final String[] numbers = values[j].split("/", -1);
                             rationalArray[j] = new Rational((long) Double.parseDouble(numbers[0]),
-                                    (long) Double.parseDouble(numbers[1]));
+                                (long) Double.parseDouble(numbers[1]));
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createSRational(rationalArray, mExifByteOrder));
+                            ExifAttribute.createSRational(rationalArray, mExifByteOrder));
                         break;
                     }
                     case IFD_FORMAT_DOUBLE: {
@@ -4403,7 +4425,7 @@ public class ExifInterface {
                             doubleArray[j] = Double.parseDouble(values[j]);
                         }
                         mAttributes[i].put(tag,
-                                ExifAttribute.createDouble(doubleArray, mExifByteOrder));
+                            ExifAttribute.createDouble(doubleArray, mExifByteOrder));
                         break;
                     }
                     default:
@@ -4430,7 +4452,7 @@ public class ExifInterface {
      * @param degree The degree of rotation.
      */
     public void rotate(int degree) {
-        if (degree % 90 !=0) {
+        if (degree % 90 != 0) {
             throw new IllegalArgumentException("degree should be a multiple of 90");
         }
 
@@ -4558,7 +4580,6 @@ public class ExifInterface {
      * horizontally first, and then rotate 270 degrees clockwise.
      *
      * @return The rotation degrees of the image after the horizontal flipping is applied, if any.
-     *
      * @see #isFlipped()
      */
     public int getRotationDegrees() {
@@ -4587,7 +4608,7 @@ public class ExifInterface {
      * @param tag the name of the tag.
      */
     private void removeAttribute(String tag) {
-        for (int i = 0 ; i < EXIF_TAGS.length; ++i) {
+        for (int i = 0; i < EXIF_TAGS.length; ++i) {
             mAttributes[i].remove(tag);
         }
     }
@@ -4611,7 +4632,7 @@ public class ExifInterface {
 
             if (shouldSupportSeek(mMimeType)) {
                 SeekableByteOrderedDataInputStream inputStream =
-                        new SeekableByteOrderedDataInputStream(in);
+                    new SeekableByteOrderedDataInputStream(in);
                 if (mIsExifDataOnly) {
                     if (!getStandaloneAttributes(inputStream)) {
                         return;
@@ -4634,7 +4655,7 @@ public class ExifInterface {
                 ByteOrderedDataInputStream inputStream = new ByteOrderedDataInputStream(in);
                 if (mMimeType == IMAGE_TYPE_JPEG) {
                     getJpegAttributes(inputStream, /* offsetToJpeg= */ 0,
-                            IFD_TYPE_PRIMARY);
+                        IFD_TYPE_PRIMARY);
                 } else if (mMimeType == IMAGE_TYPE_PNG) {
                     getPngAttributes(inputStream);
                 } else if (mMimeType == IMAGE_TYPE_RAF) {
@@ -4648,8 +4669,8 @@ public class ExifInterface {
             // ExifInterface.
             if (DEBUG) {
                 logger.warn("Invalid image: ExifInterface got an unsupported image format file"
-                        + "(ExifInterface supports JPEG and some RAW image formats only) "
-                        + "or a corrupted JPEG file to ExifInterface.", e);
+                    + "(ExifInterface supports JPEG and some RAW image formats only) "
+                    + "or a corrupted JPEG file to ExifInterface.", e);
             }
         } finally {
             addDefaultValuesForCompatibility();
@@ -4682,7 +4703,7 @@ public class ExifInterface {
             for (Map.Entry<String, ExifAttribute> entry : mAttributes[i].entrySet()) {
                 final ExifAttribute tagValue = entry.getValue();
                 logger.debug("tagName: " + entry.getKey() + ", tagType: " + tagValue.toString()
-                        + ", tagValue: '" + tagValue.getStringValue(mExifByteOrder) + "'");
+                    + ", tagValue: '" + tagValue.getStringValue(mExifByteOrder) + "'");
             }
         }
     }
@@ -4690,7 +4711,7 @@ public class ExifInterface {
     /**
      * Save the tag data into the original image file. This is expensive because it involves
      * copying all the data from one file to another and deleting the old file and renaming the
-     * other. It's best to use {@link #setAttribute(String,String)} to set all attributes to write
+     * other. It's best to use {@link #setAttribute(String, String)} to set all attributes to write
      * and make a single call rather than multiple calls for each attribute.
      * <p>
      * This method is supported for JPEG, PNG, and WebP formats.
@@ -4709,15 +4730,15 @@ public class ExifInterface {
     public void saveAttributes() throws IOException {
         if (!isSupportedFormatForSavingAttributes(mMimeType)) {
             throw new IOException("ExifInterface only supports saving attributes for JPEG, PNG, "
-                    + "and WebP formats.");
+                + "and WebP formats.");
         }
         if (mSeekableFileDescriptor == null && mFilename == null) {
             throw new IOException(
-                    "ExifInterface does not support saving attributes for the current input.");
+                "ExifInterface does not support saving attributes for the current input.");
         }
         if (mHasThumbnail && mHasThumbnailStrips && !mAreThumbnailStripsConsecutive) {
             throw new IOException("ExifInterface does not support saving attributes when the image "
-                    + "file has non-consecutive thumbnail strips");
+                + "file has non-consecutive thumbnail strips");
         }
 
         // Remember the fact that we've changed the file on disk from what was
@@ -4773,7 +4794,7 @@ public class ExifInterface {
             bufferedIn = new BufferedInputStream(in);
             bufferedOut = new BufferedOutputStream(out);
             if (mMimeType == IMAGE_TYPE_JPEG) {
-				// Threema-modified: set noExif to true
+                // Threema-modified: set noExif to true
                 saveJpegAttributes(bufferedIn, bufferedOut, true);
             } else if (mMimeType == IMAGE_TYPE_PNG) {
                 savePngAttributes(bufferedIn, bufferedOut);
@@ -4798,7 +4819,7 @@ public class ExifInterface {
             } catch (Exception exception) {
                 shouldKeepTempFile = true;
                 throw new IOException("Failed to save new file. Original file is stored in "
-                        + tempFile.getAbsolutePath(), exception);
+                    + tempFile.getAbsolutePath(), exception);
             } finally {
                 closeQuietly(in);
                 closeQuietly(out);
@@ -4816,31 +4837,31 @@ public class ExifInterface {
         mThumbnailBytes = null;
     }
 
-	/**
-	 * Save the tag data into the original image file. This is expensive because it involves
-	 * copying all the data from one file to another and deleting the old file and renaming the
-	 * other. It's best to use {@link #setAttribute(String,String)} to set all attributes to write
-	 * and make a single call rather than multiple calls for each attribute.
-	 * <p>
-	 * This method is only supported for JPEG files.
-	 * </p>
-	 */
-	// Threema-added method
-	public void saveAttributes(InputStream inputStream, OutputStream outputStream, boolean noExif) throws IOException {
-		if (!isSupportedFormatForSavingAttributes(mMimeType) || mMimeType != IMAGE_TYPE_JPEG) {
-			throw new IOException("ExifInterface only supports saving attributes on JPEG formats.");
-		}
+    /**
+     * Save the tag data into the original image file. This is expensive because it involves
+     * copying all the data from one file to another and deleting the old file and renaming the
+     * other. It's best to use {@link #setAttribute(String, String)} to set all attributes to write
+     * and make a single call rather than multiple calls for each attribute.
+     * <p>
+     * This method is only supported for JPEG files.
+     * </p>
+     */
+    // Threema-added method
+    public void saveAttributes(InputStream inputStream, OutputStream outputStream, boolean noExif) throws IOException {
+        if (!isSupportedFormatForSavingAttributes(mMimeType) || mMimeType != IMAGE_TYPE_JPEG) {
+            throw new IOException("ExifInterface only supports saving attributes on JPEG formats.");
+        }
 
-		// Keep the thumbnail in memory
-		mThumbnailBytes = getThumbnail();
+        // Keep the thumbnail in memory
+        mThumbnailBytes = getThumbnail();
 
-		saveJpegAttributes(inputStream, outputStream, noExif);
+        saveJpegAttributes(inputStream, outputStream, noExif);
 
-		// Discard the thumbnail in memory
-		mThumbnailBytes = null;
-	}
+        // Discard the thumbnail in memory
+        mThumbnailBytes = null;
+    }
 
-	/**
+    /**
      * Returns true if the image file has a thumbnail.
      */
     public boolean hasThumbnail() {
@@ -4860,7 +4881,7 @@ public class ExifInterface {
      * Returns the JPEG compressed thumbnail inside the image file, or {@code null} if there is no
      * JPEG compressed thumbnail.
      * The returned data can be decoded using
-     * {@link BitmapFactory#decodeByteArray(byte[],int,int)}
+     * {@link BitmapFactory#decodeByteArray(byte[], int, int)}
      */
     @Nullable
     public byte[] getThumbnail() {
@@ -4949,18 +4970,18 @@ public class ExifInterface {
             byte alpha = (byte) 0xff000000;
             for (int i = 0; i < rgbValues.length; i++) {
                 rgbValues[i] = alpha + (mThumbnailBytes[3 * i] << 16)
-                        + (mThumbnailBytes[3 * i + 1] << 8) + mThumbnailBytes[3 * i + 2];
+                    + (mThumbnailBytes[3 * i + 1] << 8) + mThumbnailBytes[3 * i + 2];
             }
 
             ExifAttribute imageLengthAttribute =
-                    mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_LENGTH);
+                mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_LENGTH);
             ExifAttribute imageWidthAttribute =
-                    mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_WIDTH);
+                mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_WIDTH);
             if (imageLengthAttribute != null && imageWidthAttribute != null) {
                 int imageLength = imageLengthAttribute.getIntValue(mExifByteOrder);
                 int imageWidth = imageWidthAttribute.getIntValue(mExifByteOrder);
                 return Bitmap.createBitmap(
-                        rgbValues, imageWidth, imageLength, Bitmap.Config.ARGB_8888);
+                    rgbValues, imageWidth, imageLength, Bitmap.Config.ARGB_8888);
             }
         }
         return null;
@@ -4986,24 +5007,24 @@ public class ExifInterface {
      * non-consecutively.
      *
      * @return two-element array, the offset in the first value, and length in
-     *         the second, or {@code null} if no thumbnail was found or the thumbnail strips are
-     *         not placed consecutively.
+     * the second, or {@code null} if no thumbnail was found or the thumbnail strips are
+     * not placed consecutively.
      * @throws IllegalStateException if {@link #saveAttributes()} has been
-     *             called since the underlying file was initially parsed, since
-     *             that means offsets may have changed.
+     *                               called since the underlying file was initially parsed, since
+     *                               that means offsets may have changed.
      */
     @Nullable
     public long[] getThumbnailRange() {
         if (mModified) {
             throw new IllegalStateException(
-                    "The underlying file has been modified since being parsed");
+                "The underlying file has been modified since being parsed");
         }
 
         if (mHasThumbnail) {
             if (mHasThumbnailStrips && !mAreThumbnailStripsConsecutive) {
                 return null;
             }
-            return new long[] { mThumbnailOffset + mOffsetToExifData, mThumbnailLength };
+            return new long[]{mThumbnailOffset + mOffsetToExifData, mThumbnailLength};
         }
         return null;
     }
@@ -5013,10 +5034,10 @@ public class ExifInterface {
      * or {@code null} if the tag is not contained.
      *
      * @return two-element array, the offset in the first value, and length in
-     *         the second, or {@code null} if no tag was found.
+     * the second, or {@code null} if no tag was found.
      * @throws IllegalStateException if {@link #saveAttributes()} has been
-     *             called since the underlying file was initially parsed, since
-     *             that means offsets may have changed.
+     *                               called since the underlying file was initially parsed, since
+     *                               that means offsets may have changed.
      */
     @Nullable
     public long[] getAttributeRange(@NonNull String tag) {
@@ -5025,12 +5046,12 @@ public class ExifInterface {
         }
         if (mModified) {
             throw new IllegalStateException(
-                    "The underlying file has been modified since being parsed");
+                "The underlying file has been modified since being parsed");
         }
 
         final ExifAttribute attribute = getExifAttribute(tag);
         if (attribute != null) {
-            return new long[] { attribute.bytesOffset, attribute.bytes.length };
+            return new long[]{attribute.bytesOffset, attribute.bytes.length};
         } else {
             return null;
         }
@@ -5041,7 +5062,7 @@ public class ExifInterface {
      * file, or {@code null} if the tag is not contained.
      *
      * @return raw bytes for the value of the requested tag, or {@code null} if
-     *         no tag was found.
+     * no tag was found.
      */
     @Nullable
     public byte[] getAttributeBytes(@NonNull String tag) {
@@ -5092,11 +5113,11 @@ public class ExifInterface {
             try {
                 double latitude = convertRationalLatLonToDouble(latValue, latRef);
                 double longitude = convertRationalLatLonToDouble(lngValue, lngRef);
-                return new double[] {latitude, longitude};
+                return new double[]{latitude, longitude};
             } catch (IllegalArgumentException e) {
                 logger.warn("Latitude/longitude values are not parsable. "
-                        + String.format("latValue=%s, latRef=%s, lngValue=%s, lngRef=%s",
-                        latValue, latRef, lngValue, lngRef));
+                    + String.format("latValue=%s, latRef=%s, lngValue=%s, lngRef=%s",
+                    latValue, latRef, lngValue, lngRef));
             }
         }
         return null;
@@ -5105,7 +5126,7 @@ public class ExifInterface {
     /**
      * Sets the GPS-related information. It will set GPS processing method, latitude and longitude
      * values, GPS timestamp, and speed information at the same time.
-     *
+     * <p>
      * This method is a No-Op if the location parameter is null.
      *
      * @param location the {@link Location} object returned by GPS service.
@@ -5120,9 +5141,9 @@ public class ExifInterface {
         // Location objects store speeds in m/sec. Translates it to km/hr here.
         setAttribute(TAG_GPS_SPEED_REF, "K");
         setAttribute(TAG_GPS_SPEED, new Rational(location.getSpeed()
-                * TimeUnit.HOURS.toSeconds(1) / 1000).toString());
+            * TimeUnit.HOURS.toSeconds(1) / 1000).toString());
         String[] dateTime = sFormatterPrimary.format(
-                new Date(location.getTime())).split("\\s+", -1);
+            new Date(location.getTime())).split("\\s+", -1);
         setAttribute(ExifInterface.TAG_GPS_DATESTAMP, dateTime[0]);
         setAttribute(ExifInterface.TAG_GPS_TIMESTAMP, dateTime[1]);
     }
@@ -5130,8 +5151,8 @@ public class ExifInterface {
     /**
      * Sets the latitude and longitude values.
      *
-     * @param latitude the decimal value of latitude. Must be a valid double value between -90.0 and
-     *                 90.0.
+     * @param latitude  the decimal value of latitude. Must be a valid double value between -90.0 and
+     *                  90.0.
      * @param longitude the decimal value of longitude. Must be a valid double value between -180.0
      *                  and 180.0.
      * @throws IllegalArgumentException If {@code latitude} or {@code longitude} is outside the
@@ -5208,14 +5229,13 @@ public class ExifInterface {
      * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME}.
      *
      * @return null if date time information is unavailable or invalid.
-     *
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
     public Long getDateTime() {
         return parseDateTime(getAttribute(TAG_DATETIME),
-                getAttribute(TAG_SUBSEC_TIME),
-                getAttribute(TAG_OFFSET_TIME));
+            getAttribute(TAG_SUBSEC_TIME),
+            getAttribute(TAG_OFFSET_TIME));
     }
 
     /**
@@ -5226,14 +5246,13 @@ public class ExifInterface {
      * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME_DIGITIZED}.
      *
      * @return null if digitized date time information is unavailable or invalid.
-     *
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
     public Long getDateTimeDigitized() {
         return parseDateTime(getAttribute(TAG_DATETIME_DIGITIZED),
-                getAttribute(TAG_SUBSEC_TIME_DIGITIZED),
-                getAttribute(TAG_OFFSET_TIME_DIGITIZED));
+            getAttribute(TAG_SUBSEC_TIME_DIGITIZED),
+            getAttribute(TAG_OFFSET_TIME_DIGITIZED));
     }
 
     /**
@@ -5244,18 +5263,17 @@ public class ExifInterface {
      * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME_ORIGINAL}.
      *
      * @return null if original date time information is unavailable or invalid.
-     *
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
     public Long getDateTimeOriginal() {
         return parseDateTime(getAttribute(TAG_DATETIME_ORIGINAL),
-                getAttribute(TAG_SUBSEC_TIME_ORIGINAL),
-                getAttribute(TAG_OFFSET_TIME_ORIGINAL));
+            getAttribute(TAG_SUBSEC_TIME_ORIGINAL),
+            getAttribute(TAG_OFFSET_TIME_ORIGINAL));
     }
 
     private static Long parseDateTime(@Nullable String dateTimeString, @Nullable String subSecs,
-            @Nullable String offsetString) {
+                                      @Nullable String offsetString) {
         if (dateTimeString == null || !NON_ZERO_TIME_PATTERN.matcher(dateTimeString).matches()) {
             return null;
         }
@@ -5277,8 +5295,8 @@ public class ExifInterface {
                 int hour = Integer.parseInt(offsetString.substring(1, 3));
                 int min = Integer.parseInt(offsetString.substring(4, 6));
                 if (("+".equals(sign) || "-".equals(sign))
-                        && ":".equals(offsetString.substring(3, 4))
-                        && hour <= 14 /* max UTC hour value */) {
+                    && ":".equals(offsetString.substring(3, 4))
+                    && hour <= 14 /* max UTC hour value */) {
                     msecs += (hour * 60 + min) * 60 * 1000 * ("-".equals(sign) ? 1 : -1);
                 }
             }
@@ -5294,6 +5312,7 @@ public class ExifInterface {
 
     /**
      * Returns number of milliseconds since Jan. 1, 1970, midnight UTC.
+     *
      * @return null if the date time information is not available.
      */
     @SuppressLint("AutoBoxing") /* Not a performance-critical call, thus not a big concern. */
@@ -5302,8 +5321,8 @@ public class ExifInterface {
         String date = getAttribute(TAG_GPS_DATESTAMP);
         String time = getAttribute(TAG_GPS_TIMESTAMP);
         if (date == null || time == null
-                || (!NON_ZERO_TIME_PATTERN.matcher(date).matches()
-                && !NON_ZERO_TIME_PATTERN.matcher(time).matches())) {
+            || (!NON_ZERO_TIME_PATTERN.matcher(date).matches()
+            && !NON_ZERO_TIME_PATTERN.matcher(time).matches())) {
             return null;
         }
 
@@ -5346,20 +5365,20 @@ public class ExifInterface {
 
     private static double convertRationalLatLonToDouble(String rationalString, String ref) {
         try {
-            String [] parts = rationalString.split(",", -1);
+            String[] parts = rationalString.split(",", -1);
 
-            String [] pair;
+            String[] pair;
             pair = parts[0].split("/", -1);
             double degrees = Double.parseDouble(pair[0].trim())
-                    / Double.parseDouble(pair[1].trim());
+                / Double.parseDouble(pair[1].trim());
 
             pair = parts[1].split("/", -1);
             double minutes = Double.parseDouble(pair[0].trim())
-                    / Double.parseDouble(pair[1].trim());
+                / Double.parseDouble(pair[1].trim());
 
             pair = parts[2].split("/", -1);
             double seconds = Double.parseDouble(pair[0].trim())
-                    / Double.parseDouble(pair[1].trim());
+                / Double.parseDouble(pair[1].trim());
 
             double result = degrees + (minutes / 60.0) + (seconds / 3600.0);
             if ((ref.equals("S") || ref.equals("W"))) {
@@ -5412,7 +5431,7 @@ public class ExifInterface {
      * This method looks at the first 3 bytes to determine if this file is a JPEG file.
      * See http://www.media.mit.edu/pia/Research/deepview/exif.html, "JPEG format and Marker"
      */
-	// Threema-modified: make public
+    // Threema-modified: make public
     public static boolean isJpegFormat(byte[] signatureCheckBytes) throws IOException {
         for (int i = 0; i < JPEG_SIGNATURE.length; i++) {
             if (signatureCheckBytes[i] != JPEG_SIGNATURE[i]) {
@@ -5479,7 +5498,7 @@ public class ExifInterface {
             byte[] brand = new byte[4];
             boolean isMif1 = false;
             boolean isHeic = false;
-            for (long i = 0; i < chunkDataSize / 4;  ++i) {
+            for (long i = 0; i < chunkDataSize / 4; ++i) {
                 try {
                     signatureInputStream.readFully(brand);
                 } catch (EOFException e) {
@@ -5584,7 +5603,7 @@ public class ExifInterface {
 
     /**
      * WebP's file signature is composed of 12 bytes:
-     *   'RIFF' (4 bytes) + file length value (4 bytes) + 'WEBP' (4 bytes)
+     * 'RIFF' (4 bytes) + file length value (4 bytes) + 'WEBP' (4 bytes)
      * See https://developers.google.com/speed/webp/docs/riff_container, Section "WebP File Header"
      */
     private boolean isWebpFormat(byte[] signatureCheckBytes) throws IOException {
@@ -5595,7 +5614,7 @@ public class ExifInterface {
         }
         for (int i = 0; i < WEBP_SIGNATURE_2.length; i++) {
             if (signatureCheckBytes[i + WEBP_SIGNATURE_1.length + WEBP_FILE_SIZE_BYTE_LENGTH]
-                    != WEBP_SIGNATURE_2[i]) {
+                != WEBP_SIGNATURE_2[i]) {
                 return false;
             }
         }
@@ -5605,15 +5624,15 @@ public class ExifInterface {
     /**
      * Loads EXIF attributes from a JPEG input stream.
      *
-     * @param in The input stream that starts with the JPEG data.
+     * @param in           The input stream that starts with the JPEG data.
      * @param offsetToJpeg The offset to JPEG data for the original input stream.
-     * @param imageType The image type from which to retrieve metadata. Use IFD_TYPE_PRIMARY for
-     *                   primary image, IFD_TYPE_PREVIEW for preview image, and
-     *                   IFD_TYPE_THUMBNAIL for thumbnail image.
+     * @param imageType    The image type from which to retrieve metadata. Use IFD_TYPE_PRIMARY for
+     *                     primary image, IFD_TYPE_PREVIEW for preview image, and
+     *                     IFD_TYPE_THUMBNAIL for thumbnail image.
      * @throws IOException If the data contains invalid JPEG markers, offsets, or length values.
      */
     private void getJpegAttributes(ByteOrderedDataInputStream in, int offsetToJpeg, int imageType)
-            throws IOException {
+        throws IOException {
         // See JPEG File Interchange Format Specification, "JFIF Specification"
         if (DEBUG) {
             logger.debug("getJpegAttributes starting with: " + in);
@@ -5653,7 +5672,7 @@ public class ExifInterface {
             bytesRead += 2;
             if (DEBUG) {
                 logger.debug("JPEG segment: " + Integer.toHexString(marker & 0xff) + " (length: "
-                        + (length + 2) + ")");
+                    + (length + 2) + ")");
             }
             if (length < 0) {
                 throw new IOException("Invalid length");
@@ -5668,11 +5687,11 @@ public class ExifInterface {
 
                     if (startsWith(bytes, IDENTIFIER_EXIF_APP1)) {
                         final byte[] value = Arrays.copyOfRange(bytes, IDENTIFIER_EXIF_APP1.length,
-                                bytes.length);
+                            bytes.length);
                         // Save offset to EXIF data for handling thumbnail and attribute offsets.
                         mOffsetToExifData = offsetToJpeg
-                                + /* offset to EXIF from JPEG start */ start
-                                + IDENTIFIER_EXIF_APP1.length;
+                            + /* offset to EXIF from JPEG start */ start
+                            + IDENTIFIER_EXIF_APP1.length;
                         readExifSegment(value, imageType);
 
                         setThumbnailData(new ByteOrderedDataInputStream(value));
@@ -5680,12 +5699,12 @@ public class ExifInterface {
                         // See XMP Specification Part 3: Storage in Files, 1.1.3 JPEG, Table 6
                         final int offset = start + IDENTIFIER_XMP_APP1.length;
                         final byte[] value = Arrays.copyOfRange(bytes,
-                                IDENTIFIER_XMP_APP1.length, bytes.length);
+                            IDENTIFIER_XMP_APP1.length, bytes.length);
                         // TODO: check if ignoring separate XMP data when tag 700 already exists is
                         //  valid.
                         if (getAttribute(TAG_XMP) == null) {
                             mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP, new ExifAttribute(
-                                    IFD_FORMAT_BYTE, value.length, offset, value));
+                                IFD_FORMAT_BYTE, value.length, offset, value));
                             mXmpIsFromSeparateMarker = true;
                         }
                     }
@@ -5698,7 +5717,7 @@ public class ExifInterface {
                     length = 0;
                     if (getAttribute(TAG_USER_COMMENT) == null) {
                         mAttributes[IFD_TYPE_EXIF].put(TAG_USER_COMMENT, ExifAttribute.createString(
-                                new String(bytes, ASCII)));
+                            new String(bytes, ASCII)));
                     }
                     break;
                 }
@@ -5718,11 +5737,11 @@ public class ExifInterface {
                 case MARKER_SOF15: {
                     in.skipFully(1);
                     mAttributes[imageType].put(imageType != IFD_TYPE_THUMBNAIL
-                                    ? TAG_IMAGE_LENGTH : TAG_THUMBNAIL_IMAGE_LENGTH,
-                            ExifAttribute.createULong(in.readUnsignedShort(), mExifByteOrder));
+                            ? TAG_IMAGE_LENGTH : TAG_THUMBNAIL_IMAGE_LENGTH,
+                        ExifAttribute.createULong(in.readUnsignedShort(), mExifByteOrder));
                     mAttributes[imageType].put(imageType != IFD_TYPE_THUMBNAIL
-                                    ? TAG_IMAGE_WIDTH : TAG_THUMBNAIL_IMAGE_WIDTH,
-                            ExifAttribute.createULong(in.readUnsignedShort(), mExifByteOrder));
+                            ? TAG_IMAGE_WIDTH : TAG_THUMBNAIL_IMAGE_WIDTH,
+                        ExifAttribute.createULong(in.readUnsignedShort(), mExifByteOrder));
                     length -= 5;
                     break;
                 }
@@ -5760,27 +5779,27 @@ public class ExifInterface {
             // PEF files contain a MakerNote data, which contains the data for ColorSpace tag.
             // See http://lclevy.free.fr/raw/ and piex.cc PefGetPreviewData()
             ExifAttribute makerNoteAttribute =
-                    mAttributes[IFD_TYPE_EXIF].get(TAG_MAKER_NOTE);
+                mAttributes[IFD_TYPE_EXIF].get(TAG_MAKER_NOTE);
             if (makerNoteAttribute != null) {
                 // Create an ordered DataInputStream for MakerNote
-								// MODIFIED BY THREEMA
-				try (SeekableByteOrderedDataInputStream makerNoteDataInputStream =
-                        new SeekableByteOrderedDataInputStream(makerNoteAttribute.bytes)) {
-					makerNoteDataInputStream.setByteOrder(mExifByteOrder);
+                // MODIFIED BY THREEMA
+                try (SeekableByteOrderedDataInputStream makerNoteDataInputStream =
+                         new SeekableByteOrderedDataInputStream(makerNoteAttribute.bytes)) {
+                    makerNoteDataInputStream.setByteOrder(mExifByteOrder);
 
-					// Skip to MakerNote data
-					makerNoteDataInputStream.skipFully(PEF_MAKER_NOTE_SKIP_SIZE);
+                    // Skip to MakerNote data
+                    makerNoteDataInputStream.skipFully(PEF_MAKER_NOTE_SKIP_SIZE);
 
-					// Read IFD data from MakerNote
-					readImageFileDirectory(makerNoteDataInputStream, IFD_TYPE_PEF);
+                    // Read IFD data from MakerNote
+                    readImageFileDirectory(makerNoteDataInputStream, IFD_TYPE_PEF);
 
-					// Update ColorSpace tag
-					ExifAttribute colorSpaceAttribute =
-						mAttributes[IFD_TYPE_PEF].get(TAG_COLOR_SPACE);
-					if (colorSpaceAttribute != null) {
-						mAttributes[IFD_TYPE_EXIF].put(TAG_COLOR_SPACE, colorSpaceAttribute);
-					}
-				}
+                    // Update ColorSpace tag
+                    ExifAttribute colorSpaceAttribute =
+                        mAttributes[IFD_TYPE_PEF].get(TAG_COLOR_SPACE);
+                    if (colorSpaceAttribute != null) {
+                        mAttributes[IFD_TYPE_EXIF].put(TAG_COLOR_SPACE, colorSpaceAttribute);
+                    }
+                }
             }
         }
     }
@@ -5837,9 +5856,9 @@ public class ExifInterface {
                 int imageLength = in.readShort();
                 int imageWidth = in.readShort();
                 ExifAttribute imageLengthAttribute =
-                        ExifAttribute.createUShort(imageLength, mExifByteOrder);
+                    ExifAttribute.createUShort(imageLength, mExifByteOrder);
                 ExifAttribute imageWidthAttribute =
-                        ExifAttribute.createUShort(imageWidth, mExifByteOrder);
+                    ExifAttribute.createUShort(imageWidth, mExifByteOrder);
                 mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH, imageLengthAttribute);
                 mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH, imageWidthAttribute);
                 if (DEBUG) {
@@ -5861,11 +5880,12 @@ public class ExifInterface {
                     long mPosition;
 
                     @Override
-                    public void close() throws IOException {}
+                    public void close() throws IOException {
+                    }
 
                     @Override
                     public int readAt(long position, byte[] buffer, int offset, int size)
-                            throws IOException {
+                        throws IOException {
                         if (size == 0) {
                             return 0;
                         }
@@ -5911,13 +5931,13 @@ public class ExifInterface {
                 });
 
                 String exifOffsetStr = retriever.extractMetadata(
-                        33); // MediaMetadataRetriever.METADATA_KEY_EXIF_OFFSET
+                    33); // MediaMetadataRetriever.METADATA_KEY_EXIF_OFFSET
                 String exifLengthStr = retriever.extractMetadata(
-                        34); // MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH
+                    34); // MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH
                 String hasImage = retriever.extractMetadata(
-                        MediaMetadataRetriever.METADATA_KEY_HAS_IMAGE);
+                    MediaMetadataRetriever.METADATA_KEY_HAS_IMAGE);
                 String hasVideo = retriever.extractMetadata(
-                        MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO);
+                    MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO);
 
                 String width = null;
                 String height = null;
@@ -5928,28 +5948,28 @@ public class ExifInterface {
                 // picks the image first.
                 if (metadataValueYes.equals(hasImage)) {
                     width = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_IMAGE_WIDTH);
+                        MediaMetadataRetriever.METADATA_KEY_IMAGE_WIDTH);
                     height = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_IMAGE_HEIGHT);
+                        MediaMetadataRetriever.METADATA_KEY_IMAGE_HEIGHT);
                     rotation = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_IMAGE_ROTATION);
+                        MediaMetadataRetriever.METADATA_KEY_IMAGE_ROTATION);
                 } else if (metadataValueYes.equals(hasVideo)) {
                     width = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                        MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
                     height = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                        MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
                     rotation = retriever.extractMetadata(
-                            MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+                        MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
                 }
 
                 if (width != null) {
                     mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH,
-                            ExifAttribute.createUShort(Integer.parseInt(width), mExifByteOrder));
+                        ExifAttribute.createUShort(Integer.parseInt(width), mExifByteOrder));
                 }
 
                 if (height != null) {
                     mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH,
-                            ExifAttribute.createUShort(Integer.parseInt(height), mExifByteOrder));
+                        ExifAttribute.createUShort(Integer.parseInt(height), mExifByteOrder));
                 }
 
                 if (rotation != null) {
@@ -5969,7 +5989,7 @@ public class ExifInterface {
                     }
 
                     mAttributes[IFD_TYPE_PRIMARY].put(TAG_ORIENTATION,
-                            ExifAttribute.createUShort(orientation, mExifByteOrder));
+                        ExifAttribute.createUShort(orientation, mExifByteOrder));
                 }
 
                 if (exifOffsetStr != null && exifLengthStr != null) {
@@ -5996,9 +6016,9 @@ public class ExifInterface {
                 }
 
                 String xmpOffsetStr = retriever.extractMetadata(
-                        41); // MediaMetadataRetriever.METADATA_KEY_XMP_OFFSET
+                    41); // MediaMetadataRetriever.METADATA_KEY_XMP_OFFSET
                 String xmpLengthStr = retriever.extractMetadata(
-                        42); // MediaMetadataRetriever.METADATA_KEY_XMP_LENGTH
+                    42); // MediaMetadataRetriever.METADATA_KEY_XMP_LENGTH
                 if (xmpOffsetStr != null && xmpLengthStr != null) {
                     int offset = Integer.parseInt(xmpOffsetStr);
                     int length = Integer.parseInt(xmpLengthStr);
@@ -6007,7 +6027,7 @@ public class ExifInterface {
                     in.readFully(xmpBytes);
                     if (getAttribute(TAG_XMP) == null) {
                         mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP, new ExifAttribute(
-                                IFD_FORMAT_BYTE, xmpBytes.length, offset, xmpBytes));
+                            IFD_FORMAT_BYTE, xmpBytes.length, offset, xmpBytes));
                     }
                 }
 
@@ -6016,7 +6036,7 @@ public class ExifInterface {
                 }
             } catch (RuntimeException e) {
                 throw new UnsupportedOperationException("Failed to read EXIF from HEIF file. "
-                        + "Given stream is either malformed or unsupported.");
+                    + "Given stream is either malformed or unsupported.");
             } finally {
                 try {
                     retriever.release();
@@ -6026,13 +6046,15 @@ public class ExifInterface {
             }
         } else {
             throw new UnsupportedOperationException("Reading EXIF from HEIF files "
-                    + "is supported from SDK 28 and above");
+                + "is supported from SDK 28 and above");
         }
     }
 
-    /** Reads standalone EXIF data, returning whether the data was read successfully. */
+    /**
+     * Reads standalone EXIF data, returning whether the data was read successfully.
+     */
     private boolean getStandaloneAttributes(SeekableByteOrderedDataInputStream in)
-            throws IOException {
+        throws IOException {
         byte[] signatureCheckBytes = new byte[IDENTIFIER_EXIF_APP1.length];
         in.readFully(signatureCheckBytes);
         if (!Arrays.equals(signatureCheckBytes, IDENTIFIER_EXIF_APP1)) {
@@ -6066,59 +6088,59 @@ public class ExifInterface {
         // proprietary tags and therefore does not have offical documentation
         // See GetOlympusPreviewImage() in piex.cc & http://www.exiv2.org/tags-olympus.html
         ExifAttribute makerNoteAttribute =
-                mAttributes[IFD_TYPE_EXIF].get(TAG_MAKER_NOTE);
+            mAttributes[IFD_TYPE_EXIF].get(TAG_MAKER_NOTE);
         if (makerNoteAttribute != null) {
             // Create an ordered DataInputStream for MakerNote
-					 			// MODIFIED BY THREEMA
-			try (SeekableByteOrderedDataInputStream makerNoteDataInputStream =
-                    new SeekableByteOrderedDataInputStream(makerNoteAttribute.bytes)) {
-				makerNoteDataInputStream.setByteOrder(mExifByteOrder);
+            // MODIFIED BY THREEMA
+            try (SeekableByteOrderedDataInputStream makerNoteDataInputStream =
+                     new SeekableByteOrderedDataInputStream(makerNoteAttribute.bytes)) {
+                makerNoteDataInputStream.setByteOrder(mExifByteOrder);
 
-				// There are two types of headers for Olympus MakerNotes
-				// See http://www.exiv2.org/makernote.html#R1
-				byte[] makerNoteHeader1Bytes = new byte[ORF_MAKER_NOTE_HEADER_1.length];
-				makerNoteDataInputStream.readFully(makerNoteHeader1Bytes);
-				makerNoteDataInputStream.seek(0);
-				byte[] makerNoteHeader2Bytes = new byte[ORF_MAKER_NOTE_HEADER_2.length];
-				makerNoteDataInputStream.readFully(makerNoteHeader2Bytes);
-				// Skip the corresponding amount of bytes for each header type
-				if (Arrays.equals(makerNoteHeader1Bytes, ORF_MAKER_NOTE_HEADER_1)) {
-					makerNoteDataInputStream.seek(ORF_MAKER_NOTE_HEADER_1_SIZE);
-				} else if (Arrays.equals(makerNoteHeader2Bytes, ORF_MAKER_NOTE_HEADER_2)) {
-					makerNoteDataInputStream.seek(ORF_MAKER_NOTE_HEADER_2_SIZE);
-				}
+                // There are two types of headers for Olympus MakerNotes
+                // See http://www.exiv2.org/makernote.html#R1
+                byte[] makerNoteHeader1Bytes = new byte[ORF_MAKER_NOTE_HEADER_1.length];
+                makerNoteDataInputStream.readFully(makerNoteHeader1Bytes);
+                makerNoteDataInputStream.seek(0);
+                byte[] makerNoteHeader2Bytes = new byte[ORF_MAKER_NOTE_HEADER_2.length];
+                makerNoteDataInputStream.readFully(makerNoteHeader2Bytes);
+                // Skip the corresponding amount of bytes for each header type
+                if (Arrays.equals(makerNoteHeader1Bytes, ORF_MAKER_NOTE_HEADER_1)) {
+                    makerNoteDataInputStream.seek(ORF_MAKER_NOTE_HEADER_1_SIZE);
+                } else if (Arrays.equals(makerNoteHeader2Bytes, ORF_MAKER_NOTE_HEADER_2)) {
+                    makerNoteDataInputStream.seek(ORF_MAKER_NOTE_HEADER_2_SIZE);
+                }
 
-				// Read IFD data from MakerNote
-				readImageFileDirectory(makerNoteDataInputStream, IFD_TYPE_ORF_MAKER_NOTE);
-			}
+                // Read IFD data from MakerNote
+                readImageFileDirectory(makerNoteDataInputStream, IFD_TYPE_ORF_MAKER_NOTE);
+            }
 
             // Retrieve & update preview image offset & length values
             ExifAttribute imageStartAttribute =
-                    mAttributes[IFD_TYPE_ORF_CAMERA_SETTINGS].get(TAG_ORF_PREVIEW_IMAGE_START);
+                mAttributes[IFD_TYPE_ORF_CAMERA_SETTINGS].get(TAG_ORF_PREVIEW_IMAGE_START);
             ExifAttribute imageLengthAttribute =
-                    mAttributes[IFD_TYPE_ORF_CAMERA_SETTINGS].get(TAG_ORF_PREVIEW_IMAGE_LENGTH);
+                mAttributes[IFD_TYPE_ORF_CAMERA_SETTINGS].get(TAG_ORF_PREVIEW_IMAGE_LENGTH);
 
             if (imageStartAttribute != null && imageLengthAttribute != null) {
                 mAttributes[IFD_TYPE_PREVIEW].put(TAG_JPEG_INTERCHANGE_FORMAT,
-                        imageStartAttribute);
+                    imageStartAttribute);
                 mAttributes[IFD_TYPE_PREVIEW].put(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
-                        imageLengthAttribute);
+                    imageLengthAttribute);
             }
 
             // TODO: Check this behavior in other ORF files
             // Retrieve primary image length & width values
             // See piex.cc GetOlympusPreviewImage()
             ExifAttribute aspectFrameAttribute =
-                    mAttributes[IFD_TYPE_ORF_IMAGE_PROCESSING].get(TAG_ORF_ASPECT_FRAME);
+                mAttributes[IFD_TYPE_ORF_IMAGE_PROCESSING].get(TAG_ORF_ASPECT_FRAME);
             if (aspectFrameAttribute != null) {
                 int[] aspectFrameValues = (int[]) aspectFrameAttribute.getValue(mExifByteOrder);
                 if (aspectFrameValues == null || aspectFrameValues.length != 4) {
                     logger.warn("Invalid aspect frame values. frame="
-                            + Arrays.toString(aspectFrameValues));
+                        + Arrays.toString(aspectFrameValues));
                     return;
                 }
                 if (aspectFrameValues[2] > aspectFrameValues[0] &&
-                        aspectFrameValues[3] > aspectFrameValues[1]) {
+                    aspectFrameValues[3] > aspectFrameValues[1]) {
                     int primaryImageWidth = aspectFrameValues[2] - aspectFrameValues[0] + 1;
                     int primaryImageLength = aspectFrameValues[3] - aspectFrameValues[1] + 1;
                     // Swap width & length values
@@ -6128,9 +6150,9 @@ public class ExifInterface {
                         primaryImageWidth -= primaryImageLength;
                     }
                     ExifAttribute primaryImageWidthAttribute =
-                            ExifAttribute.createUShort(primaryImageWidth, mExifByteOrder);
+                        ExifAttribute.createUShort(primaryImageWidth, mExifByteOrder);
                     ExifAttribute primaryImageLengthAttribute =
-                            ExifAttribute.createUShort(primaryImageLength, mExifByteOrder);
+                        ExifAttribute.createUShort(primaryImageLength, mExifByteOrder);
 
                     mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH, primaryImageWidthAttribute);
                     mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH, primaryImageLengthAttribute);
@@ -6151,19 +6173,19 @@ public class ExifInterface {
 
         // Retrieve preview and/or thumbnail image data
         ExifAttribute jpgFromRawAttribute =
-                mAttributes[IFD_TYPE_PRIMARY].get(TAG_RW2_JPG_FROM_RAW);
+            mAttributes[IFD_TYPE_PRIMARY].get(TAG_RW2_JPG_FROM_RAW);
         if (jpgFromRawAttribute != null) {
             ByteOrderedDataInputStream jpegInputStream =
-                    new ByteOrderedDataInputStream(jpgFromRawAttribute.bytes);
+                new ByteOrderedDataInputStream(jpgFromRawAttribute.bytes);
             getJpegAttributes(jpegInputStream, (int) jpgFromRawAttribute.bytesOffset,
-                    IFD_TYPE_PREVIEW);
+                IFD_TYPE_PREVIEW);
         }
 
         // Set ISO tag value if necessary
         ExifAttribute rw2IsoAttribute =
-                mAttributes[IFD_TYPE_PRIMARY].get(TAG_RW2_ISO);
+            mAttributes[IFD_TYPE_PRIMARY].get(TAG_RW2_ISO);
         ExifAttribute exifIsoAttribute =
-                mAttributes[IFD_TYPE_EXIF].get(TAG_PHOTOGRAPHIC_SENSITIVITY);
+            mAttributes[IFD_TYPE_EXIF].get(TAG_PHOTOGRAPHIC_SENSITIVITY);
         if (rw2IsoAttribute != null && exifIsoAttribute == null) {
             // Place this attribute only if it doesn't exist
             mAttributes[IFD_TYPE_EXIF].put(TAG_PHOTOGRAPHIC_SENSITIVITY, rw2IsoAttribute);
@@ -6208,7 +6230,7 @@ public class ExifInterface {
                 // The first chunk must be the IHDR chunk
                 if (bytesRead == 16 && !Arrays.equals(type, PNG_CHUNK_TYPE_IHDR)) {
                     throw new IOException("Encountered invalid PNG file--IHDR chunk should appear"
-                            + "as the first chunk");
+                        + "as the first chunk");
                 }
 
                 if (Arrays.equals(type, PNG_CHUNK_TYPE_IEND)) {
@@ -6227,8 +6249,8 @@ public class ExifInterface {
                     crc.update(data);
                     if ((int) crc.getValue() != dataCrcValue) {
                         throw new IOException("Encountered invalid CRC value for PNG-EXIF chunk."
-                                + "\n recorded CRC value: " + dataCrcValue + ", calculated CRC "
-                                + "value: " + crc.getValue());
+                            + "\n recorded CRC value: " + dataCrcValue + ", calculated CRC "
+                            + "value: " + crc.getValue());
                     }
                     // Save offset to EXIF data for handling thumbnail and attribute offsets.
                     mOffsetToExifData = bytesRead;
@@ -6300,7 +6322,7 @@ public class ExifInterface {
                     if (startsWith(payload, IDENTIFIER_EXIF_APP1)) {
                         int adjustedChunkSize = chunkSize - IDENTIFIER_EXIF_APP1.length;
                         payload = Arrays.copyOfRange(payload, IDENTIFIER_EXIF_APP1.length,
-                                adjustedChunkSize);
+                            adjustedChunkSize);
                     }
 
                     // Save offset to EXIF data for handling thumbnail and attribute offsets.
@@ -6334,17 +6356,17 @@ public class ExifInterface {
     }
 
     // Stores a new JPEG image with EXIF attributes into a given output stream.
-	// Threema-modified: add stripExif parameter
+    // Threema-modified: add stripExif parameter
     private void saveJpegAttributes(InputStream inputStream, OutputStream outputStream, boolean stripExif)
-            throws IOException {
+        throws IOException {
         // See JPEG File Interchange Format Specification, "JFIF Specification"
         if (DEBUG) {
             logger.debug("saveJpegAttributes starting with (inputStream: " + inputStream
-                    + ", outputStream: " + outputStream + ")");
+                + ", outputStream: " + outputStream + ")");
         }
         ByteOrderedDataInputStream dataInputStream = new ByteOrderedDataInputStream(inputStream);
         ByteOrderedDataOutputStream dataOutputStream =
-                new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
+            new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
         if (dataInputStream.readByte() != MARKER) {
             throw new IOException("Invalid marker");
         }
@@ -6363,11 +6385,11 @@ public class ExifInterface {
         }
 
         // Write EXIF APP1 segment
-				if (!stripExif) {
-			dataOutputStream.writeByte(MARKER);
-			dataOutputStream.writeByte(MARKER_APP1);
-			writeExifSegment(dataOutputStream);
-		}
+        if (!stripExif) {
+            dataOutputStream.writeByte(MARKER);
+            dataOutputStream.writeByte(MARKER_APP1);
+            writeExifSegment(dataOutputStream);
+        }
 
         // Re-add previously removed XMP data.
         if (xmpAttribute != null) {
@@ -6407,7 +6429,7 @@ public class ExifInterface {
                     }
                     int read;
                     while (length > 0 && (read = dataInputStream.read(
-                            bytes, 0, Math.min(length, bytes.length))) >= 0) {
+                        bytes, 0, Math.min(length, bytes.length))) >= 0) {
                         dataOutputStream.write(bytes, 0, read);
                         length -= read;
                     }
@@ -6433,7 +6455,7 @@ public class ExifInterface {
                     }
                     int read;
                     while (length > 0 && (read = dataInputStream.read(
-                            bytes, 0, Math.min(length, bytes.length))) >= 0) {
+                        bytes, 0, Math.min(length, bytes.length))) >= 0) {
                         dataOutputStream.write(bytes, 0, read);
                         length -= read;
                     }
@@ -6444,14 +6466,14 @@ public class ExifInterface {
     }
 
     private void savePngAttributes(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
+        throws IOException {
         if (DEBUG) {
             logger.debug("savePngAttributes starting with (inputStream: " + inputStream
-                    + ", outputStream: " + outputStream + ")");
+                + ", outputStream: " + outputStream + ")");
         }
         ByteOrderedDataInputStream dataInputStream = new ByteOrderedDataInputStream(inputStream);
         ByteOrderedDataOutputStream dataOutputStream =
-                new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
+            new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
 
         // Copy PNG signature bytes
         copy(dataInputStream, dataOutputStream, PNG_SIGNATURE.length);
@@ -6467,18 +6489,18 @@ public class ExifInterface {
             int ihdrChunkLength = dataInputStream.readInt();
             dataOutputStream.writeInt(ihdrChunkLength);
             copy(dataInputStream, dataOutputStream, PNG_CHUNK_TYPE_BYTE_LENGTH
-                    + ihdrChunkLength + PNG_CHUNK_CRC_BYTE_LENGTH);
+                + ihdrChunkLength + PNG_CHUNK_CRC_BYTE_LENGTH);
         } else {
             // Copy up until the point where EXIF chunk length information is stored.
             int copyLength = mOffsetToExifData - PNG_SIGNATURE.length
-                    - 4 /* PNG EXIF chunk length bytes */
-                    - PNG_CHUNK_TYPE_BYTE_LENGTH;
+                - 4 /* PNG EXIF chunk length bytes */
+                - PNG_CHUNK_TYPE_BYTE_LENGTH;
             copy(dataInputStream, dataOutputStream, copyLength);
 
             // Skip to the start of the chunk after the EXIF chunk
             int exifChunkLength = dataInputStream.readInt();
             dataInputStream.skipFully(PNG_CHUNK_TYPE_BYTE_LENGTH + exifChunkLength
-                    + PNG_CHUNK_CRC_BYTE_LENGTH);
+                + PNG_CHUNK_CRC_BYTE_LENGTH);
         }
 
         // Write EXIF data
@@ -6488,12 +6510,12 @@ public class ExifInterface {
             // the chunk type bytes and the chunk data bytes.
             exifByteArrayOutputStream = new ByteArrayOutputStream();
             ByteOrderedDataOutputStream exifDataOutputStream =
-                    new ByteOrderedDataOutputStream(exifByteArrayOutputStream, BIG_ENDIAN);
+                new ByteOrderedDataOutputStream(exifByteArrayOutputStream, BIG_ENDIAN);
 
             // Store Exif data in separate byte array
             writeExifSegment(exifDataOutputStream);
             byte[] exifBytes =
-                    ((ByteArrayOutputStream) exifDataOutputStream.mOutputStream).toByteArray();
+                ((ByteArrayOutputStream) exifDataOutputStream.mOutputStream).toByteArray();
 
             // Write EXIF chunk data
             dataOutputStream.write(exifBytes);
@@ -6543,15 +6565,15 @@ public class ExifInterface {
     //
     // See https://developers.google.com/speed/webp/docs/riff_container for more details.
     private void saveWebpAttributes(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
+        throws IOException {
         if (DEBUG) {
             logger.debug("saveWebpAttributes starting with (inputStream: " + inputStream
-                    + ", outputStream: " + outputStream + ")");
+                + ", outputStream: " + outputStream + ")");
         }
         ByteOrderedDataInputStream totalInputStream =
-                new ByteOrderedDataInputStream(inputStream, LITTLE_ENDIAN);
+            new ByteOrderedDataInputStream(inputStream, LITTLE_ENDIAN);
         ByteOrderedDataOutputStream totalOutputStream =
-                new ByteOrderedDataOutputStream(outputStream, LITTLE_ENDIAN);
+            new ByteOrderedDataOutputStream(outputStream, LITTLE_ENDIAN);
 
         // WebP signature
         copy(totalInputStream, totalOutputStream, WEBP_SIGNATURE_1.length);
@@ -6563,16 +6585,16 @@ public class ExifInterface {
         try {
             nonHeaderByteArrayOutputStream = new ByteArrayOutputStream();
             ByteOrderedDataOutputStream nonHeaderOutputStream =
-                    new ByteOrderedDataOutputStream(nonHeaderByteArrayOutputStream, LITTLE_ENDIAN);
+                new ByteOrderedDataOutputStream(nonHeaderByteArrayOutputStream, LITTLE_ENDIAN);
 
             if (mOffsetToExifData != 0) {
                 // EXIF chunk exists in the original file
                 // Tested by webp_with_exif.webp
                 int bytesRead = WEBP_SIGNATURE_1.length + WEBP_FILE_SIZE_BYTE_LENGTH
-                        + WEBP_SIGNATURE_2.length;
+                    + WEBP_SIGNATURE_2.length;
                 copy(totalInputStream, nonHeaderOutputStream,
-                        mOffsetToExifData - bytesRead - WEBP_CHUNK_TYPE_BYTE_LENGTH
-                                - WEBP_CHUNK_SIZE_BYTE_LENGTH);
+                    mOffsetToExifData - bytesRead - WEBP_CHUNK_TYPE_BYTE_LENGTH
+                        - WEBP_CHUNK_SIZE_BYTE_LENGTH);
 
                 // Skip input stream to the end of the EXIF chunk
                 totalInputStream.skipFully(WEBP_CHUNK_TYPE_BYTE_LENGTH);
@@ -6618,7 +6640,7 @@ public class ExifInterface {
                     // Tested by webp_with_anim_without_exif.webp
                     if (containsAnimation) {
                         copyChunksUpToGivenChunkType(totalInputStream, nonHeaderOutputStream,
-                                WEBP_CHUNK_TYPE_ANIM, null);
+                            WEBP_CHUNK_TYPE_ANIM, null);
 
                         while (true) {
                             byte[] type = new byte[WEBP_CHUNK_TYPE_BYTE_LENGTH];
@@ -6638,11 +6660,11 @@ public class ExifInterface {
                     } else {
                         // Skip until we find the VP8 or VP8L chunk
                         copyChunksUpToGivenChunkType(totalInputStream, nonHeaderOutputStream,
-                                WEBP_CHUNK_TYPE_VP8, WEBP_CHUNK_TYPE_VP8L);
+                            WEBP_CHUNK_TYPE_VP8, WEBP_CHUNK_TYPE_VP8L);
                         writeExifSegment(nonHeaderOutputStream);
                     }
                 } else if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8)
-                        || Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8L)) {
+                    || Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8L)) {
                     int size = totalInputStream.readInt();
                     int bytesToRead = size;
                     // WebP files have a single padding byte at the end if the chunk size is odd.
@@ -6735,7 +6757,7 @@ public class ExifInterface {
 
             // Write file length + second signature
             totalOutputStream.writeInt(nonHeaderByteArrayOutputStream.size()
-                    + WEBP_SIGNATURE_2.length);
+                + WEBP_SIGNATURE_2.length);
             totalOutputStream.write(WEBP_SIGNATURE_2);
             nonHeaderByteArrayOutputStream.writeTo(totalOutputStream);
         } catch (Exception e) {
@@ -6746,21 +6768,21 @@ public class ExifInterface {
     }
 
     private void copyChunksUpToGivenChunkType(ByteOrderedDataInputStream inputStream,
-            ByteOrderedDataOutputStream outputStream, byte[] firstGivenType,
-            byte[] secondGivenType) throws IOException {
+                                              ByteOrderedDataOutputStream outputStream, byte[] firstGivenType,
+                                              byte[] secondGivenType) throws IOException {
         while (true) {
             byte[] type = new byte[WEBP_CHUNK_TYPE_BYTE_LENGTH];
             inputStream.readFully(type);
             copyWebPChunk(inputStream, outputStream, type);
             if (Arrays.equals(type, firstGivenType)
-                    || (secondGivenType != null && Arrays.equals(type, secondGivenType))) {
+                || (secondGivenType != null && Arrays.equals(type, secondGivenType))) {
                 break;
             }
         }
     }
 
     private void copyWebPChunk(ByteOrderedDataInputStream inputStream,
-            ByteOrderedDataOutputStream outputStream, byte[] type) throws IOException {
+                               ByteOrderedDataOutputStream outputStream, byte[] type) throws IOException {
         int size = inputStream.readInt();
         outputStream.write(type);
         outputStream.writeInt(size);
@@ -6771,7 +6793,7 @@ public class ExifInterface {
     // Reads the given EXIF byte area and save its tag data into attributes.
     private void readExifSegment(byte[] exifBytes, int imageType) throws IOException {
         SeekableByteOrderedDataInputStream dataInputStream =
-                new SeekableByteOrderedDataInputStream(exifBytes);
+            new SeekableByteOrderedDataInputStream(exifBytes);
 
         // Parse TIFF Headers. See JEITA CP-3451C Section 4.5.2. Table 1.
         parseTiffHeaders(dataInputStream);
@@ -6785,30 +6807,30 @@ public class ExifInterface {
         String valueOfDateTimeOriginal = getAttribute(TAG_DATETIME_ORIGINAL);
         if (valueOfDateTimeOriginal != null && getAttribute(TAG_DATETIME) == null) {
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_DATETIME,
-                    ExifAttribute.createString(valueOfDateTimeOriginal));
+                ExifAttribute.createString(valueOfDateTimeOriginal));
         }
 
         // Add the default value.
         if (getAttribute(TAG_IMAGE_WIDTH) == null) {
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (getAttribute(TAG_IMAGE_LENGTH) == null) {
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (getAttribute(TAG_ORIENTATION) == null) {
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_ORIENTATION,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (getAttribute(TAG_LIGHT_SOURCE) == null) {
             mAttributes[IFD_TYPE_EXIF].put(TAG_LIGHT_SOURCE,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
     }
 
     private ByteOrder readByteOrder(ByteOrderedDataInputStream dataInputStream)
-            throws IOException {
+        throws IOException {
         // Read byte order.
         short byteOrder = dataInputStream.readShort();
         switch (byteOrder) {
@@ -6852,7 +6874,7 @@ public class ExifInterface {
 
     // Reads image file directory, which is a tag group in EXIF.
     private void readImageFileDirectory(SeekableByteOrderedDataInputStream dataInputStream,
-            @IfdType int ifdType) throws IOException {
+                                        @IfdType int ifdType) throws IOException {
         // Save offset of current IFD to prevent reading an IFD that is already read.
         mAttributesOffsets.add(dataInputStream.position());
 
@@ -6880,7 +6902,7 @@ public class ExifInterface {
             if (DEBUG) {
                 logger.debug(String.format("ifdType: %d, tagNumber: %d, tagName: %s, dataFormat: %d, "
                         + "numberOfComponents: %d", ifdType, tagNumber,
-                        tag != null ? tag.name : null, dataFormat, numberOfComponents));
+                    tag != null ? tag.name : null, dataFormat, numberOfComponents));
             }
 
             long byteCount = 0;
@@ -6896,8 +6918,8 @@ public class ExifInterface {
             } else if (!tag.isFormatCompatible(dataFormat)) {
                 if (DEBUG) {
                     logger.debug("Skip the tag entry since data format ("
-                            + IFD_FORMAT_NAMES[dataFormat] + ") is unexpected for tag: "
-                            + tag.name);
+                        + IFD_FORMAT_NAMES[dataFormat] + ") is unexpected for tag: "
+                        + tag.name);
                 }
             } else {
                 if (dataFormat == IFD_FORMAT_UNDEFINED) {
@@ -6907,7 +6929,7 @@ public class ExifInterface {
                 if (byteCount < 0 || byteCount > Integer.MAX_VALUE) {
                     if (DEBUG) {
                         logger.debug("Skip the tag entry since the number of components is invalid: "
-                                + numberOfComponents);
+                            + numberOfComponents);
                     }
                 } else {
                     valid = true;
@@ -6930,23 +6952,23 @@ public class ExifInterface {
                         // Save offset value for reading thumbnail
                         mOrfMakerNoteOffset = offset;
                     } else if (ifdType == IFD_TYPE_ORF_MAKER_NOTE
-                            && TAG_ORF_THUMBNAIL_IMAGE.equals(tag.name)) {
+                        && TAG_ORF_THUMBNAIL_IMAGE.equals(tag.name)) {
                         // Retrieve & update values for thumbnail offset and length values for ORF
                         mOrfThumbnailOffset = offset;
                         mOrfThumbnailLength = numberOfComponents;
 
                         ExifAttribute compressionAttribute =
-                                ExifAttribute.createUShort(DATA_JPEG, mExifByteOrder);
+                            ExifAttribute.createUShort(DATA_JPEG, mExifByteOrder);
                         ExifAttribute jpegInterchangeFormatAttribute =
-                                ExifAttribute.createULong(mOrfThumbnailOffset, mExifByteOrder);
+                            ExifAttribute.createULong(mOrfThumbnailOffset, mExifByteOrder);
                         ExifAttribute jpegInterchangeFormatLengthAttribute =
-                                ExifAttribute.createULong(mOrfThumbnailLength, mExifByteOrder);
+                            ExifAttribute.createULong(mOrfThumbnailLength, mExifByteOrder);
 
                         mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_COMPRESSION, compressionAttribute);
                         mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_JPEG_INTERCHANGE_FORMAT,
-                                jpegInterchangeFormatAttribute);
+                            jpegInterchangeFormatAttribute);
                         mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
-                                jpegInterchangeFormatLengthAttribute);
+                            jpegInterchangeFormatLengthAttribute);
                     }
                 }
                 dataInputStream.seek(offset);
@@ -6992,21 +7014,21 @@ public class ExifInterface {
                 // 1. Is a non-negative value (within the length of the input, if known), and
                 // 2. Does not point to a previously read IFD.
                 if (offset > 0L
-                        && (dataInputStream.length() == ByteOrderedDataInputStream.LENGTH_UNSET
-                                || offset < dataInputStream.length())) {
+                    && (dataInputStream.length() == ByteOrderedDataInputStream.LENGTH_UNSET
+                    || offset < dataInputStream.length())) {
                     if (!mAttributesOffsets.contains((int) offset)) {
                         dataInputStream.seek(offset);
                         readImageFileDirectory(dataInputStream, nextIfdType);
                     } else {
                         if (DEBUG) {
                             logger.debug("Skip jump into the IFD since it has already been read: "
-                                    + "IfdType " + nextIfdType + " (at " + offset + ")");
+                                + "IfdType " + nextIfdType + " (at " + offset + ")");
                         }
                     }
                 } else {
                     if (DEBUG) {
                         String message =
-                                "Skip jump into the IFD since its offset is invalid: " + offset;
+                            "Skip jump into the IFD since its offset is invalid: " + offset;
                         if (dataInputStream.length() != ByteOrderedDataInputStream.LENGTH_UNSET) {
                             message += " (total length: " + dataInputStream.length() + ")";
                         }
@@ -7022,7 +7044,7 @@ public class ExifInterface {
             final byte[] bytes = new byte[(int) byteCount];
             dataInputStream.readFully(bytes);
             ExifAttribute attribute = new ExifAttribute(dataFormat, numberOfComponents,
-                    bytesOffset, bytes);
+                bytesOffset, bytes);
             mAttributes[ifdType].put(tag.name, attribute);
 
             // DNG files have a DNG Version tag specifying the version of specifications that the
@@ -7036,9 +7058,9 @@ public class ExifInterface {
             // that is 65535.
             // See http://fileformats.archiveteam.org/wiki/Pentax_PEF
             if (((TAG_MAKE.equals(tag.name) || TAG_MODEL.equals(tag.name))
-                    && attribute.getStringValue(mExifByteOrder).contains(PEF_SIGNATURE))
-                    || (TAG_COMPRESSION.equals(tag.name)
-                    && attribute.getIntValue(mExifByteOrder) == 65535)) {
+                && attribute.getStringValue(mExifByteOrder).contains(PEF_SIGNATURE))
+                || (TAG_COMPRESSION.equals(tag.name)
+                && attribute.getIntValue(mExifByteOrder) == 65535)) {
                 mMimeType = IMAGE_TYPE_PEF;
             }
 
@@ -7067,13 +7089,13 @@ public class ExifInterface {
             } else {
                 if (DEBUG) {
                     logger.debug("Stop reading file since re-reading an IFD may cause an "
-                            + "infinite loop: " + nextIfdOffset);
+                        + "infinite loop: " + nextIfdOffset);
                 }
             }
         } else {
             if (DEBUG) {
                 logger.debug("Stop reading file since a wrong offset may cause an infinite loop: "
-                        + nextIfdOffset);
+                    + nextIfdOffset);
             }
         }
     }
@@ -7085,32 +7107,32 @@ public class ExifInterface {
      * See JEITA CP-3451C Table 5 and Section 4.8.1. B.
      */
     private void retrieveJpegImageSize(SeekableByteOrderedDataInputStream in, int imageType)
-            throws IOException {
+        throws IOException {
         // Check if image already has IMAGE_LENGTH & IMAGE_WIDTH values
         ExifAttribute imageLengthAttribute =
-                mAttributes[imageType].get(TAG_IMAGE_LENGTH);
+            mAttributes[imageType].get(TAG_IMAGE_LENGTH);
         ExifAttribute imageWidthAttribute =
-                mAttributes[imageType].get(TAG_IMAGE_WIDTH);
+            mAttributes[imageType].get(TAG_IMAGE_WIDTH);
 
         if (imageLengthAttribute == null || imageWidthAttribute == null) {
             // Find if offset for JPEG data exists
             ExifAttribute jpegInterchangeFormatAttribute =
-                    mAttributes[imageType].get(TAG_JPEG_INTERCHANGE_FORMAT);
+                mAttributes[imageType].get(TAG_JPEG_INTERCHANGE_FORMAT);
             ExifAttribute jpegInterchangeFormatLengthAttribute =
-                    mAttributes[imageType].get(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH);
+                mAttributes[imageType].get(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH);
             if (jpegInterchangeFormatAttribute != null
-                    && jpegInterchangeFormatLengthAttribute != null) {
+                && jpegInterchangeFormatLengthAttribute != null) {
                 int jpegInterchangeFormat =
-                        jpegInterchangeFormatAttribute.getIntValue(mExifByteOrder);
+                    jpegInterchangeFormatAttribute.getIntValue(mExifByteOrder);
                 int jpegInterchangeFormatLength =
-                        jpegInterchangeFormatAttribute.getIntValue(mExifByteOrder);
+                    jpegInterchangeFormatAttribute.getIntValue(mExifByteOrder);
 
                 // Searches for SOF marker in JPEG data and updates IMAGE_LENGTH & IMAGE_WIDTH tags
                 in.seek(jpegInterchangeFormat);
                 byte[] jpegBytes = new byte[jpegInterchangeFormatLength];
                 in.readFully(jpegBytes);
                 getJpegAttributes(new ByteOrderedDataInputStream(jpegBytes), jpegInterchangeFormat,
-                        imageType);
+                    imageType);
             }
         }
     }
@@ -7120,7 +7142,7 @@ public class ExifInterface {
         HashMap<String, ExifAttribute> thumbnailData = mAttributes[IFD_TYPE_THUMBNAIL];
 
         ExifAttribute compressionAttribute =
-                thumbnailData.get(TAG_COMPRESSION);
+            thumbnailData.get(TAG_COMPRESSION);
         if (compressionAttribute != null) {
             mThumbnailCompression = compressionAttribute.getIntValue(mExifByteOrder);
             switch (mThumbnailCompression) {
@@ -7146,13 +7168,13 @@ public class ExifInterface {
     // Check JpegInterchangeFormat(JFIF) tags to retrieve thumbnail offset & length values
     // and reads the corresponding bytes if stream does not support seek function
     private void handleThumbnailFromJfif(ByteOrderedDataInputStream in,
-            HashMap<String, ExifAttribute> thumbnailData) throws IOException {
+                                         HashMap<String, ExifAttribute> thumbnailData) throws IOException {
         ExifAttribute jpegInterchangeFormatAttribute =
-                thumbnailData.get(TAG_JPEG_INTERCHANGE_FORMAT);
+            thumbnailData.get(TAG_JPEG_INTERCHANGE_FORMAT);
         ExifAttribute jpegInterchangeFormatLengthAttribute =
-                thumbnailData.get(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH);
+            thumbnailData.get(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH);
         if (jpegInterchangeFormatAttribute != null
-                && jpegInterchangeFormatLengthAttribute != null) {
+            && jpegInterchangeFormatLengthAttribute != null) {
             int thumbnailOffset = jpegInterchangeFormatAttribute.getIntValue(mExifByteOrder);
             int thumbnailLength = jpegInterchangeFormatLengthAttribute.getIntValue(mExifByteOrder);
 
@@ -7164,7 +7186,7 @@ public class ExifInterface {
             if (thumbnailOffset > 0 && thumbnailLength > 0) {
                 mHasThumbnail = true;
                 if (mFilename == null && mAssetInputStream == null
-                        && mSeekableFileDescriptor == null) {
+                    && mSeekableFileDescriptor == null) {
                     // TODO: Need to handle potential OutOfMemoryError
                     // Save the thumbnail in memory if the input doesn't support reading again.
                     byte[] thumbnailBytes = new byte[thumbnailLength];
@@ -7177,24 +7199,24 @@ public class ExifInterface {
             }
             if (DEBUG) {
                 logger.debug("Setting thumbnail attributes with offset: " + thumbnailOffset
-                        + ", length: " + thumbnailLength);
+                    + ", length: " + thumbnailLength);
             }
         }
     }
 
     // Check StripOffsets & StripByteCounts tags to retrieve thumbnail offset & length values
     private void handleThumbnailFromStrips(ByteOrderedDataInputStream in,
-            HashMap<String, ExifAttribute> thumbnailData) throws IOException {
+                                           HashMap<String, ExifAttribute> thumbnailData) throws IOException {
         ExifAttribute stripOffsetsAttribute =
-                thumbnailData.get(TAG_STRIP_OFFSETS);
+            thumbnailData.get(TAG_STRIP_OFFSETS);
         ExifAttribute stripByteCountsAttribute =
-                thumbnailData.get(TAG_STRIP_BYTE_COUNTS);
+            thumbnailData.get(TAG_STRIP_BYTE_COUNTS);
 
         if (stripOffsetsAttribute != null && stripByteCountsAttribute != null) {
             long[] stripOffsets =
-                    convertToLongArray(stripOffsetsAttribute.getValue(mExifByteOrder));
+                convertToLongArray(stripOffsetsAttribute.getValue(mExifByteOrder));
             long[] stripByteCounts =
-                    convertToLongArray(stripByteCountsAttribute.getValue(mExifByteOrder));
+                convertToLongArray(stripByteCountsAttribute.getValue(mExifByteOrder));
 
             if (stripOffsets == null || stripOffsets.length == 0) {
                 logger.warn("stripOffsets should not be null or have zero length.");
@@ -7228,7 +7250,7 @@ public class ExifInterface {
                 // Check if strips are consecutive
                 // TODO: Add test for non-consecutive thumbnail image
                 if (i < stripOffsets.length - 1
-                        && stripOffset + stripByteCount != stripOffsets[i + 1]) {
+                    && stripOffset + stripByteCount != stripOffsets[i + 1]) {
                     mAreThumbnailStripsConsecutive = false;
                 }
 
@@ -7257,7 +7279,7 @@ public class ExifInterface {
 
                 // Add bytes to array
                 System.arraycopy(stripBytes, 0, totalStripBytes, bytesAdded,
-                        stripBytes.length);
+                    stripBytes.length);
                 bytesAdded += stripBytes.length;
             }
             mThumbnailBytes = totalStripBytes;
@@ -7272,7 +7294,7 @@ public class ExifInterface {
     // Check if thumbnail data type is currently supported or not
     private boolean isSupportedDataType(HashMap<String, ExifAttribute> thumbnailData) {
         ExifAttribute bitsPerSampleAttribute =
-                thumbnailData.get(TAG_BITS_PER_SAMPLE);
+            thumbnailData.get(TAG_BITS_PER_SAMPLE);
         if (bitsPerSampleAttribute != null) {
             int[] bitsPerSampleValue = (int[]) bitsPerSampleAttribute.getValue(mExifByteOrder);
 
@@ -7283,14 +7305,14 @@ public class ExifInterface {
             // See DNG Specification 1.4.0.0. Section 3, Compression.
             if (mMimeType == IMAGE_TYPE_DNG) {
                 ExifAttribute photometricInterpretationAttribute =
-                        thumbnailData.get(TAG_PHOTOMETRIC_INTERPRETATION);
+                    thumbnailData.get(TAG_PHOTOMETRIC_INTERPRETATION);
                 if (photometricInterpretationAttribute != null) {
                     int photometricInterpretationValue
-                            = photometricInterpretationAttribute.getIntValue(mExifByteOrder);
+                        = photometricInterpretationAttribute.getIntValue(mExifByteOrder);
                     if ((photometricInterpretationValue == PHOTOMETRIC_INTERPRETATION_BLACK_IS_ZERO
-                            && Arrays.equals(bitsPerSampleValue, BITS_PER_SAMPLE_GREYSCALE_2))
-                            || ((photometricInterpretationValue == PHOTOMETRIC_INTERPRETATION_YCBCR)
-                            && Arrays.equals(bitsPerSampleValue, BITS_PER_SAMPLE_RGB))) {
+                        && Arrays.equals(bitsPerSampleValue, BITS_PER_SAMPLE_GREYSCALE_2))
+                        || ((photometricInterpretationValue == PHOTOMETRIC_INTERPRETATION_YCBCR)
+                        && Arrays.equals(bitsPerSampleValue, BITS_PER_SAMPLE_RGB))) {
                         return true;
                     } else {
                         // TODO: Add support for lossless Huffman JPEG data
@@ -7332,9 +7354,9 @@ public class ExifInterface {
         // sizes, excluding padding at the right end or bottom end of the image to make sure that
         // the values are multiples of 64. See JEITA CP-3451C Table 5 and Section 4.8.1. B.
         ExifAttribute pixelXDimAttribute =
-                mAttributes[IFD_TYPE_EXIF].get(TAG_PIXEL_X_DIMENSION);
+            mAttributes[IFD_TYPE_EXIF].get(TAG_PIXEL_X_DIMENSION);
         ExifAttribute pixelYDimAttribute =
-                mAttributes[IFD_TYPE_EXIF].get(TAG_PIXEL_Y_DIMENSION);
+            mAttributes[IFD_TYPE_EXIF].get(TAG_PIXEL_Y_DIMENSION);
         if (pixelXDimAttribute != null && pixelYDimAttribute != null) {
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH, pixelXDimAttribute);
             mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH, pixelYDimAttribute);
@@ -7372,57 +7394,57 @@ public class ExifInterface {
      * which results in larger values for TAG_IMAGE_WIDTH and TAG_IMAGE_LENGTH tags.
      * This method corrects those tag values by checking first the values of TAG_DEFAULT_CROP_SIZE
      * See DNG Specification 1.4.0.0. Section 4. (DefaultCropSize)
-     *
+     * <p>
      * If image is a RW2 file, valid image sizes are stored in SensorBorder tags.
      * See tiff_parser.cc GetFullDimension32()
-     * */
+     */
     private void updateImageSizeValues(SeekableByteOrderedDataInputStream in, int imageType)
-            throws IOException {
+        throws IOException {
         // Uncompressed image valid image size values
         ExifAttribute defaultCropSizeAttribute =
-                mAttributes[imageType].get(TAG_DEFAULT_CROP_SIZE);
+            mAttributes[imageType].get(TAG_DEFAULT_CROP_SIZE);
         // RW2 image valid image size values
         ExifAttribute topBorderAttribute =
-                mAttributes[imageType].get(TAG_RW2_SENSOR_TOP_BORDER);
+            mAttributes[imageType].get(TAG_RW2_SENSOR_TOP_BORDER);
         ExifAttribute leftBorderAttribute =
-                mAttributes[imageType].get(TAG_RW2_SENSOR_LEFT_BORDER);
+            mAttributes[imageType].get(TAG_RW2_SENSOR_LEFT_BORDER);
         ExifAttribute bottomBorderAttribute =
-                mAttributes[imageType].get(TAG_RW2_SENSOR_BOTTOM_BORDER);
+            mAttributes[imageType].get(TAG_RW2_SENSOR_BOTTOM_BORDER);
         ExifAttribute rightBorderAttribute =
-                mAttributes[imageType].get(TAG_RW2_SENSOR_RIGHT_BORDER);
+            mAttributes[imageType].get(TAG_RW2_SENSOR_RIGHT_BORDER);
 
         if (defaultCropSizeAttribute != null) {
             // Update for uncompressed image
             ExifAttribute defaultCropSizeXAttribute, defaultCropSizeYAttribute;
             if (defaultCropSizeAttribute.format == IFD_FORMAT_URATIONAL) {
                 Rational[] defaultCropSizeValue =
-                        (Rational[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
+                    (Rational[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
                 if (defaultCropSizeValue == null || defaultCropSizeValue.length != 2) {
                     logger.warn("Invalid crop size values. cropSize="
-                            + Arrays.toString(defaultCropSizeValue));
+                        + Arrays.toString(defaultCropSizeValue));
                     return;
                 }
                 defaultCropSizeXAttribute =
-                        ExifAttribute.createURational(defaultCropSizeValue[0], mExifByteOrder);
+                    ExifAttribute.createURational(defaultCropSizeValue[0], mExifByteOrder);
                 defaultCropSizeYAttribute =
-                        ExifAttribute.createURational(defaultCropSizeValue[1], mExifByteOrder);
+                    ExifAttribute.createURational(defaultCropSizeValue[1], mExifByteOrder);
             } else {
                 int[] defaultCropSizeValue =
-                        (int[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
+                    (int[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
                 if (defaultCropSizeValue == null || defaultCropSizeValue.length != 2) {
                     logger.warn("Invalid crop size values. cropSize="
-                            + Arrays.toString(defaultCropSizeValue));
+                        + Arrays.toString(defaultCropSizeValue));
                     return;
                 }
                 defaultCropSizeXAttribute =
-                        ExifAttribute.createUShort(defaultCropSizeValue[0], mExifByteOrder);
+                    ExifAttribute.createUShort(defaultCropSizeValue[0], mExifByteOrder);
                 defaultCropSizeYAttribute =
-                        ExifAttribute.createUShort(defaultCropSizeValue[1], mExifByteOrder);
+                    ExifAttribute.createUShort(defaultCropSizeValue[1], mExifByteOrder);
             }
             mAttributes[imageType].put(TAG_IMAGE_WIDTH, defaultCropSizeXAttribute);
             mAttributes[imageType].put(TAG_IMAGE_LENGTH, defaultCropSizeYAttribute);
         } else if (topBorderAttribute != null && leftBorderAttribute != null &&
-                bottomBorderAttribute != null && rightBorderAttribute != null) {
+            bottomBorderAttribute != null && rightBorderAttribute != null) {
             // Update for RW2 image
             int topBorderValue = topBorderAttribute.getIntValue(mExifByteOrder);
             int bottomBorderValue = bottomBorderAttribute.getIntValue(mExifByteOrder);
@@ -7432,9 +7454,9 @@ public class ExifInterface {
                 int length = bottomBorderValue - topBorderValue;
                 int width = rightBorderValue - leftBorderValue;
                 ExifAttribute imageLengthAttribute =
-                        ExifAttribute.createUShort(length, mExifByteOrder);
+                    ExifAttribute.createUShort(length, mExifByteOrder);
                 ExifAttribute imageWidthAttribute =
-                        ExifAttribute.createUShort(width, mExifByteOrder);
+                    ExifAttribute.createUShort(width, mExifByteOrder);
                 mAttributes[imageType].put(TAG_IMAGE_LENGTH, imageLengthAttribute);
                 mAttributes[imageType].put(TAG_IMAGE_WIDTH, imageWidthAttribute);
             }
@@ -7467,7 +7489,7 @@ public class ExifInterface {
         // Remove null value tags.
         for (int ifdType = 0; ifdType < EXIF_TAGS.length; ++ifdType) {
             Iterator<Map.Entry<String, ExifAttribute>> entrySetIterator =
-                    mAttributes[ifdType].entrySet().iterator();
+                mAttributes[ifdType].entrySet().iterator();
             while (entrySetIterator.hasNext()) {
                 Map.Entry<String, ExifAttribute> entry = entrySetIterator.next();
                 if (entry.getValue() == null) {
@@ -7480,27 +7502,27 @@ public class ExifInterface {
         // offset when there is one or more tags in the thumbnail IFD.
         if (!mAttributes[IFD_TYPE_EXIF].isEmpty()) {
             mAttributes[IFD_TYPE_PRIMARY].put(EXIF_POINTER_TAGS[1].name,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (!mAttributes[IFD_TYPE_GPS].isEmpty()) {
             mAttributes[IFD_TYPE_PRIMARY].put(EXIF_POINTER_TAGS[2].name,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (!mAttributes[IFD_TYPE_INTEROPERABILITY].isEmpty()) {
             mAttributes[IFD_TYPE_EXIF].put(EXIF_POINTER_TAGS[3].name,
-                    ExifAttribute.createULong(0, mExifByteOrder));
+                ExifAttribute.createULong(0, mExifByteOrder));
         }
         if (mHasThumbnail) {
             if (mHasThumbnailStrips) {
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_STRIP_OFFSETS,
-                        ExifAttribute.createUShort(0, mExifByteOrder));
+                    ExifAttribute.createUShort(0, mExifByteOrder));
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_STRIP_BYTE_COUNTS,
-                        ExifAttribute.createUShort(mThumbnailLength, mExifByteOrder));
+                    ExifAttribute.createUShort(mThumbnailLength, mExifByteOrder));
             } else {
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_JPEG_INTERCHANGE_FORMAT,
-                        ExifAttribute.createULong(0, mExifByteOrder));
+                    ExifAttribute.createULong(0, mExifByteOrder));
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_JPEG_INTERCHANGE_FORMAT_LENGTH,
-                        ExifAttribute.createULong(mThumbnailLength, mExifByteOrder));
+                    ExifAttribute.createULong(mThumbnailLength, mExifByteOrder));
             }
         }
 
@@ -7532,10 +7554,10 @@ public class ExifInterface {
             int thumbnailOffset = position;
             if (mHasThumbnailStrips) {
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_STRIP_OFFSETS,
-                        ExifAttribute.createUShort(thumbnailOffset, mExifByteOrder));
+                    ExifAttribute.createUShort(thumbnailOffset, mExifByteOrder));
             } else {
                 mAttributes[IFD_TYPE_THUMBNAIL].put(TAG_JPEG_INTERCHANGE_FORMAT,
-                        ExifAttribute.createULong(thumbnailOffset, mExifByteOrder));
+                    ExifAttribute.createULong(thumbnailOffset, mExifByteOrder));
             }
             mThumbnailOffset = thumbnailOffset;
             position += mThumbnailLength;
@@ -7549,30 +7571,30 @@ public class ExifInterface {
         if (DEBUG) {
             for (int i = 0; i < EXIF_TAGS.length; ++i) {
                 logger.debug(String.format("index: %d, offsets: %d, tag count: %d, data sizes: %d, "
-                                + "total size: %d", i, ifdOffsets[i], mAttributes[i].size(),
-                        ifdDataSizes[i], totalSize));
+                        + "total size: %d", i, ifdOffsets[i], mAttributes[i].size(),
+                    ifdDataSizes[i], totalSize));
             }
         }
 
         // Update IFD pointer tags with the calculated offsets.
         if (!mAttributes[IFD_TYPE_EXIF].isEmpty()) {
             mAttributes[IFD_TYPE_PRIMARY].put(EXIF_POINTER_TAGS[1].name,
-                    ExifAttribute.createULong(ifdOffsets[IFD_TYPE_EXIF], mExifByteOrder));
+                ExifAttribute.createULong(ifdOffsets[IFD_TYPE_EXIF], mExifByteOrder));
         }
         if (!mAttributes[IFD_TYPE_GPS].isEmpty()) {
             mAttributes[IFD_TYPE_PRIMARY].put(EXIF_POINTER_TAGS[2].name,
-                    ExifAttribute.createULong(ifdOffsets[IFD_TYPE_GPS], mExifByteOrder));
+                ExifAttribute.createULong(ifdOffsets[IFD_TYPE_GPS], mExifByteOrder));
         }
         if (!mAttributes[IFD_TYPE_INTEROPERABILITY].isEmpty()) {
             mAttributes[IFD_TYPE_EXIF].put(EXIF_POINTER_TAGS[3].name, ExifAttribute.createULong(
-                    ifdOffsets[IFD_TYPE_INTEROPERABILITY], mExifByteOrder));
+                ifdOffsets[IFD_TYPE_INTEROPERABILITY], mExifByteOrder));
         }
 
         switch (mMimeType) {
             case IMAGE_TYPE_JPEG:
                 if (totalSize > 0xFFFF) {
                     throw new IllegalStateException(
-                            "Size of exif data (" + totalSize + " bytes) exceeds the max size of a "
+                        "Size of exif data (" + totalSize + " bytes) exceeds the max size of a "
                             + "JPEG APP1 segment (65536 bytes)");
                 }
                 // Write JPEG specific data (APP1 size, APP1 identifier)
@@ -7671,7 +7693,7 @@ public class ExifInterface {
      *
      * @param entryValue The value to be determined.
      * @return Returns two data formats guessed as a pair in integer. If there is no two candidate
-               data formats for the given entry value, returns {@code -1} in the second of the pair.
+     * data formats for the given entry value, returns {@code -1} in the second of the pair.
      */
     private static Pair<Integer, Integer> guessDataFormat(String entryValue) {
         // See TIFF 6.0 Section 2, "Image File Directory".
@@ -7686,11 +7708,11 @@ public class ExifInterface {
                 final Pair<Integer, Integer> guessDataFormat = guessDataFormat(entryValues[i]);
                 int first = -1, second = -1;
                 if (guessDataFormat.first.equals(dataFormat.first)
-                        || guessDataFormat.second.equals(dataFormat.first)) {
+                    || guessDataFormat.second.equals(dataFormat.first)) {
                     first = dataFormat.first;
                 }
                 if (dataFormat.second != -1 && (guessDataFormat.first.equals(dataFormat.second)
-                        || guessDataFormat.second.equals(dataFormat.second))) {
+                    || guessDataFormat.second.equals(dataFormat.second))) {
                     second = dataFormat.second;
                 }
                 if (first == -1 && second == -1) {
@@ -7721,7 +7743,7 @@ public class ExifInterface {
                         return new Pair<>(IFD_FORMAT_URATIONAL, -1);
                     }
                     return new Pair<>(IFD_FORMAT_SRATIONAL, IFD_FORMAT_URATIONAL);
-                } catch (NumberFormatException e)  {
+                } catch (NumberFormatException e) {
                     // Ignored
                 }
             }
@@ -7766,8 +7788,8 @@ public class ExifInterface {
             super(in);
             if (!in.markSupported()) {
                 throw new IllegalArgumentException("Cannot create "
-                        + "SeekableByteOrderedDataInputStream with stream that does not support "
-                        + "mark/reset");
+                    + "SeekableByteOrderedDataInputStream with stream that does not support "
+                    + "mark/reset");
             }
             // Mark given InputStream to the maximum value (we can't know the length of the
             // stream for certain) so that InputStream.reset() may be called at any point in the
@@ -7816,8 +7838,8 @@ public class ExifInterface {
             mPosition = 0;
             mByteOrder = byteOrder;
             this.mLength = in instanceof ByteOrderedDataInputStream
-                    ? ((ByteOrderedDataInputStream) in).length()
-                    : LENGTH_UNSET;
+                ? ((ByteOrderedDataInputStream) in).length()
+                : LENGTH_UNSET;
         }
 
         public void setByteOrder(ByteOrder byteOrder) {
@@ -7828,7 +7850,9 @@ public class ExifInterface {
             return mPosition;
         }
 
-        /** Reads all remaining data. */
+        /**
+         * Reads all remaining data.
+         */
         public byte[] readToEnd() throws IOException {
             byte[] data = new byte[1024];
             int bytesRead = 0;
@@ -8015,12 +8039,12 @@ public class ExifInterface {
             }
             if (mByteOrder == LITTLE_ENDIAN) {
                 return (((long) ch8 << 56) + ((long) ch7 << 48) + ((long) ch6 << 40)
-                        + ((long) ch5 << 32) + ((long) ch4 << 24) + ((long) ch3 << 16)
-                        + ((long) ch2 << 8) + (long) ch1);
+                    + ((long) ch5 << 32) + ((long) ch4 << 24) + ((long) ch3 << 16)
+                    + ((long) ch2 << 8) + (long) ch1);
             } else if (mByteOrder == BIG_ENDIAN) {
                 return (((long) ch1 << 56) + ((long) ch2 << 48) + ((long) ch3 << 40)
-                        + ((long) ch4 << 32) + ((long) ch5 << 24) + ((long) ch6 << 16)
-                        + ((long) ch7 << 8) + (long) ch8);
+                    + ((long) ch4 << 32) + ((long) ch5 << 24) + ((long) ch6 << 16)
+                    + ((long) ch7 << 8) + (long) ch8);
             }
             throw new IOException("Invalid byte order: " + mByteOrder);
         }
@@ -8045,8 +8069,10 @@ public class ExifInterface {
             throw new UnsupportedOperationException("Reset is currently unsupported");
         }
 
-        /** Return the total length (in bytes) of the underlying stream if known, otherwise
-         *  {@link #LENGTH_UNSET}. */
+        /**
+         * Return the total length (in bytes) of the underlying stream if known, otherwise
+         * {@link #LENGTH_UNSET}.
+         */
         public int length() {
             return mLength;
         }
@@ -8109,7 +8135,7 @@ public class ExifInterface {
         public void writeUnsignedShort(int val) throws IOException {
             if (val > 0xFFFF) {
                 throw new IllegalArgumentException("val is larger than the maximum value of a "
-                        + "16-bit unsigned integer");
+                    + "16-bit unsigned integer");
             }
             writeShort((short) val);
         }
@@ -8117,7 +8143,7 @@ public class ExifInterface {
         public void writeUnsignedInt(long val) throws IOException {
             if (val > 0xFFFF_FFFFL) {
                 throw new IllegalArgumentException("val is larger than the maximum value of a "
-                        + "32-bit unsigned integer");
+                    + "32-bit unsigned integer");
             }
             writeInt((int) val);
         }
@@ -8125,7 +8151,7 @@ public class ExifInterface {
 
     // Swaps image data based on image size
     private void swapBasedOnImageSize(@IfdType int firstIfdType, @IfdType int secondIfdType)
-            throws IOException {
+        throws IOException {
         if (mAttributes[firstIfdType].isEmpty() || mAttributes[secondIfdType].isEmpty()) {
             if (DEBUG) {
                 logger.debug("Cannot perform swap since only one image data exists");
@@ -8134,13 +8160,13 @@ public class ExifInterface {
         }
 
         ExifAttribute firstImageLengthAttribute =
-                mAttributes[firstIfdType].get(TAG_IMAGE_LENGTH);
+            mAttributes[firstIfdType].get(TAG_IMAGE_LENGTH);
         ExifAttribute firstImageWidthAttribute =
-                mAttributes[firstIfdType].get(TAG_IMAGE_WIDTH);
+            mAttributes[firstIfdType].get(TAG_IMAGE_WIDTH);
         ExifAttribute secondImageLengthAttribute =
-                mAttributes[secondIfdType].get(TAG_IMAGE_LENGTH);
+            mAttributes[secondIfdType].get(TAG_IMAGE_LENGTH);
         ExifAttribute secondImageWidthAttribute =
-                mAttributes[secondIfdType].get(TAG_IMAGE_WIDTH);
+            mAttributes[secondIfdType].get(TAG_IMAGE_WIDTH);
 
         if (firstImageLengthAttribute == null || firstImageWidthAttribute == null) {
             if (DEBUG) {
@@ -8157,7 +8183,7 @@ public class ExifInterface {
             int secondImageWidthValue = secondImageWidthAttribute.getIntValue(mExifByteOrder);
 
             if (firstImageLengthValue < secondImageLengthValue &&
-                    firstImageWidthValue < secondImageWidthValue) {
+                firstImageWidthValue < secondImageWidthValue) {
                 HashMap<String, ExifAttribute> tempMap = mAttributes[firstIfdType];
                 mAttributes[firstIfdType] = mAttributes[secondIfdType];
                 mAttributes[secondIfdType] = tempMap;
@@ -8169,7 +8195,7 @@ public class ExifInterface {
         if (!mAttributes[ifdType].isEmpty()) {
             if (mAttributes[ifdType].get(invalidTag) != null) {
                 mAttributes[ifdType].put(validTag,
-                        mAttributes[ifdType].get(invalidTag));
+                    mAttributes[ifdType].get(invalidTag));
                 mAttributes[ifdType].remove(invalidTag);
             }
         }
@@ -8183,7 +8209,7 @@ public class ExifInterface {
      */
     private static boolean shouldSupportSeek(int mimeType) {
         if (mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_RAF || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP) {
+            || mimeType == IMAGE_TYPE_WEBP) {
             return false;
         }
         return true;
@@ -8191,7 +8217,7 @@ public class ExifInterface {
 
     private static boolean isSupportedFormatForSavingAttributes(int mimeType) {
         if (mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP) {
+            || mimeType == IMAGE_TYPE_WEBP) {
             return true;
         }
         return false;

@@ -102,8 +102,8 @@ public class LicenseChecker implements ServiceConnection {
     private final Queue<LicenseValidator> mPendingChecks = new LinkedList<LicenseValidator>();
 
     /**
-     * @param context a Context
-     * @param policy implementation of Policy
+     * @param context          a Context
+     * @param policy           implementation of Policy
      * @param encodedPublicKey Base64-encoded RSA public key
      * @throws IllegalArgumentException if encodedPublicKey is invalid
      */
@@ -162,40 +162,40 @@ public class LicenseChecker implements ServiceConnection {
             callback.allow(Policy.LICENSED);
         } else {
             LicenseValidator validator = new LicenseValidator(mPolicy, new NullDeviceLimiter(),
-                    callback, generateNonce(), mPackageName, mVersionCode);
+                callback, generateNonce(), mPackageName, mVersionCode);
 
             if (mService == null) {
                 Log.i(TAG, "Binding to licensing service.");
                 try {
                     boolean bindResult = mContext
-                            .bindService(
-                                    new Intent(
-                                            new String(
-                                                    // Base64 encoded -
-                                                    // com.android.vending.licensing.ILicensingService
-                                                    // Consider encoding this in another way in your
-                                                    // code to improve security
-                                                    Base64.decode(
-                                                            "Y29tLmFuZHJvaWQudmVuZGluZy5saWNlbnNpbmcuSUxpY2Vuc2luZ1NlcnZpY2U=")))
-                                                                    // As of Android 5.0, implicit
-                                                                    // Service Intents are no longer
-                                                                    // allowed because it's not
-                                                                    // possible for the user to
-                                                                    // participate in disambiguating
-                                                                    // them. This does mean we break
-                                                                    // compatibility with Android
-                                                                    // Cupcake devices with this
-                                                                    // release, since setPackage was
-                                                                    // added in Donut.
-                                                                    .setPackage(
-                                                                            new String(
-                                                                                    // Base64
-                                                                                    // encoded -
-                                                                                    // com.android.vending
-                                                                                    Base64.decode(
-                                                                                            "Y29tLmFuZHJvaWQudmVuZGluZw=="))),
-                                    this, // ServiceConnection.
-                                    Context.BIND_AUTO_CREATE);
+                        .bindService(
+                            new Intent(
+                                new String(
+                                    // Base64 encoded -
+                                    // com.android.vending.licensing.ILicensingService
+                                    // Consider encoding this in another way in your
+                                    // code to improve security
+                                    Base64.decode(
+                                        "Y29tLmFuZHJvaWQudmVuZGluZy5saWNlbnNpbmcuSUxpY2Vuc2luZ1NlcnZpY2U=")))
+                                // As of Android 5.0, implicit
+                                // Service Intents are no longer
+                                // allowed because it's not
+                                // possible for the user to
+                                // participate in disambiguating
+                                // them. This does mean we break
+                                // compatibility with Android
+                                // Cupcake devices with this
+                                // release, since setPackage was
+                                // added in Donut.
+                                .setPackage(
+                                    new String(
+                                        // Base64
+                                        // encoded -
+                                        // com.android.vending
+                                        Base64.decode(
+                                            "Y29tLmFuZHJvaWQudmVuZGluZw=="))),
+                            this, // ServiceConnection.
+                            Context.BIND_AUTO_CREATE);
                     if (bindResult) {
                         mPendingChecks.offer(validator);
                     } else {
@@ -220,8 +220,8 @@ public class LicenseChecker implements ServiceConnection {
             try {
                 Log.i(TAG, "Calling checkLicense on service for " + validator.getPackageName());
                 mService.checkLicense(
-                        validator.getNonce(), validator.getPackageName(),
-                        new ResultListener(validator));
+                    validator.getNonce(), validator.getPackageName(),
+                    new ResultListener(validator));
                 mChecksInProgress.add(validator);
             } catch (RemoteException e) {
                 Log.w(TAG, "RemoteException in checkLicense call.", e);
@@ -260,7 +260,7 @@ public class LicenseChecker implements ServiceConnection {
         // Runs in IPC thread pool. Post it to the Handler, so we can guarantee
         // either this or the timeout runs.
         public void verifyLicense(final int responseCode, final String signedData,
-                final String signature) {
+                                  final String signature) {
             mHandler.post(new Runnable() {
                 public void run() {
                     Log.i(TAG, "Received response.");
@@ -292,7 +292,7 @@ public class LicenseChecker implements ServiceConnection {
 
                         if (logResponse) {
                             String android_id = Secure.getString(mContext.getContentResolver(),
-                                    Secure.ANDROID_ID);
+                                Secure.ANDROID_ID);
                             Date date = new Date();
                             Log.d(TAG, "Server Failure: " + stringError);
                             Log.d(TAG, "Android ID: " + android_id);
@@ -342,7 +342,9 @@ public class LicenseChecker implements ServiceConnection {
         }
     }
 
-    /** Unbinds service if necessary and removes reference to it. */
+    /**
+     * Unbinds service if necessary and removes reference to it.
+     */
     private void cleanupService() {
         if (mService != null) {
             try {
@@ -369,7 +371,9 @@ public class LicenseChecker implements ServiceConnection {
         mHandler.getLooper().quit();
     }
 
-    /** Generates a nonce (number used once). */
+    /**
+     * Generates a nonce (number used once).
+     */
     private int generateNonce() {
         return RANDOM.nextInt();
     }
@@ -384,7 +388,7 @@ public class LicenseChecker implements ServiceConnection {
     private static String getVersionCode(Context context, String packageName) {
         try {
             return String.valueOf(
-                    context.getPackageManager().getPackageInfo(packageName, 0).versionCode);
+                context.getPackageManager().getPackageInfo(packageName, 0).versionCode);
         } catch (NameNotFoundException e) {
             Log.e(TAG, "Package not found. could not get version code.");
             return "";

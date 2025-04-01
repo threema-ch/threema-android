@@ -33,10 +33,11 @@ import java.nio.charset.StandardCharsets
  *  This does **not** delete groups.
  *  It deletes messages within a group chat.
  */
-class GroupDeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufGroupMessage<DeleteMessageData>(
-    ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE,
-    payloadData
-) {
+class GroupDeleteMessage(payloadData: DeleteMessageData) :
+    AbstractProtobufGroupMessage<DeleteMessageData>(
+        ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE,
+        payloadData
+    ) {
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_2
 
     override fun allowUserProfileDistribution() = false
@@ -120,7 +121,8 @@ class GroupDeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufGroup
                 data.size < length + offset -> throw BadMessageException("Invalid byte array length (${data.size}) for offset $offset and length $length")
             }
             var positionIndex = offset
-            val groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+            val groupCreator =
+                String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
             positionIndex += ProtocolDefines.IDENTITY_LEN
 
             val apiGroupId = GroupId(data, positionIndex)

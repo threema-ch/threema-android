@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-				xmlns:android="http://schemas.android.com/apk/res/android"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				app:layout_collapseMode="parallax">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_collapseMode="parallax">
 
-	<TextView
-			style="@style/WizardSubTitleText"
-			android:id="@+id/scooter"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_this_is_your_id"
-			android:layout_marginTop="@dimen/wizard_paragraph_height"/>
+    <TextView
+        style="@style/WizardSubTitleText"
+        android:id="@+id/scooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:text="@string/new_wizard_this_is_your_id"
+        android:layout_marginTop="@dimen/wizard_paragraph_height" />
 
-	<TextView
-			style="@style/WizardTitleText"
-			android:id="@+id/wizard_id_title"
-			android:layout_below="@id/scooter"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:textColor="@color/wizard_color_accent"
-			android:layout_marginTop="@dimen/wizard_small_paragraph_height"/>
+    <TextView
+        style="@style/WizardTitleText"
+        android:id="@+id/wizard_id_title"
+        android:layout_below="@id/scooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/wizard_color_accent"
+        android:layout_marginTop="@dimen/wizard_small_paragraph_height" />
 
-	<TextView
-			style="@style/WizardSmallText"
-			android:id="@+id/wizard_id_explain"
-			android:layout_below="@id/wizard_id_title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_works_like_phone_number"
-			android:layout_marginTop="@dimen/wizard_small_paragraph_height"/>
+    <TextView
+        style="@style/WizardSmallText"
+        android:id="@+id/wizard_id_explain"
+        android:layout_below="@id/wizard_id_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:text="@string/new_wizard_works_like_phone_number"
+        android:layout_marginTop="@dimen/wizard_small_paragraph_height" />
 
 </RelativeLayout>

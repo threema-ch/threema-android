@@ -1,99 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<item
-		android:id="@+id/menu_gallery"
-		android:icon="@drawable/ic_collections_white_24dp"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="20"
-		android:title="@string/media_gallery"
-		app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_gallery"
+        android:icon="@drawable/ic_collections_white_24dp"
+        app:iconTint="@android:color/white"
+        android:orderInCategory="20"
+        android:title="@string/media_gallery"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/menu_group_call"
-		android:icon="@drawable/ic_phone_locked_outline"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="30"
-		android:title="@string/group_call"
-		android:visible="false"
-		app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_group_call"
+        android:icon="@drawable/ic_phone_locked_outline"
+        app:iconTint="@android:color/white"
+        android:orderInCategory="30"
+        android:title="@string/group_call"
+        android:visible="false"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/action_send_message"
-		android:enabled="true"
-		android:icon="@drawable/ic_chat_bubble"
-		app:iconTint="@android:color/white"
-		android:orderInCategory="40"
-		android:title="@string/title_compose_message"
-		android:visible="true"
-		app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_send_message"
+        android:enabled="true"
+        android:icon="@drawable/ic_chat_bubble"
+        app:iconTint="@android:color/white"
+        android:orderInCategory="40"
+        android:title="@string/title_compose_message"
+        android:visible="true"
+        app:showAsAction="always" />
 
-	<item
-		android:id="@+id/menu_group_links_manage"
-		android:icon="@drawable/ic_link_outline"
-		app:iconTint="?attr/colorOnSurface"
-		android:orderInCategory="50"
-		android:visible="false"
-		android:title="@string/group_links_manage_menu"
-		app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_group_links_manage"
+        android:icon="@drawable/ic_link_outline"
+        app:iconTint="?attr/colorOnSurface"
+        android:orderInCategory="50"
+        android:visible="false"
+        android:title="@string/group_links_manage_menu"
+        app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_resync"
-		android:enabled="true"
-		android:icon="@drawable/ic_loop_white_24dp"
-		app:iconTint="?attr/colorOnSurface"
-		android:orderInCategory="60"
-		android:title="@string/resync_group"
-		android:visible="false"
-		app:showAsAction="never"
-		/>
+    <item
+        android:id="@+id/menu_resync"
+        android:enabled="true"
+        android:icon="@drawable/ic_loop_white_24dp"
+        app:iconTint="?attr/colorOnSurface"
+        android:orderInCategory="60"
+        android:title="@string/resync_group"
+        android:visible="false"
+        app:showAsAction="never" />
 
-	<item
-		android:id="@+id/menu_clone_group"
-		android:enabled="true"
-		android:orderInCategory="70"
-		android:title="@string/action_clone_group"
-		app:iconTint="?attr/colorOnSurface"
-		android:icon="@drawable/ic_outline_copy_all"
-		android:visible="true"
-		app:showAsAction="never"
-		/>
+    <item
+        android:id="@+id/menu_clone_group"
+        android:enabled="true"
+        android:orderInCategory="70"
+        android:title="@string/action_clone_group"
+        app:iconTint="?attr/colorOnSurface"
+        android:icon="@drawable/ic_outline_copy_all"
+        android:visible="true"
+        app:showAsAction="never" />
 
-	<group>
-		<item
-			android:id="@+id/menu_dissolve_group"
-			android:enabled="true"
-			android:orderInCategory="80"
-			android:title="@string/action_dissolve_group"
-			android:icon="@drawable/ic_outline_directions_run"
-			app:iconTint="?attr/colorOnSurface"
-			android:visible="false"
-			app:showAsAction="never"
-			/>
+    <group>
+        <item
+            android:id="@+id/menu_dissolve_group"
+            android:enabled="true"
+            android:orderInCategory="80"
+            android:title="@string/action_dissolve_group"
+            android:icon="@drawable/ic_outline_directions_run"
+            app:iconTint="?attr/colorOnSurface"
+            android:visible="false"
+            app:showAsAction="never" />
 
-		<item
-			android:id="@+id/menu_leave_group"
-			android:enabled="true"
-			android:orderInCategory="80"
-			android:title="@string/action_leave_group"
-			android:icon="@drawable/ic_outline_directions_run"
-			app:iconTint="?attr/colorOnSurface"
-			android:visible="false"
-			app:showAsAction="never"
-			/>
+        <item
+            android:id="@+id/menu_leave_group"
+            android:enabled="true"
+            android:orderInCategory="80"
+            android:title="@string/action_leave_group"
+            android:icon="@drawable/ic_outline_directions_run"
+            app:iconTint="?attr/colorOnSurface"
+            android:visible="false"
+            app:showAsAction="never" />
 
-		<item
-			android:id="@+id/menu_delete_group"
-			android:enabled="true"
-			android:orderInCategory="90"
-			android:title="@string/action_delete_group"
-			android:icon="@drawable/ic_delete_outline"
-			app:iconTint="?attr/colorOnSurface"
-			android:visible="false"
-			app:showAsAction="never"
-			/>
-	</group>
+        <item
+            android:id="@+id/menu_delete_group"
+            android:enabled="true"
+            android:orderInCategory="90"
+            android:title="@string/action_delete_group"
+            android:icon="@drawable/ic_delete_outline"
+            app:iconTint="?attr/colorOnSurface"
+            android:visible="false"
+            app:showAsAction="never" />
+    </group>
 
 </menu>

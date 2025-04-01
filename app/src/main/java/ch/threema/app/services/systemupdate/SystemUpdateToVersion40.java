@@ -35,45 +35,45 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
 
 
 public class SystemUpdateToVersion40 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion40(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion40(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if(!fieldExists(this.sqLiteDatabase,
-				WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
-			this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
-					" ADD COLUMN " +  WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase,
+            WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
+            this.sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
+                " ADD COLUMN " + WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		// Master Key is unlocked
-		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		if (preferenceService != null) {
-			String currentPushToken = preferenceService.getPushToken();
+    @Override
+    public boolean runAsync() {
+        // Master Key is unlocked
+        PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+        if (preferenceService != null) {
+            String currentPushToken = preferenceService.getPushToken();
 
-			if (!TestUtil.isEmptyOrNull(currentPushToken)) {
-				// update all
-				this.sqLiteDatabase.execSQL("UPDATE " + WebClientSessionModel.TABLE + " "
-						+ "SET " + WebClientSessionModel.COLUMN_PUSH_TOKEN + "=?",
-						new String[]{
-								currentPushToken
-						});
-			}
-		}
+            if (!TestUtil.isEmptyOrNull(currentPushToken)) {
+                // update all
+                this.sqLiteDatabase.execSQL("UPDATE " + WebClientSessionModel.TABLE + " "
+                        + "SET " + WebClientSessionModel.COLUMN_PUSH_TOKEN + "=?",
+                    new String[]{
+                        currentPushToken
+                    });
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 40";
-	}
+    @Override
+    public String getText() {
+        return "version 40";
+    }
 }

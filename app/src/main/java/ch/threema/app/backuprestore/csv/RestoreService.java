@@ -494,7 +494,7 @@ public class RestoreService extends Service {
 
                 // contacts, groups and distribution lists
                 logger.info("Restoring main files (contacts, groups, distribution lists)");
-                if(!this.restoreMainFiles(fileHeaders)) {
+                if (!this.restoreMainFiles(fileHeaders)) {
                     logger.error("restore main files failed");
                     // continue anyway!
                 }
@@ -503,13 +503,13 @@ public class RestoreService extends Service {
 
                 logger.info("Restoring message files");
                 long messageCount = this.restoreMessageFiles(fileHeaders);
-                if(messageCount == 0) {
+                if (messageCount == 0) {
                     logger.error("restore message files failed");
                     // continue anyway!
                 }
 
                 logger.info("Restoring group avatar files");
-                if(!this.restoreGroupAvatarFiles(fileHeaders)) {
+                if (!this.restoreGroupAvatarFiles(fileHeaders)) {
                     logger.error("restore group avatar files failed");
                     // continue anyway!
                 }
@@ -527,7 +527,7 @@ public class RestoreService extends Service {
 
                 // restore all avatars
                 logger.info("Restoring avatars");
-                if(!this.restoreContactAvatars(fileHeaders)) {
+                if (!this.restoreContactAvatars(fileHeaders)) {
                     logger.error("restore contact avatar files failed");
                     // continue anyway!
                 }
@@ -564,7 +564,7 @@ public class RestoreService extends Service {
         } catch (RestoreCanceledException e) {
             logger.error("Restore cancelled", e);
             message = getString(R.string.restore_data_cancelled);
-        } catch(IOException e) {
+        } catch (IOException e) {
             logger.error("Exception while restoring backup", e);
             message = getString(R.string.invalid_zip_restore_failed, e.getMessage());
         } catch (Exception e) {
@@ -621,7 +621,7 @@ public class RestoreService extends Service {
                         }
                         break;
                     case Tags.DISTRIBUTION_LISTS_FILE_NAME:
-                        if(!this.restoreDistributionListFile(fileHeader)) {
+                        if (!this.restoreDistributionListFile(fileHeader)) {
                             logger.error("restore distribution list file failed");
                         }
                         break;
@@ -717,7 +717,7 @@ public class RestoreService extends Service {
      * Get the file header where the file name matches the provided exactFileName.
      *
      * @param exactFileName The file name that is matched against
-     * @param fileHeaders The file headers that are scanned
+     * @param fileHeaders   The file headers that are scanned
      * @return The first matching file header or null if none matches
      */
     @Nullable
@@ -977,13 +977,12 @@ public class RestoreService extends Service {
         for (FileHeader fileHeader : fileHeaders) {
             String fileName = fileHeader.getFileName();
             if (fileName.startsWith(Tags.CONTACT_AVATAR_FILE_PREFIX)) {
-                if(!this.restoreContactAvatarFile(fileHeader)) {
+                if (!this.restoreContactAvatarFile(fileHeader)) {
                     logger.error("restore contact avatar {} file failed or skipped", fileName);
                     // continue anyway
                 }
-            }
-            else if (fileName.startsWith(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX)) {
-                if(!this.restoreContactPhotoFile(fileHeader)) {
+            } else if (fileName.startsWith(Tags.CONTACT_PROFILE_PIC_FILE_PREFIX)) {
+                if (!this.restoreContactPhotoFile(fileHeader)) {
                     logger.error("restore contact profile pic {} file failed or skipped", fileName);
                     // continue anyway
                 }
@@ -991,6 +990,7 @@ public class RestoreService extends Service {
         }
         return true;
     }
+
     /**
      * restore all message files
      */
@@ -1011,16 +1011,14 @@ public class RestoreService extends Service {
                     logger.error("restore contact message file failed");
                     return 0;
                 }
-            }
-            else if (fileName.startsWith(Tags.GROUP_MESSAGE_FILE_PREFIX)) {
+            } else if (fileName.startsWith(Tags.GROUP_MESSAGE_FILE_PREFIX)) {
                 try {
                     count += this.restoreGroupMessageFile(fileHeader);
                 } catch (ThreemaException e) {
                     logger.error("restore group message file failed");
                     return 0;
                 }
-            }
-            else if (fileName.startsWith(Tags.DISTRIBUTION_LIST_MESSAGE_FILE_PREFIX)) {
+            } else if (fileName.startsWith(Tags.DISTRIBUTION_LIST_MESSAGE_FILE_PREFIX)) {
                 try {
                     count += this.restoreDistributionListMessageFile(fileHeader);
                 } catch (ThreemaException e) {
@@ -1037,7 +1035,7 @@ public class RestoreService extends Service {
      */
     private boolean restoreGroupAvatarFiles(List<FileHeader> fileHeaders) {
         boolean success = true;
-        for(FileHeader fileHeader: fileHeaders) {
+        for (FileHeader fileHeader : fileHeaders) {
             String fileName = fileHeader.getFileName();
 
             if (!fileName.startsWith(Tags.GROUP_AVATAR_PREFIX)) {
@@ -1112,7 +1110,7 @@ public class RestoreService extends Service {
 
         for (FileHeader fileHeader : fileHeaders) {
             String fileName = fileHeader.getFileName();
-            if(!TestUtil.isEmptyOrNull(fileName)
+            if (!TestUtil.isEmptyOrNull(fileName)
                 && fileName.startsWith(thumbnailPrefix)) {
                 thumbnailFileHeaders.put(fileName, fileHeader);
             }
@@ -1201,7 +1199,7 @@ public class RestoreService extends Service {
         });
     }
 
-    private boolean restoreContactAvatarFile(@NonNull FileHeader fileHeader){
+    private boolean restoreContactAvatarFile(@NonNull FileHeader fileHeader) {
         // Look up avatar filename
         String filename = fileHeader.getFileName();
         if (TestUtil.isEmptyOrNull(filename)) {
@@ -1237,10 +1235,10 @@ public class RestoreService extends Service {
         }
     }
 
-    private boolean restoreContactPhotoFile(@NonNull FileHeader fileHeader){
+    private boolean restoreContactPhotoFile(@NonNull FileHeader fileHeader) {
         // Look up profile picture filename
         String filename = fileHeader.getFileName();
-        if(TestUtil.isEmptyOrNull(filename)) {
+        if (TestUtil.isEmptyOrNull(filename)) {
             return false;
         }
 
@@ -1354,21 +1352,19 @@ public class RestoreService extends Service {
                 LinkBallotModel ballotLinkModel = createLinkBallotModel(row, ballotModel.getId());
 
                 if (writeToDb) {
-                    if(ballotLinkModel == null) {
+                    if (ballotLinkModel == null) {
                         // link failed
                         logger.error("link failed");
                     }
-                    if(ballotLinkModel instanceof GroupBallotModel) {
+                    if (ballotLinkModel instanceof GroupBallotModel) {
                         databaseServiceNew.getGroupBallotModelFactory().create(
-                            (GroupBallotModel)ballotLinkModel
+                            (GroupBallotModel) ballotLinkModel
                         );
-                    }
-                    else if(ballotLinkModel instanceof IdentityBallotModel) {
+                    } else if (ballotLinkModel instanceof IdentityBallotModel) {
                         databaseServiceNew.getIdentityBallotModelFactory().create(
-                            (IdentityBallotModel)ballotLinkModel
+                            (IdentityBallotModel) ballotLinkModel
                         );
-                    }
-                    else {
+                    } else {
                         logger.error("not handled link");
                     }
                 }
@@ -1415,12 +1411,12 @@ public class RestoreService extends Service {
         groupModel.setName(row.getString(Tags.TAG_GROUP_NAME));
         groupModel.setCreatedAt(row.getDate(Tags.TAG_GROUP_CREATED_AT));
 
-        if(restoreSettings.getVersion() >= 4) {
+        if (restoreSettings.getVersion() >= 4) {
             groupModel.setDeleted(row.getBoolean(Tags.TAG_GROUP_DELETED));
         } else {
             groupModel.setDeleted(false);
         }
-        if(restoreSettings.getVersion() >= 14) {
+        if (restoreSettings.getVersion() >= 14) {
             groupModel.setArchived(row.getBoolean(Tags.TAG_GROUP_ARCHIVED));
         }
 
@@ -1448,34 +1444,30 @@ public class RestoreService extends Service {
         ballotModel.setName(row.getString(Tags.TAG_BALLOT_NAME));
 
         String state = row.getString(Tags.TAG_BALLOT_STATE);
-        if(TestUtil.compare(state, BallotModel.State.CLOSED.toString())) {
+        if (TestUtil.compare(state, BallotModel.State.CLOSED.toString())) {
             ballotModel.setState(BallotModel.State.CLOSED);
-        }
-        else if(TestUtil.compare(state, BallotModel.State.OPEN.toString())) {
+        } else if (TestUtil.compare(state, BallotModel.State.OPEN.toString())) {
             ballotModel.setState(BallotModel.State.OPEN);
-        }
-        else if(TestUtil.compare(state, BallotModel.State.TEMPORARY.toString())) {
+        } else if (TestUtil.compare(state, BallotModel.State.TEMPORARY.toString())) {
             ballotModel.setState(BallotModel.State.TEMPORARY);
         }
 
         String assessment = row.getString(Tags.TAG_BALLOT_ASSESSMENT);
-        if(TestUtil.compare(assessment, BallotModel.Assessment.MULTIPLE_CHOICE.toString())) {
+        if (TestUtil.compare(assessment, BallotModel.Assessment.MULTIPLE_CHOICE.toString())) {
             ballotModel.setAssessment(BallotModel.Assessment.MULTIPLE_CHOICE);
-        }
-        else if(TestUtil.compare(assessment, BallotModel.Assessment.SINGLE_CHOICE.toString())) {
+        } else if (TestUtil.compare(assessment, BallotModel.Assessment.SINGLE_CHOICE.toString())) {
             ballotModel.setAssessment(BallotModel.Assessment.SINGLE_CHOICE);
         }
 
         String type = row.getString(Tags.TAG_BALLOT_TYPE);
-        if(TestUtil.compare(type, BallotModel.Type.INTERMEDIATE.toString())) {
+        if (TestUtil.compare(type, BallotModel.Type.INTERMEDIATE.toString())) {
             ballotModel.setType(BallotModel.Type.INTERMEDIATE);
-        }
-        else if(TestUtil.compare(type, BallotModel.Type.RESULT_ON_CLOSE.toString())) {
+        } else if (TestUtil.compare(type, BallotModel.Type.RESULT_ON_CLOSE.toString())) {
             ballotModel.setType(BallotModel.Type.RESULT_ON_CLOSE);
         }
 
         String choiceType = row.getString(Tags.TAG_BALLOT_C_TYPE);
-        if(TestUtil.compare(choiceType, BallotModel.ChoiceType.TEXT.toString())) {
+        if (TestUtil.compare(choiceType, BallotModel.ChoiceType.TEXT.toString())) {
             ballotModel.setChoiceType(BallotModel.ChoiceType.TEXT);
         }
 
@@ -1492,37 +1484,34 @@ public class RestoreService extends Service {
         Integer groupId = null;
         String identity = null;
 
-        if(reference.endsWith("GroupBallotModel")) {
+        if (reference.endsWith("GroupBallotModel")) {
             groupId = this.groupUidMap.get(referenceId);
-        }
-        else if(reference.endsWith("IdentityBallotModel")) {
+        } else if (reference.endsWith("IdentityBallotModel")) {
             identity = referenceId;
-        }
-        else {
+        } else {
             // first try to get the reference as group
             groupId = this.groupUidMap.get(referenceId);
-            if(groupId == null) {
-                if(referenceId != null && referenceId.length() == ProtocolDefines.IDENTITY_LEN) {
+            if (groupId == null) {
+                if (referenceId != null && referenceId.length() == ProtocolDefines.IDENTITY_LEN) {
                     identity = referenceId;
                 }
             }
         }
 
-        if(groupId != null) {
+        if (groupId != null) {
             GroupBallotModel linkBallotModel = new GroupBallotModel();
             linkBallotModel.setBallotId(ballotId);
             linkBallotModel.setGroupId(groupId);
 
             return linkBallotModel;
-        }
-        else if(identity != null) {
+        } else if (identity != null) {
             IdentityBallotModel linkBallotModel = new IdentityBallotModel();
             linkBallotModel.setBallotId(ballotId);
             linkBallotModel.setIdentity(referenceId);
             return linkBallotModel;
         }
 
-        if(writeToDb) {
+        if (writeToDb) {
             logger.error("invalid ballot reference {} with id {}", reference, referenceId);
             return null;
         }
@@ -1532,7 +1521,7 @@ public class RestoreService extends Service {
 
     private BallotChoiceModel createBallotChoiceModel(CSVRow row) throws ThreemaException {
         Integer ballotId = ballotIdMap.get(row.getString(Tags.TAG_BALLOT_CHOICE_BALLOT_UID));
-        if(ballotId == null) {
+        if (ballotId == null) {
             logger.error("invalid ballotId");
             return null;
         }
@@ -1543,7 +1532,7 @@ public class RestoreService extends Service {
         ballotChoiceModel.setApiBallotChoiceId(row.getInteger(Tags.TAG_BALLOT_CHOICE_API_ID));
 
         String type = row.getString(Tags.TAG_BALLOT_CHOICE_TYPE);
-        if(TestUtil.compare(type, BallotChoiceModel.Type.Text.toString())) {
+        if (TestUtil.compare(type, BallotChoiceModel.Type.Text.toString())) {
             ballotChoiceModel.setType(BallotChoiceModel.Type.Text);
         }
 
@@ -1560,7 +1549,7 @@ public class RestoreService extends Service {
         Integer ballotId = ballotIdMap.get(row.getString(Tags.TAG_BALLOT_VOTE_BALLOT_UID));
         Integer ballotChoiceId = ballotChoiceIdMap.get(row.getString(Tags.TAG_BALLOT_VOTE_CHOICE_UID));
 
-        if(ballotId == null || ballotChoiceId == null) {
+        if (ballotId == null || ballotChoiceId == null) {
             return null;
         }
 
@@ -1578,7 +1567,7 @@ public class RestoreService extends Service {
         final Counter counter = new Counter();
 
         String fileName = fileHeader.getFileName();
-        if(fileName == null) {
+        if (fileName == null) {
             throw new ThreemaException(null);
         }
 
@@ -1662,11 +1651,11 @@ public class RestoreService extends Service {
 
     }
 
-    private long restoreGroupMessageFile(FileHeader fileHeader)  throws IOException, ThreemaException, RestoreCanceledException {
+    private long restoreGroupMessageFile(FileHeader fileHeader) throws IOException, ThreemaException, RestoreCanceledException {
         final Counter counter = new Counter();
 
         String fileName = fileHeader.getFileName();
-        if(fileName == null) {
+        if (fileName == null) {
             throw new ThreemaException(null);
         }
 
@@ -1731,10 +1720,10 @@ public class RestoreService extends Service {
         List<DbEmojiReaction> reactions = messageStatesMap.entrySet().stream()
             .filter(entry -> entry != null && entry.getKey() != null && entry.getValue() instanceof String)
             .map(entry -> createReactionForStateName(
-                    (String) entry.getValue(),
-                    entry.getKey(),
-                    messageModel
-                ))
+                (String) entry.getValue(),
+                entry.getKey(),
+                messageModel
+            ))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
         if (!reactions.isEmpty()) {
@@ -1791,13 +1780,13 @@ public class RestoreService extends Service {
         final Counter counter = new Counter();
 
         String fileName = fileHeader.getFileName();
-        if(fileName == null) {
+        if (fileName == null) {
             throw new ThreemaException(null);
         }
 
         String[] pieces = fileName.substring(Tags.DISTRIBUTION_LIST_MESSAGE_FILE_PREFIX.length(), fileName.indexOf(Tags.CSV_FILE_POSTFIX)).split("-");
 
-        if(pieces.length != 1) {
+        if (pieces.length != 1) {
             throw new ThreemaException(null);
         }
 
@@ -1839,7 +1828,7 @@ public class RestoreService extends Service {
         distributionListModel.setId(row.getLong(Tags.TAG_DISTRIBUTION_LIST_ID));
         distributionListModel.setName(row.getString(Tags.TAG_DISTRIBUTION_LIST_NAME));
         distributionListModel.setCreatedAt(row.getDate(Tags.TAG_DISTRIBUTION_CREATED_AT));
-        if(restoreSettings.getVersion() >= 14) {
+        if (restoreSettings.getVersion() >= 14) {
             distributionListModel.setArchived(row.getBoolean(Tags.TAG_DISTRIBUTION_LIST_ARCHIVED));
         }
         if (restoreSettings.getVersion() >= 22) {
@@ -1850,8 +1839,8 @@ public class RestoreService extends Service {
 
     private List<GroupMemberModel> createGroupMembers(CSVRow row, int groupId) throws ThreemaException {
         List<GroupMemberModel> res = new ArrayList<>();
-        for(String identity: row.getStrings(Tags.TAG_GROUP_MEMBERS)) {
-            if(!TestUtil.isEmptyOrNull(identity)) {
+        for (String identity : row.getStrings(Tags.TAG_GROUP_MEMBERS)) {
+            if (!TestUtil.isEmptyOrNull(identity)) {
                 GroupMemberModel m = new GroupMemberModel();
                 m.setGroupId(groupId);
                 m.setIdentity(identity);
@@ -1863,8 +1852,8 @@ public class RestoreService extends Service {
 
     private List<DistributionListMemberModel> createDistributionListMembers(CSVRow row, long distributionListId) throws ThreemaException {
         List<DistributionListMemberModel> res = new ArrayList<>();
-        for(String identity: row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
-            if(!TestUtil.isEmptyOrNull(identity)) {
+        for (String identity : row.getStrings(Tags.TAG_DISTRIBUTION_MEMBERS)) {
+            if (!TestUtil.isEmptyOrNull(identity)) {
                 DistributionListMemberModel m = new DistributionListMemberModel();
                 m.setDistributionListId(distributionListId);
                 m.setIdentity(identity);
@@ -1893,15 +1882,15 @@ public class RestoreService extends Service {
         contactModel.setFirstName(row.getString(Tags.TAG_CONTACT_FIRST_NAME));
         contactModel.setLastName(row.getString(Tags.TAG_CONTACT_LAST_NAME));
 
-        if(restoreSettings.getVersion() >= 3) {
+        if (restoreSettings.getVersion() >= 3) {
             contactModel.setPublicNickName(row.getString(Tags.TAG_CONTACT_NICK_NAME));
         }
-        if(restoreSettings.getVersion() >= 13) {
+        if (restoreSettings.getVersion() >= 13) {
             final boolean isHidden = row.getBoolean(Tags.TAG_CONTACT_HIDDEN);
             // Contacts are marked as hidden if their acquaintance level is GROUP
             contactModel.setAcquaintanceLevel(isHidden ? AcquaintanceLevel.GROUP : AcquaintanceLevel.DIRECT);
         }
-        if(restoreSettings.getVersion() >= 14) {
+        if (restoreSettings.getVersion() >= 14) {
             contactModel.setArchived(row.getBoolean(Tags.TAG_CONTACT_ARCHIVED));
         }
         if (restoreSettings.getVersion() >= 19) {
@@ -1937,22 +1926,22 @@ public class RestoreService extends Service {
 
         messageModel.setUid(row.getString(Tags.TAG_MESSAGE_UID));
 
-        if(restoreSettings.getVersion() >= 2) {
+        if (restoreSettings.getVersion() >= 2) {
             messageModel.setIsStatusMessage(row.getBoolean(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE));
         }
 
-        if(restoreSettings.getVersion() >= 10) {
+        if (restoreSettings.getVersion() >= 10) {
             messageModel.setCaption(row.getString(Tags.TAG_MESSAGE_CAPTION));
         }
 
-        if(restoreSettings.getVersion() >= 15) {
+        if (restoreSettings.getVersion() >= 15) {
             String quotedMessageId = row.getString(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID);
             if (!TestUtil.isEmptyOrNull(quotedMessageId)) {
                 messageModel.setQuotedMessageId(quotedMessageId);
             }
         }
 
-        if(restoreSettings.getVersion() >= 20) {
+        if (restoreSettings.getVersion() >= 20) {
             if (!(messageModel instanceof DistributionListMessageModel)) {
                 Integer displayTags = row.getInteger(Tags.TAG_MESSAGE_DISPLAY_TAGS);
                 messageModel.setDisplayTags(displayTags);
@@ -1967,7 +1956,7 @@ public class RestoreService extends Service {
         messageModel.setPostedAt(row.getDate(Tags.TAG_MESSAGE_POSTED_AT));
         messageModel.setCreatedAt(row.getDate(Tags.TAG_MESSAGE_CREATED_AT));
 
-        if(restoreSettings.getVersion() >= 5) {
+        if (restoreSettings.getVersion() >= 5) {
             messageModel.setModifiedAt(row.getDate(Tags.TAG_MESSAGE_MODIFIED_AT));
         }
 
@@ -1992,7 +1981,7 @@ public class RestoreService extends Service {
      * the correct state will be derived from the available timestamps.
      * Therefore this only leads to correct results if the timestamps on this message
      * are already set.
-     *
+     * <p>
      * Note that no reaction is created in case of ACK/DEC. This has to be taken
      * care of separately see {@link #tryMapContactAckDecToReaction}.
      */
@@ -2075,11 +2064,11 @@ public class RestoreService extends Service {
     }
 
     private void tryUpdatingToNewBallotId(@NonNull AbstractMessageModel messageModel) {
-        if(messageModel.getType() == MessageType.BALLOT) {
+        if (messageModel.getType() == MessageType.BALLOT) {
             // try to update to new ballot id
             BallotDataModel ballotData = messageModel.getBallotData();
             Integer ballotId = this.ballotOldIdMap.get(ballotData.getBallotId());
-            if(ballotId != null) {
+            if (ballotId != null) {
                 BallotDataModel newBallotData = new BallotDataModel(ballotData.getType(), ballotId);
                 messageModel.setBallotData(newBallotData);
             }
@@ -2283,7 +2272,7 @@ public class RestoreService extends Service {
                 .setTicker(getString(R.string.restore_error_body))
                 .setContentTitle(getString(R.string.restoring_backup))
                 .setContentText(contentText)
-                .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
                 .setAutoCancel(false);
@@ -2301,14 +2290,14 @@ public class RestoreService extends Service {
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setTicker(getString(R.string.restore_success_body))
                 .setContentTitle(getString(R.string.restoring_backup))
-                .setDefaults(Notification.DEFAULT_LIGHTS|Notification.DEFAULT_SOUND|Notification.DEFAULT_VIBRATE)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setAutoCancel(true);
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             // Android Q does not allow restart in the background
             Intent backupIntent = new Intent(this, HomeActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
 
             builder.setContentIntent(pendingIntent);
 

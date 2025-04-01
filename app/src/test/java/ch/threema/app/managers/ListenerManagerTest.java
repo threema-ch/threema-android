@@ -27,58 +27,58 @@ import org.junit.Test;
 
 public class ListenerManagerTest {
 
-	interface TestListener {
-		void call();
-	}
+    interface TestListener {
+        void call();
+    }
 
-	/**
-	 * Make sure that the handle method cannot cause a deadlock.
-	 */
-	@Test
-	public void handleDeadlock() throws InterruptedException {
-		// Create a test listener manager
-		final ListenerManager.TypedListenerManager<TestListener> testListeners = new ListenerManager.TypedListenerManager<>();
+    /**
+     * Make sure that the handle method cannot cause a deadlock.
+     */
+    @Test
+    public void handleDeadlock() throws InterruptedException {
+        // Create a test listener manager
+        final ListenerManager.TypedListenerManager<TestListener> testListeners = new ListenerManager.TypedListenerManager<>();
 
-		// Add a listener that modifies the list of listeners
-		testListeners.add(new TestListener() {
-			@Override
-			public void call() {
-				// Add another listener from another thread
-				final Thread thread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						testListeners.add(new TestListener() {
-							@Override
-							public void call() {
-								// No-op
-							}
-						});
-					}
-				});
+        // Add a listener that modifies the list of listeners
+        testListeners.add(new TestListener() {
+            @Override
+            public void call() {
+                // Add another listener from another thread
+                final Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        testListeners.add(new TestListener() {
+                            @Override
+                            public void call() {
+                                // No-op
+                            }
+                        });
+                    }
+                });
 
-				// Start thread
-				thread.start();
+                // Start thread
+                thread.start();
 
-				// Check whether thread has finished
-				try {
-					thread.join(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (thread.isAlive()) {
-					Assert.fail("Thread is still active: Deadlock detected!");
-				}
-				// Yeah, no deadlock!
-			}
-		});
+                // Check whether thread has finished
+                try {
+                    thread.join(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (thread.isAlive()) {
+                    Assert.fail("Thread is still active: Deadlock detected!");
+                }
+                // Yeah, no deadlock!
+            }
+        });
 
-		// Handle
-		testListeners.handle(new ListenerManager.HandleListener<TestListener>() {
-			@Override
-			public void handle(TestListener listener) {
-				listener.call();
-			}
-		});
-	}
+        // Handle
+        testListeners.handle(new ListenerManager.HandleListener<TestListener>() {
+            @Override
+            public void handle(TestListener listener) {
+                listener.call();
+            }
+        });
+    }
 
 }

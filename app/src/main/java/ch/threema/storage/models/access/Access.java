@@ -22,27 +22,27 @@
 package ch.threema.storage.models.access;
 
 public class Access {
-	private boolean allowed = true;
-	private int notAllowedTestResourceId = 0;
+    private boolean allowed = true;
+    private int notAllowedTestResourceId = 0;
 
-	public Access() {
-	}
+    public Access() {
+    }
 
-	public Access(boolean allowed, int notAllowedTestResourceId) {
-		this();
-		this.allowed = allowed;
-		this.notAllowedTestResourceId = notAllowedTestResourceId;
-	}
+    public Access(boolean allowed, int notAllowedTestResourceId) {
+        this();
+        this.allowed = allowed;
+        this.notAllowedTestResourceId = notAllowedTestResourceId;
+    }
 
-	protected void setAllowed(boolean allowed) {
-		this.allowed = allowed;
-	}
+    protected void setAllowed(boolean allowed) {
+        this.allowed = allowed;
+    }
 
-	public boolean isAllowed() {
-		return this.allowed;
-	}
+    public boolean isAllowed() {
+        return this.allowed;
+    }
 
-	public int getNotAllowedTestResourceId() {
-		return this.notAllowedTestResourceId;
-	}
+    public int getNotAllowedTestResourceId() {
+        return this.notAllowedTestResourceId;
+    }
 }

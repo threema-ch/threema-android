@@ -1,40 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:app="http://schemas.android.com/apk/res-auto"
-				android:id="@+id/share_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/listitem_background_selector"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-				android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
-				android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/share_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/listitem_background_selector"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
+    android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right">
 
-	<ImageView
-		android:id="@+id/avatar_view"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:layout_alignParentLeft="true"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="34dp"
-		android:contentDescription="@string/title_invite_friend"
-		android:scaleType="center"
-		app:srcCompat="@drawable/ic_share_outline"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/avatar_view"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="34dp"
+        android:contentDescription="@string/title_invite_friend"
+        android:scaleType="center"
+        app:srcCompat="@drawable/ic_share_outline"
+        app:tint="?attr/colorOnSurface" />
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-		android:layout_toRightOf="@id/avatar_view"
-		android:text="@string/title_invite_friend"
-		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:layout_toRightOf="@id/avatar_view"
+        android:text="@string/title_invite_friend"
+        android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
 </RelativeLayout>

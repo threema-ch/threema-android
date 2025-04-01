@@ -27,35 +27,35 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ProtocolExtension {
-	public static final int CLIENT_INFO_TYPE = 0x00;
-	public static final int CSP_DEVICE_ID_TYPE = 0x01;
-	public static final int MESSAGE_PAYLOAD_VERSION_TYPE = 0x02;
-	public static final int DEVICE_COOKIE_TYPE = 0x03;
-	public static final String VERSION_MAGIC_STRING = "threema-clever-extension-field";
-	public static final int MESSAGE_PAYLOAD_VERSION = 0x01;
+    public static final int CLIENT_INFO_TYPE = 0x00;
+    public static final int CSP_DEVICE_ID_TYPE = 0x01;
+    public static final int MESSAGE_PAYLOAD_VERSION_TYPE = 0x02;
+    public static final int DEVICE_COOKIE_TYPE = 0x03;
+    public static final String VERSION_MAGIC_STRING = "threema-clever-extension-field";
+    public static final int MESSAGE_PAYLOAD_VERSION = 0x01;
 
-	private final int type;
-	private final byte[] data;
+    private final int type;
+    private final byte[] data;
 
-	ProtocolExtension(int type, byte[] data) {
-		this.type = type;
-		this.data = data;
-	}
+    ProtocolExtension(int type, byte[] data) {
+        this.type = type;
+        this.data = data;
+    }
 
-	public int getType() {
-		return type;
-	}
+    public int getType() {
+        return type;
+    }
 
-	public byte[] getData() {
-		return data;
-	}
+    public byte[] getData() {
+        return data;
+    }
 
-	public byte[] getBytes() throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    public byte[] getBytes() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-		bos.write(type);
-		EndianUtils.writeSwappedShort(bos, (short) data.length);
-		bos.write(data);
-		return bos.toByteArray();
-	}
+        bos.write(type);
+        EndianUtils.writeSwappedShort(bos, (short) data.length);
+        bos.write(data);
+        return bos.toByteArray();
+    }
 }

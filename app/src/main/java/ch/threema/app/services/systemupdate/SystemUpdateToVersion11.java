@@ -32,41 +32,41 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion11 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion11(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion11(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
+    @Override
+    public boolean runDirectly() {
 
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
-
-
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("publicNickName");
-			}
-		}) != null;
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
 
 
-		if(!hasField) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN publicNickName VARCHAR(255) NULL");
-		}
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("publicNickName");
+            }
+        }) != null;
 
-		return true;
-	}
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+        if (!hasField) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN publicNickName VARCHAR(255) NULL");
+        }
 
-	@Override
-	public String getText() {
-		return "version 11";
-	}
+        return true;
+    }
+
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return "version 11";
+    }
 }

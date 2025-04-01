@@ -33,33 +33,33 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * Create forwardSecurityMode field in message model and forwardSecurityEnabled field in contact model
  */
 public class SystemUpdateToVersion73 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 73;
+    public static final int VERSION = 73;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion73(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion73(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, "message", "forwardSecurityMode")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE message ADD COLUMN forwardSecurityMode TINYINT DEFAULT 0");
-		}
-		if (!fieldExists(this.sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN forwardSecurityEnabled TINYINT DEFAULT 0");
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, "message", "forwardSecurityMode")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE message ADD COLUMN forwardSecurityMode TINYINT DEFAULT 0");
+        }
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "forwardSecurityEnabled")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN forwardSecurityEnabled TINYINT DEFAULT 0");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 73 (forwardSecurity)";
-	}
+    @Override
+    public String getText() {
+        return "version 73 (forwardSecurity)";
+    }
 }

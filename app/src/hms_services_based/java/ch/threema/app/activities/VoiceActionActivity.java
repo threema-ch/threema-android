@@ -25,7 +25,7 @@ import android.app.Activity;
 
 public class VoiceActionActivity extends Activity {
 
-	public VoiceActionActivity() {
-		// stub, no voice assistant api in hms build
-	}
+    public VoiceActionActivity() {
+        // stub, no voice assistant api in hms build
+    }
 }

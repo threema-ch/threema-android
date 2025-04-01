@@ -29,30 +29,30 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
 
 public class SystemUpdateToVersion32 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion32(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion32(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
+    @Override
+    public boolean runDirectly() {
 
-		if(!fieldExists(this.sqLiteDatabase, "contacts", "avatarExpires")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN avatarExpires LONG DEFAULT NULL");
-			return true;
-		}
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "avatarExpires")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN avatarExpires LONG DEFAULT NULL");
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 32";
-	}
+    @Override
+    public String getText() {
+        return "version 32";
+    }
 }

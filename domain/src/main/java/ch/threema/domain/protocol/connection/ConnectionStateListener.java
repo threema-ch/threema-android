@@ -25,5 +25,5 @@ package ch.threema.domain.protocol.connection;
  * Interface for objects that wish to be informed about changes in the server connection state.
  */
 public interface ConnectionStateListener {
-	void updateConnectionState(ConnectionState connectionState);
+    void updateConnectionState(ConnectionState connectionState);
 }

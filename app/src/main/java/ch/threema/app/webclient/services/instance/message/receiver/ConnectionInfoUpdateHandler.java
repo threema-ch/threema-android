@@ -39,20 +39,20 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class ConnectionInfoUpdateHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectionInfoUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectionInfoUpdateHandler");
 
-	@AnyThread
-	public ConnectionInfoUpdateHandler() {
-		super(Protocol.SUB_TYPE_CONNECTION_INFO);
-	}
+    @AnyThread
+    public ConnectionInfoUpdateHandler() {
+        super(Protocol.SUB_TYPE_CONNECTION_INFO);
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received update/connectionInfo, ignoring");
-	}
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received update/connectionInfo, ignoring");
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

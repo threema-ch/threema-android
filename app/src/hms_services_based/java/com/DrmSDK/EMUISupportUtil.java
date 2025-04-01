@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @since 2020/07/01
  */
 public final class EMUISupportUtil {
-	private static final Logger logger = LoggerFactory.getLogger(EMUISupportUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(EMUISupportUtil.class);
 
     private static final String PATTERN = "^EmotionUI_[1-9]{1}";
 
@@ -168,19 +168,19 @@ public final class EMUISupportUtil {
 
         } catch (IllegalArgumentException iAE) {
             logger.error("IllegalArgumentException get system properties error!",
-                    iAE);
+                iAE);
         } catch (ClassNotFoundException iAE) {
-	        logger.error("ClassNotFoundException get system properties error!",
-                    iAE);
+            logger.error("ClassNotFoundException get system properties error!",
+                iAE);
         } catch (NoSuchMethodException iAE) {
-	        logger.error("NoSuchMethodException get system properties error!",
-                    iAE);
+            logger.error("NoSuchMethodException get system properties error!",
+                iAE);
         } catch (IllegalAccessException iAE) {
-	        logger.error("IllegalAccessException get system properties error!",
-                    iAE);
+            logger.error("IllegalAccessException get system properties error!",
+                iAE);
         } catch (InvocationTargetException iAE) {
-	        logger.error("InvocationTargetException get system properties error!",
-		        iAE);
+            logger.error("InvocationTargetException get system properties error!",
+                iAE);
         }
         return ret;
     }

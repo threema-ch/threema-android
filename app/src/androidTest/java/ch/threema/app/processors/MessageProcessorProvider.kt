@@ -95,7 +95,13 @@ open class MessageProcessorProvider {
     protected val contactB = TestContact("ABCDEFGH")
     protected val contactC = TestContact("TESTTEST")
 
-    protected val myGroup = TestGroup(GroupId(0), myContact, listOf(myContact, contactA, contactB), "MyGroup", myContact.identity)
+    protected val myGroup = TestGroup(
+        GroupId(0),
+        myContact,
+        listOf(myContact, contactA, contactB),
+        "MyGroup",
+        myContact.identity
+    )
     protected val myGroupWithProfilePicture =
         TestGroup(
             GroupId(1),
@@ -110,17 +116,47 @@ open class MessageProcessorProvider {
     protected val groupB =
         TestGroup(GroupId(3), contactB, listOf(myContact, contactB), "GroupB", myContact.identity)
     protected val groupAB =
-        TestGroup(GroupId(4), contactA, listOf(myContact, contactA, contactB), "GroupAB", myContact.identity)
+        TestGroup(
+            GroupId(4),
+            contactA,
+            listOf(myContact, contactA, contactB),
+            "GroupAB",
+            myContact.identity
+        )
     protected val groupAUnknown =
-        TestGroup(GroupId(5), contactA, listOf(myContact, contactA, contactB), "GroupAUnknown", myContact.identity)
+        TestGroup(
+            GroupId(5),
+            contactA,
+            listOf(myContact, contactA, contactB),
+            "GroupAUnknown",
+            myContact.identity
+        )
     protected val groupALeft =
-        TestGroup(GroupId(6), contactA, listOf(contactA, contactB), "GroupALeft", myContact.identity)
+        TestGroup(
+            GroupId(6),
+            contactA,
+            listOf(contactA, contactB),
+            "GroupALeft",
+            myContact.identity
+        )
     protected val myUnknownGroup =
-        TestGroup(GroupId(7), myContact, listOf(myContact, contactA), "MyUnknownGroup", myContact.identity)
+        TestGroup(
+            GroupId(7),
+            myContact,
+            listOf(myContact, contactA),
+            "MyUnknownGroup",
+            myContact.identity
+        )
     protected val myLeftGroup =
         TestGroup(GroupId(8), myContact, listOf(contactA), "MyLeftGroup", myContact.identity)
     protected val newAGroup =
-        TestGroup(GroupId(9), contactA, listOf(myContact, contactA, contactB), "NewAGroup", myContact.identity)
+        TestGroup(
+            GroupId(9),
+            contactA,
+            listOf(myContact, contactA, contactB),
+            "NewAGroup",
+            myContact.identity
+        )
 
     protected val serviceManager: ServiceManager = ThreemaApplication.requireServiceManager()
     private val contactStore: ContactStore = InMemoryContactStore().apply {
@@ -551,7 +587,14 @@ open class MessageProcessorProvider {
             override fun store(scope: NonceScope, nonce: Nonce) = true
             override fun getAllHashedNonces(scope: NonceScope) = listOf<HashedNonce>()
             override fun getCount(scope: NonceScope) = 0L
-            override fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {}
+            override fun addHashedNoncesChunk(
+                scope: NonceScope,
+                chunkSize: Int,
+                offset: Int,
+                nonces: MutableList<HashedNonce>
+            ) {
+            }
+
             override fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>) = true
         })
 

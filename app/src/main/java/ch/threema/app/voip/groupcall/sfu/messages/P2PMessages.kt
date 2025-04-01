@@ -35,7 +35,12 @@ import com.google.protobuf.InvalidProtocolBufferException
 sealed interface Handshake {
     fun getEnvelopeBytes(): ByteArray
 
-    data class Hello(val identity: String, val nickname: String, val pck: ByteArray, val pcck: ByteArray) : Handshake {
+    data class Hello(
+        val identity: String,
+        val nickname: String,
+        val pck: ByteArray,
+        val pcck: ByteArray
+    ) : Handshake {
         companion object {
             fun decode(bytes: ByteArray): Hello {
                 val envelope = ParticipantToParticipant.Handshake.HelloEnvelope.parseFrom(bytes)
@@ -216,7 +221,8 @@ sealed class P2PMessageContent {
         }
     }
 
-    data class MediaKey(val epoch: UInt, val ratchetCounter: UInt, val pcmk: ByteArray) : P2PMessageContent() {
+    data class MediaKey(val epoch: UInt, val ratchetCounter: UInt, val pcmk: ByteArray) :
+        P2PMessageContent() {
         override val type = "MediaKey"
 
         companion object {

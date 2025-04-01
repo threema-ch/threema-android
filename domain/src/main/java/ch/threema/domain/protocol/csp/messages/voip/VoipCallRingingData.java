@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.JSONUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -34,47 +35,47 @@ import java.io.ByteArrayOutputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class VoipCallRingingData extends VoipCallData<VoipCallRingingData> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallRingingData");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallRingingData");
 
-	//region Serialization
+    //region Serialization
 
-	public static @NonNull VoipCallRingingData parse(@NonNull String jsonObjectString) throws BadMessageException {
-		final JSONObject o;
-		if (jsonObjectString.trim().isEmpty()) {
-			// Historically, ringing messages may be empty
-			o = new JSONObject();
-		} else {
-			try {
-				o = new JSONObject(jsonObjectString);
-			} catch (JSONException e) {
-				logger.error("Bad VoipCallRingingData: Invalid JSON string", e);
-				throw new BadMessageException("TM064");
-			}
-		}
+    public static @NonNull VoipCallRingingData parse(@NonNull String jsonObjectString) throws BadMessageException {
+        final JSONObject o;
+        if (jsonObjectString.trim().isEmpty()) {
+            // Historically, ringing messages may be empty
+            o = new JSONObject();
+        } else {
+            try {
+                o = new JSONObject(jsonObjectString);
+            } catch (JSONException e) {
+                logger.error("Bad VoipCallRingingData: Invalid JSON string", e);
+                throw new BadMessageException("TM064");
+            }
+        }
 
-		final VoipCallRingingData callRingingData = new VoipCallRingingData();
+        final VoipCallRingingData callRingingData = new VoipCallRingingData();
 
-		try {
-			final Long callId = JSONUtil.getLongOrThrow(o, KEY_CALL_ID);
-			if (callId != null) {
-				callRingingData.setCallId(callId);
-			}
-		} catch (Exception e) {
-			logger.error("Bad VoipCallRingingData: Invalid Call ID", e);
-			throw new BadMessageException("TM064");
-		}
+        try {
+            final Long callId = JSONUtil.getLongOrThrow(o, KEY_CALL_ID);
+            if (callId != null) {
+                callRingingData.setCallId(callId);
+            }
+        } catch (Exception e) {
+            logger.error("Bad VoipCallRingingData: Invalid Call ID", e);
+            throw new BadMessageException("TM064");
+        }
 
-		return callRingingData;
-	}
+        return callRingingData;
+    }
 
-	public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
-		bos.write(this.generateString().getBytes(UTF_8));
-	}
+    public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
+        bos.write(this.generateString().getBytes(UTF_8));
+    }
 
-	private @NonNull String generateString() throws Exception {
-		final JSONObject o = this.buildJsonObject();
-		return o.toString();
-	}
+    private @NonNull String generateString() throws Exception {
+        final JSONObject o = this.buildJsonObject();
+        return o.toString();
+    }
 
-	//endregion
+    //endregion
 }

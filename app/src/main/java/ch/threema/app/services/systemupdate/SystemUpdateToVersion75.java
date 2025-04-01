@@ -22,43 +22,49 @@
 package ch.threema.app.services.systemupdate;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
 import java.sql.SQLException;
+
 import ch.threema.app.services.UpdateSystemService;
 
 import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 
 public class SystemUpdateToVersion75 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 75;
-	public static final String VERSION_STRING = "version " + VERSION;
+    public static final int VERSION = 75;
+    public static final String VERSION_STRING = "version " + VERSION;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion75(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion75(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runAsync() { return true; }
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		// add isHidden column if not present already
-		String table = "m_group";
-		String groupDescColumn = "groupDesc";
-		String groupDescTimestampColumn = "changedGroupDescTimestamp";
+    @Override
+    public boolean runDirectly() throws SQLException {
+        // add isHidden column if not present already
+        String table = "m_group";
+        String groupDescColumn = "groupDesc";
+        String groupDescTimestampColumn = "changedGroupDescTimestamp";
 
-		if (!fieldExists(this.sqLiteDatabase, table, groupDescColumn)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescColumn + " VARCHAR DEFAULT NULL");
-		}
+        if (!fieldExists(this.sqLiteDatabase, table, groupDescColumn)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescColumn + " VARCHAR DEFAULT NULL");
+        }
 
-		if (!fieldExists(this.sqLiteDatabase, table, groupDescTimestampColumn)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescTimestampColumn + " VARCHAR DEFAULT NULL");
+        if (!fieldExists(this.sqLiteDatabase, table, groupDescTimestampColumn)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + groupDescTimestampColumn + " VARCHAR DEFAULT NULL");
 
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 
-	@Override
-	public String getText() { return VERSION_STRING; }
+    @Override
+    public String getText() {
+        return VERSION_STRING;
+    }
 }

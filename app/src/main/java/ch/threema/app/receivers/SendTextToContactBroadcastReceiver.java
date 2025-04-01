@@ -43,85 +43,85 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SendTextToContactBroadcastReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SendTextToContactBroadcastReceiver");
 
-	@Override
-	@SuppressLint("StaticFieldLeak")
-	public void onReceive(final Context context, final Intent intent) {
-		if (intent == null) {
-			return;
-		}
+    @Override
+    @SuppressLint("StaticFieldLeak")
+    public void onReceive(final Context context, final Intent intent) {
+        if (intent == null) {
+            return;
+        }
 
-		int id = intent.getIntExtra(BackgroundErrorNotification.EXTRA_NOTIFICATION_ID, 0);
-		if (id != 0) {
-			NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-			notificationManagerCompat.cancel(id);
-		}
+        int id = intent.getIntExtra(BackgroundErrorNotification.EXTRA_NOTIFICATION_ID, 0);
+        if (id != 0) {
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.cancel(id);
+        }
 
-		String text = intent.getStringExtra(BackgroundErrorNotification.EXTRA_TEXT_TO_SEND);
-		if (text != null) {
+        String text = intent.getStringExtra(BackgroundErrorNotification.EXTRA_TEXT_TO_SEND);
+        if (text != null) {
 
-			final PendingResult pendingResult = goAsync();
+            final PendingResult pendingResult = goAsync();
 
-			String identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-			if (identity == null) {
-				logger.error("Identity is null");
-				return;
-			}
+            String identity = intent.getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+            if (identity == null) {
+                logger.error("Identity is null");
+                return;
+            }
 
-			AddOrUpdateContactBackgroundTask<Boolean> sendMessageTask = new AddOrUpdateContactBackgroundTask<>(
-				identity,
-				ContactModel.AcquaintanceLevel.DIRECT,
-				contactService.getMe().getIdentity(),
-				apiConnector,
-				contactModelRepository,
-				AddContactRestrictionPolicy.CHECK,
-				context,
-				null
-			) {
-				@Override
-				public void onBefore() {
-					// We need to make sure there's a connection during delivery
-					lifetimeService.acquireConnection(TAG);
-				}
+            AddOrUpdateContactBackgroundTask<Boolean> sendMessageTask = new AddOrUpdateContactBackgroundTask<>(
+                identity,
+                ContactModel.AcquaintanceLevel.DIRECT,
+                contactService.getMe().getIdentity(),
+                apiConnector,
+                contactModelRepository,
+                AddContactRestrictionPolicy.CHECK,
+                context,
+                null
+            ) {
+                @Override
+                public void onBefore() {
+                    // We need to make sure there's a connection during delivery
+                    lifetimeService.acquireConnection(TAG);
+                }
 
-				@Override
-				@NonNull
-				public Boolean onContactAdded(@NonNull ContactResult result) {
-					if (result instanceof Failed) {
-						logger.error("Could not add contact: {}", ((Failed) result).getMessage());
-						return false;
-					} else if (result instanceof PolicyViolation) {
-						logger.error("Could not add contact because of a policy violation");
-						return false;
-					}
+                @Override
+                @NonNull
+                public Boolean onContactAdded(@NonNull ContactResult result) {
+                    if (result instanceof Failed) {
+                        logger.error("Could not add contact: {}", ((Failed) result).getMessage());
+                        return false;
+                    } else if (result instanceof PolicyViolation) {
+                        logger.error("Could not add contact because of a policy violation");
+                        return false;
+                    }
 
-					try {
-						final ContactModel contactModel = contactService.getByIdentity(identity);
-						if (contactModel == null) {
-							return false;
-						}
-						MessageReceiver<?> messageReceiver = contactService.createReceiver(contactModel);
-						messageService.sendText(text, messageReceiver);
-						messageService.markConversationAsRead(messageReceiver, notificationService);
-						logger.debug("Message sent to: " + messageReceiver.getShortName());
-						return true;
-					} catch (Exception e) {
-						logger.error("Exception", e);
-						return false;
-					} finally {
-						lifetimeService.releaseConnectionLinger(TAG, WEARABLE_CONNECTION_LINGER);
-					}
-				}
+                    try {
+                        final ContactModel contactModel = contactService.getByIdentity(identity);
+                        if (contactModel == null) {
+                            return false;
+                        }
+                        MessageReceiver<?> messageReceiver = contactService.createReceiver(contactModel);
+                        messageService.sendText(text, messageReceiver);
+                        messageService.markConversationAsRead(messageReceiver, notificationService);
+                        logger.debug("Message sent to: " + messageReceiver.getShortName());
+                        return true;
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
+                        return false;
+                    } finally {
+                        lifetimeService.releaseConnectionLinger(TAG, WEARABLE_CONNECTION_LINGER);
+                    }
+                }
 
-				@Override
-				public void onFinished(@NonNull Boolean success) {
-					Toast.makeText(context, success ? R.string.message_sent : R.string.verify_failed, Toast.LENGTH_LONG).show();
-					pendingResult.finish();
-				}
-			};
+                @Override
+                public void onFinished(@NonNull Boolean success) {
+                    Toast.makeText(context, success ? R.string.message_sent : R.string.verify_failed, Toast.LENGTH_LONG).show();
+                    pendingResult.finish();
+                }
+            };
 
-			backgroundExecutor.execute(sendMessageTask);
-		}
-	}
+            backgroundExecutor.execute(sendMessageTask);
+        }
+    }
 }

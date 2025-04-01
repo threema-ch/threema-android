@@ -50,77 +50,87 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 
 public interface BallotService {
 
-	interface BallotFilter {
-		MessageReceiver<?> getReceiver();
-		BallotModel.State[] getStates();
-		default String createdOrNotVotedByIdentity() {
-			return null;
-		}
-		boolean filter(BallotModel ballotModel);
-	}
+    interface BallotFilter {
+        MessageReceiver<?> getReceiver();
 
-	BallotModel create(
-			ContactModel contactModel,
-			String description,
-			BallotModel.State state,
-			BallotModel.Assessment assessment,
-			BallotModel.Type type,
-			BallotModel.ChoiceType choiceType,
-            @NonNull BallotId ballotId
+        BallotModel.State[] getStates();
+
+        default String createdOrNotVotedByIdentity() {
+            return null;
+        }
+
+        boolean filter(BallotModel ballotModel);
+    }
+
+    BallotModel create(
+        ContactModel contactModel,
+        String description,
+        BallotModel.State state,
+        BallotModel.Assessment assessment,
+        BallotModel.Type type,
+        BallotModel.ChoiceType choiceType,
+        @NonNull BallotId ballotId
     ) throws NotAllowedException;
 
-	BallotModel create(
-			GroupModel groupModel,
-			String description,
-			BallotModel.State state,
-			BallotModel.Assessment assessment,
-			BallotModel.Type type,
-			BallotModel.ChoiceType choiceType,
-            @NonNull BallotId ballotId
+    BallotModel create(
+        GroupModel groupModel,
+        String description,
+        BallotModel.State state,
+        BallotModel.Assessment assessment,
+        BallotModel.Type type,
+        BallotModel.ChoiceType choiceType,
+        @NonNull BallotId ballotId
     ) throws NotAllowedException;
 
-	void modifyFinished(
+    void modifyFinished(
         @NonNull BallotModel ballotModel,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
     ) throws MessageTooLongException;
 
-	boolean viewingBallot(BallotModel ballotModel, boolean view);
+    boolean viewingBallot(BallotModel ballotModel, boolean view);
 
-	boolean update(BallotModel ballotModel, BallotChoiceModel choice) throws NotAllowedException;
-	boolean close(
+    boolean update(BallotModel ballotModel, BallotChoiceModel choice) throws NotAllowedException;
+
+    boolean close(
         Integer ballotModelId,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
     ) throws NotAllowedException, MessageTooLongException;
-	boolean send(
+
+    boolean send(
         BallotModel ballotModel,
         ListenerManager.HandleListener<BallotListener> handleListener,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
     ) throws MessageTooLongException;
 
-	@Nullable
-	BallotModel get(int ballotId);
-	BallotModel get(String id, String creator);
+    @Nullable
+    BallotModel get(int ballotId);
 
-	List<BallotModel> getBallots(BallotFilter filter) throws NotAllowedException;
-	long countBallots(BallotFilter filter);
+    BallotModel get(String id, String creator);
 
-	boolean belongsToMe(Integer ballotModelId, MessageReceiver<?> messageReceiver) throws NotAllowedException;
+    List<BallotModel> getBallots(BallotFilter filter) throws NotAllowedException;
 
-	/**
-	 * Create / Update ballot from createMessage
-	 * @param createMessage BallotCreateMessage received from server
-	 * @return BallotUpdateResult
-	 * @throws ThreemaException if an error occurred during processing
-	 */
-	@NonNull BallotUpdateResult update(
+    long countBallots(BallotFilter filter);
+
+    boolean belongsToMe(Integer ballotModelId, MessageReceiver<?> messageReceiver) throws NotAllowedException;
+
+    /**
+     * Create / Update ballot from createMessage
+     *
+     * @param createMessage BallotCreateMessage received from server
+     * @return BallotUpdateResult
+     * @throws ThreemaException if an error occurred during processing
+     */
+    @NonNull
+    BallotUpdateResult update(
         @NonNull BallotSetupInterface createMessage,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
     ) throws ThreemaException, BadMessageException;
-	boolean update(BallotModel ballotModel);
+
+    boolean update(BallotModel ballotModel);
 
     BallotPublishResult publish(
         MessageReceiver<?> messageReceiver,
@@ -130,57 +140,68 @@ public interface BallotService {
         @NonNull TriggerSource triggerSource
     ) throws NotAllowedException, MessageTooLongException;
 
-	BallotPublishResult publish(
-		MessageReceiver messageReceiver,
+    BallotPublishResult publish(
+        MessageReceiver messageReceiver,
         BallotModel ballotModel,
         AbstractMessageModel abstractMessageModel,
         @Nullable Collection<String> receivingIdentities,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
-	) throws NotAllowedException, MessageTooLongException;
+    ) throws NotAllowedException, MessageTooLongException;
 
-	LinkBallotModel getLinkedBallotModel(BallotModel ballotModel) throws NotAllowedException;
-	boolean remove(BallotModel ballotModel) throws NotAllowedException;
-	boolean remove(MessageReceiver<?> receiver);
+    LinkBallotModel getLinkedBallotModel(BallotModel ballotModel) throws NotAllowedException;
 
-	/*
-	choice stuff
-	 */
-	List<BallotChoiceModel> getChoices(Integer ballotModelId) throws NotAllowedException;
+    boolean remove(BallotModel ballotModel) throws NotAllowedException;
+
+    boolean remove(MessageReceiver<?> receiver);
+
+    /*
+    choice stuff
+     */
+    List<BallotChoiceModel> getChoices(Integer ballotModelId) throws NotAllowedException;
 
 	/*
 	voting stuff
 	 */
 
-	BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> values, @NonNull TriggerSource triggerSource) throws NotAllowedException;
-	BallotVoteResult vote(BallotVoteInterface ballotVoteMessage) throws NotAllowedException;
+    BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> values, @NonNull TriggerSource triggerSource) throws NotAllowedException;
 
-	/**
-	 * return the count of votings depending on the ballot properties
-	 */
-	int getVotingCount(BallotChoiceModel choiceModel);
-	boolean removeVotes(MessageReceiver<?> receiver, String identity);
+    BallotVoteResult vote(BallotVoteInterface ballotVoteMessage) throws NotAllowedException;
 
-	@NonNull List<String> getVotedParticipants(Integer ballotModelId);
-	@NonNull List<String> getPendingParticipants(Integer ballotModelId);
-	@NonNull String[] getParticipants(Integer ballotModelId);
-	@NonNull String[] getParticipants(MessageReceiver<?> messageReceiver);
+    /**
+     * return the count of votings depending on the ballot properties
+     */
+    int getVotingCount(BallotChoiceModel choiceModel);
 
-	boolean hasVoted(Integer ballotModelId, String fromIdentity);
+    boolean removeVotes(MessageReceiver<?> receiver, String identity);
 
-	/**
-	 * get my votes
-	 */
-	List<BallotVoteModel> getMyVotes(Integer ballotModelId) throws NotAllowedException;
+    @NonNull
+    List<String> getVotedParticipants(Integer ballotModelId);
 
-	/**
-	 * get all votes of a ballot
-	 */
-	List<BallotVoteModel> getBallotVotes(Integer ballotModelId) throws NotAllowedException;
+    @NonNull
+    List<String> getPendingParticipants(Integer ballotModelId);
 
-	MessageReceiver<?> getReceiver(BallotModel ballotModel);
+    @NonNull
+    String[] getParticipants(Integer ballotModelId);
 
-	BallotMatrixData getMatrixData(int ballotModelId);
+    @NonNull
+    String[] getParticipants(MessageReceiver<?> messageReceiver);
 
-	boolean removeAll();
+    boolean hasVoted(Integer ballotModelId, String fromIdentity);
+
+    /**
+     * get my votes
+     */
+    List<BallotVoteModel> getMyVotes(Integer ballotModelId) throws NotAllowedException;
+
+    /**
+     * get all votes of a ballot
+     */
+    List<BallotVoteModel> getBallotVotes(Integer ballotModelId) throws NotAllowedException;
+
+    MessageReceiver<?> getReceiver(BallotModel ballotModel);
+
+    BallotMatrixData getMatrixData(int ballotModelId);
+
+    boolean removeAll();
 }

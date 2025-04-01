@@ -27,15 +27,15 @@ import java.util.List;
 import androidx.annotation.NonNull;
 
 public class WorkData {
-	public final List<WorkContact> workContacts = new ArrayList<>();
+    public final List<WorkContact> workContacts = new ArrayList<>();
 
-	@NonNull
-	public final WorkMDMSettings mdm = new WorkMDMSettings();
-	public final WorkDirectorySettings directory = new WorkDirectorySettings();
-	public final WorkOrganization organization = new WorkOrganization();
-	public String logoDark;
-	public String logoLight;
-	public String supportUrl;
-	public int checkInterval;
-	public int responseCode;
+    @NonNull
+    public final WorkMDMSettings mdm = new WorkMDMSettings();
+    public final WorkDirectorySettings directory = new WorkDirectorySettings();
+    public final WorkOrganization organization = new WorkOrganization();
+    public String logoDark;
+    public String logoLight;
+    public String supportUrl;
+    public int checkInterval;
+    public int responseCode;
 }

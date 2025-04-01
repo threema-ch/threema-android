@@ -65,7 +65,7 @@ class MediaGalleryAdapter(
     private val columnCount: Int
     private val messageReceiver: MessageReceiver<*>
     private val checkedItems = SparseBooleanArray()
-    private var messageModels : MutableList<AbstractMessageModel>? = null
+    private var messageModels: MutableList<AbstractMessageModel>? = null
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
     @ColorInt
@@ -81,7 +81,8 @@ class MediaGalleryAdapter(
         this.foregroundColor = ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground)
         this.fileService = ThreemaApplication.getServiceManager()?.fileService
 
-        val cornerRadius: Int = context.resources.getDimensionPixelSize(R.dimen.media_gallery_container_radius)
+        val cornerRadius: Int =
+            context.resources.getDimensionPixelSize(R.dimen.media_gallery_container_radius)
         this.viewOutlineProvider = object : ViewOutlineProvider() {
             override fun getOutline(view: View, outline: Outline) {
                 outline.setRoundRect(0, 0, view.width, view.height, cornerRadius.toFloat())
@@ -103,7 +104,8 @@ class MediaGalleryAdapter(
 
         init {
             imageView = itemView.findViewById(R.id.thumbnail_view)
-            animatedFormatLabelContainer = itemView.findViewById(R.id.animated_format_label_container)
+            animatedFormatLabelContainer =
+                itemView.findViewById(R.id.animated_format_label_container)
             animatedFormatLabelIconView = itemView.findViewById(R.id.animated_format_label_icon)
             videoContainerView = itemView.findViewById(R.id.video_marker_container)
             videoDuration = itemView.findViewById(R.id.video_duration_text)
@@ -134,13 +136,14 @@ class MediaGalleryAdapter(
             val messageModel: AbstractMessageModel = it[position]
 
             if (holder.messageId != messageModel.id) {
-                val placeholderIcon : Int = if (messageModel.messageContentsType == MessageContentsType.VOICE_MESSAGE) {
-                    R.drawable.ic_keyboard_voice_outline
-                } else if (messageModel.type == MessageType.FILE) {
-                    IconUtil.getMimeIcon(messageModel.fileData.mimeType)
-                } else {
-                    IconUtil.getMimeIcon("application/x-error")
-                }
+                val placeholderIcon: Int =
+                    if (messageModel.messageContentsType == MessageContentsType.VOICE_MESSAGE) {
+                        R.drawable.ic_keyboard_voice_outline
+                    } else if (messageModel.type == MessageType.FILE) {
+                        IconUtil.getMimeIcon(messageModel.fileData.mimeType)
+                    } else {
+                        IconUtil.getMimeIcon("application/x-error")
+                    }
 
                 // do not load contents again if it's unchanged
                 Glide.with(context)
@@ -148,12 +151,14 @@ class MediaGalleryAdapter(
                     .transition(withCrossFade())
                     .optionalCenterCrop()
                     .error(placeholderIcon)
-                    .into(object : CustomViewTarget<ShapeableImageView?, Drawable?>(holder.imageView!!) {
+                    .into(object :
+                        CustomViewTarget<ShapeableImageView?, Drawable?>(holder.imageView!!) {
                         override fun onResourceCleared(placeholder: Drawable?) {}
                         override fun onLoadFailed(errorDrawable: Drawable?) {
                             decorateItem(holder, messageModel)
                             holder.imageView?.setImageDrawable(errorDrawable)
                         }
+
                         override fun onResourceReady(
                             resource: Drawable,
                             transition: Transition<in Drawable?>?
@@ -166,8 +171,12 @@ class MediaGalleryAdapter(
                             if (messageModel.messageContentsType == MessageContentsType.GIF) {
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_gif_24dp)
-                                holder.animatedFormatLabelIconView?.contentDescription = context.getString(R.string.attach_gif)
-                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && MimeUtil.isAnimatedImageFormat(messageModel.fileData.mimeType)) {
+                                holder.animatedFormatLabelIconView?.contentDescription =
+                                    context.getString(R.string.attach_gif)
+                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && MimeUtil.isAnimatedImageFormat(
+                                    messageModel.fileData.mimeType
+                                )
+                            ) {
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_webp)
                                 holder.animatedFormatLabelIconView?.contentDescription = "WebP"
@@ -180,16 +189,19 @@ class MediaGalleryAdapter(
                                     MessageType.VIDEO -> {
                                         messageModel.videoData.duration.toLong()
                                     }
+
                                     MessageType.FILE -> {
                                         messageModel.fileData.durationSeconds
                                     }
+
                                     else -> {
                                         0
                                     }
                                 }
 
                                 if (duration > 0) {
-                                    holder.videoDuration?.text = StringConversionUtil.secondsToString(duration, false)
+                                    holder.videoDuration?.text =
+                                        StringConversionUtil.secondsToString(duration, false)
                                     holder.videoDuration?.visibility = View.VISIBLE
                                 } else {
                                     holder.videoDuration?.visibility = View.GONE
@@ -204,8 +216,20 @@ class MediaGalleryAdapter(
             holder.messageId = messageModel.id
             (holder.itemView as CheckableFrameLayout).isChecked = checkedItems.get(position)
 
-            holder.itemView.setOnClickListener { v: View? -> clickListener.onClick(messageModel, holder.itemView, holder.absoluteAdapterPosition) }
-            holder.itemView.setOnLongClickListener { clickListener.onLongClick(messageModel, holder.itemView, holder.absoluteAdapterPosition) }
+            holder.itemView.setOnClickListener { v: View? ->
+                clickListener.onClick(
+                    messageModel,
+                    holder.itemView,
+                    holder.absoluteAdapterPosition
+                )
+            }
+            holder.itemView.setOnLongClickListener {
+                clickListener.onLongClick(
+                    messageModel,
+                    holder.itemView,
+                    holder.absoluteAdapterPosition
+                )
+            }
         }
     }
 
@@ -218,7 +242,7 @@ class MediaGalleryAdapter(
         if (messageModel.messageContentsType == MessageContentsType.VOICE_MESSAGE) {
             val duration: Long = if (messageModel.type == MessageType.FILE) {
                 messageModel.fileData.durationSeconds
-            } else if (messageModel.type == MessageType.VOICEMESSAGE){
+            } else if (messageModel.type == MessageType.VOICEMESSAGE) {
                 messageModel.audioData.duration.toLong()
             } else {
                 0
@@ -335,6 +359,10 @@ class MediaGalleryAdapter(
 
     interface OnClickItemListener {
         fun onClick(messageModel: AbstractMessageModel?, view: View?, position: Int)
-        fun onLongClick(messageModel: AbstractMessageModel?, itemView: View?, position: Int): Boolean
+        fun onLongClick(
+            messageModel: AbstractMessageModel?,
+            itemView: View?,
+            position: Int
+        ): Boolean
     }
 }

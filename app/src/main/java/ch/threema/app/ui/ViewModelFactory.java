@@ -28,22 +28,21 @@ import ch.threema.app.grouplinks.IncomingGroupRequestViewModel;
 import ch.threema.domain.models.GroupId;
 
 public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
-	private Object[] params;
+    private Object[] params;
 
-	public ViewModelFactory(Object... params) {
-		this.params = params;
-	}
+    public ViewModelFactory(Object... params) {
+        this.params = params;
+    }
 
-	@Override
-	public <T extends ViewModel> T create(Class<T> modelClass) {
-		if (modelClass == GroupLinkViewModel.class) {
-			return (T) new GroupLinkViewModel((GroupId) this.params[0]);
-		} // extend for more view model types
-		else if (modelClass == IncomingGroupRequestViewModel.class) {
-			return (T) new IncomingGroupRequestViewModel((GroupId)this.params[0]);
-		}
-		 else {
-			return super.create(modelClass);
-		}
-	}
+    @Override
+    public <T extends ViewModel> T create(Class<T> modelClass) {
+        if (modelClass == GroupLinkViewModel.class) {
+            return (T) new GroupLinkViewModel((GroupId) this.params[0]);
+        } // extend for more view model types
+        else if (modelClass == IncomingGroupRequestViewModel.class) {
+            return (T) new IncomingGroupRequestViewModel((GroupId) this.params[0]);
+        } else {
+            return super.create(modelClass);
+        }
+    }
 }

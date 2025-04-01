@@ -92,10 +92,11 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         )
         chatsAdapter?.onQueryChanged(queryText)
     }
-    private val showMessageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
-        // search results may have changed when returning from ComposeMessageFragment
-        globalSearchViewModel?.onDataChanged()
-    }
+    private val showMessageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
+            // search results may have changed when returning from ComposeMessageFragment
+            globalSearchViewModel?.onDataChanged()
+        }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         return true
@@ -188,34 +189,36 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         emptyView.setLoading(true)
         recyclerView.adapter = chatsAdapter
 
-        globalSearchViewModel = ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
-            globalSearchViewModel.messageModels.observe(this) { messageModels ->
-                emptyView.setLoading(false)
+        globalSearchViewModel =
+            ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
+                globalSearchViewModel.messageModels.observe(this) { messageModels ->
+                    emptyView.setLoading(false)
 
-                val messageModelsWithoutHiddenChats = messageModels.filterNot { messageModel ->
-                    val deadlineListIdentifier: String = if (messageModel is GroupMessageModel) {
-                        groupService.getUniqueIdString(messageModel.groupId)
-                    } else {
-                        ContactUtil.getUniqueIdString(messageModel.identity)
+                    val messageModelsWithoutHiddenChats = messageModels.filterNot { messageModel ->
+                        val deadlineListIdentifier: String =
+                            if (messageModel is GroupMessageModel) {
+                                groupService.getUniqueIdString(messageModel.groupId)
+                            } else {
+                                ContactUtil.getUniqueIdString(messageModel.identity)
+                            }
+                        hiddenChatsListService.has(deadlineListIdentifier)
                     }
-                    hiddenChatsListService.has(deadlineListIdentifier)
+
+                    chatsAdapter?.setMessageModels(messageModelsWithoutHiddenChats)
+
+                    if (messageModelsWithoutHiddenChats.isEmpty()) {
+                        if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
+                            emptyView.setup(R.string.search_no_matches)
+                        } else {
+                            emptyView.setup(R.string.global_search_empty_view_text)
+                        }
+                    }
                 }
 
-                chatsAdapter?.setMessageModels(messageModelsWithoutHiddenChats)
-
-                if (messageModelsWithoutHiddenChats.isEmpty()) {
-                    if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
-                        emptyView.setup(R.string.search_no_matches)
-                    } else {
-                        emptyView.setup(R.string.global_search_empty_view_text)
-                    }
+                globalSearchViewModel.isLoading.observe(this) { isLoading: Boolean ->
+                    emptyView.setLoading(isLoading)
                 }
             }
-
-            globalSearchViewModel.isLoading.observe(this) { isLoading: Boolean ->
-                emptyView.setLoading(isLoading)
-            }
-        }
 
         onQueryTextChange(null)
         return true

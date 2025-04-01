@@ -46,7 +46,8 @@ object LongToast {
         duration: Int
     ): Toast {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isAppInForeground()) {
-            val longToastView: View = LayoutInflater.from(context).inflate(R.layout.toast_long, null)
+            val longToastView: View =
+                LayoutInflater.from(context).inflate(R.layout.toast_long, null)
             val longToastTextView = longToastView.findViewById<TextView>(R.id.toast_text)
             longToastTextView.text = text
             val longToast = Toast(context)
@@ -68,11 +69,11 @@ object LongToast {
     }
 
     private fun isAppInForeground(
-    ) : Boolean {
+    ): Boolean {
         val appProcessInfo = ActivityManager.RunningAppProcessInfo();
         ActivityManager.getMyMemoryState(appProcessInfo);
         return appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
-                appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
+            appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
     }
 }
 

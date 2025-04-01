@@ -1,149 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:id="@+id/top_view"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/top_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<include layout="@layout/background_new_wizard"/>
+    <include layout="@layout/background_new_wizard" />
 
-	<LinearLayout
-	              android:layout_width="match_parent"
-	              android:layout_height="match_parent"
-	              android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
-	              android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
-	              android:layout_marginBottom="72dp"
-	              android:orientation="vertical"
-	              android:paddingTop="@dimen/wizard_contents_padding">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
+        android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
+        android:layout_marginBottom="72dp"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/wizard_contents_padding">
 
-		<TextView
-			android:id="@+id/wizard_welcome"
-			style="@style/WizardTitleText"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="8dp"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_restore_id_backup"/>
+        <TextView
+            android:id="@+id/wizard_welcome"
+            style="@style/WizardTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/new_wizard_restore_id_backup" />
 
-		<LinearLayout
-			android:id="@+id/restore_id_container"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="24dp"
-			android:background="@drawable/shape_edittext"
-			android:orientation="vertical"
-			android:padding="8dp">
+        <LinearLayout
+            android:id="@+id/restore_id_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/shape_edittext"
+            android:orientation="vertical"
+            android:padding="8dp">
 
-			<EditText
-				android:id="@+id/restore_id_edittext"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:background="@android:color/transparent"
-				android:capitalize="characters"
-				android:gravity="top"
-				android:hint="@string/restore_id_hint"
-				android:inputType="textNoSuggestions|textMultiLine|textImeMultiLine|textCapCharacters"
-				android:maxLength="100"
-				android:minHeight="@dimen/wizard_backup_code_edittext_minheight"
-				android:nextFocusRight="@+id/restore_password"
-				android:textColor="@android:color/white"
-				android:textSize="16sp"
-				android:textStyle="normal"
-				android:fontFamily="monospace"
-				android:typeface="monospace"
-				/>
+            <EditText
+                android:id="@+id/restore_id_edittext"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:capitalize="characters"
+                android:gravity="top"
+                android:hint="@string/restore_id_hint"
+                android:inputType="textNoSuggestions|textMultiLine|textImeMultiLine|textCapCharacters"
+                android:maxLength="100"
+                android:minHeight="@dimen/wizard_backup_code_edittext_minheight"
+                android:nextFocusRight="@+id/restore_password"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                android:fontFamily="monospace"
+                android:typeface="monospace" />
 
-			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/wizard_scan"
-				style="@style/WizardButtonRegular"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/wizard_scan"
+                style="@style/WizardButtonRegular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:minHeight="36dp"
-				app:drawableRightCompat="@drawable/ic_qr_code_scan"
+                app:drawableRightCompat="@drawable/ic_qr_code_scan"
                 android:drawablePadding="4dp"
-				android:drawableTint="@color/wizard_button_text_inverse"
-				android:gravity="left|center_vertical"
-				android:text="@string/new_wizard_scan_id_backup"
-				android:textSize="14dp"/>
+                android:drawableTint="@color/wizard_button_text_inverse"
+                android:gravity="left|center_vertical"
+                android:text="@string/new_wizard_scan_id_backup"
+                android:textSize="14dp" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-		<TextView
-			style="@style/WizardSmallText"
-			android:id="@+id/enter_password_explain"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="16dp"
-			android:gravity="left"
-			android:text="@string/password_hint"/>
+        <TextView
+            style="@style/WizardSmallText"
+            android:id="@+id/enter_password_explain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="left"
+            android:text="@string/password_hint" />
 
-		<LinearLayout
-			android:id="@+id/wizard_edit1_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp"
-			android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/wizard_edit1_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
 
-			<ImageView
-				style="@style/WizardEditTextIcon"
-				android:layout_width="@dimen/wizard_default_view_height"
-				android:layout_height="@dimen/wizard_default_view_height"
-				app:srcCompat="@drawable/ic_key_outline"/>
+            <ImageView
+                style="@style/WizardEditTextIcon"
+                android:layout_width="@dimen/wizard_default_view_height"
+                android:layout_height="@dimen/wizard_default_view_height"
+                app:srcCompat="@drawable/ic_key_outline" />
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:id="@+id/passphrase_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:hint="@string/password_hint"
-				app:counterEnabled="false"
-				app:errorEnabled="false"
-				app:hintAnimationEnabled="false"
-				app:hintEnabled="false"
-				app:passwordToggleEnabled="true">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passphrase_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/password_hint"
+                app:counterEnabled="false"
+                app:errorEnabled="false"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false"
+                app:passwordToggleEnabled="true">
 
-				<ch.threema.app.ui.ThreemaTextInputEditText
-					android:id="@+id/restore_password"
-					style="@style/WizardEditText"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:inputType="textPassword|textNoSuggestions"
-					android:nextFocusRight="@id/restore_id_edittext"
-					android:singleLine="true"/>
+                <ch.threema.app.ui.ThreemaTextInputEditText
+                    android:id="@+id/restore_password"
+                    style="@style/WizardEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    android:inputType="textPassword|textNoSuggestions"
+                    android:nextFocusRight="@id/restore_id_edittext"
+                    android:singleLine="true" />
 
-			</com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-		</LinearLayout>
-	</LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom"
-		android:layout_marginBottom="@dimen/wizard_contents_padding"
-		android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
-		android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
-		android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/wizard_contents_padding"
+        android:layout_marginLeft="@dimen/wizard_contents_padding_horizontal"
+        android:layout_marginRight="@dimen/wizard_contents_padding_horizontal"
+        android:orientation="horizontal">
 
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/wizard_cancel"
-			style="@style/WizardButtonInverse"
-			android:layout_width="wrap_content"
-			android:layout_marginRight="4dp"
-			android:layout_weight="1"
-			android:text="@string/cancel"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/wizard_cancel"
+            style="@style/WizardButtonInverse"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="4dp"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
 
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/wizard_finish"
-			style="@style/WizardButtonRegular"
-			android:layout_width="wrap_content"
-			android:layout_marginLeft="4dp"
-			android:layout_weight="1"
-			android:enabled="false"
-			android:text="@string/restore"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/wizard_finish"
+            style="@style/WizardButtonRegular"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="@string/restore" />
 
-	</LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

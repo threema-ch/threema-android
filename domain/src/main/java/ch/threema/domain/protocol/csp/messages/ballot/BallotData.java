@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.csp.messages.ballot;
 
 import androidx.annotation.NonNull;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,292 +34,285 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BallotData {
-	private final static String KEY_DESCRIPTION = "d";
-	private final static String KEY_STATE = "s";
-	private final static String KEY_ASSESSMENT_TYPE = "a";
-	private final static String KEY_TYPE = "t";
-	private final static String KEY_CHOICE_TYPE = "o";
-	private final static String KEY_CHOICES = "c";
-	private final static String KEY_PARTICIPANTS = "p";
-	private final static String KEY_DISPLAY_TYPE = "u";
+    private final static String KEY_DESCRIPTION = "d";
+    private final static String KEY_STATE = "s";
+    private final static String KEY_ASSESSMENT_TYPE = "a";
+    private final static String KEY_TYPE = "t";
+    private final static String KEY_CHOICE_TYPE = "o";
+    private final static String KEY_CHOICES = "c";
+    private final static String KEY_PARTICIPANTS = "p";
+    private final static String KEY_DISPLAY_TYPE = "u";
 
-	public enum State {
-		OPEN(0), CLOSED(1);
+    public enum State {
+        OPEN(0), CLOSED(1);
 
-		private final int value;
+        private final int value;
 
-		State(int value) {
-			this.value = value;
-		}
+        State(int value) {
+            this.value = value;
+        }
 
-		static State fromId(int id) {
-			for (State f : values()) {
-				if (f.value == id) return f;
-			}
-			throw new IllegalArgumentException();
-		}
-	}
+        static State fromId(int id) {
+            for (State f : values()) {
+                if (f.value == id) return f;
+            }
+            throw new IllegalArgumentException();
+        }
+    }
 
-	public enum AssessmentType {
-		SINGLE(0), MULTIPLE(1);
+    public enum AssessmentType {
+        SINGLE(0), MULTIPLE(1);
 
-		private final int value;
+        private final int value;
 
-		AssessmentType(int value) {
-			this.value = value;
-		}
+        AssessmentType(int value) {
+            this.value = value;
+        }
 
-		static AssessmentType fromId(int id) {
-			for (AssessmentType f : values()) {
-				if (f.value == id) return f;
-			}
-			throw new IllegalArgumentException();
-		}
-	}
+        static AssessmentType fromId(int id) {
+            for (AssessmentType f : values()) {
+                if (f.value == id) return f;
+            }
+            throw new IllegalArgumentException();
+        }
+    }
 
-	public enum Type {
-		RESULT_ON_CLOSE(0), INTERMEDIATE(1);
+    public enum Type {
+        RESULT_ON_CLOSE(0), INTERMEDIATE(1);
 
-		private final int value;
+        private final int value;
 
-		Type(int value) {
-			this.value = value;
-		}
+        Type(int value) {
+            this.value = value;
+        }
 
-		static Type fromId(int id) {
-			for (Type f : values()) {
-				if (f.value == id) return f;
-			}
-			throw new IllegalArgumentException();
-		}
-	}
+        static Type fromId(int id) {
+            for (Type f : values()) {
+                if (f.value == id) return f;
+            }
+            throw new IllegalArgumentException();
+        }
+    }
 
-	public enum ChoiceType {
-		TEXT(0);
+    public enum ChoiceType {
+        TEXT(0);
 
-		private final int value;
+        private final int value;
 
-		ChoiceType(int value) {
-			this.value = value;
-		}
+        ChoiceType(int value) {
+            this.value = value;
+        }
 
-		static ChoiceType fromId(int id) {
-			for (ChoiceType f : values()) {
-				if (f.value == id) return f;
-			}
-			throw new IllegalArgumentException();
-		}
-	}
+        static ChoiceType fromId(int id) {
+            for (ChoiceType f : values()) {
+                if (f.value == id) return f;
+            }
+            throw new IllegalArgumentException();
+        }
+    }
 
-	public enum DisplayType {
-		LIST_MODE(0), SUMMARY_MODE(1);
+    public enum DisplayType {
+        LIST_MODE(0), SUMMARY_MODE(1);
 
-		private final int value;
+        private final int value;
 
-		DisplayType(int value) {
-			this.value = value;
-		}
+        DisplayType(int value) {
+            this.value = value;
+        }
 
-		static DisplayType fromId(int id) {
-			for (DisplayType f : values()) {
-				if (f.value == id) return f;
-			}
-			throw new IllegalArgumentException();
-		}
-	}
+        static DisplayType fromId(int id) {
+            for (DisplayType f : values()) {
+                if (f.value == id) return f;
+            }
+            throw new IllegalArgumentException();
+        }
+    }
 
-	private String description;
-	private State state;
-	private AssessmentType assessmentType;
-	private Type type;
-	//default choice type text
-	private ChoiceType choiceType = ChoiceType.TEXT;
-	//default display type list mode
-	private DisplayType displayType = DisplayType.LIST_MODE;
+    private String description;
+    private State state;
+    private AssessmentType assessmentType;
+    private Type type;
+    //default choice type text
+    private ChoiceType choiceType = ChoiceType.TEXT;
+    //default display type list mode
+    private DisplayType displayType = DisplayType.LIST_MODE;
 
-	private final List<BallotDataChoice> choiceList = new ArrayList<>();
-	private final List<String> participants = new ArrayList<>();
+    private final List<BallotDataChoice> choiceList = new ArrayList<>();
+    private final List<String> participants = new ArrayList<>();
 
-	public BallotData setDescription(String description) {
-		this.description = description;
-		return this;
-	}
+    public BallotData setDescription(String description) {
+        this.description = description;
+        return this;
+    }
 
-	public String getDescription() {
-		return this.description;
-	}
+    public String getDescription() {
+        return this.description;
+    }
 
-	/**
-	 * Return a reference to the choice list.
-	 */
-	public List<BallotDataChoice> getChoiceList() {
-		return this.choiceList;
-	}
+    /**
+     * Return a reference to the choice list.
+     */
+    public List<BallotDataChoice> getChoiceList() {
+        return this.choiceList;
+    }
 
-	/**
-	 * Add a choice.
-	 */
-	public void addChoice(@NonNull BallotDataChoice choice) {
-		this.choiceList.add(choice);
-	}
+    /**
+     * Add a choice.
+     */
+    public void addChoice(@NonNull BallotDataChoice choice) {
+        this.choiceList.add(choice);
+    }
 
-	public BallotData setState(State state) {
-		this.state = state;
-		return this;
-	}
+    public BallotData setState(State state) {
+        this.state = state;
+        return this;
+    }
 
-	public State getState() {
-		return this.state;
-	}
+    public State getState() {
+        return this.state;
+    }
 
-	public BallotData setAssessmentType(AssessmentType assessmentType) {
-		this.assessmentType = assessmentType;
-		return this;
-	}
+    public BallotData setAssessmentType(AssessmentType assessmentType) {
+        this.assessmentType = assessmentType;
+        return this;
+    }
 
-	public AssessmentType getAssessmentType() {
-		return this.assessmentType;
-	}
+    public AssessmentType getAssessmentType() {
+        return this.assessmentType;
+    }
 
-	public BallotData setType(Type type) {
-		this.type = type;
-		return this;
-	}
+    public BallotData setType(Type type) {
+        this.type = type;
+        return this;
+    }
 
-	public Type getType() {
-		return this.type;
-	}
+    public Type getType() {
+        return this.type;
+    }
 
-	public ChoiceType getChoiceType() {
-		return this.choiceType;
-	}
+    public ChoiceType getChoiceType() {
+        return this.choiceType;
+    }
 
-	public BallotData setChoiceType(ChoiceType choiceType) {
-		this.choiceType = choiceType;
-		return this;
-	}
+    public BallotData setChoiceType(ChoiceType choiceType) {
+        this.choiceType = choiceType;
+        return this;
+    }
 
-	public DisplayType getDisplayType() {
-		return this.displayType;
-	}
+    public DisplayType getDisplayType() {
+        return this.displayType;
+    }
 
-	public BallotData setDisplayType(DisplayType displayType) {
-		this.displayType = displayType;
-		return this;
-	}
+    public BallotData setDisplayType(DisplayType displayType) {
+        this.displayType = displayType;
+        return this;
+    }
 
-	/**
-	 *
-	 * @param identity
-	 * @return
-	 */
-	public int addParticipant(String identity) {
-		for(int pos = 0; pos < this.participants.size(); pos++) {
-			if(identity.equals(this.participants.get(pos))) {
-				return pos;
-			}
-		}
+    /**
+     * @param identity
+     * @return
+     */
+    public int addParticipant(String identity) {
+        for (int pos = 0; pos < this.participants.size(); pos++) {
+            if (identity.equals(this.participants.get(pos))) {
+                return pos;
+            }
+        }
 
-		this.participants.add(identity);
-		return this.participants.size()-1;
-	}
+        this.participants.add(identity);
+        return this.participants.size() - 1;
+    }
 
-	public List<String> getParticipants() {
-		return this.participants;
-	}
+    public List<String> getParticipants() {
+        return this.participants;
+    }
 
-	@NonNull
+    @NonNull
     public static BallotData parse(String jsonObjectString) throws BadMessageException {
-		try {
-			JSONObject o = new JSONObject(jsonObjectString);
+        try {
+            JSONObject o = new JSONObject(jsonObjectString);
 
-			BallotData ballotData = new BallotData();
-			ballotData.description = o.getString(KEY_DESCRIPTION);
-			try {
-				ballotData.state = State.fromId(o.getInt(KEY_STATE));
-			}
-			catch (IllegalArgumentException e) {
-				throw new BadMessageException("TM030");
-			}
+            BallotData ballotData = new BallotData();
+            ballotData.description = o.getString(KEY_DESCRIPTION);
+            try {
+                ballotData.state = State.fromId(o.getInt(KEY_STATE));
+            } catch (IllegalArgumentException e) {
+                throw new BadMessageException("TM030");
+            }
 
-			try {
-				ballotData.assessmentType = AssessmentType.fromId(o.getInt(KEY_ASSESSMENT_TYPE));
-			}
-			catch (IllegalArgumentException e) {
-				throw new BadMessageException("TM031");
-			}
+            try {
+                ballotData.assessmentType = AssessmentType.fromId(o.getInt(KEY_ASSESSMENT_TYPE));
+            } catch (IllegalArgumentException e) {
+                throw new BadMessageException("TM031");
+            }
 
-			try {
-				ballotData.type = Type.fromId(o.getInt(KEY_TYPE));
-			}
-			catch (IllegalArgumentException e) {
-				throw new BadMessageException("TM032");
-			}
-			try {
-				ballotData.choiceType = ChoiceType.fromId(o.getInt(KEY_CHOICE_TYPE));
-			}
-			catch (IllegalArgumentException e) {
-				throw new BadMessageException("TM034");
-			}
-			try {
-				if (o.has(KEY_DISPLAY_TYPE)) {
-					ballotData.displayType = DisplayType.fromId(o.getInt(KEY_DISPLAY_TYPE));
-				} else {
-					ballotData.displayType = DisplayType.LIST_MODE;
-				}
-			} catch (IllegalArgumentException e) {
-				throw new BadMessageException("TM035");
-			}
+            try {
+                ballotData.type = Type.fromId(o.getInt(KEY_TYPE));
+            } catch (IllegalArgumentException e) {
+                throw new BadMessageException("TM032");
+            }
+            try {
+                ballotData.choiceType = ChoiceType.fromId(o.getInt(KEY_CHOICE_TYPE));
+            } catch (IllegalArgumentException e) {
+                throw new BadMessageException("TM034");
+            }
+            try {
+                if (o.has(KEY_DISPLAY_TYPE)) {
+                    ballotData.displayType = DisplayType.fromId(o.getInt(KEY_DISPLAY_TYPE));
+                } else {
+                    ballotData.displayType = DisplayType.LIST_MODE;
+                }
+            } catch (IllegalArgumentException e) {
+                throw new BadMessageException("TM035");
+            }
 
-			JSONArray choices = o.getJSONArray(KEY_CHOICES);
-			for(int n = 0; n < choices.length(); n++) {
-				ballotData.getChoiceList().add(BallotDataChoice.parse(choices.getJSONObject(n)));
-			}
+            JSONArray choices = o.getJSONArray(KEY_CHOICES);
+            for (int n = 0; n < choices.length(); n++) {
+                ballotData.getChoiceList().add(BallotDataChoice.parse(choices.getJSONObject(n)));
+            }
 
-			if(o.has(KEY_PARTICIPANTS)) {
-				JSONArray participants = o.getJSONArray(KEY_PARTICIPANTS);
-				for(int n = 0; n < participants.length(); n++) {
-					ballotData.participants.add(participants.getString(n));
-				}
-			}
+            if (o.has(KEY_PARTICIPANTS)) {
+                JSONArray participants = o.getJSONArray(KEY_PARTICIPANTS);
+                for (int n = 0; n < participants.length(); n++) {
+                    ballotData.participants.add(participants.getString(n));
+                }
+            }
 
-			return ballotData;
-		}
-		catch (JSONException jsonException) {
-			throw new BadMessageException("TM029", jsonException);
-		}
-	}
+            return ballotData;
+        } catch (JSONException jsonException) {
+            throw new BadMessageException("TM029", jsonException);
+        }
+    }
 
-	public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
-		bos.write(this.generateString().getBytes(StandardCharsets.UTF_8));
-	}
+    public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
+        bos.write(this.generateString().getBytes(StandardCharsets.UTF_8));
+    }
 
-	public String generateString() throws BadMessageException {
-		JSONObject o = new JSONObject();
-		try {
-			o.put(KEY_DESCRIPTION, this.description);
-			o.put(KEY_STATE, this.state.value);
-			o.put(KEY_ASSESSMENT_TYPE, this.assessmentType.value);
-			o.put(KEY_TYPE, this.type.value);
-			o.put(KEY_CHOICE_TYPE, this.choiceType.value);
-			o.put(KEY_DISPLAY_TYPE, this.displayType.value);
+    public String generateString() throws BadMessageException {
+        JSONObject o = new JSONObject();
+        try {
+            o.put(KEY_DESCRIPTION, this.description);
+            o.put(KEY_STATE, this.state.value);
+            o.put(KEY_ASSESSMENT_TYPE, this.assessmentType.value);
+            o.put(KEY_TYPE, this.type.value);
+            o.put(KEY_CHOICE_TYPE, this.choiceType.value);
+            o.put(KEY_DISPLAY_TYPE, this.displayType.value);
 
-			JSONArray a = new JSONArray();
-			for (BallotDataChoice c : this.getChoiceList()) {
-				a.put(c.getJsonObject());
-			}
-			o.put(KEY_CHOICES, a);
+            JSONArray a = new JSONArray();
+            for (BallotDataChoice c : this.getChoiceList()) {
+                a.put(c.getJsonObject());
+            }
+            o.put(KEY_CHOICES, a);
 
-			JSONArray p = new JSONArray();
-			for(String i: this.participants) {
-				p.put(i);
-			}
-			o.put(KEY_PARTICIPANTS, p);
-		}
-		catch (Exception jsonException) {
-			throw new BadMessageException("TM033", jsonException);
-		}
+            JSONArray p = new JSONArray();
+            for (String i : this.participants) {
+                p.put(i);
+            }
+            o.put(KEY_PARTICIPANTS, p);
+        } catch (Exception jsonException) {
+            throw new BadMessageException("TM033", jsonException);
+        }
 
-		return o.toString();
-	}
+        return o.toString();
+    }
 }

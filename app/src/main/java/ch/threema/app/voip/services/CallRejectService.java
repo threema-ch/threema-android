@@ -39,35 +39,35 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTIT
  * A small intent service that rejects an incoming call.
  */
 public class CallRejectService extends IntentService {
-	private static final String name = "CallRejectService";
-	private static final Logger logger = LoggingUtil.getThreemaLogger(name);
+    private static final String name = "CallRejectService";
+    private static final Logger logger = LoggingUtil.getThreemaLogger(name);
 
-	public static final String EXTRA_REJECT_REASON = "REJECT_REASON";
+    public static final String EXTRA_REJECT_REASON = "REJECT_REASON";
 
-	public CallRejectService() {
-		super(name);
-	}
+    public CallRejectService() {
+        super(name);
+    }
 
-	@Override
-	protected void onHandleIntent(@Nullable Intent intent) {
-		logger.info("onHandleIntent");
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        logger.info("onHandleIntent");
 
-		// Ignore null intents
-		if (intent == null) {
-			logger.debug("Empty Intent");
-			return;
-		}
+        // Ignore null intents
+        if (intent == null) {
+            logger.debug("Empty Intent");
+            return;
+        }
 
-		// Intent parameters
-		final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);
-		final long callId = intent.getLongExtra(EXTRA_CALL_ID, 0L);
-		final byte rejectReason = intent.getByteExtra(EXTRA_REJECT_REASON, VoipCallAnswerData.RejectReason.UNKNOWN);
+        // Intent parameters
+        final String contactIdentity = intent.getStringExtra(EXTRA_CONTACT_IDENTITY);
+        final long callId = intent.getLongExtra(EXTRA_CALL_ID, 0L);
+        final byte rejectReason = intent.getByteExtra(EXTRA_REJECT_REASON, VoipCallAnswerData.RejectReason.UNKNOWN);
 
-		// Reject the call
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			CallRejectWorkerKt.rejectCall(serviceManager, callId, contactIdentity, rejectReason);
-		}
-	}
+        // Reject the call
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            CallRejectWorkerKt.rejectCall(serviceManager, callId, contactIdentity, rejectReason);
+        }
+    }
 
 }

@@ -1,243 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="?android:attr/colorBackground">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<androidx.core.widget.NestedScrollView
-			android:id="@+id/scroll_parent"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:color/transparent">
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent">
 
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="16dp"
-				android:orientation="vertical"
-				android:paddingBottom="48dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:paddingBottom="48dp">
 
-				<FrameLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-					<com.google.android.material.card.MaterialCardView
-						android:id="@+id/intro_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="8dp"
-						android:layout_marginLeft="16dp"
-						android:layout_marginRight="16dp"
-						android:layout_marginTop="16dp"
-						android:clickable="true"
-						android:focusable="true"
-						app:cardBackgroundColor="?attr/colorSurface"
-						app:cardCornerRadius="@dimen/cardview_border_radius"
-						app:cardElevation="0dp"
-						app:contentPaddingBottom="8dp"
-						app:contentPaddingLeft="15dp"
-						app:contentPaddingRight="15dp"
-						app:contentPaddingTop="8dp"
-						app:strokeWidth="0dp">
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/intro_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="?attr/colorSurface"
+                        app:cardCornerRadius="@dimen/cardview_border_radius"
+                        app:cardElevation="0dp"
+                        app:contentPaddingBottom="8dp"
+                        app:contentPaddingLeft="15dp"
+                        app:contentPaddingRight="15dp"
+                        app:contentPaddingTop="8dp"
+                        app:strokeWidth="0dp">
 
-						<FrameLayout
-							android:id="@+id/logo_frame"
-							android:layout_width="128dp"
-							android:layout_height="128dp"
-							android:layout_gravity="center_horizontal|top"
-							android:contentDescription="@string/image_placeholder"
-							android:importantForAccessibility="no">
+                        <FrameLayout
+                            android:id="@+id/logo_frame"
+                            android:layout_width="128dp"
+                            android:layout_height="128dp"
+                            android:layout_gravity="center_horizontal|top"
+                            android:contentDescription="@string/image_placeholder"
+                            android:importantForAccessibility="no">
 
-							<ch.threema.app.ui.SquareImageView
-								android:layout_width="128dp"
-								android:layout_height="128dp"
-								android:src="@drawable/ic_circle_white"
-								android:tint="?attr/colorSecondaryContainer"
-								android:importantForAccessibility="no"/>
+                            <ch.threema.app.ui.SquareImageView
+                                android:layout_width="128dp"
+                                android:layout_height="128dp"
+                                android:src="@drawable/ic_circle_white"
+                                android:tint="?attr/colorSecondaryContainer"
+                                android:importantForAccessibility="no" />
 
-							<ImageView
-								android:layout_width="100dp"
-								android:layout_height="wrap_content"
-								android:layout_gravity="center"
-								android:adjustViewBounds="true"
-								android:src="@drawable/ic_backup_data_black_192dp"
-								android:importantForAccessibility="no"
-								app:tint="?attr/colorOnSecondaryContainer" />
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:adjustViewBounds="true"
+                                android:src="@drawable/ic_backup_data_black_192dp"
+                                android:importantForAccessibility="no"
+                                app:tint="?attr/colorOnSecondaryContainer" />
 
-						</FrameLayout>
+                        </FrameLayout>
 
-						<TextView
-							style="@style/Threema.TextAppearance.Emptyview"
-							android:id="@+id/empty_text"
-							android:layout_marginTop="154dp"
-							android:layout_width="match_parent"
-							android:layout_height="match_parent"
-							android:gravity="center_horizontal|bottom"
-							android:text="@string/data_backup_headline"
-							android:fontFamily="sans-serif-light"
-							android:textSize="18sp"
-							android:textAlignment="center"/>
+                        <TextView
+                            style="@style/Threema.TextAppearance.Emptyview"
+                            android:id="@+id/empty_text"
+                            android:layout_marginTop="154dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center_horizontal|bottom"
+                            android:text="@string/data_backup_headline"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="18sp"
+                            android:textAlignment="center" />
 
-					</com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-					<com.google.android.material.card.MaterialCardView
-						android:id="@+id/last_backup_layout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="8dp"
-						android:layout_marginLeft="16dp"
-						android:layout_marginRight="16dp"
-						android:layout_marginTop="16dp"
-						android:clickable="true"
-						android:focusable="true"
-						app:cardBackgroundColor="?attr/colorSurface"
-						app:cardCornerRadius="@dimen/cardview_border_radius"
-						app:cardElevation="4dp"
-						app:contentPaddingBottom="12dp"
-						app:contentPaddingLeft="15dp"
-						app:contentPaddingRight="15dp"
-						app:contentPaddingTop="12dp"
-						app:strokeWidth="0dp"
-						android:outlineProvider="none">
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/last_backup_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="?attr/colorSurface"
+                        app:cardCornerRadius="@dimen/cardview_border_radius"
+                        app:cardElevation="4dp"
+                        app:contentPaddingBottom="12dp"
+                        app:contentPaddingLeft="15dp"
+                        app:contentPaddingRight="15dp"
+                        app:contentPaddingTop="12dp"
+                        app:strokeWidth="0dp"
+                        android:outlineProvider="none">
 
-						<LinearLayout
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
 
-							<TextView
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:text="@string/data_backup_last_date"
-								android:textAppearance="@style/Threema.Text.Overline"/>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/data_backup_last_date"
+                                android:textAppearance="@style/Threema.Text.Overline" />
 
-							<TextView
-								android:id="@+id/last_backup_date"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="8dp"
-								android:ellipsize="middle"
-								android:singleLine="true"
-								android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-								android:text=""/>
+                            <TextView
+                                android:id="@+id/last_backup_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:ellipsize="middle"
+                                android:singleLine="true"
+                                android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                                android:text="" />
 
-						</LinearLayout>
+                        </LinearLayout>
 
-					</com.google.android.material.card.MaterialCardView>
+                    </com.google.android.material.card.MaterialCardView>
 
-				</FrameLayout>
+                </FrameLayout>
 
-				<com.google.android.material.card.MaterialCardView
-					android:id="@+id/path_layout"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="8dp"
-					android:layout_marginLeft="16dp"
-					android:layout_marginRight="16dp"
-					android:layout_marginTop="8dp"
-					android:clickable="true"
-					android:focusable="true"
-					app:cardBackgroundColor="?attr/colorSurface"
-					app:cardCornerRadius="@dimen/cardview_border_radius"
-					app:cardElevation="4dp"
-					app:contentPaddingBottom="0dp"
-					app:contentPaddingLeft="15dp"
-					app:contentPaddingRight="15dp"
-					app:contentPaddingTop="12dp"
-					app:strokeWidth="0dp"
-					android:outlineProvider="none">
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/path_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="@dimen/cardview_border_radius"
+                    app:cardElevation="4dp"
+                    app:contentPaddingBottom="0dp"
+                    app:contentPaddingLeft="15dp"
+                    app:contentPaddingRight="15dp"
+                    app:contentPaddingTop="12dp"
+                    app:strokeWidth="0dp"
+                    android:outlineProvider="none">
 
-					<LinearLayout
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-						<TextView
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
-							android:text="@string/data_backup_save_path"
-							android:textAppearance="@style/Threema.Text.Overline"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/data_backup_save_path"
+                            android:textAppearance="@style/Threema.Text.Overline" />
 
-						<TextView
-							android:id="@+id/backup_path"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_marginTop="8dp"
-							android:ellipsize="middle"
-							android:singleLine="true"
-							android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-							android:text=""/>
+                        <TextView
+                            android:id="@+id/backup_path"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="middle"
+                            android:singleLine="true"
+                            android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                            android:text="" />
 
-						<com.google.android.material.button.MaterialButton
-							android:id="@+id/backup_path_change_btn"
-							style="@style/Threema.MaterialButton.Borderless.Flush"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_gravity="right"
-							android:text="@string/change"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/backup_path_change_btn"
+                            style="@style/Threema.MaterialButton.Borderless.Flush"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:text="@string/change" />
 
-					</LinearLayout>
+                    </LinearLayout>
 
-				</com.google.android.material.card.MaterialCardView>
+                </com.google.android.material.card.MaterialCardView>
 
-				<androidx.constraintlayout.widget.ConstraintLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="8dp"
-					android:paddingLeft="16dp"
-					android:paddingRight="16dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/info"
-					style="@style/Threema.MaterialButton.Action.Outline"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:contentDescription="@string/safe_learn_more_button"
-					android:text="@string/safe_learn_more_button"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/info"
+                        style="@style/Threema.MaterialButton.Action.Outline"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/safe_learn_more_button"
+                        android:text="@string/safe_learn_more_button"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside" />
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/restore"
-					style="@style/Threema.MaterialButton.Action.Outline"
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_alignParentRight="true"
-					android:contentDescription="@string/restore"
-					android:text="@string/restore"
-					app:layout_constraintTop_toTopOf="parent"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintRight_toRightOf="parent" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/restore"
+                        style="@style/Threema.MaterialButton.Action.Outline"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:contentDescription="@string/restore"
+                        android:text="@string/restore"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent" />
 
-				</androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-			</LinearLayout>
+            </LinearLayout>
 
-		</androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
-	</FrameLayout>
+    </FrameLayout>
 
-	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-		android:id="@+id/floating"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom|right"
-		android:layout_margin="@dimen/floating_button_margin"
-		android:contentDescription="@string/backup_data_new"
-		android:text="@string/backup_data_new"
-		android:tint="@android:color/white"
-		android:visibility="visible"
-		app:icon="@drawable/ic_add_white_24dp"
-		app:layout_anchorGravity="bottom|right|end"
-		/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/floating_button_margin"
+        android:contentDescription="@string/backup_data_new"
+        android:text="@string/backup_data_new"
+        android:tint="@android:color/white"
+        android:visibility="visible"
+        app:icon="@drawable/ic_add_white_24dp"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </FrameLayout>

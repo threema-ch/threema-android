@@ -37,118 +37,118 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec;
  * Dummy DH session store for testing purposes only (not optimized).
  */
 public class InMemoryDHSessionStore implements DHSessionStoreInterface {
-	final private List<DHSession> dhSessionList;
+    final private List<DHSession> dhSessionList;
 
-	public InMemoryDHSessionStore() {
-		this.dhSessionList = new LinkedList<>();
-	}
+    public InMemoryDHSessionStore() {
+        this.dhSessionList = new LinkedList<>();
+    }
 
-	@Nullable
-	@Override
-	public DHSession getDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId, @NonNull ActiveTaskCodec handle) {
-		for (DHSession session : dhSessionList) {
-			if (session.getMyIdentity().equals(myIdentity) &&
-				session.getPeerIdentity().equals(peerIdentity) &&
-				session.getId().equals(sessionId)
-			) {
-				return session;
-			}
-		}
-		return null;
-	}
+    @Nullable
+    @Override
+    public DHSession getDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId, @NonNull ActiveTaskCodec handle) {
+        for (DHSession session : dhSessionList) {
+            if (session.getMyIdentity().equals(myIdentity) &&
+                session.getPeerIdentity().equals(peerIdentity) &&
+                session.getId().equals(sessionId)
+            ) {
+                return session;
+            }
+        }
+        return null;
+    }
 
-	@Nullable
-	@Override
-	public DHSession getBestDHSession(String myIdentity, String peerIdentity, @NonNull ActiveTaskCodec handle) {
-		DHSession currentBestSession = null;
+    @Nullable
+    @Override
+    public DHSession getBestDHSession(String myIdentity, String peerIdentity, @NonNull ActiveTaskCodec handle) {
+        DHSession currentBestSession = null;
 
-		for (DHSession session : dhSessionList) {
-			if (!session.getMyIdentity().equals(myIdentity) || !session.getPeerIdentity().equals(peerIdentity)) {
-				continue;
-			}
+        for (DHSession session : dhSessionList) {
+            if (!session.getMyIdentity().equals(myIdentity) || !session.getPeerIdentity().equals(peerIdentity)) {
+                continue;
+            }
 
-			if (currentBestSession == null ||
-				(currentBestSession.getMyRatchet4DH() == null && session.getMyRatchet4DH() != null) ||
-				(session.getMyRatchet4DH() != null && currentBestSession.getId().compareTo(session.getId()) > 0)) {
-				currentBestSession = session;
-			}
-		}
+            if (currentBestSession == null ||
+                (currentBestSession.getMyRatchet4DH() == null && session.getMyRatchet4DH() != null) ||
+                (session.getMyRatchet4DH() != null && currentBestSession.getId().compareTo(session.getId()) > 0)) {
+                currentBestSession = session;
+            }
+        }
 
-		return currentBestSession;
-	}
+        return currentBestSession;
+    }
 
-	@NonNull
-	@Override
-	public List<DHSession> getAllDHSessions(@NonNull String myIdentity,
-	                                        @NonNull String peerIdentity,
-	                                        @NonNull ActiveTaskCodec handle) {
-		List<DHSession> sessions = new ArrayList<>();
+    @NonNull
+    @Override
+    public List<DHSession> getAllDHSessions(@NonNull String myIdentity,
+                                            @NonNull String peerIdentity,
+                                            @NonNull ActiveTaskCodec handle) {
+        List<DHSession> sessions = new ArrayList<>();
 
-		for (DHSession session : dhSessionList) {
-			if (session.getMyIdentity().equals(myIdentity) && session.getPeerIdentity().equals(peerIdentity)) {
-				sessions.add(session);
-			}
-		}
+        for (DHSession session : dhSessionList) {
+            if (session.getMyIdentity().equals(myIdentity) && session.getPeerIdentity().equals(peerIdentity)) {
+                sessions.add(session);
+            }
+        }
 
-		return sessions;
-	}
+        return sessions;
+    }
 
-	@Override
-	public void storeDHSession(DHSession session) {
-		deleteDHSession(session.getMyIdentity(), session.getPeerIdentity(), session.getId());
-		dhSessionList.add(session);
-	}
+    @Override
+    public void storeDHSession(DHSession session) {
+        deleteDHSession(session.getMyIdentity(), session.getPeerIdentity(), session.getId());
+        dhSessionList.add(session);
+    }
 
-	@Override
-	public boolean deleteDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId) {
-		for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
-			DHSession curSession = it.next();
-			if (curSession.getMyIdentity().equals(myIdentity) &&
-				curSession.getPeerIdentity().equals(peerIdentity) &&
-				curSession.getId().equals(sessionId)) {
-				it.remove();
-				return true;
-			}
-		}
-		return false;
-	}
+    @Override
+    public boolean deleteDHSession(String myIdentity, String peerIdentity, DHSessionId sessionId) {
+        for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
+            DHSession curSession = it.next();
+            if (curSession.getMyIdentity().equals(myIdentity) &&
+                curSession.getPeerIdentity().equals(peerIdentity) &&
+                curSession.getId().equals(sessionId)) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public int deleteAllDHSessions(String myIdentity, String peerIdentity) {
-		int numDeleted = 0;
-		for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
-			DHSession session = it.next();
-			if (session.getMyIdentity().equals(myIdentity) && session.getPeerIdentity().equals(peerIdentity)) {
-				it.remove();
-				numDeleted++;
-			}
-		}
-		return numDeleted;
-	}
+    @Override
+    public int deleteAllDHSessions(String myIdentity, String peerIdentity) {
+        int numDeleted = 0;
+        for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
+            DHSession session = it.next();
+            if (session.getMyIdentity().equals(myIdentity) && session.getPeerIdentity().equals(peerIdentity)) {
+                it.remove();
+                numDeleted++;
+            }
+        }
+        return numDeleted;
+    }
 
-	@Override
-	public int deleteAllSessionsExcept(String myIdentity, String peerIdentity, DHSessionId exceptSessionId, boolean fourDhOnly) {
-		int numDeleted = 0;
-		for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
-			DHSession session = it.next();
-			if (session.getMyIdentity().equals(myIdentity) &&
-				session.getPeerIdentity().equals(peerIdentity) &&
-				(!fourDhOnly || session.getMyRatchet4DH() != null) &&
-				!exceptSessionId.equals(session.getId())) {
-				it.remove();
-				numDeleted++;
-			}
-		}
-		return numDeleted;
-	}
+    @Override
+    public int deleteAllSessionsExcept(String myIdentity, String peerIdentity, DHSessionId exceptSessionId, boolean fourDhOnly) {
+        int numDeleted = 0;
+        for (Iterator<DHSession> it = this.dhSessionList.iterator(); it.hasNext(); ) {
+            DHSession session = it.next();
+            if (session.getMyIdentity().equals(myIdentity) &&
+                session.getPeerIdentity().equals(peerIdentity) &&
+                (!fourDhOnly || session.getMyRatchet4DH() != null) &&
+                !exceptSessionId.equals(session.getId())) {
+                it.remove();
+                numDeleted++;
+            }
+        }
+        return numDeleted;
+    }
 
-	@Override
-	public void setDHSessionStoreErrorHandler(@NonNull DHSessionStoreErrorHandler errorHandler) {
-		// Nothing to do here
-	}
+    @Override
+    public void setDHSessionStoreErrorHandler(@NonNull DHSessionStoreErrorHandler errorHandler) {
+        // Nothing to do here
+    }
 
-	@Override
-	public void executeNull() {
-		// Nothing to do as the in memory dh session store does not support upgrades and downgrades
-	}
+    @Override
+    public void executeNull() {
+        // Nothing to do as the in memory dh session store does not support upgrades and downgrades
+    }
 }

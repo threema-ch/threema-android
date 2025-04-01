@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			 android:id="@+id/content_block"
-			 android:layout_width="@dimen/media_thumbnail_min_width"
-			 android:layout_height="wrap_content"
-			 android:foreground="@drawable/bubble_overlay_selector"
-             android:minHeight="@dimen/media_thumbnail_min_height">
+    android:id="@+id/content_block"
+    android:layout_width="@dimen/media_thumbnail_min_width"
+    android:layout_height="wrap_content"
+    android:foreground="@drawable/bubble_overlay_selector"
+    android:minHeight="@dimen/media_thumbnail_min_height">
 
-	<com.google.android.material.imageview.ShapeableImageView
-			android:id="@+id/attachment_image_view"
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-			android:layout_gravity="center"
-			android:scaleType="fitXY"
-			android:adjustViewBounds="true"
-			android:contentDescription="@string/attach_picture"
-			android:visibility="gone"/>
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/attachment_image_view"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_gravity="center"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/attach_picture"
+        android:visibility="gone" />
 
-	<ch.threema.app.ui.ControllerView
-			android:id="@+id/controller"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:layout_gravity="center"/>
+    <ch.threema.app.ui.ControllerView
+        android:id="@+id/controller"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center" />
 
 </FrameLayout>

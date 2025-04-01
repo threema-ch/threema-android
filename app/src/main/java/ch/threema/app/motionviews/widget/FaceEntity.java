@@ -30,72 +30,74 @@ import ch.threema.app.motionviews.FaceItem;
 import ch.threema.app.motionviews.viewmodel.Layer;
 
 public abstract class FaceEntity extends MotionEntity {
-	public static final float BLUR_RADIUS = 1.5f;
+    public static final float BLUR_RADIUS = 1.5f;
 
-	@NonNull protected final FaceItem faceItem;
-	@NonNull protected final Bitmap bitmap;
+    @NonNull
+    protected final FaceItem faceItem;
+    @NonNull
+    protected final Bitmap bitmap;
 
-	public FaceEntity(@NonNull Layer layer,
-	                  @NonNull FaceItem faceItem,
-	                  @IntRange(from = 1) int originalImageWidth,
-	                  @IntRange(from = 1) int originalImageHeight,
-	                  @IntRange(from = 1) int canvasWidth,
-	                  @IntRange(from = 1) int canvasHeight) {
-		super(layer, canvasWidth, canvasHeight);
+    public FaceEntity(@NonNull Layer layer,
+                      @NonNull FaceItem faceItem,
+                      @IntRange(from = 1) int originalImageWidth,
+                      @IntRange(from = 1) int originalImageHeight,
+                      @IntRange(from = 1) int canvasWidth,
+                      @IntRange(from = 1) int canvasHeight) {
+        super(layer, canvasWidth, canvasHeight);
 
-		this.faceItem = faceItem;
-		this.bitmap = faceItem.getBitmap();
+        this.faceItem = faceItem;
+        this.bitmap = faceItem.getBitmap();
 
-		float width = bitmap.getWidth() * faceItem.getPreScale();
-		float height = bitmap.getHeight() * faceItem.getPreScale();
+        float width = bitmap.getWidth() * faceItem.getPreScale();
+        float height = bitmap.getHeight() * faceItem.getPreScale();
 
-		// initial position of the entity
-		srcPoints[0] = 0;
-		srcPoints[1] = 0;
-		srcPoints[2] = width;
-		srcPoints[3] = 0;
-		srcPoints[4] = width;
-		srcPoints[5] = height;
-		srcPoints[6] = 0;
-		srcPoints[7] = height;
-		srcPoints[8] = 0;
-		srcPoints[9] = 0;
+        // initial position of the entity
+        srcPoints[0] = 0;
+        srcPoints[1] = 0;
+        srcPoints[2] = width;
+        srcPoints[3] = 0;
+        srcPoints[4] = width;
+        srcPoints[5] = height;
+        srcPoints[6] = 0;
+        srcPoints[7] = height;
+        srcPoints[8] = 0;
+        srcPoints[9] = 0;
 
-		float widthAspect = 1.0F * canvasWidth / width;
-		float heightAspect = 1.0F * canvasHeight / height;
-		// fit the smallest size
-		holyScale = Math.min(widthAspect, heightAspect);
-		float canvasScaleX = (float) canvasWidth / originalImageWidth;
-		float canvasScaleY = (float) canvasHeight / originalImageHeight;
+        float widthAspect = 1.0F * canvasWidth / width;
+        float heightAspect = 1.0F * canvasHeight / height;
+        // fit the smallest size
+        holyScale = Math.min(widthAspect, heightAspect);
+        float canvasScaleX = (float) canvasWidth / originalImageWidth;
+        float canvasScaleY = (float) canvasHeight / originalImageHeight;
 
-		PointF midPoint = new PointF();
-		faceItem.getFace().getMidPoint(midPoint);
-		midPoint.x = midPoint.x * canvasScaleX;
-		midPoint.y = midPoint.y * canvasScaleY;
+        PointF midPoint = new PointF();
+        faceItem.getFace().getMidPoint(midPoint);
+        midPoint.x = midPoint.x * canvasScaleX;
+        midPoint.y = midPoint.y * canvasScaleY;
 
-		float diameter = faceItem.getFace().eyesDistance() * canvasScaleX * (2f * BLUR_RADIUS);
+        float diameter = faceItem.getFace().eyesDistance() * canvasScaleX * (2f * BLUR_RADIUS);
 
-		moveCenterTo(midPoint);
-		getLayer().setScale(diameter / (originalImageWidth > originalImageHeight ? canvasHeight : canvasWidth));
-	}
+        moveCenterTo(midPoint);
+        getLayer().setScale(diameter / (originalImageWidth > originalImageHeight ? canvasHeight : canvasWidth));
+    }
 
-	@Override
-	public boolean canMove() {
-		return false;
-	}
+    @Override
+    public boolean canMove() {
+        return false;
+    }
 
-	@Override
-	public boolean canChangeColor() {
-		return false;
-	}
+    @Override
+    public boolean canChangeColor() {
+        return false;
+    }
 
-	@Override
-	public int getWidth() {
-		return bitmap.getWidth();
-	}
+    @Override
+    public int getWidth() {
+        return bitmap.getWidth();
+    }
 
-	@Override
-	public int getHeight() {
-		return bitmap.getHeight();
-	}
+    @Override
+    public int getHeight() {
+        return bitmap.getHeight();
+    }
 }

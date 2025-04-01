@@ -35,166 +35,165 @@ import ch.threema.base.utils.LoggingUtil;
 import java8.util.Optional;
 
 public abstract class AbstractAudioTranscoder {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractAudioTranscoder");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractAudioTranscoder");
 
-	//region Member Variables
-	protected final AudioComponent component;
-	protected final VideoTranscoder.Stats stats;
-	protected long trimStartTimeUs = 0;
-	protected final long trimEndTimeUs;
+    //region Member Variables
+    protected final AudioComponent component;
+    protected final VideoTranscoder.Stats stats;
+    protected long trimStartTimeUs = 0;
+    protected final long trimEndTimeUs;
 
-	private @NonNull State state = State.INITIAL;
+    private @NonNull State state = State.INITIAL;
 
-	protected MediaFormat outputFormat;
-	protected MediaMuxer muxer;
-	protected @NonNull Optional<Integer> muxerTrack = Optional.empty();
+    protected MediaFormat outputFormat;
+    protected MediaMuxer muxer;
+    protected @NonNull Optional<Integer> muxerTrack = Optional.empty();
 
-	//endregion
+    //endregion
 
-	/**
-	 * @param component The audio component that should be transcoded
-	 * @param stats Transcoder Statistics
-	 * @param trimEndTimeMs Trim time from the end in ms (!)
-	 */
-	public AbstractAudioTranscoder(AudioComponent component, VideoTranscoder.Stats stats, long trimEndTimeMs) {
-		this.component = component;
-		this.stats = stats;
-		this.trimEndTimeUs = trimEndTimeMs * 1000;
-	}
+    /**
+     * @param component     The audio component that should be transcoded
+     * @param stats         Transcoder Statistics
+     * @param trimEndTimeMs Trim time from the end in ms (!)
+     */
+    public AbstractAudioTranscoder(AudioComponent component, VideoTranscoder.Stats stats, long trimEndTimeMs) {
+        this.component = component;
+        this.stats = stats;
+        this.trimEndTimeUs = trimEndTimeMs * 1000;
+    }
 
-	//region Getter / Setter
+    //region Getter / Setter
 
-	public @NonNull State getState() {
-		return this.state;
-	}
+    public @NonNull State getState() {
+        return this.state;
+    }
 
-	protected void setState(@NonNull State state) {
-		logger.debug("Setting audio transcoder state to {}", state.name());
-		this.state = state;
-	}
+    protected void setState(@NonNull State state) {
+        logger.debug("Setting audio transcoder state to {}", state.name());
+        this.state = state;
+    }
 
-	//endregion
+    //endregion
 
 
-	/**
-	 * @return whether there are frames which did not finished the transcoding process.
-	 */
-	abstract public boolean hasPendingIntermediateFrames();
+    /**
+     * @return whether there are frames which did not finished the transcoding process.
+     */
+    abstract public boolean hasPendingIntermediateFrames();
 
-	//region Lifecycle
+    //region Lifecycle
 
-	/**
-	 * Initializes the transcoder pipeline
-	 *
-	 * Changes State from {@link State#INITIAL} to either {@link State#DETECTING_INPUT_FORMAT},
-	 * {@link State#DETECTING_OUTPUT_FORMAT} or {@link State#WAITING_ON_MUXER}.
-	 *
-	 * Should initialize outputFormat of the {@link AbstractAudioTranscoder} class.
-	 *
-	 * @throws IOException if a codec could not be initialized
-	 * @throws UnsupportedAudioFormatException if audio format is not supported by device
-	 */
-	public abstract void setup() throws IOException, UnsupportedAudioFormatException;
+    /**
+     * Initializes the transcoder pipeline
+     * <p>
+     * Changes State from {@link State#INITIAL} to either {@link State#DETECTING_INPUT_FORMAT},
+     * {@link State#DETECTING_OUTPUT_FORMAT} or {@link State#WAITING_ON_MUXER}.
+     * <p>
+     * Should initialize outputFormat of the {@link AbstractAudioTranscoder} class.
+     *
+     * @throws IOException                     if a codec could not be initialized
+     * @throws UnsupportedAudioFormatException if audio format is not supported by device
+     */
+    public abstract void setup() throws IOException, UnsupportedAudioFormatException;
 
-	/**
-	 * Trims the media start. Requires {@link AbstractAudioTranscoder#component} to be initialized.
-	 *
-	 * Searches the previous keyframe. Audio samples between trimStartTimeUs and the previous keyframe
-	 * are dropped when writing the audio samples to the muxer.
-	 *
-	 * May only be called after {@link State#INITIAL} and before {@link State#TRANSCODING}.
-	 */
-	public void trimMediaStartTo(long trimStartTimeUs) {
-		if (this.getState() == State.INITIAL || this.getState().ordinal() >= State.TRANSCODING.ordinal()) {
-			throw new IllegalStateException(String.format("Trimming may not be done in state %s", this.getState().name()));
-		}
-		this.trimStartTimeUs = trimStartTimeUs;
-		// Start sound as soon as possible before provided trimStartTime. Note that the audio before
-		// the exact trim start time is discarded.
-		this.component.getMediaExtractor().seekTo(trimStartTimeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
+    /**
+     * Trims the media start. Requires {@link AbstractAudioTranscoder#component} to be initialized.
+     * <p>
+     * Searches the previous keyframe. Audio samples between trimStartTimeUs and the previous keyframe
+     * are dropped when writing the audio samples to the muxer.
+     * <p>
+     * May only be called after {@link State#INITIAL} and before {@link State#TRANSCODING}.
+     */
+    public void trimMediaStartTo(long trimStartTimeUs) {
+        if (this.getState() == State.INITIAL || this.getState().ordinal() >= State.TRANSCODING.ordinal()) {
+            throw new IllegalStateException(String.format("Trimming may not be done in state %s", this.getState().name()));
+        }
+        this.trimStartTimeUs = trimStartTimeUs;
+        // Start sound as soon as possible before provided trimStartTime. Note that the audio before
+        // the exact trim start time is discarded.
+        this.component.getMediaExtractor().seekTo(trimStartTimeUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC);
 
-		logger.debug(
-			"Trimmed audio until {}us, the next sync after requested trim time {}us",
-			this.component.getMediaExtractor().getSampleTime(),
-			trimStartTimeUs
-		);
-	}
+        logger.debug(
+            "Trimmed audio until {}us, the next sync after requested trim time {}us",
+            this.component.getMediaExtractor().getSampleTime(),
+            trimStartTimeUs
+        );
+    }
 
-	/**
-	 * Transcoding step. Should be repeatedly called until {@link AudioFormatTranscoder#getState()}
-	 * returns {@link State#DONE}, but not after the done state is reached.
-	 *
-	 * May not be called before {@link AudioFormatTranscoder#setup()}.
-	 */
-	public abstract void step() throws UnsupportedAudioFormatException;
+    /**
+     * Transcoding step. Should be repeatedly called until {@link AudioFormatTranscoder#getState()}
+     * returns {@link State#DONE}, but not after the done state is reached.
+     * <p>
+     * May not be called before {@link AudioFormatTranscoder#setup()}.
+     */
+    public abstract void step() throws UnsupportedAudioFormatException;
 
-	/**
-	 * Injects the audio as track to the muxer and transfers the class state to
-	 * {@link State#TRANSCODING}.
-	 *
-	 * May only be called if {@link AudioFormatTranscoder#getState()} returns
-	 * {@link State#WAITING_ON_MUXER}.
-	 *
-	 */
-	public void injectTrackToMuxer(@NonNull MediaMuxer muxer) {
-		if(this.state != State.WAITING_ON_MUXER) {
-			throw new IllegalStateException("The muxer may not be reconfigured");
-		}
+    /**
+     * Injects the audio as track to the muxer and transfers the class state to
+     * {@link State#TRANSCODING}.
+     * <p>
+     * May only be called if {@link AudioFormatTranscoder#getState()} returns
+     * {@link State#WAITING_ON_MUXER}.
+     */
+    public void injectTrackToMuxer(@NonNull MediaMuxer muxer) {
+        if (this.state != State.WAITING_ON_MUXER) {
+            throw new IllegalStateException("The muxer may not be reconfigured");
+        }
 
-		this.muxer = muxer;
-		final int trackNumber = muxer.addTrack(this.outputFormat);
-		this.muxerTrack = Optional.of(trackNumber);
-		logger.debug("Added audio track number {} to muxer with format {}", trackNumber, this.outputFormat);
+        this.muxer = muxer;
+        final int trackNumber = muxer.addTrack(this.outputFormat);
+        this.muxerTrack = Optional.of(trackNumber);
+        logger.debug("Added audio track number {} to muxer with format {}", trackNumber, this.outputFormat);
 
-		this.setState(State.TRANSCODING);
-	}
+        this.setState(State.TRANSCODING);
+    }
 
-	/**
-	 * Cleanup of codecs etc.
-	 * May only be called if {@link AudioFormatTranscoder#getState()} returns {@link State#DONE}.
-	 */
-	public void cleanup() throws Exception {
-		if (this.state != State.DONE) {
-			throw new IllegalStateException("Cleanup is only permitted after encoding has finished.");
-		}
-	}
+    /**
+     * Cleanup of codecs etc.
+     * May only be called if {@link AudioFormatTranscoder#getState()} returns {@link State#DONE}.
+     */
+    public void cleanup() throws Exception {
+        if (this.state != State.DONE) {
+            throw new IllegalStateException("Cleanup is only permitted after encoding has finished.");
+        }
+    }
 
-	//endregion
+    //endregion
 
-	/**
-	 * Current state of the Audio Transcoder.
-	 *
-	 * States should be changed according to the definition order, but states may be skipped.
-	 */
-	public enum State {
-		/**
-		 * Uninitialized state
-		 */
-		INITIAL,
+    /**
+     * Current state of the Audio Transcoder.
+     * <p>
+     * States should be changed according to the definition order, but states may be skipped.
+     */
+    public enum State {
+        /**
+         * Uninitialized state
+         */
+        INITIAL,
 
-		/**
-		 * Waiting for the input audio format to be configured by the decoder-codec
-		 */
-		DETECTING_INPUT_FORMAT,
+        /**
+         * Waiting for the input audio format to be configured by the decoder-codec
+         */
+        DETECTING_INPUT_FORMAT,
 
-		/**
-		 * Waiting for the output format to be configured by the encoder-codec
-		 */
-		DETECTING_OUTPUT_FORMAT,
+        /**
+         * Waiting for the output format to be configured by the encoder-codec
+         */
+        DETECTING_OUTPUT_FORMAT,
 
-		/**
-		 * The output format has been detected and we are waiting on the muxer injection.
-		 */
-		WAITING_ON_MUXER,
+        /**
+         * The output format has been detected and we are waiting on the muxer injection.
+         */
+        WAITING_ON_MUXER,
 
-		/**
-		 * Transcoding the audio.
-		 */
-		TRANSCODING,
+        /**
+         * Transcoding the audio.
+         */
+        TRANSCODING,
 
-		/**
-		 * Transcoding has finished.
-		 */
-		DONE
-	}
+        /**
+         * Transcoding has finished.
+         */
+        DONE
+    }
 }

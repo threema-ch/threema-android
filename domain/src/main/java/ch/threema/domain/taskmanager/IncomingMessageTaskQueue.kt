@@ -140,7 +140,10 @@ internal class IncomingMessageTaskQueue(
         private val task by lazy {
             when (inboundMessage) {
                 is CspMessage -> IncomingCspMessageTask(inboundMessage, incomingMessageProcessor)
-                is InboundD2mMessage -> IncomingD2mMessageTask(inboundMessage, incomingMessageProcessor)
+                is InboundD2mMessage -> IncomingD2mMessageTask(
+                    inboundMessage,
+                    incomingMessageProcessor
+                )
             }
         }
         private val done: CompletableDeferred<Unit> = CompletableDeferred()

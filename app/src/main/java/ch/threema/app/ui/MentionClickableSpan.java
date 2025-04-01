@@ -30,20 +30,20 @@ import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MentionClickableSpan extends ClickableSpan {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionClickableSpan");
-	private String text;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionClickableSpan");
+    private String text;
 
-	public MentionClickableSpan(String text){
-		super();
-		this.text = text;
-	}
+    public MentionClickableSpan(String text) {
+        super();
+        this.text = text;
+    }
 
-	public String getText() {
-		return this.text;
-	}
+    public String getText() {
+        return this.text;
+    }
 
-	@Override
-	public void onClick(@NonNull View widget) {
-		logger.debug("onClick");
-	}
+    @Override
+    public void onClick(@NonNull View widget) {
+        logger.debug("onClick");
+    }
 }

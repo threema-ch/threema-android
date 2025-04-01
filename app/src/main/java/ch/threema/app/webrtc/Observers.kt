@@ -42,16 +42,35 @@ import kotlin.coroutines.CoroutineContext
  */
 @AnyThread
 open class DefaultNoopPeerConnectionObserver : PeerConnection.Observer {
-    override fun onRenegotiationNeeded() { /* noop */ }
-    override fun onSignalingChange(state: PeerConnection.SignalingState?) { /* noop */ }
-    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) { /* noop */ }
-    override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) { /* noop */ }
-    override fun onIceConnectionReceivingChange(receiving: Boolean) { /* noop */ }
-    override fun onIceCandidate(candidate: IceCandidate?) { /* noop */ }
-    override fun onIceCandidatesRemoved(candidatesRemoved: Array<out IceCandidate>?) { /* noop */ }
-    override fun onAddStream(stream: MediaStream?) { /* noop */ }
-    override fun onRemoveStream(stream: MediaStream?) { /* noop */ }
-    override fun onDataChannel(dataChannel: DataChannel?) { /* noop */ }
+    override fun onRenegotiationNeeded() { /* noop */
+    }
+
+    override fun onSignalingChange(state: PeerConnection.SignalingState?) { /* noop */
+    }
+
+    override fun onIceGatheringChange(state: PeerConnection.IceGatheringState?) { /* noop */
+    }
+
+    override fun onIceConnectionChange(state: PeerConnection.IceConnectionState?) { /* noop */
+    }
+
+    override fun onIceConnectionReceivingChange(receiving: Boolean) { /* noop */
+    }
+
+    override fun onIceCandidate(candidate: IceCandidate?) { /* noop */
+    }
+
+    override fun onIceCandidatesRemoved(candidatesRemoved: Array<out IceCandidate>?) { /* noop */
+    }
+
+    override fun onAddStream(stream: MediaStream?) { /* noop */
+    }
+
+    override fun onRemoveStream(stream: MediaStream?) { /* noop */
+    }
+
+    override fun onDataChannel(dataChannel: DataChannel?) { /* noop */
+    }
 }
 
 /**
@@ -60,16 +79,35 @@ open class DefaultNoopPeerConnectionObserver : PeerConnection.Observer {
  */
 @AnyThread
 interface SanePeerConnectionObserver {
-    fun onDetach() { /* noop */ }
-    fun onRenegotiationNeeded() { /* noop */ }
-    fun onSignalingChange(state: PeerConnection.SignalingState) { /* noop */ }
-    fun onConnectionChange(state: PeerConnection.PeerConnectionState) { /* noop */ }
-    fun onIceGatheringChange(state: PeerConnection.IceGatheringState) { /* noop */ }
-    fun onIceConnectionChange(state: PeerConnection.IceConnectionState) { /* noop */ }
-    fun onIceCandidate(candidate: IceCandidate) { /* noop */ }
-    fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) { /* noop */ }
-    fun onDataChannel(channel: DataChannel) { /* noop */ }
-    fun onTransceiver(transceiver: RtpTransceiver) { /* noop */ }
+    fun onDetach() { /* noop */
+    }
+
+    fun onRenegotiationNeeded() { /* noop */
+    }
+
+    fun onSignalingChange(state: PeerConnection.SignalingState) { /* noop */
+    }
+
+    fun onConnectionChange(state: PeerConnection.PeerConnectionState) { /* noop */
+    }
+
+    fun onIceGatheringChange(state: PeerConnection.IceGatheringState) { /* noop */
+    }
+
+    fun onIceConnectionChange(state: PeerConnection.IceConnectionState) { /* noop */
+    }
+
+    fun onIceCandidate(candidate: IceCandidate) { /* noop */
+    }
+
+    fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) { /* noop */
+    }
+
+    fun onDataChannel(channel: DataChannel) { /* noop */
+    }
+
+    fun onTransceiver(transceiver: RtpTransceiver) { /* noop */
+    }
 }
 
 /**
@@ -219,15 +257,19 @@ internal class PeerConnectionObserver(
 
     override fun onIceConnectionChange(state: PeerConnection.IceConnectionState) = lock.withLock {
         logger.debug("ICE connection state: {}", state.name)
-            when (state) {
-                PeerConnection.IceConnectionState.CONNECTED ->
-                    cancelIceFailedTimer()
-                PeerConnection.IceConnectionState.DISCONNECTED ->
-                    scheduleIceFailedTimer()
-                PeerConnection.IceConnectionState.FAILED ->
-                    iceFailed(GroupCallException("ICE failed explicitly"))
-                else -> { /* noop */ }
+        when (state) {
+            PeerConnection.IceConnectionState.CONNECTED ->
+                cancelIceFailedTimer()
+
+            PeerConnection.IceConnectionState.DISCONNECTED ->
+                scheduleIceFailedTimer()
+
+            PeerConnection.IceConnectionState.FAILED ->
+                iceFailed(GroupCallException("ICE failed explicitly"))
+
+            else -> { /* noop */
             }
+        }
     }
 
     override fun onSelectedCandidatePairChanged(event: CandidatePairChangeEvent) =
@@ -237,8 +279,10 @@ internal class PeerConnectionObserver(
         logger.warn("Unexpected data channel (label='{}')", channel.label())
 
     override fun onTransceiver(transceiver: RtpTransceiver) = lock.withLock {
-        logger.trace("New transceiver (kind='{}', mid='{}')",
-            transceiver.mediaType.name, transceiver.mid)
+        logger.trace(
+            "New transceiver (kind='{}', mid='{}')",
+            transceiver.mediaType.name, transceiver.mid
+        )
         addTransceiver(transceiver)
     }
 
@@ -260,7 +304,9 @@ internal class PeerConnectionObserver(
         }, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS))
             .exceptionally { error ->
                 when (error) {
-                    is CancellationException -> { /* noop */ }
+                    is CancellationException -> { /* noop */
+                    }
+
                     else -> {
                         logger.trace("ICE failed timer expired")
                         iceFailed(GroupCallException("ICE failed due to timeout"))
@@ -282,10 +328,17 @@ internal class PeerConnectionObserver(
  */
 @AnyThread
 interface SaneDataChannelObserver {
-    fun onDetach() { /* noop */ }
-    fun onBufferedAmountChange(bufferedAmount: ULong) { /* noop */ }
-    fun onStateChange(state: DataChannel.State) { /* noop */ }
-    fun onMessage(buffer: DataChannel.Buffer) { /* noop */ }
+    fun onDetach() { /* noop */
+    }
+
+    fun onBufferedAmountChange(bufferedAmount: ULong) { /* noop */
+    }
+
+    fun onStateChange(state: DataChannel.State) { /* noop */
+    }
+
+    fun onMessage(buffer: DataChannel.Buffer) { /* noop */
+    }
 }
 
 /**
@@ -445,12 +498,23 @@ suspend fun PeerConnection.addIceCandidateAsync(candidate: IceCandidate) {
  * Maps the PeerConnection.Observer into a more sane structure with non-nullable types.
  */
 interface SaneCameraEventsHandler {
-    fun onCameraError(error: String) { /* noop */ }
-    fun onCameraDisconnected() { /* noop */ }
-    fun onCameraFreeze(error: String) { /* noop */ }
-    fun onCameraOpening(cameraName: String) { /* noop */ }
-    fun onFirstFrameAvailable() { /* noop */ }
-    fun onCameraClosed() { /* noop */ }
+    fun onCameraError(error: String) { /* noop */
+    }
+
+    fun onCameraDisconnected() { /* noop */
+    }
+
+    fun onCameraFreeze(error: String) { /* noop */
+    }
+
+    fun onCameraOpening(cameraName: String) { /* noop */
+    }
+
+    fun onFirstFrameAvailable() { /* noop */
+    }
+
+    fun onCameraClosed() { /* noop */
+    }
 }
 
 /**

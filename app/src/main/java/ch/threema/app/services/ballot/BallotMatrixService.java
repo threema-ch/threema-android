@@ -27,27 +27,33 @@ import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public interface BallotMatrixService {
 
-	interface Participant {
-		boolean hasVoted();
-		String getIdentity();
-		int getPos();
-	}
+    interface Participant {
+        boolean hasVoted();
 
-	interface Choice
-	{
-		BallotChoiceModel getBallotChoiceModel();
-		boolean isWinner();
-		int getVoteCount();
-		int getPos();
-	}
+        String getIdentity();
 
-	interface DataKeyBuilder {
-		String build(Participant p, Choice c);
-	}
-	Participant createParticipant(String identity);
-	Choice createChoice(BallotChoiceModel choiceModel);
+        int getPos();
+    }
 
-	BallotMatrixService addVote(BallotVoteModel ballotVoteModel) throws ThreemaException;
+    interface Choice {
+        BallotChoiceModel getBallotChoiceModel();
 
-	BallotMatrixData finish();
+        boolean isWinner();
+
+        int getVoteCount();
+
+        int getPos();
+    }
+
+    interface DataKeyBuilder {
+        String build(Participant p, Choice c);
+    }
+
+    Participant createParticipant(String identity);
+
+    Choice createChoice(BallotChoiceModel choiceModel);
+
+    BallotMatrixService addVote(BallotVoteModel ballotVoteModel) throws ThreemaException;
+
+    BallotMatrixData finish();
 }

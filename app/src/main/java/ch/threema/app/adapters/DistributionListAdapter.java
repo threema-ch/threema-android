@@ -49,170 +49,170 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListAdapter extends FilterableListAdapter {
-	private final Context context;
-	private List<DistributionListModel> values;
-	private List<DistributionListModel> ovalues;
-	private DistributionListFilter groupListFilter;
-	private final DistributionListService distributionListService;
-	private final FilterResultsListener filterResultsListener;
+    private final Context context;
+    private List<DistributionListModel> values;
+    private List<DistributionListModel> ovalues;
+    private DistributionListFilter groupListFilter;
+    private final DistributionListService distributionListService;
+    private final FilterResultsListener filterResultsListener;
 
-	public DistributionListAdapter(
-		Context context,
-		List<DistributionListModel> values,
-		List<Integer> checkedItems,
-		DistributionListService distributionListService,
-		FilterResultsListener filterResultsListener
-	) {
-		super(context, R.layout.item_distribution_list, (List<Object>) (Object) values);
+    public DistributionListAdapter(
+        Context context,
+        List<DistributionListModel> values,
+        List<Integer> checkedItems,
+        DistributionListService distributionListService,
+        FilterResultsListener filterResultsListener
+    ) {
+        super(context, R.layout.item_distribution_list, (List<Object>) (Object) values);
 
-		this.context = context;
-		this.values = values;
-		this.ovalues = values;
-		this.distributionListService = distributionListService;
-		this.filterResultsListener = filterResultsListener;
+        this.context = context;
+        this.values = values;
+        this.ovalues = values;
+        this.distributionListService = distributionListService;
+        this.filterResultsListener = filterResultsListener;
 
-		if (checkedItems != null && checkedItems.size() > 0) {
-			// restore checked items
-			this.checkedItems.addAll(checkedItems);
-		}
-	}
+        if (checkedItems != null && checkedItems.size() > 0) {
+            // restore checked items
+            this.checkedItems.addAll(checkedItems);
+        }
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
 
-		DistributionListHolder holder = new DistributionListHolder();
+        DistributionListHolder holder = new DistributionListHolder();
 
-		if (convertView == null) {
-			// This a new view we inflate the new layout
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_distribution_list, parent, false);
+        if (convertView == null) {
+            // This a new view we inflate the new layout
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_distribution_list, parent, false);
 
-			TextView nameView = itemView.findViewById(R.id.name);
-			TextView subjectView = itemView.findViewById(R.id.subject);
-			AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
+            TextView nameView = itemView.findViewById(R.id.name);
+            TextView subjectView = itemView.findViewById(R.id.subject);
+            AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
 
-			holder.nameView = nameView;
-			holder.subjectView = subjectView;
-			holder.avatarView = avatarView;
+            holder.nameView = nameView;
+            holder.subjectView = subjectView;
+            holder.avatarView = avatarView;
 
-			itemView.setTag(holder);
-			itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
-					if (isChecked) {
-						checkedItems.add(((DistributionListHolder) checkableView.getTag()).originalPosition);
-					} else {
-						checkedItems.remove(((DistributionListHolder) checkableView.getTag()).originalPosition);
-					}
-				}
-			});
-		} else {
-			holder = (DistributionListHolder) itemView.getTag();
-		}
+            itemView.setTag(holder);
+            itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
+                    if (isChecked) {
+                        checkedItems.add(((DistributionListHolder) checkableView.getTag()).originalPosition);
+                    } else {
+                        checkedItems.remove(((DistributionListHolder) checkableView.getTag()).originalPosition);
+                    }
+                }
+            });
+        } else {
+            holder = (DistributionListHolder) itemView.getTag();
+        }
 
-		final DistributionListModel distributionListModel = values.get(position);
-		holder.originalPosition = ovalues.indexOf(distributionListModel);
+        final DistributionListModel distributionListModel = values.get(position);
+        holder.originalPosition = ovalues.indexOf(distributionListModel);
 
-		String filterString = null;
-		if (groupListFilter != null) {
-			filterString = groupListFilter.getFilterString();
-		}
+        String filterString = null;
+        if (groupListFilter != null) {
+            filterString = groupListFilter.getFilterString();
+        }
 
-		holder.nameView.setText(highlightMatches(NameUtil.getDisplayName(distributionListModel, this.distributionListService), filterString));
-		holder.subjectView.setText(this.distributionListService.getMembersString(distributionListModel));
+        holder.nameView.setText(highlightMatches(NameUtil.getDisplayName(distributionListModel, this.distributionListService), filterString));
+        holder.subjectView.setText(this.distributionListService.getMembersString(distributionListModel));
 
-		// load avatars asynchronously
-		AvatarListItemUtil.loadAvatar(
-			distributionListModel,
-			this.distributionListService,
-			holder,
-			Glide.with(context)
-		);
+        // load avatars asynchronously
+        AvatarListItemUtil.loadAvatar(
+            distributionListModel,
+            this.distributionListService,
+            holder,
+            Glide.with(context)
+        );
 
-		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
+        ((ListView) parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
 
-		return itemView;
-	}
+        return itemView;
+    }
 
-	private static class DistributionListHolder extends AvatarListItemHolder {
-		public TextView nameView;
-		public TextView subjectView;
-		public int originalPosition;
-	}
+    private static class DistributionListHolder extends AvatarListItemHolder {
+        public TextView nameView;
+        public TextView subjectView;
+        public int originalPosition;
+    }
 
-	public class DistributionListFilter extends Filter {
-		String filterString = null;
+    public class DistributionListFilter extends Filter {
+        String filterString = null;
 
-		@Override
-		protected FilterResults performFiltering(CharSequence constraint) {
-			FilterResults results = new FilterResults();
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
 
-			if (constraint == null || constraint.length() == 0) {
-				// no filtering
-				filterString = null;
-				results.values = ovalues;
-				results.count = ovalues.size();
-			} else {
-				// perform filtering
-				filterString = constraint.toString();
+            if (constraint == null || constraint.length() == 0) {
+                // no filtering
+                filterString = null;
+                results.values = ovalues;
+                results.count = ovalues.size();
+            } else {
+                // perform filtering
+                filterString = constraint.toString();
 
-				Collection<DistributionListModel> distributionListModelList = Functional.filter(ovalues, new IPredicateNonNull<DistributionListModel>() {
-					@Override
-					public boolean apply(@NonNull DistributionListModel distributionListModel) {
-						return (NameUtil.getDisplayName(distributionListModel, distributionListService).toUpperCase().contains(filterString.toUpperCase()));
-					}
-				});
+                Collection<DistributionListModel> distributionListModelList = Functional.filter(ovalues, new IPredicateNonNull<DistributionListModel>() {
+                    @Override
+                    public boolean apply(@NonNull DistributionListModel distributionListModel) {
+                        return (NameUtil.getDisplayName(distributionListModel, distributionListService).toUpperCase().contains(filterString.toUpperCase()));
+                    }
+                });
 
-				results.values = distributionListModelList;
-				results.count = distributionListModelList.size();
-			}
-			return results;
-		}
+                results.values = distributionListModelList;
+                results.count = distributionListModelList.size();
+            }
+            return results;
+        }
 
-		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results) {
-			values = (List<DistributionListModel>) results.values;
-			if (filterResultsListener != null) {
-				filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
-			}
-			notifyDataSetChanged();
-		}
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            values = (List<DistributionListModel>) results.values;
+            if (filterResultsListener != null) {
+                filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
+            }
+            notifyDataSetChanged();
+        }
 
-		public String getFilterString() {
-			return filterString;
-		}
-	}
+        public String getFilterString() {
+            return filterString;
+        }
+    }
 
-	@Override
-	public Filter getFilter() {
-		if (groupListFilter == null)
-			groupListFilter = new DistributionListFilter();
+    @Override
+    public Filter getFilter() {
+        if (groupListFilter == null)
+            groupListFilter = new DistributionListFilter();
 
-		return groupListFilter;
-	}
+        return groupListFilter;
+    }
 
-	@Override
-	public int getCount() {
-		return values != null ? values.size() : 0;
-	}
+    @Override
+    public int getCount() {
+        return values != null ? values.size() : 0;
+    }
 
-	@Override
-	public HashSet<DistributionListModel> getCheckedItems() {
-		HashSet<DistributionListModel> distributionLists = new HashSet<>();
-		DistributionListModel distributionListModel;
+    @Override
+    public HashSet<DistributionListModel> getCheckedItems() {
+        HashSet<DistributionListModel> distributionLists = new HashSet<>();
+        DistributionListModel distributionListModel;
 
-		for (int position: checkedItems) {
-			distributionListModel = ovalues.get(position);
-			if (distributionListModel != null) {
-				distributionLists.add(distributionListModel);
-			}
-		}
-		return distributionLists;
-	}
+        for (int position : checkedItems) {
+            distributionListModel = ovalues.get(position);
+            if (distributionListModel != null) {
+                distributionLists.add(distributionListModel);
+            }
+        }
+        return distributionLists;
+    }
 
-	@Override
-	public DistributionListModel getClickedItem(View v) {
-		return ovalues.get(((DistributionListHolder) v.getTag()).originalPosition);
-	}
+    @Override
+    public DistributionListModel getClickedItem(View v) {
+        return ovalues.get(((DistributionListHolder) v.getTag()).originalPosition);
+    }
 }

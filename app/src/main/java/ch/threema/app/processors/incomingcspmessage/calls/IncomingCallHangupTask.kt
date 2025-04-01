@@ -35,7 +35,8 @@ class IncomingCallHangupTask(
 ) : IncomingCspMessageSubTask<VoipCallHangupMessage>(message, triggerSource, serviceManager) {
     private val voipStateService = serviceManager.voipStateService
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processCallHangup()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processCallHangup()
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processCallHangup()
 

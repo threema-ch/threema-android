@@ -51,190 +51,190 @@ import ch.threema.base.utils.LoggingUtil;
  * Query the system media store and return images and videos found on the system.
  */
 public class MediaRepository {
-	private final Context appContext;
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaRepository");
+    private final Context appContext;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaRepository");
 
-	public MediaRepository(Context appContext) {
-		this.appContext = appContext;
-	}
+    public MediaRepository(Context appContext) {
+        this.appContext = appContext;
+    }
 
-	/**
-	 * Query the Android media store via content resolver.
-	 * Return images and videos, sorted by modification date.
-	 * This method is synchronous.
-	 * @param limit how many items should be max fetched from the video and image sections, 0 if all should be fetched
-	 */
-	@WorkerThread
-	public List<MediaAttachItem> getMediaFromMediaStore(int limit) {
-		final String[] imageProjection = this.getImageProjection();
-		final String[] videoProjection = this.getVideoProjection();
+    /**
+     * Query the Android media store via content resolver.
+     * Return images and videos, sorted by modification date.
+     * This method is synchronous.
+     *
+     * @param limit how many items should be max fetched from the video and image sections, 0 if all should be fetched
+     */
+    @WorkerThread
+    public List<MediaAttachItem> getMediaFromMediaStore(int limit) {
+        final String[] imageProjection = this.getImageProjection();
+        final String[] videoProjection = this.getVideoProjection();
 
-		final List<MediaAttachItem> mediaList = new ArrayList<>();
-		final String imageSelection = MediaStore.Images.ImageColumns.MIME_TYPE + " IN ('" + String.join("','", MimeUtil.getSupportedImageMimeTypes()) + "')";
+        final List<MediaAttachItem> mediaList = new ArrayList<>();
+        final String imageSelection = MediaStore.Images.ImageColumns.MIME_TYPE + " IN ('" + String.join("','", MimeUtil.getSupportedImageMimeTypes()) + "')";
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			Bundle videoQueryBundle = new Bundle();
-			videoQueryBundle.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{MediaStore.Images.Media.DATE_MODIFIED});
-			videoQueryBundle.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING);
-			if (limit != 0) {
-				videoQueryBundle.putInt(ContentResolver.QUERY_ARG_LIMIT, limit);
-			}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Bundle videoQueryBundle = new Bundle();
+            videoQueryBundle.putStringArray(ContentResolver.QUERY_ARG_SORT_COLUMNS, new String[]{MediaStore.Images.Media.DATE_MODIFIED});
+            videoQueryBundle.putInt(ContentResolver.QUERY_ARG_SORT_DIRECTION, ContentResolver.QUERY_SORT_DIRECTION_DESCENDING);
+            if (limit != 0) {
+                videoQueryBundle.putInt(ContentResolver.QUERY_ARG_LIMIT, limit);
+            }
 
-			Bundle imageQueryBundle = new Bundle(videoQueryBundle);
-			// exclude unsupported mime types from image query
-			imageQueryBundle.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, imageSelection);
+            Bundle imageQueryBundle = new Bundle(videoQueryBundle);
+            // exclude unsupported mime types from image query
+            imageQueryBundle.putString(ContentResolver.QUERY_ARG_SQL_SELECTION, imageSelection);
 
-			// Process images
-			try (Cursor imageCursor = appContext.getContentResolver().query(
-				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-					? MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-					: MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				imageProjection,
-				imageQueryBundle,
-				null
-			)) {
-				addToMediaResults(imageCursor, mediaList, false);
-			} catch (SecurityException e) {
-				logger.debug("Cannot access content resolver", e);
-			}
+            // Process images
+            try (Cursor imageCursor = appContext.getContentResolver().query(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    ? MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                    : MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                imageProjection,
+                imageQueryBundle,
+                null
+            )) {
+                addToMediaResults(imageCursor, mediaList, false);
+            } catch (SecurityException e) {
+                logger.debug("Cannot access content resolver", e);
+            }
 
-			// Process videos
-			try (Cursor videoCursor = appContext.getContentResolver().query(
-				Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-					? MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-					: MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-				videoProjection,
-				videoQueryBundle,
-				null
-			)) {
-				addToMediaResults(videoCursor, mediaList, true);
-			} catch (SecurityException e) {
-				logger.debug("Cannot access content resolver", e);
-			}
-		}
-		else {
-			String addLimitQuery = "";
-			if (limit != 0) {
-				addLimitQuery = "LIMIT " + limit;
-			}
+            // Process videos
+            try (Cursor videoCursor = appContext.getContentResolver().query(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                    ? MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                    : MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                videoProjection,
+                videoQueryBundle,
+                null
+            )) {
+                addToMediaResults(videoCursor, mediaList, true);
+            } catch (SecurityException e) {
+                logger.debug("Cannot access content resolver", e);
+            }
+        } else {
+            String addLimitQuery = "";
+            if (limit != 0) {
+                addLimitQuery = "LIMIT " + limit;
+            }
 
-			// Process images
-			try (Cursor imageCursor = appContext.getContentResolver().query(
-				MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				imageProjection,
-				imageSelection,
-				null,
-				MediaStore.Images.Media.DATE_MODIFIED + " DESC " + addLimitQuery
-			)) {
-				addToMediaResults(imageCursor, mediaList, false);
-			}
+            // Process images
+            try (Cursor imageCursor = appContext.getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                imageProjection,
+                imageSelection,
+                null,
+                MediaStore.Images.Media.DATE_MODIFIED + " DESC " + addLimitQuery
+            )) {
+                addToMediaResults(imageCursor, mediaList, false);
+            }
 
-			// Process videos
-			try (Cursor videoCursor = appContext.getContentResolver().query(
-				MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-				videoProjection,
-				null,
-				null,
-				MediaStore.Video.Media.DATE_MODIFIED + " DESC " + addLimitQuery
-			)) {
-				addToMediaResults(videoCursor, mediaList, true);
-			}
-		}
-		// Sort media list from most recent descending
-		Collections.sort(mediaList, (o1, o2) -> Double.compare(o2.getDateModified(), o1.getDateModified()));
+            // Process videos
+            try (Cursor videoCursor = appContext.getContentResolver().query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                videoProjection,
+                null,
+                null,
+                MediaStore.Video.Media.DATE_MODIFIED + " DESC " + addLimitQuery
+            )) {
+                addToMediaResults(videoCursor, mediaList, true);
+            }
+        }
+        // Sort media list from most recent descending
+        Collections.sort(mediaList, (o1, o2) -> Double.compare(o2.getDateModified(), o1.getDateModified()));
 
-		return mediaList;
-	}
+        return mediaList;
+    }
 
-	@SuppressLint("InlinedApi")
-	private @NonNull String[] getImageProjection() {
-		return new String[]{
-			MediaStore.Images.ImageColumns._ID,
-			MediaStore.Images.ImageColumns.DATE_ADDED,
-			MediaStore.Images.ImageColumns.DATE_TAKEN,
-			MediaStore.Images.ImageColumns.DATE_MODIFIED,
-			MediaStore.Images.ImageColumns.DISPLAY_NAME,
-			MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-			MediaStore.Images.ImageColumns.ORIENTATION,
-			MediaStore.Images.ImageColumns.MIME_TYPE,
-			MediaStore.Images.ImageColumns.IS_PRIVATE
-		};
-	}
+    @SuppressLint("InlinedApi")
+    private @NonNull String[] getImageProjection() {
+        return new String[]{
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATE_ADDED,
+            MediaStore.Images.ImageColumns.DATE_TAKEN,
+            MediaStore.Images.ImageColumns.DATE_MODIFIED,
+            MediaStore.Images.ImageColumns.DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+            MediaStore.Images.ImageColumns.ORIENTATION,
+            MediaStore.Images.ImageColumns.MIME_TYPE,
+            MediaStore.Images.ImageColumns.IS_PRIVATE
+        };
+    }
 
-	@SuppressLint("InlinedApi")
-	private @NonNull String[] getVideoProjection() {
-		return new String[]{
-			MediaStore.Video.VideoColumns._ID,
-			MediaStore.Video.VideoColumns.DATE_ADDED,
-			MediaStore.Video.VideoColumns.DATE_TAKEN,
-			MediaStore.Video.VideoColumns.DATE_MODIFIED,
-			MediaStore.Video.VideoColumns.DISPLAY_NAME,
-			MediaStore.Video.VideoColumns.DURATION,
-			MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME,
-			MediaStore.Video.VideoColumns.MIME_TYPE,
-			MediaStore.Video.VideoColumns.IS_PRIVATE
-		};
-	}
+    @SuppressLint("InlinedApi")
+    private @NonNull String[] getVideoProjection() {
+        return new String[]{
+            MediaStore.Video.VideoColumns._ID,
+            MediaStore.Video.VideoColumns.DATE_ADDED,
+            MediaStore.Video.VideoColumns.DATE_TAKEN,
+            MediaStore.Video.VideoColumns.DATE_MODIFIED,
+            MediaStore.Video.VideoColumns.DISPLAY_NAME,
+            MediaStore.Video.VideoColumns.DURATION,
+            MediaStore.Video.VideoColumns.BUCKET_DISPLAY_NAME,
+            MediaStore.Video.VideoColumns.MIME_TYPE,
+            MediaStore.Video.VideoColumns.IS_PRIVATE
+        };
+    }
 
-	/**
-	 * Consume the cursor and add the entries to the provided media list.
-	 * The cursor will not be closed, make sure to run this method inside a try-with-resources block!
-	 */
-	@SuppressLint("NewApi")
-	@WorkerThread
-	private void addToMediaResults(@Nullable Cursor cursor, @NonNull List<MediaAttachItem> mediaAttachItems, boolean isVideo) {
-		if (cursor != null) {
-			while (cursor.moveToNext()) {
-				int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
-				long dateAdded = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED));
-				long dateModified = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED));
-				long dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_TAKEN));
-				String displayName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
-				String bucketName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME));
-				int orientation = 0;
-				int duration = 0;
-				String mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
-				Uri contentUri;
+    /**
+     * Consume the cursor and add the entries to the provided media list.
+     * The cursor will not be closed, make sure to run this method inside a try-with-resources block!
+     */
+    @SuppressLint("NewApi")
+    @WorkerThread
+    private void addToMediaResults(@Nullable Cursor cursor, @NonNull List<MediaAttachItem> mediaAttachItems, boolean isVideo) {
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
+                long dateAdded = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED));
+                long dateModified = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED));
+                long dateTaken = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_TAKEN));
+                String displayName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
+                String bucketName = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME));
+                int orientation = 0;
+                int duration = 0;
+                String mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE));
+                Uri contentUri;
 
-				if (isVideo) {
-					contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
-					duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION));
-				} else {
-					contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-					orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION));
-				}
+                if (isVideo) {
+                    contentUri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
+                    duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION));
+                } else {
+                    contentUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+                    orientation = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION));
+                }
 
-				int type;
-				if (MimeUtil.isVideoFile(mimeType)) {
-					type = MediaAttachItem.TYPE_VIDEO;
-					if (duration == 0) {
-						// do not use automatic resource management on MediaMetadataRetriever
-						MediaMetadataRetriever metaDataRetriever = new MediaMetadataRetriever();
-						try {
-							metaDataRetriever.setDataSource(ThreemaApplication.getAppContext(), contentUri);
-							duration = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-						} catch (Exception ignored) {
-						} finally {
-							try {
-								metaDataRetriever.release();
-							} catch (IOException e) {
-								logger.debug("Failed to release MediaMetadataRetriever");
-							}
-						}
-					}
-				} else if (MimeUtil.isGifFile(mimeType)) {
-					type = MediaAttachItem.TYPE_GIF;
-				} else if (MimeUtil.isWebPFile(mimeType)) {
-					type = MediaAttachItem.TYPE_WEBP;
-				} else {
-					type = MediaAttachItem.TYPE_IMAGE;
-				}
-				MediaAttachItem item = new MediaAttachItem(
-					id, dateAdded, dateTaken, dateModified, contentUri,
-					displayName, bucketName, orientation, duration, type
-				);
-				mediaAttachItems.add(item);
-			}
-		}
-	}
+                int type;
+                if (MimeUtil.isVideoFile(mimeType)) {
+                    type = MediaAttachItem.TYPE_VIDEO;
+                    if (duration == 0) {
+                        // do not use automatic resource management on MediaMetadataRetriever
+                        MediaMetadataRetriever metaDataRetriever = new MediaMetadataRetriever();
+                        try {
+                            metaDataRetriever.setDataSource(ThreemaApplication.getAppContext(), contentUri);
+                            duration = Integer.parseInt(metaDataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        } catch (Exception ignored) {
+                        } finally {
+                            try {
+                                metaDataRetriever.release();
+                            } catch (IOException e) {
+                                logger.debug("Failed to release MediaMetadataRetriever");
+                            }
+                        }
+                    }
+                } else if (MimeUtil.isGifFile(mimeType)) {
+                    type = MediaAttachItem.TYPE_GIF;
+                } else if (MimeUtil.isWebPFile(mimeType)) {
+                    type = MediaAttachItem.TYPE_WEBP;
+                } else {
+                    type = MediaAttachItem.TYPE_IMAGE;
+                }
+                MediaAttachItem item = new MediaAttachItem(
+                    id, dateAdded, dateTaken, dateModified, contentUri,
+                    displayName, bucketName, orientation, duration, type
+                );
+                mediaAttachItems.add(item);
+            }
+        }
+    }
 }

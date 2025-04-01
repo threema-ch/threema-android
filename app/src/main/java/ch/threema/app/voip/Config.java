@@ -30,67 +30,69 @@ import ch.threema.app.utils.TurnServerCache;
  * VoIP configuration.
  */
 public class Config {
-	private static final int MIN_SPARE_TURN_VALIDITY = 3600*1000;
+    private static final int MIN_SPARE_TURN_VALIDITY = 3600 * 1000;
 
-	// Hardware AEC exclusion list (Manufacturer;Model)
-	@NonNull private final static String[] HW_AEC_EXCLUSION_LIST = new String[] {
-		"Fairphone;FP2",
-		"ZUK;ZUK Z1", // Ticket #286367
+    // Hardware AEC exclusion list (Manufacturer;Model)
+    @NonNull
+    private final static String[] HW_AEC_EXCLUSION_LIST = new String[]{
+        "Fairphone;FP2",
+        "ZUK;ZUK Z1", // Ticket #286367
         "bq;Aquaris X", // Ticket #494934
-		"samsung;SM-G970F", // Roman
-		"SHIFT;SHIFT6m", // Ticket #328682
-	};
+        "samsung;SM-G970F", // Roman
+        "SHIFT;SHIFT6m", // Ticket #328682
+    };
 
-	/**
-	 * Return whether this device is allowed to use hardware echo cancellation.
-	 *
-	 * This will return false only for devices on the {@link #HW_AEC_EXCLUSION_LIST}.
-	 */
-	public static boolean allowHardwareAec() {
-		final String deviceInfo = Build.MANUFACTURER + ";" + Build.MODEL;
-		for (String entry : HW_AEC_EXCLUSION_LIST) {
-			if (entry.equalsIgnoreCase(deviceInfo)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Return whether this device is allowed to use hardware echo cancellation.
+     * <p>
+     * This will return false only for devices on the {@link #HW_AEC_EXCLUSION_LIST}.
+     */
+    public static boolean allowHardwareAec() {
+        final String deviceInfo = Build.MANUFACTURER + ";" + Build.MODEL;
+        for (String entry : HW_AEC_EXCLUSION_LIST) {
+            if (entry.equalsIgnoreCase(deviceInfo)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	// Hardware video codec exclusion list (Manufacturer;Model;AndroidVersionPrefix)
-	@NonNull private final static String[] HW_VIDEO_CODEC_EXCLUSION_LIST = new String[] {
-		"Samsung;SM-A310F;7.", // Galaxy A3 (2016), Ticket #301129
-		"Samsung;SM-A320FL;8.", // Galaxy A3 (2017), Ticket #926673
-		"Samsung;SM-G930F;7.", // Galaxy S7, Ticket #573851
-		"Samsung;SM-G960F;8.", // Galaxy S9, Ticket #379708
-		"Fairphone;FP5;13.", // Fairphone 5, Ticket #641579
-	};
+    // Hardware video codec exclusion list (Manufacturer;Model;AndroidVersionPrefix)
+    @NonNull
+    private final static String[] HW_VIDEO_CODEC_EXCLUSION_LIST = new String[]{
+        "Samsung;SM-A310F;7.", // Galaxy A3 (2016), Ticket #301129
+        "Samsung;SM-A320FL;8.", // Galaxy A3 (2017), Ticket #926673
+        "Samsung;SM-G930F;7.", // Galaxy S7, Ticket #573851
+        "Samsung;SM-G960F;8.", // Galaxy S9, Ticket #379708
+        "Fairphone;FP5;13.", // Fairphone 5, Ticket #641579
+    };
 
-	/**
-	 * Do not use this directly, only for simplified testing.
-	 * Use {@link #allowHardwareVideoCodec()} instead!
-	 */
-	protected static boolean allowHardwareVideoCodec(String[] exclusionList, String deviceInfo) {
-		for (String entry : exclusionList) {
-			if (deviceInfo.toLowerCase().startsWith(entry.toLowerCase())) {
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Do not use this directly, only for simplified testing.
+     * Use {@link #allowHardwareVideoCodec()} instead!
+     */
+    protected static boolean allowHardwareVideoCodec(String[] exclusionList, String deviceInfo) {
+        for (String entry : exclusionList) {
+            if (deviceInfo.toLowerCase().startsWith(entry.toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * Return whether this device is allowed to use hardware video codecs.
-	 *
-	 * This will return false only for devices on the {@link #HW_VIDEO_CODEC_EXCLUSION_LIST}.
-	 */
-	public static boolean allowHardwareVideoCodec() {
-		final String deviceInfo = Build.MANUFACTURER + ";" + Build.MODEL + ";" + Build.VERSION.RELEASE;
-		return allowHardwareVideoCodec(HW_VIDEO_CODEC_EXCLUSION_LIST, deviceInfo);
-	}
+    /**
+     * Return whether this device is allowed to use hardware video codecs.
+     * <p>
+     * This will return false only for devices on the {@link #HW_VIDEO_CODEC_EXCLUSION_LIST}.
+     */
+    public static boolean allowHardwareVideoCodec() {
+        final String deviceInfo = Build.MANUFACTURER + ";" + Build.MODEL + ";" + Build.VERSION.RELEASE;
+        return allowHardwareVideoCodec(HW_VIDEO_CODEC_EXCLUSION_LIST, deviceInfo);
+    }
 
-	private static final TurnServerCache TURN_SERVER_CACHE = new TurnServerCache("voip", MIN_SPARE_TURN_VALIDITY);
+    private static final TurnServerCache TURN_SERVER_CACHE = new TurnServerCache("voip", MIN_SPARE_TURN_VALIDITY);
 
-	public static TurnServerCache getTurnServerCache() {
-		return TURN_SERVER_CACHE;
-	}
+    public static TurnServerCache getTurnServerCache() {
+        return TURN_SERVER_CACHE;
+    }
 }

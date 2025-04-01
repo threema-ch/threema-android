@@ -42,82 +42,82 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ServerMessageActivity extends ThreemaActivity {
-	private final static Logger logger = LoggingUtil.getThreemaLogger("ServerMessageActivity");
+    private final static Logger logger = LoggingUtil.getThreemaLogger("ServerMessageActivity");
 
-	private NotificationService notificationService = null;
+    private NotificationService notificationService = null;
 
-	private ServerMessageViewModel viewModel;
+    private ServerMessageViewModel viewModel;
 
-	private TextView serverMessageTextView;
+    private TextView serverMessageTextView;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		ConfigUtils.configureSystemBars(this);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        ConfigUtils.configureSystemBars(this);
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		final ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.warning);
-		}
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.warning);
+        }
 
-		setContentView(R.layout.activity_server_message);
+        setContentView(R.layout.activity_server_message);
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Service manager is null");
-			finish();
-			return;
-		}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            logger.error("Service manager is null");
+            finish();
+            return;
+        }
 
-		serverMessageTextView = findViewById(R.id.server_message_text);
-		serverMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        serverMessageTextView = findViewById(R.id.server_message_text);
+        serverMessageTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-		notificationService = serviceManager.getNotificationService();
+        notificationService = serviceManager.getNotificationService();
 
-		viewModel = new ViewModelProvider(this).get(ServerMessageViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ServerMessageViewModel.class);
 
-		findViewById(R.id.close_button).setOnClickListener(v -> viewModel.markServerMessageAsRead());
+        findViewById(R.id.close_button).setOnClickListener(v -> viewModel.markServerMessageAsRead());
 
-		viewModel.getServerMessage().observe(this, serverMessage -> {
-			if (serverMessage == null) {
-				// Cancel the server message notification as the "Another connection..." message
-				// may be received several times. This would open another notification. Because the
-				// message is the same, it is shown only once and therefore has been deleted at this
-				// point.
-				cancelServerMessageNotification();
-				finish();
-				return;
-			}
-			showServerMessage(serverMessage);
-		});
-	}
+        viewModel.getServerMessage().observe(this, serverMessage -> {
+            if (serverMessage == null) {
+                // Cancel the server message notification as the "Another connection..." message
+                // may be received several times. This would open another notification. Because the
+                // message is the same, it is shown only once and therefore has been deleted at this
+                // point.
+                cancelServerMessageNotification();
+                finish();
+                return;
+            }
+            showServerMessage(serverMessage);
+        });
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			viewModel.markServerMessageAsRead();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            viewModel.markServerMessageAsRead();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	public void onBackPressed() {
-		viewModel.markServerMessageAsRead();
-	}
+    @Override
+    public void onBackPressed() {
+        viewModel.markServerMessageAsRead();
+    }
 
-	private void showServerMessage(@NonNull String message) {
-		if (message.startsWith("Another connection")) {
-			message = getString(R.string.another_connection_instructions, getString(R.string.app_name));
-		}
+    private void showServerMessage(@NonNull String message) {
+        if (message.startsWith("Another connection")) {
+            message = getString(R.string.another_connection_instructions, getString(R.string.app_name));
+        }
 
-		serverMessageTextView.setText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_COMPACT));
-	}
+        serverMessageTextView.setText(HtmlCompat.fromHtml(message, HtmlCompat.FROM_HTML_MODE_COMPACT));
+    }
 
-	private void cancelServerMessageNotification() {
-		notificationService.cancel(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID);
-	}
+    private void cancelServerMessageNotification() {
+        notificationService.cancel(ThreemaApplication.SERVER_MESSAGE_NOTIFICATION_ID);
+    }
 
 }

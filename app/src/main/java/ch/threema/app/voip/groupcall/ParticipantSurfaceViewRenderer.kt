@@ -48,11 +48,14 @@ class ParticipantSurfaceViewRenderer : SurfaceViewRenderer {
     private enum class VideoState {
         /* Video is currently shown */
         SHOWN,
+
         /* Video view is frozen and therefore the avatar is shown */
         FROZEN,
+
         /* There is no video stream for this participant */
         INACTIVE
     }
+
     private var state: VideoState = VideoState.INACTIVE
 
     private var videoActive = false

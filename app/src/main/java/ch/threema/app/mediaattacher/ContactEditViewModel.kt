@@ -90,7 +90,11 @@ class ContactEditViewModel : ViewModel() {
      * Initializes the view model based on the given contact uri.
      */
     @Suppress("BlockingMethodInNonBlockingContext")
-    fun initializeContact(contactUri: Uri, contentResolver: ContentResolver, extractor: VCardExtractor) {
+    fun initializeContact(
+        contactUri: Uri,
+        contentResolver: ContentResolver,
+        extractor: VCardExtractor
+    ) {
         if (properties.value != null) {
             return
         }
@@ -102,7 +106,11 @@ class ContactEditViewModel : ViewModel() {
                 Ezvcard.parse(it).first()
             }
 
-            if (createFormattedName(vCard, extractor) == "" && vCard.formattedName?.value ?: "" != "") {
+            if (createFormattedName(
+                    vCard,
+                    extractor
+                ) == "" && vCard.formattedName?.value ?: "" != ""
+            ) {
                 formattedName.postValue(vCard.formattedName)
             } else {
                 structuredName.postValue(vCard.structuredName ?: StructuredName())
@@ -121,7 +129,14 @@ class ContactEditViewModel : ViewModel() {
             val vCard = VCard()
             if (structuredName.value != null) {
                 vCard.setProperty(structuredName.value)
-                vCard.setProperty(FormattedName(createFormattedName(vCard, VCardExtractor(DateFormat.getDateFormat(context), context.resources))))
+                vCard.setProperty(
+                    FormattedName(
+                        createFormattedName(
+                            vCard,
+                            VCardExtractor(DateFormat.getDateFormat(context), context.resources)
+                        )
+                    )
+                )
             } else if (formattedName.value != null) {
                 vCard.setProperty(formattedName.value)
             }

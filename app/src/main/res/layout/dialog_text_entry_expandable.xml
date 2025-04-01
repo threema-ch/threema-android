@@ -1,77 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/text_input_layout"
-	android:paddingTop="@dimen/dialog_margin_below_title"
-	android:paddingLeft="@dimen/edittext_padding"
-	android:paddingRight="@dimen/edittext_padding"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/text_input_layout"
+    android:paddingTop="@dimen/dialog_margin_below_title"
+    android:paddingLeft="@dimen/edittext_padding"
+    android:paddingRight="@dimen/edittext_padding"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<TextView
-		android:id="@+id/subtitle_text"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="2dp"
-		android:layout_marginRight="2dp"
-		android:layout_marginBottom="8dp"
-		android:textColor="?attr/colorOnBackground"
-		android:textSize="16sp"
-		android:clickable="false"
-		android:text="@string/add_caption_hint"/>
+    <TextView
+        android:id="@+id/subtitle_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="16sp"
+        android:clickable="false"
+        android:text="@string/add_caption_hint" />
 
-	<LinearLayout
-			android:id="@+id/add_caption_intro"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			android:paddingTop="4dp"
-			android:paddingBottom="4dp"
-			android:paddingLeft="2dp"
-			android:paddingRight="2dp"
-			android:foreground="?attr/selectableItemBackground"
-			android:gravity="center_vertical">
+    <LinearLayout
+        android:id="@+id/add_caption_intro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical">
 
-		<ImageView
-				android:id="@+id/expand_button"
-				android:layout_width="16dp"
-				android:layout_height="16dp"
-				android:layout_marginRight="8dp"
-				android:clickable="false"
-				android:contentDescription="@string/switched_on"
-				app:tint="?attr/colorOnBackground"
-				android:src="@drawable/ic_arrow_right_dark"/>
+        <ImageView
+            android:id="@+id/expand_button"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginRight="8dp"
+            android:clickable="false"
+            android:contentDescription="@string/switched_on"
+            app:tint="?attr/colorOnBackground"
+            android:src="@drawable/ic_arrow_right_dark" />
 
-		<TextView
-				android:id="@+id/add_caption_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textColor="?attr/colorOnBackground"
-				android:textSize="16sp"
-				android:clickable="false"
-				android:text="@string/add_caption_hint"/>
+        <TextView
+            android:id="@+id/add_caption_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="16sp"
+            android:clickable="false"
+            android:text="@string/add_caption_hint" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<com.google.android.material.textfield.TextInputLayout
-		android:id="@+id/edittext_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		app:endIconMode="clear_text"
-		android:paddingLeft="@dimen/edittext_padding"
-		android:visibility="gone">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edittext_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconMode="clear_text"
+        android:paddingLeft="@dimen/edittext_padding"
+        android:visibility="gone">
 
-	<ch.threema.app.ui.ComposeEditText
-			android:id="@+id/caption_edittext"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:textSize="16sp"
-			android:minHeight="@dimen/input_text_height"
-			android:maxLength="1000"
-			android:scrollHorizontally="false"/>
+        <ch.threema.app.ui.ComposeEditText
+            android:id="@+id/caption_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:minHeight="@dimen/input_text_height"
+            android:maxLength="1000"
+            android:scrollHorizontally="false" />
 
-	</com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

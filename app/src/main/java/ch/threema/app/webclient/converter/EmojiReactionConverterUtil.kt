@@ -34,7 +34,10 @@ object EmojiReactionConverterUtil {
 
     @Throws(ConversionException::class)
     @JvmStatic
-    fun getContactAckDecFromReactions(message: MessageModel, reactions: List<EmojiReactionData>): Optional<MessageState> {
+    fun getContactAckDecFromReactions(
+        message: MessageModel,
+        reactions: List<EmojiReactionData>
+    ): Optional<MessageState> {
         val ackDecReactions = getGroupAckDecFromReactions(reactions)
             .filter {
                 if (message.isOutbox) {

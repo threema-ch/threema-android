@@ -36,86 +36,86 @@ import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 
 public class CancelableGenericProgressDialog extends ThreemaDialogFragment {
-	private AlertDialog alertDialog;
-	private Activity activity;
-	private CancelableGenericProgressDialog.ProgressDialogClickListener callback;
+    private AlertDialog alertDialog;
+    private Activity activity;
+    private CancelableGenericProgressDialog.ProgressDialogClickListener callback;
 
-	public static CancelableGenericProgressDialog newInstance(@StringRes int title, @StringRes int message, @StringRes int button) {
-		CancelableGenericProgressDialog dialog = new CancelableGenericProgressDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("button", button);
+    public static CancelableGenericProgressDialog newInstance(@StringRes int title, @StringRes int message, @StringRes int button) {
+        CancelableGenericProgressDialog dialog = new CancelableGenericProgressDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("button", button);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface ProgressDialogClickListener {
-		void onProgressbarCanceled(String tag);
-	}
+    public interface ProgressDialogClickListener {
+        void onProgressbarCanceled(String tag);
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (callback == null) {
-			try {
-				callback = (CancelableGenericProgressDialog.ProgressDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
-		}
+        if (callback == null) {
+            try {
+                callback = (CancelableGenericProgressDialog.ProgressDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
+        }
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if ((activity instanceof CancelableGenericProgressDialog.ProgressDialogClickListener)) {
-				callback = (CancelableGenericProgressDialog.ProgressDialogClickListener) activity;
-			}
-		}
-	}
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if ((activity instanceof CancelableGenericProgressDialog.ProgressDialogClickListener)) {
+                callback = (CancelableGenericProgressDialog.ProgressDialogClickListener) activity;
+            }
+        }
+    }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		this.activity = activity;
-	}
+        this.activity = activity;
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int message = getArguments().getInt("message");
-		int button = getArguments().getInt("button");
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt("title");
+        int message = getArguments().getInt("message");
+        int button = getArguments().getInt("button");
 
-		final String tag = this.getTag();
+        final String tag = this.getTag();
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_progress_generic, null);
-		TextView textView = dialogView.findViewById(R.id.text);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_progress_generic, null);
+        TextView textView = dialogView.findViewById(R.id.text);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme()).setCancelable(false);
-		builder.setView(dialogView);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme()).setCancelable(false);
+        builder.setView(dialogView);
 
-		if (title != -1) {
-			builder.setTitle(title);
-		}
+        if (title != -1) {
+            builder.setTitle(title);
+        }
 
-		if (message != 0) {
-			textView.setText(message);
-		}
+        if (message != 0) {
+            textView.setText(message);
+        }
 
-		builder.setPositiveButton(getString(button), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						callback.onProgressbarCanceled(tag);
-					}
-				}
-		);
+        builder.setPositiveButton(getString(button), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onProgressbarCanceled(tag);
+                }
+            }
+        );
 
-		alertDialog = builder.create();
+        alertDialog = builder.create();
 
-		setCancelable(false);
+        setCancelable(false);
 
-		return alertDialog;
-	}
+        return alertDialog;
+    }
 }

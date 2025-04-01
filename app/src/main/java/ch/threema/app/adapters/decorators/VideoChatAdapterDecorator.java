@@ -52,318 +52,318 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoChatAdapterDecorator");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoChatAdapterDecorator");
 
-	private static final String LISTENER_TAG = "decorator";
+    private static final String LISTENER_TAG = "decorator";
 
-	public VideoChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-		super(context, messageModel, helper);
-	}
+    public VideoChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
+        super(context, messageModel, helper);
+    }
 
-	@Override
-	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		super.configureChatMessage(holder, position);
+    @Override
+    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+        super.configureChatMessage(holder, position);
 
-		final MessagePlayer videoMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-			(Activity) getContext(), helper.getMessageReceiver(), null);
+        final MessagePlayer videoMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
+            (Activity) getContext(), helper.getMessageReceiver(), null);
 
-		logger.debug("configureChatMessage Video on position {} instance {} holder {} messageplayer = {}", position, this, holder, videoMessagePlayer);
+        logger.debug("configureChatMessage Video on position {} instance {} holder {} messageplayer = {}", position, this, holder, videoMessagePlayer);
 
-		holder.messagePlayer = videoMessagePlayer;
+        holder.messagePlayer = videoMessagePlayer;
 
-		RuntimeUtil.runOnUiThread(() -> {
-			setupResendStatus(holder);
-			setControllerState(holder);
-		});
+        RuntimeUtil.runOnUiThread(() -> {
+            setupResendStatus(holder);
+            setControllerState(holder);
+        });
 
-		setOnClickListener(v -> {
-			if (!isInChoiceMode() &&
-				getMessageModel().getState() != MessageState.TRANSCODING &&
-				getMessageModel().getState() != MessageState.SENDFAILED &&
-				getMessageModel().getState() != MessageState.FS_KEY_MISMATCH
-			) {
-				videoMessagePlayer.open();
-			}
-		}, holder.messageBlockView);
+        setOnClickListener(v -> {
+            if (!isInChoiceMode() &&
+                getMessageModel().getState() != MessageState.TRANSCODING &&
+                getMessageModel().getState() != MessageState.SENDFAILED &&
+                getMessageModel().getState() != MessageState.FS_KEY_MISMATCH
+            ) {
+                videoMessagePlayer.open();
+            }
+        }, holder.messageBlockView);
 
-		setControllerClickListener(holder, videoMessagePlayer);
+        setControllerClickListener(holder, videoMessagePlayer);
 
-		configureThumbnail(holder);
+        configureThumbnail(holder);
 
-		if (getMessageModel().getType() == MessageType.VIDEO) {
-			configureForMessageTypeVideo(holder);
-		} else if (getMessageModel().getType() == MessageType.FILE) {
-			configureForMessageTypeFile(holder);
-		}
+        if (getMessageModel().getType() == MessageType.VIDEO) {
+            configureForMessageTypeVideo(holder);
+        } else if (getMessageModel().getType() == MessageType.FILE) {
+            configureForMessageTypeFile(holder);
+        }
 
-		configureVideoMessagePlayer(holder, videoMessagePlayer);
-	}
+        configureVideoMessagePlayer(holder, videoMessagePlayer);
+    }
 
-	private void configureForMessageTypeVideo(@NonNull ComposeMessageHolder holder) {
-		String datePrefixString = "";
-		dateContentDescriptionPrefix = "";
+    private void configureForMessageTypeVideo(@NonNull ComposeMessageHolder holder) {
+        String datePrefixString = "";
+        dateContentDescriptionPrefix = "";
 
-		long duration = getMessageModel().getVideoData().getDuration();
-		int size = getMessageModel().getVideoData().getVideoSize();
+        long duration = getMessageModel().getVideoData().getDuration();
+        int size = getMessageModel().getVideoData().getVideoSize();
 
-		//do not show duration if 0
-		if (duration > 0) {
-			datePrefixString = StringConversionUtil.secondsToString(duration, false);
-			dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
-			setDuration(duration);
-		}
+        //do not show duration if 0
+        if (duration > 0) {
+            datePrefixString = StringConversionUtil.secondsToString(duration, false);
+            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+            setDuration(duration);
+        }
 
-		if (size > 0) {
-			datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
-			dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
-		}
+        if (size > 0) {
+            datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
+            dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
+        }
 
-		setDatePrefix(datePrefixString);
+        setDatePrefix(datePrefixString);
 
-		setDefaultBackground(holder);
-	}
+        setDefaultBackground(holder);
+    }
 
-	private void configureForMessageTypeFile(@NonNull ComposeMessageHolder holder) {
-		String datePrefixString = "";
-		long duration = getMessageModel().getFileData().getDurationSeconds();
+    private void configureForMessageTypeFile(@NonNull ComposeMessageHolder holder) {
+        String datePrefixString = "";
+        long duration = getMessageModel().getFileData().getDurationSeconds();
 
-		if (!getMessageModel().getFileData().isDownloaded()) {
-			long size = getMessageModel().getFileData().getFileSize();
-			if (size > 0) {
-				datePrefixString = Formatter.formatShortFileSize(getContext(), size);
-				dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
-			}
+        if (!getMessageModel().getFileData().isDownloaded()) {
+            long size = getMessageModel().getFileData().getFileSize();
+            if (size > 0) {
+                datePrefixString = Formatter.formatShortFileSize(getContext(), size);
+                dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
+            }
 
-			if (duration > 0) {
-				if (size > 0) {
-					datePrefixString = datePrefixString + " | ";
-				}
-				datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
-			}
-		} else {
-			if (duration > 0) {
-				datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
-				dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
-			}
-		}
+            if (duration > 0) {
+                if (size > 0) {
+                    datePrefixString = datePrefixString + " | ";
+                }
+                datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
+            }
+        } else {
+            if (duration > 0) {
+                datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
+                dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+            }
+        }
 
-		if (duration > 0) {
-			setDuration(duration);
-		}
+        if (duration > 0) {
+            setDuration(duration);
+        }
 
-		setDatePrefix(datePrefixString);
+        setDatePrefix(datePrefixString);
 
-		configureBodyText(holder, getMessageModel().getFileData().getCaption());
+        configureBodyText(holder, getMessageModel().getFileData().getCaption());
 
-		configureBackground(holder);
-	}
+        configureBackground(holder);
+    }
 
-	private void configureBackground(@NonNull ComposeMessageHolder holder) {
-		if (getMessageModel().getFileData().getRenderingType() == FileData.RENDERING_STICKER) {
-			setStickerBackground(holder);
-		} else {
-			setDefaultBackground(holder);
-		}
-	}
+    private void configureBackground(@NonNull ComposeMessageHolder holder) {
+        if (getMessageModel().getFileData().getRenderingType() == FileData.RENDERING_STICKER) {
+            setStickerBackground(holder);
+        } else {
+            setDefaultBackground(holder);
+        }
+    }
 
-	private void configureVideoMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer videoMessagePlayer) {
-		videoMessagePlayer
-			// decrypt listener
-			.addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
-				@Override
-				public void onStart(AbstractMessageModel messageModel) {
-					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing(false));
-				}
+    private void configureVideoMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer videoMessagePlayer) {
+        videoMessagePlayer
+            // decrypt listener
+            .addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
+                @Override
+                public void onStart(AbstractMessageModel messageModel) {
+                    RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressing(false));
+                }
 
-				@Override
-				public void onEnd(final AbstractMessageModel messageModel, final boolean success, final String message, File decryptedFile) {
-					RuntimeUtil.runOnUiThread(() -> {
-						setControllerState(holder);
-						if (!success) {
-							if (!TestUtil.isEmptyOrNull(message)) {
-								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-							}
-						}
-					});
-				}
-			})
-			// download listener
-			.addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
-				@Override
-				public void onStart(AbstractMessageModel messageModel) {
-					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressingDeterminate(100));
-				}
+                @Override
+                public void onEnd(final AbstractMessageModel messageModel, final boolean success, final String message, File decryptedFile) {
+                    RuntimeUtil.runOnUiThread(() -> {
+                        setControllerState(holder);
+                        if (!success) {
+                            if (!TestUtil.isEmptyOrNull(message)) {
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            })
+            // download listener
+            .addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
+                @Override
+                public void onStart(AbstractMessageModel messageModel) {
+                    RuntimeUtil.runOnUiThread(() -> holder.controller.setProgressingDeterminate(100));
+                }
 
-				@Override
-				public void onStatusUpdate(AbstractMessageModel messageModel, final int progress) {
-					RuntimeUtil.runOnUiThread(() -> holder.controller.setProgress(progress));
-				}
+                @Override
+                public void onStatusUpdate(AbstractMessageModel messageModel, final int progress) {
+                    RuntimeUtil.runOnUiThread(() -> holder.controller.setProgress(progress));
+                }
 
-				@Override
-				public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
-					//hide progressbar
-					RuntimeUtil.runOnUiThread(() -> {
-						if (success) {
-							holder.controller.setPlay();
-						} else {
-							holder.controller.setReadyToDownload();
-							if (!TestUtil.isEmptyOrNull(message)) {
-								Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-							}
-						}
-					});
-				}
-			})
-			// transcode listener
-			.addListener(LISTENER_TAG, new MessagePlayer.TranscodeListener() {
-				@Override
-				public void onStart() {
-					RuntimeUtil.runOnUiThread(() -> {
-						logger.debug("**** onStart");
-						holder.transcoderView.setProgress(0);
-					});
-				}
+                @Override
+                public void onEnd(AbstractMessageModel messageModel, final boolean success, final String message) {
+                    //hide progressbar
+                    RuntimeUtil.runOnUiThread(() -> {
+                        if (success) {
+                            holder.controller.setPlay();
+                        } else {
+                            holder.controller.setReadyToDownload();
+                            if (!TestUtil.isEmptyOrNull(message)) {
+                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            })
+            // transcode listener
+            .addListener(LISTENER_TAG, new MessagePlayer.TranscodeListener() {
+                @Override
+                public void onStart() {
+                    RuntimeUtil.runOnUiThread(() -> {
+                        logger.debug("**** onStart");
+                        holder.transcoderView.setProgress(0);
+                    });
+                }
 
-				@Override
-				public void onStatusUpdate(final int progress) {
-					RuntimeUtil.runOnUiThread(() -> holder.transcoderView.setProgress(progress));
-				}
-			});
-	}
+                @Override
+                public void onStatusUpdate(final int progress) {
+                    RuntimeUtil.runOnUiThread(() -> holder.transcoderView.setProgress(progress));
+                }
+            });
+    }
 
-	private void setControllerClickListener(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer videoMessagePlayer) {
-		holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
-			@Override
-			public void onDebouncedClick(View v) {
-				if (actionModeStatus.getActionModeEnabled()) {
-					propagateControllerClickToParent();
-					return;
-				}
+    private void setControllerClickListener(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer videoMessagePlayer) {
+        holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
+            @Override
+            public void onDebouncedClick(View v) {
+                if (actionModeStatus.getActionModeEnabled()) {
+                    propagateControllerClickToParent();
+                    return;
+                }
 
-				int status = holder.controller.getStatus();
+                int status = holder.controller.getStatus();
 
-				logger.debug("onClick status = {}", status);
+                logger.debug("onClick status = {}", status);
 
-				switch (status) {
-					case ControllerView.STATUS_READY_TO_RETRY:
-						propagateControllerRetryClickToParent();
-						break;
-					case ControllerView.STATUS_READY_TO_PLAY:
-					case ControllerView.STATUS_READY_TO_DOWNLOAD:
-						videoMessagePlayer.open();
-						break;
-					case ControllerView.STATUS_PROGRESSING:
-						if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
-							getMessageService().cancelMessageUpload(getMessageModel());
-						} else {
-							videoMessagePlayer.cancel();
-						}
-						break;
-					case ControllerView.STATUS_TRANSCODING:
-						// no click while processing
-						break;
-					default:
-						// no action taken for other statuses
-						break;
-				}
-			}
-		});
-	}
+                switch (status) {
+                    case ControllerView.STATUS_READY_TO_RETRY:
+                        propagateControllerRetryClickToParent();
+                        break;
+                    case ControllerView.STATUS_READY_TO_PLAY:
+                    case ControllerView.STATUS_READY_TO_DOWNLOAD:
+                        videoMessagePlayer.open();
+                        break;
+                    case ControllerView.STATUS_PROGRESSING:
+                        if (MessageUtil.isFileMessageBeingSent(getMessageModel())) {
+                            getMessageService().cancelMessageUpload(getMessageModel());
+                        } else {
+                            videoMessagePlayer.cancel();
+                        }
+                        break;
+                    case ControllerView.STATUS_TRANSCODING:
+                        // no click while processing
+                        break;
+                    default:
+                        // no action taken for other statuses
+                        break;
+                }
+            }
+        });
+    }
 
-	private void configureThumbnail(@NonNull ComposeMessageHolder holder) {
-		Bitmap thumbnail;
-		try {
-			thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
-				getThumbnailCache());
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			thumbnail = null;
-		}
+    private void configureThumbnail(@NonNull ComposeMessageHolder holder) {
+        Bitmap thumbnail;
+        try {
+            thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
+                getThumbnailCache());
+        } catch (Exception e) {
+            logger.error("Exception", e);
+            thumbnail = null;
+        }
 
-		ImageViewUtil.showBitmapOrMoviePlaceholder(
-			getContext(),
-			holder.contentView,
-			holder.attachmentImage,
-			thumbnail,
-			getThumbnailWidth()
-		);
-		holder.bodyTextView.setWidth(getThumbnailWidth());
-		holder.attachmentImage.setContentDescription(getContext().getString(R.string.video_placeholder));
-		showHide(holder.bodyTextView, false);
-	}
+        ImageViewUtil.showBitmapOrMoviePlaceholder(
+            getContext(),
+            holder.contentView,
+            holder.attachmentImage,
+            thumbnail,
+            getThumbnailWidth()
+        );
+        holder.bodyTextView.setWidth(getThumbnailWidth());
+        holder.attachmentImage.setContentDescription(getContext().getString(R.string.video_placeholder));
+        showHide(holder.bodyTextView, false);
+    }
 
-	private void setControllerState(@NonNull ComposeMessageHolder holder) {
-		if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
-			setControllerStateOutgoingMessage(holder);
-		} else {
-			setControllerStateIncomingMessage(holder);
-		}
-	}
+    private void setControllerState(@NonNull ComposeMessageHolder holder) {
+        if (getMessageModel().isOutbox() && !(getMessageModel() instanceof DistributionListMessageModel)) {
+            setControllerStateOutgoingMessage(holder);
+        } else {
+            setControllerStateIncomingMessage(holder);
+        }
+    }
 
-	private void setControllerStateOutgoingMessage(@NonNull ComposeMessageHolder holder) {
-		logger.debug("**** Video MessageStatus: {}", getMessageModel().getState());
+    private void setControllerStateOutgoingMessage(@NonNull ComposeMessageHolder holder) {
+        logger.debug("**** Video MessageStatus: {}", getMessageModel().getState());
 
-		switch (getMessageModel().getState()) {
-			case TRANSCODING:
-				holder.controller.setTranscoding();
-				if (holder.transcoderView != null) {
-					holder.transcoderView.setMessageModel(getMessageModel());
-					holder.transcoderView.setVisibility(View.VISIBLE);
-					holder.transcoderView.setProgress(holder.messagePlayer.getTranscodeProgress());
-				}
-				break;
-			case PENDING:
-			case SENDING:
-				holder.controller.setProgressing();
-				if (holder.transcoderView != null) {
-					holder.transcoderView.setVisibility(View.GONE);
-				}
-				break;
-			case SENDFAILED:
-			case FS_KEY_MISMATCH:
-				holder.controller.setRetry();
-				if (holder.transcoderView != null) {
-					holder.transcoderView.setVisibility(View.GONE);
-				}
-				break;
-			case SENT:
-			case DELIVERED:
-			case READ:
-				holder.controller.setPlay();
-				if (holder.transcoderView != null) {
-					holder.transcoderView.setVisibility(View.GONE);
-				}
-				break;
-			default:
-				break;
-		}
-	}
+        switch (getMessageModel().getState()) {
+            case TRANSCODING:
+                holder.controller.setTranscoding();
+                if (holder.transcoderView != null) {
+                    holder.transcoderView.setMessageModel(getMessageModel());
+                    holder.transcoderView.setVisibility(View.VISIBLE);
+                    holder.transcoderView.setProgress(holder.messagePlayer.getTranscodeProgress());
+                }
+                break;
+            case PENDING:
+            case SENDING:
+                holder.controller.setProgressing();
+                if (holder.transcoderView != null) {
+                    holder.transcoderView.setVisibility(View.GONE);
+                }
+                break;
+            case SENDFAILED:
+            case FS_KEY_MISMATCH:
+                holder.controller.setRetry();
+                if (holder.transcoderView != null) {
+                    holder.transcoderView.setVisibility(View.GONE);
+                }
+                break;
+            case SENT:
+            case DELIVERED:
+            case READ:
+                holder.controller.setPlay();
+                if (holder.transcoderView != null) {
+                    holder.transcoderView.setVisibility(View.GONE);
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
-	private void setControllerStateIncomingMessage(@NonNull ComposeMessageHolder holder) {
-		boolean isDownloaded = getMessageModel().getType() == MessageType.VIDEO
-			? getMessageModel().getVideoData().isDownloaded()
-			: getMessageModel().getFileData().isDownloaded();
+    private void setControllerStateIncomingMessage(@NonNull ComposeMessageHolder holder) {
+        boolean isDownloaded = getMessageModel().getType() == MessageType.VIDEO
+            ? getMessageModel().getVideoData().isDownloaded()
+            : getMessageModel().getFileData().isDownloaded();
 
-		if (isDownloaded) {
-			holder.controller.setPlay();
-		} else {
-			holder.controller.setReadyToDownload();
-		}
+        if (isDownloaded) {
+            holder.controller.setPlay();
+        } else {
+            holder.controller.setReadyToDownload();
+        }
 
-		if (holder.messagePlayer != null) {
-			logger.debug("messagePlayerState: {}", holder.messagePlayer.getState());
+        if (holder.messagePlayer != null) {
+            logger.debug("messagePlayerState: {}", holder.messagePlayer.getState());
 
-			switch (holder.messagePlayer.getState()) {
-				case MessagePlayer.State_DOWNLOADING:
-					if (!isDownloaded) {
-						holder.controller.setProgressingDeterminate(100);
-						holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
-					}
-					break;
-				case MessagePlayer.State_DECRYPTING:
-					holder.controller.setProgressing();
-					break;
-			}
-		}
-	}
+            switch (holder.messagePlayer.getState()) {
+                case MessagePlayer.State_DOWNLOADING:
+                    if (!isDownloaded) {
+                        holder.controller.setProgressingDeterminate(100);
+                        holder.controller.setProgress(holder.messagePlayer.getDownloadProgress());
+                    }
+                    break;
+                case MessagePlayer.State_DECRYPTING:
+                    holder.controller.setProgressing();
+                    break;
+            }
+        }
+    }
 }

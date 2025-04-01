@@ -16,15 +16,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-         <com.google.android.material.search.SearchBar
-             android:id="@+id/toolbar"
-             android:layout_height="wrap_content"
-             android:layout_width="match_parent"
-             android:hint="@string/title_choose_recipient"
-             app:navigationIcon="@drawable/ic_arrow_left"
-             android:outlineProvider="none"/>
+            <com.google.android.material.search.SearchBar
+                android:id="@+id/toolbar"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:hint="@string/title_choose_recipient"
+                app:navigationIcon="@drawable/ic_arrow_left"
+                android:outlineProvider="none" />
 
-            <include layout="@layout/connection_indicator"/>
+            <include layout="@layout/connection_indicator" />
 
         </FrameLayout>
 

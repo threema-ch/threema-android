@@ -52,7 +52,10 @@ internal class ReflectedOutgoingDeleteMessageTask(
             receiver = messageReceiver,
             messageService = messageService
         )?.let { validatedMessageModelToDelete ->
-            messageService.deleteMessageContentsAndRelatedData(validatedMessageModelToDelete, deleteMessage.date)
+            messageService.deleteMessageContentsAndRelatedData(
+                validatedMessageModelToDelete,
+                deleteMessage.date
+            )
         }
     }
 }

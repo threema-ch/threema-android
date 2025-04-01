@@ -54,7 +54,8 @@ class RemoteAudioContext private constructor(
                 throw Error("Invalid transceiver kind for remote audio context: '${transceiver.mediaType.name}")
             }
             if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.RECV_ONLY &&
-                transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
+                transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            ) {
                 throw Error("Invalid transceiver direction for remote audio context: '${transceiver.direction.name}")
             }
 
@@ -85,7 +86,8 @@ abstract class LocalAudioContext(
             throw Error("Invalid transceiver kind for local audio context: '${transceiver.mediaType.name}")
         }
         if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_ONLY &&
-            transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
+            transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+        ) {
             throw Error("Invalid transceiver direction for local audio context: '${transceiver.direction.name}")
         }
 

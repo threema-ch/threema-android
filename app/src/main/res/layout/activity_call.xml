@@ -1,355 +1,355 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/call_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/gallery_background">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/call_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gallery_background">
 
-	<!-- Background image (for audio calls) -->
-	<ImageView
-		android:id="@+id/background_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="centerCrop"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		tools:ignore="ContentDescription" />
+    <!-- Background image (for audio calls) -->
+    <ImageView
+        android:id="@+id/background_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
-	<!-- Video surfaces -->
-	<!-- Gradient on top of fullscreen renderer for better readability -->
-	<org.webrtc.SurfaceViewRenderer
-		android:id="@+id/fullscreen_video_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintBottom_toBottomOf="parent"/>
+    <!-- Video surfaces -->
+    <!-- Gradient on top of fullscreen renderer for better readability -->
+    <org.webrtc.SurfaceViewRenderer
+        android:id="@+id/fullscreen_video_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-	<View
-		android:id="@+id/fullscreen_video_view_gradient"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@drawable/call_background_gradient"
-		android:visibility="visible"
-		app:layout_constraintBottom_toBottomOf="@id/fullscreen_video_view"
-		app:layout_constraintEnd_toEndOf="@id/fullscreen_video_view"
-		app:layout_constraintStart_toStartOf="@id/fullscreen_video_view"
-		app:layout_constraintTop_toTopOf="@id/fullscreen_video_view" />
+    <View
+        android:id="@+id/fullscreen_video_view_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/call_background_gradient"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/fullscreen_video_view"
+        app:layout_constraintEnd_toEndOf="@id/fullscreen_video_view"
+        app:layout_constraintStart_toStartOf="@id/fullscreen_video_view"
+        app:layout_constraintTop_toTopOf="@id/fullscreen_video_view" />
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/content_layout"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<org.webrtc.SurfaceViewRenderer
-			android:id="@+id/pip_video_view"
-			android:layout_width="0dp"
-			android:layout_height="0dp"
-			android:layout_margin="@dimen/call_activity_margin"
-			android:visibility="gone"
-			app:layout_constraintBottom_toTopOf="@+id/incall_buttons_container"
-			app:layout_constraintDimensionRatio="H,3:4"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintWidth_default="percent"
-			app:layout_constraintWidth_percent=".25" />
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/pip_video_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/call_activity_margin"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/incall_buttons_container"
+            app:layout_constraintDimensionRatio="H,3:4"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent=".25" />
 
-		<!-- Debug info -->
-		<TextView
-			android:id="@+id/call_debug_info"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="@dimen/call_activity_margin"
-			android:background="@color/material_grey_300_alpha"
-			android:textColor="#ffffff"
-			android:visibility="gone"
-			android:textSize="11sp"
-			tools:ignore="SmallSp"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/caller_container" />
+        <!-- Debug info -->
+        <TextView
+            android:id="@+id/call_debug_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/call_activity_margin"
+            android:background="@color/material_grey_300_alpha"
+            android:textColor="#ffffff"
+            android:visibility="gone"
+            android:textSize="11sp"
+            tools:ignore="SmallSp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/caller_container" />
 
-		<!-- Caller info plus camera switches -->
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@+id/caller_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="@dimen/call_activity_margin"
-			android:layout_marginRight="0dp"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
+        <!-- Caller info plus camera switches -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/caller_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/call_activity_margin"
+            android:layout_marginRight="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-			<!-- Name -->
-			<ch.threema.app.emojis.EmojiTextView
-				android:id="@+id/call_contact_name"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/caller_container_margin_top"
-				android:ellipsize="end"
-				android:fontFamily="sans-serif-light"
-				android:textColor="#ffffff"
-				android:textSize="32sp"
-				app:layout_constrainedWidth="true"
-				app:layout_constraintHorizontal_bias="0"
-				app:layout_constraintHorizontal_chainStyle="packed"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintRight_toLeftOf="@+id/button_call_switch_cam"
-				app:layout_constraintTop_toTopOf="parent" />
+            <!-- Name -->
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/call_contact_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/caller_container_margin_top"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-light"
+                android:textColor="#ffffff"
+                android:textSize="32sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/button_call_switch_cam"
+                app:layout_constraintTop_toTopOf="parent" />
 
-			<!-- Verification dots -->
-			<ImageView
-				android:id="@+id/call_contact_dots"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
-				android:layout_marginLeft="1dp"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/call_contact_name"
-				tools:ignore="ContentDescription" />
+            <!-- Verification dots -->
+            <ImageView
+                android:id="@+id/call_contact_dots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="1dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/call_contact_name"
+                tools:ignore="ContentDescription" />
 
-			<!-- Call status -->
-			<ch.threema.app.ui.AnimatedEllipsisTextView
-				android:id="@+id/call_status"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
-				android:ellipsize="none"
-				android:fontFamily="sans-serif-light"
-				android:textColor="#ffffff"
-				android:textSize="24sp"
-				app:layout_constrainedWidth="true"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/call_contact_dots" />
+            <!-- Call status -->
+            <ch.threema.app.ui.AnimatedEllipsisTextView
+                android:id="@+id/call_status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="none"
+                android:fontFamily="sans-serif-light"
+                android:textColor="#ffffff"
+                android:textSize="24sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/call_contact_dots" />
 
-			<!-- Call duration counter -->
-			<Chronometer
-				android:id="@+id/call_duration"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
-				android:fontFamily="sans-serif-light"
-				android:textColor="#ffffff"
-				android:textSize="24sp"
-				app:layout_constrainedWidth="true"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/call_contact_dots" />
+            <!-- Call duration counter -->
+            <Chronometer
+                android:id="@+id/call_duration"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif-light"
+                android:textColor="#ffffff"
+                android:textSize="24sp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/call_contact_dots" />
 
-			<!-- video toggle -->
-			<ImageView
-				android:id="@+id/button_call_toggle_video"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:layout_marginTop="@dimen/call_video_button_margin_top"
-				android:background="@drawable/ripple_call_button"
-				android:clickable="true"
-				android:contentDescription="@string/voip_toggle_video"
-				android:focusable="true"
-				android:scaleType="center"
-				app:tint="@android:color/white"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintTop_toTopOf="parent"
-				app:srcCompat="@drawable/ic_videocam_off_black_outline" />
+            <!-- video toggle -->
+            <ImageView
+                android:id="@+id/button_call_toggle_video"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:layout_marginTop="@dimen/call_video_button_margin_top"
+                android:background="@drawable/ripple_call_button"
+                android:clickable="true"
+                android:contentDescription="@string/voip_toggle_video"
+                android:focusable="true"
+                android:scaleType="center"
+                app:tint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_videocam_off_black_outline" />
 
-			<ImageView
-				android:id="@+id/button_call_switch_cam"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:layout_marginTop="@dimen/call_video_button_margin_top"
-				android:background="@drawable/ripple_call_button"
-				android:clickable="true"
-				android:contentDescription="@string/voip_switch_cam"
-				android:focusable="true"
-				android:scaleType="center"
-				app:tint="@android:color/white"
-				android:visibility="gone"
-				app:layout_constraintEnd_toStartOf="@+id/button_call_toggle_video"
-				app:layout_constraintTop_toTopOf="parent"
-				app:srcCompat="@drawable/ic_flip_camera_android" />
+            <ImageView
+                android:id="@+id/button_call_switch_cam"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:layout_marginTop="@dimen/call_video_button_margin_top"
+                android:background="@drawable/ripple_call_button"
+                android:clickable="true"
+                android:contentDescription="@string/voip_switch_cam"
+                android:focusable="true"
+                android:scaleType="center"
+                app:tint="@android:color/white"
+                android:visibility="gone"
+                app:layout_constraintEnd_toStartOf="@+id/button_call_toggle_video"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_flip_camera_android" />
 
-		</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-		<!-- Incoming call buttons -->
-		<FrameLayout
-			android:id="@+id/incoming_call_buttons_container"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="32dp"
-			android:layout_marginRight="32dp"
-			android:layout_marginBottom="@dimen/incoming_call_slider_margin_bottom"
-			android:gravity="center_horizontal"
-			app:layout_constraintBottom_toTopOf="@id/incall_buttons_container"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintWidth_max="300dp">
+        <!-- Incoming call buttons -->
+        <FrameLayout
+            android:id="@+id/incoming_call_buttons_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="@dimen/incoming_call_slider_margin_bottom"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toTopOf="@id/incall_buttons_container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintWidth_max="300dp">
 
-			<FrameLayout
-				android:id="@+id/buttons_incoming_call_container"
-				android:layout_width="match_parent"
-				android:layout_height="@dimen/incoming_call_slider_height"
-				android:gravity="center_horizontal"
-				android:visibility="gone">
+            <FrameLayout
+                android:id="@+id/buttons_incoming_call_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/incoming_call_slider_height"
+                android:gravity="center_horizontal"
+                android:visibility="gone">
 
-				<ch.threema.app.voip.CallAnswerIndicatorLayout
-					android:id="@+id/buttons_incoming_call_slider_container"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/incoming_call_slider_height"
-					android:gravity="center_vertical"
-					android:visibility="visible" />
+                <ch.threema.app.voip.CallAnswerIndicatorLayout
+                    android:id="@+id/buttons_incoming_call_slider_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/incoming_call_slider_height"
+                    android:gravity="center_vertical"
+                    android:visibility="visible" />
 
-				<ImageView
-					android:id="@+id/button_incoming_call"
-					android:layout_width="@dimen/incoming_call_widget_circle_size"
-					android:layout_height="@dimen/incoming_call_widget_circle_size"
-					android:layout_gravity="center"
-					android:background="@drawable/ic_circle_white"
-					android:clickable="true"
-					android:foreground="@drawable/selector_avatar"
-					android:scaleType="center"
-					app:tint="@color/material_blue"
-					app:srcCompat="@drawable/ic_ring_volume_outline" />
-			</FrameLayout>
+                <ImageView
+                    android:id="@+id/button_incoming_call"
+                    android:layout_width="@dimen/incoming_call_widget_circle_size"
+                    android:layout_height="@dimen/incoming_call_widget_circle_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_circle_white"
+                    android:clickable="true"
+                    android:foreground="@drawable/selector_avatar"
+                    android:scaleType="center"
+                    app:tint="@color/material_blue"
+                    app:srcCompat="@drawable/ic_ring_volume_outline" />
+            </FrameLayout>
 
-			<FrameLayout
-				android:id="@+id/accessibility_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="bottom"
-				android:visibility="gone">
+            <FrameLayout
+                android:id="@+id/accessibility_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:visibility="gone">
 
-				<ImageView
-					android:id="@+id/accessibility_decline"
-					android:layout_width="@dimen/incoming_call_widget_circle_size"
-					android:layout_height="@dimen/incoming_call_widget_circle_size"
-					android:layout_gravity="center_vertical|left"
-					android:background="@drawable/ic_circle_lockscreen_red"
-					android:clickable="true"
-					android:contentDescription="@string/voip_reject"
-					android:focusable="true"
-					android:foreground="@drawable/selector_avatar"
-					android:scaleType="center"
-					app:tint="@android:color/white"
-					app:srcCompat="@drawable/ic_call_end_outline" />
+                <ImageView
+                    android:id="@+id/accessibility_decline"
+                    android:layout_width="@dimen/incoming_call_widget_circle_size"
+                    android:layout_height="@dimen/incoming_call_widget_circle_size"
+                    android:layout_gravity="center_vertical|left"
+                    android:background="@drawable/ic_circle_lockscreen_red"
+                    android:clickable="true"
+                    android:contentDescription="@string/voip_reject"
+                    android:focusable="true"
+                    android:foreground="@drawable/selector_avatar"
+                    android:scaleType="center"
+                    app:tint="@android:color/white"
+                    app:srcCompat="@drawable/ic_call_end_outline" />
 
-				<ImageView
-					android:id="@+id/accessibility_answer"
-					android:layout_width="@dimen/incoming_call_widget_circle_size"
-					android:layout_height="@dimen/incoming_call_widget_circle_size"
-					android:layout_gravity="center_vertical|right"
-					android:background="@drawable/ic_circle_lockscreen_green"
-					android:clickable="true"
-					android:contentDescription="@string/voip_accept"
-					android:focusable="true"
-					android:foreground="@drawable/selector_avatar"
-					android:scaleType="center"
-					app:tint="@android:color/white"
-					app:srcCompat="@drawable/ic_phone_locked_outline" />
-			</FrameLayout>
+                <ImageView
+                    android:id="@+id/accessibility_answer"
+                    android:layout_width="@dimen/incoming_call_widget_circle_size"
+                    android:layout_height="@dimen/incoming_call_widget_circle_size"
+                    android:layout_gravity="center_vertical|right"
+                    android:background="@drawable/ic_circle_lockscreen_green"
+                    android:clickable="true"
+                    android:contentDescription="@string/voip_accept"
+                    android:focusable="true"
+                    android:foreground="@drawable/selector_avatar"
+                    android:scaleType="center"
+                    app:tint="@android:color/white"
+                    app:srcCompat="@drawable/ic_phone_locked_outline" />
+            </FrameLayout>
 
-		</FrameLayout>
+        </FrameLayout>
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@+id/incall_buttons_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/call_activity_margin"
-			android:layout_marginBottom="@dimen/call_activity_margin"
-			app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/incall_buttons_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/call_activity_margin"
+            android:layout_marginBottom="@dimen/call_activity_margin"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-			<!-- Bottom buttons -->
+            <!-- Bottom buttons -->
 
-			<ImageView
-				android:id="@+id/button_picture_in_picture"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:background="@drawable/ripple_call_button"
-				android:clickable="true"
-				android:contentDescription="@string/enable_picture_in_picture"
-				android:focusable="true"
-				android:scaleType="center"
-				app:tint="@android:color/white"
-				android:visibility="gone"
-				app:layout_constraintTop_toTopOf="parent"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:srcCompat="@drawable/ic_picture_in_picture" />
+            <ImageView
+                android:id="@+id/button_picture_in_picture"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:background="@drawable/ripple_call_button"
+                android:clickable="true"
+                android:contentDescription="@string/enable_picture_in_picture"
+                android:focusable="true"
+                android:scaleType="center"
+                app:tint="@android:color/white"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:srcCompat="@drawable/ic_picture_in_picture" />
 
-			<ImageView
-				android:id="@+id/button_call_disconnect"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:background="@drawable/ic_circle_lockscreen_red"
-				android:clickable="true"
-				android:contentDescription="@string/voip_hangup"
-				android:focusable="true"
-				android:foreground="@drawable/selector_avatar"
-				android:scaleType="center"
-				app:tint="@android:color/white"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintEnd_toEndOf="parent"
-				app:layout_constraintStart_toStartOf="parent"
-				app:srcCompat="@drawable/ic_call_end_outline" />
+            <ImageView
+                android:id="@+id/button_call_disconnect"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:background="@drawable/ic_circle_lockscreen_red"
+                android:clickable="true"
+                android:contentDescription="@string/voip_hangup"
+                android:focusable="true"
+                android:foreground="@drawable/selector_avatar"
+                android:scaleType="center"
+                app:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_call_end_outline" />
 
-			<ch.threema.app.voip.AudioSelectorButton
-				android:id="@+id/button_call_toggle_audio_source"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:layout_marginLeft="12dp"
-				android:background="@drawable/ic_compound_audio_source_24dp"
-				android:clickable="true"
-				android:contentDescription="@string/voip_toggle_speaker"
-				android:focusable="true"
-				android:scaleType="center"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintStart_toEndOf="@+id/button_call_disconnect" />
+            <ch.threema.app.voip.AudioSelectorButton
+                android:id="@+id/button_call_toggle_audio_source"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:layout_marginLeft="12dp"
+                android:background="@drawable/ic_compound_audio_source_24dp"
+                android:clickable="true"
+                android:contentDescription="@string/voip_toggle_speaker"
+                android:focusable="true"
+                android:scaleType="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/button_call_disconnect" />
 
-			<ImageView
-				android:id="@+id/button_call_toggle_mic"
-				android:layout_width="@dimen/call_activity_small_button_size"
-				android:layout_height="@dimen/call_activity_small_button_size"
-				android:layout_marginRight="12dp"
-				android:background="@drawable/ripple_call_button"
-				android:clickable="true"
-				android:contentDescription="@string/voip_toggle_mic"
-				android:focusable="true"
-				android:scaleType="center"
-				app:tint="@android:color/white"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintEnd_toStartOf="@+id/button_call_disconnect"
-				app:srcCompat="@drawable/ic_keyboard_voice_outline" />
+            <ImageView
+                android:id="@+id/button_call_toggle_mic"
+                android:layout_width="@dimen/call_activity_small_button_size"
+                android:layout_height="@dimen/call_activity_small_button_size"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/ripple_call_button"
+                android:clickable="true"
+                android:contentDescription="@string/voip_toggle_mic"
+                android:focusable="true"
+                android:scaleType="center"
+                app:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/button_call_disconnect"
+                app:srcCompat="@drawable/ic_keyboard_voice_outline" />
 
-		</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-	<FrameLayout
-		android:id="@+id/interrupt_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:background="#AA000000"
-		android:gravity="center"
-		android:padding="16dp"
-		android:visibility="gone"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+    <FrameLayout
+        android:id="@+id/interrupt_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#AA000000"
+        android:gravity="center"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_gravity="center"
-			android:gravity="center"
-			android:text="@string/audio_mute_due_to_focus_loss"
-			android:textAlignment="center"
-			android:textColor="@android:color/white"
-			android:textSize="24sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/audio_mute_due_to_focus_loss"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="24sp" />
 
-	</FrameLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

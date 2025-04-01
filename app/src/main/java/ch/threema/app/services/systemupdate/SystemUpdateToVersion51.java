@@ -35,30 +35,30 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion51 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion51(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion51(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_CREATED)) {
-			this.sqLiteDatabase.rawExecSQL(
-				"ALTER TABLE " + WebClientSessionModel.TABLE
-				+ " ADD COLUMN " + WebClientSessionModel.COLUMN_CREATED + " BIGINT NULL"
-			);
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_CREATED)) {
+            this.sqLiteDatabase.rawExecSQL(
+                "ALTER TABLE " + WebClientSessionModel.TABLE
+                    + " ADD COLUMN " + WebClientSessionModel.COLUMN_CREATED + " BIGINT NULL"
+            );
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 51";
-	}
+    @Override
+    public String getText() {
+        return "version 51";
+    }
 }

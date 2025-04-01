@@ -121,7 +121,10 @@ class MessageListAdapterItem(
     }
 
     val latestMessageGroupMemberName =
-        if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(getDraft())) {
+        if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(
+                getDraft()
+            )
+        ) {
             String.format(
                 "%s: ",
                 NameUtil.getShortName(conversationModel.context, latestMessage, contactService)
@@ -165,7 +168,11 @@ class MessageListAdapterItem(
             R.drawable.ic_do_not_disturb_filled
         } else if (mentionOnlyChatsListService.has(uniqueId)) {
             R.drawable.ic_dnd_mention_black_18dp
-        } else if (ringtoneService.hasCustomRingtone(uniqueId) && ringtoneService.isSilent(uniqueId, isGroupConversation)) {
+        } else if (ringtoneService.hasCustomRingtone(uniqueId) && ringtoneService.isSilent(
+                uniqueId,
+                isGroupConversation
+            )
+        ) {
             R.drawable.ic_notifications_off_filled
         } else {
             ConversationModel.NO_RESOURCE

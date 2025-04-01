@@ -41,95 +41,95 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class TranscoderView extends FrameLayout {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("TranscoderView");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("TranscoderView");
 
-	public static final int PROGRESS_MAX = 100;
+    public static final int PROGRESS_MAX = 100;
 
-	private LinearProgressIndicator transcodeProgress;
-	private AbstractMessageModel messageModel;
-	private MessageService messageService;
+    private LinearProgressIndicator transcodeProgress;
+    private AbstractMessageModel messageModel;
+    private MessageService messageService;
 
-	public TranscoderView(Context context) {
-		super(context);
-		init(context);
-	}
+    public TranscoderView(Context context) {
+        super(context);
+        init(context);
+    }
 
-	public TranscoderView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init(context);
-	}
+    public TranscoderView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
 
-	public TranscoderView(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		init(context);
-	}
+    public TranscoderView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
 
-	private void init(Context context) {
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		inflater.inflate(R.layout.conversation_list_item_transcoder_view, this);
+    private void init(Context context) {
+        LayoutInflater inflater = (LayoutInflater) context
+            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.conversation_list_item_transcoder_view, this);
 
-		try {
-			messageService = ThreemaApplication.getServiceManager().getMessageService();
-		} catch (ThreemaException e) {
-			logger.debug("Unable to get MessageService", e);
-		}
-	}
+        try {
+            messageService = ThreemaApplication.getServiceManager().getMessageService();
+        } catch (ThreemaException e) {
+            logger.debug("Unable to get MessageService", e);
+        }
+    }
 
-	@Override
-	protected void onFinishInflate() {
-		super.onFinishInflate();
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
 
-		transcodeProgress = this.findViewById(R.id.transcode_progress);
-		this.findViewById(R.id.cancel_button).setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (messageModel != null && messageService != null) {
-					messageService.cancelVideoTranscoding(messageModel);
-				}
-			}
-		});
+        transcodeProgress = this.findViewById(R.id.transcode_progress);
+        this.findViewById(R.id.cancel_button).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (messageModel != null && messageService != null) {
+                    messageService.cancelVideoTranscoding(messageModel);
+                }
+            }
+        });
 
-		transcodeProgress.setMax(PROGRESS_MAX);
-		transcodeProgress.setProgress(0);
-		transcodeProgress.setIndeterminate(true);
-	}
+        transcodeProgress.setMax(PROGRESS_MAX);
+        transcodeProgress.setProgress(0);
+        transcodeProgress.setIndeterminate(true);
+    }
 
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
 
-		final View parent = ((View) getParent());
-		final ViewTreeObserver observer = parent.getViewTreeObserver();
-		observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				ImageView imageView = parent.findViewById(R.id.attachment_image_view);
-				if (imageView != null) {
-					getLayoutParams().height = imageView.getMeasuredHeight();
-					getLayoutParams().width = imageView.getMeasuredWidth();
-					requestLayout();
-				}
-				ViewTreeObserver obs = parent.getViewTreeObserver();
-				obs.removeOnGlobalLayoutListener(this);
-			}
-		});
-	}
+        final View parent = ((View) getParent());
+        final ViewTreeObserver observer = parent.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ImageView imageView = parent.findViewById(R.id.attachment_image_view);
+                if (imageView != null) {
+                    getLayoutParams().height = imageView.getMeasuredHeight();
+                    getLayoutParams().width = imageView.getMeasuredWidth();
+                    requestLayout();
+                }
+                ViewTreeObserver obs = parent.getViewTreeObserver();
+                obs.removeOnGlobalLayoutListener(this);
+            }
+        });
+    }
 
-	public void setProgress(int progress) {
-		if (progress > PROGRESS_MAX) {
-			progress = PROGRESS_MAX;
-		}
+    public void setProgress(int progress) {
+        if (progress > PROGRESS_MAX) {
+            progress = PROGRESS_MAX;
+        }
 
-		if (progress > 0) {
-			transcodeProgress.setIndeterminate(false);
-			transcodeProgress.setProgress(progress);
-		} else {
-			transcodeProgress.setIndeterminate(true);
-		}
-	}
+        if (progress > 0) {
+            transcodeProgress.setIndeterminate(false);
+            transcodeProgress.setProgress(progress);
+        } else {
+            transcodeProgress.setIndeterminate(true);
+        }
+    }
 
-	public void setMessageModel(AbstractMessageModel messageModel) {
-		this.messageModel = messageModel;
-	}
+    public void setMessageModel(AbstractMessageModel messageModel) {
+        this.messageModel = messageModel;
+    }
 }

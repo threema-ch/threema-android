@@ -33,48 +33,49 @@ import ch.threema.app.services.UpdateSystemService;
  * Remove old message log
  */
 public class SystemUpdateToVersion55 implements UpdateSystemService.SystemUpdate {
-	private final static String TAG = "SystemUpdateToVersion55";
+    private final static String TAG = "SystemUpdateToVersion55";
 
-	public SystemUpdateToVersion55() { }
+    public SystemUpdateToVersion55() {
+    }
 
-	@Override
-	public boolean runDirectly() {
-		try {
-			final File threemaDir = new File(Environment.getExternalStorageDirectory(), BuildConfig.MEDIA_PATH);
-			if (threemaDir.exists()) {
-				final File messageLog = new File(threemaDir, "message_log.txt");
-				final File debugLog = new File(threemaDir, "debug_log.txt");
+    @Override
+    public boolean runDirectly() {
+        try {
+            final File threemaDir = new File(Environment.getExternalStorageDirectory(), BuildConfig.MEDIA_PATH);
+            if (threemaDir.exists()) {
+                final File messageLog = new File(threemaDir, "message_log.txt");
+                final File debugLog = new File(threemaDir, "debug_log.txt");
 
-				final boolean hasMessageLog = messageLog.exists() && messageLog.isFile();
-				final boolean hasDebugLog = debugLog.exists() && debugLog.isFile();
+                final boolean hasMessageLog = messageLog.exists() && messageLog.isFile();
+                final boolean hasDebugLog = debugLog.exists() && debugLog.isFile();
 
-				if (hasMessageLog && !hasDebugLog) {
-					// Rename
-					boolean success = messageLog.renameTo(debugLog);
-					if (!success) {
-						Log.w(TAG, "Renaming message log failed");
-					}
-				} else if (hasMessageLog && hasDebugLog) {
-					// Delete
-					boolean success = messageLog.delete();
-					if (!success) {
-						Log.w(TAG, "Removing message log failed");
-					}
-				}
-			}
-		} catch (Exception e) {
-			Log.w(TAG, "Exception: " + e.getMessage());
-		}
-		return true;
-	}
+                if (hasMessageLog && !hasDebugLog) {
+                    // Rename
+                    boolean success = messageLog.renameTo(debugLog);
+                    if (!success) {
+                        Log.w(TAG, "Renaming message log failed");
+                    }
+                } else if (hasMessageLog && hasDebugLog) {
+                    // Delete
+                    boolean success = messageLog.delete();
+                    if (!success) {
+                        Log.w(TAG, "Removing message log failed");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Exception: " + e.getMessage());
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 55";
-	}
+    @Override
+    public String getText() {
+        return "version 55";
+    }
 }

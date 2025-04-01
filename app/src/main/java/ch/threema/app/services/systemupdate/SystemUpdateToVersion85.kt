@@ -35,9 +35,9 @@ internal class SystemUpdateToVersion85(
 
     override fun runDirectly(): Boolean {
         for (table in arrayOf(
-                "message",
-                "m_group_message",
-                "distribution_list_message"
+            "message",
+            "m_group_message",
+            "distribution_list_message"
         )) {
             if (!fieldExists(sqLiteDatabase, table, "displayTags")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE `$table` ADD COLUMN `displayTags` TINYINT DEFAULT 0")

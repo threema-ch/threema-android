@@ -39,7 +39,8 @@ class DeleteMessageTest {
      *  (message id bytes (8))
      */
     private val messageId: MessageId = MessageId()
-    private val protobufMessageId: ByteArray = DeleteMessageData(messageId.messageIdLong).toProtobufBytes()
+    private val protobufMessageId: ByteArray =
+        DeleteMessageData(messageId.messageIdLong).toProtobufBytes()
 
     private val bytesMessageData: ByteArray = protobufMessageId
 
@@ -152,7 +153,8 @@ class DeleteMessageTest {
 
         // arrange
         val offset = 5
-        val bytesMessageDataContainingOffsetAndJunk = nextBytes(offset) + bytesMessageData + nextBytes(10)
+        val bytesMessageDataContainingOffsetAndJunk =
+            nextBytes(offset) + bytesMessageData + nextBytes(10)
 
         // act
         val deleteMessage = DeleteMessage.fromByteArray(

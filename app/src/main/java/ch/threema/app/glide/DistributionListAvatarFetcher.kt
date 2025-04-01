@@ -36,15 +36,22 @@ import com.bumptech.glide.load.data.DataFetcher
  * or groups as only low resolution default avatars are needed.
  */
 class DistributionListAvatarFetcher(
-        context: Context,
-        private val distributionListService: DistributionListService?,
-        private val distributionListConfig: AvatarCacheServiceImpl.DistributionListAvatarConfig
+    context: Context,
+    private val distributionListService: DistributionListService?,
+    private val distributionListConfig: AvatarCacheServiceImpl.DistributionListAvatarConfig
 ) : AvatarFetcher(context) {
 
-    private val distributionListDefaultAvatar: VectorDrawableCompat? by lazy { VectorDrawableCompat.create(context.resources, R.drawable.ic_distribution_list, null) }
+    private val distributionListDefaultAvatar: VectorDrawableCompat? by lazy {
+        VectorDrawableCompat.create(
+            context.resources,
+            R.drawable.ic_distribution_list,
+            null
+        )
+    }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val color = distributionListService?.getAvatarColor(distributionListConfig.model) ?: ColorUtil.getInstance().getCurrentThemeGray(context)
+        val color = distributionListService?.getAvatarColor(distributionListConfig.model)
+            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
         callback.onDataReady(buildDefaultAvatarLowRes(distributionListDefaultAvatar, color))
     }
 

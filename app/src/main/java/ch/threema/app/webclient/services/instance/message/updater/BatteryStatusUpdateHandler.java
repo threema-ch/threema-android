@@ -47,92 +47,92 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class BatteryStatusUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusUpdateHandler");
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final Listener listener = new Listener();
+    // Listeners
+    private final Listener listener = new Listener();
 
-	// Dispatchers
-	private MessageDispatcher dispatcher;
+    // Dispatchers
+    private MessageDispatcher dispatcher;
 
-	private final Context appContext;
-	private final int sessionId;
+    private final Context appContext;
+    private final int sessionId;
 
-	@AnyThread
-	public BatteryStatusUpdateHandler(
-		@NonNull Context appContext,
-		@NonNull HandlerExecutor handler,
-		int sessionId,
-		MessageDispatcher dispatcher
-	) {
-		super(Protocol.SUB_TYPE_BATTERY_STATUS);
-		this.appContext = appContext;
-		this.handler = handler;
-		this.dispatcher = dispatcher;
-		this.sessionId = sessionId;
-	}
+    @AnyThread
+    public BatteryStatusUpdateHandler(
+        @NonNull Context appContext,
+        @NonNull HandlerExecutor handler,
+        int sessionId,
+        MessageDispatcher dispatcher
+    ) {
+        super(Protocol.SUB_TYPE_BATTERY_STATUS);
+        this.appContext = appContext;
+        this.handler = handler;
+        this.dispatcher = dispatcher;
+        this.sessionId = sessionId;
+    }
 
-	@Override
-	public void register() {
-		logger.debug("register(" + this.sessionId + ")");
-		WebClientListenerManager.batteryStatusListener.add(this.listener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register(" + this.sessionId + ")");
+        WebClientListenerManager.batteryStatusListener.add(this.listener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister(" + this.sessionId + ")");
-		WebClientListenerManager.batteryStatusListener.remove(this.listener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister(" + this.sessionId + ")");
+        WebClientListenerManager.batteryStatusListener.remove(this.listener);
+    }
 
-	public void update(final int percent, final boolean isCharging) {
-		try {
-			MsgpackObjectBuilder data = BatteryStatus.convert(percent, isCharging);
-			logger.debug("Sending battery status update ({}%, {})", percent, isCharging ? "C" : "D");
-			send(this.dispatcher, data, null);
-		} catch (MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+    public void update(final int percent, final boolean isCharging) {
+        try {
+            MsgpackObjectBuilder data = BatteryStatus.convert(percent, isCharging);
+            logger.debug("Sending battery status update ({}%, {})", percent, isCharging ? "C" : "D");
+            send(this.dispatcher, data, null);
+        } catch (MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	/**
-	 * Trigger a single battery status measurement and send the results to Threema Web.
-	 */
-	public void trigger() {
-		// Get current battery status
-		final Intent intent = this.appContext.registerReceiver(
-			null, BatteryStatusServiceImpl.getBatteryStatusIntentFilter());
-		if (intent == null) {
-			return;
-		}
+    /**
+     * Trigger a single battery status measurement and send the results to Threema Web.
+     */
+    public void trigger() {
+        // Get current battery status
+        final Intent intent = this.appContext.registerReceiver(
+            null, BatteryStatusServiceImpl.getBatteryStatusIntentFilter());
+        if (intent == null) {
+            return;
+        }
 
-		// Parse battery status intent
-		final Boolean isCharging = BatteryStatusUtil.isCharging(intent);
-		final Integer percent = BatteryStatusUtil.getPercent(intent);
-		if (isCharging == null || percent == null) {
-			return;
-		}
+        // Parse battery status intent
+        final Boolean isCharging = BatteryStatusUtil.isCharging(intent);
+        final Integer percent = BatteryStatusUtil.getPercent(intent);
+        if (isCharging == null || percent == null) {
+            return;
+        }
 
-		// Send update to Threema Web
-		this.update(percent, isCharging);
-	}
+        // Send update to Threema Web
+        this.update(percent, isCharging);
+    }
 
-	@AnyThread
-	private class Listener implements BatteryStatusListener {
-		@Override
-		public void onChange(int percent, boolean isCharging) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					BatteryStatusUpdateHandler.this.update(percent, isCharging);
-				}
-			});
-		}
-	}
+    @AnyThread
+    private class Listener implements BatteryStatusListener {
+        @Override
+        public void onChange(int percent, boolean isCharging) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    BatteryStatusUpdateHandler.this.update(percent, isCharging);
+                }
+            });
+        }
+    }
 }

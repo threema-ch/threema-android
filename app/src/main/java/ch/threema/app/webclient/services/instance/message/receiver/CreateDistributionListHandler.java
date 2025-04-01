@@ -47,97 +47,98 @@ import ch.threema.storage.models.DistributionListModel;
 
 @WorkerThread
 public class CreateDistributionListHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CreateDistributionListHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CreateDistributionListHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final DistributionListService distributionListService;
+    private final MessageDispatcher dispatcher;
+    private final DistributionListService distributionListService;
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_BAD_REQUEST,
-		Protocol.ERROR_VALUE_TOO_LONG,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_BAD_REQUEST,
+        Protocol.ERROR_VALUE_TOO_LONG,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	@AnyThread
-	public CreateDistributionListHandler(MessageDispatcher dispatcher,
-	                                     DistributionListService distributionListService) {
-		super(Protocol.SUB_TYPE_DISTRIBUTION_LIST);
-		this.dispatcher = dispatcher;
-		this.distributionListService = distributionListService;
-	}
+    @AnyThread
+    public CreateDistributionListHandler(MessageDispatcher dispatcher,
+                                         DistributionListService distributionListService) {
+        super(Protocol.SUB_TYPE_DISTRIBUTION_LIST);
+        this.dispatcher = dispatcher;
+        this.distributionListService = distributionListService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received create distribution list create");
-		final Map<String, Value> args = this.getArguments(message, false, new String[]{
-			Protocol.ARGUMENT_TEMPORARY_ID,
-		});
-		final Map<String, Value> data = this.getData(message, false);
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received create distribution list create");
+        final Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_TEMPORARY_ID,
+        });
+        final Map<String, Value> data = this.getData(message, false);
 
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		// Parse members
-		if (!data.containsKey(Protocol.ARGUMENT_MEMBERS)) {
-			logger.error("Invalid request, members not set");
-			this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
-			return;
-		}
-		final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
-		final String[] identities = new String[members.size()];
-		for (int n = 0; n < members.size(); n++) {
-			identities[n] = members.get(n).asStringValue().toString();
-		}
+        // Parse members
+        if (!data.containsKey(Protocol.ARGUMENT_MEMBERS)) {
+            logger.error("Invalid request, members not set");
+            this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+            return;
+        }
+        final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
+        final String[] identities = new String[members.size()];
+        for (int n = 0; n < members.size(); n++) {
+            identities[n] = members.get(n).asStringValue().toString();
+        }
 
-		// Parse distribution list name
-		String name = null;
-		if (data.containsKey(Protocol.ARGUMENT_NAME)
-				&& !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
-			name = data.get(Protocol.ARGUMENT_NAME).asStringValue().toString();
-			if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_DISTRIBUTION_LIST_NAME) {
-				this.failed(temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-				return;
-			}
-		}
+        // Parse distribution list name
+        String name = null;
+        if (data.containsKey(Protocol.ARGUMENT_NAME)
+            && !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
+            name = data.get(Protocol.ARGUMENT_NAME).asStringValue().toString();
+            if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_DISTRIBUTION_LIST_NAME) {
+                this.failed(temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
+                return;
+            }
+        }
 
-		try {
-			final DistributionListModel distributionListModel =
-				this.distributionListService.createDistributionList(name, identities);
-			this.success(temporaryId, distributionListModel);
-		} catch (Exception e1) {
-			this.failed(temporaryId, Protocol.ERROR_INTERNAL);
-		}
-	}
+        try {
+            final DistributionListModel distributionListModel =
+                this.distributionListService.createDistributionList(name, identities);
+            this.success(temporaryId, distributionListModel);
+        } catch (Exception e1) {
+            this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+        }
+    }
 
-	private void success(String temporaryId, DistributionListModel distributionListModel) {
-		logger.debug("Respond create distribution list success");
-		try {
-			this.send(this.dispatcher,
-					new MsgpackObjectBuilder()
-						.put(Protocol.SUB_TYPE_RECEIVER, DistributionList.convert(distributionListModel)),
-					new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, true)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-			);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+    private void success(String temporaryId, DistributionListModel distributionListModel) {
+        logger.debug("Respond create distribution list success");
+        try {
+            this.send(this.dispatcher,
+                new MsgpackObjectBuilder()
+                    .put(Protocol.SUB_TYPE_RECEIVER, DistributionList.convert(distributionListModel)),
+                new MsgpackObjectBuilder()
+                    .put(Protocol.ARGUMENT_SUCCESS, true)
+                    .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+            );
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	private void failed(String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond create distribution list failed ({})", errorCode);
-		this.send(this.dispatcher,
-				(MsgpackObjectBuilder) null,
-				new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, false)
-						.put(Protocol.ARGUMENT_ERROR, errorCode)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-		);
-	}
+    private void failed(String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond create distribution list failed ({})", errorCode);
+        this.send(this.dispatcher,
+            (MsgpackObjectBuilder) null,
+            new MsgpackObjectBuilder()
+                .put(Protocol.ARGUMENT_SUCCESS, false)
+                .put(Protocol.ARGUMENT_ERROR, errorCode)
+                .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+        );
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

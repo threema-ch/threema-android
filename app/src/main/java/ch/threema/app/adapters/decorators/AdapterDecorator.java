@@ -33,53 +33,53 @@ import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.RuntimeUtil;
 
 abstract class AdapterDecorator {
-	@NonNull
-	private final Context context;
-	private transient ListView inListView = null;
+    @NonNull
+    private final Context context;
+    private transient ListView inListView = null;
 
-	protected AdapterDecorator(@NonNull Context context) {
-		this.context = context;
-	}
+    protected AdapterDecorator(@NonNull Context context) {
+        this.context = context;
+    }
 
-	@NonNull
-	protected Context getContext() {
-		return this.context;
-	}
+    @NonNull
+    protected Context getContext() {
+        return this.context;
+    }
 
-	final public void decorate(AbstractListItemHolder holder, int position) {
-		this.configure(holder, position);
-	}
+    final public void decorate(AbstractListItemHolder holder, int position) {
+        this.configure(holder, position);
+    }
 
-	protected boolean showHide(View view, boolean show) {
-		if(view != null) {
-			if(show) {
-				view.setVisibility(View.VISIBLE);
-			}
-			else {
-				view.setVisibility(View.GONE);
-			}
-			return true;
-		}
+    protected boolean showHide(View view, boolean show) {
+        if (view != null) {
+            if (show) {
+                view.setVisibility(View.VISIBLE);
+            } else {
+                view.setVisibility(View.GONE);
+            }
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@AnyThread
-	protected void invalidate(final AbstractListItemHolder holder, final int position) {
-		RuntimeUtil.runOnUiThread(() -> {
-			if (holder != null && holder.position == position) {
-				configure(holder, position);
-			}
-		});
-	}
-	abstract protected void configure(AbstractListItemHolder holder, int position);
+    @AnyThread
+    protected void invalidate(final AbstractListItemHolder holder, final int position) {
+        RuntimeUtil.runOnUiThread(() -> {
+            if (holder != null && holder.position == position) {
+                configure(holder, position);
+            }
+        });
+    }
 
-	public void setInListView(ListView inListView) {
-		this.inListView = inListView;
-	}
+    abstract protected void configure(AbstractListItemHolder holder, int position);
 
-	protected boolean isInChoiceMode() {
-		return this.inListView != null && (this.inListView.getChoiceMode() == AbsListView.CHOICE_MODE_MULTIPLE
-				|| this.inListView.getChoiceMode() == AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-	}
+    public void setInListView(ListView inListView) {
+        this.inListView = inListView;
+    }
+
+    protected boolean isInChoiceMode() {
+        return this.inListView != null && (this.inListView.getChoiceMode() == AbsListView.CHOICE_MODE_MULTIPLE
+            || this.inListView.getChoiceMode() == AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+    }
 }

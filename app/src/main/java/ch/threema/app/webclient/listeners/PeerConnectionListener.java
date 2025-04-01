@@ -28,6 +28,7 @@ import ch.threema.app.webclient.state.PeerConnectionState;
 
 @AnyThread
 public interface PeerConnectionListener {
-	void onStateChanged(PeerConnectionState oldState, PeerConnectionState newState);
-	void onDataChannel(DataChannel dataChannel);
+    void onStateChanged(PeerConnectionState oldState, PeerConnectionState newState);
+
+    void onDataChannel(DataChannel dataChannel);
 }

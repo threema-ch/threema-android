@@ -30,40 +30,40 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactNotificationsActivity extends NotificationsActivity {
-	private ContactModel contactModel;
+    private ContactModel contactModel;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		String identity = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
-		if (TestUtil.isEmptyOrNull(identity)) {
-			finish();
-			return;
-		}
+        String identity = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+        if (TestUtil.isEmptyOrNull(identity)) {
+            finish();
+            return;
+        }
 
-		this.contactModel = contactService.getByIdentity(identity);
-		this.uid = ContactUtil.getUniqueIdString(identity);
+        this.contactModel = contactService.getByIdentity(identity);
+        this.uid = ContactUtil.getUniqueIdString(identity);
 
-		refreshSettings();
-	}
+        refreshSettings();
+    }
 
-	public void refreshSettings() {
-		defaultRingtone = ringtoneService.getDefaultContactRingtone();
-		selectedRingtone = ringtoneService.getContactRingtone(uid);
+    public void refreshSettings() {
+        defaultRingtone = ringtoneService.getDefaultContactRingtone();
+        selectedRingtone = ringtoneService.getContactRingtone(uid);
 
-		super.refreshSettings();
-	}
+        super.refreshSettings();
+    }
 
-	@Override
-	void notifySettingsChanged() {
-		this.conversationService.refresh(this.contactModel);
-	}
+    @Override
+    void notifySettingsChanged() {
+        this.conversationService.refresh(this.contactModel);
+    }
 
-	@Override
-	protected void setupButtons() {
-		super.setupButtons();
+    @Override
+    protected void setupButtons() {
+        super.setupButtons();
 
-		radioSilentExceptMentions.setVisibility(View.GONE);
-	}
+        radioSilentExceptMentions.setVisibility(View.GONE);
+    }
 }

@@ -128,7 +128,10 @@ class IdentityBlockedStepsTest {
         )
         assertEquals(
             BlockState.EXPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(explicitlyBlockedContact.identity, blockUnknownPreferenceService)
+            runIdentityBlockedSteps(
+                explicitlyBlockedContact.identity,
+                blockUnknownPreferenceService
+            )
         )
     }
 

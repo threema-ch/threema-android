@@ -41,8 +41,11 @@ class GroupCallThreadUtil {
             val factory = TrulySingleThreadExecutorThreadFactory("GroupCallWorker") {
                 THREAD = it
             }
-            val handler = CoroutineExceptionHandler { _, exception -> exceptionHandler?.handle(exception) ?: throw exception }
-            DISPATCHER = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher().plus(handler)
+            val handler = CoroutineExceptionHandler { _, exception ->
+                exceptionHandler?.handle(exception) ?: throw exception
+            }
+            DISPATCHER =
+                Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher().plus(handler)
         }
 
         fun assertDispatcherThread() {

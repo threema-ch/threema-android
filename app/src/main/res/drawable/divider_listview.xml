@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
-	android:insetLeft="60dp"
-	android:insetRight="0dp">
+    android:insetLeft="60dp"
+    android:insetRight="0dp">
 
-	<shape android:shape="rectangle">
+    <shape android:shape="rectangle">
 
-		<solid android:color="@color/file_picker_divider_color" />
-	</shape>
+        <solid android:color="@color/file_picker_divider_color" />
+    </shape>
 
 </inset>

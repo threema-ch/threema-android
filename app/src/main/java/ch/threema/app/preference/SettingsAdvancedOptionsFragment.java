@@ -139,26 +139,26 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     private TwoStatePreference threemaPushTwoStatePreference;
     private TwoStatePreference messageLogPreference, ipv6Preferences;
 
-	private WallpaperService wallpaperService;
-	private SharedPreferences sharedPreferences;
-	private PreferenceService preferenceService;
-	private RingtoneService ringtoneService;
-	private NotificationService notificationService;
-	private FileService fileService;
-	private UserService userService;
-	private LifetimeService lifetimeService;
-	private DeadlineListService mutedChatsListService, mentionOnlyChatsListService;
-	private MessageService messageService;
-	private ContactService contactService;
-	private APIConnector apiConnector;
-	private ContactModelRepository contactModelRepository;
-	private View fragmentView;
+    private WallpaperService wallpaperService;
+    private SharedPreferences sharedPreferences;
+    private PreferenceService preferenceService;
+    private RingtoneService ringtoneService;
+    private NotificationService notificationService;
+    private FileService fileService;
+    private UserService userService;
+    private LifetimeService lifetimeService;
+    private DeadlineListService mutedChatsListService, mentionOnlyChatsListService;
+    private MessageService messageService;
+    private ContactService contactService;
+    private APIConnector apiConnector;
+    private ContactModelRepository contactModelRepository;
+    private View fragmentView;
 
     private BroadcastReceiver pushTokenResetBroadcastReceiver;
 
-	private @Nullable BackgroundExecutor backgroundExecutor;
+    private @Nullable BackgroundExecutor backgroundExecutor;
 
-	private boolean pushServicesInstalled;
+    private boolean pushServicesInstalled;
 
     /**
      * This activity result launcher is needed to open the settings to disable hibernation.
@@ -574,44 +574,44 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
         return this.checkInstances();
     }
 
-	protected boolean checkInstances() {
-		return TestUtil.required(
-			this.wallpaperService,
-			this.lifetimeService,
-			this.preferenceService,
-			this.fileService,
-			this.userService,
-			this.ringtoneService,
-			this.mutedChatsListService,
-			this.messageService,
-			this.contactService,
-			this.apiConnector,
-			this.contactModelRepository
-		);
-	}
+    protected boolean checkInstances() {
+        return TestUtil.required(
+            this.wallpaperService,
+            this.lifetimeService,
+            this.preferenceService,
+            this.fileService,
+            this.userService,
+            this.ringtoneService,
+            this.mutedChatsListService,
+            this.messageService,
+            this.contactService,
+            this.apiConnector,
+            this.contactModelRepository
+        );
+    }
 
-	protected void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				this.wallpaperService = serviceManager.getWallpaperService();
-				this.lifetimeService = serviceManager.getLifetimeService();
-				this.preferenceService = serviceManager.getPreferenceService();
-				this.fileService = serviceManager.getFileService();
-				this.userService = serviceManager.getUserService();
-				this.ringtoneService = serviceManager.getRingtoneService();
-				this.mutedChatsListService = serviceManager.getMutedChatsListService();
-				this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
-				this.messageService = serviceManager.getMessageService();
-				this.contactService = serviceManager.getContactService();
-				this.notificationService = serviceManager.getNotificationService();
-				this.apiConnector = serviceManager.getAPIConnector();
-				this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    protected void instantiate() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                this.wallpaperService = serviceManager.getWallpaperService();
+                this.lifetimeService = serviceManager.getLifetimeService();
+                this.preferenceService = serviceManager.getPreferenceService();
+                this.fileService = serviceManager.getFileService();
+                this.userService = serviceManager.getUserService();
+                this.ringtoneService = serviceManager.getRingtoneService();
+                this.mutedChatsListService = serviceManager.getMutedChatsListService();
+                this.mentionOnlyChatsListService = serviceManager.getMentionOnlyChatsListService();
+                this.messageService = serviceManager.getMessageService();
+                this.contactService = serviceManager.getContactService();
+                this.notificationService = serviceManager.getNotificationService();
+                this.apiConnector = serviceManager.getAPIConnector();
+                this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -735,32 +735,32 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     }
 
 
-	@SuppressLint("StaticFieldLeak")
-	public void sendLogFileToSupport(final String caption) {
-		final Context context = getContext();
-		if (context == null) {
-			logger.warn("Cannot send logfile as the context is null");
-			return;
-		}
+    @SuppressLint("StaticFieldLeak")
+    public void sendLogFileToSupport(final String caption) {
+        final Context context = getContext();
+        if (context == null) {
+            logger.warn("Cannot send logfile as the context is null");
+            return;
+        }
 
-		SendToSupportBackgroundTask sendLogFileTask = new SendToSupportBackgroundTask(
-			userService.getIdentity(),
-			apiConnector,
-			contactModelRepository,
-			context
-		) {
-			@Override
-			public void onBefore() {
-				GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
-			}
+        SendToSupportBackgroundTask sendLogFileTask = new SendToSupportBackgroundTask(
+            userService.getIdentity(),
+            apiConnector,
+            contactModelRepository,
+            context
+        ) {
+            @Override
+            public void onBefore() {
+                GenericProgressDialog.newInstance(R.string.preparing_messages, R.string.please_wait).show(getParentFragmentManager(), DIALOG_TAG_SENDLOG);
+            }
 
-			@NonNull
-			@Override
-			public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
-				File zipFile = DebugLogFileBackend.getZipFile(fileService);
+            @NonNull
+            @Override
+            public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
+                File zipFile = DebugLogFileBackend.getZipFile(fileService);
 
-				try {
-					ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
+                try {
+                    ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
 
                     messageService.sendText(caption +
                         "\n-- \n" +
@@ -779,39 +779,39 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                                 RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.an_error_occurred_during_send, Toast.LENGTH_LONG).show());
                             }
 
-							@Override
-							public void onCompleted() {
-								RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.message_sent, Toast.LENGTH_LONG).show());
-							}
-						});
-				} catch (Exception e) {
-					logger.error("Could not send log file");
-					return SendToSupportResult.FAILED;
-				}
+                            @Override
+                            public void onCompleted() {
+                                RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.message_sent, Toast.LENGTH_LONG).show());
+                            }
+                        });
+                } catch (Exception e) {
+                    logger.error("Could not send log file");
+                    return SendToSupportResult.FAILED;
+                }
 
-				return SendToSupportResult.SUCCESS;
-			}
+                return SendToSupportResult.SUCCESS;
+            }
 
-			@Override
-			public void onFinished(@NonNull SendToSupportResult result) {
-				if (isAdded()) {
-					DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_SENDLOG, true);
+            @Override
+            public void onFinished(@NonNull SendToSupportResult result) {
+                if (isAdded()) {
+                    DialogUtil.dismissDialog(getParentFragmentManager(), DIALOG_TAG_SENDLOG, true);
 
-					if (result == SendToSupportResult.SUCCESS) {
-						Toast.makeText(requireActivity().getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
-					} else {
-						Toast.makeText(requireActivity().getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();
-					}
-				}
-			}
-		};
+                    if (result == SendToSupportResult.SUCCESS) {
+                        Toast.makeText(requireActivity().getApplicationContext(), R.string.message_sent, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(requireActivity().getApplicationContext(), R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        };
 
-		if (backgroundExecutor == null) {
-			backgroundExecutor = new BackgroundExecutor();
-		}
+        if (backgroundExecutor == null) {
+            backgroundExecutor = new BackgroundExecutor();
+        }
 
-		backgroundExecutor.execute(sendLogFileTask);
-	}
+        backgroundExecutor.execute(sendLogFileTask);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

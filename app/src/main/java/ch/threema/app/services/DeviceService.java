@@ -22,5 +22,5 @@
 package ch.threema.app.services;
 
 public interface DeviceService {
-	boolean isOnline();
+    boolean isOnline();
 }

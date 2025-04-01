@@ -41,77 +41,77 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel, RecyclerView.ViewHolder> {
-	private final UserService userService;
-	private final ContactService contactService;
-	private final GroupService groupService;
-	private final GroupModel groupModel;
-	private OnClickListener onClickListener;
-	private final Context context;
+    private final UserService userService;
+    private final ContactService contactService;
+    private final GroupService groupService;
+    private final GroupModel groupModel;
+    private OnClickListener onClickListener;
+    private final Context context;
 
-	public static class ItemHolder extends RecyclerView.ViewHolder {
-		public final View view;
-		public final TextView nameView, idView;
-		public final AvatarView avatarView;
+    public static class ItemHolder extends RecyclerView.ViewHolder {
+        public final View view;
+        public final TextView nameView, idView;
+        public final AvatarView avatarView;
 
-		public ItemHolder(View view) {
-			super(view);
-			this.view = view;
-			this.nameView = itemView.findViewById(R.id.contact_name);
-			this.avatarView = itemView.findViewById(R.id.avatar_view);
-			this.idView = itemView.findViewById(R.id.threemaid);
-		}
-	}
+        public ItemHolder(View view) {
+            super(view);
+            this.view = view;
+            this.nameView = itemView.findViewById(R.id.contact_name);
+            this.avatarView = itemView.findViewById(R.id.avatar_view);
+            this.idView = itemView.findViewById(R.id.threemaid);
+        }
+    }
 
-	public MentionSelectorAdapter(Context context, UserService userService, ContactService contactService, GroupService groupService, GroupModel groupModel) {
-		this.context = context;
-		this.userService = userService;
-		this.contactService = contactService;
-		this.groupService = groupService;
-		this.groupModel = groupModel;
-	}
+    public MentionSelectorAdapter(Context context, UserService userService, ContactService contactService, GroupService groupService, GroupModel groupModel) {
+        this.context = context;
+        this.userService = userService;
+        this.contactService = contactService;
+        this.groupService = groupService;
+        this.groupModel = groupModel;
+    }
 
-	@NonNull
-	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View v = LayoutInflater.from(context).inflate(R.layout.item_mention_selector, parent, false);
-		return new ItemHolder(v);
-	}
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(context).inflate(R.layout.item_mention_selector, parent, false);
+        return new ItemHolder(v);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-		ItemHolder itemHolder = (ItemHolder) holder;
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+        ItemHolder itemHolder = (ItemHolder) holder;
 
-		final ContactModel contactModel = getEntity(position);
-		Bitmap avatar;
+        final ContactModel contactModel = getEntity(position);
+        Bitmap avatar;
 
-		final String name = NameUtil.getQuoteName(contactModel, this.userService);
-		itemHolder.nameView.setText(name);
+        final String name = NameUtil.getQuoteName(contactModel, this.userService);
+        itemHolder.nameView.setText(name);
 
-		if (contactModel.getIdentity().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
-			avatar = this.groupService.getAvatar(groupModel, false);
-			itemHolder.idView.setText("");
-			if (avatar != null) {
-				itemHolder.avatarView.setImageBitmap(avatar);
-			} else {
-				itemHolder.avatarView.setImageResource(R.drawable.ic_group);
-			}
-			itemHolder.avatarView.setBadgeVisible(false);
-		} else {
-			avatar = this.contactService.getAvatar(contactModel, false);
+        if (contactModel.getIdentity().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
+            avatar = this.groupService.getAvatar(groupModel, false);
+            itemHolder.idView.setText("");
+            if (avatar != null) {
+                itemHolder.avatarView.setImageBitmap(avatar);
+            } else {
+                itemHolder.avatarView.setImageResource(R.drawable.ic_group);
+            }
+            itemHolder.avatarView.setBadgeVisible(false);
+        } else {
+            avatar = this.contactService.getAvatar(contactModel, false);
 
-			itemHolder.idView.setText(contactModel.getIdentity());
-			itemHolder.avatarView.setImageBitmap(avatar);
-			itemHolder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
-		}
-		AdapterUtil.styleContact(itemHolder.nameView, contactModel);
-		itemHolder.view.setOnClickListener(v -> onClickListener.onItemClick(v, contactModel));
-	}
+            itemHolder.idView.setText(contactModel.getIdentity());
+            itemHolder.avatarView.setImageBitmap(avatar);
+            itemHolder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
+        }
+        AdapterUtil.styleContact(itemHolder.nameView, contactModel);
+        itemHolder.view.setOnClickListener(v -> onClickListener.onItemClick(v, contactModel));
+    }
 
-	public void setOnClickListener(OnClickListener listener) {
-		onClickListener = listener;
-	}
+    public void setOnClickListener(OnClickListener listener) {
+        onClickListener = listener;
+    }
 
-	public interface OnClickListener {
-		void onItemClick(View v, ContactModel contactModel);
-	}
+    public interface OnClickListener {
+        void onItemClick(View v, ContactModel contactModel);
+    }
 }

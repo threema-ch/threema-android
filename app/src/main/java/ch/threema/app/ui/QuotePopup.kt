@@ -78,7 +78,8 @@ class QuotePopup(
     val quoteInfo = QuoteInfo()
 
     init {
-        popupLayout = LayoutInflater.from(context).inflate(R.layout.popup_quote, null, false) as MaterialCardView
+        popupLayout = LayoutInflater.from(context)
+            .inflate(R.layout.popup_quote, null, false) as MaterialCardView
         quoteTextView = popupLayout.findViewById(R.id.quote_text_view)
         quoteIdentityView = popupLayout.findViewById(R.id.quote_id_view)
         quoteBar = popupLayout.findViewById(R.id.quote_bar)
@@ -116,7 +117,8 @@ class QuotePopup(
         val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(activity, textInputLayout)
         val popupX = coordinates[0]
         val popupY = coordinates[1]
-        val viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
+        val viewableSpaceHeight =
+            coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         this.width = editText.width
         this.height = viewableSpaceHeight
 
@@ -140,9 +142,11 @@ class QuotePopup(
         quoteInfo.messageModel = messageModel
         quoteInfo.quoteText = QuoteUtil.getMessageBody(quoteInfo.messageModel, true)
         quoteInfo.quoteIdentity = identity
-        quoteIdentityView.text = NameUtil.getQuoteName(quoteInfo.quoteIdentity, contactService, userService)
+        quoteIdentityView.text =
+            NameUtil.getQuoteName(quoteInfo.quoteIdentity, contactService, userService)
         quoteBar.setBackgroundColor(color)
-        quoteTextView.text = EmojiMarkupUtil.getInstance().addTextSpans(activity, quoteInfo.quoteText, quoteTextView, false, false)
+        quoteTextView.text = EmojiMarkupUtil.getInstance()
+            .addTextSpans(activity, quoteInfo.quoteText, quoteTextView, false, false)
         quoteThumbnail.visibility = View.GONE
         quoteTypeImage.visibility = View.GONE
 
@@ -173,7 +177,8 @@ class QuotePopup(
                 R.dimen.compose_textinputlayout_radius_expanded,
                 R.dimen.compose_textinputlayout_radius_expanded,
                 R.dimen.compose_textinputlayout_radius,
-                R.dimen.compose_textinputlayout_radius)
+                R.dimen.compose_textinputlayout_radius
+            )
         }, delayMs)
     }
 
@@ -196,7 +201,7 @@ class QuotePopup(
     }
 
     interface QuotePopupListener {
-        fun onHeightSet(height : Int)
+        fun onHeightSet(height: Int)
         fun onDismiss()
         fun onPostVisibilityChange()
     }

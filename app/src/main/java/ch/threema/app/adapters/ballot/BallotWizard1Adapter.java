@@ -39,80 +39,81 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
  */
 public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-	public interface OnChoiceListener {
-		void onEditClicked(int position);
-		void onRemoveClicked(int position);
-	}
+    public interface OnChoiceListener {
+        void onEditClicked(int position);
 
-	private static class BallotAdminChoiceItemHolder extends RecyclerView.ViewHolder {
+        void onRemoveClicked(int position);
+    }
 
-		public TextView name;
-		public ImageView removeButton;
-		public ImageView editButton;
+    private static class BallotAdminChoiceItemHolder extends RecyclerView.ViewHolder {
 
-		public BallotAdminChoiceItemHolder(@NonNull View itemView) {
-			super(itemView);
-			name = itemView.findViewById(R.id.choice_name_readonly);
-			removeButton = itemView.findViewById(R.id.remove_button);
-			editButton = itemView.findViewById(R.id.edit_button);
-		}
+        public TextView name;
+        public ImageView removeButton;
+        public ImageView editButton;
 
-		public void bind(BallotChoiceModel choiceModel, OnChoiceListener onChoiceListener) {
-			if (choiceModel != null) {
-				name.setText(choiceModel.getName());
-				if (canEdit(choiceModel)) {
-					removeButton.setOnClickListener(view -> {
-						if (onChoiceListener != null) {
-							onChoiceListener.onRemoveClicked(getAdapterPosition());
-						}
-					});
-					removeButton.setVisibility(View.VISIBLE);
-					editButton.setOnClickListener(view -> {
-						if (onChoiceListener != null) {
-							onChoiceListener.onEditClicked(getAdapterPosition());
-						}
-					});
-					editButton.setVisibility(View.VISIBLE);
-				} else {
-					removeButton.setVisibility(View.GONE);
-					editButton.setVisibility(View.GONE);
-				}
-			}
-		}
+        public BallotAdminChoiceItemHolder(@NonNull View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.choice_name_readonly);
+            removeButton = itemView.findViewById(R.id.remove_button);
+            editButton = itemView.findViewById(R.id.edit_button);
+        }
 
-		private boolean canEdit(BallotChoiceModel choiceModel) {
-			return choiceModel.getId() <= 0;
-		}
-	}
+        public void bind(BallotChoiceModel choiceModel, OnChoiceListener onChoiceListener) {
+            if (choiceModel != null) {
+                name.setText(choiceModel.getName());
+                if (canEdit(choiceModel)) {
+                    removeButton.setOnClickListener(view -> {
+                        if (onChoiceListener != null) {
+                            onChoiceListener.onRemoveClicked(getAdapterPosition());
+                        }
+                    });
+                    removeButton.setVisibility(View.VISIBLE);
+                    editButton.setOnClickListener(view -> {
+                        if (onChoiceListener != null) {
+                            onChoiceListener.onEditClicked(getAdapterPosition());
+                        }
+                    });
+                    editButton.setVisibility(View.VISIBLE);
+                } else {
+                    removeButton.setVisibility(View.GONE);
+                    editButton.setVisibility(View.GONE);
+                }
+            }
+        }
 
-	private final List<BallotChoiceModel> values;
-	private OnChoiceListener onChoiceListener;
+        private boolean canEdit(BallotChoiceModel choiceModel) {
+            return choiceModel.getId() <= 0;
+        }
+    }
 
-	public BallotWizard1Adapter(List<BallotChoiceModel> values) {
-		this.values = values;
-	}
+    private final List<BallotChoiceModel> values;
+    private OnChoiceListener onChoiceListener;
 
-	public BallotWizard1Adapter setOnChoiceListener(OnChoiceListener onChoiceListener) {
-		this.onChoiceListener = onChoiceListener;
-		return this;
-	}
+    public BallotWizard1Adapter(List<BallotChoiceModel> values) {
+        this.values = values;
+    }
 
-	@NonNull
-	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View view = inflater.inflate(R.layout.item_ballot_wizard1, parent, false);
-		return new BallotAdminChoiceItemHolder(view);
-	}
+    public BallotWizard1Adapter setOnChoiceListener(OnChoiceListener onChoiceListener) {
+        this.onChoiceListener = onChoiceListener;
+        return this;
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-		BallotAdminChoiceItemHolder viewHolder = (BallotAdminChoiceItemHolder) holder;
-		viewHolder.bind(values.get(position), onChoiceListener);
-	}
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View view = inflater.inflate(R.layout.item_ballot_wizard1, parent, false);
+        return new BallotAdminChoiceItemHolder(view);
+    }
 
-	@Override
-	public int getItemCount() {
-		return values.size();
-	}
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        BallotAdminChoiceItemHolder viewHolder = (BallotAdminChoiceItemHolder) holder;
+        viewHolder.bind(values.get(position), onChoiceListener);
+    }
+
+    @Override
+    public int getItemCount() {
+        return values.size();
+    }
 }

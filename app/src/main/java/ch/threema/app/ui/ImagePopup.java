@@ -42,70 +42,70 @@ import ch.threema.app.R;
 import ch.threema.app.utils.AnimationUtil;
 
 public class ImagePopup extends DimmingPopupWindow {
-	private ImageView imageView;
-	private View topLayout;
-	private View parentView;
-	final int[] location = new int[2];
+    private ImageView imageView;
+    private View topLayout;
+    private View parentView;
+    final int[] location = new int[2];
 
-	public ImagePopup(Context context, @NonNull View parentView) {
-		super(context);
-		init(context, parentView, parentView.getWidth(), parentView.getHeight());
-	}
+    public ImagePopup(Context context, @NonNull View parentView) {
+        super(context);
+        init(context, parentView, parentView.getWidth(), parentView.getHeight());
+    }
 
-	private void init(Context context, View parentView, int screenWidth, int screenHeight) {
-		this.parentView = parentView;
+    private void init(Context context, View parentView, int screenWidth, int screenHeight) {
+        this.parentView = parentView;
 
-		topLayout = LayoutInflater.from(context).inflate(R.layout.popup_image_nomargin, null, true);
+        topLayout = LayoutInflater.from(context).inflate(R.layout.popup_image_nomargin, null, true);
 
-		this.imageView = topLayout.findViewById(R.id.thumbnail_view);
+        this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
-		int borderSize = context.getResources().getDimensionPixelSize(R.dimen.image_popup_screen_border_width);
-		setContentView(topLayout);
+        int borderSize = context.getResources().getDimensionPixelSize(R.dimen.image_popup_screen_border_width);
+        setContentView(topLayout);
 
-		if (screenHeight > screenWidth) {
-			// portrait
-			setWidth(screenWidth - borderSize);
-			setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
-		} else {
-			// landscape
-			setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
-			setHeight(screenHeight - borderSize);
-		}
-		setBackgroundDrawable(new BitmapDrawable());
-		setAnimationStyle(0);
-		setElevation(0);
-		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-	}
+        if (screenHeight > screenWidth) {
+            // portrait
+            setWidth(screenWidth - borderSize);
+            setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
+        } else {
+            // landscape
+            setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
+            setHeight(screenHeight - borderSize);
+        }
+        setBackgroundDrawable(new BitmapDrawable());
+        setAnimationStyle(0);
+        setElevation(0);
+        setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
 
-	public void show(@NonNull final View sourceView, @NonNull Bitmap bitmap) {
-		this.imageView.setImageBitmap(bitmap);
+    public void show(@NonNull final View sourceView, @NonNull Bitmap bitmap) {
+        this.imageView.setImageBitmap(bitmap);
 
-		showAtLocation(parentView, Gravity.CENTER, 0, 0);
-		dimBackground();
-		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-				AnimationUtil.getViewCenter(sourceView, getContentView(), location);
+        showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        dimBackground();
+        getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                AnimationUtil.getViewCenter(sourceView, getContentView(), location);
 
-				AnimationSet animation = new AnimationSet(true);
-				Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.ABSOLUTE, location[0], Animation.ABSOLUTE, location[1]);
-				Animation fade = new AlphaAnimation(0.0f, 1.0f);
+                AnimationSet animation = new AnimationSet(true);
+                Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.ABSOLUTE, location[0], Animation.ABSOLUTE, location[1]);
+                Animation fade = new AlphaAnimation(0.0f, 1.0f);
 
-				animation.addAnimation(scale);
-				animation.addAnimation(fade);
-				animation.setInterpolator(new DecelerateInterpolator());
-				animation.setDuration(150);
+                animation.addAnimation(scale);
+                animation.addAnimation(fade);
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.setDuration(150);
 
-				getContentView().startAnimation(animation);
-			}
-		});
+                getContentView().startAnimation(animation);
+            }
+        });
 
-		topLayout.setOnClickListener(v -> dismiss());
-	}
+        topLayout.setOnClickListener(v -> dismiss());
+    }
 
-	@Override
-	public void dismiss() {
-		AnimationUtil.popupAnimateOut(getContentView(), ImagePopup.super::dismiss);
-	}
+    @Override
+    public void dismiss() {
+        AnimationUtil.popupAnimateOut(getContentView(), ImagePopup.super::dismiss);
+    }
 }

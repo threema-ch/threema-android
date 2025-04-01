@@ -58,7 +58,8 @@ class EmojiReactionsRepository(
     fun getReactionsByMessage(messageModel: AbstractMessageModel): EmojiReactionsModel? {
         logger.debug("Loading emoji reactions for message {}", messageModel.id)
         synchronized(cache) {
-            val reactionMessageIdentifier = ReactionMessageIdentifier.fromMessageModel(messageModel) ?: return null
+            val reactionMessageIdentifier =
+                ReactionMessageIdentifier.fromMessageModel(messageModel) ?: return null
             return cache.getOrCreate(reactionMessageIdentifier) {
                 val dbReactions = emojiReactionDao.findAllByMessage(messageModel)
                     .map(DbEmojiReaction::toDataType)
@@ -143,7 +144,8 @@ class EmojiReactionsRepository(
             } ?: emptyList()
         } else {
             // in case of an outgoing message only the other party can react - and vice versa
-            val senderIdentity = if (targetMessageModel.isOutbox) targetMessageModel.identity else myIdentity
+            val senderIdentity =
+                if (targetMessageModel.isOutbox) targetMessageModel.identity else myIdentity
             val state = targetMessageModel.state
 
             when (state) {
@@ -206,9 +208,10 @@ class EmojiReactionsRepository(
                     reactedAt = Date()
                 )
                 emojiReactionDao.create(reactionEntry, targetMessage)
-                ReactionMessageIdentifier.fromMessageModel(targetMessage)?.let { reactionMessageIdentifier ->
-                    cache.get(reactionMessageIdentifier)?.addEntry(reactionEntry.toDataType())
-                }
+                ReactionMessageIdentifier.fromMessageModel(targetMessage)
+                    ?.let { reactionMessageIdentifier ->
+                        cache.get(reactionMessageIdentifier)?.addEntry(reactionEntry.toDataType())
+                    }
             } catch (exception: SQLiteException) {
                 throw EmojiReactionEntryCreateException(exception)
             }
@@ -273,9 +276,11 @@ class EmojiReactionsRepository(
                         messageService.clearMessageState(targetMessage)
                     }
                 }
-                ReactionMessageIdentifier.fromMessageModel(targetMessage)?.let { reactionMessageIdentifier ->
-                    cache.get(reactionMessageIdentifier)?.removeEntry(reactionEntry.toDataType())
-                }
+                ReactionMessageIdentifier.fromMessageModel(targetMessage)
+                    ?.let { reactionMessageIdentifier ->
+                        cache.get(reactionMessageIdentifier)
+                            ?.removeEntry(reactionEntry.toDataType())
+                    }
             } catch (exception: SQLiteException) {
                 throw EmojiReactionEntryRemoveException(exception)
             }
@@ -307,7 +312,10 @@ class EmojiReactionsRepository(
                     is GroupMessageModel -> TargetMessageType.GROUP
                     else -> return null
                 }
-                return ReactionMessageIdentifier(messageId = messageModel.id, messageType = messageType)
+                return ReactionMessageIdentifier(
+                    messageId = messageModel.id,
+                    messageType = messageType
+                )
             }
         }
 

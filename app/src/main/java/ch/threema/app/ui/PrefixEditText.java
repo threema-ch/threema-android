@@ -28,88 +28,90 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 
 public class PrefixEditText extends ThreemaTextInputEditText {
-	String prefix = "";
+    String prefix = "";
 
-	public PrefixEditText(Context context) {
-		super(context, null);
-		init();
-	}
+    public PrefixEditText(Context context) {
+        super(context, null);
+        init();
+    }
 
-	public PrefixEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
+    public PrefixEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
 
-	public PrefixEditText(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		init();
-	}
+    public PrefixEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
 
-	private void init() {
-		prefix = (String) getTag();
+    private void init() {
+        prefix = (String) getTag();
 
-		Selection.setSelection(getText(), getText().length());
+        Selection.setSelection(getText(), getText().length());
 
-		addTextChangedListener(new TextWatcher() {
+        addTextChangedListener(new TextWatcher() {
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-			                              int after) { }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (prefix != null && s.toString().startsWith(prefix+prefix)) {
-					setText(s.subSequence(prefix.length(), s.length()));
-					setSelection(s.length()-prefix.length());
-				} else {
-					if (!s.toString().startsWith(prefix)) {
-						String cleanString;
-						String deletedPrefix = prefix.substring(0, prefix.length() - 1);
-						if (s.toString().startsWith(deletedPrefix)) {
-							cleanString = s.toString().replaceAll(deletedPrefix, "");
-						} else {
-							cleanString = s.toString().replaceAll(prefix, "");
-						}
-						setText(prefix + cleanString);
-						setSelection(prefix.length());
-					}
-				}
-			}
-		});
-	}
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (prefix != null && s.toString().startsWith(prefix + prefix)) {
+                    setText(s.subSequence(prefix.length(), s.length()));
+                    setSelection(s.length() - prefix.length());
+                } else {
+                    if (!s.toString().startsWith(prefix)) {
+                        String cleanString;
+                        String deletedPrefix = prefix.substring(0, prefix.length() - 1);
+                        if (s.toString().startsWith(deletedPrefix)) {
+                            cleanString = s.toString().replaceAll(deletedPrefix, "");
+                        } else {
+                            cleanString = s.toString().replaceAll(prefix, "");
+                        }
+                        setText(prefix + cleanString);
+                        setSelection(prefix.length());
+                    }
+                }
+            }
+        });
+    }
 
-	@Override
-	public void setText(CharSequence text, BufferType type) {
-		if (text != null && prefix != null && !text.toString().startsWith(prefix)) {
-			text = prefix + text;
-		}
-		super.setText(text, type);
-	}
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        if (text != null && prefix != null && !text.toString().startsWith(prefix)) {
+            text = prefix + text;
+        }
+        super.setText(text, type);
+    }
 
-	@Override
-	protected void onSelectionChanged(int selStart, int selEnd) {
-		CharSequence text = getText();
-		if (prefix != null && text != null) {
-			if (selEnd < selStart) {
-				setSelection(text.length(), text.length());
-				return;
-			} else if (text.length() >= prefix.length()) {
-				if (selStart <= prefix.length()) {
-					if (selEnd <= prefix.length()) {
-						setSelection(prefix.length(), prefix.length());
-						return;
-					} else if (selEnd > prefix.length()) {
-						setSelection(prefix.length(), selEnd);
-						return;
-					}
-				}
-			}
-		}
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        CharSequence text = getText();
+        if (prefix != null && text != null) {
+            if (selEnd < selStart) {
+                setSelection(text.length(), text.length());
+                return;
+            } else if (text.length() >= prefix.length()) {
+                if (selStart <= prefix.length()) {
+                    if (selEnd <= prefix.length()) {
+                        setSelection(prefix.length(), prefix.length());
+                        return;
+                    } else if (selEnd > prefix.length()) {
+                        setSelection(prefix.length(), selEnd);
+                        return;
+                    }
+                }
+            }
+        }
 
-		super.onSelectionChanged(selStart, selEnd);
-	}
+        super.onSelectionChanged(selStart, selEnd);
+    }
 }
 

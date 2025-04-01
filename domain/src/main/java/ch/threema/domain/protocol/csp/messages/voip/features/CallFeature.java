@@ -27,13 +27,13 @@ import org.json.JSONObject;
  * A call feature.
  */
 public interface CallFeature {
-	/**
-	 * Get the name of the feature.
-	 */
-	String getName();
+    /**
+     * Get the name of the feature.
+     */
+    String getName();
 
-	/**
-	 * Return the parameters as a JSON object (or null).
-	 */
-	JSONObject getParams();
+    /**
+     * Return the parameters as a JSON object (or null).
+     */
+    JSONObject getParams();
 }

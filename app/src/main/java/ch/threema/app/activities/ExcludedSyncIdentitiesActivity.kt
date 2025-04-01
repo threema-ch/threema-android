@@ -26,7 +26,8 @@ import ch.threema.app.ThreemaApplication
 
 class ExcludedSyncIdentitiesActivity : IdentityListActivity() {
     private val identityList: IdentityList? by lazy {
-        val listService = ThreemaApplication.getServiceManager()?.excludedSyncIdentitiesService ?: return@lazy null
+        val listService = ThreemaApplication.getServiceManager()?.excludedSyncIdentitiesService
+            ?: return@lazy null
 
         object : IdentityList {
             override fun getAll(): Set<String> {

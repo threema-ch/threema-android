@@ -36,6 +36,7 @@ internal sealed interface OutboundL3Message : TypedMessage
 internal sealed interface InboundL4Message : TypedMessage {
     fun toInboundMessage(): InboundMessage
 }
+
 internal sealed interface OutboundL4Message : TypedMessage
 
 internal sealed interface OutboundL5Message : TypedMessage

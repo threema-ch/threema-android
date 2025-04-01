@@ -60,160 +60,160 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
  * Currently, this is limited to WebP
  */
 public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableMessagePlayer");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableMessagePlayer");
 
-	private final PreferenceService preferenceService;
-	private Drawable imageDrawable;
-	private ImageView imageContainer;
+    private final PreferenceService preferenceService;
+    private Drawable imageDrawable;
+    private ImageView imageContainer;
 
-	protected AnimatedImageDrawableMessagePlayer(Context context,
-												 MessageService messageService,
-												 FileService fileService,
-												 PreferenceService preferenceService,
-												 MessageReceiver messageReceiver,
-												 AbstractMessageModel messageModel) {
-		super(context, messageService, fileService, messageReceiver, messageModel);
-		this.preferenceService = preferenceService;
-	}
+    protected AnimatedImageDrawableMessagePlayer(Context context,
+                                                 MessageService messageService,
+                                                 FileService fileService,
+                                                 PreferenceService preferenceService,
+                                                 MessageReceiver messageReceiver,
+                                                 AbstractMessageModel messageModel) {
+        super(context, messageService, fileService, messageReceiver, messageModel);
+        this.preferenceService = preferenceService;
+    }
 
-	public AnimatedImageDrawableMessagePlayer attachContainer(ImageView container) {
-		this.imageContainer = container;
-		return this;
-	}
+    public AnimatedImageDrawableMessagePlayer attachContainer(ImageView container) {
+        this.imageContainer = container;
+        return this;
+    }
 
-	@Override
-	public MediaMessageDataInterface getData() {
-		return this.getMessageModel().getFileData();
-	}
+    @Override
+    public MediaMessageDataInterface getData() {
+        return this.getMessageModel().getFileData();
+    }
 
-	@Override
-	protected AbstractMessageModel setData(MediaMessageDataInterface data) {
-		AbstractMessageModel messageModel = this.getMessageModel();
-		messageModel.setFileDataModel((FileDataModel) data);
-		return messageModel;
-	}
+    @Override
+    protected AbstractMessageModel setData(MediaMessageDataInterface data) {
+        AbstractMessageModel messageModel = this.getMessageModel();
+        messageModel.setFileDataModel((FileDataModel) data);
+        return messageModel;
+    }
 
-	@Override
-	protected void open(final File decryptedFile) {
-		logger.debug("open(decryptedFile)");
-		if (this.currentActivityRef != null && this.currentActivityRef.get() != null && this.isReceiverMatch(this.currentMessageReceiver)) {
-			final String mimeType = getMessageModel().getFileData().getMimeType();
+    @Override
+    protected void open(final File decryptedFile) {
+        logger.debug("open(decryptedFile)");
+        if (this.currentActivityRef != null && this.currentActivityRef.get() != null && this.isReceiverMatch(this.currentMessageReceiver)) {
+            final String mimeType = getMessageModel().getFileData().getMimeType();
 
-			if (!TestUtil.isEmptyOrNull(mimeType) && decryptedFile.exists()) {
-				if (preferenceService.isAnimationAutoplay()) {
-					autoPlay(decryptedFile);
-				} else {
-					openInExternalPlayer();
-				}
-			}
-		}
-	}
+            if (!TestUtil.isEmptyOrNull(mimeType) && decryptedFile.exists()) {
+                if (preferenceService.isAnimationAutoplay()) {
+                    autoPlay(decryptedFile);
+                } else {
+                    openInExternalPlayer();
+                }
+            }
+        }
+    }
 
-	public void autoPlay(final File decryptedFile) {
-		logger.debug("autoPlay(decryptedFile)");
+    public void autoPlay(final File decryptedFile) {
+        logger.debug("autoPlay(decryptedFile)");
 
-		if (this.imageContainer != null && this.currentActivityRef != null && this.currentActivityRef.get() != null && getMessageModel() != null) {
-			this.makePause(SOURCE_UNDEFINED);
+        if (this.imageContainer != null && this.currentActivityRef != null && this.currentActivityRef.get() != null && getMessageModel() != null) {
+            this.makePause(SOURCE_UNDEFINED);
 
-			final String mimeType = getMessageModel().getFileData().getMimeType();
+            final String mimeType = getMessageModel().getFileData().getMimeType();
 
-			if (ConfigUtils.isDisplayableAnimatedImageFormat(mimeType)) {
-				Glide.with(getContext())
-					.load(new File(decryptedFile.getPath()))
-					.optionalFitCenter()
-					.error(R.drawable.ic_image_outline)
-					.addListener(new RequestListener<>() {
-						@Override
-						public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-							return false;
-						}
+            if (ConfigUtils.isDisplayableAnimatedImageFormat(mimeType)) {
+                Glide.with(getContext())
+                    .load(new File(decryptedFile.getPath()))
+                    .optionalFitCenter()
+                    .error(R.drawable.ic_image_outline)
+                    .addListener(new RequestListener<>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-						@Override
-						public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-							imageDrawable = resource;
-							return false;
-						}
-					})
-					.into(imageContainer);
-			}
-		}
-	}
+                        @Override
+                        public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                            imageDrawable = resource;
+                            return false;
+                        }
+                    })
+                    .into(imageContainer);
+            }
+        }
+    }
 
-	@Override
-	public boolean open() {
-		logger.debug("open");
+    @Override
+    public boolean open() {
+        logger.debug("open");
 
-		return super.open();
-	}
+        return super.open();
+    }
 
-	public boolean autoPlay() {
-		logger.debug("autoPlay");
+    public boolean autoPlay() {
+        logger.debug("autoPlay");
 
-		return super.open(true);
-	}
+        return super.open(true);
+    }
 
-	public void openInExternalPlayer() {
-		RuntimeUtil.runOnUiThread(() -> {
-			if (currentActivityRef != null && currentActivityRef.get() != null && this.isReceiverMatch(currentMessageReceiver)) {
-				Intent intent = new Intent(getContext(), MediaViewerActivity.class);
-				IntentDataUtil.append(getMessageModel(), intent);
-				intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
-				currentActivityRef.get().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
-			}
-		});
-	}
+    public void openInExternalPlayer() {
+        RuntimeUtil.runOnUiThread(() -> {
+            if (currentActivityRef != null && currentActivityRef.get() != null && this.isReceiverMatch(currentMessageReceiver)) {
+                Intent intent = new Intent(getContext(), MediaViewerActivity.class);
+                IntentDataUtil.append(getMessageModel(), intent);
+                intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
+                currentActivityRef.get().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
+            }
+        });
+    }
 
-	@Override
-	protected void makePause(int source) {
-		logger.debug("makePause");
-		if (this.imageContainer != null && this.imageDrawable != null) {
-			if (imageDrawable instanceof Animatable) {
-				if (((Animatable) imageDrawable).isRunning()) {
-					((Animatable) this.imageDrawable).stop();
-				}
-			}
-		}
-	}
+    @Override
+    protected void makePause(int source) {
+        logger.debug("makePause");
+        if (this.imageContainer != null && this.imageDrawable != null) {
+            if (imageDrawable instanceof Animatable) {
+                if (((Animatable) imageDrawable).isRunning()) {
+                    ((Animatable) this.imageDrawable).stop();
+                }
+            }
+        }
+    }
 
-	@Override
-	protected void makeResume(int source) {
-		logger.debug("makeResume: " + getMessageModel().getId());
-		if (this.imageContainer != null && this.imageDrawable != null) {
-			if (imageDrawable instanceof Animatable) {
-				if (!((Animatable) imageDrawable).isRunning()) {
-					((Animatable) this.imageDrawable).start();
-				}
-			}
-		}
-	}
+    @Override
+    protected void makeResume(int source) {
+        logger.debug("makeResume: " + getMessageModel().getId());
+        if (this.imageContainer != null && this.imageDrawable != null) {
+            if (imageDrawable instanceof Animatable) {
+                if (!((Animatable) imageDrawable).isRunning()) {
+                    ((Animatable) this.imageDrawable).start();
+                }
+            }
+        }
+    }
 
-	@Override
-	public void seekTo(int pos) {
-	}
+    @Override
+    public void seekTo(int pos) {
+    }
 
-	@Override
-	public int getDuration() {
-		return 0;
-	}
+    @Override
+    public int getDuration() {
+        return 0;
+    }
 
-	@Override
-	public int getPosition() {
-		return 0;
-	}
+    @Override
+    public int getPosition() {
+        return 0;
+    }
 
-	@Override
-	public void removeListeners() {
-		super.removeListeners();
-		logger.debug("removeListeners");
+    @Override
+    public void removeListeners() {
+        super.removeListeners();
+        logger.debug("removeListeners");
 
-		// release animated image players if item comes out of view
-		if (this.imageDrawable != null) {
-			if (imageDrawable instanceof Animatable) {
-				if (((Animatable) imageDrawable).isRunning()) {
-					((Animatable) this.imageDrawable).stop();
-				}
-			}
-			this.imageDrawable = null;
-		}
-	}
+        // release animated image players if item comes out of view
+        if (this.imageDrawable != null) {
+            if (imageDrawable instanceof Animatable) {
+                if (((Animatable) imageDrawable).isRunning()) {
+                    ((Animatable) this.imageDrawable).stop();
+                }
+            }
+            this.imageDrawable = null;
+        }
+    }
 }

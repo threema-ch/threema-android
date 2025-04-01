@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ch.threema.app.ui.CheckableConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:background="@drawable/listitem_background_selector"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/listitem_background_selector"
     android:paddingVertical="@dimen/listitem_standard_margin_top_bottom"
-	android:paddingLeft="@dimen/listitem_standard_margin_left_right"
-	android:paddingRight="@dimen/listitem_standard_margin_left_right">
+    android:paddingLeft="@dimen/listitem_standard_margin_left_right"
+    android:paddingRight="@dimen/listitem_standard_margin_left_right">
 
-	<include layout="@layout/avatar_view_checkable_constrained" />
+    <include layout="@layout/avatar_view_checkable_constrained" />
 
-	<!-- first line -->
+    <!-- first line -->
 
-	<ch.threema.app.emojis.EmojiTextView
-		android:id="@+id/name"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:minHeight="@dimen/listitem_min_height_first_line"
-		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-		android:ellipsize="end"
-		android:singleLine="true"
-		android:text="Name"
-		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-		app:layout_constrainedWidth="true"
-		app:layout_constraintBottom_toTopOf="@+id/subject"
-		app:layout_constraintHorizontal_bias="0"
-		app:layout_constraintLeft_toRightOf="@id/avatar_view"
-		app:layout_constraintRight_toLeftOf="@+id/group"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintVertical_chainStyle="packed" />
+        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Name"
+        android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@+id/subject"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toRightOf="@id/avatar_view"
+        app:layout_constraintRight_toLeftOf="@+id/group"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-	<ImageView
-		android:id="@+id/group"
-		android:layout_width="20dp"
-		android:layout_height="20dp"
-		android:layout_marginLeft="5dp"
-		android:baselineAlignBottom="true"
-		app:srcCompat="@drawable/ic_group_outline"
-		android:visibility="visible"
-		app:layout_constraintBottom_toBottomOf="@id/name"
-		app:layout_constraintLeft_toRightOf="@id/name"
-		app:layout_constraintRight_toRightOf="parent"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/group"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="5dp"
+        android:baselineAlignBottom="true"
+        app:srcCompat="@drawable/ic_group_outline"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/name"
+        app:layout_constraintLeft_toRightOf="@id/name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:tint="?attr/colorOnSurface" />
 
-	<!-- second line -->
+    <!-- second line -->
 
-	<ch.threema.app.emojis.EmojiTextView
-		android:id="@+id/subject"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/subject"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:minHeight="@dimen/listitem_min_height_second_line"
-		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-		android:ellipsize="end"
-		android:singleLine="true"
-		android:text="Subject"
-		android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-		app:layout_constraintTop_toBottomOf="@id/name"
-		app:layout_constraintLeft_toRightOf="@id/avatar_view"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintHorizontal_bias="0"
-		app:layout_constrainedWidth="true"
-		app:layout_constraintVertical_chainStyle="packed"/>
+        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Subject"
+        android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintLeft_toRightOf="@id/avatar_view"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintVertical_chainStyle="packed" />
 
 </ch.threema.app.ui.CheckableConstraintLayout>

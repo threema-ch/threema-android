@@ -39,23 +39,23 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class IgnoreRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("IgnoreRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("IgnoreRequestHandler");
 
-	private final @NonNull String type;
+    private final @NonNull String type;
 
-	@AnyThread
-	public IgnoreRequestHandler(final @NonNull String type, final @NonNull String subType) {
-		super(subType);
-		this.type = type;
-	}
+    @AnyThread
+    public IgnoreRequestHandler(final @NonNull String type, final @NonNull String subType) {
+        super(subType);
+        this.type = type;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Ignoring incoming {}/{} message", this.type, this.subType);
-	}
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Ignoring incoming {}/{} message", this.type, this.subType);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

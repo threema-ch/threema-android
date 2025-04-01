@@ -91,17 +91,17 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
-	private final Context context;
-	private ContactService contactService;
-	private GroupService groupService;
-	private PreferenceService preferenceService;
-	private IdListService excludeFromSyncListService;
-	private BlockedIdentitiesService blockedIdentitiesService;
-	private final @NonNull ch.threema.data.models.ContactModel contactModel;
-	private final @NonNull ContactModelData contactModelData;
-	private final List<GroupModel> values;
-	private OnClickListener onClickListener;
-	private final @NonNull RequestManager requestManager;
+    private final Context context;
+    private ContactService contactService;
+    private GroupService groupService;
+    private PreferenceService preferenceService;
+    private IdListService excludeFromSyncListService;
+    private BlockedIdentitiesService blockedIdentitiesService;
+    private final @NonNull ch.threema.data.models.ContactModel contactModel;
+    private final @NonNull ContactModelData contactModelData;
+    private final List<GroupModel> values;
+    private OnClickListener onClickListener;
+    private final @NonNull RequestManager requestManager;
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
         public final @NonNull View view;
@@ -166,34 +166,34 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return true;
             });
 
-			// When clicking ten times on the Threema ID, the clear forward security session button
-			// becomes visible.
-			threemaIdView.setOnClickListener(v -> {
-				onThreemaIDClickCount++;
-				if (onThreemaIDClickCount >= 10) {
-					onThreemaIDClickCount = 0;
-					clearForwardSecuritySection.setVisibility(View.VISIBLE);
-					clearForwardSecurityButton.setOnClickListener(clearButton -> {
-						ContactModel contactModel = contactService.getByIdentity(contactModelData.identity);
-						if (contactModel == null) {
-							logger.error("Contact model is null. Cannot schedule fs session deletion task.");
-							return;
-						}
+            // When clicking ten times on the Threema ID, the clear forward security session button
+            // becomes visible.
+            threemaIdView.setOnClickListener(v -> {
+                onThreemaIDClickCount++;
+                if (onThreemaIDClickCount >= 10) {
+                    onThreemaIDClickCount = 0;
+                    clearForwardSecuritySection.setVisibility(View.VISIBLE);
+                    clearForwardSecurityButton.setOnClickListener(clearButton -> {
+                        ContactModel contactModel = contactService.getByIdentity(contactModelData.identity);
+                        if (contactModel == null) {
+                            logger.error("Contact model is null. Cannot schedule fs session deletion task.");
+                            return;
+                        }
 
-						try {
-							ThreemaApplication.requireServiceManager()
-								.getTaskCreator()
-								.scheduleDeleteAndTerminateFSSessionsTaskAsync(
-									contactModel,
-									Terminate.Cause.RESET
-								);
-							Toast.makeText(clearButton.getContext(), R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
-						} catch (Exception e) {
-							Toast.makeText(clearButton.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-						}
-					});
-				}
-			});
+                        try {
+                            ThreemaApplication.requireServiceManager()
+                                .getTaskCreator()
+                                .scheduleDeleteAndTerminateFSSessionsTaskAsync(
+                                    contactModel,
+                                    Terminate.Cause.RESET
+                                );
+                            Toast.makeText(clearButton.getContext(), R.string.forward_security_cleared, Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Toast.makeText(clearButton.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            });
 
             publicNickNameView.setOnLongClickListener(ignored -> {
                 copyTextToClipboard(contactModelData.nickname, R.string.contact_details_nickname_copied);
@@ -218,19 +218,19 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-	@UiThread
-	public ContactDetailAdapter(
-		Context context,
-		List<GroupModel>values,
-		@NonNull ch.threema.data.models.ContactModel contactModel,
-		@NonNull ContactModelData contactModelData,
-		@NonNull RequestManager requestManager
-	) {
-		this.context = context;
-		this.values = values;
-		this.contactModel = contactModel;
-		this.contactModelData = contactModelData;
-		this.requestManager = requestManager;
+    @UiThread
+    public ContactDetailAdapter(
+        Context context,
+        List<GroupModel> values,
+        @NonNull ch.threema.data.models.ContactModel contactModel,
+        @NonNull ContactModelData contactModelData,
+        @NonNull RequestManager requestManager
+    ) {
+        this.context = context;
+        this.values = values;
+        this.contactModel = contactModel;
+        this.contactModelData = contactModelData;
+        this.requestManager = requestManager;
 
         try {
             ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
@@ -289,20 +289,20 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         } else {
             HeaderHolder headerHolder = (HeaderHolder) holder;
 
-			String identityAdditional = null;
-			switch (this.contactModelData.activityState) {
-				case ACTIVE:
-					if (blockedIdentitiesService.isBlocked(contactModelData.identity)) {
-						identityAdditional = context.getString(R.string.blocked);
-					}
-					break;
-				case INACTIVE:
-					identityAdditional = context.getString(R.string.contact_state_inactive);
-					break;
-				case INVALID:
-					identityAdditional = context.getString(R.string.contact_state_invalid);
-					break;
-			}
+            String identityAdditional = null;
+            switch (this.contactModelData.activityState) {
+                case ACTIVE:
+                    if (blockedIdentitiesService.isBlocked(contactModelData.identity)) {
+                        identityAdditional = context.getString(R.string.blocked);
+                    }
+                    break;
+                case INACTIVE:
+                    identityAdditional = context.getString(R.string.contact_state_inactive);
+                    break;
+                case INVALID:
+                    identityAdditional = context.getString(R.string.contact_state_invalid);
+                    break;
+            }
 
             final boolean shouldShowJobTitle = contactModelData.workVerificationLevel == WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
                 && contactModelData.jobTitle != null && !contactModelData.jobTitle.isBlank();
@@ -320,14 +320,14 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                 headerHolder.departmentTextView.setText(contactModelData.department);
             }
 
-			headerHolder.threemaIdView.setText(
-				contactModelData.identity + (identityAdditional != null ? " (" + identityAdditional + ")" : "")
-			);
-			headerHolder.verificationLevelImageView.setVerificationLevel(
-				contactModelData.verificationLevel,
-				contactModelData.workVerificationLevel
-			);
-			headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
+            headerHolder.threemaIdView.setText(
+                contactModelData.identity + (identityAdditional != null ? " (" + identityAdditional + ")" : "")
+            );
+            headerHolder.verificationLevelImageView.setVerificationLevel(
+                contactModelData.verificationLevel,
+                contactModelData.workVerificationLevel
+            );
+            headerHolder.verificationLevelImageView.setVisibility(View.VISIBLE);
 
             boolean isSyncExcluded = excludeFromSyncListService.has(contactModelData.identity);
 
@@ -337,18 +337,18 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             ) {
                 headerHolder.synchronizeContainer.setVisibility(View.VISIBLE);
 
-				Drawable icon = null;
-				try {
-					icon = AndroidContactUtil.getInstance().getAccountIcon(contactModelData.androidContactLookupKey);
-				} catch (SecurityException e) {
-					logger.error("Could not access android account icon", e);
-				}
-				if (icon != null) {
-					headerHolder.syncSourceIcon.setImageDrawable(icon);
-					headerHolder.syncSourceIcon.setVisibility(View.VISIBLE);
-				} else {
-					headerHolder.syncSourceIcon.setVisibility(View.GONE);
-				}
+                Drawable icon = null;
+                try {
+                    icon = AndroidContactUtil.getInstance().getAccountIcon(contactModelData.androidContactLookupKey);
+                } catch (SecurityException e) {
+                    logger.error("Could not access android account icon", e);
+                }
+                if (icon != null) {
+                    headerHolder.syncSourceIcon.setImageDrawable(icon);
+                    headerHolder.syncSourceIcon.setVisibility(View.VISIBLE);
+                } else {
+                    headerHolder.syncSourceIcon.setVisibility(View.GONE);
+                }
 
                 headerHolder.synchronize.setChecked(isSyncExcluded);
                 headerHolder.synchronize.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -375,10 +375,10 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                 headerHolder.groupMembershipTitle.setVisibility(View.GONE);
             }
 
-			initializeReadReceiptsSpinner(headerHolder);
-			initializeTypingIndicatorSpinner(headerHolder);
-		}
-	}
+            initializeReadReceiptsSpinner(headerHolder);
+            initializeTypingIndicatorSpinner(headerHolder);
+        }
+    }
 
     @Override
     public int getItemCount() {
@@ -411,83 +411,83 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         void onVerificationInfoClick(View v);
     }
 
-	private void initializeReadReceiptsSpinner(@NonNull HeaderHolder headerHolder) {
-		final String[] choices = context.getResources().getStringArray(R.array.receipts_override_choices);
-		choices[0] = context.getString(R.string.receipts_override_choice_default,
-			choices[preferenceService.isReadReceipts() ? 1 : 2]);
+    private void initializeReadReceiptsSpinner(@NonNull HeaderHolder headerHolder) {
+        final String[] choices = context.getResources().getStringArray(R.array.receipts_override_choices);
+        choices[0] = context.getString(R.string.receipts_override_choice_default,
+            choices[preferenceService.isReadReceipts() ? 1 : 2]);
 
-		int initialReadReceiptPosition;
-		switch (contactModelData.readReceiptPolicy) {
-			case SEND:
-				initialReadReceiptPosition = 1;
-				break;
-			case DONT_SEND:
-				initialReadReceiptPosition = 2;
-				break;
-			case DEFAULT:
-			default:
-				initialReadReceiptPosition = 0;
-				break;
-		}
-		ArrayAdapter<String> readReceiptsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, choices);
-		headerHolder.readReceiptsSpinner.setAdapter(readReceiptsAdapter);
-		headerHolder.readReceiptsSpinner.setText(choices[initialReadReceiptPosition], false);
-		headerHolder.readReceiptsSpinner.setOnItemClickListener((parent, view, readReceiptPosition, id) -> {
-			switch (readReceiptPosition) {
-				case 0:
-					contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DEFAULT);
-					break;
-				case 1:
-					contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.SEND);
-					break;
-				case 2:
-					contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DONT_SEND);
-					break;
-				default:
-					logger.warn("Invalid position for read receipt policy: {}", readReceiptPosition);
-					break;
-			}
-		});
-	}
+        int initialReadReceiptPosition;
+        switch (contactModelData.readReceiptPolicy) {
+            case SEND:
+                initialReadReceiptPosition = 1;
+                break;
+            case DONT_SEND:
+                initialReadReceiptPosition = 2;
+                break;
+            case DEFAULT:
+            default:
+                initialReadReceiptPosition = 0;
+                break;
+        }
+        ArrayAdapter<String> readReceiptsAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, choices);
+        headerHolder.readReceiptsSpinner.setAdapter(readReceiptsAdapter);
+        headerHolder.readReceiptsSpinner.setText(choices[initialReadReceiptPosition], false);
+        headerHolder.readReceiptsSpinner.setOnItemClickListener((parent, view, readReceiptPosition, id) -> {
+            switch (readReceiptPosition) {
+                case 0:
+                    contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DEFAULT);
+                    break;
+                case 1:
+                    contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.SEND);
+                    break;
+                case 2:
+                    contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DONT_SEND);
+                    break;
+                default:
+                    logger.warn("Invalid position for read receipt policy: {}", readReceiptPosition);
+                    break;
+            }
+        });
+    }
 
-	private void initializeTypingIndicatorSpinner(@NonNull HeaderHolder headerHolder) {
-		final String[] typingChoices = context.getResources().getStringArray(R.array.receipts_override_choices);
-		typingChoices[0] = context.getString(R.string.receipts_override_choice_default,
-			typingChoices[preferenceService.isTypingIndicator() ? 1 : 2]);
+    private void initializeTypingIndicatorSpinner(@NonNull HeaderHolder headerHolder) {
+        final String[] typingChoices = context.getResources().getStringArray(R.array.receipts_override_choices);
+        typingChoices[0] = context.getString(R.string.receipts_override_choice_default,
+            typingChoices[preferenceService.isTypingIndicator() ? 1 : 2]);
 
-		int initialTypingIndicatorPosition;
-		switch (contactModelData.typingIndicatorPolicy) {
-			case SEND:
-				initialTypingIndicatorPosition = 1;
-				break;
-			case DONT_SEND:
-				initialTypingIndicatorPosition = 2;
-				break;
-			case DEFAULT:
-			default:
-				initialTypingIndicatorPosition = 0;
-				break;
-		}
+        int initialTypingIndicatorPosition;
+        switch (contactModelData.typingIndicatorPolicy) {
+            case SEND:
+                initialTypingIndicatorPosition = 1;
+                break;
+            case DONT_SEND:
+                initialTypingIndicatorPosition = 2;
+                break;
+            case DEFAULT:
+            default:
+                initialTypingIndicatorPosition = 0;
+                break;
+        }
 
-		ArrayAdapter<String> typingIndicatorAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, typingChoices);
-		headerHolder.typingIndicatorsSpinner.setAdapter(typingIndicatorAdapter);
-		headerHolder.typingIndicatorsSpinner.setText(typingChoices[initialTypingIndicatorPosition], false);
-		headerHolder.typingIndicatorsSpinner.setOnItemClickListener((parent, view, typingIndicatorPosition, id) -> {
-			switch (typingIndicatorPosition) {
-				case 0:
-					contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DEFAULT);
-					break;
-				case 1:
-					contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.SEND);
-					break;
-				case 2:
-					contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DONT_SEND);
-					break;
-				default:
-					logger.warn("Invalid position for typing indicator policy: {}", typingIndicatorPosition);
-					break;
-			}
-		});
-	}
+        ArrayAdapter<String> typingIndicatorAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item, typingChoices);
+        headerHolder.typingIndicatorsSpinner.setAdapter(typingIndicatorAdapter);
+        headerHolder.typingIndicatorsSpinner.setText(typingChoices[initialTypingIndicatorPosition], false);
+        headerHolder.typingIndicatorsSpinner.setOnItemClickListener((parent, view, typingIndicatorPosition, id) -> {
+            switch (typingIndicatorPosition) {
+                case 0:
+                    contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DEFAULT);
+                    break;
+                case 1:
+                    contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.SEND);
+                    break;
+                case 2:
+                    contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DONT_SEND);
+                    break;
+                default:
+                    logger.warn("Invalid position for typing indicator policy: {}", typingIndicatorPosition);
+                    break;
+            }
+        });
+    }
 
 }

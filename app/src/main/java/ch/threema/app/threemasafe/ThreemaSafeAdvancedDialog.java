@@ -52,231 +52,234 @@ import ch.threema.base.ThreemaException;
 
 public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements View.OnClickListener {
 
-	private static final String ARG_SERVER_URL = "sU";
-	private static final String ARG_PLAIN_STYLE = "pS";
-	private static final String ARG_SERVER_USERNAME ="Un";
-	private static final String ARG_SERVER_PASSWORD ="Sp";
-	private static final String DIALOG_TAG_PROGRESS = "pr";
+    private static final String ARG_SERVER_URL = "sU";
+    private static final String ARG_PLAIN_STYLE = "pS";
+    private static final String ARG_SERVER_USERNAME = "Un";
+    private static final String ARG_SERVER_PASSWORD = "Sp";
+    private static final String DIALOG_TAG_PROGRESS = "pr";
 
-	private WizardDialogCallback callback;
-	private Activity activity;
-	private ThreemaSafeService threemaSafeService;
-	private AlertDialog alertDialog;
+    private WizardDialogCallback callback;
+    private Activity activity;
+    private ThreemaSafeService threemaSafeService;
+    private AlertDialog alertDialog;
 
-	private ThreemaSafeServerInfo serverInfo;
+    private ThreemaSafeServerInfo serverInfo;
 
-	private Button positiveButton;
-	private EditText serverUrlEditText, usernameEditText, passwordEditText;
-	private LinearLayout serverContainer;
-	private MaterialSwitch defaultServerSwitch;
+    private Button positiveButton;
+    private EditText serverUrlEditText, usernameEditText, passwordEditText;
+    private LinearLayout serverContainer;
+    private MaterialSwitch defaultServerSwitch;
 
-	public static ThreemaSafeAdvancedDialog newInstance(ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
-		ThreemaSafeAdvancedDialog dialog = new ThreemaSafeAdvancedDialog();
-		Bundle args = new Bundle();
-		args.putString(ARG_SERVER_URL, serverInfo.getCustomServerName());
-		args.putString(ARG_SERVER_USERNAME, serverInfo.getServerUsername());
-		args.putString(ARG_SERVER_PASSWORD, serverInfo.getServerPassword());
-		args.putBoolean(ARG_PLAIN_STYLE, plainStyle);
-		dialog.setArguments(args);
+    public static ThreemaSafeAdvancedDialog newInstance(ThreemaSafeServerInfo serverInfo, boolean plainStyle) {
+        ThreemaSafeAdvancedDialog dialog = new ThreemaSafeAdvancedDialog();
+        Bundle args = new Bundle();
+        args.putString(ARG_SERVER_URL, serverInfo.getCustomServerName());
+        args.putString(ARG_SERVER_USERNAME, serverInfo.getServerUsername());
+        args.putString(ARG_SERVER_PASSWORD, serverInfo.getServerPassword());
+        args.putBoolean(ARG_PLAIN_STYLE, plainStyle);
+        dialog.setArguments(args);
 
-		return dialog;
-	}
+        return dialog;
+    }
 
-	public interface WizardDialogCallback {
-		void onYes(String tag, ThreemaSafeServerInfo serverInfo);
-		void onNo(String tag);
-	}
+    public interface WizardDialogCallback {
+        void onYes(String tag, ThreemaSafeServerInfo serverInfo);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
+    }
 
-		try {
-			callback = (WizardDialogCallback) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if (!(activity instanceof WizardDialogCallback)) {
-				throw new ClassCastException("Calling fragment must implement WizardDialogCallback interface");
-			}
-			callback = (WizardDialogCallback) activity;
-		}
-	}
+        try {
+            callback = (WizardDialogCallback) getTargetFragment();
+        } catch (ClassCastException e) {
+            //
+        }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if (!(activity instanceof WizardDialogCallback)) {
+                throw new ClassCastException("Calling fragment must implement WizardDialogCallback interface");
+            }
+            callback = (WizardDialogCallback) activity;
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		serverInfo = new ThreemaSafeServerInfo();
-		serverInfo.setCustomServerName(getArguments().getString(ARG_SERVER_URL));
-		serverInfo.setServerUsername(getArguments().getString(ARG_SERVER_USERNAME));
-		serverInfo.setServerPassword(getArguments().getString(ARG_SERVER_PASSWORD));
-		boolean plainStyle = getArguments().getBoolean(ARG_PLAIN_STYLE);
+        this.activity = activity;
+    }
 
-		final View dialogView = activity.getLayoutInflater().inflate(plainStyle ? R.layout.dialog_safe_advanced : R.layout.dialog_wizard_safe_advanced, null);
-		positiveButton = dialogView.findViewById(R.id.ok);
-		serverUrlEditText = dialogView.findViewById(R.id.safe_edit_server);
-		serverContainer = dialogView.findViewById(R.id.safe_server_container);
-		usernameEditText = dialogView.findViewById(R.id.safe_edit_username);
-		passwordEditText = dialogView.findViewById(R.id.safe_edit_server_password);
-		defaultServerSwitch = dialogView.findViewById(R.id.safe_switch_server);
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        serverInfo = new ThreemaSafeServerInfo();
+        serverInfo.setCustomServerName(getArguments().getString(ARG_SERVER_URL));
+        serverInfo.setServerUsername(getArguments().getString(ARG_SERVER_USERNAME));
+        serverInfo.setServerPassword(getArguments().getString(ARG_SERVER_PASSWORD));
+        boolean plainStyle = getArguments().getBoolean(ARG_PLAIN_STYLE);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), plainStyle ? getTheme() : R.style.Threema_Dialog_Wizard);
-		builder.setView(dialogView);
+        final View dialogView = activity.getLayoutInflater().inflate(plainStyle ? R.layout.dialog_safe_advanced : R.layout.dialog_wizard_safe_advanced, null);
+        positiveButton = dialogView.findViewById(R.id.ok);
+        serverUrlEditText = dialogView.findViewById(R.id.safe_edit_server);
+        serverContainer = dialogView.findViewById(R.id.safe_server_container);
+        usernameEditText = dialogView.findViewById(R.id.safe_edit_username);
+        passwordEditText = dialogView.findViewById(R.id.safe_edit_server_password);
+        defaultServerSwitch = dialogView.findViewById(R.id.safe_switch_server);
 
-		try {
-			threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
-		} catch (Exception e) {
-			//
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), plainStyle ? getTheme() : R.style.Threema_Dialog_Wizard);
+        builder.setView(dialogView);
 
-		defaultServerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-			updateUI();
-		});
+        try {
+            threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
+        } catch (Exception e) {
+            //
+        }
 
-		if (serverInfo.isDefaultServer()) {
-			serverContainer.setVisibility(View.GONE);
-		}
+        defaultServerSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            updateUI();
+        });
 
-		serverUrlEditText.setText(serverInfo.isDefaultServer() ? "" : serverInfo.getCustomServerName());
-		usernameEditText.setText(serverInfo.getServerUsername());
-		passwordEditText.setText(serverInfo.getServerPassword());
-		defaultServerSwitch.setChecked(serverInfo.isDefaultServer());
+        if (serverInfo.isDefaultServer()) {
+            serverContainer.setVisibility(View.GONE);
+        }
 
-		updateUI();
+        serverUrlEditText.setText(serverInfo.isDefaultServer() ? "" : serverInfo.getCustomServerName());
+        usernameEditText.setText(serverInfo.getServerUsername());
+        passwordEditText.setText(serverInfo.getServerPassword());
+        defaultServerSwitch.setChecked(serverInfo.isDefaultServer());
 
-		serverUrlEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        updateUI();
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				updateButtons();
-			}
+        serverUrlEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateButtons();
+            }
 
-		if (plainStyle) {
-			builder.setTitle(R.string.safe_configure_choose_server);
-			builder.setPositiveButton(getString(R.string.ok), null);
-			builder.setNegativeButton(getString(R.string.cancel), null);
-		} else {
-			positiveButton.setOnClickListener(this);
-			updateButtons();
-			dialogView.findViewById(R.id.cancel).setOnClickListener(v -> onCancel(null));
-			updateButtons();
-		}
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
-		setCancelable(false);
+        if (plainStyle) {
+            builder.setTitle(R.string.safe_configure_choose_server);
+            builder.setPositiveButton(getString(R.string.ok), null);
+            builder.setNegativeButton(getString(R.string.cancel), null);
+        } else {
+            positiveButton.setOnClickListener(this);
+            updateButtons();
+            dialogView.findViewById(R.id.cancel).setOnClickListener(v -> onCancel(null));
+            updateButtons();
+        }
 
-		alertDialog = builder.create();
+        setCancelable(false);
 
-		return alertDialog;
-	}
+        alertDialog = builder.create();
 
-	@Override
-	public void onStart() {
-		super.onStart();
+        return alertDialog;
+    }
 
-		Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-		if (button != null) {
-			this.positiveButton = button;
-			this.positiveButton.setOnClickListener(this);
-			alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> onCancel(null));
-			updateButtons();
-		}
-	}
+    @Override
+    public void onStart() {
+        super.onStart();
 
-	private void updateUI() {
-		updateButtons();
+        Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        if (button != null) {
+            this.positiveButton = button;
+            this.positiveButton.setOnClickListener(this);
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> onCancel(null));
+            updateButtons();
+        }
+    }
 
-		if (defaultServerSwitch.isChecked()) {
-			if (serverContainer.getVisibility() == View.VISIBLE) {
-				AnimationUtil.fadeViewVisibility(serverContainer, View.GONE);
-			}
-		} else {
-			if (serverContainer.getVisibility() != View.VISIBLE) {
-				AnimationUtil.fadeViewVisibility(serverContainer, View.VISIBLE);
-			}
-		}
-	}
+    private void updateUI() {
+        updateButtons();
 
-	private void updateButtons() {
-		if (positiveButton != null && serverUrlEditText != null && defaultServerSwitch != null) {
-			if (defaultServerSwitch.isChecked()) {
-				positiveButton.setEnabled(true);
-			} else {
-				positiveButton.setEnabled(serverUrlEditText.getText() != null && serverUrlEditText.getText().length() >= 9);
-			}
-		}
-	}
+        if (defaultServerSwitch.isChecked()) {
+            if (serverContainer.getVisibility() == View.VISIBLE) {
+                AnimationUtil.fadeViewVisibility(serverContainer, View.GONE);
+            }
+        } else {
+            if (serverContainer.getVisibility() != View.VISIBLE) {
+                AnimationUtil.fadeViewVisibility(serverContainer, View.VISIBLE);
+            }
+        }
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void testServer() {
-		new AsyncTask<Void, Void, String>() {
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.safe_test_server, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_PROGRESS);
-			}
+    private void updateButtons() {
+        if (positiveButton != null && serverUrlEditText != null && defaultServerSwitch != null) {
+            if (defaultServerSwitch.isChecked()) {
+                positiveButton.setEnabled(true);
+            } else {
+                positiveButton.setEnabled(serverUrlEditText.getText() != null && serverUrlEditText.getText().length() >= 9);
+            }
+        }
+    }
 
-			@Override
-			protected String doInBackground(Void... voids) {
-				try {
-					threemaSafeService.testServer(serverInfo);
-					return null;
-				} catch (ThreemaException e) {
-					return e.getMessage();
-				}
-			}
+    @SuppressLint("StaticFieldLeak")
+    private void testServer() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                GenericProgressDialog.newInstance(R.string.safe_test_server, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_PROGRESS);
+            }
 
-			@Override
-			protected void onPostExecute(String failureMessage) {
-				DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_PROGRESS, true);
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    threemaSafeService.testServer(serverInfo);
+                    return null;
+                } catch (ThreemaException e) {
+                    return e.getMessage();
+                }
+            }
 
-				if (failureMessage != null) {
-					Toast.makeText(getActivity(), getString(R.string.test_unsuccessful) + ": " + failureMessage, Toast.LENGTH_LONG).show();
-				} else {
-					onYes();
-				}
+            @Override
+            protected void onPostExecute(String failureMessage) {
+                DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
-				updateUI();
-			}
-		}.execute();
-	}
+                if (failureMessage != null) {
+                    Toast.makeText(getActivity(), getString(R.string.test_unsuccessful) + ": " + failureMessage, Toast.LENGTH_LONG).show();
+                } else {
+                    onYes();
+                }
 
-	private void onYes() {
-		dismiss();
-		callback.onYes(getTag(), serverInfo);
-	}
+                updateUI();
+            }
+        }.execute();
+    }
 
-	@Override
-	public void onCancel(DialogInterface dialogInterface) {
-		dismiss();
-		callback.onNo(this.getTag());
-	}
+    private void onYes() {
+        dismiss();
+        callback.onYes(getTag(), serverInfo);
+    }
 
-	@Override
-	public void onClick(View v) {
-		if (!defaultServerSwitch.isChecked()) {
-			EditTextUtil.hideSoftKeyboard(serverUrlEditText);
-			serverInfo.setCustomServerName(serverUrlEditText.getText().toString());
-			serverInfo.setServerUsername(usernameEditText.getText().toString());
-			serverInfo.setServerPassword(passwordEditText.getText().toString());
-			testServer();
-		} else {
-			serverInfo = new ThreemaSafeServerInfo();
-			onYes();
-		}
-	}
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        dismiss();
+        callback.onNo(this.getTag());
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (!defaultServerSwitch.isChecked()) {
+            EditTextUtil.hideSoftKeyboard(serverUrlEditText);
+            serverInfo.setCustomServerName(serverUrlEditText.getText().toString());
+            serverInfo.setServerUsername(usernameEditText.getText().toString());
+            serverInfo.setServerPassword(passwordEditText.getText().toString());
+            testServer();
+        } else {
+            serverInfo = new ThreemaSafeServerInfo();
+            onYes();
+        }
+    }
 
 }

@@ -44,15 +44,14 @@ public class MediaComponent {
     private Context mContext;
     private final Uri mSrcUri;
     private final int mType;
-	private String mimeType;
-	private long durationUs;
+    private String mimeType;
+    private long durationUs;
 
     private MediaExtractor mMediaExtractor;
     private MediaFormat mTrackFormat;
     private int mSelectedTrackIndex;
 
     /**
-     *
      * @param context
      * @param srcUri
      * @param type
@@ -65,7 +64,7 @@ public class MediaComponent {
 
         if (type != COMPONENT_TYPE_AUDIO && type != COMPONENT_TYPE_VIDEO) {
             throw new IllegalArgumentException("Invalid component type. " +
-                    "Must be one of COMPONENT_TYPE_AUDIO or COMPONENT_TYPE_VIDEO");
+                "Must be one of COMPONENT_TYPE_AUDIO or COMPONENT_TYPE_VIDEO");
         }
 
         init();
@@ -73,6 +72,7 @@ public class MediaComponent {
 
     /**
      * The MediaExtractor instance to use to for this component.
+     *
      * @return
      */
     public MediaExtractor getMediaExtractor() {
@@ -81,6 +81,7 @@ public class MediaComponent {
 
     /**
      * The MediaFormat for the selected track of this component.
+     *
      * @return
      */
     public @Nullable MediaFormat getTrackFormat() {
@@ -89,6 +90,7 @@ public class MediaComponent {
 
     /**
      * The index of the selected track for this component.
+     *
      * @return
      */
     public int getSelectedTrackIndex() {
@@ -97,23 +99,25 @@ public class MediaComponent {
 
     /**
      * The component type.
+     *
      * @return COMPONENT_TYPE_AUDIO or COMPONENT_TYPE_VIDEO
      */
     public int getType() {
         return mType;
     }
 
-	/**
-	 * Get mime type of selected track for this component.
-	 * @return
-	 */
-	public @Nullable String getMimeType() {
-		return mimeType;
-	}
+    /**
+     * Get mime type of selected track for this component.
+     *
+     * @return
+     */
+    public @Nullable String getMimeType() {
+        return mimeType;
+    }
 
-	public long getDurationUs() {
-		return durationUs;
-	}
+    public long getDurationUs() {
+        return durationUs;
+    }
 
     public void release() {
         mContext = null;
@@ -123,6 +127,7 @@ public class MediaComponent {
 
     /**
      * create me!
+     *
      * @throws IOException
      */
     private void init() throws IOException {
@@ -146,7 +151,7 @@ public class MediaComponent {
     private void selectTrackIndex() {
         for (int index = 0; index < mMediaExtractor.getTrackCount(); ++index) {
             MediaFormat trackFormat = mMediaExtractor.getTrackFormat(index);
-			String mimeType = trackFormat.getString(MediaFormat.KEY_MIME);
+            String mimeType = trackFormat.getString(MediaFormat.KEY_MIME);
 
             if (mType == COMPONENT_TYPE_VIDEO && MimeUtil.isVideoFile(mimeType) ||
                 mType == COMPONENT_TYPE_AUDIO && MimeUtil.isAudioFile(mimeType)) {
@@ -154,19 +159,19 @@ public class MediaComponent {
                 mMediaExtractor.selectTrack(index);
                 mSelectedTrackIndex = index;
                 mTrackFormat = trackFormat;
-				this.mimeType = mimeType;
+                this.mimeType = mimeType;
 
-				if (trackFormat.containsKey(MediaFormat.KEY_DURATION)) {
-					this.durationUs = trackFormat.getLong(MediaFormat.KEY_DURATION);
-				} else {
-					this.durationUs = 0L;
-				}
+                if (trackFormat.containsKey(MediaFormat.KEY_DURATION)) {
+                    this.durationUs = trackFormat.getLong(MediaFormat.KEY_DURATION);
+                } else {
+                    this.durationUs = 0L;
+                }
                 return;
             }
         }
 
         mSelectedTrackIndex = -1;
         mTrackFormat = null;
-		mimeType = null;
+        mimeType = null;
     }
 }

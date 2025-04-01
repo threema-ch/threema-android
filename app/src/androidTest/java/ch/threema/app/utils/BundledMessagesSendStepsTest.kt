@@ -109,7 +109,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
                     group.groupModel,
                 ) { GroupTextMessage().apply { text = "Test" } },
                 { hasBeenMarkedAsSent = true },
-                { stateMap -> forwardSecurityModes = stateMap},
+                { stateMap -> forwardSecurityModes = stateMap },
             )
 
             handle.runBundledMessagesSendSteps(
@@ -197,7 +197,10 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
         assertEquals(1, sentDates.toSet().size)
     }
 
-    private fun assertMessageHandleSent(messageHandle: OutgoingCspMessageHandle, assertMessage: (AbstractMessage) -> Unit) {
+    private fun assertMessageHandleSent(
+        messageHandle: OutgoingCspMessageHandle,
+        assertMessage: (AbstractMessage) -> Unit
+    ) {
         val expectedReceivers = messageHandle.receivers
             .map { it.identity }
             .filter { it != myContact.identity }
@@ -210,7 +213,10 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             .sortedBy { it.toIdentity }
             .onEach {
                 assertMessage(it)
-                assertEquals(messageHandle.messageCreator.messageId.messageIdLong, it.messageId.messageIdLong)
+                assertEquals(
+                    messageHandle.messageCreator.messageId.messageIdLong,
+                    it.messageId.messageIdLong
+                )
                 assertEquals(messageHandle.messageCreator.createdAt.time, it.date.time)
             }
             .map { it.toIdentity }

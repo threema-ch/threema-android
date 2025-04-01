@@ -37,69 +37,69 @@ import ch.threema.storage.models.ContactModel;
  * Update all Contacts with Feature Level < current Feature Level
  */
 public class SystemUpdateToVersion39 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion39");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion39");
 
-	public SystemUpdateToVersion39() {
-	}
+    public SystemUpdateToVersion39() {
+    }
 
-	@Override
-	public boolean runDirectly() {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		// lazy get services
-		if(ThreemaApplication.getServiceManager() == null) {
-			logger.error("update script 39 failed, no service manager available");
-			return false;
-		}
+    @Override
+    public boolean runAsync() {
+        // lazy get services
+        if (ThreemaApplication.getServiceManager() == null) {
+            logger.error("update script 39 failed, no service manager available");
+            return false;
+        }
 
-		try {
-			ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
+        try {
+            ContactService contactService = ThreemaApplication.getServiceManager().getContactService();
 
-			// call find with fetchMissingFeatureLevel = true to fetch all contacts without current feature level
-			contactService.find(new ContactService.Filter() {
-				@Override
-				public IdentityState[] states() {
-					return null;
-				}
+            // call find with fetchMissingFeatureLevel = true to fetch all contacts without current feature level
+            contactService.find(new ContactService.Filter() {
+                @Override
+                public IdentityState[] states() {
+                    return null;
+                }
 
-				@Override
-				public Long requiredFeature() {
-					return ThreemaFeature.VOIP;
-				}
+                @Override
+                public Long requiredFeature() {
+                    return ThreemaFeature.VOIP;
+                }
 
-				@Override
-				public Boolean fetchMissingFeatureLevel() {
-					return true;
-				}
+                @Override
+                public Boolean fetchMissingFeatureLevel() {
+                    return true;
+                }
 
-				@Override
-				public Boolean includeMyself() {
-					return true;
-				}
+                @Override
+                public Boolean includeMyself() {
+                    return true;
+                }
 
-				@Override
-				public Boolean includeHidden() {
-					return true;
-				}
+                @Override
+                public Boolean includeHidden() {
+                    return true;
+                }
 
-				@Override
-				public Boolean onlyWithReceiptSettings() {
-					return false;
-				}
-			});
-		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-			logger.error("update script 39 failed", e);
-			return false;
-		}
+                @Override
+                public Boolean onlyWithReceiptSettings() {
+                    return false;
+                }
+            });
+        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+            logger.error("update script 39 failed", e);
+            return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "sync feature levels";
-	}
+    @Override
+    public String getText() {
+        return "sync feature levels";
+    }
 }

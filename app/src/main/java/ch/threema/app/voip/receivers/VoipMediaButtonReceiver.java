@@ -37,62 +37,62 @@ import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class VoipMediaButtonReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipMediaButtonReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipMediaButtonReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
+    @Override
+    public void onReceive(Context context, Intent intent) {
 
-		VoipStateService stateService;
-		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager != null) {
-				stateService = serviceManager.getVoipStateService();
-			} else {
-				return;
-			}
-		} catch (Exception e) {
-			logger.error("Could not initialize services", e);
-			return;
-		}
+        VoipStateService stateService;
+        try {
+            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager != null) {
+                stateService = serviceManager.getVoipStateService();
+            } else {
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("Could not initialize services", e);
+            return;
+        }
 
-		if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-			KeyEvent mediaButtonEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-			if (mediaButtonEvent == null) {
-				return;
-			}
+        if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
+            KeyEvent mediaButtonEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+            if (mediaButtonEvent == null) {
+                return;
+            }
 
-			logger.info("MediaButtonReceiver: mediaAction={}, keyCode={}",
-				intent.getAction(), mediaButtonEvent.getKeyCode());
+            logger.info("MediaButtonReceiver: mediaAction={}, keyCode={}",
+                intent.getAction(), mediaButtonEvent.getKeyCode());
 
-			// If this is a valid accept button, handle it
-			if (isAcceptButton(mediaButtonEvent.getKeyCode())) {
-				// Only consider the up action
-				if (mediaButtonEvent.getAction() == KeyEvent.ACTION_UP) {
-					final CallStateSnapshot callState = stateService.getCallState();
-					if (callState.isRinging()) {
-						logger.info("Accepting call via media button");
-						stateService.acceptIncomingCall();
-					} else if (callState.isCalling()) {
-						logger.info("Hanging up call via media button");
-						VoipUtil.sendVoipCommand(
-							ThreemaApplication.getAppContext(),
-							VoipCallService.class,
-							VoipCallService.ACTION_HANGUP
-						);
-					}
-				}
-			}
-		}
-	}
+            // If this is a valid accept button, handle it
+            if (isAcceptButton(mediaButtonEvent.getKeyCode())) {
+                // Only consider the up action
+                if (mediaButtonEvent.getAction() == KeyEvent.ACTION_UP) {
+                    final CallStateSnapshot callState = stateService.getCallState();
+                    if (callState.isRinging()) {
+                        logger.info("Accepting call via media button");
+                        stateService.acceptIncomingCall();
+                    } else if (callState.isCalling()) {
+                        logger.info("Hanging up call via media button");
+                        VoipUtil.sendVoipCommand(
+                            ThreemaApplication.getAppContext(),
+                            VoipCallService.class,
+                            VoipCallService.ACTION_HANGUP
+                        );
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * Return whether this is a media button that we want to use to accept a call.
-	 */
-	private static boolean isAcceptButton(int keyCode) {
-		return
-			keyCode == KeyEvent.KEYCODE_MEDIA_PLAY ||
-				keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE ||
-				keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ||
-				keyCode == KeyEvent.KEYCODE_HEADSETHOOK;
-	}
+    /**
+     * Return whether this is a media button that we want to use to accept a call.
+     */
+    private static boolean isAcceptButton(int keyCode) {
+        return
+            keyCode == KeyEvent.KEYCODE_MEDIA_PLAY ||
+                keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE ||
+                keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE ||
+                keyCode == KeyEvent.KEYCODE_HEADSETHOOK;
+    }
 }

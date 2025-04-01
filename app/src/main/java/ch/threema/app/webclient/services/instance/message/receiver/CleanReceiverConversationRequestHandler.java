@@ -46,94 +46,95 @@ import ch.threema.storage.models.ConversationModel;
 
 @WorkerThread
 public class CleanReceiverConversationRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CleanReceiverConversationRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CleanReceiverConversationRequestHandler");
 
-	private final MessageDispatcher responseDispatcher;
-	private final ConversationService conversationService;
+    private final MessageDispatcher responseDispatcher;
+    private final ConversationService conversationService;
 
-	// Error codes
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_INVALID_IDENTITY,
-		Protocol.ERROR_BAD_REQUEST,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    // Error codes
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_INVALID_IDENTITY,
+        Protocol.ERROR_BAD_REQUEST,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	@AnyThread
-	public CleanReceiverConversationRequestHandler(MessageDispatcher responseDispatcher,
-	                                               ConversationService conversationService) {
-		super(Protocol.SUB_TYPE_CLEAN_RECEIVER_CONVERSATION);
-		this.responseDispatcher = responseDispatcher;
-		this.conversationService = conversationService;
-	}
+    @AnyThread
+    public CleanReceiverConversationRequestHandler(MessageDispatcher responseDispatcher,
+                                                   ConversationService conversationService) {
+        super(Protocol.SUB_TYPE_CLEAN_RECEIVER_CONVERSATION);
+        this.responseDispatcher = responseDispatcher;
+        this.conversationService = conversationService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received clean receiver request");
-		final Map<String, Value> args = this.getArguments(message, false, new String[]{
-				Protocol.ARGUMENT_TEMPORARY_ID,
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received clean receiver request");
+        final Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_TEMPORARY_ID,
+        });
 
-		// Get temporary ID
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        // Get temporary ID
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		// Get receiver
-		final ch.threema.app.messagereceiver.MessageReceiver receiver;
-		try {
-			receiver = this.getReceiver(args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-			this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
-			return;
-		}
+        // Get receiver
+        final ch.threema.app.messagereceiver.MessageReceiver receiver;
+        try {
+            receiver = this.getReceiver(args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+            this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+            return;
+        }
 
-		if (receiver == null) {
-			logger.error("invalid receiver");
-			this.failed(temporaryId, Protocol.ERROR_INVALID_IDENTITY);
-			return;
-		}
+        if (receiver == null) {
+            logger.error("invalid receiver");
+            this.failed(temporaryId, Protocol.ERROR_INVALID_IDENTITY);
+            return;
+        }
 
-		try {
-			ConversationModel conversationModel = null;
-			switch(receiver.getType()) {
-				case ContactMessageReceiver.Type_CONTACT:
-					conversationModel = this.conversationService.refresh(((ContactMessageReceiver)receiver).getContact());
-					this.conversationService.empty(conversationModel, true);
-					break;
-				case ContactMessageReceiver.Type_GROUP:
-					conversationModel = this.conversationService.refresh(((GroupMessageReceiver)receiver).getGroup());
-					this.conversationService.empty(conversationModel, false);
-					break;
-				case ContactMessageReceiver.Type_DISTRIBUTION_LIST:
-					conversationModel = this.conversationService.refresh(((DistributionListMessageReceiver)receiver).getDistributionList());
-					this.conversationService.empty(conversationModel, false);
-					break;
-			}
+        try {
+            ConversationModel conversationModel = null;
+            switch (receiver.getType()) {
+                case ContactMessageReceiver.Type_CONTACT:
+                    conversationModel = this.conversationService.refresh(((ContactMessageReceiver) receiver).getContact());
+                    this.conversationService.empty(conversationModel, true);
+                    break;
+                case ContactMessageReceiver.Type_GROUP:
+                    conversationModel = this.conversationService.refresh(((GroupMessageReceiver) receiver).getGroup());
+                    this.conversationService.empty(conversationModel, false);
+                    break;
+                case ContactMessageReceiver.Type_DISTRIBUTION_LIST:
+                    conversationModel = this.conversationService.refresh(((DistributionListMessageReceiver) receiver).getDistributionList());
+                    this.conversationService.empty(conversationModel, false);
+                    break;
+            }
 
-			if (conversationModel == null) {
-				throw new ThreemaException("invalid conversation/receiver");
-			}
+            if (conversationModel == null) {
+                throw new ThreemaException("invalid conversation/receiver");
+            }
 
-			this.success(temporaryId);
-		} catch (Exception x) {
-			logger.error("Exception", x);
-			this.failed(temporaryId, Protocol.ERROR_INTERNAL);
-		}
-	}
+            this.success(temporaryId);
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+        }
+    }
 
-	private void success(String temporaryId) {
-		logger.debug("Respond with clean receiver success");
-		this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
-	}
+    private void success(String temporaryId) {
+        logger.debug("Respond with clean receiver success");
+        this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
+    }
 
-	private void failed(String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond with clean receiver failed ({})", errorCode);
-		this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
-	}
+    private void failed(String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond with clean receiver failed ({})", errorCode);
+        this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

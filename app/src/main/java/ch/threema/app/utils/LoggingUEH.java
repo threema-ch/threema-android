@@ -27,20 +27,20 @@ import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LoggingUEH implements Thread.UncaughtExceptionHandler {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LoggingUEH");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LoggingUEH");
 
-	private final Thread.UncaughtExceptionHandler defaultUEH;
+    private final Thread.UncaughtExceptionHandler defaultUEH;
 
-	public LoggingUEH() {
-		this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
-	}
+    public LoggingUEH() {
+        this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+    }
 
-	@Override
-	public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
-		logger.error("Uncaught exception", ex);
+    @Override
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
+        logger.error("Uncaught exception", ex);
 
-		if (defaultUEH != null) {
-			defaultUEH.uncaughtException(thread, ex);
-		}
-	}
+        if (defaultUEH != null) {
+            defaultUEH.uncaughtException(thread, ex);
+        }
+    }
 }

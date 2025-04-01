@@ -52,20 +52,21 @@ fun ExpandingBox(
     expanded: Boolean = false,
     content: @Composable (
         expandedState: Boolean,
-        toggleExpandedState:() -> Unit
+        toggleExpandedState: () -> Unit
     ) -> Unit,
 ) {
     var expandedState by rememberSaveable(expanded) { mutableStateOf(expanded) }
-    Box(modifier = modifier
-        .fillMaxWidth()
-        .then(
-            if (expandedState || collapsedMaxHeight == null) {
-                Modifier.wrapContentHeight()
-            } else {
-                Modifier.heightIn(max = collapsedMaxHeight)
-            }
-        )
-        .animateContentSize()
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (expandedState || collapsedMaxHeight == null) {
+                    Modifier.wrapContentHeight()
+                } else {
+                    Modifier.heightIn(max = collapsedMaxHeight)
+                }
+            )
+            .animateContentSize()
     ) {
         content(expandedState) { expandedState = !expandedState }
     }

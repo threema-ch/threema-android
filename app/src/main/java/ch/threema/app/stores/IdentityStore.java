@@ -38,181 +38,181 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class IdentityStore implements IdentityStoreInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("IdentityStore");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("IdentityStore");
 
-	private String identity;
-	private String serverGroup;
-	private byte[] publicKey;
-	private byte[] privateKey;
-	private String publicNickname;
-	private final PreferenceStoreInterface preferenceStore;
+    private String identity;
+    private String serverGroup;
+    private byte[] publicKey;
+    private byte[] privateKey;
+    private String publicNickname;
+    private final PreferenceStoreInterface preferenceStore;
 
-	private final Map<KeyPair,NaCl> naClCache;
+    private final Map<KeyPair, NaCl> naClCache;
 
-	public IdentityStore(PreferenceStoreInterface preferenceStore) throws ThreemaException {
+    public IdentityStore(PreferenceStoreInterface preferenceStore) throws ThreemaException {
 
-		this.preferenceStore = preferenceStore;
-		this.naClCache = Collections.synchronizedMap(new HashMap<>());
+        this.preferenceStore = preferenceStore;
+        this.naClCache = Collections.synchronizedMap(new HashMap<>());
 
-		this.identity = this.preferenceStore.getString(PreferenceStore.PREFS_IDENTITY);
-		if (this.identity == null) {
-			return;
-		}
+        this.identity = this.preferenceStore.getString(PreferenceStore.PREFS_IDENTITY);
+        if (this.identity == null) {
+            return;
+        }
 
-		//store private key in a crypted file
+        //store private key in a crypted file
 
-		this.serverGroup = this.preferenceStore.getString(PreferenceStore.PREFS_SERVER_GROUP);
-		this.publicKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PUBLIC_KEY);
-		this.privateKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PRIVATE_KEY, true);
-		this.publicNickname = this.preferenceStore.getString(PreferenceStore.PREFS_PUBLIC_NICKNAME);
+        this.serverGroup = this.preferenceStore.getString(PreferenceStore.PREFS_SERVER_GROUP);
+        this.publicKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PUBLIC_KEY);
+        this.privateKey = this.preferenceStore.getBytes(PreferenceStore.PREFS_PRIVATE_KEY, true);
+        this.publicNickname = this.preferenceStore.getString(PreferenceStore.PREFS_PUBLIC_NICKNAME);
 
-		if (this.identity.length() == ProtocolDefines.IDENTITY_LEN &&
-				this.publicKey.length == NaCl.PUBLICKEYBYTES) {
-				if (this.privateKey.length == NaCl.SECRETKEYBYTES) {
-					return;
-				}
-				if (this.privateKey.length == 0) {
-					this.privateKey = null;
-					logger.debug("Private key missing");
-					return;
-				}
-		}
-		throw new ThreemaException("Bad identity file format");
-	}
+        if (this.identity.length() == ProtocolDefines.IDENTITY_LEN &&
+            this.publicKey.length == NaCl.PUBLICKEYBYTES) {
+            if (this.privateKey.length == NaCl.SECRETKEYBYTES) {
+                return;
+            }
+            if (this.privateKey.length == 0) {
+                this.privateKey = null;
+                logger.debug("Private key missing");
+                return;
+            }
+        }
+        throw new ThreemaException("Bad identity file format");
+    }
 
-	@Override
-	public byte[] encryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
-		if (privateKey != null) {
-			NaCl nacl = getCachedNaCl(privateKey, receiverPublicKey);
-			return nacl.encrypt(boxData, nonce);
-		}
-		return null;
-	}
+    @Override
+    public byte[] encryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
+        if (privateKey != null) {
+            NaCl nacl = getCachedNaCl(privateKey, receiverPublicKey);
+            return nacl.encrypt(boxData, nonce);
+        }
+        return null;
+    }
 
-	@Override
-	public byte[] decryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
-		if (privateKey != null) {
-			NaCl nacl = getCachedNaCl(privateKey, senderPublicKey);
-			return nacl.decrypt(boxData, nonce);
-		}
-		return null;
-	}
+    @Override
+    public byte[] decryptData(@NonNull byte[] boxData, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
+        if (privateKey != null) {
+            NaCl nacl = getCachedNaCl(privateKey, senderPublicKey);
+            return nacl.decrypt(boxData, nonce);
+        }
+        return null;
+    }
 
-	@Override
-	public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
-		return getCachedNaCl(privateKey, publicKey).getPrecomputed();
-	}
+    @Override
+    public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
+        return getCachedNaCl(privateKey, publicKey).getPrecomputed();
+    }
 
-	@Override
-	public String getIdentity() {
-		return this.identity;
-	}
+    @Override
+    public String getIdentity() {
+        return this.identity;
+    }
 
-	@Override
-	public String getServerGroup() {
-		return this.serverGroup;
-	}
+    @Override
+    public String getServerGroup() {
+        return this.serverGroup;
+    }
 
-	@Override
-	public byte[] getPublicKey() {
-		return this.publicKey;
-	}
+    @Override
+    public byte[] getPublicKey() {
+        return this.publicKey;
+    }
 
-	@Override
-	public byte[] getPrivateKey() {
-		return this.privateKey;
-	}
+    @Override
+    public byte[] getPrivateKey() {
+        return this.privateKey;
+    }
 
-	@Override
-	@NonNull
-	public String getPublicNickname() {
-		if (this.publicNickname == null) {
-			return "";
-		}
-		return this.publicNickname;
-	}
+    @Override
+    @NonNull
+    public String getPublicNickname() {
+        if (this.publicNickname == null) {
+            return "";
+        }
+        return this.publicNickname;
+    }
 
     /**
      * This method persists the public nickname. It does *not* reflect the changes and must
      * therefore only be used to persist the nickname.
      */
-	public void persistPublicNickname(String publicNickname) {
-		this.publicNickname = publicNickname;
-		this.preferenceStore.save(PreferenceStore.PREFS_PUBLIC_NICKNAME, publicNickname);
-		ListenerManager.profileListeners.handle(listener -> listener.onNicknameChanged(publicNickname));
-	}
+    public void persistPublicNickname(String publicNickname) {
+        this.publicNickname = publicNickname;
+        this.preferenceStore.save(PreferenceStore.PREFS_PUBLIC_NICKNAME, publicNickname);
+        ListenerManager.profileListeners.handle(listener -> listener.onNicknameChanged(publicNickname));
+    }
 
-	@Override
-	public void storeIdentity(
-		@NonNull String identity,
-		@NonNull String serverGroup,
-		@NonNull byte[] publicKey,
-		@NonNull byte[] privateKey
-	) {
-		this.identity = identity;
-		this.serverGroup = serverGroup;
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
+    @Override
+    public void storeIdentity(
+        @NonNull String identity,
+        @NonNull String serverGroup,
+        @NonNull byte[] publicKey,
+        @NonNull byte[] privateKey
+    ) {
+        this.identity = identity;
+        this.serverGroup = serverGroup;
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
 
-		this.preferenceStore.save(PreferenceStore.PREFS_IDENTITY, identity);
-		this.preferenceStore.save(PreferenceStore.PREFS_SERVER_GROUP, serverGroup);
-		this.preferenceStore.save(PreferenceStore.PREFS_PUBLIC_KEY, publicKey);
-		this.preferenceStore.save(PreferenceStore.PREFS_PRIVATE_KEY, privateKey, true);
+        this.preferenceStore.save(PreferenceStore.PREFS_IDENTITY, identity);
+        this.preferenceStore.save(PreferenceStore.PREFS_SERVER_GROUP, serverGroup);
+        this.preferenceStore.save(PreferenceStore.PREFS_PUBLIC_KEY, publicKey);
+        this.preferenceStore.save(PreferenceStore.PREFS_PRIVATE_KEY, privateKey, true);
 
-		//default identity
-		this.persistPublicNickname(identity);
-	}
+        //default identity
+        this.persistPublicNickname(identity);
+    }
 
-	public void clear() {
-		this.identity = null;
-		this.serverGroup = null;
-		this.publicKey = null;
-		this.privateKey = null;
-		this.publicNickname = null;
+    public void clear() {
+        this.identity = null;
+        this.serverGroup = null;
+        this.publicKey = null;
+        this.privateKey = null;
+        this.publicNickname = null;
 
-		//remove settings
-		this.preferenceStore.remove(Arrays.asList(
-				PreferenceStore.PREFS_IDENTITY,
-				PreferenceStore.PREFS_PRIVATE_KEY,
-				PreferenceStore.PREFS_SERVER_GROUP,
-				PreferenceStore.PREFS_PUBLIC_KEY,
-				PreferenceStore.PREFS_PRIVATE_KEY));
-	}
+        //remove settings
+        this.preferenceStore.remove(Arrays.asList(
+            PreferenceStore.PREFS_IDENTITY,
+            PreferenceStore.PREFS_PRIVATE_KEY,
+            PreferenceStore.PREFS_SERVER_GROUP,
+            PreferenceStore.PREFS_PUBLIC_KEY,
+            PreferenceStore.PREFS_PRIVATE_KEY));
+    }
 
-	private NaCl getCachedNaCl(byte[] privateKey, byte[] publicKey) {
-		// Check for cached NaCl instance to save heavy Curve25519 computation
-		KeyPair hashKey = new KeyPair(privateKey, publicKey);
-		NaCl nacl = naClCache.get(hashKey);
-		if (nacl == null) {
-			nacl = new NaCl(privateKey, publicKey);
-			naClCache.put(hashKey, nacl);
-		}
-		return nacl;
-	}
+    private NaCl getCachedNaCl(byte[] privateKey, byte[] publicKey) {
+        // Check for cached NaCl instance to save heavy Curve25519 computation
+        KeyPair hashKey = new KeyPair(privateKey, publicKey);
+        NaCl nacl = naClCache.get(hashKey);
+        if (nacl == null) {
+            nacl = new NaCl(privateKey, publicKey);
+            naClCache.put(hashKey, nacl);
+        }
+        return nacl;
+    }
 
-	private static class KeyPair {
-		private final byte[] privateKey;
-		private final byte[] publicKey;
+    private static class KeyPair {
+        private final byte[] privateKey;
+        private final byte[] publicKey;
 
-		public KeyPair(byte[] privateKey, byte[] publicKey) {
-			this.privateKey = privateKey;
-			this.publicKey = publicKey;
-		}
+        public KeyPair(byte[] privateKey, byte[] publicKey) {
+            this.privateKey = privateKey;
+            this.publicKey = publicKey;
+        }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			KeyPair keyPair = (KeyPair) o;
-			return Arrays.equals(privateKey, keyPair.privateKey) &&
-				Arrays.equals(publicKey, keyPair.publicKey);
-		}
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            KeyPair keyPair = (KeyPair) o;
+            return Arrays.equals(privateKey, keyPair.privateKey) &&
+                Arrays.equals(publicKey, keyPair.publicKey);
+        }
 
-		@Override
-		public int hashCode() {
-			int result = Arrays.hashCode(privateKey);
-			result = 31 * result + Arrays.hashCode(publicKey);
-			return result;
-		}
-	}
+        @Override
+        public int hashCode() {
+            int result = Arrays.hashCode(privateKey);
+            result = 31 * result + Arrays.hashCode(publicKey);
+            return result;
+        }
+    }
 }

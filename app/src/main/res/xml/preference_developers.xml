@@ -14,8 +14,7 @@
             android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="Hints">
+    <PreferenceCategory android:title="Hints">
         <Preference
             android:key="@string/preferences__dev_reset_reaction_tooltip_shown"
             android:title="Reset reaction tooltip"
@@ -81,7 +80,7 @@
         <Preference
             android:key="@string/preferences__open_pattern_library"
             android:title="Open Pattern Library"
-            android:summary="View apps dynamic color and typography theme values"/>
+            android:summary="View apps dynamic color and typography theme values" />
     </PreferenceCategory>
 
     <PreferenceCategory

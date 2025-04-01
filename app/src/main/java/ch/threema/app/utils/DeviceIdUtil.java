@@ -34,31 +34,31 @@ import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class DeviceIdUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceIdUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceIdUtil");
 
-	private static final String DEVICE_ID_FILENAME = "device_id";
+    private static final String DEVICE_ID_FILENAME = "device_id";
 
-	@NonNull
-	public static String getDeviceId(Context context) {
-		String deviceId = null;
-		File deviceIdFile = new File(context.getFilesDir(), DEVICE_ID_FILENAME);
-		if (deviceIdFile.exists()) {
-			try {
-				deviceId = FileUtils.readFileToString(deviceIdFile);
-			} catch (IOException e) {
-				logger.error("Exception", e);
-			}
-		}
+    @NonNull
+    public static String getDeviceId(Context context) {
+        String deviceId = null;
+        File deviceIdFile = new File(context.getFilesDir(), DEVICE_ID_FILENAME);
+        if (deviceIdFile.exists()) {
+            try {
+                deviceId = FileUtils.readFileToString(deviceIdFile);
+            } catch (IOException e) {
+                logger.error("Exception", e);
+            }
+        }
 
-		if (deviceId == null) {
-			deviceId = UUID.randomUUID().toString();
-			try {
-				FileUtils.writeStringToFile(deviceIdFile, deviceId);
-			} catch (IOException e) {
-				logger.error("Exception", e);
-			}
-		}
+        if (deviceId == null) {
+            deviceId = UUID.randomUUID().toString();
+            try {
+                FileUtils.writeStringToFile(deviceIdFile, deviceId);
+            } catch (IOException e) {
+                logger.error("Exception", e);
+            }
+        }
 
-		return deviceId;
-	}
+        return deviceId;
+    }
 }

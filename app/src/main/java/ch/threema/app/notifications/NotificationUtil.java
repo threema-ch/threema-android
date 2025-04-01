@@ -26,6 +26,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
@@ -33,45 +34,47 @@ import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 
 public class NotificationUtil {
-	public static final String TAG = "NotificationUtil";
+    public static final String TAG = "NotificationUtil";
 
-	/**
-	 * Get Android N notification importance
-	 * @param context Context
-	 * @return Notification importance
-	 */
-	@TargetApi(Build.VERSION_CODES.N)
-	public static int getNotificationImportance(Context context) {
-		switch(getNotificationPriority(context)) {
-			case NotificationCompat.PRIORITY_MAX:
-				return NotificationManagerCompat.IMPORTANCE_MAX;
-			case NotificationCompat.PRIORITY_HIGH:
-				return NotificationManagerCompat.IMPORTANCE_HIGH;
-			case NotificationCompat.PRIORITY_LOW:
-				return NotificationManagerCompat.IMPORTANCE_LOW;
-			default:
-				return NotificationManagerCompat.IMPORTANCE_DEFAULT;
-		}
-	}
+    /**
+     * Get Android N notification importance
+     *
+     * @param context Context
+     * @return Notification importance
+     */
+    @TargetApi(Build.VERSION_CODES.N)
+    public static int getNotificationImportance(Context context) {
+        switch (getNotificationPriority(context)) {
+            case NotificationCompat.PRIORITY_MAX:
+                return NotificationManagerCompat.IMPORTANCE_MAX;
+            case NotificationCompat.PRIORITY_HIGH:
+                return NotificationManagerCompat.IMPORTANCE_HIGH;
+            case NotificationCompat.PRIORITY_LOW:
+                return NotificationManagerCompat.IMPORTANCE_LOW;
+            default:
+                return NotificationManagerCompat.IMPORTANCE_DEFAULT;
+        }
+    }
 
-	/**
-	 * Get Android pre-N notification priority
-	 * @param context Context
-	 * @return Notification priority
-	 */
-	public static int getNotificationPriority(Context context) {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    /**
+     * Get Android pre-N notification priority
+     *
+     * @param context Context
+     * @return Notification priority
+     */
+    public static int getNotificationPriority(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		try {
-			return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.preferences__notification_priority), "1"));
-		} catch (NumberFormatException | NullPointerException e) {
-			return NotificationCompat.PRIORITY_HIGH;
-		}
-	}
+        try {
+            return Integer.parseInt(sharedPreferences.getString(context.getString(R.string.preferences__notification_priority), "1"));
+        } catch (NumberFormatException | NullPointerException e) {
+            return NotificationCompat.PRIORITY_HIGH;
+        }
+    }
 
-	public static boolean isVoiceCallVibrate(Context context) {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isVoiceCallVibrate(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		return sharedPreferences.getBoolean(context.getString(R.string.preferences__voip_vibration), true);
-	}
+        return sharedPreferences.getBoolean(context.getString(R.string.preferences__voip_vibration), true);
+    }
 }

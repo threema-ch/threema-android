@@ -24,7 +24,7 @@ package ch.threema.domain.onprem;
 import ch.threema.base.ThreemaException;
 
 public class LicenseExpiredException extends ThreemaException {
-	public LicenseExpiredException(String msg) {
-		super(msg);
-	}
+    public LicenseExpiredException(String msg) {
+        super(msg);
+    }
 }

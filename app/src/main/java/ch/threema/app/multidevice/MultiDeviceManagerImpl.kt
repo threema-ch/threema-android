@@ -83,18 +83,20 @@ class MultiDeviceManagerImpl(
     private val preferenceStore: PreferenceStoreInterface,
     private val serverMessageService: ServerMessageService,
     private val version: Version,
-    ) : MultiDeviceManager {
+) : MultiDeviceManager {
 
     private var reconnectHandle: ReconnectableServerConnection? = null
 
     private var _persistedProperties: PersistedMultiDeviceProperties? = null
-    private var _properties = MutableSharedFlow<MultiDeviceProperties?>(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private var _properties =
+        MutableSharedFlow<MultiDeviceProperties?>(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     init {
         CoroutineScope(Dispatchers.Default).launch {
             _persistedProperties = loadProperties()
                 .also {
-                    _properties.emit(it?.let(::mapPersistedProperties)) }
+                    _properties.emit(it?.let(::mapPersistedProperties))
+                }
         }
     }
 
@@ -132,7 +134,8 @@ class MultiDeviceManagerImpl(
     override val isMultiDeviceActive: Boolean
         get() = properties != null
 
-    override val latestSocketCloseReason = MutableSharedFlow<D2mSocketCloseReason?>(1, 0, BufferOverflow.DROP_OLDEST)
+    override val latestSocketCloseReason =
+        MutableSharedFlow<D2mSocketCloseReason?>(1, 0, BufferOverflow.DROP_OLDEST)
 
     private var serverInfo: InboundD2mMessage.ServerInfo? = null
 
@@ -209,7 +212,10 @@ class MultiDeviceManagerImpl(
             try {
                 val linkingCancelledSignal = CompletableDeferred<Unit>()
 
-                val (controller, linkingCompleted) = taskCreator.scheduleDeviceLinkingTask(deviceJoinOfferUri, linkingCancelledSignal)
+                val (controller, linkingCompleted) = taskCreator.scheduleDeviceLinkingTask(
+                    deviceJoinOfferUri,
+                    linkingCancelledSignal
+                )
 
                 launch {
                     controller.linkingStatus.collect { send(it) }
@@ -236,7 +242,8 @@ class MultiDeviceManagerImpl(
 
     // TODO(ANDR-2717): Remove
     override suspend fun purge(taskCreator: TaskCreator) {
-        val myDeviceId = (properties ?: throw MultiDeviceException("Multi device properties are missing")).mediatorDeviceId
+        val myDeviceId = (properties
+            ?: throw MultiDeviceException("Multi device properties are missing")).mediatorDeviceId
         loadLinkedDevicesMediatorIds(taskCreator)
             .filter { it != myDeviceId }
             .forEach {
@@ -262,8 +269,9 @@ class MultiDeviceManagerImpl(
                     // TODO(ANDR-2717): Display as invalid device in devices list
                     D2dMessage.DeviceInfo.INVALID_DEVICE_INFO
                 }
-                val activityInfo = augmentedDeviceInfo.connectedSince?.let { "Connected since ${Date(it.toLong())}" }
-                    ?: augmentedDeviceInfo.lastDisconnectAt?.let { "Last disconnect: ${Date(it.toLong())}" }
+                val activityInfo =
+                    augmentedDeviceInfo.connectedSince?.let { "Connected since ${Date(it.toLong())}" }
+                        ?: augmentedDeviceInfo.lastDisconnectAt?.let { "Last disconnect: ${Date(it.toLong())}" }
                 listOfNotNull(
                     deviceInfo.label,
                     deviceInfo.platform,
@@ -305,6 +313,7 @@ class MultiDeviceManagerImpl(
     private fun handleUnsupportedProtocolVersion() {
         displayConnectionError("Unsupported protocol version")
     }
+
     private fun handleDeviceLimitReached() {
         displayConnectionError("Device limit reached")
     }
@@ -445,7 +454,11 @@ class MultiDeviceManagerImpl(
                 try {
                     // return:
                     PersistedMultiDeviceProperties.deserialize(bytes).also {
-                        logger.trace("Deserialized persisted md properties: {} -> {}", bytes.toHexString(5), it)
+                        logger.trace(
+                            "Deserialized persisted md properties: {} -> {}",
+                            bytes.toHexString(5),
+                            it
+                        )
                     }
                 } catch (e: PersistedMultiDeviceProperties.DeserializeException) {
                     logger.error("Persisted properties are invalid. Remove properties.", e)
@@ -474,7 +487,11 @@ class MultiDeviceManagerImpl(
             } else {
                 val bytes = properties.serialize()
                 logger.trace("Serialize md properties: {} -> {}", properties, bytes.toHexString(5))
-                preferenceStore.save(PreferenceStore.PREFS_MD_PROPERTIES, properties.serialize(), true)
+                preferenceStore.save(
+                    PreferenceStore.PREFS_MD_PROPERTIES,
+                    properties.serialize(),
+                    true
+                )
             }
         }
     }

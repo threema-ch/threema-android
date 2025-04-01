@@ -37,110 +37,111 @@ import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
 
 public class RuntimeUtil {
-	private static Boolean isInTestMode;
-	public static Handler handler = new Handler(Looper.getMainLooper());
+    private static Boolean isInTestMode;
+    public static Handler handler = new Handler(Looper.getMainLooper());
 
-	private static final ExecutorService workerExecutor = Executors.newCachedThreadPool();
+    private static final ExecutorService workerExecutor = Executors.newCachedThreadPool();
 
-	/**
-	 * check if current running environment is a test suite
-	 */
-	public static boolean isInTest() {
-		if (isInTestMode == null) {
-			try {
-				Class.forName("ch.threema.app.ThreemaTestRunner");
-				isInTestMode = true;
-			} catch (ClassNotFoundException e) {
-				isInTestMode = false;
-			}
-		}
+    /**
+     * check if current running environment is a test suite
+     */
+    public static boolean isInTest() {
+        if (isInTestMode == null) {
+            try {
+                Class.forName("ch.threema.app.ThreemaTestRunner");
+                isInTestMode = true;
+            } catch (ClassNotFoundException e) {
+                isInTestMode = false;
+            }
+        }
 
-		return isInTestMode;
-	}
+        return isInTestMode;
+    }
 
-	/**
-	 * Return true if the calling thread is in the UI thread
-	 */
-	public static boolean isOnUiThread() {
-		return Looper.myLooper() == Looper.getMainLooper();
-	}
+    /**
+     * Return true if the calling thread is in the UI thread
+     */
+    public static boolean isOnUiThread() {
+        return Looper.myLooper() == Looper.getMainLooper();
+    }
 
-	/**
-	 * Run the specified runnable on the UI thread.
-	 */
-	public static void runOnUiThread(final Runnable runnable) {
-		if (isOnUiThread()) {
-			if (runnable != null) {
-				runnable.run();
-			}
-		} else {
-			handler.post(runnable);
-		}
-	}
+    /**
+     * Run the specified runnable on the UI thread.
+     */
+    public static void runOnUiThread(final Runnable runnable) {
+        if (isOnUiThread()) {
+            if (runnable != null) {
+                runnable.run();
+            }
+        } else {
+            handler.post(runnable);
+        }
+    }
 
-	/**
-	 * Run the specified runnable in an async task.
-	 */
-	@UiThread
-	public static void runInAsyncTask(@NonNull final Runnable runnable) {
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected Void doInBackground(Void... voids) {
-				runnable.run();
-				return null;
-			}
-		}.execute();
-	}
+    /**
+     * Run the specified runnable in an async task.
+     */
+    @UiThread
+    public static void runInAsyncTask(@NonNull final Runnable runnable) {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                runnable.run();
+                return null;
+            }
+        }.execute();
+    }
 
-	/**
-	 * Run a {@link Runnable} in a background worker thread.
-	 *
-	 * This method is backed by a {@link Executors#newCachedThreadPool()} that will create new threads
-	 * if needed (no thread available).
-	 *
-	 * Threads that have not been used for sixty seconds are terminated and removed from the cache.
-	 */
-	@AnyThread
-	public static void runOnWorkerThread(@NonNull final Runnable runnable) {
-		workerExecutor.execute(runnable);
-	}
+    /**
+     * Run a {@link Runnable} in a background worker thread.
+     * <p>
+     * This method is backed by a {@link Executors#newCachedThreadPool()} that will create new threads
+     * if needed (no thread available).
+     * <p>
+     * Threads that have not been used for sixty seconds are terminated and removed from the cache.
+     */
+    @AnyThread
+    public static void runOnWorkerThread(@NonNull final Runnable runnable) {
+        workerExecutor.execute(runnable);
+    }
 
-	/**
-	 * Run the provided runnable while holding a partial wakelock
-	 * @param context context
-	 * @param timeout wakelock timeout
-	 * @param tag wakelock tag
-	 * @param runnable the runnable to run
-	 */
-	public static void runInWakelock(@NonNull Context context, long timeout, @NonNull String tag, @NonNull final Runnable runnable) {
-		PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-		PowerManager.WakeLock wakeLock = null;
-		try {
-			wakeLock = acquireWakeLock(powerManager, timeout, tag);
-			runnable.run();
-		} finally {
-			if (wakeLock != null && wakeLock.isHeld()) {
-				wakeLock.release();
-			}
-		}
-	}
+    /**
+     * Run the provided runnable while holding a partial wakelock
+     *
+     * @param context  context
+     * @param timeout  wakelock timeout
+     * @param tag      wakelock tag
+     * @param runnable the runnable to run
+     */
+    public static void runInWakelock(@NonNull Context context, long timeout, @NonNull String tag, @NonNull final Runnable runnable) {
+        PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = null;
+        try {
+            wakeLock = acquireWakeLock(powerManager, timeout, tag);
+            runnable.run();
+        } finally {
+            if (wakeLock != null && wakeLock.isHeld()) {
+                wakeLock.release();
+            }
+        }
+    }
 
-	private static PowerManager.WakeLock acquireWakeLock(PowerManager powerManager, long timeout, String tag) {
-		try {
-			PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":" + tag);
-			wakeLock.acquire(timeout);
-			return wakeLock;
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    private static PowerManager.WakeLock acquireWakeLock(PowerManager powerManager, long timeout, String tag) {
+        try {
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, BuildConfig.APPLICATION_ID + ":" + tag);
+            wakeLock.acquire(timeout);
+            return wakeLock;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	public static class MainThreadExecutor implements Executor {
-		private final Handler handler = new Handler(Looper.getMainLooper());
+    public static class MainThreadExecutor implements Executor {
+        private final Handler handler = new Handler(Looper.getMainLooper());
 
-		@Override
-		public void execute(@NonNull Runnable runnable) {
-			handler.post(runnable);
-		}
-	}
+        @Override
+        public void execute(@NonNull Runnable runnable) {
+            handler.post(runnable);
+        }
+    }
 }

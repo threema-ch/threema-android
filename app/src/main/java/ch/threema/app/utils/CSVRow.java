@@ -27,285 +27,287 @@ import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
 
 public class CSVRow {
-	private CSVWriter writer;
-	final private String[] header;
-	final private String[] data;
+    private CSVWriter writer;
+    final private String[] header;
+    final private String[] data;
 
-	public CSVRow(CSVWriter writer, String[] header) {
-		this.writer = writer;
-		this.header = header;
-		this.data = new String[this.header.length];
-	}
+    public CSVRow(CSVWriter writer, String[] header) {
+        this.writer = writer;
+        this.header = header;
+        this.data = new String[this.header.length];
+    }
 
-	public CSVRow(String[] header, String[] data) {
-		this.header = header;
-		this.data = data;
-	}
+    public CSVRow(String[] header, String[] data) {
+        this.header = header;
+        this.data = data;
+    }
 
-	public String getString(int pos) throws ThreemaException {
-		if(this.data == null || this.data.length < pos) {
-			throw new ThreemaException("invalid csv position");
-		}
+    public String getString(int pos) throws ThreemaException {
+        if (this.data == null || this.data.length < pos) {
+            throw new ThreemaException("invalid csv position");
+        }
 
-		return this.data[pos];
-	}
+        return this.data[pos];
+    }
 
-	public @NonNull Integer getInteger(int pos) throws ThreemaException {
-		return Integer.valueOf(this.getString(pos));
-	}
+    public @NonNull Integer getInteger(int pos) throws ThreemaException {
+        return Integer.valueOf(this.getString(pos));
+    }
 
-	public @NonNull Long getLong(int pos) throws ThreemaException {
-		return Long.valueOf(this.getString(pos));
-	}
+    public @NonNull Long getLong(int pos) throws ThreemaException {
+        return Long.valueOf(this.getString(pos));
+    }
 
-	public boolean getBoolean(int pos) throws ThreemaException {
-		return TestUtil.compare("1", this.getString(pos));
-	}
+    public boolean getBoolean(int pos) throws ThreemaException {
+        return TestUtil.compare("1", this.getString(pos));
+    }
 
-	public Date getDate(int pos) throws ThreemaException {
-		String cell = this.getString(pos);
-		if(cell != null && cell.length() > 0) {
-			return new Date(Long.parseLong(cell));
-		}
+    public Date getDate(int pos) throws ThreemaException {
+        String cell = this.getString(pos);
+        if (cell != null && cell.length() > 0) {
+            return new Date(Long.parseLong(cell));
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public CSVRow write(String fieldName, Object v) throws ThreemaException{
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+    public CSVRow write(String fieldName, Object v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-		return this.write(pos, v);
-	}
+        return this.write(pos, v);
+    }
 
-	public CSVRow write(int pos, Object v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+    public CSVRow write(int pos, Object v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
-	public CSVRow write(String fieldName, String v) throws ThreemaException{
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-		return this.write(pos, v);
-	}
+    public CSVRow write(String fieldName, String v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-	public CSVRow write(int pos, String v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+        return this.write(pos, v);
+    }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
+    public CSVRow write(int pos, String v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-	public CSVRow write(String fieldName, boolean v) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-		return this.write(pos, v);
-	}
+    public CSVRow write(String fieldName, boolean v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-	public CSVRow write(int pos, int v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+        return this.write(pos, v);
+    }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
+    public CSVRow write(int pos, int v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-	public CSVRow write(String fieldName, int v) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-		return this.write(pos, v);
-	}
+    public CSVRow write(String fieldName, int v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-	public CSVRow write(int pos, boolean v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+        return this.write(pos, v);
+    }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
+    public CSVRow write(int pos, boolean v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-	public CSVRow write(String fieldName, Date v) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-		return this.write(pos, v);
-	}
+    public CSVRow write(String fieldName, Date v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-	public CSVRow write(int pos, Date v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+        return this.write(pos, v);
+    }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
+    public CSVRow write(int pos, Date v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-	public CSVRow write(String fieldName, Object[] v) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position");
-		}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-		return this.write(pos, v);
-	}
+    public CSVRow write(String fieldName, Object[] v) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position");
+        }
 
-	public CSVRow write(int pos, Object[] v) throws ThreemaException {
-		if(this.data.length < pos) {
-			throw new ThreemaException("invalid position to write [" + pos + "]");
-		}
+        return this.write(pos, v);
+    }
 
-		this.data[pos] = this.escape(v);
-		return this;
-	}
+    public CSVRow write(int pos, Object[] v) throws ThreemaException {
+        if (this.data.length < pos) {
+            throw new ThreemaException("invalid position to write [" + pos + "]");
+        }
 
-	public String[] getStrings(int pos) throws ThreemaException {
-		String r = this.getString(pos);
-		return TestUtil.isEmptyOrNull(r) ? new String[]{} : r.split(";");
-	}
+        this.data[pos] = this.escape(v);
+        return this;
+    }
 
-	public String getString(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getString(pos);
-	}
+    public String[] getStrings(int pos) throws ThreemaException {
+        String r = this.getString(pos);
+        return TestUtil.isEmptyOrNull(r) ? new String[]{} : r.split(";");
+    }
 
-	public @NonNull Integer getInteger(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getInteger(pos);
-	}
+    public String getString(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getString(pos);
+    }
 
-	public @NonNull Long getLong(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getLong(pos);
-	}
+    public @NonNull Integer getInteger(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getInteger(pos);
+    }
 
-	public boolean getBoolean(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getBoolean(pos);
-	}
+    public @NonNull Long getLong(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getLong(pos);
+    }
 
-	public Date getDate(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getDate(pos);
+    public boolean getBoolean(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getBoolean(pos);
+    }
 
-	}
+    public Date getDate(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getDate(pos);
 
-	public String[] getStrings(String fieldName) throws ThreemaException {
-		int pos = this.getValuePosition(fieldName);
-		if(pos < 0) {
-			throw new ThreemaException("invalid csv header position [" + fieldName + "]");
-		}
-		return this.getStrings(pos);
+    }
 
-	}
+    public String[] getStrings(String fieldName) throws ThreemaException {
+        int pos = this.getValuePosition(fieldName);
+        if (pos < 0) {
+            throw new ThreemaException("invalid csv header position [" + fieldName + "]");
+        }
+        return this.getStrings(pos);
 
-	/**
-	 * Return the CSV column index for the specified column name.
-	 *
-	 * @return the index, or -1 if the column was not found.
-	 */
-	public int getValuePosition(String fieldName) {
-		if(this.header != null && fieldName != null) {
-			for(int n = 0; n < this.header.length; n++) {
-				if(fieldName.equals(this.header[n])) {
-					return n;
-				}
-			}
-		}
+    }
 
-		return -1;
-	}
+    /**
+     * Return the CSV column index for the specified column name.
+     *
+     * @return the index, or -1 if the column was not found.
+     */
+    public int getValuePosition(String fieldName) {
+        if (this.header != null && fieldName != null) {
+            for (int n = 0; n < this.header.length; n++) {
+                if (fieldName.equals(this.header[n])) {
+                    return n;
+                }
+            }
+        }
 
-	public void write() {
-		if(this.writer != null) {
-			this.writer.writeNext(this.data);
-		}
-	}
+        return -1;
+    }
+
+    public void write() {
+        if (this.writer != null) {
+            this.writer.writeNext(this.data);
+        }
+    }
 
 
-	/**
-	 * return a csv well formed string
-	 */
-	private String escape(Date date) {
-		if(date == null) {
-			return "";
-		}
-		return String.valueOf(date.getTime());
-	}
+    /**
+     * return a csv well formed string
+     */
+    private String escape(Date date) {
+        if (date == null) {
+            return "";
+        }
+        return String.valueOf(date.getTime());
+    }
 
-	/**
-	 * return a csv well formed string
-	 */
-	private String escape(boolean bool) {
-		return bool ? "1" : "0";
-	}
-	/**
-	 * return a csv well formed string
-	 */
-	private String escape(String ns) {
-		if (ns == null) {
-			return "";
-		}
-		return ns.replace("\\", "\\\\");
-	}
+    /**
+     * return a csv well formed string
+     */
+    private String escape(boolean bool) {
+        return bool ? "1" : "0";
+    }
 
-	private String escape(Object[] os) {
-		String result = "";
-		if(os != null) {
-			for (Object o : os) {
-				if (result.length() > 0) {
-					result += ';';
-				}
+    /**
+     * return a csv well formed string
+     */
+    private String escape(String ns) {
+        if (ns == null) {
+            return "";
+        }
+        return ns.replace("\\", "\\\\");
+    }
 
-				result += this.escape(o);
-			}
-		}
+    private String escape(Object[] os) {
+        String result = "";
+        if (os != null) {
+            for (Object o : os) {
+                if (result.length() > 0) {
+                    result += ';';
+                }
 
-		return result;
-	}
+                result += this.escape(o);
+            }
+        }
 
-	/**
-	 * return a csv well formed string
-	 */
-	private String escape(Object ns) {
-		if (ns == null) {
-			return "";
-		}
+        return result;
+    }
 
-		return this.escape(ns.toString());
-	}
+    /**
+     * return a csv well formed string
+     */
+    private String escape(Object ns) {
+        if (ns == null) {
+            return "";
+        }
+
+        return this.escape(ns.toString());
+    }
 }

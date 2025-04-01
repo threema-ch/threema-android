@@ -412,7 +412,10 @@ class AddOrUpdateContactBackgroundTaskTest {
                 assertTrue(it.acquaintanceLevelChanged)
                 assertTrue(it.verificationLevelChanged)
                 assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value!!.acquaintanceLevel)
-                assertEquals(VerificationLevel.FULLY_VERIFIED, contactModel.data.value!!.verificationLevel)
+                assertEquals(
+                    VerificationLevel.FULLY_VERIFIED,
+                    contactModel.data.value!!.verificationLevel
+                )
             },
             newIdentity = newIdentity,
             publicKey = ByteArray(NaCl.PUBLICKEYBYTES)

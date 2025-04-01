@@ -34,93 +34,94 @@ import ch.threema.app.R;
 
 public class DirectoryHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
-	private final int             headerOffset;
-	private final boolean         sticky;
-	private final HeaderCallback sectionCallback;
+    private final int headerOffset;
+    private final boolean sticky;
+    private final HeaderCallback sectionCallback;
 
-	private View headerView;
-	private TextView header;
+    private View headerView;
+    private TextView header;
 
-	public DirectoryHeaderItemDecoration(int headerHeight, boolean sticky, @NonNull HeaderCallback sectionCallback) {
-		headerOffset = headerHeight;
-		this.sticky = sticky;
-		this.sectionCallback = sectionCallback;
-	}
+    public DirectoryHeaderItemDecoration(int headerHeight, boolean sticky, @NonNull HeaderCallback sectionCallback) {
+        headerOffset = headerHeight;
+        this.sticky = sticky;
+        this.sectionCallback = sectionCallback;
+    }
 
-	@Override
-	public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-		super.getItemOffsets(outRect, view, parent, state);
+    @Override
+    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.getItemOffsets(outRect, view, parent, state);
 
-		int pos = parent.getChildAdapterPosition(view);
-		if (sectionCallback.isHeader(pos)) {
-			outRect.top = headerOffset;
-		}
-	}
+        int pos = parent.getChildAdapterPosition(view);
+        if (sectionCallback.isHeader(pos)) {
+            outRect.top = headerOffset;
+        }
+    }
 
-	@Override
-	public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-		super.onDrawOver(c, parent, state);
+    @Override
+    public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.onDrawOver(c, parent, state);
 
-		if (headerView == null) {
-			headerView = inflateHeaderView(parent);
-			header = (TextView) headerView.findViewById(R.id.list_item_section_text);
-			fixLayoutSize(headerView, parent);
-		}
+        if (headerView == null) {
+            headerView = inflateHeaderView(parent);
+            header = (TextView) headerView.findViewById(R.id.list_item_section_text);
+            fixLayoutSize(headerView, parent);
+        }
 
-		CharSequence previousHeader = "";
-		for (int i = 0; i < parent.getChildCount(); i++) {
-			View child = parent.getChildAt(i);
-			final int position = parent.getChildAdapterPosition(child);
+        CharSequence previousHeader = "";
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            View child = parent.getChildAt(i);
+            final int position = parent.getChildAdapterPosition(child);
 
-			CharSequence title = sectionCallback.getHeaderText(position);
-			header.setText(title);
-			if (!previousHeader.equals(title) || sectionCallback.isHeader(position)) {
-				drawHeader(c, child, headerView);
-				previousHeader = title;
-			}
-		}
-	}
+            CharSequence title = sectionCallback.getHeaderText(position);
+            header.setText(title);
+            if (!previousHeader.equals(title) || sectionCallback.isHeader(position)) {
+                drawHeader(c, child, headerView);
+                previousHeader = title;
+            }
+        }
+    }
 
-	private void drawHeader(Canvas c, View child, View headerView) {
-		c.save();
-		if (sticky) {
-			c.translate(0, Math.max(0, child.getTop() - headerView.getHeight()));
-		} else {
-			c.translate(0, child.getTop() - headerView.getHeight());
-		}
-		headerView.draw(c);
-		c.restore();
-	}
+    private void drawHeader(Canvas c, View child, View headerView) {
+        c.save();
+        if (sticky) {
+            c.translate(0, Math.max(0, child.getTop() - headerView.getHeight()));
+        } else {
+            c.translate(0, child.getTop() - headerView.getHeight());
+        }
+        headerView.draw(c);
+        c.restore();
+    }
 
-	private View inflateHeaderView(RecyclerView parent) {
-		return LayoutInflater.from(parent.getContext())
-			.inflate(R.layout.item_directory_header, parent, false);
-	}
+    private View inflateHeaderView(RecyclerView parent) {
+        return LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.item_directory_header, parent, false);
+    }
 
-	/**
-	 * Measures the header view to make sure its size is greater than 0 and will be drawn
-	 * https://yoda.entelect.co.za/view/9627/how-to-android-recyclerview-item-decorations
-	 */
-	private void fixLayoutSize(View view, ViewGroup parent) {
-		int widthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth(),
-			View.MeasureSpec.EXACTLY);
-		int heightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight(),
-			View.MeasureSpec.UNSPECIFIED);
+    /**
+     * Measures the header view to make sure its size is greater than 0 and will be drawn
+     * https://yoda.entelect.co.za/view/9627/how-to-android-recyclerview-item-decorations
+     */
+    private void fixLayoutSize(View view, ViewGroup parent) {
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(parent.getWidth(),
+            View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight(),
+            View.MeasureSpec.UNSPECIFIED);
 
-		int childWidth = ViewGroup.getChildMeasureSpec(widthSpec,
-			parent.getPaddingLeft() + parent.getPaddingRight(),
-			view.getLayoutParams().width);
-		int childHeight = ViewGroup.getChildMeasureSpec(heightSpec,
-			parent.getPaddingTop() + parent.getPaddingBottom(),
-			view.getLayoutParams().height);
+        int childWidth = ViewGroup.getChildMeasureSpec(widthSpec,
+            parent.getPaddingLeft() + parent.getPaddingRight(),
+            view.getLayoutParams().width);
+        int childHeight = ViewGroup.getChildMeasureSpec(heightSpec,
+            parent.getPaddingTop() + parent.getPaddingBottom(),
+            view.getLayoutParams().height);
 
-		view.measure(childWidth, childHeight);
+        view.measure(childWidth, childHeight);
 
-		view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-	}
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+    }
 
-	public interface HeaderCallback {
-		boolean isHeader(int position);
-		CharSequence getHeaderText(int position);
-	}
+    public interface HeaderCallback {
+        boolean isHeader(int position);
+
+        CharSequence getHeaderText(int position);
+    }
 }

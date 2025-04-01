@@ -40,16 +40,16 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.ThreemaApplication.WORKER_AUTOSTART;
 
 public class AutoStartNotifyReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AutoStartNotifyReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AutoStartNotifyReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (intent != null && Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-			logger.info("*** Phone rebooted - AutoStart");
-			OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(AutostartWorker.class)
-				.setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
-				.build();
-			WorkManager.getInstance(context).enqueueUniqueWork(WORKER_AUTOSTART, ExistingWorkPolicy.REPLACE, workRequest);
-		}
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent != null && Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+            logger.info("*** Phone rebooted - AutoStart");
+            OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(AutostartWorker.class)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.MINUTES)
+                .build();
+            WorkManager.getInstance(context).enqueueUniqueWork(WORKER_AUTOSTART, ExistingWorkPolicy.REPLACE, workRequest);
+        }
+    }
 }

@@ -38,72 +38,72 @@ import ch.threema.app.utils.LocationUtil;
 
 public class LocationPickerAdapter extends RecyclerView.Adapter<LocationPickerAdapter.PoiViewHolder> {
 
-	private LocationPickerAdapter.OnClickItemListener onClickItemListener;
-	private final Context context;
-	private final LayoutInflater inflater;
-	private List<Poi> pois;
+    private LocationPickerAdapter.OnClickItemListener onClickItemListener;
+    private final Context context;
+    private final LayoutInflater inflater;
+    private List<Poi> pois;
 
-	public static final class PoiViewHolder extends RecyclerView.ViewHolder {
-		private final TextView nameView;
-		private final ImageView iconView;
+    public static final class PoiViewHolder extends RecyclerView.ViewHolder {
+        private final TextView nameView;
+        private final ImageView iconView;
 
-		public PoiViewHolder(@NonNull View itemView) {
-			super(itemView);
+        public PoiViewHolder(@NonNull View itemView) {
+            super(itemView);
 
-			nameView = itemView.findViewById(R.id.name);
-			iconView = itemView.findViewById(R.id.type_icon);
-		}
-	}
+            nameView = itemView.findViewById(R.id.name);
+            iconView = itemView.findViewById(R.id.type_icon);
+        }
+    }
 
-	public LocationPickerAdapter(Context context) {
-		this.context = context;
-		this.inflater = LayoutInflater.from(context);
-	}
+    public LocationPickerAdapter(Context context) {
+        this.context = context;
+        this.inflater = LayoutInflater.from(context);
+    }
 
-	@NonNull
-	@Override
-	public LocationPickerAdapter.PoiViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View itemView = inflater.inflate(R.layout.item_location_picker_place_no_address, parent, false);
-		return new PoiViewHolder(itemView);
-	}
+    @NonNull
+    @Override
+    public LocationPickerAdapter.PoiViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = inflater.inflate(R.layout.item_location_picker_place_no_address, parent, false);
+        return new PoiViewHolder(itemView);
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	public void onBindViewHolder(@NonNull LocationPickerAdapter.PoiViewHolder holder, int position) {
-		if (pois != null) {
-			final Poi poi = pois.get(position);
-			holder.nameView.setText(poi.getName());
-			holder.iconView.setImageResource(LocationUtil.getPlaceDrawableRes(context, poi, true));
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public void onBindViewHolder(@NonNull LocationPickerAdapter.PoiViewHolder holder, int position) {
+        if (pois != null) {
+            final Poi poi = pois.get(position);
+            holder.nameView.setText(poi.getName());
+            holder.iconView.setImageResource(LocationUtil.getPlaceDrawableRes(context, poi, true));
 
-			if (this.onClickItemListener != null) {
-				holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(poi, holder.itemView));
-			}
-		} else {
-			// Covers the case of data not being ready yet.
-			holder.nameView.setText("No data");
-			holder.iconView.setImageResource(R.drawable.ic_map_marker_outline);
-		}
-	}
+            if (this.onClickItemListener != null) {
+                holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(poi, holder.itemView));
+            }
+        } else {
+            // Covers the case of data not being ready yet.
+            holder.nameView.setText("No data");
+            holder.iconView.setImageResource(R.drawable.ic_map_marker_outline);
+        }
+    }
 
-	// getItemCount() is called many times, and when it is first called,
-	// messageModels has not been updated (means initially, it's null, and we can't return null).
-	@Override
-	public int getItemCount() {
-		if (pois != null)
-			return pois.size();
-		else return 0;
-	}
+    // getItemCount() is called many times, and when it is first called,
+    // messageModels has not been updated (means initially, it's null, and we can't return null).
+    @Override
+    public int getItemCount() {
+        if (pois != null)
+            return pois.size();
+        else return 0;
+    }
 
-	void setPois(List<Poi> pois){
-		this.pois = pois;
-		notifyDataSetChanged();
-	}
+    void setPois(List<Poi> pois) {
+        this.pois = pois;
+        notifyDataSetChanged();
+    }
 
-	void setOnClickItemListener(LocationPickerAdapter.OnClickItemListener onClickItemListener) {
-		this.onClickItemListener = onClickItemListener;
-	}
+    void setOnClickItemListener(LocationPickerAdapter.OnClickItemListener onClickItemListener) {
+        this.onClickItemListener = onClickItemListener;
+    }
 
-	public interface OnClickItemListener {
-		void onClick(Poi poi, View view);
-	}
+    public interface OnClickItemListener {
+        void onClick(Poi poi, View view);
+    }
 }

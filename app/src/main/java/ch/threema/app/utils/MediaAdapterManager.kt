@@ -212,24 +212,29 @@ class MediaAdapterManager(private val mediaAdapterListener: MediaAdapterListener
     }
 
     private fun notifyItemRangeChanged(start: Int, itemCount: Int, notify: Int) {
-        notifyAdapters({a -> a.notifyItemRangeChanged(start, itemCount)}, notify)
+        notifyAdapters({ a -> a.notifyItemRangeChanged(start, itemCount) }, notify)
     }
 
     private fun notifyItemChanged(position: Int, notify: Int) {
-        notifyAdapters({a -> a.notifyItemChanged(position)}, notify)
+        notifyAdapters({ a -> a.notifyItemChanged(position) }, notify)
     }
 
-    private fun notifyItemMoved(fromPosition: Int, toPosition: Int, notify: Int = NOTIFY_BOTH_ADAPTERS) {
-        notifyAdapters({a -> a.notifyItemMoved(fromPosition, toPosition)}, notify)
+    private fun notifyItemMoved(
+        fromPosition: Int,
+        toPosition: Int,
+        notify: Int = NOTIFY_BOTH_ADAPTERS
+    ) {
+        notifyAdapters({ a -> a.notifyItemMoved(fromPosition, toPosition) }, notify)
     }
 
     private fun notifyItemRemoved(position: Int, notify: Int = NOTIFY_BOTH_ADAPTERS) {
-        notifyAdapters({a -> a.notifyItemRemoved(position)}, notify)
+        notifyAdapters({ a -> a.notifyItemRemoved(position) }, notify)
     }
 
     private fun isNotifyListener(notify: Int) = notify and NOTIFY_LISTENER == NOTIFY_LISTENER
     private fun isNotifyAdapter(notify: Int) = notify and NOTIFY_ADAPTER == NOTIFY_ADAPTER
-    private fun isNotifyPreviewAdapter(notify: Int) = notify and NOTIFY_PREVIEW_ADAPTER == NOTIFY_PREVIEW_ADAPTER
+    private fun isNotifyPreviewAdapter(notify: Int) =
+        notify and NOTIFY_PREVIEW_ADAPTER == NOTIFY_PREVIEW_ADAPTER
 }
 
 /**

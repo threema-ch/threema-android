@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:app="http://schemas.android.com/apk/res-auto"
-		android:id="@+id/cell"
-		android:layout_height="@dimen/ballot_matrix_cell_width"
-		android:layout_width="@dimen/ballot_matrix_cell_width"
-		android:layout_marginBottom="@dimen/ballot_matrix_cell_border"
-		android:layout_marginRight="@dimen/ballot_matrix_cell_border"
-		android:layout_gravity="center"
-		android:gravity="center">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cell"
+    android:layout_height="@dimen/ballot_matrix_cell_width"
+    android:layout_width="@dimen/ballot_matrix_cell_width"
+    android:layout_marginBottom="@dimen/ballot_matrix_cell_border"
+    android:layout_marginRight="@dimen/ballot_matrix_cell_border"
+    android:layout_gravity="center"
+    android:gravity="center">
 
-	<ch.threema.app.ui.HintedImageView
-		android:id="@+id/avatar_view"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:layout_marginBottom="4dp"
-		android:layout_marginTop="2dp"
-		android:clickable="true"
-		android:foreground="@drawable/selector_avatar"
-		app:srcCompat="@drawable/ic_contact"/>
+    <ch.threema.app.ui.HintedImageView
+        android:id="@+id/avatar_view"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="2dp"
+        android:clickable="true"
+        android:foreground="@drawable/selector_avatar"
+        app:srcCompat="@drawable/ic_contact" />
 
 </LinearLayout>

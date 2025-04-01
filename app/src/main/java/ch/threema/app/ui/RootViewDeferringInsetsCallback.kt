@@ -31,8 +31,12 @@ import ch.threema.app.emojis.EmojiPicker
 import ch.threema.app.services.PreferenceService
 import ch.threema.base.utils.LoggingUtil
 
-class RootViewDeferringInsetsCallback(private val emojiPicker: EmojiPicker?, private val threemaToolbarActivity: ThreemaToolbarActivity):
-    WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE), androidx.core.view.OnApplyWindowInsetsListener {
+class RootViewDeferringInsetsCallback(
+    private val emojiPicker: EmojiPicker?,
+    private val threemaToolbarActivity: ThreemaToolbarActivity
+) :
+    WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
+    androidx.core.view.OnApplyWindowInsetsListener {
 
     private companion object {
         private val logger = LoggingUtil.getThreemaLogger("RootViewDeferringInsetsCallback")
@@ -42,7 +46,8 @@ class RootViewDeferringInsetsCallback(private val emojiPicker: EmojiPicker?, pri
     private var lastWindowInsets: WindowInsetsCompat? = null
     private var deferredInsets = false
     private var disableAnimation = false
-    private val preferenceService: PreferenceService? = ThreemaApplication.getServiceManager()?.preferenceService
+    private val preferenceService: PreferenceService? =
+        ThreemaApplication.getServiceManager()?.preferenceService
 
     override fun onApplyWindowInsets(
         v: View,
@@ -60,7 +65,12 @@ class RootViewDeferringInsetsCallback(private val emojiPicker: EmojiPicker?, pri
         val typeInsets = windowInsets.getInsets(types)
         val notchInsets = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout())
 
-        v.setPadding(typeInsets.left + notchInsets.left, typeInsets.top, typeInsets.right + notchInsets.right, typeInsets.bottom)
+        v.setPadding(
+            typeInsets.left + notchInsets.left,
+            typeInsets.top,
+            typeInsets.right + notchInsets.right,
+            typeInsets.bottom
+        )
         val attachedActivity: ThreemaToolbarActivity = threemaToolbarActivity
         if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
             attachedActivity.onSoftKeyboardOpened(
@@ -75,7 +85,8 @@ class RootViewDeferringInsetsCallback(private val emojiPicker: EmojiPicker?, pri
     }
 
     override fun onPrepare(animation: WindowInsetsAnimationCompat) {
-       logger.debug("onPrepare, typeMask = {}, emojiPicker {} emojiSearch {}, lastInset {}",
+        logger.debug(
+            "onPrepare, typeMask = {}, emojiPicker {} emojiSearch {}, lastInset {}",
             animation.typeMask,
             emojiPicker?.isShown,
             emojiPicker?.isEmojiSearchShown,
@@ -111,8 +122,8 @@ class RootViewDeferringInsetsCallback(private val emojiPicker: EmojiPicker?, pri
         if (animation.typeMask and WindowInsetsCompat.Type.ime() == WindowInsetsCompat.Type.ime()) {
             if (deferredInsets) {
                 deferredInsets = false
-                view?.let {view ->
-                    lastWindowInsets?.let {lastWindowInsets ->
+                view?.let { view ->
+                    lastWindowInsets?.let { lastWindowInsets ->
                         ViewCompat.dispatchApplyWindowInsets(view, lastWindowInsets)
                     }
                 }

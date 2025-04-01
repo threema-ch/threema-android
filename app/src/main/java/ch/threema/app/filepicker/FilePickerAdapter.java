@@ -45,133 +45,133 @@ import ch.threema.app.utils.TestUtil;
 
 public class FilePickerAdapter extends ArrayAdapter<FileInfo> {
 
-	private final Context context;
-	private final int resourceID;
-	private final List<FileInfo> items;
-	private final @ColorInt int enabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface);
-	private final @ColorInt int disabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurfaceVariant);
+    private final Context context;
+    private final int resourceID;
+    private final List<FileInfo> items;
+    private final @ColorInt int enabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface);
+    private final @ColorInt int disabledColor = ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurfaceVariant);
 
-	FilePickerAdapter(Context context, int textViewResourceId,
-	                  List<FileInfo> objects) {
-		super(context, textViewResourceId, objects);
-		this.context = context;
-		this.resourceID = textViewResourceId;
-		this.items = objects;
-	}
+    FilePickerAdapter(Context context, int textViewResourceId,
+                      List<FileInfo> objects) {
+        super(context, textViewResourceId, objects);
+        this.context = context;
+        this.resourceID = textViewResourceId;
+        this.items = objects;
+    }
 
-	public FileInfo getItem(int i) {
-		return items.get(i);
-	}
+    public FileInfo getItem(int i) {
+        return items.get(i);
+    }
 
-	@NonNull
-	@Override
-	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		ViewHolder viewHolder;
-		if (convertView == null) {
-			LayoutInflater layoutInflater = (LayoutInflater) context
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = layoutInflater.inflate(resourceID, null);
-			viewHolder = new ViewHolder();
-			viewHolder.item = convertView;
-			viewHolder.icon = convertView.findViewById(android.R.id.icon);
-			viewHolder.name = convertView.findViewById(R.id.name);
-			viewHolder.date = convertView.findViewById(R.id.date);
-			viewHolder.size = convertView.findViewById(R.id.size);
-			viewHolder.extra = convertView.findViewById(R.id.extra);
-			convertView.setTag(viewHolder);
-		} else {
-			viewHolder = (ViewHolder) convertView.getTag();
-		}
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        ViewHolder viewHolder;
+        if (convertView == null) {
+            LayoutInflater layoutInflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(resourceID, null);
+            viewHolder = new ViewHolder();
+            viewHolder.item = convertView;
+            viewHolder.icon = convertView.findViewById(android.R.id.icon);
+            viewHolder.name = convertView.findViewById(R.id.name);
+            viewHolder.date = convertView.findViewById(R.id.date);
+            viewHolder.size = convertView.findViewById(R.id.size);
+            viewHolder.extra = convertView.findViewById(R.id.extra);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
-		FileInfo fileInfo = items.get(position);
-		if (fileInfo != null) {
+        FileInfo fileInfo = items.get(position);
+        if (fileInfo != null) {
 
-			viewHolder.name.setText(fileInfo.getName());
-			viewHolder.size.setText("");
-			viewHolder.date.setText("");
-			viewHolder.extra.setVisibility(View.GONE);
+            viewHolder.name.setText(fileInfo.getName());
+            viewHolder.size.setText("");
+            viewHolder.date.setText("");
+            viewHolder.extra.setVisibility(View.GONE);
 
-			if (fileInfo.getData().equalsIgnoreCase(Constants.FOLDER)) {
-				viewHolder.icon.setImageResource(R.drawable.ic_folder);
-				viewHolder.extra.setVisibility(View.GONE);
-				tintItem(viewHolder);
-			} else if (fileInfo.getData().equalsIgnoreCase(
-					Constants.PARENT_FOLDER)) {
-				viewHolder.icon.setImageResource(R.drawable.ic_doc_parent);
-				viewHolder.date.setText(R.string.parent_directory);
-				viewHolder.size.setVisibility(View.GONE);
-				viewHolder.extra.setVisibility(View.GONE);
-				tintItem(viewHolder);
-			} else {
-				String mimeType = FileUtil.getMimeTypeFromPath(fileInfo.getPath());
+            if (fileInfo.getData().equalsIgnoreCase(Constants.FOLDER)) {
+                viewHolder.icon.setImageResource(R.drawable.ic_folder);
+                viewHolder.extra.setVisibility(View.GONE);
+                tintItem(viewHolder);
+            } else if (fileInfo.getData().equalsIgnoreCase(
+                Constants.PARENT_FOLDER)) {
+                viewHolder.icon.setImageResource(R.drawable.ic_doc_parent);
+                viewHolder.date.setText(R.string.parent_directory);
+                viewHolder.size.setVisibility(View.GONE);
+                viewHolder.extra.setVisibility(View.GONE);
+                tintItem(viewHolder);
+            } else {
+                String mimeType = FileUtil.getMimeTypeFromPath(fileInfo.getPath());
 
-				viewHolder.icon.setImageResource(IconUtil.getMimeIcon(mimeType));
-				viewHolder.size.setText(fileInfo.getData());
-				viewHolder.size.setVisibility(View.VISIBLE);
+                viewHolder.icon.setImageResource(IconUtil.getMimeIcon(mimeType));
+                viewHolder.size.setText(fileInfo.getData());
+                viewHolder.size.setVisibility(View.VISIBLE);
 
-				if (mimeType != null && mimeType.equals(MimeUtil.MIME_TYPE_ZIP)) {
-					String id = getBackupID(fileInfo.getName());
+                if (mimeType != null && mimeType.equals(MimeUtil.MIME_TYPE_ZIP)) {
+                    String id = getBackupID(fileInfo.getName());
 
-					if (!TestUtil.isEmptyOrNull(id)) {
-						viewHolder.extra.setText(id);
-						viewHolder.extra.setVisibility(View.VISIBLE);
-					}
-				}
+                    if (!TestUtil.isEmptyOrNull(id)) {
+                        viewHolder.extra.setText(id);
+                        viewHolder.extra.setVisibility(View.VISIBLE);
+                    }
+                }
 
-				tintItem(viewHolder);
-			}
+                tintItem(viewHolder);
+            }
 
-			long date = fileInfo.getLastModified();
-			if (date != 0L) {
-				viewHolder.date.setText(LocaleUtil.formatTimeStampString(context, date, false));
-			}
+            long date = fileInfo.getLastModified();
+            if (date != 0L) {
+                viewHolder.date.setText(LocaleUtil.formatTimeStampString(context, date, false));
+            }
 
-		}
-		return convertView;
-	}
+        }
+        return convertView;
+    }
 
-	private String getBackupID(final String filename) {
-		if (!TestUtil.isEmptyOrNull(filename)) {
-			String[] pieces = filename.split("_");
-			if (pieces.length > 2 && pieces[0].equals("threema-backup")) {
-				if (!TestUtil.isEmptyOrNull(pieces[1]) && !TestUtil.isEmptyOrNull(pieces[2])) {
-					final String identity = pieces[1];
-					final Date time = new Date();
+    private String getBackupID(final String filename) {
+        if (!TestUtil.isEmptyOrNull(filename)) {
+            String[] pieces = filename.split("_");
+            if (pieces.length > 2 && pieces[0].equals("threema-backup")) {
+                if (!TestUtil.isEmptyOrNull(pieces[1]) && !TestUtil.isEmptyOrNull(pieces[2])) {
+                    final String identity = pieces[1];
+                    final Date time = new Date();
 
-					try {
-						time.setTime(Long.parseLong(pieces[2]));
-					} catch (NumberFormatException e) {
-						return null;
-					}
+                    try {
+                        time.setTime(Long.parseLong(pieces[2]));
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
 
-					return identity;
-				}
-			}
-		}
-		return null;
-	}
+                    return identity;
+                }
+            }
+        }
+        return null;
+    }
 
-	private void tintItem(ViewHolder holder) {
-		int color = enabledColor;
+    private void tintItem(ViewHolder holder) {
+        int color = enabledColor;
 
-		holder.icon.setColorFilter(color);
-		holder.name.setTextColor(color);
-		holder.date.setTextColor(color);
-		holder.size.setTextColor(color);
-		holder.extra.setTextColor(color);
-	}
+        holder.icon.setColorFilter(color);
+        holder.name.setTextColor(color);
+        holder.date.setTextColor(color);
+        holder.size.setTextColor(color);
+        holder.extra.setTextColor(color);
+    }
 
-	@Override
-	public boolean areAllItemsEnabled() {
-		return false;
-	}
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
 
-	static class ViewHolder {
-		View item;
-		ImageView icon;
-		TextView name;
-		TextView date;
-		TextView size;
-		TextView extra;
-	}
+    static class ViewHolder {
+        View item;
+        ImageView icon;
+        TextView name;
+        TextView date;
+        TextView size;
+        TextView extra;
+    }
 }

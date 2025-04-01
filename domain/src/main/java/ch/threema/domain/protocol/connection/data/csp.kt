@@ -34,15 +34,13 @@ import java.nio.charset.StandardCharsets
  * There is no special logic such as prepending the length. If the length is required (as in a CspFrame)
  * a [CspData] is typically acquired by utilising [CspFrame.toCspData].
  */
-internal class CspData(bytes: ByteArray)
-    :   ByteContainer(bytes),
+internal class CspData(bytes: ByteArray) : ByteContainer(bytes),
     InboundL1Message,
     OutboundL2Message {
     override val type: String = "CspData"
 }
 
-internal class CspLoginMessage(bytes: ByteArray)
-    :   ByteContainer(bytes),
+internal class CspLoginMessage(bytes: ByteArray) : ByteContainer(bytes),
     InboundL2Message,
     OutboundL3Message {
     override val type: String = "CspLoginMessage"
@@ -71,8 +69,7 @@ internal class CspFrame(val box: ByteArray) :
  * Contains data of a decrypted csp message
  * https://clients.pages.threema.dev/protocols/threema-protocols/structbuf/csp/index.html#m:payload:container
  */
-internal class CspContainer(val payloadType: UByte, val data: ByteArray)
-    :   InboundL3Message,
+internal class CspContainer(val payloadType: UByte, val data: ByteArray) : InboundL3Message,
     InboundL4Message,
     OutboundL4Message,
     OutboundL5Message {

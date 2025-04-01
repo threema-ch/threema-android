@@ -243,7 +243,10 @@ class MultiplexedRendezvousPathTest {
     }
 }
 
-private class TestClosedRendezvousPath(override val pid: UInt, override val closedSignal: CompletableDeferred<Unit>) : RendezvousPath {
+private class TestClosedRendezvousPath(
+    override val pid: UInt,
+    override val closedSignal: CompletableDeferred<Unit>
+) : RendezvousPath {
     init {
         closedSignal.complete(Unit)
     }
@@ -265,11 +268,16 @@ private class TestClosedRendezvousPath(override val pid: UInt, override val clos
     }
 }
 
-private class TestRendezvousPath(override val pid: UInt, override val closedSignal: CompletableDeferred<Unit>) : RendezvousPath {
+private class TestRendezvousPath(
+    override val pid: UInt,
+    override val closedSignal: CompletableDeferred<Unit>
+) : RendezvousPath {
     var connected = false
     var closed = false
-    val writtenBytes = Channel<ByteArray>(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
-    val readableBytes = Channel<ByteArray>(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
+    val writtenBytes =
+        Channel<ByteArray>(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
+    val readableBytes =
+        Channel<ByteArray>(capacity = Channel.UNLIMITED, onBufferOverflow = BufferOverflow.SUSPEND)
 
     override suspend fun connect() {
         if (closed) {

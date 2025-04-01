@@ -35,7 +35,8 @@ class IncomingCallAnswerTask(
 ) : IncomingCspMessageSubTask<VoipCallAnswerMessage>(message, triggerSource, serviceManager) {
     private val voipStateService = serviceManager.voipStateService
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processCallAnswer()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processCallAnswer()
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processCallAnswer()
 

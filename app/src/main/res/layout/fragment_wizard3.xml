@@ -1,144 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/WizardSubTitleText"
+        android:id="@+id/scooter"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:text="@string/new_wizard_link_mobile"
+        android:layout_marginTop="@dimen/wizard_paragraph_height"
+        android:layout_marginBottom="@dimen/wizard_paragraph_height" />
+
+    <Spinner
+        style="@style/WizardSpinner"
+        android:id="@+id/country_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/wizard_default_view_height"
+        android:layout_marginBottom="8dp"
+        android:focusable="true"
+        android:spinnerMode="dropdown"
+        android:layout_below="@id/scooter" />
+
+    <LinearLayout
+        android:id="@+id/wizard_phone_layout"
+        android:layout_height="@dimen/wizard_default_view_height"
+        android:layout_width="match_parent"
+        android:layout_below="@id/country_spinner"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/WizardEditTextIcon"
+            android:layout_width="@dimen/wizard_default_view_height"
+            android:layout_height="@dimen/wizard_default_view_height"
+            app:srcCompat="@drawable/ic_call_outline" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_height="@dimen/wizard_default_view_height"
                 android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:orientation="vertical">
+                android:orientation="horizontal">
 
-	<TextView
-			style="@style/WizardSubTitleText"
-			android:id="@+id/scooter"
-			android:layout_alignParentTop="true"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:gravity="center_horizontal"
-			android:text="@string/new_wizard_link_mobile"
-			android:layout_marginTop="@dimen/wizard_paragraph_height"
-			android:layout_marginBottom="@dimen/wizard_paragraph_height"/>
+                <EditText
+                    style="@style/WizardEditText"
+                    android:id="@+id/wizard_prefix"
+                    android:layout_width="64dp"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    android:inputType="phone"
+                    android:maxLength="6"
+                    android:nextFocusForward="@+id/wizard_phone"
+                    android:hint="+" />
 
-	<Spinner
-			style="@style/WizardSpinner"
-			android:id="@+id/country_spinner"
-			android:layout_width="match_parent"
-			android:layout_height="@dimen/wizard_default_view_height"
-			android:layout_marginBottom="8dp"
-			android:focusable="true"
-			android:spinnerMode="dropdown"
-			android:layout_below="@id/scooter"/>
+                <ch.threema.app.emojis.EmojiEditText
+                    style="@style/WizardEditText"
+                    android:id="@+id/wizard_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="1dp"
+                    android:hint="@string/new_wizard_hint_mobile_number"
+                    android:nextFocusForward="@+id/wizard_email"
+                    android:inputType="phone" />
 
-	<LinearLayout
-			android:id="@+id/wizard_phone_layout"
-			android:layout_height="@dimen/wizard_default_view_height"
-			android:layout_width="match_parent"
-			android:layout_below="@id/country_spinner"
-			android:orientation="horizontal">
+            </LinearLayout>
 
-		<ImageView
-			style="@style/WizardEditTextIcon"
-			android:layout_width="@dimen/wizard_default_view_height"
-			android:layout_height="@dimen/wizard_default_view_height"
-			app:srcCompat="@drawable/ic_call_outline"/>
+            <TextView
+                android:id="@+id/preset_phone_text"
+                style="@style/WizardSmallText"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wizard_default_view_height"
+                android:gravity="center_vertical"
+                android:background="@drawable/shape_edittext_icon"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:singleLine="true"
+                android:visibility="gone" />
 
-		<FrameLayout android:layout_width="match_parent"
-					 android:layout_height="wrap_content">
+        </FrameLayout>
 
-			<LinearLayout
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:layout_width="match_parent"
-					android:orientation="horizontal">
-
-				<EditText
-						style="@style/WizardEditText"
-						android:id="@+id/wizard_prefix"
-						android:layout_width="64dp"
-						android:layout_height="@dimen/wizard_default_view_height"
-						android:inputType="phone"
-						android:maxLength="6"
-						android:nextFocusForward="@+id/wizard_phone"
-						android:hint="+"/>
-
-				<ch.threema.app.emojis.EmojiEditText
-						style="@style/WizardEditText"
-						android:id="@+id/wizard_phone"
-						android:layout_width="match_parent"
-						android:layout_height="match_parent"
-						android:layout_marginLeft="1dp"
-						android:hint="@string/new_wizard_hint_mobile_number"
-						android:nextFocusForward="@+id/wizard_email"
-						android:inputType="phone"/>
-
-			</LinearLayout>
-
-			<TextView
-					android:id="@+id/preset_phone_text"
-					style="@style/WizardSmallText"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:gravity="center_vertical"
-					android:background="@drawable/shape_edittext_icon"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:singleLine="true"
-					android:visibility="gone"/>
-
-		</FrameLayout>
-
-	</LinearLayout>
+    </LinearLayout>
 
 
-	<LinearLayout
-			android:id="@+id/wizard_email_layout"
-			android:layout_height="@dimen/wizard_default_view_height"
-			android:layout_width="match_parent"
-			android:layout_below="@id/wizard_phone_layout"
-			android:layout_marginTop="24dp"
-			android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/wizard_email_layout"
+        android:layout_height="@dimen/wizard_default_view_height"
+        android:layout_width="match_parent"
+        android:layout_below="@id/wizard_phone_layout"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal">
 
-		<ImageView
-			style="@style/WizardEditTextIcon"
-			android:layout_width="@dimen/wizard_default_view_height"
-			android:layout_height="@dimen/wizard_default_view_height"
-			app:srcCompat="@drawable/ic_email_outline"/>
+        <ImageView
+            style="@style/WizardEditTextIcon"
+            android:layout_width="@dimen/wizard_default_view_height"
+            android:layout_height="@dimen/wizard_default_view_height"
+            app:srcCompat="@drawable/ic_email_outline" />
 
-		<FrameLayout android:layout_width="match_parent"
-					 android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-			<TextView
-					android:id="@+id/preset_email_text"
-					style="@style/WizardSmallText"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:gravity="center_vertical"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:singleLine="true"
-					android:background="@drawable/shape_edittext_icon"
-					android:visibility="gone"/>
+            <TextView
+                android:id="@+id/preset_email_text"
+                style="@style/WizardSmallText"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wizard_default_view_height"
+                android:gravity="center_vertical"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:singleLine="true"
+                android:background="@drawable/shape_edittext_icon"
+                android:visibility="gone" />
 
-			<ch.threema.app.emojis.EmojiEditText
-					style="@style/WizardEditText"
-					android:id="@+id/wizard_email"
-					android:layout_width="match_parent"
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:hint="@string/new_wizard_hint_email"
-					android:imeOptions="actionDone"
-					android:inputType="textEmailAddress"
-					/>
+            <ch.threema.app.emojis.EmojiEditText
+                style="@style/WizardEditText"
+                android:id="@+id/wizard_email"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/wizard_default_view_height"
+                android:hint="@string/new_wizard_hint_email"
+                android:imeOptions="actionDone"
+                android:inputType="textEmailAddress" />
 
-		</FrameLayout>
+        </FrameLayout>
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<TextView
-		android:id="@+id/disabled_by_policy"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="4dp"
-		android:layout_below="@+id/wizard_email_layout"
-		android:textSize="14sp"
-		android:text="@string/disabled_by_policy"
-		android:visibility="gone"/>
+    <TextView
+        android:id="@+id/disabled_by_policy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_below="@+id/wizard_email_layout"
+        android:textSize="14sp"
+        android:text="@string/disabled_by_policy"
+        android:visibility="gone" />
 
 </RelativeLayout>

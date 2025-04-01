@@ -32,38 +32,38 @@ import ch.threema.app.services.UpdateSystemService;
  */
 public class SystemUpdateToVersion50 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion50(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion50(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_count_idx` ON `message"
-				+ "`(`identity"
-				+ "`, `outbox"
-				+ "`, `isSaved"
-				+ "`, `isRead"
-				+ "`, `isStatusMessage"
-				+ "`)");
+    @Override
+    public boolean runAsync() {
+        sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_count_idx` ON `message"
+            + "`(`identity"
+            + "`, `outbox"
+            + "`, `isSaved"
+            + "`, `isRead"
+            + "`, `isStatusMessage"
+            + "`)");
 
-		sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_queue_idx` ON `message"
-				+ "`(`type"
-				+ "`, `isQueued"
-				+ "`, `outbox"
-				+ "`)");
+        sqLiteDatabase.rawExecSQL("CREATE INDEX IF NOT EXISTS `message_queue_idx` ON `message"
+            + "`(`type"
+            + "`, `isQueued"
+            + "`, `outbox"
+            + "`)");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 50 (db maintenance)";
-	}
+    @Override
+    public String getText() {
+        return "version 50 (db maintenance)";
+    }
 }

@@ -28,41 +28,41 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.factories.ModelFactory;
 
 public class SystemUpdateToVersion65 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 65;
-	public static final String VERSION_STRING = "version " + VERSION;
+    public static final int VERSION = 65;
+    public static final String VERSION_STRING = "version " + VERSION;
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion65(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
-		this.databaseService = databaseService;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion65(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+        this.databaseService = databaseService;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		final ModelFactory[] modelFactories = new ModelFactory[] {
-			this.databaseService.getGroupInviteModelFactory(),
-			this.databaseService.getOutgoingGroupJoinRequestModelFactory(),
-			this.databaseService.getIncomingGroupJoinRequestModelFactory()
-		};
+    @Override
+    public boolean runDirectly() {
+        final ModelFactory[] modelFactories = new ModelFactory[]{
+            this.databaseService.getGroupInviteModelFactory(),
+            this.databaseService.getOutgoingGroupJoinRequestModelFactory(),
+            this.databaseService.getIncomingGroupJoinRequestModelFactory()
+        };
 
-		for(ModelFactory factory: modelFactories) {
-			for(String statement: factory.getStatements()) {
-				this.sqLiteDatabase.execSQL(statement);
-			}
-		}
+        for (ModelFactory factory : modelFactories) {
+            for (String statement : factory.getStatements()) {
+                this.sqLiteDatabase.execSQL(statement);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return VERSION_STRING;
-	}
+    @Override
+    public String getText() {
+        return VERSION_STRING;
+    }
 }

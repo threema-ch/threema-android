@@ -26,5 +26,5 @@ package ch.threema.domain.taskmanager;
  * queue has been flushed completely.
  */
 public interface QueueSendCompleteListener {
-	void queueSendComplete();
+    void queueSendComplete();
 }

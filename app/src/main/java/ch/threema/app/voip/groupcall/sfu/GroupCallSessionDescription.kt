@@ -294,7 +294,10 @@ internal class GroupCallSessionDescription(
         val opus = MICROPHONE_CODECS["opus"]!!
 
         // Ensure correct Opus settings
-        return sdp.replace(Regex("a=fmtp:${opus.payloadType} .*"), "a=fmtp:${opus.payloadType} ${opus.fmtp!!.joinToString(";")}")
+        return sdp.replace(
+            Regex("a=fmtp:${opus.payloadType} .*"),
+            "a=fmtp:${opus.payloadType} ${opus.fmtp!!.joinToString(";")}"
+        )
     }
 
     private fun createRtpMediaLines(
@@ -318,7 +321,11 @@ internal class GroupCallSessionDescription(
 
         // Add media-specific lines
         val lines = mutableListOf(
-            "m=${kind.sdpKind} ${if (active) "9" else "0"} UDP/TLS/RTP/SAVPF ${payloadTypes.joinToString(" ")}",
+            "m=${kind.sdpKind} ${if (active) "9" else "0"} UDP/TLS/RTP/SAVPF ${
+                payloadTypes.joinToString(
+                    " "
+                )
+            }",
             "c=IN IP4 0.0.0.0",
             "a=rtcp:9 IN IP4 0.0.0.0",
             "a=mid:${mid.mid}"
@@ -368,7 +375,10 @@ internal class GroupCallSessionDescription(
         )
     }
 
-    private fun createSessionLines(init: RemoteSessionDescriptionInit, bundle: List<Mid>): List<String> {
+    private fun createSessionLines(
+        init: RemoteSessionDescriptionInit,
+        bundle: List<Mid>
+    ): List<String> {
         return listOf(
             "v=0",
             "o=- ${state.id} ${state.version++} IN IP4 127.0.0.1",

@@ -28,9 +28,10 @@ import ch.threema.app.services.UserService;
 
 public class StoreLicenseCheck implements CheckLicenseRoutine.StoreLicenseChecker {
 
-	private StoreLicenseCheck() {}
+    private StoreLicenseCheck() {
+    }
 
-	public static void checkLicense(Context context, UserService userService) {
-		// stub, no platform store license check in foss based builds
-	}
+    public static void checkLicense(Context context, UserService userService) {
+        // stub, no platform store license check in foss based builds
+    }
 }

@@ -286,8 +286,17 @@ class BlobLoader private constructor(
             if (multiDevicePropertyProvider == null) {
                 throw ThreemaException("Missing argument")
             }
-            val urlWithoutQueryParameters = serverAddressProvider.getBlobMirrorServerDownloadUrl(multiDevicePropertyProvider, blobId)
-            return URL(appendMirrorQueryParameters(urlWithoutQueryParameters, multiDevicePropertyProvider, scope))
+            val urlWithoutQueryParameters = serverAddressProvider.getBlobMirrorServerDownloadUrl(
+                multiDevicePropertyProvider,
+                blobId
+            )
+            return URL(
+                appendMirrorQueryParameters(
+                    urlWithoutQueryParameters,
+                    multiDevicePropertyProvider,
+                    scope
+                )
+            )
         } else {
             if (useIpv6 == null) {
                 throw ThreemaException("Missing argument")
@@ -302,8 +311,17 @@ class BlobLoader private constructor(
             if (multiDevicePropertyProvider == null) {
                 throw ThreemaException("Missing argument")
             }
-            val urlWithoutQueryParameters = serverAddressProvider.getBlobMirrorServerDoneUrl(multiDevicePropertyProvider, blobId)
-            return URL(appendMirrorQueryParameters(urlWithoutQueryParameters, multiDevicePropertyProvider, scope))
+            val urlWithoutQueryParameters = serverAddressProvider.getBlobMirrorServerDoneUrl(
+                multiDevicePropertyProvider,
+                blobId
+            )
+            return URL(
+                appendMirrorQueryParameters(
+                    urlWithoutQueryParameters,
+                    multiDevicePropertyProvider,
+                    scope
+                )
+            )
         } else {
             if (useIpv6 == null) {
                 throw ThreemaException("Missing argument")
@@ -321,9 +339,11 @@ class BlobLoader private constructor(
         multiDevicePropertyProvider: MultiDevicePropertyProvider,
         scope: BlobScope
     ): String {
-        val deviceIdHex: String = multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
-        val deviceGroupIdHex: String = Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
-            ?: throw ThreemaException("Could not read device group id")
+        val deviceIdHex: String =
+            multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
+        val deviceGroupIdHex: String =
+            Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
+                ?: throw ThreemaException("Could not read device group id")
         return "$rawUrl?deviceId=${deviceIdHex}&deviceGroupId=${deviceGroupIdHex}&scope=${scope.name}"
     }
 

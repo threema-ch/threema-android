@@ -40,7 +40,11 @@ import kotlin.math.sqrt
  * @param messageModel The AbstractMessageModel of a voice message
  * @param requestedSamplesCount How many points to expect to be drawn in the end
  */
-class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel, private val requestedSamplesCount: Int, private val listener: AudioWaveformGeneratorListener) : Runnable {
+class AudioWaveformGeneratorTask(
+    private val messageModel: AbstractMessageModel,
+    private val requestedSamplesCount: Int,
+    private val listener: AudioWaveformGeneratorListener
+) : Runnable {
     private val logger = LoggingUtil.getThreemaLogger("AudioWaveFormGenerator")
 
     private var sampleRate = 0
@@ -49,7 +53,7 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
     var canceled: AtomicBoolean = AtomicBoolean(false)
 
     interface AudioWaveformGeneratorListener {
-        fun onDataReady(newMessageModel: AbstractMessageModel, sampleData : List<Float>)
+        fun onDataReady(newMessageModel: AbstractMessageModel, sampleData: List<Float>)
         fun onError(errorMessageModel: AbstractMessageModel, errorMessage: String?)
         fun onCanceled(cancelMessageModel: AbstractMessageModel)
     }
@@ -63,13 +67,19 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
         var decoder: MediaCodec? = null
         var inputAudioComponent: MediaComponent? = null
         try {
-            val file = ThreemaApplication.getServiceManager()?.fileService?.getDecryptedMessageFile(messageModel)
+            val file = ThreemaApplication.getServiceManager()?.fileService?.getDecryptedMessageFile(
+                messageModel
+            )
             if (file == null || !file.exists()) {
                 listener.onError(messageModel, "Unable to open audio file")
                 return
             }
 
-            inputAudioComponent = MediaComponent(ThreemaApplication.getAppContext(), Uri.fromFile(file), MediaComponent.COMPONENT_TYPE_AUDIO)
+            inputAudioComponent = MediaComponent(
+                ThreemaApplication.getAppContext(),
+                Uri.fromFile(file),
+                MediaComponent.COMPONENT_TYPE_AUDIO
+            )
             if (inputAudioComponent.mimeType != null) {
                 val mediaFormat = inputAudioComponent.trackFormat
                 if (mediaFormat != null) {
@@ -81,7 +91,11 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
                         decoder = MediaCodec.createDecoderByType(inputAudioComponent.mimeType!!)
                         decoder.configure(mediaFormat, null, null, 0)
                         decoder.start()
-                        extractSamples(inputAudioComponent.mediaExtractor, decoder, inputAudioComponent.durationUs)
+                        extractSamples(
+                            inputAudioComponent.mediaExtractor,
+                            decoder,
+                            inputAudioComponent.durationUs
+                        )
 
                         if (!canceled.get()) {
                             listener.onDataReady(messageModel, sampleData)
@@ -106,7 +120,7 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
         if (canceled.get()) {
             listener.onCanceled(messageModel)
         } else {
-            listener.onError(messageModel,  "Audio waveform generating failed or interrupted")
+            listener.onError(messageModel, "Audio waveform generating failed or interrupted")
         }
     }
 
@@ -118,20 +132,40 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
         var sampleIndex = 0
         while (!outputDone && !canceled.get()) {
             if (!inputDone) {
-                val decoderInputBufferIndex = decoder.dequeueInputBuffer(VideoTranscoder.TIMEOUT_USEC.toLong())
+                val decoderInputBufferIndex =
+                    decoder.dequeueInputBuffer(VideoTranscoder.TIMEOUT_USEC.toLong())
                 if (decoderInputBufferIndex >= 0) {
-                    val chunkSize = extractor.readSampleData(decoder.getInputBuffer(decoderInputBufferIndex)!!, 0)
+                    val chunkSize = extractor.readSampleData(
+                        decoder.getInputBuffer(decoderInputBufferIndex)!!,
+                        0
+                    )
                     if (chunkSize < 0 || samplesExtracted >= requestedSamplesCount) {
-                        decoder.queueInputBuffer(decoderInputBufferIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+                        decoder.queueInputBuffer(
+                            decoderInputBufferIndex,
+                            0,
+                            0,
+                            0L,
+                            MediaCodec.BUFFER_FLAG_END_OF_STREAM
+                        )
                         inputDone = true
                     } else {
-                        decoder.queueInputBuffer(decoderInputBufferIndex, 0, chunkSize, extractor.sampleTime, 0)
+                        decoder.queueInputBuffer(
+                            decoderInputBufferIndex,
+                            0,
+                            chunkSize,
+                            extractor.sampleTime,
+                            0
+                        )
                         samplesExtracted++
-                        extractor.seekTo(duration * samplesExtracted / requestedSamplesCount, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                        extractor.seekTo(
+                            duration * samplesExtracted / requestedSamplesCount,
+                            MediaExtractor.SEEK_TO_CLOSEST_SYNC
+                        )
                     }
                 }
             }
-            val outputBufIndex = decoder.dequeueOutputBuffer(info, VideoTranscoder.TIMEOUT_USEC.toLong())
+            val outputBufIndex =
+                decoder.dequeueOutputBuffer(info, VideoTranscoder.TIMEOUT_USEC.toLong())
             if (outputBufIndex >= 0) {
                 if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
                     outputDone = true
@@ -172,7 +206,7 @@ class AudioWaveformGeneratorTask(private val messageModel: AbstractMessageModel,
         canceled.set(true)
     }
 
-    fun getMessageId() : Int {
+    fun getMessageId(): Int {
         return messageModel.id
     }
 }

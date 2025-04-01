@@ -45,135 +45,136 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupAddActivity extends MemberChooseActivity implements GenericAlertDialog.DialogClickListener {
-	private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
-	private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
-	private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
+    private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
+    private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
+    private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
 
-	private GroupService groupService;
-	private GroupModel groupModel;
-	private boolean appendMembers;
+    private GroupService groupService;
+    private GroupModel groupModel;
+    private boolean appendMembers;
 
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		if (!super.initActivity(savedInstanceState)) {
-			return false;
-		}
+    @Override
+    protected boolean initActivity(Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
 
-		if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
-			Toast.makeText(this, R.string.disabled_by_policy_short, Toast.LENGTH_LONG).show();
-			return false;
-		}
+        if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
+            Toast.makeText(this, R.string.disabled_by_policy_short, Toast.LENGTH_LONG).show();
+            return false;
+        }
 
-		try {
-			this.groupService = serviceManager.getGroupService();
-		} catch (Exception e) {
-			LogUtil.exception(e, this);
-			return false;
-		}
+        try {
+            this.groupService = serviceManager.getGroupService();
+        } catch (Exception e) {
+            LogUtil.exception(e, this);
+            return false;
+        }
 
-		initData(savedInstanceState);
+        initData(savedInstanceState);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	protected int getNotice() {
-		return 0;
-	}
+    @Override
+    protected int getNotice() {
+        return 0;
+    }
 
-	@Override
-	protected int getMode() {
-		return appendMembers ? MODE_ADD_TO_GROUP : MODE_NEW_GROUP;
-	}
+    @Override
+    protected int getMode() {
+        return appendMembers ? MODE_ADD_TO_GROUP : MODE_NEW_GROUP;
+    }
 
-	@Override
-	protected void initData(Bundle savedInstanceState) {
-		this.appendMembers = false;
-		this.excludedIdentities = new ArrayList<>();
-		try {
-			int groupId = IntentDataUtil.getGroupId(this.getIntent());
-			if(this.groupService != null && groupId > 0) {
-				this.groupModel = this.groupService.getById(groupId);
-				this.appendMembers = (this.groupModel != null && this.groupService.isGroupCreator(this.groupModel));
-				String[] excluded = IntentDataUtil.getContactIdentities(this.getIntent());
-				if (excluded != null && excluded.length > 0) {
-					this.excludedIdentities = new ArrayList<>(Arrays.asList(excluded));
-				}
-			}
-		} catch (Exception e) {
-			LogUtil.exception(e, this);
-			return;
-		}
+    @Override
+    protected void initData(Bundle savedInstanceState) {
+        this.appendMembers = false;
+        this.excludedIdentities = new ArrayList<>();
+        try {
+            int groupId = IntentDataUtil.getGroupId(this.getIntent());
+            if (this.groupService != null && groupId > 0) {
+                this.groupModel = this.groupService.getById(groupId);
+                this.appendMembers = (this.groupModel != null && this.groupService.isGroupCreator(this.groupModel));
+                String[] excluded = IntentDataUtil.getContactIdentities(this.getIntent());
+                if (excluded != null && excluded.length > 0) {
+                    this.excludedIdentities = new ArrayList<>(Arrays.asList(excluded));
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.exception(e, this);
+            return;
+        }
 
-		if (appendMembers) {
-			updateToolbarTitle(R.string.add_group_members, R.string.title_select_contacts);
-		} else {
-			updateToolbarTitle(R.string.title_addgroup, R.string.title_select_contacts);
-		}
+        if (appendMembers) {
+            updateToolbarTitle(R.string.add_group_members, R.string.title_select_contacts);
+        } else {
+            updateToolbarTitle(R.string.title_addgroup, R.string.title_select_contacts);
+        }
 
-		initList();
+        initList();
 
-		if (!appendMembers) {
-			ShowOnceDialog.newInstance(R.string.title_addgroup, R.string.note_group_howto, 0).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
-		}
-	}
+        if (!appendMembers) {
+            ShowOnceDialog.newInstance(R.string.title_addgroup, R.string.note_group_howto, 0).show(getSupportFragmentManager(), DIALOG_TAG_NOTE_GROUP_HOWTO);
+        }
+    }
 
-	@Override
-	protected void menuNext(final List<ContactModel> selectedContacts) {
-		final int previousContacts = this.appendMembers ? excludedIdentities.size() : 1; // user counts as one contact
+    @Override
+    protected void menuNext(final List<ContactModel> selectedContacts) {
+        final int previousContacts = this.appendMembers ? excludedIdentities.size() : 1; // user counts as one contact
 
-		if (selectedContacts.size() >= ThreemaApplication.MIN_GROUP_MEMBERS_COUNT) {
-			if ((previousContacts + selectedContacts.size()) > BuildConfig.MAX_GROUP_SIZE) {
-				Toast.makeText(this, String.format(getString(R.string.group_select_max), BuildConfig.MAX_GROUP_SIZE - previousContacts), Toast.LENGTH_LONG).show();
-			} else {
-				createOrUpdateGroup(selectedContacts);
-			}
-		} else if (groupModel != null) {
-			// Adding group members to existing group (none selected)
-			createOrUpdateGroup(Collections.emptyList());
-		} else {
-			// Adding group members to new group (none selected)
-			GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no, 0).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
-		}
-	}
+        if (selectedContacts.size() >= ThreemaApplication.MIN_GROUP_MEMBERS_COUNT) {
+            if ((previousContacts + selectedContacts.size()) > BuildConfig.MAX_GROUP_SIZE) {
+                Toast.makeText(this, String.format(getString(R.string.group_select_max), BuildConfig.MAX_GROUP_SIZE - previousContacts), Toast.LENGTH_LONG).show();
+            } else {
+                createOrUpdateGroup(selectedContacts);
+            }
+        } else if (groupModel != null) {
+            // Adding group members to existing group (none selected)
+            createOrUpdateGroup(Collections.emptyList());
+        } else {
+            // Adding group members to new group (none selected)
+            GenericAlertDialog.newInstance(R.string.title_addgroup, R.string.group_create_no_members, R.string.yes, R.string.no, 0).show(getSupportFragmentManager(), DIALOG_TAG_NO_MEMBERS);
+        }
+    }
 
-	private void createOrUpdateGroup(@NonNull final List<ContactModel> selectedContacts) {
-		//ok!
-		if(this.groupModel != null) {
-			// edit group mode
-			Intent intent = new Intent();
-			IntentDataUtil.append(selectedContacts, intent);
-			setResult(RESULT_OK, intent);
-			finish();
-		} else {
-			// new group mode
-			Intent nextIntent =  new Intent(this, GroupAdd2Activity.class);
-			IntentDataUtil.append(selectedContacts, nextIntent);
-			startActivityForResult(nextIntent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
-		}
-	}
+    private void createOrUpdateGroup(@NonNull final List<ContactModel> selectedContacts) {
+        //ok!
+        if (this.groupModel != null) {
+            // edit group mode
+            Intent intent = new Intent();
+            IntentDataUtil.append(selectedContacts, intent);
+            setResult(RESULT_OK, intent);
+            finish();
+        } else {
+            // new group mode
+            Intent nextIntent = new Intent(this, GroupAdd2Activity.class);
+            IntentDataUtil.append(selectedContacts, nextIntent);
+            startActivityForResult(nextIntent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
+        }
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == ThreemaActivity.ACTIVITY_ID_GROUP_ADD) {
-			if (resultCode != RESULT_CANCELED) {
-				finish();
-			}
-		}
-	}
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ThreemaActivity.ACTIVITY_ID_GROUP_ADD) {
+            if (resultCode != RESULT_CANCELED) {
+                finish();
+            }
+        }
+    }
 
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putStringArrayList(BUNDLE_EXISTING_MEMBERS, this.excludedIdentities);
-	}
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(BUNDLE_EXISTING_MEMBERS, this.excludedIdentities);
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		createOrUpdateGroup(new ArrayList<>());
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+        createOrUpdateGroup(new ArrayList<>());
+    }
 
-	@Override
-	public void onNo(String tag, Object data) { }
+    @Override
+    public void onNo(String tag, Object data) {
+    }
 }

@@ -66,7 +66,7 @@ class LinkNewDeviceWizardViewModel : ViewModel() {
         mutableCurrentFragment.value = fragment
     }
 
-    fun switchToFragment(newFragmentClass : Class<out Fragment>?) {
+    fun switchToFragment(newFragmentClass: Class<out Fragment>?) {
         mutableNextFragment.value = newFragmentClass
     }
 
@@ -96,7 +96,9 @@ class LinkNewDeviceWizardViewModel : ViewModel() {
                     }
 
                     is Failed -> {
-                        showFailure(ThreemaApplication.getAppContext().getString(R.string.connection_error))
+                        showFailure(
+                            ThreemaApplication.getAppContext().getString(R.string.connection_error)
+                        )
                     }
                 }
             } catch (e: Exception) {

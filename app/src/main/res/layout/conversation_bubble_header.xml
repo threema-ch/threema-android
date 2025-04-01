@@ -23,6 +23,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textStyle="bold"
-        tools:text="@tools:sample/full_names"/>
+        tools:text="@tools:sample/full_names" />
 
 </LinearLayout>

@@ -49,201 +49,213 @@ import com.google.android.material.button.MaterialButton
 private val logger = LoggingUtil.getThreemaLogger("OngoingCallNoticeView")
 
 enum class OngoingCallNoticeMode {
-	MODE_VOIP,
-	MODE_GROUP_CALL_RUNNING,
-	MODE_GROUP_CALL_JOINED
+    MODE_VOIP,
+    MODE_GROUP_CALL_RUNNING,
+    MODE_GROUP_CALL_JOINED
 }
 
 class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
-	private var operationMode: OngoingCallNoticeMode? = null
-	private var groupId: LocalGroupId? = null
-	private lateinit var actionButton: MaterialButton
-	private lateinit var callContainer: RelativeLayout
-	private lateinit var chronometer: Chronometer
-	private lateinit var callText: TextView
-	private lateinit var participantsText: TextView
-	private lateinit var ongoingCallDivider: View
+    private var operationMode: OngoingCallNoticeMode? = null
+    private var groupId: LocalGroupId? = null
+    private lateinit var actionButton: MaterialButton
+    private lateinit var callContainer: RelativeLayout
+    private lateinit var chronometer: Chronometer
+    private lateinit var callText: TextView
+    private lateinit var participantsText: TextView
+    private lateinit var ongoingCallDivider: View
 
-	constructor(context: Context) : super(context) {
-		init()
-	}
+    constructor(context: Context) : super(context) {
+        init()
+    }
 
-	constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-		init()
-	}
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init()
+    }
 
-	constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-		init()
-	}
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init()
+    }
 
-	@AnyThread
-	fun showVoip() {
-		post {
-			setupVoipActions()
-			show(VoipCallService.getStartTime(), OngoingCallNoticeMode.MODE_VOIP)
-		}
-	}
+    @AnyThread
+    fun showVoip() {
+        post {
+            setupVoipActions()
+            show(VoipCallService.getStartTime(), OngoingCallNoticeMode.MODE_VOIP)
+        }
+    }
 
-	/**
-	 * Hide the notice only if the current [OngoingCallNoticeMode] is [OngoingCallNoticeMode.MODE_VOIP].
-	 */
-	@AnyThread
-	fun hideVoip() {
-		logger.info("Hide voip in operation mode `{}`", operationMode) // TODO(ANDR-2441): remove eventually
-		if (operationMode == OngoingCallNoticeMode.MODE_VOIP) {
-			hide()
-		}
-	}
+    /**
+     * Hide the notice only if the current [OngoingCallNoticeMode] is [OngoingCallNoticeMode.MODE_VOIP].
+     */
+    @AnyThread
+    fun hideVoip() {
+        logger.info(
+            "Hide voip in operation mode `{}`",
+            operationMode
+        ) // TODO(ANDR-2441): remove eventually
+        if (operationMode == OngoingCallNoticeMode.MODE_VOIP) {
+            hide()
+        }
+    }
 
-	@AnyThread
-	fun showGroupCall(call: GroupCallDescription, mode: OngoingCallNoticeMode) {
-		post {
-			val participantsCount = call.callState?.participants?.size ?: 0
-			setupGroupCallActions(call)
-			show(getRunningSince(call, context), mode, participantsCount)
-		}
-	}
+    @AnyThread
+    fun showGroupCall(call: GroupCallDescription, mode: OngoingCallNoticeMode) {
+        post {
+            val participantsCount = call.callState?.participants?.size ?: 0
+            setupGroupCallActions(call)
+            show(getRunningSince(call, context), mode, participantsCount)
+        }
+    }
 
-	/**
-	 * Hides the notice no matter what the current [OngoingCallNoticeMode] is.
-	 */
-	@AnyThread
-	fun hide() {
-		post {
-			chronometer.stop()
-			visibility = View.GONE
-		}
-	}
+    /**
+     * Hides the notice no matter what the current [OngoingCallNoticeMode] is.
+     */
+    @AnyThread
+    fun hide() {
+        post {
+            chronometer.stop()
+            visibility = View.GONE
+        }
+    }
 
-	@UiThread
-	private fun show(startTime: Long, mode: OngoingCallNoticeMode, participantCount: Int = 0) {
-		setOperationMode(mode, participantCount)
-		chronometer.visibility = VISIBLE
-		chronometer.base = startTime
-		chronometer.start()
-		visibility = View.VISIBLE
-	}
+    @UiThread
+    private fun show(startTime: Long, mode: OngoingCallNoticeMode, participantCount: Int = 0) {
+        setOperationMode(mode, participantCount)
+        chronometer.visibility = VISIBLE
+        chronometer.base = startTime
+        chronometer.start()
+        visibility = View.VISIBLE
+    }
 
-	private fun setOperationMode(mode: OngoingCallNoticeMode, participantCount: Int) {
-		operationMode = mode
+    private fun setOperationMode(mode: OngoingCallNoticeMode, participantCount: Int) {
+        operationMode = mode
 
-		when (mode) {
-			OngoingCallNoticeMode.MODE_VOIP -> {
-				callContainer.isClickable = true
-				callContainer.isFocusable = true
-				actionButton.text = context.getString(R.string.voip_hangup)
-				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_call_end_outline)
-				callText.setText(R.string.call_ongoing)
-				participantsText.visibility = GONE
-				ongoingCallDivider.visibility = GONE
-			}
-			OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED -> {
-				callContainer.isClickable = false
-				callContainer.isFocusable = false
-				actionButton.text = context.getString(R.string.voip_gc_open_call)
-				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_phone_locked_outline)
-				callText.setText(R.string.voip_gc_in_call)
-				setParticipantsText(participantCount)
-			}
-			OngoingCallNoticeMode.MODE_GROUP_CALL_RUNNING -> {
-				callContainer.isClickable = false
-				callContainer.isFocusable = false
-				actionButton.text = context.getString(R.string.voip_gc_join_call)
-				actionButton.icon = AppCompatResources.getDrawable(context, R.drawable.ic_outline_login_24)
-				callText.setText(R.string.voip_gc_ongoing_call)
-				setParticipantsText(participantCount)
-			}
-		}
-	}
+        when (mode) {
+            OngoingCallNoticeMode.MODE_VOIP -> {
+                callContainer.isClickable = true
+                callContainer.isFocusable = true
+                actionButton.text = context.getString(R.string.voip_hangup)
+                actionButton.icon =
+                    AppCompatResources.getDrawable(context, R.drawable.ic_call_end_outline)
+                callText.setText(R.string.call_ongoing)
+                participantsText.visibility = GONE
+                ongoingCallDivider.visibility = GONE
+            }
 
-	override fun onFinishInflate() {
-		super.onFinishInflate()
-		actionButton = findViewById(R.id.call_hangup)
-		callContainer = findViewById(R.id.call_container)
-		callText = findViewById(R.id.call_text)
-		chronometer = findViewById(R.id.call_duration)
-		participantsText = findViewById(R.id.participants_count)
-		ongoingCallDivider = findViewById(R.id.ongoing_call_divider)
-	}
+            OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED -> {
+                callContainer.isClickable = false
+                callContainer.isFocusable = false
+                actionButton.text = context.getString(R.string.voip_gc_open_call)
+                actionButton.icon =
+                    AppCompatResources.getDrawable(context, R.drawable.ic_phone_locked_outline)
+                callText.setText(R.string.voip_gc_in_call)
+                setParticipantsText(participantCount)
+            }
 
-	private fun init() {
-		if (context !is AppCompatActivity) {
-			return
-		}
-		(context as AppCompatActivity).lifecycle.addObserver(this)
-		val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-		inflater.inflate(R.layout.notice_ongoing_call, this)
-	}
+            OngoingCallNoticeMode.MODE_GROUP_CALL_RUNNING -> {
+                callContainer.isClickable = false
+                callContainer.isFocusable = false
+                actionButton.text = context.getString(R.string.voip_gc_join_call)
+                actionButton.icon =
+                    AppCompatResources.getDrawable(context, R.drawable.ic_outline_login_24)
+                callText.setText(R.string.voip_gc_ongoing_call)
+                setParticipantsText(participantCount)
+            }
+        }
+    }
 
-	private fun voipContainerAction() {
-		logger.info("Run voip container action") // TODO(ANDR-2441): remove eventually
-		if (VoipCallService.isRunning()) {
-			val openIntent = Intent(context, CallActivity::class.java)
-			openIntent.putExtra(VoipCallService.EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL)
-			openIntent.putExtra(
-				VoipCallService.EXTRA_CONTACT_IDENTITY,
-				VoipCallService.getOtherPartysIdentity()
-			)
-			openIntent.putExtra(VoipCallService.EXTRA_START_TIME, VoipCallService.getStartTime())
-			context.startActivity(openIntent)
-		}
-	}
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        actionButton = findViewById(R.id.call_hangup)
+        callContainer = findViewById(R.id.call_container)
+        callText = findViewById(R.id.call_text)
+        chronometer = findViewById(R.id.call_duration)
+        participantsText = findViewById(R.id.participants_count)
+        ongoingCallDivider = findViewById(R.id.ongoing_call_divider)
+    }
 
-	private fun voipButtonAction() {
-		logger.info("Run voip button action") // TODO(ANDR-2441): remove eventually
-		val hangupIntent = Intent(context, VoipCallService::class.java)
-		hangupIntent.action = VoipCallService.ACTION_HANGUP
-		context.startService(hangupIntent)
-	}
+    private fun init() {
+        if (context !is AppCompatActivity) {
+            return
+        }
+        (context as AppCompatActivity).lifecycle.addObserver(this)
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        inflater.inflate(R.layout.notice_ongoing_call, this)
+    }
 
-	private fun groupCallButtonAction(call: GroupCallDescription) {
-		context.startActivity(GroupCallActivity.getJoinCallIntent(context, call.getGroupIdInt()))
-	}
+    private fun voipContainerAction() {
+        logger.info("Run voip container action") // TODO(ANDR-2441): remove eventually
+        if (VoipCallService.isRunning()) {
+            val openIntent = Intent(context, CallActivity::class.java)
+            openIntent.putExtra(VoipCallService.EXTRA_ACTIVITY_MODE, CallActivity.MODE_ACTIVE_CALL)
+            openIntent.putExtra(
+                VoipCallService.EXTRA_CONTACT_IDENTITY,
+                VoipCallService.getOtherPartysIdentity()
+            )
+            openIntent.putExtra(VoipCallService.EXTRA_START_TIME, VoipCallService.getStartTime())
+            context.startActivity(openIntent)
+        }
+    }
 
-	private fun setViewAction(view: View?, action: Runnable?) {
-		if (action == null) {
-			view?.setOnClickListener(null)
-		} else {
-			view?.setOnClickListener { action.run() }
-		}
-	}
+    private fun voipButtonAction() {
+        logger.info("Run voip button action") // TODO(ANDR-2441): remove eventually
+        val hangupIntent = Intent(context, VoipCallService::class.java)
+        hangupIntent.action = VoipCallService.ACTION_HANGUP
+        context.startService(hangupIntent)
+    }
 
-	private fun setContainerAction(action: Runnable?) {
-		setViewAction(callContainer, action)
-	}
+    private fun groupCallButtonAction(call: GroupCallDescription) {
+        context.startActivity(GroupCallActivity.getJoinCallIntent(context, call.getGroupIdInt()))
+    }
 
-	private fun setButtonAction(action: Runnable?) {
-		setViewAction(actionButton, action)
-	}
+    private fun setViewAction(view: View?, action: Runnable?) {
+        if (action == null) {
+            view?.setOnClickListener(null)
+        } else {
+            view?.setOnClickListener { action.run() }
+        }
+    }
 
-	private fun setupVoipActions() {
-		groupId = null
-		setContainerAction(this::voipContainerAction)
-		setButtonAction(this::voipButtonAction)
-	}
+    private fun setContainerAction(action: Runnable?) {
+        setViewAction(callContainer, action)
+    }
 
-	private fun setupGroupCallActions(call: GroupCallDescription) {
-		if (groupId != call.groupId) {
-			groupId = call.groupId
-			setContainerAction(null)
-			val action = call.let { { groupCallButtonAction(it) } }
-			setButtonAction(action)
-		}
-	}
+    private fun setButtonAction(action: Runnable?) {
+        setViewAction(actionButton, action)
+    }
 
-	private fun setParticipantsText(participantCount: Int) {
-		if (participantCount > 0) {
-			participantsText.text = ConfigUtils.getSafeQuantityString(
-				context,
-				R.plurals.n_participants_in_call,
-				participantCount,
-				participantCount
-			)
-			participantsText.visibility = VISIBLE
-			ongoingCallDivider.visibility = VISIBLE
-		} else {
-			participantsText.visibility = GONE
-			ongoingCallDivider.visibility = GONE
-		}
-	}
+    private fun setupVoipActions() {
+        groupId = null
+        setContainerAction(this::voipContainerAction)
+        setButtonAction(this::voipButtonAction)
+    }
+
+    private fun setupGroupCallActions(call: GroupCallDescription) {
+        if (groupId != call.groupId) {
+            groupId = call.groupId
+            setContainerAction(null)
+            val action = call.let { { groupCallButtonAction(it) } }
+            setButtonAction(action)
+        }
+    }
+
+    private fun setParticipantsText(participantCount: Int) {
+        if (participantCount > 0) {
+            participantsText.text = ConfigUtils.getSafeQuantityString(
+                context,
+                R.plurals.n_participants_in_call,
+                participantCount,
+                participantCount
+            )
+            participantsText.visibility = VISIBLE
+            ongoingCallDivider.visibility = VISIBLE
+        } else {
+            participantsText.visibility = GONE
+            ongoingCallDivider.visibility = GONE
+        }
+    }
 }

@@ -97,8 +97,8 @@ class TaskArchiveFactory(databaseService: DatabaseServiceNew) :
 
     override fun getStatements() = arrayOf(
         "CREATE TABLE `$tableName` (" +
-                "`$COLUMN_ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "`$COLUMN_TASK` STRING NOT NULL)"
+            "`$COLUMN_ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "`$COLUMN_TASK` STRING NOT NULL)"
     )
 
     private fun getOldestIdForTask(task: String): Long? {

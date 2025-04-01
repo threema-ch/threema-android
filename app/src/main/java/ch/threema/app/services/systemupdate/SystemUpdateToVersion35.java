@@ -34,37 +34,37 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion35 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion35(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion35(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
+    @Override
+    public boolean runDirectly() throws SQLException {
 
-		//add new caption field to message model fields
-		for(String table: new String[]{
-			"message",
-			"m_group_message",
-			"distribution_list_message"
-		}) {
-			if(!fieldExists(this.sqLiteDatabase, table, "caption")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
-						+ " ADD COLUMN caption VARCHAR NULL");
-			}
-		}
-		return true;
-	}
+        //add new caption field to message model fields
+        for (String table : new String[]{
+            "message",
+            "m_group_message",
+            "distribution_list_message"
+        }) {
+            if (!fieldExists(this.sqLiteDatabase, table, "caption")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
+                    + " ADD COLUMN caption VARCHAR NULL");
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 35 (add caption)";
-	}
+    @Override
+    public String getText() {
+        return "version 35 (add caption)";
+    }
 }

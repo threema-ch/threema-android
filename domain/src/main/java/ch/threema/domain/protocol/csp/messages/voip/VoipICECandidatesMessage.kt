@@ -79,7 +79,7 @@ class VoipICECandidatesMessage : VoipMessage() {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage) : VoipICECandidatesMessage {
+        fun fromReflected(message: MdD2D.IncomingMessage): VoipICECandidatesMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val voipICECandidatesMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)
             voipICECandidatesMessage.initializeCommonProperties(message)

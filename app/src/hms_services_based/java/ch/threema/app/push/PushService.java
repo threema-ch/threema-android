@@ -46,77 +46,79 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushService extends HmsMessageService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
 
-	public static void deleteToken(Context context) {
-		logger.info("Delete HMS push token");
-		try {
-			String appId = Objects.requireNonNull(HmsTokenUtil.getHmsAppId(context));
-			HmsInstanceId.getInstance(ThreemaApplication.getAppContext()).deleteToken(appId, HmsTokenUtil.TOKEN_SCOPE);
-			PushUtil.sendTokenToServer("", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
-		} catch (ApiException | ThreemaException | NullPointerException e) {
-			logger.error("Could not delete hms token", e);
-		}
-	}
+    public static void deleteToken(Context context) {
+        logger.info("Delete HMS push token");
+        try {
+            String appId = Objects.requireNonNull(HmsTokenUtil.getHmsAppId(context));
+            HmsInstanceId.getInstance(ThreemaApplication.getAppContext()).deleteToken(appId, HmsTokenUtil.TOKEN_SCOPE);
+            PushUtil.sendTokenToServer("", ProtocolDefines.PUSHTOKEN_TYPE_NONE);
+        } catch (ApiException | ThreemaException | NullPointerException e) {
+            logger.error("Could not delete hms token", e);
+        }
+    }
 
-	@Override
-	public void onNewToken(@Nullable String token) {
-		logger.info("New HMS token received");
-		try {
-			String formattedToken = HmsTokenUtil.obtainAndPrependHmsAppId(getApplicationContext(), token);
-			if (formattedToken != null) {
-				PushUtil.sendTokenToServer(formattedToken, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
-			} else {
-				logger.warn("Could not send new token to server: app id could not be prepended or token is null");
-			}
-		} catch (ThreemaException e) {
-			logger.error("Could not send token to server ", e);
-		}
-	}
+    @Override
+    public void onNewToken(@Nullable String token) {
+        logger.info("New HMS token received");
+        try {
+            String formattedToken = HmsTokenUtil.obtainAndPrependHmsAppId(getApplicationContext(), token);
+            if (formattedToken != null) {
+                PushUtil.sendTokenToServer(formattedToken, ProtocolDefines.PUSHTOKEN_TYPE_HMS);
+            } else {
+                logger.warn("Could not send new token to server: app id could not be prepended or token is null");
+            }
+        } catch (ThreemaException e) {
+            logger.error("Could not send token to server ", e);
+        }
+    }
 
-	@Override
-	public void onMessageReceived(RemoteMessage remoteMessage) {
-		logger.info("Handling incoming HMS message.");
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        logger.info("Handling incoming HMS message.");
 
-		RuntimeUtil.runInWakelock(getApplicationContext(), DateUtils.MINUTE_IN_MILLIS * 10, "PushService", () -> processHMSMessage(remoteMessage));
-	}
+        RuntimeUtil.runInWakelock(getApplicationContext(), DateUtils.MINUTE_IN_MILLIS * 10, "PushService", () -> processHMSMessage(remoteMessage));
+    }
 
-	private void processHMSMessage(RemoteMessage remoteMessage) {
-		logger.info("Received HMS message: {}", remoteMessage.getMessageId());
-		// Log message sent time
-		try {
-			Date sentDate = new Date(remoteMessage.getSentTime());
-			logger.info("*** Message sent     :  {}", sentDate);
-			logger.info("*** Message received : {}", new Date());
-			logger.info("*** Original priority: {}", remoteMessage.getOriginalUrgency());
-			logger.info("*** Current priority: {}", remoteMessage.getUrgency());
-		} catch (Exception ignore) {
-		}
+    private void processHMSMessage(RemoteMessage remoteMessage) {
+        logger.info("Received HMS message: {}", remoteMessage.getMessageId());
+        // Log message sent time
+        try {
+            Date sentDate = new Date(remoteMessage.getSentTime());
+            logger.info("*** Message sent     :  {}", sentDate);
+            logger.info("*** Message received : {}", new Date());
+            logger.info("*** Original priority: {}", remoteMessage.getOriginalUrgency());
+            logger.info("*** Current priority: {}", remoteMessage.getUrgency());
+        } catch (Exception ignore) {
+        }
 
-		Map<String, String> data = remoteMessage.getDataOfMap();
-		PushUtil.processRemoteMessage(data);
-	}
+        Map<String, String> data = remoteMessage.getDataOfMap();
+        PushUtil.processRemoteMessage(data);
+    }
 
-	// following services check are handled here and not in ConfigUtils to minimize number of duplicating classes
-	/**
-	 * check for specific huawei services
-	 */
-	public static boolean hmsServicesInstalled(Context context) {
-		return RuntimeUtil.isInTest() || (HuaweiMobileServicesUtil.isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS);
-	}
+    // following services check are handled here and not in ConfigUtils to minimize number of duplicating classes
 
-	/**
-	 * check for specific google services
-	 * @noinspection unused
-	 */
-	public static boolean playServicesInstalled(Context context) {
-		return false;
-	}
+    /**
+     * check for specific huawei services
+     */
+    public static boolean hmsServicesInstalled(Context context) {
+        return RuntimeUtil.isInTest() || (HuaweiMobileServicesUtil.isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS);
+    }
 
-	/**
-	 * check for available push service
-	 */
-	public static boolean servicesInstalled(Context context) {
-		return playServicesInstalled(context) || hmsServicesInstalled(context);
-	}
+    /**
+     * check for specific google services
+     *
+     * @noinspection unused
+     */
+    public static boolean playServicesInstalled(Context context) {
+        return false;
+    }
+
+    /**
+     * check for available push service
+     */
+    public static boolean servicesInstalled(Context context) {
+        return playServicesInstalled(context) || hmsServicesInstalled(context);
+    }
 }

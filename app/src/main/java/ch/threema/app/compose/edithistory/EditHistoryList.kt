@@ -68,13 +68,15 @@ fun EditHistoryList(
 
     // check if talkback is enabled
     val isExploreByTouchEnabled = produceState(false) {
-        val am: AccessibilityManager? = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager?
+        val am: AccessibilityManager? =
+            context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager?
         value = am?.isTouchExplorationEnabled ?: false
     }
 
     val isItemExpandableMap = remember { mutableStateMapOf<Int, Boolean>() }
     LaunchedEffect(editHistoryUiState.editHistoryEntries) {
-        isItemExpandableMap.keys.retainAll(editHistoryUiState.editHistoryEntries.map { it.uid }.toSet())
+        isItemExpandableMap.keys.retainAll(editHistoryUiState.editHistoryEntries.map { it.uid }
+            .toSet())
     }
 
     LazyColumn(modifier = modifier) {
@@ -104,7 +106,11 @@ fun EditHistoryList(
                 key = { index -> editHistoryUiState.editHistoryEntries[index].uid }
             ) { index ->
                 val entry = editHistoryUiState.editHistoryEntries[index]
-                val isExpandable by remember { derivedStateOf { isItemExpandableMap[entry.uid] ?: false } }
+                val isExpandable by remember {
+                    derivedStateOf {
+                        isItemExpandableMap[entry.uid] ?: false
+                    }
+                }
 
                 ExpandingBox(
                     collapsedMaxHeight = if (isExpandable) ITEM_MAX_HEIGHT else null
@@ -113,14 +119,16 @@ fun EditHistoryList(
                         .padding(start = 8.dp)
                         .then(stringResource(R.string.cd_index_in_edit_history).let {
                             Modifier.semantics {
-                                contentDescription = it.format(editHistoryUiState.editHistoryEntries.size - index)
+                                contentDescription =
+                                    it.format(editHistoryUiState.editHistoryEntries.size - index)
                             }
                         })
                     val bubbleModifier = Modifier.onGloballyPositioned { coordinates ->
                         // measure bubble height to initialize whether it is expandable
                         if (!isItemExpandableMap.containsKey(entry.uid)) {
                             val heightInDp = (coordinates.size.height / density.density).dp
-                            isItemExpandableMap[entry.uid] = !isExploreByTouchEnabled.value && heightInDp > ITEM_MAX_HEIGHT
+                            isItemExpandableMap[entry.uid] =
+                                !isExploreByTouchEnabled.value && heightInDp > ITEM_MAX_HEIGHT
                         }
                     }
                     if (editHistoryUiState.editHistoryEntries.size > 1) {

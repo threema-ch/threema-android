@@ -36,8 +36,9 @@ internal class SystemUpdateToVersion81(
     override fun runDirectly(): Boolean {
         sqLiteDatabase.execSQL(
             "CREATE TABLE `server_messages` (" +
-            "`message` VARCHAR PRIMARY KEY ON CONFLICT REPLACE, " +
-            "`type` INTEGER)")
+                "`message` VARCHAR PRIMARY KEY ON CONFLICT REPLACE, " +
+                "`type` INTEGER)"
+        )
         return true
     }
 

@@ -37,55 +37,55 @@ import ch.threema.app.stores.PreferenceStore;
 import ch.threema.base.utils.LoggingUtil;
 
 /**
- *  rename account manager accounts
+ * rename account manager accounts
  */
 public class SystemUpdateToVersion48 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion48");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion48");
 
-	private final Context context;
+    private final Context context;
 
-	public SystemUpdateToVersion48(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion48(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		final AccountManager accountManager = AccountManager.get(this.context);
-		final String myIdentity = PreferenceManager.getDefaultSharedPreferences(this.context).getString(PreferenceStore.PREFS_IDENTITY, null);
+    @Override
+    public boolean runDirectly() throws SQLException {
+        final AccountManager accountManager = AccountManager.get(this.context);
+        final String myIdentity = PreferenceManager.getDefaultSharedPreferences(this.context).getString(PreferenceStore.PREFS_IDENTITY, null);
 
-		if (accountManager != null && myIdentity != null) {
-			try {
-				Account accountToRename = null;
+        if (accountManager != null && myIdentity != null) {
+            try {
+                Account accountToRename = null;
 
-				for (Account account : Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))) {
-					if (account.name.equals(myIdentity)) {
-						accountToRename = account;
-					} else {
-						if (!account.name.equals(context.getString(R.string.title_mythreemaid))) {
-							accountManager.removeAccount(account, null, null);
-						}
-					}
-				}
+                for (Account account : Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))) {
+                    if (account.name.equals(myIdentity)) {
+                        accountToRename = account;
+                    } else {
+                        if (!account.name.equals(context.getString(R.string.title_mythreemaid))) {
+                            accountManager.removeAccount(account, null, null);
+                        }
+                    }
+                }
 
-				// rename old-style ID-based account to generic name
-				if (accountToRename != null) {
-					accountManager.renameAccount(accountToRename,context.getString(R.string.title_mythreemaid), null, null);
-				}
-				return true;
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-		return false;
-	}
+                // rename old-style ID-based account to generic name
+                if (accountToRename != null) {
+                    accountManager.renameAccount(accountToRename, context.getString(R.string.title_mythreemaid), null, null);
+                }
+                return true;
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 48";
-	}
+    @Override
+    public String getText() {
+        return "version 48";
+    }
 }

@@ -27,69 +27,69 @@ import static junit.framework.Assert.assertEquals;
 
 public class ThumbnailUtilsTest {
 
-	/**
-	 * Only downscaling should happen, no upscaling.
-	 */
-	@Test
-	public void resizeProportionallyNoChange1() {
-		int w = 300;
-		int h = 200;
-		int maxSidePx = 400;
-		final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
-		assertEquals(w, size.width);
-		assertEquals(h, size.height);
-	}
+    /**
+     * Only downscaling should happen, no upscaling.
+     */
+    @Test
+    public void resizeProportionallyNoChange1() {
+        int w = 300;
+        int h = 200;
+        int maxSidePx = 400;
+        final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
+        assertEquals(w, size.width);
+        assertEquals(h, size.height);
+    }
 
-	/**
-	 * Only downscaling should happen, no upscaling.
-	 */
-	@Test
-	public void resizeProportionallyNoChange2() {
-		int w = 300;
-		int h = 200;
-		int maxSidePx = 300;
-		final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
-		assertEquals(w, size.width);
-		assertEquals(h, size.height);
-	}
+    /**
+     * Only downscaling should happen, no upscaling.
+     */
+    @Test
+    public void resizeProportionallyNoChange2() {
+        int w = 300;
+        int h = 200;
+        int maxSidePx = 300;
+        final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
+        assertEquals(w, size.width);
+        assertEquals(h, size.height);
+    }
 
-	/**
-	 * Evenly divisible scale factors should not have any rounding errors.
-	 */
-	@Test
-	public void resizeProportionallyEven1() {
-		int w = 300;
-		int h = 200;
-		int maxSidePx = 150;
-		final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
-		assertEquals(150, size.width);
-		assertEquals(100, size.height);
-	}
+    /**
+     * Evenly divisible scale factors should not have any rounding errors.
+     */
+    @Test
+    public void resizeProportionallyEven1() {
+        int w = 300;
+        int h = 200;
+        int maxSidePx = 150;
+        final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
+        assertEquals(150, size.width);
+        assertEquals(100, size.height);
+    }
 
-	/**
-	 * Evenly divisible scale factors should not have any rounding errors.
-	 * The order of width and height should not matter.
-	 */
-	@Test
-	public void resizeProportionallyEven2() {
-		int w = 200;
-		int h = 300;
-		int maxSidePx = 150;
-		final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
-		assertEquals(100, size.width);
-		assertEquals(150, size.height);
-	}
+    /**
+     * Evenly divisible scale factors should not have any rounding errors.
+     * The order of width and height should not matter.
+     */
+    @Test
+    public void resizeProportionallyEven2() {
+        int w = 200;
+        int h = 300;
+        int maxSidePx = 150;
+        final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
+        assertEquals(100, size.width);
+        assertEquals(150, size.height);
+    }
 
-	/**
-	 * Not evenly divisible scale factors should properly round.
-	 */
-	@Test
-	public void resizeProportionallyRound() {
-		int w = 300;
-		int h = 200;
-		int maxSidePx = 100;
-		final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
-		assertEquals(100, size.width);
-		assertEquals(67, size.height);
-	}
+    /**
+     * Not evenly divisible scale factors should properly round.
+     */
+    @Test
+    public void resizeProportionallyRound() {
+        int w = 300;
+        int h = 200;
+        int maxSidePx = 100;
+        final ThumbnailUtils.Size size = ThumbnailUtils.resizeProportionally(w, h, maxSidePx);
+        assertEquals(100, size.width);
+        assertEquals(67, size.height);
+    }
 }

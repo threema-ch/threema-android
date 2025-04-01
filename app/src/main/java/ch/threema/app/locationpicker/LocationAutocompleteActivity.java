@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+
 import org.maplibre.android.geometry.LatLng;
 
 import java.util.ArrayList;
@@ -59,164 +60,164 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 
 public class LocationAutocompleteActivity extends ThreemaActivity {
 
-	private static final String DIALOG_TAG_NO_CONNECTION = "no_connection";
+    private static final String DIALOG_TAG_NO_CONNECTION = "no_connection";
 
-	private static final long QUERY_TIMEOUT = 1000; // ms
+    private static final long QUERY_TIMEOUT = 1000; // ms
 
-	private LocationAutocompleteAdapter autocompleteAdapter;
-	private EmptyRecyclerView recyclerView;
+    private LocationAutocompleteAdapter autocompleteAdapter;
+    private EmptyRecyclerView recyclerView;
 
-	private String queryText;
-	private LatLng currentLocation = new LatLng();
-	private LocationAutocompleteViewModel viewModel;
-	private List<Poi> places = new ArrayList<>();
-	private LinearProgressIndicator progressBar;
-	private EmptyView emptyView;
+    private String queryText;
+    private LatLng currentLocation = new LatLng();
+    private LocationAutocompleteViewModel viewModel;
+    private List<Poi> places = new ArrayList<>();
+    private LinearProgressIndicator progressBar;
+    private EmptyView emptyView;
 
-	private Handler queryHandler = new Handler();
-	private Runnable queryTask = new Runnable() {
-		@Override
-		public void run() {
-			viewModel.search(new PoiQuery(queryText, currentLocation));
-		}
-	};
+    private Handler queryHandler = new Handler();
+    private Runnable queryTask = new Runnable() {
+        @Override
+        public void run() {
+            viewModel.search(new PoiQuery(queryText, currentLocation));
+        }
+    };
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		ConfigUtils.configureSystemBars(this);
+        ConfigUtils.configureSystemBars(this);
 
-		setContentView(R.layout.activity_location_autocomplete);
+        setContentView(R.layout.activity_location_autocomplete);
 
-		MaterialToolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		toolbar.setTitle(null);
-		final ActionBar actionBar = getSupportActionBar();
-		if (actionBar == null) {
-			finish();
-			return;
-		}
-		actionBar.setTitle(null);
-		actionBar.setDisplayHomeAsUpEnabled(true);
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(null);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            finish();
+            return;
+        }
+        actionBar.setTitle(null);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-		Intent intent = getIntent();
-		currentLocation.setLatitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0));
-		currentLocation.setLongitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
+        Intent intent = getIntent();
+        currentLocation.setLatitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0));
+        currentLocation.setLongitude(intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
 
-		ThreemaEditText searchView = findViewById(R.id.search_view);
-		searchView.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        ThreemaEditText searchView = findViewById(R.id.search_view);
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (s != null) {
-					queryHandler.removeCallbacksAndMessages(null);
-					queryText = s.toString();
-					queryHandler.postDelayed(queryTask, QUERY_TIMEOUT);
-				}
-			}
-		});
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s != null) {
+                    queryHandler.removeCallbacksAndMessages(null);
+                    queryText = s.toString();
+                    queryHandler.postDelayed(queryTask, QUERY_TIMEOUT);
+                }
+            }
+        });
 
-		progressBar = this.findViewById(R.id.progress);
+        progressBar = this.findViewById(R.id.progress);
 
-		recyclerView = this.findViewById(R.id.recycler);
-		recyclerView.setHasFixedSize(true);
-		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView = this.findViewById(R.id.recycler);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-		emptyView = new EmptyView(this, ConfigUtils.getActionBarSize(this));
-		emptyView.setup(R.string.lp_search_place_min_chars);
-		((ViewGroup) recyclerView.getParent()).addView(emptyView);
-		recyclerView.setEmptyView(emptyView);
+        emptyView = new EmptyView(this, ConfigUtils.getActionBarSize(this));
+        emptyView.setup(R.string.lp_search_place_min_chars);
+        ((ViewGroup) recyclerView.getParent()).addView(emptyView);
+        recyclerView.setEmptyView(emptyView);
 
-		// Get the ViewModel.
-		viewModel = new ViewModelProvider(this).get(LocationAutocompleteViewModel.class);
+        // Get the ViewModel.
+        viewModel = new ViewModelProvider(this).get(LocationAutocompleteViewModel.class);
 
-		// Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-		viewModel.getIsLoading().observe(this, isLoading -> {
-			if (isLoading != null && isLoading) {
-				progressBar.setVisibility(View.VISIBLE);
-			} else {
-				progressBar.setVisibility(View.GONE);
-			}
-		});
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            if (isLoading != null && isLoading) {
+                progressBar.setVisibility(View.VISIBLE);
+            } else {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
 
-		// Create the observer which updates the UI.
-		viewModel.getPlaces().observe(this, newplaces -> {
-			// Update the UI
-			places = newplaces;
-			refreshAdapter(places);
+        // Create the observer which updates the UI.
+        viewModel.getPlaces().observe(this, newplaces -> {
+            // Update the UI
+            places = newplaces;
+            refreshAdapter(places);
 
-			if (!NetworkUtil.isOnline()) {
-				SimpleStringAlertDialog.newInstance(R.string.send_location, R.string.internet_connection_required).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
-			}
-			else if (places.size() == 0 && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
-				emptyView.setup(R.string.lp_search_place_no_matches);
-			}
-			else {
-				emptyView.setup(R.string.lp_search_place_min_chars);
-			}
-		});
+            if (!NetworkUtil.isOnline()) {
+                SimpleStringAlertDialog.newInstance(R.string.send_location, R.string.internet_connection_required).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
+            } else if (places.size() == 0 && (queryText != null && queryText.length() >= QUERY_MIN_LENGTH)) {
+                emptyView.setup(R.string.lp_search_place_no_matches);
+            } else {
+                emptyView.setup(R.string.lp_search_place_min_chars);
+            }
+        });
 
-		setResult(RESULT_CANCELED);
-	}
+        setResult(RESULT_CANCELED);
+    }
 
-	private void refreshAdapter(List<Poi> places) {
-		if (autocompleteAdapter == null) {
-			autocompleteAdapter = new LocationAutocompleteAdapter(places);
-			autocompleteAdapter.setOnItemClickListener(new LocationAutocompleteAdapter.OnItemClickListener() {
-				@Override
-				public void onClick(Poi poi, int position) {
-					returnResult(poi);
-				}
-			});
-			recyclerView.setAdapter(autocompleteAdapter);
-		} else {
-			recyclerView.getRecycledViewPool().clear();
-			autocompleteAdapter.notifyDataSetChanged();
-		}
-	}
+    private void refreshAdapter(List<Poi> places) {
+        if (autocompleteAdapter == null) {
+            autocompleteAdapter = new LocationAutocompleteAdapter(places);
+            autocompleteAdapter.setOnItemClickListener(new LocationAutocompleteAdapter.OnItemClickListener() {
+                @Override
+                public void onClick(Poi poi, int position) {
+                    returnResult(poi);
+                }
+            });
+            recyclerView.setAdapter(autocompleteAdapter);
+        } else {
+            recyclerView.getRecycledViewPool().clear();
+            autocompleteAdapter.notifyDataSetChanged();
+        }
+    }
 
-	private void returnResult(Poi place) {
-		Intent data = new Intent();
+    private void returnResult(Poi place) {
+        Intent data = new Intent();
 
-		if (place != null) {
-			IntentDataUtil.append(place.getLatLng(), getString(R.string.app_name), place.getName(), null, data);
-			setResult(RESULT_OK, data);
-		} else {
-			setResult(RESULT_CANCELED);
-		}
-		this.finish();
-	}
+        if (place != null) {
+            IntentDataUtil.append(place.getLatLng(), getString(R.string.app_name), place.getName(), null, data);
+            setResult(RESULT_OK, data);
+        } else {
+            setResult(RESULT_CANCELED);
+        }
+        this.finish();
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			this.finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		// Intercepting back navigation is needed as this activity overrides the finish() method
-		this.finish();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        // Intercepting back navigation is needed as this activity overrides the finish() method
+        this.finish();
+    }
 
-	@Override
-	public void finish() {
-		super.finish();
-		overridePendingTransition(R.anim.slide_in_left_short, R.anim.slide_out_right_short);
-	}
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left_short, R.anim.slide_out_right_short);
+    }
 }

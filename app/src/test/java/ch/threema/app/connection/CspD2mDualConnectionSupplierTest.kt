@@ -91,7 +91,8 @@ class CspD2mDualConnectionSupplierTest {
         val multiDeviceManager = Mockito.mock(MultiDeviceManager::class.java)
         val propertiesProvider = Mockito.mock(MultiDevicePropertyProvider::class.java)
         val socketCloseListener = Mockito.mock(D2mSocketCloseListener::class.java)
-        Mockito.`when`(multiDeviceManager.isMultiDeviceActive).thenAnswer { mdActiveHandle.isMdActive }
+        Mockito.`when`(multiDeviceManager.isMultiDeviceActive)
+            .thenAnswer { mdActiveHandle.isMdActive }
         Mockito.`when`(multiDeviceManager.propertiesProvider).thenReturn(propertiesProvider)
         Mockito.`when`(multiDeviceManager.socketCloseListener).thenReturn(socketCloseListener)
         val incomingMessageProcessor = Mockito.mock(IncomingMessageProcessor::class.java)
@@ -99,7 +100,8 @@ class CspD2mDualConnectionSupplierTest {
         val deviceCookieManager = Mockito.mock(DeviceCookieManager::class.java)
         val serverAddressProviderService = Mockito.mock(ServerAddressProviderService::class.java)
         val serverAddressProvider = Mockito.mock(ServerAddressProvider::class.java)
-        Mockito.`when`(serverAddressProviderService.serverAddressProvider).thenReturn(serverAddressProvider)
+        Mockito.`when`(serverAddressProviderService.serverAddressProvider)
+            .thenReturn(serverAddressProvider)
         val identityStore = Mockito.mock(IdentityStoreInterface::class.java)
         val version = Version()
         val isIpv6Preferred = true

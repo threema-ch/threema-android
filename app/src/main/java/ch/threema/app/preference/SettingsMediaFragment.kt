@@ -56,14 +56,18 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
     override fun getPreferenceResource(): Int = R.xml.preference_media
 
     private fun initAutoDownloadPref() {
-        val autoDownloadExplainSizePreference: Preference = getPref(R.string.preferences__auto_download_explain)
-        autoDownloadExplainSizePreference.summary = getString(R.string.auto_download_limit_explain,
-                Formatter.formatShortFileSize(context,
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                            MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_SI
-                        else
-                            MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO
-                ))
+        val autoDownloadExplainSizePreference: Preference =
+            getPref(R.string.preferences__auto_download_explain)
+        autoDownloadExplainSizePreference.summary = getString(
+            R.string.auto_download_limit_explain,
+            Formatter.formatShortFileSize(
+                context,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_SI
+                else
+                    MessageServiceImpl.FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO
+            )
+        )
     }
 
     private fun initMediaPref() {
@@ -76,14 +80,20 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
 
     private fun initSaveMediaPref() {
         saveMediaPreference = getPref(R.string.preferences__save_media)
-        saveMediaPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-            if (newValue as Boolean) {
-                ConfigUtils.requestWriteStoragePermissions(requireActivity(), this@SettingsMediaFragment, PERMISSION_REQUEST_SAVE_MEDIA)
-            } else true
-        }
+        saveMediaPreference?.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    ConfigUtils.requestWriteStoragePermissions(
+                        requireActivity(),
+                        this@SettingsMediaFragment,
+                        PERMISSION_REQUEST_SAVE_MEDIA
+                    )
+                } else true
+            }
 
         if (ConfigUtils.isWorkRestricted()) {
-            val value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_save_to_gallery))
+            val value =
+                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_save_to_gallery))
             if (value != null) {
                 saveMediaPreference?.isEnabled = false
                 saveMediaPreference?.isSelectable = false
@@ -92,27 +102,32 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
     }
 
     private fun initDownloadPref() {
-        val wifiDownloadPreference: MultiSelectListPreference = getPref(R.string.preferences__auto_download_wifi)
-        wifiDownloadPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-            if (newValue is Set<*>) {
-                preference.summary = getAutoDownloadSummary(newValue)
-                true
-            } else {
-                false
+        val wifiDownloadPreference: MultiSelectListPreference =
+            getPref(R.string.preferences__auto_download_wifi)
+        wifiDownloadPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { preference, newValue ->
+                if (newValue is Set<*>) {
+                    preference.summary = getAutoDownloadSummary(newValue)
+                    true
+                } else {
+                    false
+                }
             }
-        }
         wifiDownloadPreference.summary = getAutoDownloadSummary(preferenceService.wifiAutoDownload)
 
-        val mobileDownloadPreference: MultiSelectListPreference = getPref(R.string.preferences__auto_download_mobile)
-        mobileDownloadPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-            if (newValue is Set<*>) {
-                preference.summary = getAutoDownloadSummary(newValue)
-                true
-            } else {
-                false
+        val mobileDownloadPreference: MultiSelectListPreference =
+            getPref(R.string.preferences__auto_download_mobile)
+        mobileDownloadPreference.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { preference, newValue ->
+                if (newValue is Set<*>) {
+                    preference.summary = getAutoDownloadSummary(newValue)
+                    true
+                } else {
+                    false
+                }
             }
-        }
-        mobileDownloadPreference.summary = getAutoDownloadSummary(preferenceService.mobileAutoDownload)
+        mobileDownloadPreference.summary =
+            getAutoDownloadSummary(preferenceService.mobileAutoDownload)
     }
 
     private fun getAutoDownloadSummary(selectedOptions: Set<*>): CharSequence? {
@@ -123,7 +138,10 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
                 result.add(resources.getStringArray(R.array.list_auto_download)[i])
             }
         }
-        return if (result.isEmpty()) resources.getString(R.string.never) else TextUtils.join(", ", result)
+        return if (result.isEmpty()) resources.getString(R.string.never) else TextUtils.join(
+            ", ",
+            result
+        )
     }
 
 

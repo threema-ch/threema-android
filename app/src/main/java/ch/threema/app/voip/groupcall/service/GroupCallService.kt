@@ -107,14 +107,23 @@ class GroupCallService : Service() {
             0
         }
 
-        fun getStartIntent(context: Context, sfuBaseUrl: String, callId: CallId, groupId: LocalGroupId): Intent {
+        fun getStartIntent(
+            context: Context,
+            sfuBaseUrl: String,
+            callId: CallId,
+            groupId: LocalGroupId
+        ): Intent {
             return getServiceIntent(context)
                 .putExtra(EXTRA_SFU_BASE_URL, sfuBaseUrl)
                 .putExtra(EXTRA_CALL_ID, callId.bytes)
                 .putExtra(EXTRA_GROUP_ID, groupId.id)
         }
 
-        private fun getLeaveCallIntent(context: Context, callId: CallId, groupId: LocalGroupId): Intent {
+        private fun getLeaveCallIntent(
+            context: Context,
+            callId: CallId,
+            groupId: LocalGroupId
+        ): Intent {
             return getServiceIntent(context)
                 .putExtra(EXTRA_CALL_ID, callId.bytes)
                 .putExtra(EXTRA_GROUP_ID, groupId.id)
@@ -278,7 +287,10 @@ class GroupCallService : Service() {
             .apply {
                 getLeaveCallPendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)?.let { leaveCallPendingIntent ->
                     setStyle(
-                        NotificationCompat.CallStyle.forOngoingCall(callerPerson, leaveCallPendingIntent)
+                        NotificationCompat.CallStyle.forOngoingCall(
+                            callerPerson,
+                            leaveCallPendingIntent
+                        )
                     )
                 }
             }
@@ -340,7 +352,13 @@ class GroupCallService : Service() {
                     contactModelRepository
                 )
                 CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-                    launch { controller.join(applicationContext, sfuBaseUrl, sfuConnection) { stopService() } }
+                    launch {
+                        controller.join(
+                            applicationContext,
+                            sfuBaseUrl,
+                            sfuConnection
+                        ) { stopService() }
+                    }
                     val startedAt = controller.descriptionSignal.await().startedAt.toLong()
                     updateNotification(startedAt)
                 }
@@ -358,7 +376,10 @@ class GroupCallService : Service() {
     private fun setPSTNCallStateListener() {
         val telephonyManager = getSystemService(TELEPHONY_SERVICE)
         if (telephonyManager is TelephonyManager && (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)
+                || ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) == PackageManager.PERMISSION_GRANTED)
         ) {
             telephonyManager.listen(onCallStateListener, PhoneStateListener.LISTEN_CALL_STATE)
         }
@@ -384,7 +405,11 @@ class GroupCallService : Service() {
         logger.info("Call has been left. Stop service.")
         if (groupCallController?.hasForeverAloneTimerFired() == true) {
             RuntimeUtil.runOnUiThread(Runnable {
-                Toast.makeText(applicationContext, getString(R.string.group_call_inactivity_left), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.group_call_inactivity_left),
+                    Toast.LENGTH_LONG
+                ).show()
             })
         }
         stopService()

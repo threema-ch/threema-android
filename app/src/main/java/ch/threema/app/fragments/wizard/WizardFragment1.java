@@ -49,181 +49,183 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvancedDialog.WizardDialogCallback {
-	public static final int PAGE_ID = 1;
+    public static final int PAGE_ID = 1;
 
-	private static final String DIALOG_TAG_ADVANCED = "adv";
+    private static final String DIALOG_TAG_ADVANCED = "adv";
 
-	private EditText password1, password2;
-	private TextInputLayout password1layout, password2layout;
+    private EditText password1, password2;
+    private TextInputLayout password1layout, password2layout;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
+        View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		TextView title = rootView.findViewById(R.id.wizard_title);
-		title.setText(R.string.threema_safe);
+        TextView title = rootView.findViewById(R.id.wizard_title);
+        title.setText(R.string.threema_safe);
 
-		// inflate content layout
-		contentViewStub.setLayoutResource(R.layout.fragment_wizard1);
-		contentViewStub.inflate();
+        // inflate content layout
+        contentViewStub.setLayoutResource(R.layout.fragment_wizard1);
+        contentViewStub.inflate();
 
-		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
+        WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
-		this.password1 = rootView.findViewById(R.id.safe_password1);
-		this.password2 = rootView.findViewById(R.id.safe_password2);
-		this.password1layout = rootView.findViewById(R.id.password1layout);
-		this.password2layout = rootView.findViewById(R.id.password2layout);
+        this.password1 = rootView.findViewById(R.id.safe_password1);
+        this.password2 = rootView.findViewById(R.id.safe_password2);
+        this.password1layout = rootView.findViewById(R.id.password1layout);
+        this.password2layout = rootView.findViewById(R.id.password2layout);
 
-		if (!TestUtil.isEmptyOrNull(callback.getSafePassword())) {
-			this.password1.setText(callback.getSafePassword());
-			this.password2.setText(callback.getSafePassword());
-		}
+        if (!TestUtil.isEmptyOrNull(callback.getSafePassword())) {
+            this.password1.setText(callback.getSafePassword());
+            this.password2.setText(callback.getSafePassword());
+        }
 
-		this.password1.addTextChangedListener(new PasswordWatcher());
-		this.password2.addTextChangedListener(new PasswordWatcher());
-		this.password2.setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-					if (password1.getText() != null && password2.getText() != null) {
-						if (getPasswordOK(password1.getText().toString(), password2.getText().toString())) {
-							if (getActivity() != null && isAdded()) {
-								((WizardBaseActivity) getActivity()).nextPage();
-							}
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-		});
+        this.password1.addTextChangedListener(new PasswordWatcher());
+        this.password2.addTextChangedListener(new PasswordWatcher());
+        this.password2.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (password1.getText() != null && password2.getText() != null) {
+                        if (getPasswordOK(password1.getText().toString(), password2.getText().toString())) {
+                            if (getActivity() != null && isAdded()) {
+                                ((WizardBaseActivity) getActivity()).nextPage();
+                            }
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        });
 
-		Button advancedOptions = rootView.findViewById(R.id.advanced_options);
-		advancedOptions.setVisibility(View.VISIBLE);
-		advancedOptions.setOnClickListener(v -> {
-			ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(callback.getSafeServerInfo(), false);
-			dialog.setTargetFragment(this, 0);
-			dialog.show(getFragmentManager(), DIALOG_TAG_ADVANCED);
-		});
+        Button advancedOptions = rootView.findViewById(R.id.advanced_options);
+        advancedOptions.setVisibility(View.VISIBLE);
+        advancedOptions.setOnClickListener(v -> {
+            ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(callback.getSafeServerInfo(), false);
+            dialog.setTargetFragment(this, 0);
+            dialog.show(getFragmentManager(), DIALOG_TAG_ADVANCED);
+        });
 
-		if (ConfigUtils.isWorkRestricted()) {
-			// administrator forced use of threema safe. do not allow user to override advanced settings
-			if (callback.getSafeForcePasswordEntry()) {
-				TextView explainText = rootView.findViewById(R.id.safe_enable_explain);
-				explainText.setText(R.string.safe_configure_choose_password_force);
-				advancedOptions.setVisibility(View.GONE);
-			}
+        if (ConfigUtils.isWorkRestricted()) {
+            // administrator forced use of threema safe. do not allow user to override advanced settings
+            if (callback.getSafeForcePasswordEntry()) {
+                TextView explainText = rootView.findViewById(R.id.safe_enable_explain);
+                explainText.setText(R.string.safe_configure_choose_password_force);
+                advancedOptions.setVisibility(View.GONE);
+            }
 
-			// threema safe password entry disabled completely
-			if (callback.getSafeSkipBackupPasswordEntry()) {
-				this.password1layout.setVisibility(View.GONE);
-				this.password2layout.setVisibility(View.GONE);
-				rootView.findViewById(R.id.safe_enable_explain).setVisibility(View.GONE);
-				rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
-				advancedOptions.setVisibility(View.GONE);
-			}
-		}
+            // threema safe password entry disabled completely
+            if (callback.getSafeSkipBackupPasswordEntry()) {
+                this.password1layout.setVisibility(View.GONE);
+                this.password2layout.setVisibility(View.GONE);
+                rootView.findViewById(R.id.safe_enable_explain).setVisibility(View.GONE);
+                rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
+                advancedOptions.setVisibility(View.GONE);
+            }
+        }
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	@Override
-	protected int getAdditionalInfoText() {
-		return R.string.safe_enable_explain;
-	}
+    @Override
+    protected int getAdditionalInfoText() {
+        return R.string.safe_enable_explain;
+    }
 
-	@Override
-	public void onYes(String tag, ThreemaSafeServerInfo serverInfo) {
-		((WizardFragment1.OnSettingsChangedListener) requireActivity()).onSafeServerInfoSet(serverInfo);
-	}
+    @Override
+    public void onYes(String tag, ThreemaSafeServerInfo serverInfo) {
+        ((WizardFragment1.OnSettingsChangedListener) requireActivity()).onSafeServerInfoSet(serverInfo);
+    }
 
-	@Override
-	public void onNo(String tag) {
+    @Override
+    public void onNo(String tag) {
 
-	}
+    }
 
-	private class PasswordWatcher implements TextWatcher {
-		private PasswordWatcher() {}
+    private class PasswordWatcher implements TextWatcher {
+        private PasswordWatcher() {
+        }
 
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
+        @Override
+        public void afterTextChanged(Editable s) {
+            boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
 
-			OnSettingsChangedListener listener = (WizardFragment1.OnSettingsChangedListener) getActivity();
-			if (listener != null) {
-				if (passwordOk) {
-					listener.onSafePasswordSet(s.toString());
-				} else {
-					listener.onSafePasswordSet(null);
-				}
-			}
-		}
-	}
+            OnSettingsChangedListener listener = (WizardFragment1.OnSettingsChangedListener) getActivity();
+            if (listener != null) {
+                if (passwordOk) {
+                    listener.onSafePasswordSet(s.toString());
+                } else {
+                    listener.onSafePasswordSet(null);
+                }
+            }
+        }
+    }
 
-	public static boolean getPasswordLengthOK(String text, int minLength) {
-		return text != null && text.length() >= minLength && text.length() <= MAX_PW_LENGTH;
-	}
+    public static boolean getPasswordLengthOK(String text, int minLength) {
+        return text != null && text.length() >= minLength && text.length() <= MAX_PW_LENGTH;
+    }
 
-	private boolean getPasswordOK(String password1Text, String password2Text) {
-		boolean lengthOk = getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(getContext()) ? 1 :MIN_PW_LENGTH);
-		boolean passwordsMatch = password1Text != null && password1Text.equals(password2Text);
+    private boolean getPasswordOK(String password1Text, String password2Text) {
+        boolean lengthOk = getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(getContext()) ? 1 : MIN_PW_LENGTH);
+        boolean passwordsMatch = password1Text != null && password1Text.equals(password2Text);
 
-		if (!lengthOk && password1Text != null && password1Text.length() > 0) {
-			this.password1layout.setError(getString(R.string.password_too_short_generic));
-			this.password2layout.setError(null);
-		} else {
-			this.password1layout.setError(null);
-			if (!TestUtil.isBlankOrNull(this.password2.getText())) {
-				this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
-			} else {
-				this.password2layout.setError(null);
-			}
-		}
+        if (!lengthOk && password1Text != null && password1Text.length() > 0) {
+            this.password1layout.setError(getString(R.string.password_too_short_generic));
+            this.password2layout.setError(null);
+        } else {
+            this.password1layout.setError(null);
+            if (!TestUtil.isBlankOrNull(this.password2.getText())) {
+                this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
+            } else {
+                this.password2layout.setError(null);
+            }
+        }
 
-		return (lengthOk && passwordsMatch);
-	}
+        return (lengthOk && passwordsMatch);
+    }
 
-	public interface OnSettingsChangedListener {
-		void onSafePasswordSet(String password);
-		void onSafeServerInfoSet(ThreemaSafeServerInfo serverInfo);
-	}
+    public interface OnSettingsChangedListener {
+        void onSafePasswordSet(String password);
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		initValues();
-		if (this.password1 != null) {
-			this.password1.requestFocus();
-			EditTextUtil.showSoftKeyboard(this.password1);
-		}
-	}
+        void onSafeServerInfoSet(ThreemaSafeServerInfo serverInfo);
+    }
 
-	@Override
-	public void onPause() {
-		if (this.password1 != null) {
-			this.password1.clearFocus();
-			EditTextUtil.hideSoftKeyboard(this.password1);
-		}
-		super.onPause();
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        initValues();
+        if (this.password1 != null) {
+            this.password1.requestFocus();
+            EditTextUtil.showSoftKeyboard(this.password1);
+        }
+    }
 
-	private void initValues() {
-		if (isResumed()) {
-			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
-			if (callback.isSafeEnabled()) {
-				password1.setText(callback.getSafePassword());
-				password2.setText(callback.getSafePassword());
-			}
-		}
-	}
+    @Override
+    public void onPause() {
+        if (this.password1 != null) {
+            this.password1.clearFocus();
+            EditTextUtil.hideSoftKeyboard(this.password1);
+        }
+        super.onPause();
+    }
+
+    private void initValues() {
+        if (isResumed()) {
+            WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
+            if (callback.isSafeEnabled()) {
+                password1.setText(callback.getSafePassword());
+                password2.setText(callback.getSafePassword());
+            }
+        }
+    }
 }

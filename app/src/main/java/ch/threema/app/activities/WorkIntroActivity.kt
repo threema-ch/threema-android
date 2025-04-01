@@ -74,7 +74,8 @@ class WorkIntroActivity : ThreemaActivity() {
             workInfoLink
         )
 
-        workInfoLinkTextView.text = HtmlCompat.fromHtml(workInfoHtmlLink, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        workInfoLinkTextView.text =
+            HtmlCompat.fromHtml(workInfoHtmlLink, HtmlCompat.FROM_HTML_MODE_COMPACT)
         workInfoLinkTextView.movementMethod = LinkMovementMethod.getInstance()
         workInfoLinkTextView.setOnClickListener {
             LinkifyUtil.getInstance().openLink(Uri.parse(workInfoLink), null, this)

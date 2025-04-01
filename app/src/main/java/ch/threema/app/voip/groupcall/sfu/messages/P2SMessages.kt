@@ -102,7 +102,12 @@ sealed class P2SMessage {
         }
     }
 
-    data class SubscribeParticipantCamera(val participantId: ParticipantId, val width: Int, val height: Int, val fps: Int) : P2SMessage() {
+    data class SubscribeParticipantCamera(
+        val participantId: ParticipantId,
+        val width: Int,
+        val height: Int,
+        val fps: Int
+    ) : P2SMessage() {
         override val type = "SubscribeParticipantCamera"
 
         override fun wrap(envelope: ParticipantToSfu.Envelope.Builder): ParticipantToSfu.Envelope.Builder {

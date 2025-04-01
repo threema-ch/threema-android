@@ -101,8 +101,16 @@ internal class TaskRunner(
         override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt {
             val flags: UShort = 0u
             val reflectId: UInt = reflectIdManager.next()
-            val reflect: OutboundD2mMessage.Reflect = OutboundD2mMessage.Reflect(flags, reflectId, encryptedEnvelopeResult.encryptedEnvelope)
-            logReflect(debugInfo = encryptedEnvelopeResult.debugInfo, reflectId = reflectId, flags = flags)
+            val reflect: OutboundD2mMessage.Reflect = OutboundD2mMessage.Reflect(
+                flags,
+                reflectId,
+                encryptedEnvelopeResult.encryptedEnvelope
+            )
+            logReflect(
+                debugInfo = encryptedEnvelopeResult.debugInfo,
+                reflectId = reflectId,
+                flags = flags
+            )
             write(reflect)
             return reflectId
         }
@@ -128,7 +136,10 @@ internal class TaskRunner(
      *
      * @param layer5Codec the current layer 5 codec for sending messages
      */
-    internal suspend fun startTaskRunner(layer5Codec: Layer5Codec, incomingMessageProcessor: IncomingMessageProcessor) {
+    internal suspend fun startTaskRunner(
+        layer5Codec: Layer5Codec,
+        incomingMessageProcessor: IncomingMessageProcessor
+    ) {
         logger.info("Starting task runner")
 
         // Stop old executor job to allow tasks to detect faster that they cannot send or receive

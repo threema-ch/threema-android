@@ -53,7 +53,10 @@ class ForwardSecurityNotificationManager(
     fun showForwardSecurityNotification(messageReceiver: MessageReceiver<*>) {
         val contentText = getNotificationContextText(messageReceiver)
 
-        val builder: NotificationCompat.Builder = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_FORWARD_SECURITY)
+        val builder: NotificationCompat.Builder = NotificationCompat.Builder(
+            context,
+            NotificationChannels.NOTIFICATION_CHANNEL_FORWARD_SECURITY
+        )
             .setContentTitle(context.getString(R.string.forward_security_notification_rejected_title))
             .setContentText(contentText)
             .setSmallIcon(R.drawable.ic_baseline_key_off_24)

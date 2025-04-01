@@ -35,13 +35,21 @@ import kotlin.jvm.functions.Function0;
 
 public interface WallpaperService {
 
-	ActivityResultLauncher<Intent> getWallpaperActivityResultLauncher(@NonNull Fragment fragment, @Nullable Runnable onResultAction, @Nullable Function0<MessageReceiver> getMessageReceiver);
-	boolean removeWallpaper(MessageReceiver messageReceiver);
-	void removeWallpaper(String uniqueIdString);
-	boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape, boolean isTheDarkside);
-	boolean hasGalleryWallpaper(MessageReceiver messageReceiver);
-	void selectWallpaper(@NonNull Fragment fragment, @NonNull ActivityResultLauncher<Intent> fileSelectionLauncher, @Nullable MessageReceiver messageReceiver, @Nullable Runnable onSuccess);
-	void removeAll(Context context, boolean silent);
-	boolean hasGlobalGalleryWallpaper();
-	boolean hasGlobalEmptyWallpaper();
+    ActivityResultLauncher<Intent> getWallpaperActivityResultLauncher(@NonNull Fragment fragment, @Nullable Runnable onResultAction, @Nullable Function0<MessageReceiver> getMessageReceiver);
+
+    boolean removeWallpaper(MessageReceiver messageReceiver);
+
+    void removeWallpaper(String uniqueIdString);
+
+    boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape, boolean isTheDarkside);
+
+    boolean hasGalleryWallpaper(MessageReceiver messageReceiver);
+
+    void selectWallpaper(@NonNull Fragment fragment, @NonNull ActivityResultLauncher<Intent> fileSelectionLauncher, @Nullable MessageReceiver messageReceiver, @Nullable Runnable onSuccess);
+
+    void removeAll(Context context, boolean silent);
+
+    boolean hasGlobalGalleryWallpaper();
+
+    boolean hasGlobalEmptyWallpaper();
 }

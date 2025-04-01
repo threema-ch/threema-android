@@ -37,24 +37,24 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true">
 
-    <TextView
-        android:id="@+id/threemaid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginRight="2dp"
-        android:singleLine="true"
-        android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+        <TextView
+            android:id="@+id/threemaid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_marginRight="2dp"
+            android:singleLine="true"
+            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
-    <com.google.android.material.chip.Chip
-        style="@style/Threema.Chip.Suggestion"
-        android:id="@+id/admin_chip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:text="@string/add_group_owner"
-        android:contentDescription="@string/add_group_owner"
-        android:visibility="gone"/>
+        <com.google.android.material.chip.Chip
+            style="@style/Threema.Chip.Suggestion"
+            android:id="@+id/admin_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:text="@string/add_group_owner"
+            android:contentDescription="@string/add_group_owner"
+            android:visibility="gone" />
 
     </FrameLayout>
 

@@ -89,20 +89,23 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
         emojiPicker?.setEmojiKeyListener(this)
 
         lifecycleScope.launch {
-            val emojiReactionsRepository: EmojiReactionsRepository = ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
-            val emojiReactionsModel: EmojiReactionsModel? = emojiReactionsRepository.getReactionsByMessage(messageModel!!)
+            val emojiReactionsRepository: EmojiReactionsRepository =
+                ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
+            val emojiReactionsModel: EmojiReactionsModel? =
+                emojiReactionsRepository.getReactionsByMessage(messageModel!!)
 
             emojiReactionsModel?.let { reactionModel ->
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    reactionModel.data.firstOrNull().let { emojiReactions: List<EmojiReactionData>? ->
-                        emojiPicker?.let { picker ->
-                            // inflate emoji picker
-                            withContext(Dispatchers.Main) {
-                                picker.init(emojiService, false, emojiReactions)
-                                showEmojiPicker()
+                    reactionModel.data.firstOrNull()
+                        .let { emojiReactions: List<EmojiReactionData>? ->
+                            emojiPicker?.let { picker ->
+                                // inflate emoji picker
+                                withContext(Dispatchers.Main) {
+                                    picker.init(emojiService, false, emojiReactions)
+                                    showEmojiPicker()
+                                }
                             }
                         }
-                    }
                 }
             }
         }

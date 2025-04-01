@@ -34,51 +34,52 @@ import ch.threema.app.R;
 
 public class ThreemaTextInputEditText extends TextInputEditText {
 
-	public ThreemaTextInputEditText(Context context) {
-		super(context);
+    public ThreemaTextInputEditText(Context context) {
+        super(context);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaTextInputEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    public ThreemaTextInputEditText(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaTextInputEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public ThreemaTextInputEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	private void init(Context context) {
-		// PreferenceService may not yet be available at this time
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
-			setImeOptions(getImeOptions() | 0x1000000);
-		}
-	}
+    private void init(Context context) {
+        // PreferenceService may not yet be available at this time
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
+            setImeOptions(getImeOptions() | 0x1000000);
+        }
+    }
 
-	@Override
-	@TargetApi(Build.VERSION_CODES.O)
-	public int getAutofillType() {
-		// disable Autofill in EditText due to privacy and TransactionTooLargeException as well as bug https://issuetracker.google.com/issues/67675432
-		return AUTOFILL_TYPE_NONE;
-	}
+    @Override
+    @TargetApi(Build.VERSION_CODES.O)
+    public int getAutofillType() {
+        // disable Autofill in EditText due to privacy and TransactionTooLargeException as well as bug https://issuetracker.google.com/issues/67675432
+        return AUTOFILL_TYPE_NONE;
+    }
 
-	/**
-	 * Get a password or passphrase from the EditText without using a String, as Strings are immutable
-	 * See https://docs.oracle.com/javase/1.5.0/docs/guide/security/jce/JCERefGuide.html#PBEEx
-	 * @return passphrase as char array
-	 */
-	public char[] getPassphrase() {
-		int length = length();
-		char[] passphrase = new char[length];
+    /**
+     * Get a password or passphrase from the EditText without using a String, as Strings are immutable
+     * See https://docs.oracle.com/javase/1.5.0/docs/guide/security/jce/JCERefGuide.html#PBEEx
+     *
+     * @return passphrase as char array
+     */
+    public char[] getPassphrase() {
+        int length = length();
+        char[] passphrase = new char[length];
 
-		if (length > 0 && getText() != null) {
-			getText().getChars(0, length, passphrase, 0);
-		}
-		return passphrase;
-	}
+        if (length > 0 && getText() != null) {
+            getText().getChars(0, length, passphrase, 0);
+        }
+        return passphrase;
+    }
 }

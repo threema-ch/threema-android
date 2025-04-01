@@ -68,7 +68,8 @@ import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudioFocusChangeListener {
+class VoiceMessagePlayerService : MediaSessionService(), SensorListener,
+    OnAudioFocusChangeListener {
     private val audioBecomingNoisyFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
     private val audioBecomingNoisyReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -134,7 +135,8 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
         super.onUpdateNotification(session, true)
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? =
+        mediaSession
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         logger.info("onTaskRemoved")
@@ -168,7 +170,12 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
             .setWakeMode(C.WAKE_MODE_LOCAL)
             .setLoadControl(
                 DefaultLoadControl.Builder()
-                    .setBufferDurationsMs(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE)
+                    .setBufferDurationsMs(
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE,
+                        Integer.MAX_VALUE
+                    )
                     .build()
             )
             .build()
@@ -259,23 +266,42 @@ class VoiceMessagePlayerService : MediaSessionService(), SensorListener, OnAudio
          */
         override fun onForegroundServiceStartNotAllowedException() {
             @SuppressLint("MissingPermission")
-            if (ConfigUtils.isPermissionGranted(this@VoiceMessagePlayerService, Manifest.permission.POST_NOTIFICATIONS)) {
-                val notificationManagerCompat = NotificationManagerCompat.from(this@VoiceMessagePlayerService)
+            if (ConfigUtils.isPermissionGranted(
+                    this@VoiceMessagePlayerService,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            ) {
+                val notificationManagerCompat =
+                    NotificationManagerCompat.from(this@VoiceMessagePlayerService)
                 val builder =
-                    NotificationCompat.Builder(this@VoiceMessagePlayerService, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+                    NotificationCompat.Builder(
+                        this@VoiceMessagePlayerService,
+                        NotificationChannels.NOTIFICATION_CHANNEL_ALERT
+                    )
                         .setContentIntent(getSessionActivityPendingIntent())
                         .setSmallIcon(R.drawable.ic_notification_small)
-                        .setColor(ResourcesCompat.getColor(resources, R.color.md_theme_light_primary, theme))
+                        .setColor(
+                            ResourcesCompat.getColor(
+                                resources,
+                                R.color.md_theme_light_primary,
+                                theme
+                            )
+                        )
                         .setContentTitle(getString(R.string.vm_fg_service_not_allowed))
                         .setStyle(
-                            NotificationCompat.BigTextStyle().bigText(getString(R.string.vm_fg_service_not_allowed_explain))
+                            NotificationCompat.BigTextStyle()
+                                .bigText(getString(R.string.vm_fg_service_not_allowed_explain))
                         )
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setAutoCancel(true)
 
                 notificationManagerCompat.notify(NOTIFICATION_ID, builder.build())
             } else {
-                Toast.makeText(this@VoiceMessagePlayerService, R.string.notifications_disabled_title, LENGTH_LONG).show()
+                Toast.makeText(
+                    this@VoiceMessagePlayerService,
+                    R.string.notifications_disabled_title,
+                    LENGTH_LONG
+                ).show()
             }
         }
     }

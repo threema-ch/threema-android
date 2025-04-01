@@ -60,7 +60,9 @@ import java.util.List;
  */
 public class JSONStringer {
 
-    /** The output data, containing at most one top-level array or object. */
+    /**
+     * The output data, containing at most one top-level array or object.
+     */
     final StringBuilder out = new StringBuilder();
 
     /**
@@ -220,8 +222,8 @@ public class JSONStringer {
      * Encodes {@code value}.
      *
      * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean,
-     *     Integer, Long, Double or null. May not be {@link Double#isNaN() NaNs}
-     *     or {@link Double#isInfinite() infinities}.
+     *              Integer, Long, Double or null. May not be {@link Double#isNaN() NaNs}
+     *              or {@link Double#isInfinite() infinities}.
      * @return this stringer.
      */
     public JSONStringer value(Object value) throws JSONException {
@@ -241,8 +243,8 @@ public class JSONStringer {
         beforeValue();
 
         if (value == null
-                || value instanceof Boolean
-                || value == JSONObject.NULL) {
+            || value instanceof Boolean
+            || value == JSONObject.NULL) {
             out.append(value);
 
         } else if (value instanceof Number) {
@@ -273,7 +275,7 @@ public class JSONStringer {
      * Encodes {@code value} to this stringer.
      *
      * @param value a finite value. May not be {@link Double#isNaN() NaNs} or
-     *     {@link Double#isInfinite() infinities}.
+     *              {@link Double#isInfinite() infinities}.
      * @return this stringer.
      */
     public JSONStringer value(double value) throws JSONException {
@@ -426,7 +428,8 @@ public class JSONStringer {
      * of {@link Object#toString}, this method returns null if the stringer
      * contains no data.
      */
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return out.length() == 0 ? null : out.toString();
     }
 }

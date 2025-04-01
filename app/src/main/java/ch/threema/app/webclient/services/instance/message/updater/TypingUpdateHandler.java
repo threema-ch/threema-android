@@ -43,62 +43,62 @@ import ch.threema.storage.models.ContactModel;
 
 @WorkerThread
 public class TypingUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("TypingUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("TypingUpdateHandler");
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final Listener listener = new Listener();
+    // Listeners
+    private final Listener listener = new Listener();
 
-	// Dispatchers
-	private MessageDispatcher dispatcher;
+    // Dispatchers
+    private MessageDispatcher dispatcher;
 
-	@AnyThread
-	public TypingUpdateHandler(@NonNull HandlerExecutor handler, MessageDispatcher dispatcher) {
-		super(Protocol.SUB_TYPE_TYPING);
-		this.handler = handler;
-		this.dispatcher = dispatcher;
-	}
+    @AnyThread
+    public TypingUpdateHandler(@NonNull HandlerExecutor handler, MessageDispatcher dispatcher) {
+        super(Protocol.SUB_TYPE_TYPING);
+        this.handler = handler;
+        this.dispatcher = dispatcher;
+    }
 
-	@Override
-	public void register() {
-		ListenerManager.contactTypingListeners.add(this.listener);
-	}
+    @Override
+    public void register() {
+        ListenerManager.contactTypingListeners.add(this.listener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		ListenerManager.contactTypingListeners.remove(this.listener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        ListenerManager.contactTypingListeners.remove(this.listener);
+    }
 
-	private void update(final ContactModel contact, final boolean isTyping) {
-		try {
-			// Convert typing notification and prepare arguments
-			final MsgpackObjectBuilder args = Contact.getArguments(contact);
-			final MsgpackObjectBuilder data = ContactTyping.convert(isTyping);
+    private void update(final ContactModel contact, final boolean isTyping) {
+        try {
+            // Convert typing notification and prepare arguments
+            final MsgpackObjectBuilder args = Contact.getArguments(contact);
+            final MsgpackObjectBuilder data = ContactTyping.convert(isTyping);
 
-			// Send message
-			logger.debug("Sending typing update");
-			send(dispatcher, data, args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Send message
+            logger.debug("Sending typing update");
+            send(dispatcher, data, args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@AnyThread
-	private class Listener implements ContactTypingListener {
-		@Override
-		public void onContactIsTyping(ContactModel fromContact, boolean isTyping) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					TypingUpdateHandler.this.update(fromContact, isTyping);
-				}
-			});
-		}
-	}
+    @AnyThread
+    private class Listener implements ContactTypingListener {
+        @Override
+        public void onContactIsTyping(ContactModel fromContact, boolean isTyping) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    TypingUpdateHandler.this.update(fromContact, isTyping);
+                }
+            });
+        }
+    }
 }

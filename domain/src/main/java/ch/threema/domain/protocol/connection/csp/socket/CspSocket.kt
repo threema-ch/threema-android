@@ -45,7 +45,7 @@ internal class CspSocket(
     private val addressProvider: ChatServerAddressProvider,
     ioProcessingStoppedSignal: CompletableDeferred<Unit>,
     inputDispatcher: CoroutineContext,
-    ) : BaseSocket(ioProcessingStoppedSignal, inputDispatcher) {
+) : BaseSocket(ioProcessingStoppedSignal, inputDispatcher) {
 
     private var _address: String? = null
     override val address: String? get() = _address
@@ -60,7 +60,8 @@ internal class CspSocket(
 
         addressProvider.update()
 
-        val address = addressProvider.get() ?: throw ServerSocketException("No server address available")
+        val address =
+            addressProvider.get() ?: throw ServerSocketException("No server address available")
 
         ioProcessingStopped = false
 
@@ -128,7 +129,7 @@ internal class CspSocket(
         // `login-ack`: https://clients.pages.threema.dev/protocols/threema-protocols/structbuf/csp/#m:handshake:login-ack
         sendInbound(readNBytes(dis, ProtocolDefines.SERVER_LOGIN_ACK_LEN))
 
-        while(!ioProcessingStopped) {
+        while (!ioProcessingStopped) {
             val length = ByteBuffer.wrap(readNBytes(dis, 2))
                 .order(ByteOrder.LITTLE_ENDIAN)
                 .short.toUShort().toInt()

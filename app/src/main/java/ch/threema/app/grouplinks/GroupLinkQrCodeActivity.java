@@ -51,114 +51,113 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class GroupLinkQrCodeActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkQrCodeActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupLinkQrCodeActivity");
 
-	private FileService fileService;
-	private QRCodeService qrCodeService;
-	private String groupLink;
-	private String groupName;
+    private FileService fileService;
+    private QRCodeService qrCodeService;
+    private String groupLink;
+    private String groupName;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	protected void initServices() {
-		super.initServices();
-		try {
-			this.fileService = serviceManager.getFileService();
-			this.qrCodeService = serviceManager.getQRCodeService();
-		} catch (FileSystemNotPresentException e) {
-			logger.error("Exception, required services not available... finishing", e);
-			finish();
-		}
-	}
+    @Override
+    protected void initServices() {
+        super.initServices();
+        try {
+            this.fileService = serviceManager.getFileService();
+            this.qrCodeService = serviceManager.getQRCodeService();
+        } catch (FileSystemNotPresentException e) {
+            logger.error("Exception, required services not available... finishing", e);
+            finish();
+        }
+    }
 
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		if (!super.initActivity(savedInstanceState)) {
-			return false;
-		}
+    @Override
+    protected boolean initActivity(Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
 
-		this.groupLink = getIntent().getStringExtra(IntentDataUtil.INTENT_DATA_GROUP_LINK);
-		this.groupName = getIntent().getStringExtra(IntentDataUtil.INTENT_DATA_GROUP_NAME);
+        this.groupLink = getIntent().getStringExtra(IntentDataUtil.INTENT_DATA_GROUP_LINK);
+        this.groupName = getIntent().getStringExtra(IntentDataUtil.INTENT_DATA_GROUP_NAME);
 
-		if (groupLink == null) {
-			logger.error("No group link received... finishing");
-			finish();
-			return false;
-		}
+        if (groupLink == null) {
+            logger.error("No group link received... finishing");
+            finish();
+            return false;
+        }
 
-		initLayout();
-		return true;
-	}
+        initLayout();
+        return true;
+    }
 
-	private void initLayout() {
-		setSupportActionBar(findViewById(R.id.toolbar));
-		final ActionBar actionBar = getSupportActionBar();
-		if (actionBar == null) {
-			finish();
-			return;
-		}
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setDisplayShowHomeEnabled(true);
-		actionBar.setTitle(getString(R.string.group_qr_code_title));
+    private void initLayout() {
+        setSupportActionBar(findViewById(R.id.toolbar));
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            finish();
+            return;
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        actionBar.setTitle(getString(R.string.group_qr_code_title));
 
-		Bitmap qrBitmap = qrCodeService.getRawQR(groupLink, true, QRCodeServiceImpl.QR_TYPE_GROUP_LINK);
-		final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrBitmap);
-		bitmapDrawable.setFilterBitmap(false);
+        Bitmap qrBitmap = qrCodeService.getRawQR(groupLink, true, QRCodeServiceImpl.QR_TYPE_GROUP_LINK);
+        final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), qrBitmap);
+        bitmapDrawable.setFilterBitmap(false);
 
-		((ImageView) findViewById(R.id.thumbnail_view)).setImageDrawable(bitmapDrawable);
-		((TextView) findViewById(R.id.qr_code_description))
-			.setText(
-				HtmlCompat.fromHtml(String.format(
-					getString(R.string.group_link_qr_desc),
-					groupName
-				), HtmlCompat.FROM_HTML_MODE_COMPACT)
-			);
-	}
+        ((ImageView) findViewById(R.id.thumbnail_view)).setImageDrawable(bitmapDrawable);
+        ((TextView) findViewById(R.id.qr_code_description))
+            .setText(
+                HtmlCompat.fromHtml(String.format(
+                    getString(R.string.group_link_qr_desc),
+                    groupName
+                ), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            );
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_group_link_qrcode;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_group_link_qrcode;
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_group_link_qrcode, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_group_link_qrcode, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == android.R.id.home) {
-			finish();
-		}
-		else if (id == R.id.menu_share) {
-			shareQrBitmap();
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+        } else if (id == R.id.menu_share) {
+            shareQrBitmap();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	private void shareQrBitmap() {
-		try {
-			Uri qrCodeShareFileUri = this.fileService.getTempShareFileUri(
-				BitmapUtil.getBitmapFromView(findViewById(R.id.qr_code_container)));
-			Intent intent = new Intent(Intent.ACTION_SEND);
-			intent.putExtra(Intent.EXTRA_STREAM, qrCodeShareFileUri);
-			intent.setType(MimeUtil.MIME_TYPE_IMAGE_PNG);
-			if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(qrCodeShareFileUri.getScheme())) {
-				intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			}
-			startActivity(Intent.createChooser(intent, getResources().getText(R.string.share_via)));
-		} catch (IOException e) {
-			logger.error("Exception sharing group QR-code", e);
-			Toast.makeText(this,
-				String.format(getString(R.string.an_error_occurred_more), e),
-				Toast.LENGTH_LONG
-			).show();
-		}
-	}
+    private void shareQrBitmap() {
+        try {
+            Uri qrCodeShareFileUri = this.fileService.getTempShareFileUri(
+                BitmapUtil.getBitmapFromView(findViewById(R.id.qr_code_container)));
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, qrCodeShareFileUri);
+            intent.setType(MimeUtil.MIME_TYPE_IMAGE_PNG);
+            if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(qrCodeShareFileUri.getScheme())) {
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            startActivity(Intent.createChooser(intent, getResources().getText(R.string.share_via)));
+        } catch (IOException e) {
+            logger.error("Exception sharing group QR-code", e);
+            Toast.makeText(this,
+                String.format(getString(R.string.an_error_occurred_more), e),
+                Toast.LENGTH_LONG
+            ).show();
+        }
+    }
 }

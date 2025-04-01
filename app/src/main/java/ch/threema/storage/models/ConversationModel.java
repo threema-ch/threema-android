@@ -36,188 +36,189 @@ import ch.threema.app.utils.ConversationUtil;
 
 public class ConversationModel {
 
-	public static final int NO_RESOURCE = -1;
+    public static final int NO_RESOURCE = -1;
 
-	private final @NonNull Context context;
+    private final @NonNull Context context;
 
-	private MessageReceiver<?> receiver;
+    private MessageReceiver<?> receiver;
 
-	private long messageCount;
+    private long messageCount;
 
-	private @Nullable AbstractMessageModel latestMessage;
+    private @Nullable AbstractMessageModel latestMessage;
 
-	private long unreadCount;
-	private boolean isUnreadTagged;
+    private long unreadCount;
+    private boolean isUnreadTagged;
 
-	private String uid = null;
-	private int position = -1;
+    private String uid = null;
+    private int position = -1;
 
-	private @Nullable Date lastUpdate;
+    private @Nullable Date lastUpdate;
 
-	private boolean isTyping = false;
-	private boolean isPinTagged = false;
+    private boolean isTyping = false;
+    private boolean isPinTagged = false;
 
-	public ConversationModel(@NonNull Context context, MessageReceiver<?> receiver) {
-		this.context = context;
-		this.receiver = receiver;
-	}
+    public ConversationModel(@NonNull Context context, MessageReceiver<?> receiver) {
+        this.context = context;
+        this.receiver = receiver;
+    }
 
-	public @NonNull Context getContext() {
-		return context;
-	}
+    public @NonNull Context getContext() {
+        return context;
+    }
 
-	public void setMessageCount(long messageCount) {
-		this.messageCount = messageCount;
-	}
+    public void setMessageCount(long messageCount) {
+        this.messageCount = messageCount;
+    }
 
-	public long getMessageCount() {
-		return messageCount;
-	}
+    public long getMessageCount() {
+        return messageCount;
+    }
 
-	public void setLastUpdate(@Nullable Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
+    public void setLastUpdate(@Nullable Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 
-	public @Nullable Date getLastUpdate() {
-		return lastUpdate;
-	}
+    public @Nullable Date getLastUpdate() {
+        return lastUpdate;
+    }
 
-	/**
-	 * Return the date used for sorting.
-	 * Corresponds to {@link #getLastUpdate()} if set.
-	 */
-	public @NonNull Date getSortDate() {
-		if (this.lastUpdate != null) {
-			return this.lastUpdate;
-		}
-		return new Date(0);
-	}
+    /**
+     * Return the date used for sorting.
+     * Corresponds to {@link #getLastUpdate()} if set.
+     */
+    public @NonNull Date getSortDate() {
+        if (this.lastUpdate != null) {
+            return this.lastUpdate;
+        }
+        return new Date(0);
+    }
 
-	public void setLatestMessage(@Nullable AbstractMessageModel latestMessage) {
-		this.latestMessage = latestMessage;
-	}
+    public void setLatestMessage(@Nullable AbstractMessageModel latestMessage) {
+        this.latestMessage = latestMessage;
+    }
 
-	@Nullable
-	public AbstractMessageModel getLatestMessage() {
-		return latestMessage;
-	}
+    @Nullable
+    public AbstractMessageModel getLatestMessage() {
+        return latestMessage;
+    }
 
-	public boolean hasUnreadMessage() {
-		return this.unreadCount > 0;
-	}
+    public boolean hasUnreadMessage() {
+        return this.unreadCount > 0;
+    }
 
-	@Nullable
-	public ContactModel getContact() {
-		if (this.isContactConversation()) {
-			return ((ContactMessageReceiver) this.receiver).getContact();
-		}
+    @Nullable
+    public ContactModel getContact() {
+        if (this.isContactConversation()) {
+            return ((ContactMessageReceiver) this.receiver).getContact();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Nullable
-	public GroupModel getGroup() {
-		if (this.isGroupConversation()) {
-			return ((GroupMessageReceiver) this.receiver).getGroup();
-		}
+    @Nullable
+    public GroupModel getGroup() {
+        if (this.isGroupConversation()) {
+            return ((GroupMessageReceiver) this.receiver).getGroup();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Nullable
-	public DistributionListModel getDistributionList() {
-		if (this.isDistributionListConversation()) {
-			return ((DistributionListMessageReceiver) this.receiver).getDistributionList();
-		}
+    @Nullable
+    public DistributionListModel getDistributionList() {
+        if (this.isDistributionListConversation()) {
+            return ((DistributionListMessageReceiver) this.receiver).getDistributionList();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public boolean isContactConversation() {
-		return this.receiver.getType() == MessageReceiver.Type_CONTACT;
-	}
+    public boolean isContactConversation() {
+        return this.receiver.getType() == MessageReceiver.Type_CONTACT;
+    }
 
-	public boolean isGroupConversation() {
-		return this.receiver.getType() == MessageReceiver.Type_GROUP;
-	}
+    public boolean isGroupConversation() {
+        return this.receiver.getType() == MessageReceiver.Type_GROUP;
+    }
 
-	public boolean isDistributionListConversation() {
-		return this.receiver.getType() == MessageReceiver.Type_DISTRIBUTION_LIST;
-	}
+    public boolean isDistributionListConversation() {
+        return this.receiver.getType() == MessageReceiver.Type_DISTRIBUTION_LIST;
+    }
 
-	public @MessageReceiverType
-	int getReceiverType() {
-		return this.receiver.getType();
-	}
+    public @MessageReceiverType
+    int getReceiverType() {
+        return this.receiver.getType();
+    }
 
-	public MessageReceiver<?> getReceiver() {
-		return this.receiver;
-	}
-	public void setReceiver(MessageReceiver<?> receiver) {
-		this.receiver = receiver;
-	}
+    public MessageReceiver<?> getReceiver() {
+        return this.receiver;
+    }
 
-	@NonNull
-	public String getUid() {
-		if (this.uid == null) {
-			if (this.isContactConversation()) {
-				this.uid = ConversationUtil.getIdentityConversationUid(this.getContact() != null ? this.getContact().getIdentity() : null);
-			} else if (this.isGroupConversation()) {
-				this.uid = ConversationUtil.getGroupConversationUid(this.getGroup() != null ? this.getGroup().getId() : -1);
-			} else if (this.isDistributionListConversation()) {
-				this.uid = ConversationUtil.getDistributionListConversationUid(this.getDistributionList() != null ? this.getDistributionList().getId() : -1);
-			}
-		}
-		return this.uid;
-	}
+    public void setReceiver(MessageReceiver<?> receiver) {
+        this.receiver = receiver;
+    }
 
-	public ConversationModel setPosition(int position) {
-		this.position = position;
-		return this;
-	}
+    @NonNull
+    public String getUid() {
+        if (this.uid == null) {
+            if (this.isContactConversation()) {
+                this.uid = ConversationUtil.getIdentityConversationUid(this.getContact() != null ? this.getContact().getIdentity() : null);
+            } else if (this.isGroupConversation()) {
+                this.uid = ConversationUtil.getGroupConversationUid(this.getGroup() != null ? this.getGroup().getId() : -1);
+            } else if (this.isDistributionListConversation()) {
+                this.uid = ConversationUtil.getDistributionListConversationUid(this.getDistributionList() != null ? this.getDistributionList().getId() : -1);
+            }
+        }
+        return this.uid;
+    }
 
-	public int getPosition() {
-		return this.position;
-	}
+    public ConversationModel setPosition(int position) {
+        this.position = position;
+        return this;
+    }
 
-	public boolean isTyping() {
-		return this.isTyping;
-	}
+    public int getPosition() {
+        return this.position;
+    }
 
-	public ConversationModel setIsTyping(boolean is) {
-		this.isTyping = is;
-		return this;
-	}
+    public boolean isTyping() {
+        return this.isTyping;
+    }
 
-	public void setIsPinTagged(boolean isPinTagged) {
-		this.isPinTagged = isPinTagged;
-	}
+    public ConversationModel setIsTyping(boolean is) {
+        this.isTyping = is;
+        return this;
+    }
 
-	public boolean isPinTagged() {
-		return isPinTagged;
-	}
+    public void setIsPinTagged(boolean isPinTagged) {
+        this.isPinTagged = isPinTagged;
+    }
 
-	public void setIsUnreadTagged(boolean isUnreadTagged) {
-		this.isUnreadTagged = isUnreadTagged;
-	}
+    public boolean isPinTagged() {
+        return isPinTagged;
+    }
 
-	public boolean getIsUnreadTagged() {
-		return isUnreadTagged;
-	}
+    public void setIsUnreadTagged(boolean isUnreadTagged) {
+        this.isUnreadTagged = isUnreadTagged;
+    }
 
-	public void setUnreadCount(long unreadCount) {
-		this.unreadCount = unreadCount;
-		if (this.unreadCount == 0) {
-			isUnreadTagged = false;
-		}
-	}
+    public boolean getIsUnreadTagged() {
+        return isUnreadTagged;
+    }
 
-	public long getUnreadCount() {
-		return this.unreadCount;
-	}
+    public void setUnreadCount(long unreadCount) {
+        this.unreadCount = unreadCount;
+        if (this.unreadCount == 0) {
+            isUnreadTagged = false;
+        }
+    }
 
-	@Override
-	public @NonNull String toString() {
-		return getReceiver().getDisplayName();
-	}
+    public long getUnreadCount() {
+        return this.unreadCount;
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return getReceiver().getDisplayName();
+    }
 }

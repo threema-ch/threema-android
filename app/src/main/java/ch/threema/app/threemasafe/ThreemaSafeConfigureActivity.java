@@ -63,289 +63,291 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
 
 public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity implements ThreemaSafeAdvancedDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeConfigureActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeConfigureActivity");
 
-	private static final String DIALOG_TAG_PREPARING = "prep";
-	private static final String DIALOG_TAG_ADVANCED = "adv";
+    private static final String DIALOG_TAG_PREPARING = "prep";
+    private static final String DIALOG_TAG_ADVANCED = "adv";
 
-	public static final String EXTRA_CHANGE_PASSWORD = "cp";
-	public static final String EXTRA_WORK_FORCE_PASSWORD = "fp";
-	public static final String EXTRA_OPEN_HOME_ACTIVITY = "oha";
-	private static final String DIALOG_TAG_UNSAFE_PASSWORD = "unsafe";
-	private static final String DIALOG_TAG_UNSAFE_PASSWORD_WORK = "unsafework";
+    public static final String EXTRA_CHANGE_PASSWORD = "cp";
+    public static final String EXTRA_WORK_FORCE_PASSWORD = "fp";
+    public static final String EXTRA_OPEN_HOME_ACTIVITY = "oha";
+    private static final String DIALOG_TAG_UNSAFE_PASSWORD = "unsafe";
+    private static final String DIALOG_TAG_UNSAFE_PASSWORD_WORK = "unsafework";
 
-	private ThreemaSafeService threemaSafeService;
-	private UserService userService;
+    private ThreemaSafeService threemaSafeService;
+    private UserService userService;
 
-	private EditText password1, password2;
-	private String safePassword = null;
-	private TextInputLayout password1layout, password2layout;
-	private Button nextButton;
-	private boolean updatePasswordOnly;
-	private ThreemaSafeServerInfo serverInfo;
-	private boolean openHomeActivity = false;
+    private EditText password1, password2;
+    private String safePassword = null;
+    private TextInputLayout password1layout, password2layout;
+    private Button nextButton;
+    private boolean updatePasswordOnly;
+    private ThreemaSafeServerInfo serverInfo;
+    private boolean openHomeActivity = false;
 
-	@SuppressLint("SetTextI18n")
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		super.initActivity(savedInstanceState);
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected boolean initActivity(Bundle savedInstanceState) {
+        super.initActivity(savedInstanceState);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar == null) {
-			return false;
-		}
-		actionBar.setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            return false;
+        }
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-		try {
-			threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
-			userService = ThreemaApplication.getServiceManager().getUserService();
-		} catch (Exception e) {
-			return false;
-		}
+        try {
+            threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
+            userService = ThreemaApplication.getServiceManager().getUserService();
+        } catch (Exception e) {
+            return false;
+        }
 
-		Intent intent = getIntent();
+        Intent intent = getIntent();
 
-		this.password1 = findViewById(R.id.safe_password1);
-		this.password2 = findViewById(R.id.safe_password2);
-		this.password1layout = findViewById(R.id.password1layout);
-		this.password2layout = findViewById(R.id.password2layout);
+        this.password1 = findViewById(R.id.safe_password1);
+        this.password2 = findViewById(R.id.safe_password2);
+        this.password1layout = findViewById(R.id.password1layout);
+        this.password2layout = findViewById(R.id.password2layout);
 
-		this.password1.addTextChangedListener(new PasswordWatcher());
-		this.password2.addTextChangedListener(new PasswordWatcher());
+        this.password1.addTextChangedListener(new PasswordWatcher());
+        this.password2.addTextChangedListener(new PasswordWatcher());
 
-		Button advancedButton = findViewById(R.id.advanced_options);
-		if ((intent != null && intent.getBooleanExtra(EXTRA_CHANGE_PASSWORD, false))) {
-			updatePasswordOnly = true;
-			actionBar.setTitle(R.string.safe_change_password);
-			advancedButton.setVisibility(View.INVISIBLE);
-		} else {
-			updatePasswordOnly = false;
-			actionBar.setTitle(R.string.safe_configure_choose_password_title);
-			advancedButton.setVisibility(View.VISIBLE);
-			advancedButton.setOnClickListener(v -> {
-				ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(serverInfo, true);
-				dialog.show(getSupportFragmentManager(), DIALOG_TAG_ADVANCED);
-			});
+        Button advancedButton = findViewById(R.id.advanced_options);
+        if ((intent != null && intent.getBooleanExtra(EXTRA_CHANGE_PASSWORD, false))) {
+            updatePasswordOnly = true;
+            actionBar.setTitle(R.string.safe_change_password);
+            advancedButton.setVisibility(View.INVISIBLE);
+        } else {
+            updatePasswordOnly = false;
+            actionBar.setTitle(R.string.safe_configure_choose_password_title);
+            advancedButton.setVisibility(View.VISIBLE);
+            advancedButton.setOnClickListener(v -> {
+                ThreemaSafeAdvancedDialog dialog = ThreemaSafeAdvancedDialog.newInstance(serverInfo, true);
+                dialog.show(getSupportFragmentManager(), DIALOG_TAG_ADVANCED);
+            });
 
-			if (ConfigUtils.isWorkRestricted() && intent != null && intent.getBooleanExtra(EXTRA_WORK_FORCE_PASSWORD, false)) {
-				TextView explainText = findViewById(R.id.safe_enable_explain);
-				explainText.setText(getString(R.string.work_safe_forced_explain) + "\n\n" + getString(R.string.safe_configure_choose_password));
-			}
-		}
+            if (ConfigUtils.isWorkRestricted() && intent != null && intent.getBooleanExtra(EXTRA_WORK_FORCE_PASSWORD, false)) {
+                TextView explainText = findViewById(R.id.safe_enable_explain);
+                explainText.setText(getString(R.string.work_safe_forced_explain) + "\n\n" + getString(R.string.safe_configure_choose_password));
+            }
+        }
 
-		nextButton = findViewById(R.id.next);
-		nextButton.setOnClickListener(v -> {
-			// finish up
-			saveChangesAndExit(safePassword);
-		});
-		nextButton.setEnabled(false);
-		nextButton.setVisibility(View.VISIBLE);
+        nextButton = findViewById(R.id.next);
+        nextButton.setOnClickListener(v -> {
+            // finish up
+            saveChangesAndExit(safePassword);
+        });
+        nextButton.setEnabled(false);
+        nextButton.setVisibility(View.VISIBLE);
 
-		this.serverInfo = preferenceService.getThreemaSafeServerInfo();
+        this.serverInfo = preferenceService.getThreemaSafeServerInfo();
 
-		if (ConfigUtils.isWorkRestricted()) {
-			ThreemaSafeMDMConfig safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
-			if (safeMDMConfig.isBackupExpertSettingsDisabled()) {
-				advancedButton.setVisibility(View.INVISIBLE);
-				this.serverInfo = safeMDMConfig.getServerInfo();
-			}
-		}
+        if (ConfigUtils.isWorkRestricted()) {
+            ThreemaSafeMDMConfig safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
+            if (safeMDMConfig.isBackupExpertSettingsDisabled()) {
+                advancedButton.setVisibility(View.INVISIBLE);
+                this.serverInfo = safeMDMConfig.getServerInfo();
+            }
+        }
 
-		openHomeActivity = (intent != null && intent.getBooleanExtra(EXTRA_OPEN_HOME_ACTIVITY, false))
-			|| (savedInstanceState != null && savedInstanceState.getBoolean(EXTRA_OPEN_HOME_ACTIVITY, false));
+        openHomeActivity = (intent != null && intent.getBooleanExtra(EXTRA_OPEN_HOME_ACTIVITY, false))
+            || (savedInstanceState != null && savedInstanceState.getBoolean(EXTRA_OPEN_HOME_ACTIVITY, false));
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-		super.onSaveInstanceState(outState, outPersistentState);
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
 
-		outState.putBoolean(EXTRA_OPEN_HOME_ACTIVITY, openHomeActivity);
-	}
+        outState.putBoolean(EXTRA_OPEN_HOME_ACTIVITY, openHomeActivity);
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_threema_safe_configure;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_threema_safe_configure;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				onBackPressed();
-				break;
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return false;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void saveChangesAndExit(final String safePassword) {
-		if (!TestUtil.isEmptyOrNull(safePassword)) {
-			new AsyncTask<Void, Void, Boolean>() {
-				byte[] masterkey;
+    @SuppressLint("StaticFieldLeak")
+    private void saveChangesAndExit(final String safePassword) {
+        if (!TestUtil.isEmptyOrNull(safePassword)) {
+            new AsyncTask<Void, Void, Boolean>() {
+                byte[] masterkey;
 
-				@Override
-				protected void onPreExecute() {
-					GenericProgressDialog.newInstance(R.string.preparing_threema_safe, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_PREPARING);
-				}
+                @Override
+                protected void onPreExecute() {
+                    GenericProgressDialog.newInstance(R.string.preparing_threema_safe, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_PREPARING);
+                }
 
-				@Override
-				protected Boolean doInBackground(Void... voids) {
-					masterkey = threemaSafeService.deriveMasterKey(safePassword, userService.getIdentity());
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    masterkey = threemaSafeService.deriveMasterKey(safePassword, userService.getIdentity());
 
-					if (!TextUtil.checkBadPassword(ThreemaSafeConfigureActivity.this, safePassword)) {
-						if (updatePasswordOnly) {
-							deleteExistingBackup();
-						}
-						return true;
-					}
-					return false;
-				}
+                    if (!TextUtil.checkBadPassword(ThreemaSafeConfigureActivity.this, safePassword)) {
+                        if (updatePasswordOnly) {
+                            deleteExistingBackup();
+                        }
+                        return true;
+                    }
+                    return false;
+                }
 
-				@Override
-				protected void onPostExecute(Boolean passwordOK) {
-					DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_PREPARING, true);
+                @Override
+                protected void onPostExecute(Boolean passwordOK) {
+                    DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_PREPARING, true);
 
-					if (masterkey != null) {
-						if (!passwordOK) {
-							Context context = ThreemaSafeConfigureActivity.this;
+                    if (masterkey != null) {
+                        if (!passwordOK) {
+                            Context context = ThreemaSafeConfigureActivity.this;
 
-							if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
-								GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD_WORK);
-							} else {
-								GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, false);
-								dialog.setData(masterkey);
-								dialog.show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD);
-							}
-						} else {
-							storeKeyAndFinish(masterkey);
-						}
-					} else {
-						Toast.makeText(ThreemaSafeConfigureActivity.this, R.string.safe_error_preparing, Toast.LENGTH_LONG).show();
-						finish();
-					}
-				}
-			}.execute();
-		} else {
-			threemaSafeService.storeMasterKey(new byte[0]);
-			finish();
-		}
-	}
+                            if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
+                                GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD_WORK);
+                            } else {
+                                GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, false);
+                                dialog.setData(masterkey);
+                                dialog.show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD);
+                            }
+                        } else {
+                            storeKeyAndFinish(masterkey);
+                        }
+                    } else {
+                        Toast.makeText(ThreemaSafeConfigureActivity.this, R.string.safe_error_preparing, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+            }.execute();
+        } else {
+            threemaSafeService.storeMasterKey(new byte[0]);
+            finish();
+        }
+    }
 
-	@WorkerThread
-	private boolean deleteExistingBackup() {
-		try {
-			threemaSafeService.deleteBackup();
-			return true;
-		} catch (ThreemaException e) {
-			logger.error("Exception", e);
-		}
-		return false;
-	}
+    @WorkerThread
+    private boolean deleteExistingBackup() {
+        try {
+            threemaSafeService.deleteBackup();
+            return true;
+        } catch (ThreemaException e) {
+            logger.error("Exception", e);
+        }
+        return false;
+    }
 
-	private void storeKeyAndFinish(byte[] masterkey) {
-		threemaSafeService.storeMasterKey(masterkey);
-		preferenceService.setThreemaSafeServerInfo(serverInfo);
-		threemaSafeService.setEnabled(true);
-		threemaSafeService.uploadNow(true);
+    private void storeKeyAndFinish(byte[] masterkey) {
+        threemaSafeService.storeMasterKey(masterkey);
+        preferenceService.setThreemaSafeServerInfo(serverInfo);
+        threemaSafeService.setEnabled(true);
+        threemaSafeService.uploadNow(true);
 
-		if (updatePasswordOnly) {
-			Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_password_updated, Toast.LENGTH_LONG).show();
-		} else {
-			Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_activated, Toast.LENGTH_LONG).show();
-		}
+        if (updatePasswordOnly) {
+            Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_password_updated, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_activated, Toast.LENGTH_LONG).show();
+        }
 
-		if (openHomeActivity) {
-			startActivity(new Intent(ThreemaSafeConfigureActivity.this, HomeActivity.class));
-		}
+        if (openHomeActivity) {
+            startActivity(new Intent(ThreemaSafeConfigureActivity.this, HomeActivity.class));
+        }
 
-		finish();
-	}
+        finish();
+    }
 
-	private class PasswordWatcher implements TextWatcher {
-		private PasswordWatcher() {}
+    private class PasswordWatcher implements TextWatcher {
+        private PasswordWatcher() {
+        }
 
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
+        @Override
+        public void afterTextChanged(Editable s) {
+            boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
 
-			if (passwordOk) {
-				safePassword = s.toString();
-				nextButton.setEnabled(true);
-			} else {
-				safePassword = null;
-				nextButton.setEnabled(false);
-			}
-		}
-	}
+            if (passwordOk) {
+                safePassword = s.toString();
+                nextButton.setEnabled(true);
+            } else {
+                safePassword = null;
+                nextButton.setEnabled(false);
+            }
+        }
+    }
 
-	private boolean getPasswordOK(String password1Text, String password2Text) {
-		boolean lengthOk = WizardFragment1.getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(this) ? 1 :MIN_PW_LENGTH);
-		boolean passwordsMatch = password1Text.equals(password2Text);
+    private boolean getPasswordOK(String password1Text, String password2Text) {
+        boolean lengthOk = WizardFragment1.getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(this) ? 1 : MIN_PW_LENGTH);
+        boolean passwordsMatch = password1Text.equals(password2Text);
 
-		if (!lengthOk && password1Text.length() > 0) {
-			this.password1layout.setError(getString(R.string.password_too_short_generic));
-			this.password2layout.setError(null);
-		} else {
-			this.password1layout.setError(null);
-			if (!TestUtil.isBlankOrNull(this.password2.getText())) {
-				this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
-			} else {
-				this.password2layout.setError(null);
-			}
-		}
+        if (!lengthOk && password1Text.length() > 0) {
+            this.password1layout.setError(getString(R.string.password_too_short_generic));
+            this.password2layout.setError(null);
+        } else {
+            this.password1layout.setError(null);
+            if (!TestUtil.isBlankOrNull(this.password2.getText())) {
+                this.password2layout.setError(passwordsMatch ? null : getString(R.string.passwords_dont_match));
+            } else {
+                this.password2layout.setError(null);
+            }
+        }
 
-		return (lengthOk && passwordsMatch);
-	}
+        return (lengthOk && passwordsMatch);
+    }
 
-	@Override
-	public void onYes(String tag, ThreemaSafeServerInfo serverInfo) {
-		this.serverInfo = serverInfo;
-	}
+    @Override
+    public void onYes(String tag, ThreemaSafeServerInfo serverInfo) {
+        this.serverInfo = serverInfo;
+    }
 
-	@Override
-	public void onNo(String tag) {}
+    @Override
+    public void onNo(String tag) {
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	public void onYes(String tag, Object data) {
-		if (!DIALOG_TAG_UNSAFE_PASSWORD_WORK.equals(tag)) {
-			if (updatePasswordOnly) {
-				new AsyncTask<Void, Void, Boolean>() {
-					@Override
-					protected Boolean doInBackground(Void... voids) {
-						return deleteExistingBackup();
-					}
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public void onYes(String tag, Object data) {
+        if (!DIALOG_TAG_UNSAFE_PASSWORD_WORK.equals(tag)) {
+            if (updatePasswordOnly) {
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... voids) {
+                        return deleteExistingBackup();
+                    }
 
-					@Override
-					protected void onPostExecute(Boolean success) {
-						storeKeyAndFinish((byte[]) data);
-					}
-				}.execute();
-			} else {
-				storeKeyAndFinish((byte[]) data);
-			}
-		}
-	}
+                    @Override
+                    protected void onPostExecute(Boolean success) {
+                        storeKeyAndFinish((byte[]) data);
+                    }
+                }.execute();
+            } else {
+                storeKeyAndFinish((byte[]) data);
+            }
+        }
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		// stay put
-	}
+    @Override
+    public void onNo(String tag, Object data) {
+        // stay put
+    }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-		ConfigUtils.adjustToolbar(this, getToolbar());
-	}
+        ConfigUtils.adjustToolbar(this, getToolbar());
+    }
 }

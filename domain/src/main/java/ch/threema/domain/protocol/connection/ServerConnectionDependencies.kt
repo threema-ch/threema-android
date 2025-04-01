@@ -29,7 +29,7 @@ internal fun interface ServerConnectionDependencyProvider {
     fun create(connection: ServerConnection): ServerConnectionDependencies
 }
 
-internal data class ServerConnectionDependencies (
+internal data class ServerConnectionDependencies(
     val mainController: MainConnectionController,
     val socket: ServerSocket,
     val layers: ServerConnectionLayers,

@@ -36,11 +36,11 @@ internal class SystemUpdateToVersion87(
     override fun runDirectly(): Boolean {
         sqLiteDatabase.execSQL(
             "CREATE TABLE `rejected_group_messages` (" +
-                    "`messageId` INTEGER NOT NULL, " +
-                    "`rejectedIdentity` VARCHAR NOT NULL," +
-                    "`groupId` INTEGER NOT NULL," +
-                    "PRIMARY KEY (`messageId`, `rejectedIdentity`, `groupId`) ON CONFLICT IGNORE " +
-                    ")"
+                "`messageId` INTEGER NOT NULL, " +
+                "`rejectedIdentity` VARCHAR NOT NULL," +
+                "`groupId` INTEGER NOT NULL," +
+                "PRIMARY KEY (`messageId`, `rejectedIdentity`, `groupId`) ON CONFLICT IGNORE " +
+                ")"
         )
 
         return true

@@ -40,120 +40,120 @@ import ch.threema.base.utils.LoggingUtil;
 import static android.content.Context.POWER_SERVICE;
 
 public class PowermanagerUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PowermanagerUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PowermanagerUtil");
 
-	// https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-push-notificati/48166241
-	// https://stackoverflow.com/questions/31638986/protected-apps-setting-on-huawei-phones-and-how-to-handle-it
+    // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-push-notificati/48166241
+    // https://stackoverflow.com/questions/31638986/protected-apps-setting-on-huawei-phones-and-how-to-handle-it
 
-	private static final Intent[] POWERMANAGER_INTENTS = {
-			new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
-			new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity")),
-			new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity")),
-			new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
-			new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager")),
-			new Intent().setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
-			new Intent().setComponent(new ComponentName("com.htc.pitroad", "com.htc.pitroad.landingpage.activity.LandingPageActivity")),
-			new Intent("miui.intent.action.POWER_HIDE_MODE_APP_LIST").addCategory(Intent.CATEGORY_DEFAULT)
-	};
+    private static final Intent[] POWERMANAGER_INTENTS = {
+        new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity")),
+        new Intent().setComponent(new ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity")),
+        new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.optimize.process.ProtectActivity")),
+        new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.AddWhiteListActivity")),
+        new Intent().setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager")),
+        new Intent().setComponent(new ComponentName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.BgStartUpManagerActivity")),
+        new Intent().setComponent(new ComponentName("com.htc.pitroad", "com.htc.pitroad.landingpage.activity.LandingPageActivity")),
+        new Intent("miui.intent.action.POWER_HIDE_MODE_APP_LIST").addCategory(Intent.CATEGORY_DEFAULT)
+    };
 
-	private static final Intent[] AUTOSTART_INTENTS = {
-			new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
-			new Intent().setComponent(new ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity")),
-			new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
-			new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")),
-			new Intent().setComponent(new ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")),
-			new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.privacypermissionsentry.PermissionTopActivity")),
-			new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.MainActivity")),
-			new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity")),
-			new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity")),
-			new Intent().setComponent(new ComponentName("com.transsion.phonemanager", "com.itel.autobootmanager.activity.AutoBootMgrActivity")),
-			new Intent("miui.intent.action.OP_AUTO_START").addCategory(Intent.CATEGORY_DEFAULT),
-	};
+    private static final Intent[] AUTOSTART_INTENTS = {
+        new Intent().setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity")),
+        new Intent().setComponent(new ComponentName("com.letv.android.letvsafe", "com.letv.android.letvsafe.AutobootManageActivity")),
+        new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.permission.startup.StartupAppListActivity")),
+        new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.safecenter.startupapp.StartupAppListActivity")),
+        new Intent().setComponent(new ComponentName("com.oppo.safe", "com.oppo.safe.permission.startup.StartupAppListActivity")),
+        new Intent().setComponent(new ComponentName("com.coloros.safecenter", "com.coloros.privacypermissionsentry.PermissionTopActivity")),
+        new Intent().setComponent(new ComponentName("com.asus.mobilemanager", "com.asus.mobilemanager.MainActivity")),
+        new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.startupmgr.ui.StartupNormalAppListActivity")),
+        new Intent().setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.appcontrol.activity.StartupAppControlActivity")),
+        new Intent().setComponent(new ComponentName("com.transsion.phonemanager", "com.itel.autobootmanager.activity.AutoBootMgrActivity")),
+        new Intent("miui.intent.action.OP_AUTO_START").addCategory(Intent.CATEGORY_DEFAULT),
+    };
 
-	public static final int RESULT_DISABLE_POWERMANAGER = 661;
-	public static final int RESULT_DISABLE_AUTOSTART = 662;
+    public static final int RESULT_DISABLE_POWERMANAGER = 661;
+    public static final int RESULT_DISABLE_AUTOSTART = 662;
 
-	private static boolean isCallable(Context context, Intent intent) {
-		List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
-			PackageManager.MATCH_DEFAULT_ONLY);
-		return list.size() > 0;
-	}
+    private static boolean isCallable(Context context, Intent intent) {
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
+            PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
 
-	private static Intent getPowermanagerIntent(Context context) {
-		for (Intent intent : POWERMANAGER_INTENTS) {
-			if (isCallable(context, intent)) {
-				return intent;
-			}
-		}
-		return null;
-	}
+    private static Intent getPowermanagerIntent(Context context) {
+        for (Intent intent : POWERMANAGER_INTENTS) {
+            if (isCallable(context, intent)) {
+                return intent;
+            }
+        }
+        return null;
+    }
 
-	private static Intent getAutostartIntent(Context context) {
-		for (Intent intent : AUTOSTART_INTENTS) {
-			if (isCallable(context, intent)) {
-				return intent;
-			}
-		}
-		return null;
-	}
+    private static Intent getAutostartIntent(Context context) {
+        for (Intent intent : AUTOSTART_INTENTS) {
+            if (isCallable(context, intent)) {
+                return intent;
+            }
+        }
+        return null;
+    }
 
-	public static void callPowerManager(@NonNull Fragment fragment) {
-		for (Intent intent : POWERMANAGER_INTENTS) {
-			if (isCallable(fragment.getActivity(), intent)) {
-				try {
-					fragment.startActivityForResult(intent, RESULT_DISABLE_POWERMANAGER);
-					return;
-				} catch (Exception e) {
-					logger.error("Unable to start power manager activity", e);
-				}
-			}
-		}
-	}
+    public static void callPowerManager(@NonNull Fragment fragment) {
+        for (Intent intent : POWERMANAGER_INTENTS) {
+            if (isCallable(fragment.getActivity(), intent)) {
+                try {
+                    fragment.startActivityForResult(intent, RESULT_DISABLE_POWERMANAGER);
+                    return;
+                } catch (Exception e) {
+                    logger.error("Unable to start power manager activity", e);
+                }
+            }
+        }
+    }
 
-	public static void callAutostartManager(@NonNull Fragment fragment) {
-		for (Intent intent : AUTOSTART_INTENTS) {
-			if (isCallable(fragment.getActivity(), intent)) {
-				try {
-					fragment.startActivityForResult(intent, RESULT_DISABLE_AUTOSTART);
-					return;
-				} catch (Exception e) {
-					logger.error("Unable to start autostart activity", e);
-				}
-			}
-		}
-	}
+    public static void callAutostartManager(@NonNull Fragment fragment) {
+        for (Intent intent : AUTOSTART_INTENTS) {
+            if (isCallable(fragment.getActivity(), intent)) {
+                try {
+                    fragment.startActivityForResult(intent, RESULT_DISABLE_AUTOSTART);
+                    return;
+                } catch (Exception e) {
+                    logger.error("Unable to start autostart activity", e);
+                }
+            }
+        }
+    }
 
-	public static boolean hasPowerManagerOption(Context context) {
-		return getPowermanagerIntent(context) != null;
-	}
+    public static boolean hasPowerManagerOption(Context context) {
+        return getPowermanagerIntent(context) != null;
+    }
 
-	public static boolean hasAutostartOption(Context context) {
-		return getAutostartIntent(context) != null;
-	}
+    public static boolean hasAutostartOption(Context context) {
+        return getAutostartIntent(context) != null;
+    }
 
-	public static boolean needsFixing(Context context) {
-		return !isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
-	}
+    public static boolean needsFixing(Context context) {
+        return !isIgnoringBatteryOptimizations(context) || hasAutostartOption(context) || hasPowerManagerOption(context);
+    }
 
-	/**
-	 * Try to find out whether battery optimizations are already disabled for our app.
-	 * If this fails (e.g. on devices older than Android M), `true` will be returned.
-	 */
-	public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
-		// App is always whitelisted in unit tests
-		if (RuntimeUtil.isInTest()) {
-			return true;
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
-			try {
-				return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
-			} catch (Exception e) {
-				logger.error("Exception while checking if battery optimization is disabled", e);
-				// don't care about buggy phones not implementing this API
-				return true;
-			}
-		}
-		return true;
-	}
+    /**
+     * Try to find out whether battery optimizations are already disabled for our app.
+     * If this fails (e.g. on devices older than Android M), `true` will be returned.
+     */
+    public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
+        // App is always whitelisted in unit tests
+        if (RuntimeUtil.isInTest()) {
+            return true;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
+            try {
+                return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+            } catch (Exception e) {
+                logger.error("Exception while checking if battery optimization is disabled", e);
+                // don't care about buggy phones not implementing this API
+                return true;
+            }
+        }
+        return true;
+    }
 }

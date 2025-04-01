@@ -88,7 +88,11 @@ class PermissionIconView : FrameLayout {
      * highlighted view is shown larger than the other views.
      */
     fun setHighlighted(isHighlighted: Boolean, animate: Boolean) {
-        val duration = if (animate) { resources.getInteger(android.R.integer.config_mediumAnimTime).toLong() } else { 0L }
+        val duration = if (animate) {
+            resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        } else {
+            0L
+        }
         if (isHighlighted) {
             animate()
                 .scaleX(1.5f)

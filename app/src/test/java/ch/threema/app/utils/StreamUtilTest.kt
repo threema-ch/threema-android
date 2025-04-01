@@ -64,7 +64,7 @@ class StreamUtilTest {
         val inputStream: InputStream? = null
 
         // Assert that the comparison fails when the input is not null
-        assertFalse(inputStream.contentEquals(byteArrayOf(0,1,2,3)))
+        assertFalse(inputStream.contentEquals(byteArrayOf(0, 1, 2, 3)))
         assertFalse(inputStream.contentEquals(byteArrayOf()))
 
         // Assert that the comparison succeeds when the byte array is also null
@@ -73,7 +73,7 @@ class StreamUtilTest {
 
     @Test
     fun testBytesNull() {
-        val inputStream = ByteArrayInputStream(byteArrayOf(0,1,2,3))
+        val inputStream = ByteArrayInputStream(byteArrayOf(0, 1, 2, 3))
 
         // Assert that the comparison fails when the input is null
         assertFalse(inputStream.contentEquals(null))

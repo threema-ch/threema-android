@@ -26,7 +26,8 @@ import androidx.work.*
 import ch.threema.app.ThreemaApplication
 import ch.threema.base.utils.LoggingUtil
 
-class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeWorker")
 
     companion object {
@@ -35,12 +36,12 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
 
         fun buildOneTimeWorkRequest(networkState: String): OneTimeWorkRequest {
             val data = Data.Builder()
-                    .putString(EXTRA_NETWORK_STATE, networkState)
-                    .build()
+                .putString(EXTRA_NETWORK_STATE, networkState)
+                .build()
 
             return OneTimeWorkRequestBuilder<ConnectivityChangeWorker>()
-                    .apply { setInputData(data) }
-                    .build()
+                .apply { setInputData(data) }
+                .build()
         }
     }
 
@@ -65,10 +66,13 @@ class ConnectivityChangeWorker(context: Context, workerParameters: WorkerParamet
                     if (serviceManager.taskManager.hasPendingTasks()) {
                         logger.info("Messages in queue; acquiring connection")
                         serviceManager.lifetimeService.acquireConnection("connectivityChange")
-                        serviceManager.lifetimeService.releaseConnectionLinger("connectivityChange", MESSAGE_SEND_TIME)
+                        serviceManager.lifetimeService.releaseConnectionLinger(
+                            "connectivityChange",
+                            MESSAGE_SEND_TIME
+                        )
                     }
                 } catch (e: Exception) {
-                   logger.error("Error", e)
+                    logger.error("Error", e)
                 }
             }
         }

@@ -28,7 +28,8 @@ class GroupFeatureSupport(
     @ThreemaFeature.Feature feature: Long,
     groupMembers: List<ContactModel>
 ) {
-    @SuppressWarnings("WeakerAccess") val contactsWithFeatureSupport: List<ContactModel>
+    @SuppressWarnings("WeakerAccess")
+    val contactsWithFeatureSupport: List<ContactModel>
     val contactsWithoutFeatureSupport: List<ContactModel>
 
     init {
@@ -38,7 +39,7 @@ class GroupFeatureSupport(
         }
     }
 
-    val adoptionRate : GroupFeatureAdoptionRate =
+    val adoptionRate: GroupFeatureAdoptionRate =
         // deduct adoption rate
         if (contactsWithFeatureSupport.isNotEmpty() && contactsWithoutFeatureSupport.isNotEmpty()) {
             GroupFeatureAdoptionRate.PARTIAL

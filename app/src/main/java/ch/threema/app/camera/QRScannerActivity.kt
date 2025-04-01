@@ -66,7 +66,8 @@ class QRScannerActivity : ThreemaActivity() {
     private lateinit var cameraPreviewContainer: View
 
     private var hint: String = ""
-    @QRCodeColor private var qrColor = QR_TYPE_ANY
+    @QRCodeColor
+    private var qrColor = QR_TYPE_ANY
 
     private var camera: Camera? = null
     private var preview: Preview? = null
@@ -90,7 +91,8 @@ class QRScannerActivity : ThreemaActivity() {
         window.statusBarColor = Color.TRANSPARENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // we want dark icons, i.e. a light status bar
-            window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
         qrColor = intent.getIntExtra(KEY_QR_TYPE, QR_TYPE_ANY)
@@ -144,8 +146,9 @@ class QRScannerActivity : ThreemaActivity() {
 
     @SuppressLint("ClickableViewAccessibility", "WrongConstant")
     private fun bindCameraUseCases() {
-        val lensFacing = if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
-                    (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else -1)
+        val lensFacing =
+            if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
+                (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else -1)
 
         if (lensFacing == -1) {
             Toast.makeText(this, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
@@ -159,26 +162,28 @@ class QRScannerActivity : ThreemaActivity() {
         val resolution = Size(720, 1280)
 
         val cameraProvider = cameraProvider
-                ?: throw IllegalStateException("Camera initialization failed.")
+            ?: throw IllegalStateException("Camera initialization failed.")
 
         preview = Preview.Builder()
-                .setTargetResolution(resolution)
-                .setTargetRotation(rotation)
-                .build()
+            .setTargetResolution(resolution)
+            .setTargetRotation(rotation)
+            .build()
 
         imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .setTargetResolution(resolution)
-                .setTargetRotation(rotation)
-                .build()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setTargetResolution(resolution)
+            .setTargetRotation(rotation)
+            .build()
 
         imageAnalyzer = ImageAnalysis.Builder()
-                .setTargetResolution(resolution)
-                .setTargetRotation(rotation)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor, QRCodeAnalyzer { decodeQRCodeState: DecodeQRCodeState ->
+            .setTargetResolution(resolution)
+            .setTargetRotation(rotation)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+            .also {
+                it.setAnalyzer(
+                    cameraExecutor,
+                    QRCodeAnalyzer { decodeQRCodeState: DecodeQRCodeState ->
                         when (decodeQRCodeState) {
                             is DecodeQRCodeState.ERROR -> {
                                 logger.debug("Decoder Error")
@@ -188,6 +193,7 @@ class QRScannerActivity : ThreemaActivity() {
                                     returnData(null, false)
                                 }
                             }
+
                             is DecodeQRCodeState.SUCCESS -> {
                                 logger.debug("Decoder Success")
                                 val qrCodeData = decodeQRCodeState.qrCode
@@ -198,21 +204,23 @@ class QRScannerActivity : ThreemaActivity() {
                             }
                         }
                     })
-                }
+            }
 
         try {
             // Must unbind the use-cases before rebinding them
             cameraProvider.unbindAll()
 
             camera = cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                this, cameraSelector, preview, imageCapture, imageAnalyzer
+            )
 
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(cameraPreview.surfaceProvider)
 
             val point = cameraPreview.meteringPointFactory.createPoint(
-                    cameraPreviewContainer.left + cameraPreviewContainer.width / 2.0f,
-                    cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f)
+                cameraPreviewContainer.left + cameraPreviewContainer.width / 2.0f,
+                cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f
+            )
             camera?.cameraControl?.startFocusAndMetering(FocusMeteringAction.Builder(point).build())
         } catch (e: Exception) {
             logger.error("Use case binding failed", e)
@@ -224,14 +232,15 @@ class QRScannerActivity : ThreemaActivity() {
                 MotionEvent.ACTION_DOWN -> true
                 MotionEvent.ACTION_UP -> {
                     camera?.cameraControl?.startFocusAndMetering(
-                            FocusMeteringAction.Builder(
-                                    cameraPreview.meteringPointFactory.createPoint(
-                                            motionEvent.x, motionEvent.y
-                                    )
-                            ).build()
+                        FocusMeteringAction.Builder(
+                            cameraPreview.meteringPointFactory.createPoint(
+                                motionEvent.x, motionEvent.y
+                            )
+                        ).build()
                     )
                     true
                 }
+
                 else -> false
             }
         }
@@ -244,7 +253,7 @@ class QRScannerActivity : ThreemaActivity() {
             val intent = Intent()
             intent.putExtra(ThreemaApplication.INTENT_DATA_QRCODE, qrCodeData)
             setResult(RESULT_OK, intent)
-        } else  {
+        } else {
             setResult(RESULT_CANCELED)
         }
 

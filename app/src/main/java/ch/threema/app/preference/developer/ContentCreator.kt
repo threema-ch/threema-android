@@ -67,7 +67,10 @@ object ContentCreator {
     @AnyThread
     fun createReactionSpam(serviceManager: ServiceManager, fragmentManager: FragmentManager) {
         CoroutineScope(Dispatchers.Default).launch {
-            val goOn = confirm(fragmentManager, "Create loads of messages with reactions and/or ACK/DEC for any contact/group whose name starts with '$SPAM_CHATS_PREFIX'?")
+            val goOn = confirm(
+                fragmentManager,
+                "Create loads of messages with reactions and/or ACK/DEC for any contact/group whose name starts with '$SPAM_CHATS_PREFIX'?"
+            )
             if (!goOn) {
                 return@launch
             }
@@ -144,7 +147,10 @@ object ContentCreator {
         return reactions.toDbReactions(message.id)
     }
 
-    private fun createGroupText(messageStates: Map<String, Any>, reactions: List<Pair<String, Set<String>>>): String {
+    private fun createGroupText(
+        messageStates: Map<String, Any>,
+        reactions: List<Pair<String, Set<String>>>
+    ): String {
         val stateTexts = messageStates
             .map { (identity, state) -> "@[$identity]: $state" }
         val reactionTexts = reactions
@@ -213,7 +219,10 @@ object ContentCreator {
         return reactions.toDbReactions(message.id)
     }
 
-    private fun createContactText(state: MessageState?, reactions: List<Pair<String, Set<String>>>): String {
+    private fun createContactText(
+        state: MessageState?,
+        reactions: List<Pair<String, Set<String>>>
+    ): String {
         val stateText = state?.let { "State: $it" }
         val reactionTexts = reactions
             .map { (identity, reactions) -> "@[$identity]: ${reactions.joinToString(", ")}" }
@@ -222,25 +231,26 @@ object ContentCreator {
 
     private fun List<Pair<String, Set<String>>>.toDbReactions(messageId: Int): List<DbEmojiReaction> {
         return flatMap { (identity, reactions) ->
-            reactions.map{ reaction -> DbEmojiReaction(
-                messageId,
-                identity,
-                reaction,
-                Date()
-            ) }
+            reactions.map { reaction ->
+                DbEmojiReaction(
+                    messageId,
+                    identity,
+                    reaction,
+                    Date()
+                )
+            }
         }
     }
 
     private fun createReactions(identities: List<String>): List<Pair<String, Set<String>>> {
         val availableReactions = getReactionSequences(identities.size * 3)
         return identities.map { identity ->
-            val numberOfReactions = Random.nextInt(1 .. 3)
+            val numberOfReactions = Random.nextInt(1..3)
             identity to availableReactions.shuffled().take(numberOfReactions).toSet()
         }.filter { it.second.isNotEmpty() }
     }
 
-    private fun isSpamChat(identifier: String?)
-        = identifier?.startsWith(SPAM_CHATS_PREFIX) == true
+    private fun isSpamChat(identifier: String?) = identifier?.startsWith(SPAM_CHATS_PREFIX) == true
 
     private fun createContactMessage(
         text: String,
@@ -261,14 +271,18 @@ object ContentCreator {
     ): GroupMessageModel = GroupMessageModel().apply {
         groupId = groupModel.id
         identity = senderIdentity
-        this.groupMessageStates  = groupMessageStates.toMap()
+        this.groupMessageStates = groupMessageStates.toMap()
         enrichTextMessage(
             text,
             senderIdentity == userIdentity
         )
     }
 
-    private fun AbstractMessageModel.enrichTextMessage(text: String, isOutbox: Boolean, state: MessageState? = null) {
+    private fun AbstractMessageModel.enrichTextMessage(
+        text: String,
+        isOutbox: Boolean,
+        state: MessageState? = null
+    ) {
         val theDate = Date()
         uid = UUID.randomUUID().toString()
         apiMessageId = MessageId().toString()
@@ -345,7 +359,11 @@ object ContentCreator {
         return result.await()
     }
 
-    private fun withGenericProgress(fragmentManager: FragmentManager, message: String, block: () -> Unit) {
+    private fun withGenericProgress(
+        fragmentManager: FragmentManager,
+        message: String,
+        block: () -> Unit
+    ) {
         val dialog = GenericProgressDialog.newInstance(null, message)
         dialog.show(fragmentManager, "CONTENT_CREATOR_PROGRESS_DIALOG")
         try {

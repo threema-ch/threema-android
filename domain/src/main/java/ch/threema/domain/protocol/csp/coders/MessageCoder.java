@@ -110,706 +110,705 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MessageCoder {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCoder");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCoder");
 
-	private final @NonNull ContactStore contactStore;
-	private final @NonNull IdentityStoreInterface identityStore;
+    private final @NonNull ContactStore contactStore;
+    private final @NonNull IdentityStoreInterface identityStore;
 
-	/**
-	 *
-	 * @param contactStore contact store to use for retrieving keys
-	 * @param identityStore identity store to use for encryption
-	 */
-	public MessageCoder(@NonNull ContactStore contactStore, @NonNull IdentityStoreInterface identityStore) {
-		this.contactStore = contactStore;
-		this.identityStore = identityStore;
-	}
+    /**
+     * @param contactStore  contact store to use for retrieving keys
+     * @param identityStore identity store to use for encryption
+     */
+    public MessageCoder(@NonNull ContactStore contactStore, @NonNull IdentityStoreInterface identityStore) {
+        this.contactStore = contactStore;
+        this.identityStore = identityStore;
+    }
 
 
-	/**
-	 * Attempt to decrypt a boxed (encrypted) message using the given contact and identity store
-	 * and return the decrypted result. The result will be a subclass of AbstractMessage according
-	 * to the message type. Note that the contact is not added, if it does not exist.
-	 *
-	 * @param boxmsg boxed message to be decrypted
-	 * @return decrypted message, or null if the message type is not supported
-	 * @throws BadMessageException if the message cannot be decrypted successfully
-	 * @throws MissingPublicKeyException if the sender's public key cannot be obtained
-	 */
-	public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg) throws BadMessageException, MissingPublicKeyException {
+    /**
+     * Attempt to decrypt a boxed (encrypted) message using the given contact and identity store
+     * and return the decrypted result. The result will be a subclass of AbstractMessage according
+     * to the message type. Note that the contact is not added, if it does not exist.
+     *
+     * @param boxmsg boxed message to be decrypted
+     * @return decrypted message, or null if the message type is not supported
+     * @throws BadMessageException       if the message cannot be decrypted successfully
+     * @throws MissingPublicKeyException if the sender's public key cannot be obtained
+     */
+    public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg) throws BadMessageException, MissingPublicKeyException {
 
-		if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
-			throw new BadMessageException("Message is not for own identity, cannot decode");
-		}
+        if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
+            throw new BadMessageException("Message is not for own identity, cannot decode");
+        }
 
-		if (boxmsg.getFromIdentity().equals(identityStore.getIdentity())) {
-			throw new BadMessageException("Message is from own identity, cannot decode");
-		}
+        if (boxmsg.getFromIdentity().equals(identityStore.getIdentity())) {
+            throw new BadMessageException("Message is from own identity, cannot decode");
+        }
 
-		/* obtain public key of sender */
-		Contact	contact = contactStore.getContactForIdentityIncludingCache(boxmsg.getFromIdentity());
+        /* obtain public key of sender */
+        Contact contact = contactStore.getContactForIdentityIncludingCache(boxmsg.getFromIdentity());
 
-		if (contact == null) {
-			throw new MissingPublicKeyException("Missing public key for ID " + boxmsg.getFromIdentity());
-		}
+        if (contact == null) {
+            throw new MissingPublicKeyException("Missing public key for ID " + boxmsg.getFromIdentity());
+        }
 
-		/* decrypt with our secret key */
-		byte[] data = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), contact.getPublicKey());
-		if (data == null) {
-			throw new BadMessageException("Decryption of message from " + boxmsg.getFromIdentity() + " failed");
-		}
+        /* decrypt with our secret key */
+        byte[] data = identityStore.decryptData(boxmsg.getBox(), boxmsg.getNonce(), contact.getPublicKey());
+        if (data == null) {
+            throw new BadMessageException("Decryption of message from " + boxmsg.getFromIdentity() + " failed");
+        }
 
-		if (data.length == 1) {
-			throw new BadMessageException("Empty message received");
-		}
+        if (data.length == 1) {
+            throw new BadMessageException("Empty message received");
+        }
 
-		/* remove padding */
-		int padbytes = data[data.length - 1] & 0xFF;
-		int realDataLength = data.length - padbytes;
-		if (realDataLength < 1) {
-			throw new BadMessageException("Bad message padding");
-		}
-		MessageCoder.logger.debug("Effective data length is {}", realDataLength);
+        /* remove padding */
+        int padbytes = data[data.length - 1] & 0xFF;
+        int realDataLength = data.length - padbytes;
+        if (realDataLength < 1) {
+            throw new BadMessageException("Bad message padding");
+        }
+        MessageCoder.logger.debug("Effective data length is {}", realDataLength);
 
-		AbstractMessage msg = deserializeData(data, realDataLength, boxmsg.getFromIdentity(), boxmsg.getToIdentity());
+        AbstractMessage msg = deserializeData(data, realDataLength, boxmsg.getFromIdentity(), boxmsg.getToIdentity());
 
-		/* copy header attributes from boxed message */
-		msg.setFromIdentity(boxmsg.getFromIdentity());
-		msg.setToIdentity(boxmsg.getToIdentity());
-		msg.setMessageId(boxmsg.getMessageId());
-		msg.setDate(boxmsg.getDate());
-		msg.setMessageFlags(boxmsg.getFlags());
+        /* copy header attributes from boxed message */
+        msg.setFromIdentity(boxmsg.getFromIdentity());
+        msg.setToIdentity(boxmsg.getToIdentity());
+        msg.setMessageId(boxmsg.getMessageId());
+        msg.setDate(boxmsg.getDate());
+        msg.setMessageFlags(boxmsg.getFlags());
 
-		// Decrypt metadata, if present
-		if (boxmsg.getMetadataBox() != null) {
-			MetadataCoder coder = new MetadataCoder(identityStore);
-			try {
-				MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), contact.getPublicKey());
+        // Decrypt metadata, if present
+        if (boxmsg.getMetadataBox() != null) {
+            MetadataCoder coder = new MetadataCoder(identityStore);
+            try {
+                MessageMetadata metadata = coder.decode(boxmsg.getNonce(), boxmsg.getMetadataBox(), contact.getPublicKey());
 
-				// Ensure message ID matches envelope message ID (so the server cannot swap it and
-				// cause messages to be misquoted or delivery receipts to be swapped)
-				if (metadata.getMessageId() != 0) {
-					MessageId metadataMessageId = new MessageId(metadata.getMessageId());
-					if (!metadataMessageId.equals(boxmsg.getMessageId())) {
-						throw new BadMessageException("Metadata message ID does not match envelope message ID");
-					}
-				}
+                // Ensure message ID matches envelope message ID (so the server cannot swap it and
+                // cause messages to be misquoted or delivery receipts to be swapped)
+                if (metadata.getMessageId() != 0) {
+                    MessageId metadataMessageId = new MessageId(metadata.getMessageId());
+                    if (!metadataMessageId.equals(boxmsg.getMessageId())) {
+                        throw new BadMessageException("Metadata message ID does not match envelope message ID");
+                    }
+                }
 
-				// Take date from encrypted metadata
-				if (metadata.getCreatedAt() != 0) {
-					msg.setDate(new Date(metadata.getCreatedAt()));
-				}
+                // Take date from encrypted metadata
+                if (metadata.getCreatedAt() != 0) {
+                    msg.setDate(new Date(metadata.getCreatedAt()));
+                }
 
-				// Take nickname from encrypted metadata. Note that the nickname in the metadata box
-				// should be used even if the message would not allow user profile distribution
-				// Note that it must be explicitly checked that the nickname is present, otherwise
-				// the default value would be the empty string (which would reset the nickname)
-				if (metadata.hasNickname()) {
-					msg.setNickname(metadata.getNickname());
-				}
-			} catch (InvalidProtocolBufferException | ThreemaException e) {
-				throw new BadMessageException("Metadata decode failed", e);
-			}
-		} else if (msg.allowUserProfileDistribution()) {
-			// If there is no metadata box but the message allows user profile distribution, take
-			// the nickname from the box message
-			msg.setNickname(boxmsg.getPushFromName());
-		}
+                // Take nickname from encrypted metadata. Note that the nickname in the metadata box
+                // should be used even if the message would not allow user profile distribution
+                // Note that it must be explicitly checked that the nickname is present, otherwise
+                // the default value would be the empty string (which would reset the nickname)
+                if (metadata.hasNickname()) {
+                    msg.setNickname(metadata.getNickname());
+                }
+            } catch (InvalidProtocolBufferException | ThreemaException e) {
+                throw new BadMessageException("Metadata decode failed", e);
+            }
+        } else if (msg.allowUserProfileDistribution()) {
+            // If there is no metadata box but the message allows user profile distribution, take
+            // the nickname from the box message
+            msg.setNickname(boxmsg.getPushFromName());
+        }
 
-		return msg;
-	}
+        return msg;
+    }
 
-	/**
-	 * Decode a FS encapsulated message that has already been decrypted, and return it with the
-	 * same attributes as the outer (envelope) message.
-	 *
-	 * @param data decrypted body
-	 * @param outer outer message
-	 * @throws BadMessageException if the message cannot be decoded or if the encapsulated message
-	 *   is not allowed to be encapsulated
-	 */
-	public @NonNull AbstractMessage decodeEncapsulated(
-		@NonNull byte[] data,
-		@NonNull AbstractMessage outer,
-		@NonNull Version appliedVersion
-	) throws BadMessageException {
-		AbstractMessage msg = deserializeData(data, data.length, outer.getFromIdentity(), outer.getToIdentity());
+    /**
+     * Decode a FS encapsulated message that has already been decrypted, and return it with the
+     * same attributes as the outer (envelope) message.
+     *
+     * @param data  decrypted body
+     * @param outer outer message
+     * @throws BadMessageException if the message cannot be decoded or if the encapsulated message
+     *                             is not allowed to be encapsulated
+     */
+    public @NonNull AbstractMessage decodeEncapsulated(
+        @NonNull byte[] data,
+        @NonNull AbstractMessage outer,
+        @NonNull Version appliedVersion
+    ) throws BadMessageException {
+        AbstractMessage msg = deserializeData(data, data.length, outer.getFromIdentity(), outer.getToIdentity());
 
-		// Filter messages not allowed by any FS version.
-		if (msg instanceof ForwardSecurityEnvelopeMessage) {
-			throw new BadMessageException("Unexpected FS envelope encapsulated by an FS message");
-		}
+        // Filter messages not allowed by any FS version.
+        if (msg instanceof ForwardSecurityEnvelopeMessage) {
+            throw new BadMessageException("Unexpected FS envelope encapsulated by an FS message");
+        }
 
-		// Filter messages based on the applied version.
-		switch (appliedVersion) {
-			case V1_0:
-			case V1_1:
-				// Technically, typing-indicator and delivery-receipts are not allowed for V1.0 but
-				// they don't do any harm, so we'll let this slide through for simplicity.
-				//
-				// Disallow encapsulation of group messages for V1.X
-				if (msg instanceof AbstractGroupMessage) {
-					throw new BadMessageException("Unexpected group message encapsulated by an FS message");
-				}
-				break;
-			case V1_2:
-				// Every message type is ok with V1.2
-				break;
-			default:
-				throw new BadMessageException("Unhandled FS version when decapsulating: " + appliedVersion);
-		}
+        // Filter messages based on the applied version.
+        switch (appliedVersion) {
+            case V1_0:
+            case V1_1:
+                // Technically, typing-indicator and delivery-receipts are not allowed for V1.0 but
+                // they don't do any harm, so we'll let this slide through for simplicity.
+                //
+                // Disallow encapsulation of group messages for V1.X
+                if (msg instanceof AbstractGroupMessage) {
+                    throw new BadMessageException("Unexpected group message encapsulated by an FS message");
+                }
+                break;
+            case V1_2:
+                // Every message type is ok with V1.2
+                break;
+            default:
+                throw new BadMessageException("Unhandled FS version when decapsulating: " + appliedVersion);
+        }
 
-		/* copy header attributes from outer message */
-		msg.setFromIdentity(outer.getFromIdentity());
-		msg.setToIdentity(outer.getToIdentity());
-		msg.setMessageId(outer.getMessageId());
-		msg.setDate(outer.getDate());
-		msg.setMessageFlags(outer.getMessageFlags());
-		msg.setNickname(outer.getNickname());
+        /* copy header attributes from outer message */
+        msg.setFromIdentity(outer.getFromIdentity());
+        msg.setToIdentity(outer.getToIdentity());
+        msg.setMessageId(outer.getMessageId());
+        msg.setDate(outer.getDate());
+        msg.setMessageFlags(outer.getMessageFlags());
+        msg.setNickname(outer.getNickname());
 
-		return msg;
-	}
+        return msg;
+    }
 
-	/**
-	 * Encrypt this message using the given contact and identity store and return the boxed result.
-	 *
-	 * @return boxed message
-	 */
-	public @NonNull
-	MessageBox encode(@NonNull AbstractMessage message, @NonNull byte[] nonce) throws ThreemaException {
-		try {
-			/* prepare data for box */
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(message.getType());
+    /**
+     * Encrypt this message using the given contact and identity store and return the boxed result.
+     *
+     * @return boxed message
+     */
+    public @NonNull
+    MessageBox encode(@NonNull AbstractMessage message, @NonNull byte[] nonce) throws ThreemaException {
+        try {
+            /* prepare data for box */
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bos.write(message.getType());
             byte[] body = message.getBody();
             if (body == null) {
                 throw new ThreemaException("Message body is null");
             }
             bos.write(body);
 
-			/* PKCS7 padding */
-			SecureRandom rnd = new SecureRandom();
-			int padbytes = rnd.nextInt(254) + 1;
-			if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN) {
-				padbytes = ProtocolDefines.MIN_MESSAGE_PADDED_LEN - bos.size();
-			}
-			MessageCoder.logger.debug("Adding {} padding bytes", padbytes);
+            /* PKCS7 padding */
+            SecureRandom rnd = new SecureRandom();
+            int padbytes = rnd.nextInt(254) + 1;
+            if ((bos.size() + padbytes) < ProtocolDefines.MIN_MESSAGE_PADDED_LEN) {
+                padbytes = ProtocolDefines.MIN_MESSAGE_PADDED_LEN - bos.size();
+            }
+            MessageCoder.logger.debug("Adding {} padding bytes", padbytes);
 
-			byte[] paddata = new byte[padbytes];
-			for (int i = 0; i < padbytes; i++)
-				paddata[i] = (byte) padbytes;
+            byte[] paddata = new byte[padbytes];
+            for (int i = 0; i < padbytes; i++)
+                paddata[i] = (byte) padbytes;
 
-			bos.write(paddata);
-			byte[] boxData = bos.toByteArray();
+            bos.write(paddata);
+            byte[] boxData = bos.toByteArray();
 
-			/* obtain receiver's public key */
-			Contact receiver = contactStore.getContactForIdentityIncludingCache(message.getToIdentity());
-			byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
+            /* obtain receiver's public key */
+            Contact receiver = contactStore.getContactForIdentityIncludingCache(message.getToIdentity());
+            byte[] receiverPublicKey = receiver != null ? receiver.getPublicKey() : null;
 
-			if (receiverPublicKey == null) {
-				throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
-			}
+            if (receiverPublicKey == null) {
+                throw new ThreemaException("Missing public key for ID " + message.getToIdentity());
+            }
 
-			/* sign/encrypt with our private key */
-			byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
-			if (boxedData == null) {
-				throw new ThreemaException("Data encryption failed");
-			}
+            /* sign/encrypt with our private key */
+            byte[] boxedData = identityStore.encryptData(boxData, nonce, receiverPublicKey);
+            if (boxedData == null) {
+                throw new ThreemaException("Data encryption failed");
+            }
 
-			/* Encrypt metadata */
-			MessageMetadata.Builder metadataBuilder = MessageMetadata.newBuilder()
-				.setMessageId(message.getMessageId().getMessageIdLong())
-				.setCreatedAt(message.getDate().getTime());
+            /* Encrypt metadata */
+            MessageMetadata.Builder metadataBuilder = MessageMetadata.newBuilder()
+                .setMessageId(message.getMessageId().getMessageIdLong())
+                .setCreatedAt(message.getDate().getTime());
 
-			// Get the nickname from the identity store
-			String nickname = identityStore.getPublicNickname();
+            // Get the nickname from the identity store
+            String nickname = identityStore.getPublicNickname();
 
-			// Include the nickname if the message allows user profile distribution
-			if (message.allowUserProfileDistribution()) {
-				// Use padding to get a length of at least 16 bytes with nickname + padding
-				byte[] padding = new byte[Math.max(0, 16 - nickname.getBytes().length)];
-				metadataBuilder.setPadding(ByteString.copyFrom(padding));
-				metadataBuilder.setNickname(nickname);
-			} else {
-				// Set 16 bytes padding to get a length of at least 16 bytes with nickname + padding
-				metadataBuilder.setPadding(ByteString.copyFrom(new byte[16]));
-				// Note that this call is required to clear the nickname. If the messages should not
-				// distribute the user profile, the nickname must be cleared. Otherwise an empty
-				// string is sent, which will delete the nickname on the receiver's device.
-				metadataBuilder.clearNickname();
-			}
+            // Include the nickname if the message allows user profile distribution
+            if (message.allowUserProfileDistribution()) {
+                // Use padding to get a length of at least 16 bytes with nickname + padding
+                byte[] padding = new byte[Math.max(0, 16 - nickname.getBytes().length)];
+                metadataBuilder.setPadding(ByteString.copyFrom(padding));
+                metadataBuilder.setNickname(nickname);
+            } else {
+                // Set 16 bytes padding to get a length of at least 16 bytes with nickname + padding
+                metadataBuilder.setPadding(ByteString.copyFrom(new byte[16]));
+                // Note that this call is required to clear the nickname. If the messages should not
+                // distribute the user profile, the nickname must be cleared. Otherwise an empty
+                // string is sent, which will delete the nickname on the receiver's device.
+                metadataBuilder.clearNickname();
+            }
 
-			MetadataBox metadataBox = new MetadataCoder(identityStore).encode(metadataBuilder.build(), nonce, receiverPublicKey);
+            MetadataBox metadataBox = new MetadataCoder(identityStore).encode(metadataBuilder.build(), nonce, receiverPublicKey);
 
-			/* make BoxedMessage */
-			MessageBox boxmsg = new MessageBox();
-			boxmsg.setFromIdentity(message.getFromIdentity());
-			boxmsg.setToIdentity(message.getToIdentity());
-			boxmsg.setMessageId(message.getMessageId());
-			boxmsg.setDate(message.getDate());
-			boxmsg.setFlags(message.getMessageFlags());
+            /* make BoxedMessage */
+            MessageBox boxmsg = new MessageBox();
+            boxmsg.setFromIdentity(message.getFromIdentity());
+            boxmsg.setToIdentity(message.getToIdentity());
+            boxmsg.setMessageId(message.getMessageId());
+            boxmsg.setDate(message.getDate());
+            boxmsg.setFlags(message.getMessageFlags());
 
-			if (message.allowUserProfileDistribution() && boxmsg.getToIdentity() != null && boxmsg.getToIdentity().startsWith("*")) {
-				boxmsg.setPushFromName(nickname);
-			}
-			boxmsg.setMetadataBox(metadataBox);
-			boxmsg.setNonce(nonce);
-			boxmsg.setBox(boxedData);
+            if (message.allowUserProfileDistribution() && boxmsg.getToIdentity() != null && boxmsg.getToIdentity().startsWith("*")) {
+                boxmsg.setPushFromName(nickname);
+            }
+            boxmsg.setMetadataBox(metadataBox);
+            boxmsg.setNonce(nonce);
+            boxmsg.setBox(boxedData);
 
-			return boxmsg;
-		} catch (IOException e) {
-			/* should never happen as we only write to a byte array */
-			logger.error(e.getMessage(), e);
-			throw new ThreemaException("Failed to create MessageBox");
-		}
-	}
+            return boxmsg;
+        } catch (IOException e) {
+            /* should never happen as we only write to a byte array */
+            logger.error(e.getMessage(), e);
+            throw new ThreemaException("Failed to create MessageBox");
+        }
+    }
 
-	private @NonNull AbstractMessage deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity) throws BadMessageException {
-		/* first byte of data is type */
-		int type = data[0] & 0xFF;
-		AbstractMessage message;
+    private @NonNull AbstractMessage deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity) throws BadMessageException {
+        /* first byte of data is type */
+        int type = data[0] & 0xFF;
+        AbstractMessage message;
 
-		switch (type) {
-			case ProtocolDefines.MSGTYPE_TEXT: {
-				message = TextMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+        switch (type) {
+            case ProtocolDefines.MSGTYPE_TEXT: {
+                message = TextMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_IMAGE: {
-				if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for image message");
-				}
+            case ProtocolDefines.MSGTYPE_IMAGE: {
+                if (realDataLength != (1 + ProtocolDefines.BLOB_ID_LEN + 4 + NaCl.NONCEBYTES)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for image message");
+                }
 
-				ImageMessage imagemsg = new ImageMessage();
+                ImageMessage imagemsg = new ImageMessage();
 
-				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, 1, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				imagemsg.setBlobId(blobId);
+                byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, 1, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                imagemsg.setBlobId(blobId);
 
-				int size = EndianUtils.readSwappedInteger(data, 1 + ProtocolDefines.BLOB_ID_LEN);
-				imagemsg.setSize(size);
+                int size = EndianUtils.readSwappedInteger(data, 1 + ProtocolDefines.BLOB_ID_LEN);
+                imagemsg.setSize(size);
 
-				byte[] nonce = new byte[NaCl.NONCEBYTES];
-				System.arraycopy(data, 1 + 4 + ProtocolDefines.BLOB_ID_LEN, nonce, 0, nonce.length);
-				imagemsg.setNonce(nonce);
+                byte[] nonce = new byte[NaCl.NONCEBYTES];
+                System.arraycopy(data, 1 + 4 + ProtocolDefines.BLOB_ID_LEN, nonce, 0, nonce.length);
+                imagemsg.setNonce(nonce);
 
-				message = imagemsg;
+                message = imagemsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VIDEO: {
-				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for video message");
-				}
+            case ProtocolDefines.MSGTYPE_VIDEO: {
+                if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for video message");
+                }
 
-				VideoMessage videomsg = new VideoMessage();
+                VideoMessage videomsg = new VideoMessage();
 
-				ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
+                ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
 
-				try {
-					videomsg.setDuration(EndianUtils.readSwappedShort(bis));
+                try {
+                    videomsg.setDuration(EndianUtils.readSwappedShort(bis));
 
-					byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-					bis.read(videoBlobId);
-					videomsg.setVideoBlobId(videoBlobId);
+                    byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                    bis.read(videoBlobId);
+                    videomsg.setVideoBlobId(videoBlobId);
 
-					videomsg.setVideoSize(EndianUtils.readSwappedInteger(bis));
+                    videomsg.setVideoSize(EndianUtils.readSwappedInteger(bis));
 
-					byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-					bis.read(thumbnailBlobId);
-					videomsg.setThumbnailBlobId(thumbnailBlobId);
+                    byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                    bis.read(thumbnailBlobId);
+                    videomsg.setThumbnailBlobId(thumbnailBlobId);
 
-					videomsg.setThumbnailSize(EndianUtils.readSwappedInteger(bis));
+                    videomsg.setThumbnailSize(EndianUtils.readSwappedInteger(bis));
 
-					byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-					bis.read(encryptionKey);
-					videomsg.setEncryptionKey(encryptionKey);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
+                    byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                    bis.read(encryptionKey);
+                    videomsg.setEncryptionKey(encryptionKey);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
-				message = videomsg;
+                message = videomsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_LOCATION: {
+            case ProtocolDefines.MSGTYPE_LOCATION: {
                 message = LocationMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_AUDIO: {
-				if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for audio message");
-				}
+            case ProtocolDefines.MSGTYPE_AUDIO: {
+                if (realDataLength != (1 + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for audio message");
+                }
 
-				AudioMessage audiomsg = new AudioMessage();
+                AudioMessage audiomsg = new AudioMessage();
 
-				ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
+                ByteArrayInputStream bis = new ByteArrayInputStream(data, 1, data.length - 1);
 
-				try {
-					audiomsg.setDuration(EndianUtils.readSwappedShort(bis));
+                try {
+                    audiomsg.setDuration(EndianUtils.readSwappedShort(bis));
 
-					byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-					bis.read(audioBlobId);
-					audiomsg.setAudioBlobId(audioBlobId);
+                    byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                    bis.read(audioBlobId);
+                    audiomsg.setAudioBlobId(audioBlobId);
 
-					audiomsg.setAudioSize(EndianUtils.readSwappedInteger(bis));
+                    audiomsg.setAudioSize(EndianUtils.readSwappedInteger(bis));
 
-					byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-					bis.read(encryptionKey);
-					audiomsg.setEncryptionKey(encryptionKey);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
+                    byte[] encryptionKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                    bis.read(encryptionKey);
+                    audiomsg.setEncryptionKey(encryptionKey);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
-				message = audiomsg;
+                message = audiomsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_CREATE: {
-				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN) ||
-					((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group create message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_CREATE: {
+                if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN) ||
+                    ((realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN) % ProtocolDefines.IDENTITY_LEN) != 0) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group create message");
+                }
 
-				GroupSetupMessage groupcreatemsg = new GroupSetupMessage();
-				groupcreatemsg.setGroupCreator(fromIdentity);
-				groupcreatemsg.setApiGroupId(new GroupId(data, 1));
-				int numMembers = ((realDataLength - ProtocolDefines.GROUP_ID_LEN - 1) / ProtocolDefines.IDENTITY_LEN);
-				String[] members = new String[numMembers];
-				for (int i = 0; i < numMembers; i++) {
-					members[i] = new String(data, 1 + ProtocolDefines.GROUP_ID_LEN + i * ProtocolDefines.IDENTITY_LEN, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII);
-				}
-				groupcreatemsg.setMembers(members);
-				message = groupcreatemsg;
-				break;
-			}
+                GroupSetupMessage groupcreatemsg = new GroupSetupMessage();
+                groupcreatemsg.setGroupCreator(fromIdentity);
+                groupcreatemsg.setApiGroupId(new GroupId(data, 1));
+                int numMembers = ((realDataLength - ProtocolDefines.GROUP_ID_LEN - 1) / ProtocolDefines.IDENTITY_LEN);
+                String[] members = new String[numMembers];
+                for (int i = 0; i < numMembers; i++) {
+                    members[i] = new String(data, 1 + ProtocolDefines.GROUP_ID_LEN + i * ProtocolDefines.IDENTITY_LEN, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII);
+                }
+                groupcreatemsg.setMembers(members);
+                message = groupcreatemsg;
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_REQUEST_SYNC: {
+            case ProtocolDefines.MSGTYPE_GROUP_REQUEST_SYNC: {
                 message = GroupSyncRequestMessage.fromByteArray(data, 1, realDataLength - 1, toIdentity);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_RENAME: {
-				if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group rename message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_RENAME: {
+                if (realDataLength < (1 + ProtocolDefines.GROUP_ID_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group rename message");
+                }
 
-				GroupNameMessage grouprenamemsg = new GroupNameMessage();
-				grouprenamemsg.setGroupCreator(fromIdentity);
-				grouprenamemsg.setApiGroupId(new GroupId(data, 1));
-				grouprenamemsg.setGroupName(new String(data, 1 + ProtocolDefines.GROUP_ID_LEN, realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN, UTF_8));
-				message = grouprenamemsg;
+                GroupNameMessage grouprenamemsg = new GroupNameMessage();
+                grouprenamemsg.setGroupCreator(fromIdentity);
+                grouprenamemsg.setApiGroupId(new GroupId(data, 1));
+                grouprenamemsg.setGroupName(new String(data, 1 + ProtocolDefines.GROUP_ID_LEN, realDataLength - 1 - ProtocolDefines.GROUP_ID_LEN, UTF_8));
+                message = grouprenamemsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_LEAVE: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group leave message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_LEAVE: {
+                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group leave message");
+                }
 
-				GroupLeaveMessage groupleavemsg = new GroupLeaveMessage();
-				groupleavemsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				groupleavemsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
-				message = groupleavemsg;
-				break;
-			}
+                GroupLeaveMessage groupleavemsg = new GroupLeaveMessage();
+                groupleavemsg.setGroupCreator(new String(data, 1, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+                groupleavemsg.setApiGroupId(new GroupId(data, 1 + ProtocolDefines.IDENTITY_LEN));
+                message = groupleavemsg;
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_TEXT: {
-				message = GroupTextMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_TEXT: {
+                message = GroupTextMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO: {
-				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group set photo message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_SET_PHOTO: {
+                if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group set photo message");
+                }
 
-				GroupSetProfilePictureMessage groupsetphotomsg = new GroupSetProfilePictureMessage();
-				groupsetphotomsg.setGroupCreator(fromIdentity);
+                GroupSetProfilePictureMessage groupsetphotomsg = new GroupSetProfilePictureMessage();
+                groupsetphotomsg.setGroupCreator(fromIdentity);
 
-				int i = 1;
-				groupsetphotomsg.setApiGroupId(new GroupId(data, i));
-				i += ProtocolDefines.GROUP_ID_LEN;
-				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				i += ProtocolDefines.BLOB_ID_LEN;
-				groupsetphotomsg.setBlobId(blobId);
-				groupsetphotomsg.setSize(EndianUtils.readSwappedInteger(data, i));
-				i += 4;
-				byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-				System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-				groupsetphotomsg.setEncryptionKey(blobKey);
-				message = groupsetphotomsg;
+                int i = 1;
+                groupsetphotomsg.setApiGroupId(new GroupId(data, i));
+                i += ProtocolDefines.GROUP_ID_LEN;
+                byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                i += ProtocolDefines.BLOB_ID_LEN;
+                groupsetphotomsg.setBlobId(blobId);
+                groupsetphotomsg.setSize(EndianUtils.readSwappedInteger(data, i));
+                i += 4;
+                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
+                groupsetphotomsg.setEncryptionKey(blobKey);
+                message = groupsetphotomsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_DELETE_PHOTO: {
-				if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group delete photo message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_DELETE_PHOTO: {
+                if (realDataLength != (1 + ProtocolDefines.GROUP_ID_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group delete photo message");
+                }
 
-				GroupDeleteProfilePictureMessage groupDeleteProfilePictureMessage = new GroupDeleteProfilePictureMessage();
-				groupDeleteProfilePictureMessage.setGroupCreator(fromIdentity);
-				groupDeleteProfilePictureMessage.setApiGroupId(new GroupId(data, 1));
+                GroupDeleteProfilePictureMessage groupDeleteProfilePictureMessage = new GroupDeleteProfilePictureMessage();
+                groupDeleteProfilePictureMessage.setGroupCreator(fromIdentity);
+                groupDeleteProfilePictureMessage.setApiGroupId(new GroupId(data, 1));
 
-				message = groupDeleteProfilePictureMessage;
+                message = groupDeleteProfilePictureMessage;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_IMAGE: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group image message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_IMAGE: {
+                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group image message");
+                }
 
-				int i = 1;
+                int i = 1;
 
-				GroupImageMessage groupimagemsg = new GroupImageMessage();
-				groupimagemsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				i += ProtocolDefines.IDENTITY_LEN;
-				groupimagemsg.setApiGroupId(new GroupId(data, i));
-				i += ProtocolDefines.GROUP_ID_LEN;
-				byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				i += ProtocolDefines.BLOB_ID_LEN;
-				groupimagemsg.setBlobId(blobId);
-				groupimagemsg.setSize(EndianUtils.readSwappedInteger(data, i));
-				i += 4;
-				byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-				System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-				groupimagemsg.setEncryptionKey(blobKey);
-				message = groupimagemsg;
+                GroupImageMessage groupimagemsg = new GroupImageMessage();
+                groupimagemsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+                i += ProtocolDefines.IDENTITY_LEN;
+                groupimagemsg.setApiGroupId(new GroupId(data, i));
+                i += ProtocolDefines.GROUP_ID_LEN;
+                byte[] blobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                i += ProtocolDefines.BLOB_ID_LEN;
+                groupimagemsg.setBlobId(blobId);
+                groupimagemsg.setSize(EndianUtils.readSwappedInteger(data, i));
+                i += 4;
+                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
+                groupimagemsg.setEncryptionKey(blobKey);
+                message = groupimagemsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_VIDEO: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + 2 * ProtocolDefines.BLOB_ID_LEN + 2 * 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group video message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_VIDEO: {
+                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + 2 * ProtocolDefines.BLOB_ID_LEN + 2 * 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group video message");
+                }
 
-				int i = 1;
+                int i = 1;
 
-				GroupVideoMessage groupvideomsg = new GroupVideoMessage();
-				groupvideomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				i += ProtocolDefines.IDENTITY_LEN;
-				groupvideomsg.setApiGroupId(new GroupId(data, i));
-				i += ProtocolDefines.GROUP_ID_LEN;
-				groupvideomsg.setDuration(EndianUtils.readSwappedShort(data, i));
-				i += 2;
-				byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, i, videoBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				i += ProtocolDefines.BLOB_ID_LEN;
-				groupvideomsg.setVideoBlobId(videoBlobId);
-				groupvideomsg.setVideoSize(EndianUtils.readSwappedInteger(data, i));
-				i += 4;
-				byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, i, thumbnailBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				i += ProtocolDefines.BLOB_ID_LEN;
-				groupvideomsg.setThumbnailBlobId(thumbnailBlobId);
-				groupvideomsg.setThumbnailSize(EndianUtils.readSwappedInteger(data, i));
-				i += 4;
-				byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-				System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-				groupvideomsg.setEncryptionKey(blobKey);
-				message = groupvideomsg;
+                GroupVideoMessage groupvideomsg = new GroupVideoMessage();
+                groupvideomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+                i += ProtocolDefines.IDENTITY_LEN;
+                groupvideomsg.setApiGroupId(new GroupId(data, i));
+                i += ProtocolDefines.GROUP_ID_LEN;
+                groupvideomsg.setDuration(EndianUtils.readSwappedShort(data, i));
+                i += 2;
+                byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, i, videoBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                i += ProtocolDefines.BLOB_ID_LEN;
+                groupvideomsg.setVideoBlobId(videoBlobId);
+                groupvideomsg.setVideoSize(EndianUtils.readSwappedInteger(data, i));
+                i += 4;
+                byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, i, thumbnailBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                i += ProtocolDefines.BLOB_ID_LEN;
+                groupvideomsg.setThumbnailBlobId(thumbnailBlobId);
+                groupvideomsg.setThumbnailSize(EndianUtils.readSwappedInteger(data, i));
+                i += 4;
+                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
+                groupvideomsg.setEncryptionKey(blobKey);
+                message = groupvideomsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_LOCATION: {
+            case ProtocolDefines.MSGTYPE_GROUP_LOCATION: {
                 message = GroupLocationMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_AUDIO: {
-				if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-					throw new BadMessageException("Bad length (" + realDataLength + ") for group audio message");
-				}
+            case ProtocolDefines.MSGTYPE_GROUP_AUDIO: {
+                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
+                    throw new BadMessageException("Bad length (" + realDataLength + ") for group audio message");
+                }
 
-				int i = 1;
+                int i = 1;
 
-				GroupAudioMessage groupaudiomsg = new GroupAudioMessage();
-				groupaudiomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-				i += ProtocolDefines.IDENTITY_LEN;
-				groupaudiomsg.setApiGroupId(new GroupId(data, i));
-				i += ProtocolDefines.GROUP_ID_LEN;
-				groupaudiomsg.setDuration(EndianUtils.readSwappedShort(data, i));
-				i += 2;
-				byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-				System.arraycopy(data, i, audioBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-				i += ProtocolDefines.BLOB_ID_LEN;
-				groupaudiomsg.setAudioBlobId(audioBlobId);
-				groupaudiomsg.setAudioSize(EndianUtils.readSwappedInteger(data, i));
-				i += 4;
-				byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-				System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-				groupaudiomsg.setEncryptionKey(blobKey);
-				message = groupaudiomsg;
+                GroupAudioMessage groupaudiomsg = new GroupAudioMessage();
+                groupaudiomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
+                i += ProtocolDefines.IDENTITY_LEN;
+                groupaudiomsg.setApiGroupId(new GroupId(data, i));
+                i += ProtocolDefines.GROUP_ID_LEN;
+                groupaudiomsg.setDuration(EndianUtils.readSwappedShort(data, i));
+                i += 2;
+                byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
+                System.arraycopy(data, i, audioBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
+                i += ProtocolDefines.BLOB_ID_LEN;
+                groupaudiomsg.setAudioBlobId(audioBlobId);
+                groupaudiomsg.setAudioSize(EndianUtils.readSwappedInteger(data, i));
+                i += 4;
+                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
+                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
+                groupaudiomsg.setEncryptionKey(blobKey);
+                message = groupaudiomsg;
 
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_BALLOT_CREATE: {
+            case ProtocolDefines.MSGTYPE_BALLOT_CREATE: {
                 message = PollSetupMessage.fromByteArray(data, 1, realDataLength - 1, fromIdentity);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_FILE: {
-				message = FileMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_FILE: {
+                message = FileMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_BALLOT_VOTE: {
-				message = PollVoteMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_BALLOT_VOTE: {
+                message = PollVoteMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_BALLOT_CREATE: {
-				message = GroupPollSetupMessage.fromByteArray(data, 1, realDataLength - 1, fromIdentity);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_BALLOT_CREATE: {
+                message = GroupPollSetupMessage.fromByteArray(data, 1, realDataLength - 1, fromIdentity);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_FILE: {
-				message = GroupFileMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_FILE: {
+                message = GroupFileMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_BALLOT_VOTE: {
-				message = GroupPollVoteMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_BALLOT_VOTE: {
+                message = GroupPollVoteMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_JOIN_REQUEST: {
-				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-				final GroupJoinRequestData groupJoinRequestData = GroupJoinRequestData.fromProtobuf(protobufPayload);
-				message = new GroupJoinRequestMessage(groupJoinRequestData);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_JOIN_REQUEST: {
+                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+                final GroupJoinRequestData groupJoinRequestData = GroupJoinRequestData.fromProtobuf(protobufPayload);
+                message = new GroupJoinRequestMessage(groupJoinRequestData);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_JOIN_RESPONSE: {
-				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-				final GroupJoinResponseData groupJoinResponseData = GroupJoinResponseData.fromProtobuf(protobufPayload);
-				message = new GroupJoinResponseMessage(groupJoinResponseData);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_JOIN_RESPONSE: {
+                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+                final GroupJoinResponseData groupJoinResponseData = GroupJoinResponseData.fromProtobuf(protobufPayload);
+                message = new GroupJoinResponseMessage(groupJoinResponseData);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_CALL_START: {
-                message = GroupCallStartMessage.fromByteArray(data, 1, realDataLength -1 );
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_CALL_START: {
+                message = GroupCallStartMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT: {
-				message = DeliveryReceiptMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_DELIVERY_RECEIPT: {
+                message = DeliveryReceiptMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_DELIVERY_RECEIPT: {
+            case ProtocolDefines.MSGTYPE_GROUP_DELIVERY_RECEIPT: {
                 message = GroupDeliveryReceiptMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_TYPING_INDICATOR: {
+            case ProtocolDefines.MSGTYPE_TYPING_INDICATOR: {
                 message = TypingIndicatorMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_CONTACT_SET_PHOTO: {
+            case ProtocolDefines.MSGTYPE_CONTACT_SET_PHOTO: {
                 message = SetProfilePictureMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_CONTACT_DELETE_PHOTO: {
-                message = DeleteProfilePictureMessage.fromByteArray(data, 1, realDataLength -1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_CONTACT_DELETE_PHOTO: {
+                message = DeleteProfilePictureMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_CONTACT_REQUEST_PHOTO: {
+            case ProtocolDefines.MSGTYPE_CONTACT_REQUEST_PHOTO: {
                 message = ContactRequestProfilePictureMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VOIP_CALL_OFFER: {
-				message = VoipCallOfferMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_VOIP_CALL_OFFER: {
+                message = VoipCallOfferMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VOIP_CALL_ANSWER: {
-				message = VoipCallAnswerMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_VOIP_CALL_ANSWER: {
+                message = VoipCallAnswerMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VOIP_ICE_CANDIDATES: {
-				message = VoipICECandidatesMessage.fromByteArray(data, 1, realDataLength -1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_VOIP_ICE_CANDIDATES: {
+                message = VoipICECandidatesMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VOIP_CALL_HANGUP: {
-				message = VoipCallHangupMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_VOIP_CALL_HANGUP: {
+                message = VoipCallHangupMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_VOIP_CALL_RINGING: {
-				message = VoipCallRingingMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_VOIP_CALL_RINGING: {
+                message = VoipCallRingingMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_FS_ENVELOPE: {
-				final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-				final ForwardSecurityData forwardSecurityData = ForwardSecurityData.fromProtobuf(protobufPayload);
-				message = new ForwardSecurityEnvelopeMessage(forwardSecurityData);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_FS_ENVELOPE: {
+                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
+                final ForwardSecurityData forwardSecurityData = ForwardSecurityData.fromProtobuf(protobufPayload);
+                message = new ForwardSecurityEnvelopeMessage(forwardSecurityData);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_EMPTY: {
-				message = new EmptyMessage();
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_EMPTY: {
+                message = new EmptyMessage();
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_WEB_SESSION_RESUME: {
-				final Map<String, String> webSessionResumeData = new HashMap<>();
-				try {
-					JSONObject object = new JSONObject(new String(data, 1, realDataLength - 1, UTF_8));
-					webSessionResumeData.put("wcs", object.getString("wcs"));
-					webSessionResumeData.put("wct", String.valueOf(object.getLong("wct")));
-					webSessionResumeData.put("wcv", String.valueOf(object.getInt("wcv")));
-					if (object.has("wca")) {
-						webSessionResumeData.put("wca", object.getString("wca"));
-					}
-				} catch (JSONException e) {
-					throw new BadMessageException(e.getMessage());
-				}
-				message = new WebSessionResumeMessage(webSessionResumeData);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_WEB_SESSION_RESUME: {
+                final Map<String, String> webSessionResumeData = new HashMap<>();
+                try {
+                    JSONObject object = new JSONObject(new String(data, 1, realDataLength - 1, UTF_8));
+                    webSessionResumeData.put("wcs", object.getString("wcs"));
+                    webSessionResumeData.put("wct", String.valueOf(object.getLong("wct")));
+                    webSessionResumeData.put("wcv", String.valueOf(object.getInt("wcv")));
+                    if (object.has("wca")) {
+                        webSessionResumeData.put("wca", object.getString("wca"));
+                    }
+                } catch (JSONException e) {
+                    throw new BadMessageException(e.getMessage());
+                }
+                message = new WebSessionResumeMessage(webSessionResumeData);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_EDIT_MESSAGE: {
-				message = EditMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_EDIT_MESSAGE: {
+                message = EditMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_DELETE_MESSAGE: {
-				message = DeleteMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_DELETE_MESSAGE: {
+                message = DeleteMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE: {
-				message = GroupEditMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE: {
+                message = GroupEditMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE: {
-				message = GroupDeleteMessage.fromByteArray(data, 1, realDataLength - 1);
-				break;
-			}
+            case ProtocolDefines.MSGTYPE_GROUP_DELETE_MESSAGE: {
+                message = GroupDeleteMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
 
-			case ProtocolDefines.MSGTYPE_REACTION: {
+            case ProtocolDefines.MSGTYPE_REACTION: {
                 final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
                 final ReactionMessageData reactionMessageData = ReactionMessageData.fromProtobuf(protobufPayload);
                 message = new ReactionMessage(reactionMessageData);
@@ -836,10 +835,10 @@ public class MessageCoder {
                 break;
             }
 
-			default:
-				throw new BadMessageException("Unsupported message type " + type);
-		}
+            default:
+                throw new BadMessageException("Unsupported message type " + type);
+        }
 
-		return message;
-	}
+        return message;
+    }
 }

@@ -47,7 +47,7 @@ data class GroupCallDescription(
     var maxParticipants: UInt? = null
 ) {
     private val gchk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCHK) }
-    private val gcsk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCSK)}
+    private val gcsk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCSK) }
 
     val gckh: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCKH) }
 

@@ -38,37 +38,37 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion60 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion60(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion60(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
+    @Override
+    public boolean runDirectly() throws SQLException {
 
-		//add new quote field to message model fields
-		for(String table: new String[]{
-				MessageModel.TABLE,
-				GroupMessageModel.TABLE,
-				DistributionListMessageModel.TABLE
-		}) {
-			if(!fieldExists(this.sqLiteDatabase, table, AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID)) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
-						+ " ADD COLUMN " + AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + " VARCHAR NULL");
-			}
-		}
-		return true;
-	}
+        //add new quote field to message model fields
+        for (String table : new String[]{
+            MessageModel.TABLE,
+            GroupMessageModel.TABLE,
+            DistributionListMessageModel.TABLE
+        }) {
+            if (!fieldExists(this.sqLiteDatabase, table, AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID)) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
+                    + " ADD COLUMN " + AbstractMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + " VARCHAR NULL");
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 60 (add quoted message id)";
-	}
+    @Override
+    public String getText() {
+        return "version 60 (add quoted message id)";
+    }
 }

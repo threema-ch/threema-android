@@ -33,73 +33,73 @@ import ch.threema.storage.models.ContactModel;
 
 public class TypingIndicatorTextWatcher implements TextWatcher {
 
-	private static final long TYPING_SEND_TIMEOUT = 10 * DateUtils.SECOND_IN_MILLIS;
-	private final Handler typingIndicatorHandler = new Handler();
-	@NonNull
-	private final ContactService contactService;
-	private final ContactModel contactModel;
+    private static final long TYPING_SEND_TIMEOUT = 10 * DateUtils.SECOND_IN_MILLIS;
+    private final Handler typingIndicatorHandler = new Handler();
+    @NonNull
+    private final ContactService contactService;
+    private final ContactModel contactModel;
 
-	private boolean isTypingSent = false;
-	private String previousText = "";
+    private boolean isTypingSent = false;
+    private String previousText = "";
 
-	private final Runnable sendStoppedTyping = new Runnable() {
-		public void run() {
-			if (isTypingSent) {
-				isTypingSent = false;
-				contactService.sendTypingIndicator(contactModel.getIdentity(), false);
-			}
-		}
-	};
+    private final Runnable sendStoppedTyping = new Runnable() {
+        public void run() {
+            if (isTypingSent) {
+                isTypingSent = false;
+                contactService.sendTypingIndicator(contactModel.getIdentity(), false);
+            }
+        }
+    };
 
-	public TypingIndicatorTextWatcher(@NonNull ContactService contactService, ContactModel contactModel) {
-		this.contactService = contactService;
-		this.contactModel = contactModel;
-	}
+    public TypingIndicatorTextWatcher(@NonNull ContactService contactService, ContactModel contactModel) {
+        this.contactService = contactService;
+        this.contactModel = contactModel;
+    }
 
-	public void stopTyping() {
-		sendStoppedTyping.run();
-	}
+    public void stopTyping() {
+        sendStoppedTyping.run();
+    }
 
-	@Override
-	public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-	}
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+    }
 
-	@Override
-	public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-		if(textHasChanged(charSequence)) {
-			if (!isTypingSent) {
-				new Thread(() -> {
-					isTypingSent = true;
-					contactService.sendTypingIndicator(contactModel.getIdentity(), true);
-				}).start();
-			} else {
-				//stop end typing sending handler
-				killEvents();
-			}
-		}
-	}
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        if (textHasChanged(charSequence)) {
+            if (!isTypingSent) {
+                new Thread(() -> {
+                    isTypingSent = true;
+                    contactService.sendTypingIndicator(contactModel.getIdentity(), true);
+                }).start();
+            } else {
+                //stop end typing sending handler
+                killEvents();
+            }
+        }
+    }
 
-	public void killEvents() {
-		typingIndicatorHandler.removeCallbacks(sendStoppedTyping);
-	}
+    public void killEvents() {
+        typingIndicatorHandler.removeCallbacks(sendStoppedTyping);
+    }
 
-	@Override
-	public void afterTextChanged(Editable editable) {
-		if (editable != null && editable.length() == 0) {
-			typingIndicatorHandler.post(sendStoppedTyping);
-		} else {
-			typingIndicatorHandler.postDelayed(sendStoppedTyping, TYPING_SEND_TIMEOUT);
-		}
-	}
+    @Override
+    public void afterTextChanged(Editable editable) {
+        if (editable != null && editable.length() == 0) {
+            typingIndicatorHandler.post(sendStoppedTyping);
+        } else {
+            typingIndicatorHandler.postDelayed(sendStoppedTyping, TYPING_SEND_TIMEOUT);
+        }
+    }
 
-	private boolean textHasChanged(CharSequence charSequence) {
-		if(charSequence != null) {
-			if(!TestUtil.compare(charSequence.toString(), this.previousText)) {
-				this.previousText = charSequence.toString();
-				return true;
-			}
-		}
+    private boolean textHasChanged(CharSequence charSequence) {
+        if (charSequence != null) {
+            if (!TestUtil.compare(charSequence.toString(), this.previousText)) {
+                this.previousText = charSequence.toString();
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

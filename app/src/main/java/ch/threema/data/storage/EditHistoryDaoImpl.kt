@@ -55,7 +55,11 @@ class EditHistoryDaoImpl(
             )
         }
 
-        return sqlite.writableDatabase.insert(table, SQLiteDatabase.CONFLICT_ROLLBACK, contentValues)
+        return sqlite.writableDatabase.insert(
+            table,
+            SQLiteDatabase.CONFLICT_ROLLBACK,
+            contentValues
+        )
     }
 
     override fun deleteAllByMessageUid(messageUid: String) {
@@ -86,16 +90,25 @@ class EditHistoryDaoImpl(
         val result = mutableListOf<DbEditHistoryEntry>()
         while (cursor.moveToNext()) {
             val uid = cursor.getInt(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_UID))
-            val messageId = cursor.getInt(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_MESSAGE_ID))
-            val text = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_TEXT))
-            val editedAt = cursor.getDate(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_EDITED_AT))
-            result.add(DbEditHistoryEntry(
-                uid = uid,
-                messageUid = messageUid,
-                messageId = messageId,
-                text = text,
-                editedAt = editedAt
-            ))
+            val messageId =
+                cursor.getInt(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_MESSAGE_ID))
+            val text = cursor.getStringOrNull(
+                getColumnIndexOrThrow(
+                    cursor,
+                    DbEditHistoryEntry.COLUMN_TEXT
+                )
+            )
+            val editedAt =
+                cursor.getDate(getColumnIndexOrThrow(cursor, DbEditHistoryEntry.COLUMN_EDITED_AT))
+            result.add(
+                DbEditHistoryEntry(
+                    uid = uid,
+                    messageUid = messageUid,
+                    messageId = messageId,
+                    text = text,
+                    editedAt = editedAt
+                )
+            )
         }
 
         cursor.close()

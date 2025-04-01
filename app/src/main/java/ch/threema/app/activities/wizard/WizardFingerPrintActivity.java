@@ -45,134 +45,135 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 
 public class WizardFingerPrintActivity extends WizardBackgroundActivity implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
 
-	public static final int PROGRESS_MAX = 100;
-	private static final String DIALOG_TAG_CREATE_ID = "ci";
-	private static final String DIALOG_TAG_CREATE_ERROR = "ni";
-	private static final String DIALOG_TAG_FINGERPRINT_INFO = "fi";
-	private ProgressBar swipeProgress;
-	private ImageView fingerView;
+    public static final int PROGRESS_MAX = 100;
+    private static final String DIALOG_TAG_CREATE_ID = "ci";
+    private static final String DIALOG_TAG_CREATE_ERROR = "ni";
+    private static final String DIALOG_TAG_FINGERPRINT_INFO = "fi";
+    private ProgressBar swipeProgress;
+    private ImageView fingerView;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_new_fingerprint);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_fingerprint);
 
-		swipeProgress = findViewById(R.id.wizard1_swipe_progress);
-		swipeProgress.setMax(PROGRESS_MAX);
-		swipeProgress.setProgress(0);
+        swipeProgress = findViewById(R.id.wizard1_swipe_progress);
+        swipeProgress.setMax(PROGRESS_MAX);
+        swipeProgress.setProgress(0);
 
-		fingerView = findViewById(R.id.finger_overlay);
-		ImageView infoView = findViewById(R.id.wizard_icon_info);
-		infoView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_fingerprint, R.string.ok);
-				wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_FINGERPRINT_INFO);
-			}
-		});
+        fingerView = findViewById(R.id.finger_overlay);
+        ImageView infoView = findViewById(R.id.wizard_icon_info);
+        infoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WizardDialog wizardDialog = WizardDialog.newInstance(R.string.new_wizard_info_fingerprint, R.string.ok);
+                wizardDialog.show(getSupportFragmentManager(), DIALOG_TAG_FINGERPRINT_INFO);
+            }
+        });
 
-		((NewWizardFingerPrintView) findViewById(R.id.wizard1_finger_print))
-				.setOnSwipeByte(new NewWizardFingerPrintView.OnSwipeResult() {
-					@Override
-					public void newBytes(byte[] bytes, int step, int maxSteps) {
-						swipeProgress.setProgress(step);
+        ((NewWizardFingerPrintView) findViewById(R.id.wizard1_finger_print))
+            .setOnSwipeByte(new NewWizardFingerPrintView.OnSwipeResult() {
+                @Override
+                public void newBytes(byte[] bytes, int step, int maxSteps) {
+                    swipeProgress.setProgress(step);
 
-						if (fingerView != null) {
-							fingerView.setVisibility(View.GONE);
-							fingerView = null;
-						}
+                    if (fingerView != null) {
+                        fingerView.setVisibility(View.GONE);
+                        fingerView = null;
+                    }
 
-						if (step >= maxSteps) {
-							// disable fingerprint widget
-							findViewById(R.id.wizard1_finger_print).setEnabled(false);
-							// generate id and stuff
-							createIdentity(bytes);
-						}
-					}
-				}, PROGRESS_MAX);
+                    if (step >= maxSteps) {
+                        // disable fingerprint widget
+                        findViewById(R.id.wizard1_finger_print).setEnabled(false);
+                        // generate id and stuff
+                        createIdentity(bytes);
+                    }
+                }
+            }, PROGRESS_MAX);
 
-		findViewById(R.id.cancel).setOnClickListener(v -> finish());
-	}
+        findViewById(R.id.cancel).setOnClickListener(v -> finish());
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void createIdentity(final byte[] bytes) {
-		new AsyncTask<Void, Void, String>() {
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.wizard_first_create_id,
-						R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID);
-			}
+    @SuppressLint("StaticFieldLeak")
+    private void createIdentity(final byte[] bytes) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                GenericProgressDialog.newInstance(R.string.wizard_first_create_id,
+                    R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID);
+            }
 
-			@Override
-			protected String doInBackground(Void... params) {
-				try {
-					if (!userService.hasIdentity()) {
-						userService.createIdentity(bytes);
-						preferenceService.resetIDBackupCount();
-						preferenceService.setLastIDBackupReminderDate(new Date());
-						notificationPreferenceService.setWizardRunning(true);
-					}
-				} catch (final ThreemaException e) {
-					logger.error("Exception", e);
-					return e.getMessage();
-				} catch (final Exception e) {
-					logger.error("Exception", e);
-					return getString(R.string.new_wizard_need_internet);
-				}
-				return null;
-			}
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    if (!userService.hasIdentity()) {
+                        userService.createIdentity(bytes);
+                        preferenceService.resetIDBackupCount();
+                        preferenceService.setLastIDBackupReminderDate(new Date());
+                        notificationPreferenceService.setWizardRunning(true);
+                    }
+                } catch (final ThreemaException e) {
+                    logger.error("Exception", e);
+                    return e.getMessage();
+                } catch (final Exception e) {
+                    logger.error("Exception", e);
+                    return getString(R.string.new_wizard_need_internet);
+                }
+                return null;
+            }
 
-			@Override
-			protected void onPostExecute(String errorString) {
-				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID, true);
+            @Override
+            protected void onPostExecute(String errorString) {
+                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CREATE_ID, true);
 
-				if (TestUtil.isEmptyOrNull(errorString)) {
-					Intent intent = new Intent(WizardFingerPrintActivity.this, WizardBaseActivity.class);
-					intent.putExtra(WizardBaseActivity.EXTRA_NEW_IDENTITY_CREATED, true);
-					startActivity(intent);
+                if (TestUtil.isEmptyOrNull(errorString)) {
+                    Intent intent = new Intent(WizardFingerPrintActivity.this, WizardBaseActivity.class);
+                    intent.putExtra(WizardBaseActivity.EXTRA_NEW_IDENTITY_CREATED, true);
+                    startActivity(intent);
 
-					overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-					finish();
-				} else {
-					try {
-						userService.removeIdentity();
-					} catch (Exception e) {
-						logger.error("Exception", e);
-					}
-					GenericAlertDialog dialog = GenericAlertDialog.newInstance(
-							R.string.error,
-							errorString,
-							R.string.try_again,
-							R.string.cancel);
-					dialog.setData(bytes);
-					getSupportFragmentManager().beginTransaction().add(dialog, DIALOG_TAG_CREATE_ERROR).commitAllowingStateLoss();
-				}
-			}
-		}.execute();
-	}
+                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                    finish();
+                } else {
+                    try {
+                        userService.removeIdentity();
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
+                    }
+                    GenericAlertDialog dialog = GenericAlertDialog.newInstance(
+                        R.string.error,
+                        errorString,
+                        R.string.try_again,
+                        R.string.cancel);
+                    dialog.setData(bytes);
+                    getSupportFragmentManager().beginTransaction().add(dialog, DIALOG_TAG_CREATE_ERROR).commitAllowingStateLoss();
+                }
+            }
+        }.execute();
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		// Override the behavior of WizardBackgroundActivity to allow normal back navigation
-		return false;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        // Override the behavior of WizardBackgroundActivity to allow normal back navigation
+        return false;
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		if (tag.equals(DIALOG_TAG_CREATE_ERROR)) {
-			// check again for a valid license and try to create identity
-			StoreLicenseCheck.checkLicense(this, userService);
-			createIdentity((byte[]) data);
-		}
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+        if (tag.equals(DIALOG_TAG_CREATE_ERROR)) {
+            // check again for a valid license and try to create identity
+            StoreLicenseCheck.checkLicense(this, userService);
+            createIdentity((byte[]) data);
+        }
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		finish();
-	}
+    @Override
+    public void onNo(String tag, Object data) {
+        finish();
+    }
 
-	@Override
-	public void onNo(String tag) {}
+    @Override
+    public void onNo(String tag) {
+    }
 }

@@ -50,7 +50,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("CspD2mDualConnec
  * @param isTestBuild Set to `true` in test builds to run validations and checks during use to help find
  *                    problems. Failed checks will throw runtime exceptions.
  */
-class CspD2mDualConnectionSupplier (
+class CspD2mDualConnectionSupplier(
     private val multiDeviceManager: MultiDeviceManager,
     private val incomingMessageProcessor: IncomingMessageProcessor,
     private val taskManager: TaskManager,
@@ -80,7 +80,8 @@ class CspD2mDualConnectionSupplier (
                 val connection = BaseServerConnectionProvider.createConnection(configuration)
                 if (isTestBuild
                     && this::latestConnection.isInitialized
-                    && connection::class == latestConnection::class) {
+                    && connection::class == latestConnection::class
+                ) {
                     throw ServerConnectionException("Unexpected new connection of same type")
                 }
                 connection.also {

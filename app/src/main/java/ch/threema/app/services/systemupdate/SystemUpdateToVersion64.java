@@ -39,76 +39,76 @@ import ch.threema.base.utils.LoggingUtil;
 /* clean up image labeler */
 
 public class SystemUpdateToVersion64 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion64");
-	private Context context;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion64");
+    private Context context;
 
-	public SystemUpdateToVersion64(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion64(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		deleteMediaLabelsDatabase();
+    @Override
+    public boolean runAsync() {
+        deleteMediaLabelsDatabase();
 
-		return true;
-	}
+        return true;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void deleteMediaLabelsDatabase() {
-		logger.debug("deleteMediaLabelsDatabase");
+    @SuppressLint("StaticFieldLeak")
+    private void deleteMediaLabelsDatabase() {
+        logger.debug("deleteMediaLabelsDatabase");
 
-		new AsyncTask<Void, Void, Exception>() {
-			@Override
-			protected void onPreExecute() {
-				WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag("ImageLabelsPeriodic");
-				WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag("ImageLabelsOneTime");
-			}
+        new AsyncTask<Void, Void, Exception>() {
+            @Override
+            protected void onPreExecute() {
+                WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag("ImageLabelsPeriodic");
+                WorkManager.getInstance(ThreemaApplication.getAppContext()).cancelAllWorkByTag("ImageLabelsOneTime");
+            }
 
-			@Override
-			protected Exception doInBackground(Void... voids) {
-				try {
-					final String[] files = new String[] {
-						"media_items.db",
-						"media_items.db-shm",
-						"media_items.db-wal",
-					};
-					for (String filename : files) {
-						final File databasePath = context.getDatabasePath(filename);
-						if (databasePath.exists() && databasePath.isFile()) {
-							logger.info("Removing file {}", filename);
-							if (!databasePath.delete()) {
-								logger.warn("Could not remove file {}", filename);
-							}
-						} else {
-							logger.debug("File {} not found", filename);
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Exception while deleting media labels database");
-					return e;
-				}
-				return null;
-			}
+            @Override
+            protected Exception doInBackground(Void... voids) {
+                try {
+                    final String[] files = new String[]{
+                        "media_items.db",
+                        "media_items.db-shm",
+                        "media_items.db-wal",
+                    };
+                    for (String filename : files) {
+                        final File databasePath = context.getDatabasePath(filename);
+                        if (databasePath.exists() && databasePath.isFile()) {
+                            logger.info("Removing file {}", filename);
+                            if (!databasePath.delete()) {
+                                logger.warn("Could not remove file {}", filename);
+                            }
+                        } else {
+                            logger.debug("File {} not found", filename);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Exception while deleting media labels database");
+                    return e;
+                }
+                return null;
+            }
 
-			@Override
-			protected void onPostExecute(Exception e) {
-				// remove notification channel
-				String NOTIFICATION_CHANNEL_IMAGE_LABELING =  "il";
-				NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-				if (notificationManagerCompat != null) {
-					notificationManagerCompat.deleteNotificationChannel(NOTIFICATION_CHANNEL_IMAGE_LABELING);
-				}
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(Exception e) {
+                // remove notification channel
+                String NOTIFICATION_CHANNEL_IMAGE_LABELING = "il";
+                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+                if (notificationManagerCompat != null) {
+                    notificationManagerCompat.deleteNotificationChannel(NOTIFICATION_CHANNEL_IMAGE_LABELING);
+                }
+            }
+        }.execute();
+    }
 
-	@Override
-	public String getText() {
-		return "delete media labels database";
-	}
+    @Override
+    public String getText() {
+        return "delete media labels database";
+    }
 }

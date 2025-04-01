@@ -41,55 +41,57 @@ import java.util.List;
  */
 @AnyThread
 public class TemporaryTaskEventHandler implements MessageHandler {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryTaskEventHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryTaskEventHandler");
 
-	@NonNull final private List<Object> events = new ArrayList<>();
-	@Nullable private MessageHandler handler;
+    @NonNull
+    final private List<Object> events = new ArrayList<>();
+    @Nullable
+    private MessageHandler handler;
 
-	@Override
-	public synchronized void onOffer(@NonNull final Offer offer) {
-		if (this.handler != null) {
-			this.handler.onOffer(offer);
-		} else {
-			this.events.add(offer);
-		}
-	}
+    @Override
+    public synchronized void onOffer(@NonNull final Offer offer) {
+        if (this.handler != null) {
+            this.handler.onOffer(offer);
+        } else {
+            this.events.add(offer);
+        }
+    }
 
-	@Override
-	public synchronized void onAnswer(@NonNull final Answer answer) {
-		if (this.handler != null) {
-			this.handler.onAnswer(answer);
-		} else {
-			this.events.add(answer);
-		}
-	}
+    @Override
+    public synchronized void onAnswer(@NonNull final Answer answer) {
+        if (this.handler != null) {
+            this.handler.onAnswer(answer);
+        } else {
+            this.events.add(answer);
+        }
+    }
 
-	@Override
-	public synchronized void onCandidates(@NonNull final Candidate[] candidates) {
-		if (this.handler != null) {
-			this.handler.onCandidates(candidates);
-		} else {
-			this.events.add(candidates);
-		}
-	}
+    @Override
+    public synchronized void onCandidates(@NonNull final Candidate[] candidates) {
+        if (this.handler != null) {
+            this.handler.onCandidates(candidates);
+        } else {
+            this.events.add(candidates);
+        }
+    }
 
-	public synchronized void replace(@NonNull final WebRTCTask task, @NonNull final MessageHandler handler) {
-		logger.debug("Flushing {} events", this.events.size());
-		this.handler = handler;
-		for (final Object event: this.events) {
-			if (event instanceof Offer) {
-				handler.onOffer((Offer) event);
-			} else if (event instanceof Answer) {
-				handler.onAnswer((Answer) event);
-			} else if (event.getClass().isArray()) {
-				handler.onCandidates((Candidate[]) event);
-			} else {
-				logger.error("Invalid buffered task event type: {}", event.getClass());
-			}
-		}
+    public synchronized void replace(@NonNull final WebRTCTask task, @NonNull final MessageHandler handler) {
+        logger.debug("Flushing {} events", this.events.size());
+        this.handler = handler;
+        for (final Object event : this.events) {
+            if (event instanceof Offer) {
+                handler.onOffer((Offer) event);
+            } else if (event instanceof Answer) {
+                handler.onAnswer((Answer) event);
+            } else if (event.getClass().isArray()) {
+                handler.onCandidates((Candidate[]) event);
+            } else {
+                logger.error("Invalid buffered task event type: {}", event.getClass());
+            }
+        }
 
-		logger.debug("Events flushed, replacing handler");
-		this.events.clear();
-		task.setMessageHandler(handler);
-	}
+        logger.debug("Events flushed, replacing handler");
+        this.events.clear();
+        task.setMessageHandler(handler);
+    }
 }

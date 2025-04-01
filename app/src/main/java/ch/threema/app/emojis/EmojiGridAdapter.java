@@ -22,6 +22,7 @@
 package ch.threema.app.emojis;
 
 import android.content.Context;
+
 import androidx.annotation.ColorInt;
 
 import android.graphics.drawable.Drawable;
@@ -38,131 +39,132 @@ import ch.threema.app.R;
 import static ch.threema.app.emojis.EmojiSpritemap.emojiCategories;
 
 public class EmojiGridAdapter extends BaseAdapter {
-	private final int pageNumber;
-	private final int emojiItemSize;
-	private final int emojiItemPaddingSize;
-	@ColorInt private final int diverseHintColor;
-	private final EmojiService emojiService;
-	private final ArrayList<EmojiInfo> emojis;
-	Context context;
+    private final int pageNumber;
+    private final int emojiItemSize;
+    private final int emojiItemPaddingSize;
+    @ColorInt
+    private final int diverseHintColor;
+    private final EmojiService emojiService;
+    private final ArrayList<EmojiInfo> emojis;
+    Context context;
 
-	private final KeyClickListener keyClickListener;
+    private final KeyClickListener keyClickListener;
 
-	public EmojiGridAdapter(Context context,
-	                        int pageNumber,
-	                        EmojiService emojiService,
-	                        KeyClickListener listener) {
-		this.context = context;
-		this.pageNumber = pageNumber;
-		this.keyClickListener = listener;
-		this.emojiService = emojiService;
-		this.diverseHintColor = context.getResources().getColor(R.color.emoji_picker_hint);
-		if (EmojiManager.getInstance(context).getSpritemapInSampleSize() == 1) {
-			this.emojiItemSize = context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_item_size);
-			this.emojiItemPaddingSize = (emojiItemSize - context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2;
-		} else {
-			this.emojiItemSize = 44;
-			this.emojiItemPaddingSize = (emojiItemSize - 32) / 2;
-		}
-		this.emojis = new ArrayList<>();
-		if (pageNumber != 0) {
-			for (EmojiInfo entry : emojiCategories.get(pageNumber - 1).emojiInfos) {
-				// filter diversity child emojis
-				if (entry.diversityFlag == EmojiSpritemap.DIVERSITY_CHILD) {
-					continue;
-				}
+    public EmojiGridAdapter(Context context,
+                            int pageNumber,
+                            EmojiService emojiService,
+                            KeyClickListener listener) {
+        this.context = context;
+        this.pageNumber = pageNumber;
+        this.keyClickListener = listener;
+        this.emojiService = emojiService;
+        this.diverseHintColor = context.getResources().getColor(R.color.emoji_picker_hint);
+        if (EmojiManager.getInstance(context).getSpritemapInSampleSize() == 1) {
+            this.emojiItemSize = context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_item_size);
+            this.emojiItemPaddingSize = (emojiItemSize - context.getResources().getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2;
+        } else {
+            this.emojiItemSize = 44;
+            this.emojiItemPaddingSize = (emojiItemSize - 32) / 2;
+        }
+        this.emojis = new ArrayList<>();
+        if (pageNumber != 0) {
+            for (EmojiInfo entry : emojiCategories.get(pageNumber - 1).emojiInfos) {
+                // filter diversity child emojis
+                if (entry.diversityFlag == EmojiSpritemap.DIVERSITY_CHILD) {
+                    continue;
+                }
 
-				// filter emojis with display flag set to 0
-				if (entry.displayFlag == EmojiSpritemap.DISPLAY_NO) {
-					continue;
-				}
+                // filter emojis with display flag set to 0
+                if (entry.displayFlag == EmojiSpritemap.DISPLAY_NO) {
+                    continue;
+                }
 
-				this.emojis.add(entry);
-			}
-		} else {
-			emojiService.syncRecentEmojis();
-			getRecents();
-		}
-	}
+                this.emojis.add(entry);
+            }
+        } else {
+            emojiService.syncRecentEmojis();
+            getRecents();
+        }
+    }
 
-	@Override
-	public void notifyDataSetChanged() {
-		// TODO hack
-		if (pageNumber == 0) {
-			this.emojis.clear();
-			getRecents();
-		}
+    @Override
+    public void notifyDataSetChanged() {
+        // TODO hack
+        if (pageNumber == 0) {
+            this.emojis.clear();
+            getRecents();
+        }
 
-		super.notifyDataSetChanged();
-	}
+        super.notifyDataSetChanged();
+    }
 
-	private void getRecents() {
-		this.emojis.addAll(emojiService.getRecentEmojis());
-	}
+    private void getRecents() {
+        this.emojis.addAll(emojiService.getRecentEmojis());
+    }
 
-	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		final EmojiInfo item = getItem(position);
-		final String emojiSequence = getKey(item.emojiSequence);
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final EmojiInfo item = getItem(position);
+        final String emojiSequence = getKey(item.emojiSequence);
 
-		final EmojiItemView view;
-		if (convertView instanceof EmojiItemView) {
-			view = (EmojiItemView)convertView;
-		} else {
-			final EmojiItemView emojiItemView = new EmojiItemView(context);
-			Drawable background = ResourcesCompat.getDrawable(context.getResources(), R.drawable.selector_emoji_reactions_grid_item, null);
-			emojiItemView.setBackground(background);
-			emojiItemView.setPadding(emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize);
-			emojiItemView.setLayoutParams(new AbsListView.LayoutParams(emojiItemSize, emojiItemSize));
-			view = emojiItemView;
-		}
+        final EmojiItemView view;
+        if (convertView instanceof EmojiItemView) {
+            view = (EmojiItemView) convertView;
+        } else {
+            final EmojiItemView emojiItemView = new EmojiItemView(context);
+            Drawable background = ResourcesCompat.getDrawable(context.getResources(), R.drawable.selector_emoji_reactions_grid_item, null);
+            emojiItemView.setBackground(background);
+            emojiItemView.setPadding(emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize, emojiItemPaddingSize);
+            emojiItemView.setLayoutParams(new AbsListView.LayoutParams(emojiItemSize, emojiItemSize));
+            view = emojiItemView;
+        }
 
-		view.setEmoji(emojiSequence, pageNumber != 0 && item.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT, diverseHintColor);
-		view.setContentDescription(emojiSequence);
-		view.setOnClickListener(v -> keyClickListener.onEmojiKeyClicked(getKey(item.emojiSequence)));
-		view.setOnLongClickListener(v -> {
-			if (pageNumber != 0) {
-				keyClickListener.onEmojiKeyLongClicked(v, item.emojiSequence);
-			} else {
-				keyClickListener.onRecentLongClicked(v, item.emojiSequence);
-			}
-			return true;
-		});
+        view.setEmoji(emojiSequence, pageNumber != 0 && item.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT, diverseHintColor);
+        view.setContentDescription(emojiSequence);
+        view.setOnClickListener(v -> keyClickListener.onEmojiKeyClicked(getKey(item.emojiSequence)));
+        view.setOnLongClickListener(v -> {
+            if (pageNumber != 0) {
+                keyClickListener.onEmojiKeyLongClicked(v, item.emojiSequence);
+            } else {
+                keyClickListener.onRecentLongClicked(v, item.emojiSequence);
+            }
+            return true;
+        });
 
-		return view;
-	}
+        return view;
+    }
 
-	private String getKey(String parentKey) {
-		return pageNumber != 0
-			? emojiService.getPreferredDiversity(parentKey)
-			: parentKey;
-	}
+    private String getKey(String parentKey) {
+        return pageNumber != 0
+            ? emojiService.getPreferredDiversity(parentKey)
+            : parentKey;
+    }
 
-	@Override
-	public int getCount() {
-		return this.emojis.size();
-	}
+    @Override
+    public int getCount() {
+        return this.emojis.size();
+    }
 
-	@Override
-	public EmojiInfo getItem(int position) {
-		return this.emojis.get(position);
-	}
+    @Override
+    public EmojiInfo getItem(int position) {
+        return this.emojis.get(position);
+    }
 
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-	public interface KeyClickListener {
-		void onEmojiKeyClicked(String emojiCodeString);
+    public interface KeyClickListener {
+        void onEmojiKeyClicked(String emojiCodeString);
 
-		void onEmojiKeyLongClicked(View view, String emojiCodeString);
+        void onEmojiKeyLongClicked(View view, String emojiCodeString);
 
-		void onRecentLongClicked(View v, String emojiCodeString);
-	}
+        void onRecentLongClicked(View v, String emojiCodeString);
+    }
 }

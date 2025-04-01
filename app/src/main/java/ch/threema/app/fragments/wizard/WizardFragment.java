@@ -46,78 +46,78 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public abstract class WizardFragment extends Fragment {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment");
 
-	private static final String DIALOG_TAG_ADDITIONAL_INFO = "ai";
+    private static final String DIALOG_TAG_ADDITIONAL_INFO = "ai";
 
-	protected PreferenceService preferenceService;
-	protected UserService userService;
-	protected LocaleService localeService;
-	protected ViewStub contentViewStub;
+    protected PreferenceService preferenceService;
+    protected UserService userService;
+    protected LocaleService localeService;
+    protected ViewStub contentViewStub;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		if (!requiredInstances()) {
-			requireActivity().finish();
-		}
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        if (!requiredInstances()) {
+            requireActivity().finish();
+        }
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	public View onCreateView(
-		LayoutInflater inflater,
-		ViewGroup container,
-		Bundle savedInstanceState
-	) {
-		View rootView = inflater.inflate(R.layout.fragment_wizard, container, false);
+    @Override
+    public View onCreateView(
+        LayoutInflater inflater,
+        ViewGroup container,
+        Bundle savedInstanceState
+    ) {
+        View rootView = inflater.inflate(R.layout.fragment_wizard, container, false);
 
-		contentViewStub = rootView.findViewById(R.id.stub_content);
+        contentViewStub = rootView.findViewById(R.id.stub_content);
 
-		ImageView infoIcon = rootView.findViewById(R.id.wizard_icon_info);
-		infoIcon.setOnClickListener(v -> showAdditionalInfo());
+        ImageView infoIcon = rootView.findViewById(R.id.wizard_icon_info);
+        infoIcon.setOnClickListener(v -> showAdditionalInfo());
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	private void showAdditionalInfo() {
-		int infoStringRes = getAdditionalInfoText();
-		if (infoStringRes != 0) {
-			WizardDialog wizardDialog = WizardDialog.newInstance(infoStringRes, R.string.ok);
-			wizardDialog.show(getParentFragmentManager(), DIALOG_TAG_ADDITIONAL_INFO);
-		}
-	}
+    private void showAdditionalInfo() {
+        int infoStringRes = getAdditionalInfoText();
+        if (infoStringRes != 0) {
+            WizardDialog wizardDialog = WizardDialog.newInstance(infoStringRes, R.string.ok);
+            wizardDialog.show(getParentFragmentManager(), DIALOG_TAG_ADDITIONAL_INFO);
+        }
+    }
 
-	private boolean requiredInstances() {
-		if (!this.checkInstances()) {
-			this.instantiate();
-		}
-		return this.checkInstances();
-	}
+    private boolean requiredInstances() {
+        if (!this.checkInstances()) {
+            this.instantiate();
+        }
+        return this.checkInstances();
+    }
 
-	private boolean checkInstances() {
-		return TestUtil.required(
-			this.preferenceService,
-			this.userService,
-			this.localeService
-		);
-	}
+    private boolean checkInstances() {
+        return TestUtil.required(
+            this.preferenceService,
+            this.userService,
+            this.localeService
+        );
+    }
 
-	private void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			this.preferenceService = serviceManager.getPreferenceService();
-			try {
-				this.userService = serviceManager.getUserService();
-				this.localeService = serviceManager.getLocaleService();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    private void instantiate() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            this.preferenceService = serviceManager.getPreferenceService();
+            try {
+                this.userService = serviceManager.getUserService();
+                this.localeService = serviceManager.getLocaleService();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	protected void setPage(int page) {
-		((WizardBaseActivity) requireActivity()).setPage(page);
-	}
+    protected void setPage(int page) {
+        ((WizardBaseActivity) requireActivity()).setPage(page);
+    }
 
-	protected abstract @StringRes int getAdditionalInfoText();
+    protected abstract @StringRes int getAdditionalInfoText();
 }

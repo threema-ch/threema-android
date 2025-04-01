@@ -22,6 +22,7 @@
 package ch.threema.app.asynctasks;
 
 import android.os.AsyncTask;
+
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,51 +35,51 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class DeleteMyGroupAsyncTask extends AsyncTask<Void, Void, Void> {
-	private static final String DIALOG_TAG = "lg";
+    private static final String DIALOG_TAG = "lg";
 
-	private final GroupModel groupModel;
-	private final GroupService groupService;
-	private final AppCompatActivity activity;
-	private final Fragment fragment;
-	private final Runnable runOnCompletion;
+    private final GroupModel groupModel;
+    private final GroupService groupService;
+    private final AppCompatActivity activity;
+    private final Fragment fragment;
+    private final Runnable runOnCompletion;
 
-	public DeleteMyGroupAsyncTask(GroupModel groupModel,
-	                              GroupService groupService,
-	                              AppCompatActivity activity,
-	                              Fragment fragment,
-	                              Runnable runOnCompletion) {
+    public DeleteMyGroupAsyncTask(GroupModel groupModel,
+                                  GroupService groupService,
+                                  AppCompatActivity activity,
+                                  Fragment fragment,
+                                  Runnable runOnCompletion) {
 
-		this.groupModel = groupModel;
-		this.groupService = groupService;
-		this.activity = activity;
-		this.fragment = fragment;
-		this.runOnCompletion = runOnCompletion;
-	}
+        this.groupModel = groupModel;
+        this.groupService = groupService;
+        this.activity = activity;
+        this.fragment = fragment;
+        this.runOnCompletion = runOnCompletion;
+    }
 
-	@Override
-	protected void onPreExecute() {
-		GenericProgressDialog.newInstance(R.string.action_delete_group, R.string.please_wait).show(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG);
-	}
+    @Override
+    protected void onPreExecute() {
+        GenericProgressDialog.newInstance(R.string.action_delete_group, R.string.please_wait).show(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG);
+    }
 
-	@Override
-	protected Void doInBackground(Void... params) {
-		groupService.dissolveGroupFromLocal(groupModel);
-		groupService.remove(groupModel);
-		return null;
-	}
+    @Override
+    protected Void doInBackground(Void... params) {
+        groupService.dissolveGroupFromLocal(groupModel);
+        groupService.remove(groupModel);
+        return null;
+    }
 
-	@Override
-	protected void onPostExecute(Void aVoid) {
-		DialogUtil.dismissDialog(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG, true);
-		ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
-			@Override
-			public void handle(ConversationListener listener) {
-				listener.onModifiedAll();
-			}
-		});
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        DialogUtil.dismissDialog(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG, true);
+        ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
+            @Override
+            public void handle(ConversationListener listener) {
+                listener.onModifiedAll();
+            }
+        });
 
-		if (runOnCompletion != null) {
-			runOnCompletion.run();
-		}
-	}
+        if (runOnCompletion != null) {
+            runOnCompletion.run();
+        }
+    }
 }

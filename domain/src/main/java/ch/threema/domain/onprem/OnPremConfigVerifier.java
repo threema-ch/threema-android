@@ -45,74 +45,74 @@ import ch.threema.base.utils.Base64;
 
 public class OnPremConfigVerifier {
 
-	private final byte[][] trustedPublicKeys;
+    private final byte[][] trustedPublicKeys;
 
-	/**
-	 * Create an OPPF verifier with the specified trusted public keys.
-	 *
-	 * @param trustedPublicKeys The trusted public keys in Base64
-	 */
-	public OnPremConfigVerifier(String[] trustedPublicKeys) throws IOException {
-		this.trustedPublicKeys = new byte[trustedPublicKeys.length][];
-		for (int i = 0; i < trustedPublicKeys.length; i++) {
-			this.trustedPublicKeys[i] = Base64.decode(trustedPublicKeys[i]);
-		}
-	}
+    /**
+     * Create an OPPF verifier with the specified trusted public keys.
+     *
+     * @param trustedPublicKeys The trusted public keys in Base64
+     */
+    public OnPremConfigVerifier(String[] trustedPublicKeys) throws IOException {
+        this.trustedPublicKeys = new byte[trustedPublicKeys.length][];
+        for (int i = 0; i < trustedPublicKeys.length; i++) {
+            this.trustedPublicKeys[i] = Base64.decode(trustedPublicKeys[i]);
+        }
+    }
 
-	/**
-	 * Verify an OPPF and return the resulting JSON document.
-	 */
-	public JSONObject verify(String oppfData) throws IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, SignatureException, JSONException, ThreemaException {
-		if (oppfData == null) {
-			throw new ThreemaException("OPPF string is empty");
-		}
+    /**
+     * Verify an OPPF and return the resulting JSON document.
+     */
+    public JSONObject verify(String oppfData) throws IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidAlgorithmParameterException, SignatureException, JSONException, ThreemaException {
+        if (oppfData == null) {
+            throw new ThreemaException("OPPF string is empty");
+        }
 
-		// Extract signature
-		int lfIndex = oppfData.lastIndexOf('\n');
-		if (lfIndex == -1) {
-			throw new ThreemaException("Bad input OPPF data");
-		}
+        // Extract signature
+        int lfIndex = oppfData.lastIndexOf('\n');
+        if (lfIndex == -1) {
+            throw new ThreemaException("Bad input OPPF data");
+        }
 
-		String jsonData = oppfData.substring(0, lfIndex);
-		byte[] sig = Base64.decode(oppfData.substring(lfIndex + 1));
+        String jsonData = oppfData.substring(0, lfIndex);
+        byte[] sig = Base64.decode(oppfData.substring(lfIndex + 1));
 
-		// Verify signature
-		EdDSAPublicKey chosenPublicKey = null;
-		boolean valid = false;
+        // Verify signature
+        EdDSAPublicKey chosenPublicKey = null;
+        boolean valid = false;
 
-		for (byte[] publicKey : trustedPublicKeys) {
-			EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
-			Signature signature = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
-			EdDSAPublicKey edPublicKey = new EdDSAPublicKey(new EdDSAPublicKeySpec(publicKey, spec));
-			signature.initVerify(edPublicKey);
-			signature.setParameter(EdDSAEngine.ONE_SHOT_MODE);
-			signature.update(jsonData.getBytes(StandardCharsets.UTF_8));
-			if (signature.verify(sig)) {
-				valid = true;
-				chosenPublicKey = edPublicKey;
-				break;
-			}
-		}
+        for (byte[] publicKey : trustedPublicKeys) {
+            EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName(EdDSANamedCurveTable.ED_25519);
+            Signature signature = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
+            EdDSAPublicKey edPublicKey = new EdDSAPublicKey(new EdDSAPublicKeySpec(publicKey, spec));
+            signature.initVerify(edPublicKey);
+            signature.setParameter(EdDSAEngine.ONE_SHOT_MODE);
+            signature.update(jsonData.getBytes(StandardCharsets.UTF_8));
+            if (signature.verify(sig)) {
+                valid = true;
+                chosenPublicKey = edPublicKey;
+                break;
+            }
+        }
 
-		if (!valid) {
-			throw new ThreemaException("Signature verification failed");
-		}
+        if (!valid) {
+            throw new ThreemaException("Signature verification failed");
+        }
 
-		// Parse the JSON
-		JSONObject jsonObject = new JSONObject(jsonData);
+        // Parse the JSON
+        JSONObject jsonObject = new JSONObject(jsonData);
 
-		// Check that the version is supported
-		if (!jsonObject.getString("version").startsWith("1.")) {
-			throw new ThreemaException("Unsupported OPPF version");
-		}
+        // Check that the version is supported
+        if (!jsonObject.getString("version").startsWith("1.")) {
+            throw new ThreemaException("Unsupported OPPF version");
+        }
 
-		// Check that the signature key matches
-		byte[] signatureKey = Base64.decode(jsonObject.getString("signatureKey"));
-		if (!Arrays.equals(signatureKey, chosenPublicKey.getA().toByteArray())) {
-			// Signature key in JSON does not match supplied public key
-			throw new ThreemaException("Signature key does not match supplied public key");
-		}
+        // Check that the signature key matches
+        byte[] signatureKey = Base64.decode(jsonObject.getString("signatureKey"));
+        if (!Arrays.equals(signatureKey, chosenPublicKey.getA().toByteArray())) {
+            // Signature key in JSON does not match supplied public key
+            throw new ThreemaException("Signature key does not match supplied public key");
+        }
 
-		return jsonObject;
-	}
+        return jsonObject;
+    }
 }

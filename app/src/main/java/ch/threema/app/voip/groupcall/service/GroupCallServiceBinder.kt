@@ -26,7 +26,10 @@ import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import kotlinx.coroutines.CompletableDeferred
 
-class GroupCallServiceBinder(private val controllerDeferred : CompletableDeferred<GroupCallController>, private val audioManagerDeferred : CompletableDeferred<CallAudioManager>) :
+class GroupCallServiceBinder(
+    private val controllerDeferred: CompletableDeferred<GroupCallController>,
+    private val audioManagerDeferred: CompletableDeferred<CallAudioManager>
+) :
     Binder() {
 
     suspend fun getGroupCallController(): GroupCallController {

@@ -27,14 +27,15 @@ import androidx.annotation.IntDef;
 
 /**
  * All valid log levels.
- *
+ * <p>
  * Maps directly to Android Logcat log levels.
  */
 @IntDef({
-	Log.VERBOSE,
-	Log.DEBUG,
-	Log.INFO,
-	Log.WARN,
-	Log.ERROR,
+    Log.VERBOSE,
+    Log.DEBUG,
+    Log.INFO,
+    Log.WARN,
+    Log.ERROR,
 })
-public @interface LogLevel { }
+public @interface LogLevel {
+}

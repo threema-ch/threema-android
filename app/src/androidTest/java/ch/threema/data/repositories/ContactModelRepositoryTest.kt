@@ -412,10 +412,16 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
     fun updateNickname() {
         // Create contact using "old model"
         val identity = randomIdentity()
-        databaseService.contactModelFactory.createOrUpdate(ContactModel(identity, nonSecureRandomArray(32)))
+        databaseService.contactModelFactory.createOrUpdate(
+            ContactModel(
+                identity,
+                nonSecureRandomArray(32)
+            )
+        )
 
         // Fetch model
-        val model: ch.threema.data.models.ContactModel? = contactModelRepository.getByIdentity(identity)
+        val model: ch.threema.data.models.ContactModel? =
+            contactModelRepository.getByIdentity(identity)
         assertNotNull(model)
         assertEquals(null, model!!.data.value?.nickname)
         model.setNicknameFromSync("testnick")

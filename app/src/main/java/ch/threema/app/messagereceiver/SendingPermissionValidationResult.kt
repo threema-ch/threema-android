@@ -29,5 +29,6 @@ sealed class SendingPermissionValidationResult(val isValid: Boolean) {
 
     data object Valid : SendingPermissionValidationResult(isValid = true)
 
-    data class Denied(@StringRes val errorResId: Int? = null) : SendingPermissionValidationResult(isValid = false)
+    data class Denied(@StringRes val errorResId: Int? = null) :
+        SendingPermissionValidationResult(isValid = false)
 }

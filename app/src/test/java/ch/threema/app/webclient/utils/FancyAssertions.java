@@ -24,18 +24,18 @@ package ch.threema.app.webclient.utils;
 import junit.framework.Assert;
 
 public class FancyAssertions {
-	@FunctionalInterface
-	public interface ThrowingRunnable {
-		void run() throws Exception;
-	}
+    @FunctionalInterface
+    public interface ThrowingRunnable {
+        void run() throws Exception;
+    }
 
-	public static void assertThrows(Throwable expected, ThrowingRunnable runnable) {
-		try {
-			runnable.run();
-			Assert.fail("Exception not thrown");
-		} catch (Throwable thrown) {
-			Assert.assertEquals(expected.getClass(), thrown.getClass());
-			Assert.assertEquals(expected.getMessage(), thrown.getMessage());
-		}
-	}
+    public static void assertThrows(Throwable expected, ThrowingRunnable runnable) {
+        try {
+            runnable.run();
+            Assert.fail("Exception not thrown");
+        } catch (Throwable thrown) {
+            Assert.assertEquals(expected.getClass(), thrown.getClass());
+            Assert.assertEquals(expected.getMessage(), thrown.getMessage());
+        }
+    }
 }

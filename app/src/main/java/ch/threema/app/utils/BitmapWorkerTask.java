@@ -42,185 +42,184 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 
 public class BitmapWorkerTask extends AsyncTask<BitmapWorkerTaskParams, Void, Bitmap> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BitmapWorkerTask");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BitmapWorkerTask");
 
-	private final WeakReference<ImageView> imageViewReference;
+    private final WeakReference<ImageView> imageViewReference;
 
-	public BitmapWorkerTask(ImageView imageView) {
-		this.imageViewReference = new WeakReference<ImageView>(imageView);
-	}
+    public BitmapWorkerTask(ImageView imageView) {
+        this.imageViewReference = new WeakReference<ImageView>(imageView);
+    }
 
-	// Decode image in background.
-	@Override
-	protected Bitmap doInBackground(BitmapWorkerTaskParams... params) {
-		BitmapWorkerTaskParams bitmapParams = params[0];
-		Bitmap bitmap = null;
+    // Decode image in background.
+    @Override
+    protected Bitmap doInBackground(BitmapWorkerTaskParams... params) {
+        BitmapWorkerTaskParams bitmapParams = params[0];
+        Bitmap bitmap = null;
 
-		try {
-			bitmap = decodeSampledBitmapFromUri(bitmapParams);
-		} catch (FileNotFoundException | IllegalStateException | SecurityException e) {
-			logger.error("Exception", e);
-		}
+        try {
+            bitmap = decodeSampledBitmapFromUri(bitmapParams);
+        } catch (FileNotFoundException | IllegalStateException | SecurityException e) {
+            logger.error("Exception", e);
+        }
 
-		if (bitmap == null) {
-			bitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(ThreemaApplication.getAppContext(), R.drawable.ic_baseline_broken_image_24), Color.WHITE);
-		}
+        if (bitmap == null) {
+            bitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(ThreemaApplication.getAppContext(), R.drawable.ic_baseline_broken_image_24), Color.WHITE);
+        }
 
-		return bitmap;
-	}
+        return bitmap;
+    }
 
-	// Once complete, see if ImageView is still around and set bitmap.
-	@Override
-	protected void onPostExecute(Bitmap bitmap) {
-		if (imageViewReference != null) {
-			final ImageView imageView = imageViewReference.get();
-			if (imageView != null) {
-				imageView.setImageBitmap(bitmap);
-			}
-		}
-	}
+    // Once complete, see if ImageView is still around and set bitmap.
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        if (imageViewReference != null) {
+            final ImageView imageView = imageViewReference.get();
+            if (imageView != null) {
+                imageView.setImageBitmap(bitmap);
+            }
+        }
+    }
 
-	private Bitmap decodeSampledBitmapFromUri(BitmapWorkerTaskParams bitmapParams) throws FileNotFoundException, IllegalStateException, SecurityException {
-		InputStream is = null;
-		final BitmapFactory.Options options = new BitmapFactory.Options();
+    private Bitmap decodeSampledBitmapFromUri(BitmapWorkerTaskParams bitmapParams) throws FileNotFoundException, IllegalStateException, SecurityException {
+        InputStream is = null;
+        final BitmapFactory.Options options = new BitmapFactory.Options();
 
-		if (bitmapParams.width != 0 && bitmapParams.height != 0) {
-			// First decode with inJustDecodeBounds=true to check dimensions
-			options.inJustDecodeBounds = true;
+        if (bitmapParams.width != 0 && bitmapParams.height != 0) {
+            // First decode with inJustDecodeBounds=true to check dimensions
+            options.inJustDecodeBounds = true;
 
-			try {
-				is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
-				BitmapFactory.decodeStream(is, null, options);
-			} finally {
-				if (is != null) {
-					try {
-						is.close();
-					} catch (IOException e) {
-						//
-					}
-				}
-			}
+            try {
+                is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
+                BitmapFactory.decodeStream(is, null, options);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            }
 
-			boolean isRotated = (bitmapParams.exifOrientation + bitmapParams.orientation) % 180 != 0;
+            boolean isRotated = (bitmapParams.exifOrientation + bitmapParams.orientation) % 180 != 0;
 
-			// width of container in which the resulting bitmap should be fitted
-			int containerWidth = bitmapParams.width;
-			int containerHeight = bitmapParams.height;
+            // width of container in which the resulting bitmap should be fitted
+            int containerWidth = bitmapParams.width;
+            int containerHeight = bitmapParams.height;
 
-			int bitmapWidth = isRotated ? options.outHeight : options.outWidth;
-			int bitmapHeight = isRotated ? options.outWidth : options.outHeight;
+            int bitmapWidth = isRotated ? options.outHeight : options.outWidth;
+            int bitmapHeight = isRotated ? options.outWidth : options.outHeight;
 
-			if (bitmapWidth < containerWidth && bitmapHeight < containerHeight) {
-				// blow up
-				float ratioX = (float) containerWidth / bitmapWidth;
-				float ratioY = (float) containerHeight / bitmapHeight;
+            if (bitmapWidth < containerWidth && bitmapHeight < containerHeight) {
+                // blow up
+                float ratioX = (float) containerWidth / bitmapWidth;
+                float ratioY = (float) containerHeight / bitmapHeight;
 
-				if (ratioX < ratioY) {
-					bitmapWidth = containerWidth;
-					bitmapHeight = (int) ((float) bitmapHeight * ratioX);
-				} else {
-					bitmapHeight = containerHeight;
-					bitmapWidth = (int) ((float) bitmapWidth * ratioY);
-				}
-			}
-			else {
-				if (bitmapWidth > containerWidth) {
-					// scale down
-					bitmapHeight = (bitmapHeight * containerWidth) / bitmapWidth;
-					bitmapWidth = containerWidth;
-				}
-				if (bitmapHeight > containerHeight) {
-					bitmapWidth = (bitmapWidth * containerHeight) / bitmapHeight;
-					bitmapHeight = containerHeight;
-				}
-			}
+                if (ratioX < ratioY) {
+                    bitmapWidth = containerWidth;
+                    bitmapHeight = (int) ((float) bitmapHeight * ratioX);
+                } else {
+                    bitmapHeight = containerHeight;
+                    bitmapWidth = (int) ((float) bitmapWidth * ratioY);
+                }
+            } else {
+                if (bitmapWidth > containerWidth) {
+                    // scale down
+                    bitmapHeight = (bitmapHeight * containerWidth) / bitmapWidth;
+                    bitmapWidth = containerWidth;
+                }
+                if (bitmapHeight > containerHeight) {
+                    bitmapWidth = (bitmapWidth * containerHeight) / bitmapHeight;
+                    bitmapHeight = containerHeight;
+                }
+            }
 
-			options.inSampleSize = calculateInSampleSize(options, bitmapWidth, bitmapHeight);
+            options.inSampleSize = calculateInSampleSize(options, bitmapWidth, bitmapHeight);
 
-			// Decode bitmap with inSampleSize set
-			options.inJustDecodeBounds = false;
-			options.inMutable = bitmapParams.mutable;
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            options.inMutable = bitmapParams.mutable;
 
-			is = null;
-			Bitmap roughBitmap;
-			try {
-				is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
-				roughBitmap = BitmapFactory.decodeStream(is, null, options);
-			} finally {
-				if (is != null) {
-					try {
-						is.close();
-					} catch (IOException e) {
-						//
-					}
-				}
-			}
+            is = null;
+            Bitmap roughBitmap;
+            try {
+                is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
+                roughBitmap = BitmapFactory.decodeStream(is, null, options);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            }
 
-			int outWidth = bitmapWidth;
-			int outHeight = bitmapHeight;
+            int outWidth = bitmapWidth;
+            int outHeight = bitmapHeight;
 
-			// resize bitmap to exact size
-			if (roughBitmap != null) {
-				if (bitmapParams.exifOrientation != 0 || bitmapParams.exifFlip != FLIP_NONE) {
-					roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.exifOrientation, bitmapParams.exifFlip);
-				}
+            // resize bitmap to exact size
+            if (roughBitmap != null) {
+                if (bitmapParams.exifOrientation != 0 || bitmapParams.exifFlip != FLIP_NONE) {
+                    roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.exifOrientation, bitmapParams.exifFlip);
+                }
 
-				if (bitmapParams.orientation != 0 || bitmapParams.flip != FLIP_NONE) {
-					roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.orientation, bitmapParams.flip);
-				}
+                if (bitmapParams.orientation != 0 || bitmapParams.flip != FLIP_NONE) {
+                    roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.orientation, bitmapParams.flip);
+                }
 
-				try {
-					return Bitmap.createScaledBitmap(roughBitmap, outWidth, outHeight, true);
-				} catch (Exception e) {
-					return null;
-				}
-			}
-			return null;
-		}
-		options.inMutable = bitmapParams.mutable;
+                try {
+                    return Bitmap.createScaledBitmap(roughBitmap, outWidth, outHeight, true);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+        options.inMutable = bitmapParams.mutable;
 
-		is = null;
-		try {
-			is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
-			Bitmap roughBitmap = BitmapFactory.decodeStream(is, null, options);
+        is = null;
+        try {
+            is = bitmapParams.contentResolver.openInputStream(bitmapParams.imageUri);
+            Bitmap roughBitmap = BitmapFactory.decodeStream(is, null, options);
 
-			if (roughBitmap != null) {
-				if (bitmapParams.exifOrientation != 0 || bitmapParams.exifFlip != FLIP_NONE) {
-					roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.exifOrientation, bitmapParams.exifFlip);
-				}
+            if (roughBitmap != null) {
+                if (bitmapParams.exifOrientation != 0 || bitmapParams.exifFlip != FLIP_NONE) {
+                    roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.exifOrientation, bitmapParams.exifFlip);
+                }
 
-				if (bitmapParams.orientation != 0 || bitmapParams.flip != FLIP_NONE) {
-					roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.orientation, bitmapParams.flip);
-				}
-			}
-			return roughBitmap;
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					//
-				}
-			}
-		}
-	}
+                if (bitmapParams.orientation != 0 || bitmapParams.flip != FLIP_NONE) {
+                    roughBitmap = BitmapUtil.rotateBitmap(roughBitmap, bitmapParams.orientation, bitmapParams.flip);
+                }
+            }
+            return roughBitmap;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
+        }
+    }
 
-	private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		final int height = options.outHeight;
-		final int width = options.outWidth;
-		int inSampleSize = 1;
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
 
-		if (height > reqHeight || width > reqWidth) {
-			// Calculate ratios of height and width to requested height and width
-			final int heightRatio = Math.round((float) height / (float) reqHeight);
-			final int widthRatio = Math.round((float) width / (float) reqWidth);
+        if (height > reqHeight || width > reqWidth) {
+            // Calculate ratios of height and width to requested height and width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
 
-			// Choose the smallest ratio as inSampleSize value, this will guarantee
-			// a final image with both dimensions larger than or equal to the
-			// requested height and width.
-			inSampleSize = Math.min(heightRatio, widthRatio);
-		}
+            // Choose the smallest ratio as inSampleSize value, this will guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = Math.min(heightRatio, widthRatio);
+        }
 
-		return inSampleSize;
-	}
+        return inSampleSize;
+    }
 }

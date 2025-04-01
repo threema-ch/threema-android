@@ -61,12 +61,13 @@ class ReflectUserProfileNicknameSyncTask(
     }
 
     private suspend fun encryptAndReflectUserProfileUpdate(handle: ActiveTaskCodec) {
-        val encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult = getEncryptedUserProfileSyncUpdate(
-            userProfile = userProfile {
-                nickname = newNickname
-            },
-            mdProperties
-        )
+        val encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult =
+            getEncryptedUserProfileSyncUpdate(
+                userProfile = userProfile {
+                    nickname = newNickname
+                },
+                mdProperties
+            )
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
             storeD2dNonce = true,

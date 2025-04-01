@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_marginTop="4dp"
-	android:layout_marginBottom="4dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp">
 
-	<ch.threema.app.ui.ControllerView
-		android:id="@+id/controller"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:layout_alignParentTop="true"
-		android:layout_alignParentLeft="true"
-		android:contentDescription="@string/location_placeholder"/>
+    <ch.threema.app.ui.ControllerView
+        android:id="@+id/controller"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:contentDescription="@string/location_placeholder" />
 
-	<ch.threema.app.emojis.EmojiConversationTextView
-		style="@style/Threema.Bubble.Text.Body"
-		android:id="@+id/text_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="@dimen/chat_bubble_container_padding_left_right"
-		android:layout_toRightOf="@id/controller"
-		android:linksClickable="false" />
+    <ch.threema.app.emojis.EmojiConversationTextView
+        style="@style/Threema.Bubble.Text.Body"
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/chat_bubble_container_padding_left_right"
+        android:layout_toRightOf="@id/controller"
+        android:linksClickable="false" />
 
-	<TextView
-		style="@style/Threema.Bubble.Text.Body.Small"
-		android:id="@+id/secondary_text_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/text_view"
-		android:layout_alignLeft="@id/text_view"
-		android:ellipsize="end"
-		android:singleLine="true" />
+    <TextView
+        style="@style/Threema.Bubble.Text.Body.Small"
+        android:id="@+id/secondary_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_view"
+        android:layout_alignLeft="@id/text_view"
+        android:ellipsize="end"
+        android:singleLine="true" />
 
 </RelativeLayout>

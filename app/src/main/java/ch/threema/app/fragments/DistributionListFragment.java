@@ -35,78 +35,78 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListFragment extends RecipientListFragment {
-	@Override
-	protected boolean isMultiSelectAllowed() {
-		return false;
-	}
+    @Override
+    protected boolean isMultiSelectAllowed() {
+        return false;
+    }
 
-	@Override
-	protected String getBundleName() {
-		return "DistListState";
-	}
+    @Override
+    protected String getBundleName() {
+        return "DistListState";
+    }
 
-	@Override
-	protected int getEmptyText() {
-		return R.string.no_matching_distribution_lists;
-	}
+    @Override
+    protected int getEmptyText() {
+        return R.string.no_matching_distribution_lists;
+    }
 
-	@Override
-	protected int getAddIcon() {
-		return R.drawable.ic_bullhorn_outline;
-	}
+    @Override
+    protected int getAddIcon() {
+        return R.drawable.ic_bullhorn_outline;
+    }
 
-	@Override
-	protected int getAddText() {
-		return R.string.title_add_distribution_list;
-	}
+    @Override
+    protected int getAddText() {
+        return R.string.title_add_distribution_list;
+    }
 
-	@Override
-	protected Intent getAddIntent() {
-		return new Intent(getActivity(), DistributionListAddActivity.class);
-	}
+    @Override
+    protected Intent getAddIntent() {
+        return new Intent(getActivity(), DistributionListAddActivity.class);
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	protected void createListAdapter(ArrayList<Integer> checkedItemPositions) {
-		new AsyncTask<Void, Void, List<DistributionListModel>>() {
-			@Override
-			protected List<DistributionListModel> doInBackground(Void... voids) {
-				return distributionListService.getAll(new DistributionListService.DistributionListFilter() {
-					@Override
-					public boolean sortingByDate() {
-						return true;
-					}
+    @SuppressLint("StaticFieldLeak")
+    protected void createListAdapter(ArrayList<Integer> checkedItemPositions) {
+        new AsyncTask<Void, Void, List<DistributionListModel>>() {
+            @Override
+            protected List<DistributionListModel> doInBackground(Void... voids) {
+                return distributionListService.getAll(new DistributionListService.DistributionListFilter() {
+                    @Override
+                    public boolean sortingByDate() {
+                        return true;
+                    }
 
-					@Override
-					public boolean sortingAscending() {
-						return false;
-					}
+                    @Override
+                    public boolean sortingAscending() {
+                        return false;
+                    }
 
-					@Override
-					public boolean showHidden() {
-						return false;
-					}
-				});
-			}
+                    @Override
+                    public boolean showHidden() {
+                        return false;
+                    }
+                });
+            }
 
-			@Override
-			protected void onPostExecute(List<DistributionListModel> distributionListModels) {
-				adapter = new DistributionListAdapter(
-					activity,
-					distributionListModels,
-					checkedItemPositions,
-					distributionListService,
-					DistributionListFragment.this
-				);
-				setListAdapter(adapter);
-				if (listInstanceState != null) {
-					if (isAdded() && getView() != null && getActivity() != null) {
-						getListView().onRestoreInstanceState(listInstanceState);
-					}
-					listInstanceState = null;
-					restoreCheckedItems(checkedItemPositions);
+            @Override
+            protected void onPostExecute(List<DistributionListModel> distributionListModels) {
+                adapter = new DistributionListAdapter(
+                    activity,
+                    distributionListModels,
+                    checkedItemPositions,
+                    distributionListService,
+                    DistributionListFragment.this
+                );
+                setListAdapter(adapter);
+                if (listInstanceState != null) {
+                    if (isAdded() && getView() != null && getActivity() != null) {
+                        getListView().onRestoreInstanceState(listInstanceState);
+                    }
+                    listInstanceState = null;
+                    restoreCheckedItems(checkedItemPositions);
 
-				}
-			}
-		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	}
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 }

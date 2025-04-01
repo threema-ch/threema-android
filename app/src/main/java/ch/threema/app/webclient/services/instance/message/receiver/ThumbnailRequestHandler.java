@@ -46,96 +46,96 @@ import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class ThumbnailRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailRequestHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final MessageService messageService;
-	private final FileService fileService;
+    private final MessageDispatcher dispatcher;
+    private final MessageService messageService;
+    private final FileService fileService;
 
-	@AnyThread
-	public ThumbnailRequestHandler(MessageDispatcher dispatcher,
-	                               MessageService messageService,
-	                               FileService fileService) {
-		super(Protocol.SUB_TYPE_THUMBNAIL);
-		this.dispatcher = dispatcher;
-		this.messageService = messageService;
-		this.fileService = fileService;
-	}
+    @AnyThread
+    public ThumbnailRequestHandler(MessageDispatcher dispatcher,
+                                   MessageService messageService,
+                                   FileService fileService) {
+        super(Protocol.SUB_TYPE_THUMBNAIL);
+        this.dispatcher = dispatcher;
+        this.messageService = messageService;
+        this.fileService = fileService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received thumbnail request");
-		Map<String, Value> args = this.getArguments(message, false, new String[] {
-				Protocol.ARGUMENT_RECEIVER_TYPE,
-				Protocol.ARGUMENT_RECEIVER_ID,
-				Protocol.ARGUMENT_MESSAGE_ID,
-				Protocol.ARGUMENT_TEMPORARY_ID
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received thumbnail request");
+        Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_TYPE,
+            Protocol.ARGUMENT_RECEIVER_ID,
+            Protocol.ARGUMENT_MESSAGE_ID,
+            Protocol.ARGUMENT_TEMPORARY_ID
+        });
 
-		final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
-		final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
-		final int messageId = Integer.valueOf(messageIdStr);
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
+        final int messageId = Integer.valueOf(messageIdStr);
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		AbstractMessageModel messageModel = null;
-		switch(type) {
-			case Receiver.Type.GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId);
-				break;
-			case Receiver.Type.CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId);
-				break;
-			case Receiver.Type.DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId);
-				break;
-		}
+        AbstractMessageModel messageModel = null;
+        switch (type) {
+            case Receiver.Type.GROUP:
+                messageModel = this.messageService.getGroupMessageModel(messageId);
+                break;
+            case Receiver.Type.CONTACT:
+                messageModel = this.messageService.getContactMessageModel(messageId);
+                break;
+            case Receiver.Type.DISTRIBUTION_LIST:
+                messageModel = this.messageService.getDistributionListMessageModel(messageId);
+                break;
+        }
 
-		// Send response
-		final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
-				.put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
-				.put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
-				.put(Protocol.ARGUMENT_MESSAGE_ID, String.valueOf(messageId))
-				.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
-		this.respond(messageModel, responseArgs);
-	}
+        // Send response
+        final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
+            .put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
+            .put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
+            .put(Protocol.ARGUMENT_MESSAGE_ID, String.valueOf(messageId))
+            .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
+        this.respond(messageModel, responseArgs);
+    }
 
-	private void respond(AbstractMessageModel messageModel, MsgpackObjectBuilder args) {
-		try {
-			logger.debug("Sending thumbnail response");
-			Bitmap thumbnail = null;
-			try {
-				thumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
-			} catch (Exception x) {
-				logger.error("Exception", x);
-			}
+    private void respond(AbstractMessageModel messageModel, MsgpackObjectBuilder args) {
+        try {
+            logger.debug("Sending thumbnail response");
+            Bitmap thumbnail = null;
+            try {
+                thumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
+            } catch (Exception x) {
+                logger.error("Exception", x);
+            }
 
-			// Make sure that the thumbnail is not larger than a certain size
-			if (thumbnail != null) {
-				thumbnail = this.resizeThumbnail(thumbnail);
-			}
+            // Make sure that the thumbnail is not larger than a certain size
+            if (thumbnail != null) {
+                thumbnail = this.resizeThumbnail(thumbnail);
+            }
 
-			// Return null if no avatar is available
-			byte[] data = null;
-			if (thumbnail != null) {
-				data = BitmapUtil.bitmapToByteArray(thumbnail, Protocol.FORMAT_THUMBNAIL, Protocol.QUALITY_THUMBNAIL);
-			}
-			this.send(this.dispatcher, data, args);
-		} catch (MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Return null if no avatar is available
+            byte[] data = null;
+            if (thumbnail != null) {
+                data = BitmapUtil.bitmapToByteArray(thumbnail, Protocol.FORMAT_THUMBNAIL, Protocol.QUALITY_THUMBNAIL);
+            }
+            this.send(this.dispatcher, data, args);
+        } catch (MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	/**
-	 * Make sure that the thumbnail is not larger than a certain size,
-	 * resizing if necessary.
-	 */
-	private Bitmap resizeThumbnail(final @NonNull Bitmap thumbnail) {
-		return ThumbnailUtils.resize(thumbnail, Protocol.SIZE_THUMBNAIL_MAX_PX);
-	}
+    /**
+     * Make sure that the thumbnail is not larger than a certain size,
+     * resizing if necessary.
+     */
+    private Bitmap resizeThumbnail(final @NonNull Bitmap thumbnail) {
+        return ThumbnailUtils.resize(thumbnail, Protocol.SIZE_THUMBNAIL_MAX_PX);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

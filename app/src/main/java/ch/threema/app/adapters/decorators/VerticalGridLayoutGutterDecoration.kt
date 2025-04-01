@@ -32,16 +32,16 @@ import androidx.recyclerview.widget.RecyclerView
  * with vertical orientation.
  */
 class VerticalGridLayoutGutterDecoration(gutterPx: Int) : RecyclerView.ItemDecoration() {
-	private val gutterPx = gutterPx / 2
-	override fun getItemOffsets(
-		outRect: Rect,
-		view: View,
-		parent: RecyclerView,
-		state: RecyclerView.State
-	) {
-		outRect.top = gutterPx
-		outRect.left = gutterPx
-		outRect.right = gutterPx
-		outRect.bottom = gutterPx
-	}
+    private val gutterPx = gutterPx / 2
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        outRect.top = gutterPx
+        outRect.left = gutterPx
+        outRect.right = gutterPx
+        outRect.bottom = gutterPx
+    }
 }

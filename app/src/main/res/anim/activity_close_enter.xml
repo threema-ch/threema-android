@@ -5,7 +5,7 @@
     <alpha
         android:duration="@android:integer/config_shortAnimTime"
         android:fromAlpha="0.0"
-        android:toAlpha="1.0"/>
+        android:toAlpha="1.0" />
     <scale
         android:duration="@android:integer/config_shortAnimTime"
         android:fromXScale="1.2"
@@ -13,5 +13,5 @@
         android:toXScale="1.0"
         android:toYScale="1.0"
         android:pivotX="50%p"
-        android:pivotY="50%p"/>
+        android:pivotY="50%p" />
 </set>

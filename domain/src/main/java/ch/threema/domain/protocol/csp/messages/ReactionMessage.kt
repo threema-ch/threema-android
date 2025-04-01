@@ -25,10 +25,11 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
 
-class ReactionMessage(payloadData: ReactionMessageData) : AbstractProtobufMessage<ReactionMessageData>(
+class ReactionMessage(payloadData: ReactionMessageData) :
+    AbstractProtobufMessage<ReactionMessageData>(
         ProtocolDefines.MSGTYPE_REACTION,
         payloadData
-) {
+    ) {
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_1
 
     override fun allowUserProfileDistribution() = true

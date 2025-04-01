@@ -33,40 +33,40 @@ import ch.threema.app.services.UpdateSystemService;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SystemUpdateToVersion63 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion63");
-	private Context context;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion63");
+    private Context context;
 
-	public SystemUpdateToVersion63(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion63(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		// delete obsolete temporary dirs
-		deleteDir(new File(context.getFilesDir(), "tmp"));
-		deleteDir(new File(context.getExternalFilesDir(null), "data.blob"));
-		deleteDir(new File(context.getExternalFilesDir(null), "tmp"));
+    @Override
+    public boolean runAsync() {
+        // delete obsolete temporary dirs
+        deleteDir(new File(context.getFilesDir(), "tmp"));
+        deleteDir(new File(context.getExternalFilesDir(null), "data.blob"));
+        deleteDir(new File(context.getExternalFilesDir(null), "tmp"));
 
-		return true;
-	}
+        return true;
+    }
 
-	private void deleteDir(File tmpPath) {
-		if (tmpPath.exists()) {
-			try {
-				FileUtils.deleteDirectory(tmpPath);
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    private void deleteDir(File tmpPath) {
+        if (tmpPath.exists()) {
+            try {
+                FileUtils.deleteDirectory(tmpPath);
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	@Override
-	public String getText() {
-		return "clean old temp directory";
-	}
+    @Override
+    public String getText() {
+        return "clean old temp directory";
+    }
 }

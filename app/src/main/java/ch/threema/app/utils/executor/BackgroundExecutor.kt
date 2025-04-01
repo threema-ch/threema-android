@@ -66,7 +66,7 @@ class BackgroundExecutor {
             return completableDeferred
         }
 
-        executor.execute Executor@ {
+        executor.execute Executor@{
             // Execute background task in executor
             val result = try {
                 backgroundTask.runInBackground()

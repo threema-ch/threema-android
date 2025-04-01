@@ -58,143 +58,142 @@ import ch.threema.app.listeners.VoipCallListener;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ListenerManager {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ListenerManager");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ListenerManager");
 
-	public interface HandleListener<T> {
-		void handle(T listener);
-	}
+    public interface HandleListener<T> {
+        void handle(T listener);
+    }
 
-	public static class TypedListenerManager<T> {
-		private final List<T> listeners = new ArrayList<>();
-		private final Map<String, Integer> tags = new HashMap<>();
-		private boolean enabled = true;
+    public static class TypedListenerManager<T> {
+        private final List<T> listeners = new ArrayList<>();
+        private final Map<String, Integer> tags = new HashMap<>();
+        private boolean enabled = true;
 
-		public void add(T l, String tag) {
-			synchronized (this.listeners) {
-				Integer pos = this.tags.get(tag);
-				if (pos != null && pos >= 0) {
-					//remove listener first
-					this.listeners.remove(this.listeners.get(pos));
-				}
+        public void add(T l, String tag) {
+            synchronized (this.listeners) {
+                Integer pos = this.tags.get(tag);
+                if (pos != null && pos >= 0) {
+                    //remove listener first
+                    this.listeners.remove(this.listeners.get(pos));
+                }
 
-				addInternal(this.listeners, l, false);
+                addInternal(this.listeners, l, false);
 
-				//save tagged position
-				this.tags.put(tag, this.listeners.size()-1);
-			}
-		}
+                //save tagged position
+                this.tags.put(tag, this.listeners.size() - 1);
+            }
+        }
 
-		public void add(T l) {
-			addInternal(this.listeners, l, false);
-		}
+        public void add(T l) {
+            addInternal(this.listeners, l, false);
+        }
 
-		public void add(T l, boolean higherPriority) {
-			addInternal(this.listeners, l, higherPriority);
-		}
+        public void add(T l, boolean higherPriority) {
+            addInternal(this.listeners, l, higherPriority);
+        }
 
-		public void remove(T l) {
-			removeInternal(this.listeners, l);
-		}
+        public void remove(T l) {
+            removeInternal(this.listeners, l);
+        }
 
-		/**
-		 * Remove all listeners.
-		 */
-		public void clear() {
-			synchronized (this.listeners) {
-				this.listeners.clear();
-			}
-		}
+        /**
+         * Remove all listeners.
+         */
+        public void clear() {
+            synchronized (this.listeners) {
+                this.listeners.clear();
+            }
+        }
 
-		/**
-		 * Return whether the specified listener was already added.
-		 */
-		public boolean contains(T l) {
-			return l != null && this.listeners.contains(l);
-		}
+        /**
+         * Return whether the specified listener was already added.
+         */
+        public boolean contains(T l) {
+            return l != null && this.listeners.contains(l);
+        }
 
-		public void handle(ListenerManager.HandleListener<T> handleListener) {
-			if (handleListener != null && this.enabled) {
-				// Since a handler might modify the array of listeners, there's the danger
-				// of a ConcurrentModificationException or a deadlock.
-				// Therefore we iterate over a copy of the listeners, to avoid that problem.
-				final List<T> listenersCopy;
-				synchronized (this.listeners) {
-					listenersCopy = new ArrayList<>(this.listeners);
-				}
+        public void handle(ListenerManager.HandleListener<T> handleListener) {
+            if (handleListener != null && this.enabled) {
+                // Since a handler might modify the array of listeners, there's the danger
+                // of a ConcurrentModificationException or a deadlock.
+                // Therefore we iterate over a copy of the listeners, to avoid that problem.
+                final List<T> listenersCopy;
+                synchronized (this.listeners) {
+                    listenersCopy = new ArrayList<>(this.listeners);
+                }
 
-				// Run the handle method on every listener
-				for (T listener: listenersCopy) {
-					if (listener != null) {
-						try {
-							handleListener.handle(listener);
-						} catch (Exception x) {
-							logger.error("cannot handle event", x);
-						}
-					}
-				}
-			}
-		}
+                // Run the handle method on every listener
+                for (T listener : listenersCopy) {
+                    if (listener != null) {
+                        try {
+                            handleListener.handle(listener);
+                        } catch (Exception x) {
+                            logger.error("cannot handle event", x);
+                        }
+                    }
+                }
+            }
+        }
 
-		private <T> void addInternal(List<T> holder, T listener, boolean higherPriority) {
-			if(holder != null && listener != null) {
-				synchronized (holder) {
-					if (!holder.contains(listener)) {
-						if(higherPriority) {
-							//add first!
-							holder.add(0, listener);
-						}
-						else {
-							holder.add(listener);
-						}
-					}
-				}
-			}
-		}
+        private <T> void addInternal(List<T> holder, T listener, boolean higherPriority) {
+            if (holder != null && listener != null) {
+                synchronized (holder) {
+                    if (!holder.contains(listener)) {
+                        if (higherPriority) {
+                            //add first!
+                            holder.add(0, listener);
+                        } else {
+                            holder.add(listener);
+                        }
+                    }
+                }
+            }
+        }
 
-		private <T> void removeInternal(List<T> holder, T listener) {
-			if(holder != null && listener != null) {
-				synchronized (holder) {
-					holder.remove(listener);
-				}
-			}
-		}
+        private <T> void removeInternal(List<T> holder, T listener) {
+            if (holder != null && listener != null) {
+                synchronized (holder) {
+                    holder.remove(listener);
+                }
+            }
+        }
 
-		public void enabled(boolean enabled) {
-			if(this.enabled != enabled) {
-				logger.debug(this.getClass() + " " + (enabled ? "enabled" : "disabled"));
-				this.enabled = enabled;
-			}
-		}
+        public void enabled(boolean enabled) {
+            if (this.enabled != enabled) {
+                logger.debug(this.getClass() + " " + (enabled ? "enabled" : "disabled"));
+                this.enabled = enabled;
+            }
+        }
 
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-	}
+        public boolean isEnabled() {
+            return this.enabled;
+        }
+    }
 
-	public static final TypedListenerManager<ConversationListener> conversationListeners = new TypedListenerManager<ConversationListener>();
-	public static final TypedListenerManager<ContactListener> contactListeners = new TypedListenerManager<ContactListener>();
-	public static final TypedListenerManager<ContactTypingListener> contactTypingListeners = new TypedListenerManager<ContactTypingListener>();
-	public static final TypedListenerManager<DistributionListListener> distributionListListeners = new TypedListenerManager<DistributionListListener>();
-	public static final TypedListenerManager<GroupListener> groupListeners = new TypedListenerManager<GroupListener>();
-	public static final TypedListenerManager<MessageListener> messageListeners = new TypedListenerManager<MessageListener>();
-	public static final TypedListenerManager<MessageDeletedForAllListener> messageDeletedForAllListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<PreferenceListener>  preferenceListeners = new TypedListenerManager<PreferenceListener>();
-	public static final TypedListenerManager<ServerMessageListener>  serverMessageListeners = new TypedListenerManager<ServerMessageListener>();
-	public static final TypedListenerManager<SynchronizeContactsListener>  synchronizeContactsListeners = new TypedListenerManager<SynchronizeContactsListener>();
-	public static final TypedListenerManager<ContactSettingsListener>  contactSettingsListeners = new TypedListenerManager<ContactSettingsListener>();
-	public static final TypedListenerManager<BallotListener> ballotListeners = new TypedListenerManager<BallotListener>();
-	public static final TypedListenerManager<BallotVoteListener> ballotVoteListeners = new TypedListenerManager<BallotVoteListener>();
-	public static final TypedListenerManager<SMSVerificationListener> smsVerificationListeners = new TypedListenerManager<SMSVerificationListener>();
-	public static final TypedListenerManager<AppIconListener> appIconListeners = new TypedListenerManager<AppIconListener>();
-	public static final TypedListenerManager<ProfileListener> profileListeners = new TypedListenerManager<ProfileListener>();
-	public static final TypedListenerManager<VoipCallListener> voipCallListeners = new TypedListenerManager<VoipCallListener>();
-	public static final TypedListenerManager<ThreemaSafeListener> threemaSafeListeners = new TypedListenerManager<ThreemaSafeListener>();
-	public static final TypedListenerManager<ChatListener> chatListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<GroupJoinResponseListener> groupJoinResponseListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<IncomingGroupJoinRequestListener> incomingGroupJoinRequestListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
-	public static final TypedListenerManager<EditMessageListener> editMessageListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<ConversationListener> conversationListeners = new TypedListenerManager<ConversationListener>();
+    public static final TypedListenerManager<ContactListener> contactListeners = new TypedListenerManager<ContactListener>();
+    public static final TypedListenerManager<ContactTypingListener> contactTypingListeners = new TypedListenerManager<ContactTypingListener>();
+    public static final TypedListenerManager<DistributionListListener> distributionListListeners = new TypedListenerManager<DistributionListListener>();
+    public static final TypedListenerManager<GroupListener> groupListeners = new TypedListenerManager<GroupListener>();
+    public static final TypedListenerManager<MessageListener> messageListeners = new TypedListenerManager<MessageListener>();
+    public static final TypedListenerManager<MessageDeletedForAllListener> messageDeletedForAllListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<PreferenceListener> preferenceListeners = new TypedListenerManager<PreferenceListener>();
+    public static final TypedListenerManager<ServerMessageListener> serverMessageListeners = new TypedListenerManager<ServerMessageListener>();
+    public static final TypedListenerManager<SynchronizeContactsListener> synchronizeContactsListeners = new TypedListenerManager<SynchronizeContactsListener>();
+    public static final TypedListenerManager<ContactSettingsListener> contactSettingsListeners = new TypedListenerManager<ContactSettingsListener>();
+    public static final TypedListenerManager<BallotListener> ballotListeners = new TypedListenerManager<BallotListener>();
+    public static final TypedListenerManager<BallotVoteListener> ballotVoteListeners = new TypedListenerManager<BallotVoteListener>();
+    public static final TypedListenerManager<SMSVerificationListener> smsVerificationListeners = new TypedListenerManager<SMSVerificationListener>();
+    public static final TypedListenerManager<AppIconListener> appIconListeners = new TypedListenerManager<AppIconListener>();
+    public static final TypedListenerManager<ProfileListener> profileListeners = new TypedListenerManager<ProfileListener>();
+    public static final TypedListenerManager<VoipCallListener> voipCallListeners = new TypedListenerManager<VoipCallListener>();
+    public static final TypedListenerManager<ThreemaSafeListener> threemaSafeListeners = new TypedListenerManager<ThreemaSafeListener>();
+    public static final TypedListenerManager<ChatListener> chatListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<GroupJoinResponseListener> groupJoinResponseListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<IncomingGroupJoinRequestListener> incomingGroupJoinRequestListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<EditMessageListener> editMessageListener = new TypedListenerManager<>();
 }

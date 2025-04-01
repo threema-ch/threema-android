@@ -24,10 +24,13 @@ package ch.threema.app.services;
 import ch.threema.app.listeners.SensorListener;
 
 public interface SensorService {
-	void registerSensors(String tag, SensorListener sensorListener, boolean useAccelerometer);
-	void registerSensors(String tag, SensorListener sensorListener);
-	void unregisterSensors(String tag);
-	void unregisterAllSensors();
+    void registerSensors(String tag, SensorListener sensorListener, boolean useAccelerometer);
 
-	boolean isSensorRegistered(String tag);
+    void registerSensors(String tag, SensorListener sensorListener);
+
+    void unregisterSensors(String tag);
+
+    void unregisterAllSensors();
+
+    boolean isSensorRegistered(String tag);
 }

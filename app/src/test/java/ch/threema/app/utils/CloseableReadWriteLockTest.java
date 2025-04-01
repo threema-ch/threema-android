@@ -34,132 +34,135 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 public class CloseableReadWriteLockTest {
-	static class WriteLocker extends Thread {
-		private final @NonNull CloseableReadWriteLock lock;
-		private volatile boolean shutdown = false;
-		private volatile boolean running = false;
+    static class WriteLocker extends Thread {
+        private final @NonNull CloseableReadWriteLock lock;
+        private volatile boolean shutdown = false;
+        private volatile boolean running = false;
 
-		public WriteLocker(@NonNull CloseableReadWriteLock writeLock) {
-			this.lock = writeLock;
-		}
+        public WriteLocker(@NonNull CloseableReadWriteLock writeLock) {
+            this.lock = writeLock;
+        }
 
-		@Override
-		public void run() {
-			try (CloseableLock writeLock = this.lock.write()) {
-				running = true;
-				while (!shutdown) {
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException ignored) { }
-				}
-			}
-			running = false;
-		}
+        @Override
+        public void run() {
+            try (CloseableLock writeLock = this.lock.write()) {
+                running = true;
+                while (!shutdown) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+            running = false;
+        }
 
-		public void awaitRunning() {
-			while (!this.running) {
-				try {
-					Thread.sleep(5);
-				} catch (InterruptedException ignored) { }
-			}
-		}
+        public void awaitRunning() {
+            while (!this.running) {
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
 
-		public void shutdown() {
-			this.shutdown = true;
-		}
-	}
+        public void shutdown() {
+            this.shutdown = true;
+        }
+    }
 
-	@Test
-	public void testLockingType() {
-		final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
-		final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
+    @Test
+    public void testLockingType() {
+        final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
+        final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
 
-		// Lock for reading
-		try (CloseableLock readLock = lock.read()) {
-			assertFalse(innerLock.isWriteLocked());
-		}
+        // Lock for reading
+        try (CloseableLock readLock = lock.read()) {
+            assertFalse(innerLock.isWriteLocked());
+        }
 
-		// Lock for writing
-		try (CloseableLock writeLock = lock.write()) {
-			assertTrue(innerLock.isWriteLocked());
-			assertTrue(innerLock.isWriteLockedByCurrentThread());
-		}
-	}
+        // Lock for writing
+        try (CloseableLock writeLock = lock.write()) {
+            assertTrue(innerLock.isWriteLocked());
+            assertTrue(innerLock.isWriteLockedByCurrentThread());
+        }
+    }
 
-	@Test
-	public void testWriteLock() throws InterruptedException {
-		final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
-		final Lock readLock = innerLock.readLock();
-		final Lock writeLock = innerLock.writeLock();
+    @Test
+    public void testWriteLock() throws InterruptedException {
+        final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
+        final Lock readLock = innerLock.readLock();
+        final Lock writeLock = innerLock.writeLock();
 
-		final WriteLocker t = new WriteLocker(new CloseableReadWriteLock(innerLock));
+        final WriteLocker t = new WriteLocker(new CloseableReadWriteLock(innerLock));
 
-		// Thread hasn't been started yet, locking should still work
-		assertFalse(innerLock.isWriteLocked());
-		writeLock.lock();
-		assertTrue(innerLock.isWriteLocked());
-		writeLock.unlock();
-		assertFalse(innerLock.isWriteLocked());
+        // Thread hasn't been started yet, locking should still work
+        assertFalse(innerLock.isWriteLocked());
+        writeLock.lock();
+        assertTrue(innerLock.isWriteLocked());
+        writeLock.unlock();
+        assertFalse(innerLock.isWriteLocked());
 
-		// Start thread, now the lock should be locked
-		t.start();
-		t.awaitRunning();
-		assertTrue(innerLock.isWriteLocked());
-		assertFalse(readLock.tryLock(50, TimeUnit.MILLISECONDS));
-		assertFalse(writeLock.tryLock(50, TimeUnit.MILLISECONDS));
+        // Start thread, now the lock should be locked
+        t.start();
+        t.awaitRunning();
+        assertTrue(innerLock.isWriteLocked());
+        assertFalse(readLock.tryLock(50, TimeUnit.MILLISECONDS));
+        assertFalse(writeLock.tryLock(50, TimeUnit.MILLISECONDS));
 
-		// Stop thread, this should unlock the lock
-		t.shutdown();
-		assertTrue(readLock.tryLock(100, TimeUnit.MILLISECONDS));
-		readLock.unlock();
-		assertTrue(writeLock.tryLock(50, TimeUnit.MILLISECONDS));
-		writeLock.unlock();
-	}
+        // Stop thread, this should unlock the lock
+        t.shutdown();
+        assertTrue(readLock.tryLock(100, TimeUnit.MILLISECONDS));
+        readLock.unlock();
+        assertTrue(writeLock.tryLock(50, TimeUnit.MILLISECONDS));
+        writeLock.unlock();
+    }
 
-	@Test
-	public void testAutoUnlocking() {
-		final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
-		final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
+    @Test
+    public void testAutoUnlocking() {
+        final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
+        final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
 
-		try {
-			try (CloseableLock writeLock = lock.write()) {
-				assertTrue(innerLock.isWriteLocked());
-				assertTrue(innerLock.isWriteLockedByCurrentThread());
-				throw new RuntimeException("Oh no!!! Will it be unlocked?");
-			}
-		} catch (RuntimeException ignored) { }
-		assertFalse(innerLock.isWriteLocked());
-	}
+        try {
+            try (CloseableLock writeLock = lock.write()) {
+                assertTrue(innerLock.isWriteLocked());
+                assertTrue(innerLock.isWriteLockedByCurrentThread());
+                throw new RuntimeException("Oh no!!! Will it be unlocked?");
+            }
+        } catch (RuntimeException ignored) {
+        }
+        assertFalse(innerLock.isWriteLocked());
+    }
 
-	@Test
-	public void testTry() throws InterruptedException {
-		final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
-		final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
+    @Test
+    public void testTry() throws InterruptedException {
+        final ReentrantReadWriteLock innerLock = new ReentrantReadWriteLock();
+        final CloseableReadWriteLock lock = new CloseableReadWriteLock(innerLock);
 
-		// Lock lock
-		final WriteLocker t = new WriteLocker(lock);
-		t.start();
-		t.awaitRunning();
+        // Lock lock
+        final WriteLocker t = new WriteLocker(lock);
+        t.start();
+        t.awaitRunning();
 
-		// Ensure it's locked
-		assertTrue(innerLock.isWriteLocked());
-		assertFalse(innerLock.isWriteLockedByCurrentThread());
+        // Ensure it's locked
+        assertTrue(innerLock.isWriteLocked());
+        assertFalse(innerLock.isWriteLockedByCurrentThread());
 
-		// Try locking
-		try (CloseableLock locked = lock.tryWrite(100, TimeUnit.MILLISECONDS)) {
-			fail("Lock should not have been locked");
-		} catch (CloseableReadWriteLock.NotLocked notLocked) {
-			// Yep
-		}
+        // Try locking
+        try (CloseableLock locked = lock.tryWrite(100, TimeUnit.MILLISECONDS)) {
+            fail("Lock should not have been locked");
+        } catch (CloseableReadWriteLock.NotLocked notLocked) {
+            // Yep
+        }
 
-		// Unlock
-		t.shutdown();
+        // Unlock
+        t.shutdown();
 
-		// Try locking
-		try (CloseableLock locked = lock.tryWrite(100, TimeUnit.MILLISECONDS)) {
-			// Yep
-		} catch (CloseableReadWriteLock.NotLocked notLocked) {
-			fail("Lock should have been locked");
-		}
-	}
+        // Try locking
+        try (CloseableLock locked = lock.tryWrite(100, TimeUnit.MILLISECONDS)) {
+            // Yep
+        } catch (CloseableReadWriteLock.NotLocked notLocked) {
+            fail("Lock should have been locked");
+        }
+    }
 }

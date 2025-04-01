@@ -1,44 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/root_view"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="#55000000">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#55000000">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@android:color/black">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black">
 
-		<com.google.android.material.appbar.MaterialToolbar
-			android:id="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-	</com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-	<ch.threema.app.ui.ThreemaEditText
-		android:id="@+id/edittext"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		android:paddingTop="?actionBarSize"
-		android:visibility="invisible"
-		android:background="@null"
-		android:layout_gravity="center"
-		android:gravity="center_horizontal"
-		android:hint="@string/enter_text_hint"
-		android:inputType="text|textNoSuggestions"
-		android:maxLength="128"
-		android:maxLines="3"
-		android:imeOptions="actionDone"
-		android:textColor="@android:color/white"
-		android:textColorHint="#FFBBBBBB"
-		android:textSize="@dimen/imagepaint_default_font_size"
-		android:textStyle="bold"/>
+    <ch.threema.app.ui.ThreemaEditText
+        android:id="@+id/edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:paddingTop="?actionBarSize"
+        android:visibility="invisible"
+        android:background="@null"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:hint="@string/enter_text_hint"
+        android:inputType="text|textNoSuggestions"
+        android:maxLength="128"
+        android:maxLines="3"
+        android:imeOptions="actionDone"
+        android:textColor="@android:color/white"
+        android:textColorHint="#FFBBBBBB"
+        android:textSize="@dimen/imagepaint_default_font_size"
+        android:textStyle="bold" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

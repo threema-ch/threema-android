@@ -38,72 +38,74 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.MimeUtil;
 
 public class FileViewFragment extends MediaViewFragment {
-	private WeakReference<ImageView> previewViewRef;
-	private WeakReference<TextView> filenameViewRef;
-	private WeakReference<TextView> mimeTypeViewRef;
+    private WeakReference<ImageView> previewViewRef;
+    private WeakReference<TextView> filenameViewRef;
+    private WeakReference<TextView> mimeTypeViewRef;
 
-	public FileViewFragment() { super(); }
+    public FileViewFragment() {
+        super();
+    }
 
-	@Override
-	protected int getFragmentResourceId() {
-		return R.layout.fragment_media_viewer_file;
-	}
+    @Override
+    protected int getFragmentResourceId() {
+        return R.layout.fragment_media_viewer_file;
+    }
 
-	@Override
-	protected void created(Bundle savedInstanceState) {
-		this.previewViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
-		this.filenameViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.filename_view));
-		this.mimeTypeViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.file_type));
-	}
+    @Override
+    protected void created(Bundle savedInstanceState) {
+        this.previewViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
+        this.filenameViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.filename_view));
+        this.mimeTypeViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.file_type));
+    }
 
-	@Override
-	protected void handleDecryptingFile() {
-		//on decoding, do nothing!
-	}
+    @Override
+    protected void handleDecryptingFile() {
+        //on decoding, do nothing!
+    }
 
-	@Override
-	protected void handleDecryptFailure() {
-		//
-	}
+    @Override
+    protected void handleDecryptFailure() {
+        //
+    }
 
-	@Override
-	protected void handleDecryptedFile(final File file) {
-		if (this.isAdded() && getContext() != null) {
-			this.previewViewRef.get().setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					((MediaViewerActivity) requireActivity()).viewMediaInGallery();
-				}
-			});
-		}
-	}
+    @Override
+    protected void handleDecryptedFile(final File file) {
+        if (this.isAdded() && getContext() != null) {
+            this.previewViewRef.get().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MediaViewerActivity) requireActivity()).viewMediaInGallery();
+                }
+            });
+        }
+    }
 
-	@Override
-	protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
-		// Set mime category icon
-		if (this.previewViewRef != null && this.previewViewRef.get() != null) {
-			this.previewViewRef.get().setImageDrawable(ResourcesCompat.getDrawable(getResources(), IconUtil.getMimeCategoryIcon(category), requireActivity().getTheme()));
-		}
-		// Set mime description
-		if (this.mimeTypeViewRef != null && this.mimeTypeViewRef.get() != null) {
-			Integer mimeDescription = MimeUtil.getMimeDescription(category);
-			if (mimeDescription != null) {
-				this.mimeTypeViewRef.get().setText(mimeDescription);
-			} else {
-				this.mimeTypeViewRef.get().setVisibility(View.GONE);
-			}
-		}
-	}
+    @Override
+    protected void handleMimeCategory(@NonNull MimeUtil.MimeCategory category) {
+        // Set mime category icon
+        if (this.previewViewRef != null && this.previewViewRef.get() != null) {
+            this.previewViewRef.get().setImageDrawable(ResourcesCompat.getDrawable(getResources(), IconUtil.getMimeCategoryIcon(category), requireActivity().getTheme()));
+        }
+        // Set mime description
+        if (this.mimeTypeViewRef != null && this.mimeTypeViewRef.get() != null) {
+            Integer mimeDescription = MimeUtil.getMimeDescription(category);
+            if (mimeDescription != null) {
+                this.mimeTypeViewRef.get().setText(mimeDescription);
+            } else {
+                this.mimeTypeViewRef.get().setVisibility(View.GONE);
+            }
+        }
+    }
 
-	@Override
-	protected void handleFileName(@Nullable String filename) {
-		if (filenameViewRef != null && filenameViewRef.get() != null) {
-			if (filename != null) {
-				filenameViewRef.get().setText(filename);
-				filenameViewRef.get().setVisibility(View.VISIBLE);
-			} else {
-				filenameViewRef.get().setVisibility(View.GONE);
-			}
-		}
-	}
+    @Override
+    protected void handleFileName(@Nullable String filename) {
+        if (filenameViewRef != null && filenameViewRef.get() != null) {
+            if (filename != null) {
+                filenameViewRef.get().setText(filename);
+                filenameViewRef.get().setVisibility(View.VISIBLE);
+            } else {
+                filenameViewRef.get().setVisibility(View.GONE);
+            }
+        }
+    }
 }

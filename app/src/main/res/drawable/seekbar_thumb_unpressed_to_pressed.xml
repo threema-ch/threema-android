@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:name="seekbar_thumb_unpressed_to_pressed"
     android:width="18dp"
     android:height="18dp"

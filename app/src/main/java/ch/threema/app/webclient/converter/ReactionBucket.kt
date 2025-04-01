@@ -24,17 +24,23 @@ package ch.threema.app.webclient.converter
 import ch.threema.data.models.EmojiReactionData
 import java.util.Date
 
-data class ReactionBucket(val reaction: String, val mostRecentReactedAt: Date, val identities: List<String>) {
+data class ReactionBucket(
+    val reaction: String,
+    val mostRecentReactedAt: Date,
+    val identities: List<String>
+) {
     companion object {
         @JvmStatic
         fun fromReactions(reactions: List<EmojiReactionData>): List<ReactionBucket> {
             return reactions
                 .groupBy { it.emojiSequence }
-                .map { (reactionSequence, reactionsForSequence) -> ReactionBucket(
-                    reactionSequence,
-                    reactionsForSequence.maxOf { it.reactedAt },
-                    reactionsForSequence.map { it.senderIdentity }
-                ) }
+                .map { (reactionSequence, reactionsForSequence) ->
+                    ReactionBucket(
+                        reactionSequence,
+                        reactionsForSequence.maxOf { it.reactedAt },
+                        reactionsForSequence.map { it.senderIdentity }
+                    )
+                }
                 .sortedByDescending(ReactionBucket::mostRecentReactedAt)
         }
     }

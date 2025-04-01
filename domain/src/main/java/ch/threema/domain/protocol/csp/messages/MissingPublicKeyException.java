@@ -26,11 +26,11 @@ package ch.threema.domain.protocol.csp.messages;
  */
 public class MissingPublicKeyException extends Exception {
 
-	public MissingPublicKeyException(String msg) {
-		super(msg);
-	}
+    public MissingPublicKeyException(String msg) {
+        super(msg);
+    }
 
-	public MissingPublicKeyException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    public MissingPublicKeyException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

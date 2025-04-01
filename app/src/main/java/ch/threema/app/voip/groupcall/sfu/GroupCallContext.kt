@@ -201,6 +201,7 @@ data class P2PContexts(
                         logger.warn("Cannot map capture state")
                     }
                 }
+
             envelope.hasRekey() -> P2PMessageContent.MediaKey.fromProtobuf(envelope.rekey)
             else -> {
                 logger.warn("Cannot map P2P message")

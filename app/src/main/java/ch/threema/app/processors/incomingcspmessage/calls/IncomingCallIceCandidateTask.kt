@@ -35,7 +35,8 @@ class IncomingCallIceCandidateTask(
 ) : IncomingCspMessageSubTask<VoipICECandidatesMessage>(message, triggerSource, serviceManager) {
     private val voipStateService = serviceManager.voipStateService
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processICECandidate()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processICECandidate()
 
     override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processICECandidate()
 

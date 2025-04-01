@@ -49,18 +49,18 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class MessagePlayerServiceImpl implements MessagePlayerService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayerServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayerServiceImpl");
 
-	private final Map<Integer, MessagePlayer> messagePlayers = new HashMap<>();
-	private final Context context;
-	private final MessageService messageService;
-	private final FileService fileService;
-	private final PreferenceService preferenceService;
+    private final Map<Integer, MessagePlayer> messagePlayers = new HashMap<>();
+    private final Context context;
+    private final MessageService messageService;
+    private final FileService fileService;
+    private final PreferenceService preferenceService;
     @NonNull
     private final NotificationPreferenceService notificationPreferenceService;
-	private final DeadlineListService hiddenChatsListService;
+    private final DeadlineListService hiddenChatsListService;
 
-	public MessagePlayerServiceImpl(
+    public MessagePlayerServiceImpl(
         @NonNull Context context,
         @NonNull MessageService messageService,
         @NonNull FileService fileService,
@@ -68,243 +68,243 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
         @NonNull NotificationPreferenceService notificationPreferenceService,
         DeadlineListService hiddenChatsListService
     ) {
-		this.context = context;
-		this.messageService = messageService;
-		this.fileService = fileService;
-		this.preferenceService = preferenceService;
+        this.context = context;
+        this.messageService = messageService;
+        this.fileService = fileService;
+        this.preferenceService = preferenceService;
         this.notificationPreferenceService = notificationPreferenceService;
-		this.hiddenChatsListService = hiddenChatsListService;
-	}
+        this.hiddenChatsListService = hiddenChatsListService;
+    }
 
-	@Override
-	public MessagePlayer createPlayer(AbstractMessageModel messageModel, Activity activity, MessageReceiver<?> messageReceiver, ListenableFuture<MediaController> mediaControllerFuture) {
-		int key = messageModel.getId();
-		MessagePlayer o = null;
+    @Override
+    public MessagePlayer createPlayer(AbstractMessageModel messageModel, Activity activity, MessageReceiver<?> messageReceiver, ListenableFuture<MediaController> mediaControllerFuture) {
+        int key = messageModel.getId();
+        MessagePlayer o = null;
 
-		synchronized (this.messagePlayers) {
-			o = this.messagePlayers.get(key);
+        synchronized (this.messagePlayers) {
+            o = this.messagePlayers.get(key);
 
-			if (o == null) {
-				if (messageModel.getType() == MessageType.IMAGE) {
-					o = new ImageMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							messageReceiver,
-							messageModel
-					);
-				} else if (messageModel.getType() == MessageType.VOICEMESSAGE) {
-					o = new AudioMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							this.preferenceService,
+            if (o == null) {
+                if (messageModel.getType() == MessageType.IMAGE) {
+                    o = new ImageMessagePlayer(
+                        this.context,
+                        this.messageService,
+                        this.fileService,
+                        messageReceiver,
+                        messageModel
+                    );
+                } else if (messageModel.getType() == MessageType.VOICEMESSAGE) {
+                    o = new AudioMessagePlayer(
+                        this.context,
+                        this.messageService,
+                        this.fileService,
+                        this.preferenceService,
+                        this.notificationPreferenceService,
+                        this.hiddenChatsListService,
+                        messageReceiver,
+                        mediaControllerFuture,
+                        messageModel
+                    );
+                } else if (messageModel.getType() == MessageType.VIDEO) {
+                    o = new VideoMessagePlayer(
+                        this.context,
+                        this.messageService,
+                        this.fileService,
+                        messageReceiver,
+                        messageModel
+                    );
+                } else if (messageModel.getType() == MessageType.FILE) {
+                    if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())
+                        && messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
+                        o = new AudioMessagePlayer(
+                            this.context,
+                            this.messageService,
+                            this.fileService,
+                            this.preferenceService,
                             this.notificationPreferenceService,
-							this.hiddenChatsListService,
-							messageReceiver,
-							mediaControllerFuture,
-							messageModel
-					);
-				} else if (messageModel.getType() == MessageType.VIDEO) {
-					o = new VideoMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							messageReceiver,
-							messageModel
-					);
-				} else if (messageModel.getType() == MessageType.FILE) {
-					if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())
-							&& messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
-						o = new AudioMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							this.preferenceService,
-                            this.notificationPreferenceService,
-							this.hiddenChatsListService,
-							messageReceiver,
-							mediaControllerFuture,
-							messageModel
-						);
-					} else if (MimeUtil.isAnimatedImageFormat(messageModel.getFileData().getMimeType())
-							&& (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA
-							|| messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
-						o = new AnimatedImageDrawableMessagePlayer(
-							this.context,
-							this.messageService,
-							this.fileService,
-							this.preferenceService,
-							messageReceiver,
-							messageModel
-						);
-					} else {
-						o = new FileMessagePlayer(
-								this.context,
-								this.messageService,
-								this.fileService,
-								messageReceiver,
-								messageModel
-						);
-					}
-				}
-				logger.debug("creating new player " + key);
-			} else {
-				// make sure data model is updated as its status may have changed after the player has been created
-				if (messageModel.getType() == MessageType.VOICEMESSAGE) {
-					o.setData(messageModel.getAudioData());
-				}
-				if (messageModel.getType() == MessageType.FILE &&
-					MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())	&&
-					messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
-					o.setData(messageModel.getFileData());
-				}
-				logger.debug("recycling existing player {}", key);
-			}
-			if (o != null) {
-				if (activity != null) {
-					if (o.isReceiverMatch(messageReceiver)) {
-						o.setCurrentActivity(activity, messageReceiver);
-					} else {
-						o.release();
-					}
-				}
-				this.messagePlayers.put(key, o);
-			}
-		}
-		if (o != null) {
-			o.addListener("service", new MessagePlayer.PlaybackListener() {
-				@Override
-				public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-					//call stop other players first!
-					logger.debug("onPlay autoPlay = " + autoPlay);
+                            this.hiddenChatsListService,
+                            messageReceiver,
+                            mediaControllerFuture,
+                            messageModel
+                        );
+                    } else if (MimeUtil.isAnimatedImageFormat(messageModel.getFileData().getMimeType())
+                        && (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA
+                        || messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
+                        o = new AnimatedImageDrawableMessagePlayer(
+                            this.context,
+                            this.messageService,
+                            this.fileService,
+                            this.preferenceService,
+                            messageReceiver,
+                            messageModel
+                        );
+                    } else {
+                        o = new FileMessagePlayer(
+                            this.context,
+                            this.messageService,
+                            this.fileService,
+                            messageReceiver,
+                            messageModel
+                        );
+                    }
+                }
+                logger.debug("creating new player " + key);
+            } else {
+                // make sure data model is updated as its status may have changed after the player has been created
+                if (messageModel.getType() == MessageType.VOICEMESSAGE) {
+                    o.setData(messageModel.getAudioData());
+                }
+                if (messageModel.getType() == MessageType.FILE &&
+                    MimeUtil.isAudioFile(messageModel.getFileData().getMimeType()) &&
+                    messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
+                    o.setData(messageModel.getFileData());
+                }
+                logger.debug("recycling existing player {}", key);
+            }
+            if (o != null) {
+                if (activity != null) {
+                    if (o.isReceiverMatch(messageReceiver)) {
+                        o.setCurrentActivity(activity, messageReceiver);
+                    } else {
+                        o.release();
+                    }
+                }
+                this.messagePlayers.put(key, o);
+            }
+        }
+        if (o != null) {
+            o.addListener("service", new MessagePlayer.PlaybackListener() {
+                @Override
+                public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
+                    //call stop other players first!
+                    logger.debug("onPlay autoPlay = " + autoPlay);
 
-					if (!autoPlay) {
-						stopOtherPlayers(messageModel);
-					}
-				}
+                    if (!autoPlay) {
+                        stopOtherPlayers(messageModel);
+                    }
+                }
 
-				@Override
-				public void onPause(AbstractMessageModel messageModel) {
-				}
+                @Override
+                public void onPause(AbstractMessageModel messageModel) {
+                }
 
-				@Override
-				public void onStatusUpdate(AbstractMessageModel messageModel, int position) {
-				}
+                @Override
+                public void onStatusUpdate(AbstractMessageModel messageModel, int position) {
+                }
 
-				@Override
-				public void onStop(AbstractMessageModel messageModel) {
-					logger.debug("onStop");
-				}
-			});
-		}
-		return o;
-	}
+                @Override
+                public void onStop(AbstractMessageModel messageModel) {
+                    logger.debug("onStop");
+                }
+            });
+        }
+        return o;
+    }
 
-	private void stopOtherPlayers(AbstractMessageModel messageModel) {
-		logger.debug("stopOtherPlayers");
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (!entry.getKey().equals(messageModel.getId())) {
-					logger.debug("maybe stopping player {} if not running ", entry.getKey());
-					entry.getValue().stop();
-				}
-			}
-		}
-		logger.debug("otherPlayers stopped");
-	}
+    private void stopOtherPlayers(AbstractMessageModel messageModel) {
+        logger.debug("stopOtherPlayers");
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                if (!entry.getKey().equals(messageModel.getId())) {
+                    logger.debug("maybe stopping player {} if not running ", entry.getKey());
+                    entry.getValue().stop();
+                }
+            }
+        }
+        logger.debug("otherPlayers stopped");
+    }
 
-	@Override
-	public void release() {
-		logger.debug("release all players");
-		synchronized (this.messagePlayers) {
-			Iterator<Map.Entry<Integer, MessagePlayer>> iterator = messagePlayers.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Map.Entry<Integer, MessagePlayer> pair = iterator.next();
-				MessagePlayer mp = pair.getValue();
-				mp.stop();
-				if (mp.release()) {
-					iterator.remove();
-					logger.debug("Releasing player " + pair.getKey());
-				} else {
-					// remove ties to activity
-					mp.setCurrentActivity(null, null);
-					mp.removeListeners();
-					logger.debug("Keep downloading player " + pair.getKey());
-				}
-			}
-		}
-	}
+    @Override
+    public void release() {
+        logger.debug("release all players");
+        synchronized (this.messagePlayers) {
+            Iterator<Map.Entry<Integer, MessagePlayer>> iterator = messagePlayers.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, MessagePlayer> pair = iterator.next();
+                MessagePlayer mp = pair.getValue();
+                mp.stop();
+                if (mp.release()) {
+                    iterator.remove();
+                    logger.debug("Releasing player " + pair.getKey());
+                } else {
+                    // remove ties to activity
+                    mp.setCurrentActivity(null, null);
+                    mp.removeListeners();
+                    logger.debug("Keep downloading player " + pair.getKey());
+                }
+            }
+        }
+    }
 
-	@Override
-	public void stopAll() {
-		logger.debug("stop all players");
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				entry.getValue().stop();
-			}
-		}
-	}
+    @Override
+    public void stopAll() {
+        logger.debug("stop all players");
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                entry.getValue().stop();
+            }
+        }
+    }
 
-	@Override
-	public void pauseAll(int source) {
-		logger.debug("pause all players");
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				entry.getValue().pause(source);
-			}
-		}
-	}
+    @Override
+    public void pauseAll(int source) {
+        logger.debug("pause all players");
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                entry.getValue().pause(source);
+            }
+        }
+    }
 
-	@Override
-	public void resumeAll(Activity activity, MessageReceiver messageReceiver, int source) {
-		logger.debug("resume all players");
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				// re-attach message players to current activity
-				if (entry.getValue().isReceiverMatch(messageReceiver)) {
-					entry.getValue().setCurrentActivity(activity, messageReceiver);
-					entry.getValue().resume(source);
-				} else {
-					entry.getValue().release();
-				}
-			}
-		}
-	}
+    @Override
+    public void resumeAll(Activity activity, MessageReceiver messageReceiver, int source) {
+        logger.debug("resume all players");
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                // re-attach message players to current activity
+                if (entry.getValue().isReceiverMatch(messageReceiver)) {
+                    entry.getValue().setCurrentActivity(activity, messageReceiver);
+                    entry.getValue().resume(source);
+                } else {
+                    entry.getValue().release();
+                }
+            }
+        }
+    }
 
-	@Override
-	public void setTranscodeProgress(@NonNull AbstractMessageModel messageModel, int progress) {
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getId())) {
-					entry.getValue().setTranscodeProgress(progress);
-					return;
-				}
-			}
-		}
-	}
+    @Override
+    public void setTranscodeProgress(@NonNull AbstractMessageModel messageModel, int progress) {
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                if (entry.getKey().equals(messageModel.getId())) {
+                    entry.getValue().setTranscodeProgress(progress);
+                    return;
+                }
+            }
+        }
+    }
 
-	@Override
-	public void setTranscodeStart(@NonNull AbstractMessageModel messageModel) {
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getId())) {
-					entry.getValue().setTranscodeStart();
-					return;
-				}
-			}
-		}
-	}
+    @Override
+    public void setTranscodeStart(@NonNull AbstractMessageModel messageModel) {
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                if (entry.getKey().equals(messageModel.getId())) {
+                    entry.getValue().setTranscodeStart();
+                    return;
+                }
+            }
+        }
+    }
 
-	@Override
-	public void setTranscodeFinished(@NonNull AbstractMessageModel messageModel, boolean success, @Nullable String message) {
-		synchronized (this.messagePlayers) {
-			for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
-				if (entry.getKey().equals(messageModel.getId())) {
-					entry.getValue().setTranscodeFinished(success, message);
-					return;
-				}
-			}
-		}
-	}
+    @Override
+    public void setTranscodeFinished(@NonNull AbstractMessageModel messageModel, boolean success, @Nullable String message) {
+        synchronized (this.messagePlayers) {
+            for (Map.Entry<Integer, MessagePlayer> entry : messagePlayers.entrySet()) {
+                if (entry.getKey().equals(messageModel.getId())) {
+                    entry.getValue().setTranscodeFinished(success, message);
+                    return;
+                }
+            }
+        }
+    }
 }

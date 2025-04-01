@@ -33,52 +33,52 @@ import ch.threema.app.services.PollingHelper;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ReConnectJobService extends JobService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
-	private static boolean isStopped;
-	private PollingHelper pollingHelper = null;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
+    private static boolean isStopped;
+    private PollingHelper pollingHelper = null;
 
-	public ReConnectJobService() {
-		new Configuration.Builder().setJobSchedulerJobIdRange(20000, 21000).build();
-	}
+    public ReConnectJobService() {
+        new Configuration.Builder().setJobSchedulerJobIdRange(20000, 21000).build();
+    }
 
-	@Override
-	public boolean onStartJob(final JobParameters jobParameters) {
-		logger.info("Reconnect job {} started", jobParameters.getJobId());
+    @Override
+    public boolean onStartJob(final JobParameters jobParameters) {
+        logger.info("Reconnect job {} started", jobParameters.getJobId());
 
-		isStopped = false;
+        isStopped = false;
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				logger.info("Scheduling poll on reconnect");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Scheduling poll on reconnect");
 
-				if (pollingHelper == null) {
-					pollingHelper = new PollingHelper(ReConnectJobService.this, "reconnectJobService");
-				}
+                if (pollingHelper == null) {
+                    pollingHelper = new PollingHelper(ReConnectJobService.this, "reconnectJobService");
+                }
 
-				if (!isStopped) {
-					boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
+                if (!isStopped) {
+                    boolean success = pollingHelper.poll(true) || (ThreemaApplication.getMasterKey() != null && ThreemaApplication.getMasterKey().isLocked());
 
-					if (!isStopped) {
-						try {
-							jobFinished(jobParameters, !success);
-							logger.info("Reconnect job {} finished. Success = {}", jobParameters.getJobId(), success);
-						} catch (Exception e) {
-							logger.error("Exception while finishing ReConnectJob", e);
-						}
-					}
-				}
-			}
-		}, "ReConnectJobService").start();
+                    if (!isStopped) {
+                        try {
+                            jobFinished(jobParameters, !success);
+                            logger.info("Reconnect job {} finished. Success = {}", jobParameters.getJobId(), success);
+                        } catch (Exception e) {
+                            logger.error("Exception while finishing ReConnectJob", e);
+                        }
+                    }
+                }
+            }
+        }, "ReConnectJobService").start();
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean onStopJob(JobParameters jobParameters) {
-		isStopped = true;
-		logger.info("Reconnect job {} stopped", jobParameters.getJobId());
+    @Override
+    public boolean onStopJob(JobParameters jobParameters) {
+        isStopped = true;
+        logger.info("Reconnect job {} stopped", jobParameters.getJobId());
 
-		return false;
-	}
+        return false;
+    }
 }

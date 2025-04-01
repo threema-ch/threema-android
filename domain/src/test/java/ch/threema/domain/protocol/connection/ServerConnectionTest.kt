@@ -232,7 +232,11 @@ internal abstract class ServerConnectionTest {
      */
     private fun observeConnectionStates(connection: ServerConnection): List<ConnectionState> {
         val connectionStates = mutableListOf<ConnectionState>()
-        connection.addConnectionStateListener { connectionState -> connectionStates.add(connectionState) }
+        connection.addConnectionStateListener { connectionState ->
+            connectionStates.add(
+                connectionState
+            )
+        }
         return connectionStates
     }
 }

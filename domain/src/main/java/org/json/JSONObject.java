@@ -100,13 +100,21 @@ public class JSONObject {
      * returning true when compared to {@code null}. Its {@link #toString}
      * method returns "null".
      */
-    @NonNull public static final Object NULL = new Object() {
-        @Override public boolean equals(Object o) {
+    @NonNull
+    public static final Object NULL = new Object() {
+        @Override
+        public boolean equals(Object o) {
             return o == this || o == null; // API specifies this broken equals implementation
         }
+
         // at least make the broken equals(null) consistent with Objects.hashCode(null).
-        @Override public int hashCode() { return Objects.hashCode(null); }
-        @Override public String toString() {
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(null);
+        }
+
+        @Override
+        public String toString() {
             return "null";
         }
     };
@@ -125,7 +133,7 @@ public class JSONObject {
      * the given map.
      *
      * @param copyFrom a map whose keys are of type {@link String} and whose
-     *     values are of supported types.
+     *                 values are of supported types.
      * @throws NullPointerException if any of the map's keys are null.
      */
     /* (accept a raw type for API compatibility) */
@@ -150,9 +158,9 @@ public class JSONObject {
      * object in the tokener.
      *
      * @param readFrom a tokener whose nextValue() method will yield a
-     *     {@code JSONObject}.
+     *                 {@code JSONObject}.
      * @throws JSONException if the parse fails or doesn't yield a
-     *     {@code JSONObject}.
+     *                       {@code JSONObject}.
      */
     public JSONObject(@NonNull JSONTokener readFrom) throws JSONException {
         /*
@@ -173,7 +181,7 @@ public class JSONObject {
      *
      * @param json a JSON-encoded string containing an object.
      * @throws JSONException if the parse fails or doesn't yield a {@code
-     *     JSONObject}.
+     *                       JSONObject}.
      */
     public JSONObject(@NonNull String json) throws JSONException {
         this(new JSONTokener(json));
@@ -207,7 +215,8 @@ public class JSONObject {
      *
      * @return this object.
      */
-    @NonNull public JSONObject put(@NonNull String name, boolean value) throws JSONException {
+    @NonNull
+    public JSONObject put(@NonNull String name, boolean value) throws JSONException {
         nameValuePairs.put(checkName(name), value);
         return this;
     }
@@ -217,10 +226,11 @@ public class JSONObject {
      * mapping with the same name.
      *
      * @param value a finite value. May not be {@link Double#isNaN() NaNs} or
-     *     {@link Double#isInfinite() infinities}.
+     *              {@link Double#isInfinite() infinities}.
      * @return this object.
      */
-    @NonNull public JSONObject put(@NonNull String name, double value) throws JSONException {
+    @NonNull
+    public JSONObject put(@NonNull String name, double value) throws JSONException {
         nameValuePairs.put(checkName(name), JSON.checkDouble(value));
         return this;
     }
@@ -231,7 +241,8 @@ public class JSONObject {
      *
      * @return this object.
      */
-    @NonNull public JSONObject put(@NonNull String name, int value) throws JSONException {
+    @NonNull
+    public JSONObject put(@NonNull String name, int value) throws JSONException {
         nameValuePairs.put(checkName(name), value);
         return this;
     }
@@ -242,7 +253,8 @@ public class JSONObject {
      *
      * @return this object.
      */
-    @NonNull public JSONObject put(@NonNull String name, long value) throws JSONException {
+    @NonNull
+    public JSONObject put(@NonNull String name, long value) throws JSONException {
         nameValuePairs.put(checkName(name), value);
         return this;
     }
@@ -253,12 +265,13 @@ public class JSONObject {
      * mapping for {@code name} is removed.
      *
      * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean,
-     *     Integer, Long, Double, {@link #NULL}, or {@code null}. May not be
-     *     {@link Double#isNaN() NaNs} or {@link Double#isInfinite()
-     *     infinities}.
+     *              Integer, Long, Double, {@link #NULL}, or {@code null}. May not be
+     *              {@link Double#isNaN() NaNs} or {@link Double#isInfinite()
+     *              infinities}.
      * @return this object.
      */
-    @NonNull public JSONObject put(@NonNull String name, @Nullable Object value) throws JSONException {
+    @NonNull
+    public JSONObject put(@NonNull String name, @Nullable Object value) throws JSONException {
         if (value == null) {
             nameValuePairs.remove(name);
             return this;
@@ -275,7 +288,8 @@ public class JSONObject {
      * Equivalent to {@code put(name, value)} when both parameters are non-null;
      * does nothing otherwise.
      */
-    @NonNull public JSONObject putOpt(@Nullable String name, @Nullable Object value) throws JSONException {
+    @NonNull
+    public JSONObject putOpt(@Nullable String name, @Nullable Object value) throws JSONException {
         if (name == null || value == null) {
             return this;
         }
@@ -297,10 +311,11 @@ public class JSONObject {
      * depending on the number of calls to it.
      *
      * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean,
-     *     Integer, Long, Double, {@link #NULL} or null. May not be {@link
-     *     Double#isNaN() NaNs} or {@link Double#isInfinite() infinities}.
+     *              Integer, Long, Double, {@link #NULL} or null. May not be {@link
+     *              Double#isNaN() NaNs} or {@link Double#isInfinite() infinities}.
      */
-    @NonNull public JSONObject accumulate(@NonNull String name, @Nullable Object value) throws JSONException {
+    @NonNull
+    public JSONObject accumulate(@NonNull String name, @Nullable Object value) throws JSONException {
         Object current = nameValuePairs.get(checkName(name));
         if (current == null) {
             return put(name, value);
@@ -325,8 +340,7 @@ public class JSONObject {
      * will be thrown.
      *
      * @throws JSONException if {@code name} is {@code null} or if the mapping for
-     *         {@code name} is non-null and is not a {@link JSONArray}.
-     *
+     *                       {@code name} is non-null and is not a {@link JSONArray}.
      * @hide
      */
     public JSONObject append(String name, Object value) throws JSONException {
@@ -359,9 +373,10 @@ public class JSONObject {
      * Removes the named mapping if it exists; does nothing otherwise.
      *
      * @return the value previously mapped by {@code name}, or null if there was
-     *     no such mapping.
+     * no such mapping.
      */
-    @Nullable public Object remove(@Nullable String name) {
+    @Nullable
+    public Object remove(@Nullable String name) {
         return nameValuePairs.remove(name);
     }
 
@@ -387,7 +402,8 @@ public class JSONObject {
      *
      * @throws JSONException if no such mapping exists.
      */
-    @NonNull public Object get(@NonNull String name) throws JSONException {
+    @NonNull
+    public Object get(@NonNull String name) throws JSONException {
         Object result = nameValuePairs.get(name);
         if (result == null) {
             throw new JSONException("No value for " + name);
@@ -399,7 +415,8 @@ public class JSONObject {
      * Returns the value mapped by {@code name}, or null if no such mapping
      * exists.
      */
-    @Nullable public Object opt(@Nullable String name) {
+    @Nullable
+    public Object opt(@Nullable String name) {
         return nameValuePairs.get(name);
     }
 
@@ -408,7 +425,7 @@ public class JSONObject {
      * can be coerced to a boolean, or throws otherwise.
      *
      * @throws JSONException if the mapping doesn't exist or cannot be coerced
-     *     to a boolean.
+     *                       to a boolean.
      */
     public boolean getBoolean(@NonNull String name) throws JSONException {
         Object object = get(name);
@@ -442,7 +459,7 @@ public class JSONObject {
      * can be coerced to a double, or throws otherwise.
      *
      * @throws JSONException if the mapping doesn't exist or cannot be coerced
-     *     to a double.
+     *                       to a double.
      */
     public double getDouble(@NonNull String name) throws JSONException {
         Object object = get(name);
@@ -476,7 +493,7 @@ public class JSONObject {
      * can be coerced to an int, or throws otherwise.
      *
      * @throws JSONException if the mapping doesn't exist or cannot be coerced
-     *     to an int.
+     *                       to an int.
      */
     public int getInt(@NonNull String name) throws JSONException {
         Object object = get(name);
@@ -512,7 +529,7 @@ public class JSONObject {
      * so this is <a href="#lossy">lossy</a>; use strings to transfer numbers via JSON.
      *
      * @throws JSONException if the mapping doesn't exist or cannot be coerced
-     *     to a long.
+     *                       to a long.
      */
     public long getLong(@NonNull String name) throws JSONException {
         Object object = get(name);
@@ -550,7 +567,8 @@ public class JSONObject {
      *
      * @throws JSONException if no such mapping exists.
      */
-    @NonNull public String getString(@NonNull String name) throws JSONException {
+    @NonNull
+    public String getString(@NonNull String name) throws JSONException {
         Object object = get(name);
         String result = JSON.toString(object);
         if (result == null) {
@@ -563,7 +581,8 @@ public class JSONObject {
      * Returns the value mapped by {@code name} if it exists, coercing it if
      * necessary, or the empty string if no such mapping exists.
      */
-    @NonNull public String optString(@Nullable String name) {
+    @NonNull
+    public String optString(@Nullable String name) {
         return optString(name, "");
     }
 
@@ -571,7 +590,8 @@ public class JSONObject {
      * Returns the value mapped by {@code name} if it exists, coercing it if
      * necessary, or {@code fallback} if no such mapping exists.
      */
-    @NonNull public String optString(@Nullable String name, @NonNull String fallback) {
+    @NonNull
+    public String optString(@Nullable String name, @NonNull String fallback) {
         Object object = opt(name);
         String result = JSON.toString(object);
         return result != null ? result : fallback;
@@ -582,9 +602,10 @@ public class JSONObject {
      * JSONArray}, or throws otherwise.
      *
      * @throws JSONException if the mapping doesn't exist or is not a {@code
-     *     JSONArray}.
+     *                       JSONArray}.
      */
-    @NonNull public JSONArray getJSONArray(@NonNull String name) throws JSONException {
+    @NonNull
+    public JSONArray getJSONArray(@NonNull String name) throws JSONException {
         Object object = get(name);
         if (object instanceof JSONArray) {
             return (JSONArray) object;
@@ -597,7 +618,8 @@ public class JSONObject {
      * Returns the value mapped by {@code name} if it exists and is a {@code
      * JSONArray}, or null otherwise.
      */
-    @Nullable public JSONArray optJSONArray(@Nullable String name) {
+    @Nullable
+    public JSONArray optJSONArray(@Nullable String name) {
         Object object = opt(name);
         return object instanceof JSONArray ? (JSONArray) object : null;
     }
@@ -607,9 +629,10 @@ public class JSONObject {
      * JSONObject}, or throws otherwise.
      *
      * @throws JSONException if the mapping doesn't exist or is not a {@code
-     *     JSONObject}.
+     *                       JSONObject}.
      */
-    @NonNull public JSONObject getJSONObject(@NonNull String name) throws JSONException {
+    @NonNull
+    public JSONObject getJSONObject(@NonNull String name) throws JSONException {
         Object object = get(name);
         if (object instanceof JSONObject) {
             return (JSONObject) object;
@@ -622,7 +645,8 @@ public class JSONObject {
      * Returns the value mapped by {@code name} if it exists and is a {@code
      * JSONObject}, or null otherwise.
      */
-    @Nullable public JSONObject optJSONObject(@Nullable String name) {
+    @Nullable
+    public JSONObject optJSONObject(@Nullable String name) {
         Object object = opt(name);
         return object instanceof JSONObject ? (JSONObject) object : null;
     }
@@ -632,7 +656,8 @@ public class JSONObject {
      * array contains null for names that aren't mapped. This method returns
      * null if {@code names} is either null or empty.
      */
-    @Nullable public JSONArray toJSONArray(@Nullable JSONArray names) throws JSONException {
+    @Nullable
+    public JSONArray toJSONArray(@Nullable JSONArray names) throws JSONException {
         JSONArray result = new JSONArray();
         if (names == null) {
             return null;
@@ -655,7 +680,8 @@ public class JSONObject {
      * modified after the iterator is returned, the iterator's behavior is
      * undefined. The order of the keys is undefined.
      */
-    @NonNull public Iterator<String> keys() {
+    @NonNull
+    public Iterator<String> keys() {
         return nameValuePairs.keySet().iterator();
     }
 
@@ -664,7 +690,7 @@ public class JSONObject {
      * is a view of the keys in this object. {@link Set#remove(Object)} will remove
      * the corresponding mapping from this object and set iterator behaviour
      * is undefined if this object is modified after it is returned.
-     *
+     * <p>
      * See {@link #keys()}.
      *
      * @hide.
@@ -677,17 +703,20 @@ public class JSONObject {
      * Returns an array containing the string names in this object. This method
      * returns null if this object contains no mappings.
      */
-    @Nullable public JSONArray names() {
+    @Nullable
+    public JSONArray names() {
         return nameValuePairs.isEmpty()
-                ? null
-                : new JSONArray(new ArrayList<String>(nameValuePairs.keySet()));
+            ? null
+            : new JSONArray(new ArrayList<String>(nameValuePairs.keySet()));
     }
 
     /**
      * Encodes this object as a compact JSON string, such as:
      * <pre>{"query":"Pizza","locations":[94043,90210]}</pre>
      */
-    @Override @NonNull public String toString() {
+    @Override
+    @NonNull
+    public String toString() {
         try {
             JSONStringer stringer = new JSONStringer();
             writeTo(stringer);
@@ -710,9 +739,10 @@ public class JSONObject {
      * }</pre>
      *
      * @param indentSpaces the number of spaces to indent for each level of
-     *     nesting.
+     *                     nesting.
      */
-    @NonNull public String toString(int indentSpaces) throws JSONException {
+    @NonNull
+    public String toString(int indentSpaces) throws JSONException {
         JSONStringer stringer = new JSONStringer(indentSpaces);
         writeTo(stringer);
         return stringer.toString();
@@ -730,9 +760,10 @@ public class JSONObject {
      * Encodes the number as a JSON string.
      *
      * @param number a finite value. May not be {@link Double#isNaN() NaNs} or
-     *     {@link Double#isInfinite() infinities}.
+     *               {@link Double#isInfinite() infinities}.
      */
-    @NonNull public static String numberToString(@NonNull Number number) throws JSONException {
+    @NonNull
+    public static String numberToString(@NonNull Number number) throws JSONException {
         if (number == null) {
             throw new JSONException("Number must be non-null");
         }
@@ -758,9 +789,10 @@ public class JSONObject {
      * necessary character escaping.
      *
      * @param data the string to encode. Null will be interpreted as an empty
-     *     string.
+     *             string.
      */
-    @NonNull public static String quote(@Nullable String data) {
+    @NonNull
+    public static String quote(@Nullable String data) {
         if (data == null) {
             return "\"\"";
         }
@@ -787,7 +819,8 @@ public class JSONObject {
      * Otherwise if the object is from a {@code java} package, returns the result of {@code toString}.
      * If wrapping fails, returns null.
      */
-    @Nullable public static Object wrap(@Nullable Object o) {
+    @Nullable
+    public static Object wrap(@Nullable Object o) {
         if (o == null) {
             return NULL;
         }

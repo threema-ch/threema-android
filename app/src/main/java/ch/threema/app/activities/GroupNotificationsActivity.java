@@ -29,46 +29,46 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupNotificationsActivity extends NotificationsActivity {
-	private GroupModel groupModel;
+    private GroupModel groupModel;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
-		if (groupId == 0) {
-			finish();
-			return;
-		}
+        int groupId = getIntent().getIntExtra(ThreemaApplication.INTENT_DATA_GROUP, 0);
+        if (groupId == 0) {
+            finish();
+            return;
+        }
 
-		groupModel = groupService.getById(groupId);
-		uid = groupService.getUniqueIdString(groupModel);
+        groupModel = groupService.getById(groupId);
+        uid = groupService.getUniqueIdString(groupModel);
 
-		refreshSettings();
-	}
+        refreshSettings();
+    }
 
-	public void refreshSettings() {
-		defaultRingtone = ringtoneService.getDefaultGroupRingtone();
-		selectedRingtone = ringtoneService.getGroupRingtone(uid);
+    public void refreshSettings() {
+        defaultRingtone = ringtoneService.getDefaultGroupRingtone();
+        selectedRingtone = ringtoneService.getGroupRingtone(uid);
 
-		super.refreshSettings();
-	}
+        super.refreshSettings();
+    }
 
-	@Override
-	void notifySettingsChanged() {
-		this.conversationService.refresh(this.groupModel);
-	}
+    @Override
+    void notifySettingsChanged() {
+        this.conversationService.refresh(this.groupModel);
+    }
 
-	@Override
-	@UiThread
-	protected void updateUI() {
-		super.updateUI();
-	}
+    @Override
+    @UiThread
+    protected void updateUI() {
+        super.updateUI();
+    }
 
-	@Override
-	protected void setupButtons() {
-		super.setupButtons();
+    @Override
+    protected void setupButtons() {
+        super.setupButtons();
 
-		radioSilentExceptMentions.setVisibility(View.VISIBLE);
-	}
+        radioSilentExceptMentions.setVisibility(View.VISIBLE);
+    }
 }

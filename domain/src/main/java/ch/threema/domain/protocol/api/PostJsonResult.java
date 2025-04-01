@@ -22,14 +22,14 @@
 package ch.threema.domain.protocol.api;
 
 public class PostJsonResult {
-	public String responseBody = null;
-	public int responseCode = 0;
+    public String responseBody = null;
+    public int responseCode = 0;
 
-	public PostJsonResult() {
-	}
+    public PostJsonResult() {
+    }
 
-	public PostJsonResult(String responseBody, int responseCode) {
-		this.responseBody = responseBody;
-		this.responseCode = responseCode; // a response code will only be set if the POST was successful (default is 0)
-	}
+    public PostJsonResult(String responseBody, int responseCode) {
+        this.responseBody = responseBody;
+        this.responseCode = responseCode; // a response code will only be set if the POST was successful (default is 0)
+    }
 }

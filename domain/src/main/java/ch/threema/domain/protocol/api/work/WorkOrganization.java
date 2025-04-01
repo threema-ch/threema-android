@@ -27,26 +27,27 @@ import org.json.JSONObject;
 import androidx.annotation.NonNull;
 
 public class WorkOrganization {
-	public String name;
+    public String name;
 
-	public WorkOrganization() {}
+    public WorkOrganization() {
+    }
 
-	public WorkOrganization(@NonNull JSONObject jsonObject) {
-		this.name = jsonObject.optString("name");
-	}
+    public WorkOrganization(@NonNull JSONObject jsonObject) {
+        this.name = jsonObject.optString("name");
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public String toJSON(){
-		JSONObject jsonObject= new JSONObject();
-		try {
-			jsonObject.put("name", getName());
+    public String toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name", getName());
 
-			return jsonObject.toString();
-		} catch (JSONException e) {
-			return "";
-		}
-	}
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            return "";
+        }
+    }
 }

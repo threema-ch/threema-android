@@ -41,119 +41,121 @@ import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class NewContactDialog extends ThreemaDialogFragment {
-	private NewContactDialogClickListener callback;
-	private Activity activity;
-	private AlertDialog alertDialog;
+    private NewContactDialogClickListener callback;
+    private Activity activity;
+    private AlertDialog alertDialog;
 
-	public static NewContactDialog newInstance(@StringRes int title, @StringRes int message,
-	                                           @StringRes int positive, @StringRes int negative) {
-		NewContactDialog dialog = new NewContactDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
+    public static NewContactDialog newInstance(@StringRes int title, @StringRes int message,
+                                               @StringRes int positive, @StringRes int negative) {
+        NewContactDialog dialog = new NewContactDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface NewContactDialogClickListener {
-		void onContactEnter(String tag, String text);
-		void onCancel(String tag);
-		void onScanButtonClick(String tag);
-	}
+    public interface NewContactDialogClickListener {
+        void onContactEnter(String tag, String text);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onCancel(String tag);
 
-		if (callback == null) {
-			try {
-				callback = (NewContactDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
+        void onScanButtonClick(String tag);
+    }
 
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if (activity instanceof NewContactDialogClickListener) {
-					callback = (NewContactDialogClickListener) activity;
-				}
-			}
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        if (callback == null) {
+            try {
+                callback = (NewContactDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
 
-		this.activity = activity;
-	}
+            // called from an activity rather than a fragment
+            if (callback == null) {
+                if (activity instanceof NewContactDialogClickListener) {
+                    callback = (NewContactDialogClickListener) activity;
+                }
+            }
+        }
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int message = getArguments().getInt("message");
-		int positive = getArguments().getInt("positive");
-		int negative = getArguments().getInt("negative");
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		final String tag = this.getTag();
+        this.activity = activity;
+    }
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_new_contact, null);
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt("title");
+        int message = getArguments().getInt("message");
+        int positive = getArguments().getInt("positive");
+        int negative = getArguments().getInt("negative");
 
-		final EmojiEditText editText = dialogView.findViewById(R.id.edit_text);
-		final TextInputLayout editTextLayout = dialogView.findViewById(R.id.text_input_layout);
+        final String tag = this.getTag();
 
-		editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_new_contact, null);
 
-		final Chip scanButton = dialogView.findViewById(R.id.scan_button);
-		scanButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// do not dismiss dialog
-				callback.onScanButtonClick(tag);
-			}
-		});
+        final EmojiEditText editText = dialogView.findViewById(R.id.edit_text);
+        final TextInputLayout editTextLayout = dialogView.findViewById(R.id.text_input_layout);
 
-		if (message != 0) {
-			editTextLayout.setHint(getString(message));
-		}
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-		builder.setView(dialogView);
+        final Chip scanButton = dialogView.findViewById(R.id.scan_button);
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // do not dismiss dialog
+                callback.onScanButtonClick(tag);
+            }
+        });
 
-		if (title != 0) {
-			builder.setTitle(title);
-		}
+        if (message != 0) {
+            editTextLayout.setHint(getString(message));
+        }
 
-		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onContactEnter(tag, editText.getText().toString());
-							}
-				}
-		);
-		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onCancel(tag);
-					}
-				}
-		);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder.setView(dialogView);
 
-		alertDialog = builder.create();
+        if (title != 0) {
+            builder.setTitle(title);
+        }
 
-		return alertDialog;
-	}
+        builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onContactEnter(tag, editText.getText().toString());
+                }
+            }
+        );
+        builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onCancel(tag);
+                }
+            }
+        );
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		callback.onCancel(getTag());
-	}
+        alertDialog = builder.create();
 
-	@Override
-	public void onStart() {
-		super.onStart();
-	}
+        return alertDialog;
+    }
+
+    @Override
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
+        callback.onCancel(getTag());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
 }

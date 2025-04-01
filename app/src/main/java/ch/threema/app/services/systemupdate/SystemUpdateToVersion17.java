@@ -26,44 +26,45 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion17 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion17(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion17(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//unique uid indexes
+    @Override
+    public boolean runDirectly() {
+        //unique uid indexes
 
-		this.run("CREATE INDEX IF NOT EXISTS `messageUidIdx` ON `message`(`uid`)");
-		this.run("CREATE INDEX IF NOT EXISTS `groupMessageUidIdx` ON `m_group_message`(`uid`)");
-		this.run("CREATE INDEX IF NOT EXISTS `distributionListMessageUidIdx` ON `distribution_list_message`(`uid`)");
+        this.run("CREATE INDEX IF NOT EXISTS `messageUidIdx` ON `message`(`uid`)");
+        this.run("CREATE INDEX IF NOT EXISTS `groupMessageUidIdx` ON `m_group_message`(`uid`)");
+        this.run("CREATE INDEX IF NOT EXISTS `distributionListMessageUidIdx` ON `distribution_list_message`(`uid`)");
 
-		//index on apiMessageId
-		this
-				.run("CREATE INDEX IF NOT EXISTS `messageApiMessageIdIdx` ON `message`(`apiMessageId`)")
-				.run("CREATE INDEX IF NOT EXISTS `groupMessageApiMessageIdIdx` ON `m_group_message`(`apiMessageId`)")
-				.run("CREATE INDEX IF NOT EXISTS `distributionListMessageIdIdx` ON `distribution_list_message`(`apiMessageId`)");
+        //index on apiMessageId
+        this
+            .run("CREATE INDEX IF NOT EXISTS `messageApiMessageIdIdx` ON `message`(`apiMessageId`)")
+            .run("CREATE INDEX IF NOT EXISTS `groupMessageApiMessageIdIdx` ON `m_group_message`(`apiMessageId`)")
+            .run("CREATE INDEX IF NOT EXISTS `distributionListMessageIdIdx` ON `distribution_list_message`(`apiMessageId`)");
 
 
-		this
-				.run("CREATE INDEX IF NOT EXISTS `distributionListDistributionListIdIdx` ON `distribution_list_message`(`distributionListId`)");
+        this
+            .run("CREATE INDEX IF NOT EXISTS `distributionListDistributionListIdIdx` ON `distribution_list_message`(`distributionListId`)");
 
-		return true;
-	}
+        return true;
+    }
 
-	private SystemUpdateToVersion17 run(String query) {
-		this.sqLiteDatabase.rawExecSQL(query);
-		return this;
-	}
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    private SystemUpdateToVersion17 run(String query) {
+        this.sqLiteDatabase.rawExecSQL(query);
+        return this;
+    }
 
-	@Override
-	public String getText() {
-		return "version 17";
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return "version 17";
+    }
 }

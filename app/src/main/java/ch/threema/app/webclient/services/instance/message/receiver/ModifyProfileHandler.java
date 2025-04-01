@@ -53,121 +53,124 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WorkerThread
 public class ModifyProfileHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyProfileHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyProfileHandler");
 
-	private static final String FIELD_NICKNAME = "publicNickname";
-	private static final String FIELD_AVATAR = "avatar";
+    private static final String FIELD_NICKNAME = "publicNickname";
+    private static final String FIELD_AVATAR = "avatar";
 
-	// Dispatchers
+    // Dispatchers
     @NonNull
-	private final MessageDispatcher responseDispatcher;
+    private final MessageDispatcher responseDispatcher;
 
-	// Services
+    // Services
     @NonNull
-	private final UserService userService;
+    private final UserService userService;
 
-	// Error codes
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_INVALID_AVATAR,
-		Protocol.ERROR_VALUE_TOO_LONG,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    // Error codes
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_INVALID_AVATAR,
+        Protocol.ERROR_VALUE_TOO_LONG,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	private static class ModifyProfileException extends Exception {
-		@ErrorCode String errorCode;
-		ModifyProfileException(@ErrorCode String errorCode) {
-			super();
-			this.errorCode = errorCode;
-		}
-	}
+    private static class ModifyProfileException extends Exception {
+        @ErrorCode
+        String errorCode;
 
-	@AnyThread
-	public ModifyProfileHandler(
+        ModifyProfileException(@ErrorCode String errorCode) {
+            super();
+            this.errorCode = errorCode;
+        }
+    }
+
+    @AnyThread
+    public ModifyProfileHandler(
         @NonNull MessageDispatcher responseDispatcher,
         @NonNull UserService userService
     ) {
-		super(Protocol.SUB_TYPE_PROFILE);
-		this.responseDispatcher = responseDispatcher;
-		this.userService = userService;
-	}
+        super(Protocol.SUB_TYPE_PROFILE);
+        this.responseDispatcher = responseDispatcher;
+        this.userService = userService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received update profile message");
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received update profile message");
 
-		// Get data and args
-		final Map<String, Value> data = this.getData(message, false);
-		final Map<String, Value> args = this.getArguments(message, false);
+        // Get data and args
+        final Map<String, Value> data = this.getData(message, false);
+        final Map<String, Value> args = this.getArguments(message, false);
 
-		// Process args
-		if (!args.containsKey(Protocol.ARGUMENT_TEMPORARY_ID)) {
-			logger.error("Invalid profile update request, temporaryId not set");
-			return;
-		}
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        // Process args
+        if (!args.containsKey(Protocol.ARGUMENT_TEMPORARY_ID)) {
+            logger.error("Invalid profile update request, temporaryId not set");
+            return;
+        }
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		try {
-			if (data.containsKey(FIELD_NICKNAME)) {
-				final String nickname = data.get(FIELD_NICKNAME).asStringValue().toString();
-				this.processNickname(nickname);
-			}
+        try {
+            if (data.containsKey(FIELD_NICKNAME)) {
+                final String nickname = data.get(FIELD_NICKNAME).asStringValue().toString();
+                this.processNickname(nickname);
+            }
 
-			if (data.containsKey(FIELD_AVATAR)) {
-				final Value value = data.get(FIELD_AVATAR);
-				if (value.isNilValue()) {
-					this.processAvatar(null);
-				} else {
-					final byte[] avatar = value.asBinaryValue().asByteArray();
-					this.processAvatar(avatar);
-				}
-			}
-		} catch (ModifyProfileException e) {
-			logger.error("Profile was not updated (" + e.errorCode + ")", e);
-			this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, e.errorCode);
-		}
+            if (data.containsKey(FIELD_AVATAR)) {
+                final Value value = data.get(FIELD_AVATAR);
+                if (value.isNilValue()) {
+                    this.processAvatar(null);
+                } else {
+                    final byte[] avatar = value.asBinaryValue().asByteArray();
+                    this.processAvatar(avatar);
+                }
+            }
+        } catch (ModifyProfileException e) {
+            logger.error("Profile was not updated (" + e.errorCode + ")", e);
+            this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, e.errorCode);
+        }
 
-		logger.debug("Profile was updated");
-		this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
-	}
+        logger.debug("Profile was updated");
+        this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
+    }
 
-	/**
-	 * Update the nickname.
-	 */
-	private void processNickname(String nickname) throws ModifyProfileException {
-		if (nickname.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_PUBLIC_NICKNAME) {
-			throw new ModifyProfileException(Protocol.ERROR_VALUE_TOO_LONG);
-		}
-		this.userService.setPublicNickname(nickname, TriggerSource.LOCAL);
-	}
+    /**
+     * Update the nickname.
+     */
+    private void processNickname(String nickname) throws ModifyProfileException {
+        if (nickname.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_PUBLIC_NICKNAME) {
+            throw new ModifyProfileException(Protocol.ERROR_VALUE_TOO_LONG);
+        }
+        this.userService.setPublicNickname(nickname, TriggerSource.LOCAL);
+    }
 
-	/**
-	 * Update the avatar.
-	 */
-	private void processAvatar(@Nullable byte[] avatarBytes) throws ModifyProfileException {
-		// If avatar bytes are null, delete own avatar.
-		if (avatarBytes == null) {
+    /**
+     * Update the avatar.
+     */
+    private void processAvatar(@Nullable byte[] avatarBytes) throws ModifyProfileException {
+        // If avatar bytes are null, delete own avatar.
+        if (avatarBytes == null) {
             userService.removeUserProfilePicture(TriggerSource.LOCAL);
-			return;
-		}
+            return;
+        }
 
-		// Validate bytes
-		if (avatarBytes.length == 0) {
-			logger.warn("Avatar bytes are empty");
-			throw new ModifyProfileException(Protocol.ERROR_INVALID_AVATAR);
-		}
+        // Validate bytes
+        if (avatarBytes.length == 0) {
+            logger.warn("Avatar bytes are empty");
+            throw new ModifyProfileException(Protocol.ERROR_INVALID_AVATAR);
+        }
 
-		// Decode avatar
-		final Bitmap avatar = BitmapFactory
-			.decodeByteArray(avatarBytes, 0, avatarBytes.length);
+        // Decode avatar
+        final Bitmap avatar = BitmapFactory
+            .decodeByteArray(avatarBytes, 0, avatarBytes.length);
 
-		// Resize to max allowed size
-		final Bitmap resized = BitmapUtil.resizeBitmap(
-			avatar,
-			ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-			ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX
-		);
+        // Resize to max allowed size
+        final Bitmap resized = BitmapUtil.resizeBitmap(
+            avatar,
+            ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
+            ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX
+        );
 
         // Set the avatar
         try {
@@ -178,11 +181,11 @@ public class ModifyProfileHandler extends MessageReceiver {
             logger.error("Could not update own avatar", e);
             throw new ModifyProfileException(Protocol.ERROR_INTERNAL);
         }
-	}
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		// We don't need to send any messages as a result of modifying the profile.
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        // We don't need to send any messages as a result of modifying the profile.
+        return false;
+    }
 }

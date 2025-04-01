@@ -31,31 +31,31 @@ import ch.threema.storage.DatabaseServiceNew;
 
 public class SystemUpdateToVersion45 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
-	private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
 
-	public SystemUpdateToVersion45(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
-		this.databaseService = databaseService;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion45(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+        this.databaseService = databaseService;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		for(String s: this.databaseService.getConversationTagFactory().getStatements()) {
-			this.sqLiteDatabase.execSQL(s);
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        for (String s : this.databaseService.getConversationTagFactory().getStatements()) {
+            this.sqLiteDatabase.execSQL(s);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 45";
-	}
+    @Override
+    public String getText() {
+        return "version 45";
+    }
 }

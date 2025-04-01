@@ -22,19 +22,19 @@
 package ch.threema.storage.models;
 
 public class ValidationMessage {
-	private final String subject;
-	private final String body;
+    private final String subject;
+    private final String body;
 
-	public ValidationMessage(String subject, String body) {
-		this.subject = subject;
-		this.body = body;
-	}
+    public ValidationMessage(String subject, String body) {
+        this.subject = subject;
+        this.body = body;
+    }
 
-	public String getSubject() {
-		return this.subject;
-	}
+    public String getSubject() {
+        return this.subject;
+    }
 
-	public String getBody() {
-		return this.body;
-	}
+    public String getBody() {
+        return this.body;
+    }
 }

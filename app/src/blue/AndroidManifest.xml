@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:installLocation="internalOnly"
-          android:testOnly="false">
-	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="internalOnly"
+    android:testOnly="false">
 
-	<application tools:ignore="GoogleAppIndexingWarning">
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-		<meta-data
-			android:name="android.content.APP_RESTRICTIONS"
-			android:resource="@xml/app_restrictions" />
-		<meta-data
-			android:name="com.google.android.gms.version"
-			android:value="@integer/google_play_services_version"/>
-		<meta-data
-			android:name="com.google.android.gms.car.application"
-			android:resource="@xml/automotive_app_desc"/>
-		<meta-data
-			android:name="firebase_analytics_collection_deactivated"
-			android:value="true"/>
-		<meta-data
-			android:name="google_analytics_adid_collection_enabled"
-			android:value="false"/>
-		<meta-data
-			android:name="google_analytics_ssaid_collection_enabled"
-			android:value="false" />
-		<meta-data
-			android:name="firebase_messaging_auto_init_enabled"
-			android:value="false"/>
+    <application tools:ignore="GoogleAppIndexingWarning">
 
-		<service
-			android:name="ch.threema.app.push.PushService"
-			android:exported="false">
-			<intent-filter>
-				<action android:name="com.google.firebase.MESSAGING_EVENT" />
-			</intent-filter>
-		</service>
+        <meta-data
+            android:name="android.content.APP_RESTRICTIONS"
+            android:resource="@xml/app_restrictions" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_ssaid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
 
-	</application>
+        <service
+            android:name="ch.threema.app.push.PushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+    </application>
 
 </manifest>

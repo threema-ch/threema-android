@@ -25,8 +25,13 @@ import androidx.annotation.AnyThread;
 import ch.threema.storage.models.DistributionListModel;
 
 public interface DistributionListListener {
-	@AnyThread void onCreate(DistributionListModel distributionListModel);
-	@AnyThread void onModify(DistributionListModel distributionListModel);
-	@AnyThread void onRemove(DistributionListModel distributionListModel);
+    @AnyThread
+    void onCreate(DistributionListModel distributionListModel);
+
+    @AnyThread
+    void onModify(DistributionListModel distributionListModel);
+
+    @AnyThread
+    void onRemove(DistributionListModel distributionListModel);
 
 }

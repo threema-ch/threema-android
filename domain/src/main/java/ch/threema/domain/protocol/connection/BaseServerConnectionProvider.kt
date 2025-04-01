@@ -107,7 +107,13 @@ object BaseServerConnectionProvider {
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager)
+            EndToEndLayer(
+                dispatcher,
+                controllers.serverConnectionController,
+                connection,
+                incomingMessageProcessor,
+                taskManager
+            )
         )
     }
 
@@ -160,7 +166,13 @@ object BaseServerConnectionProvider {
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(dispatcher, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager),
+            EndToEndLayer(
+                dispatcher,
+                controllers.serverConnectionController,
+                connection,
+                incomingMessageProcessor,
+                taskManager
+            ),
         )
     }
 }

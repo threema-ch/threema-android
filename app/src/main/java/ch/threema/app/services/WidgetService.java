@@ -30,13 +30,13 @@ import ch.threema.app.adapters.WidgetViewsFactory;
 import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetService extends RemoteViewsService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetService");
 
-	@Override
-	public RemoteViewsFactory onGetViewFactory(Intent intent) {
-		logger.debug("onGetViewFactory");
+    @Override
+    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        logger.debug("onGetViewFactory");
 
-		return(new WidgetViewsFactory(this.getApplicationContext(),
-				intent));
-	}
+        return (new WidgetViewsFactory(this.getApplicationContext(),
+            intent));
+    }
 }

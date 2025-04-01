@@ -28,7 +28,7 @@ import ch.threema.storage.DatabaseServiceNew
 /**
  * An in-memory database used in android tests.
  */
-class TestDatabaseService: DatabaseServiceNew(
+class TestDatabaseService : DatabaseServiceNew(
     ApplicationProvider.getApplicationContext(),
     null,
     "test-database-key",

@@ -93,7 +93,7 @@ class NotificationPreferenceServiceImpl(
 
     private fun ringtoneKeyToUri(@StringRes ringtoneKey: Int): Uri? {
         val ringtone = preferenceStore.getString(this.getKeyName(ringtoneKey))
-        if (!ringtone.isNullOrBlank() &&  ringtone != ServicesConstants.PREFERENCES_NULL) {
+        if (!ringtone.isNullOrBlank() && ringtone != ServicesConstants.PREFERENCES_NULL) {
             return Uri.parse(ringtone)
         }
         return null

@@ -60,7 +60,8 @@ internal class AuthLayer(
     }
 
     private val inbound = ProcessingPipe<InboundL2Message, InboundL3Message> { handleInbound(it) }
-    private val outbound = ProcessingPipe<OutboundL4Message, OutboundL3Message> { handleOutbound(it) }
+    private val outbound =
+        ProcessingPipe<OutboundL4Message, OutboundL3Message> { handleOutbound(it) }
 
     override val encoder: PipeProcessor<OutboundL4Message, OutboundL3Message> = outbound
     override val decoder: PipeProcessor<InboundL2Message, InboundL3Message> = inbound

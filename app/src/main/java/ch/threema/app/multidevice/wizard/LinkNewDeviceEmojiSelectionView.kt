@@ -37,13 +37,17 @@ private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceEmojiSelectionVi
 /**
  * A button-like view that displays a sequence of three rendezvous emojis
  */
-class LinkNewDeviceEmojiSelectionView: MaterialCardView {
+class LinkNewDeviceEmojiSelectionView : MaterialCardView {
 
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
     private val emojiViews = arrayOfNulls<ImageView>(3)
     private val rendezvousEmojis = RendezvousEmojis()
@@ -51,11 +55,13 @@ class LinkNewDeviceEmojiSelectionView: MaterialCardView {
     init {
         LayoutInflater.from(context).inflate(R.layout.view_emoji_selection, this, true)
 
-        setCardBackgroundColor(ColorStateList.valueOf(
-            ConfigUtils.getColorFromAttribute(
-                context, R.attr.colorPrimaryContainer
+        setCardBackgroundColor(
+            ColorStateList.valueOf(
+                ConfigUtils.getColorFromAttribute(
+                    context, R.attr.colorPrimaryContainer
+                )
             )
-        ))
+        )
         strokeWidth = 0
         cardElevation = 0F
 
@@ -87,7 +93,7 @@ class LinkNewDeviceEmojiSelectionView: MaterialCardView {
         }
     }
 
-    private fun fillEmojiViewContents(emojiView : ImageView?, emojiIndex: Int) {
+    private fun fillEmojiViewContents(emojiView: ImageView?, emojiIndex: Int) {
         emojiView?.let {
             it.setImageResource(getEmojiResourceID(emojiIndex))
             it.contentDescription = resources.getString(getEmojiStringID(emojiIndex))
@@ -95,18 +101,20 @@ class LinkNewDeviceEmojiSelectionView: MaterialCardView {
     }
 
     @SuppressLint("DiscouragedApi")
-    fun getEmojiResourceID(emojiIndex: Int) : Int {
+    fun getEmojiResourceID(emojiIndex: Int): Int {
         return resources.getIdentifier(
             "ic_emoji_" + rendezvousEmojis.emojiList[emojiIndex].lowercase(),
             "drawable",
-            context.packageName)
+            context.packageName
+        )
     }
 
     @SuppressLint("DiscouragedApi")
-    fun getEmojiStringID(emojiIndex: Int) : Int {
+    fun getEmojiStringID(emojiIndex: Int): Int {
         return resources.getIdentifier(
             "rendezvous_emoji_" + rendezvousEmojis.emojiList[emojiIndex],
             "string",
-            context.packageName)
+            context.packageName
+        )
     }
 }

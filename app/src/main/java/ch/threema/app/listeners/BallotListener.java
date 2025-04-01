@@ -25,15 +25,24 @@ import androidx.annotation.AnyThread;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public interface BallotListener {
-	@AnyThread void onClosed(final BallotModel ballotModel);
-	@AnyThread void onModified(final BallotModel ballotModel);
-	@AnyThread void onCreated(final BallotModel ballotModel);
-	@AnyThread void onRemoved(final BallotModel ballotModel);
+    @AnyThread
+    void onClosed(final BallotModel ballotModel);
 
-	/**
-	 * return true, if the event have to be handled!
-	 * @param ballotModel
-	 * @return
-	 */
-	@AnyThread boolean handle(final BallotModel ballotModel);
+    @AnyThread
+    void onModified(final BallotModel ballotModel);
+
+    @AnyThread
+    void onCreated(final BallotModel ballotModel);
+
+    @AnyThread
+    void onRemoved(final BallotModel ballotModel);
+
+    /**
+     * return true, if the event have to be handled!
+     *
+     * @param ballotModel
+     * @return
+     */
+    @AnyThread
+    boolean handle(final BallotModel ballotModel);
 }

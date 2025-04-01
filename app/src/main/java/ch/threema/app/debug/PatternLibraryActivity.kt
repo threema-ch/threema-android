@@ -192,7 +192,10 @@ class PatternLibraryActivity : AppCompatActivity() {
                                         .background(MaterialTheme.colorScheme.surfaceContainer)
                                 ) {
                                     Text(
-                                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                                        modifier = Modifier.padding(
+                                            vertical = 12.dp,
+                                            horizontal = 16.dp
+                                        ),
                                         color = MaterialTheme.colorScheme.onSurface,
                                         text = colorSection.name,
                                         style = MaterialTheme.typography.bodyLarge
@@ -201,7 +204,10 @@ class PatternLibraryActivity : AppCompatActivity() {
                             }
                             items(colorSection.colors.size) { index ->
                                 ColorSpot(
-                                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
+                                    modifier = Modifier.padding(
+                                        vertical = 4.dp,
+                                        horizontal = 12.dp
+                                    ),
                                     color = colorSection.colors[index].first,
                                     colorName = colorSection.colors[index].second
                                 )
@@ -270,7 +276,12 @@ private fun ColorSpot(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        val tearShape = RoundedCornerShape(topStartPercent = 5, topEndPercent = 50, bottomEndPercent = 50, bottomStartPercent = 50)
+        val tearShape = RoundedCornerShape(
+            topStartPercent = 5,
+            topEndPercent = 50,
+            bottomEndPercent = 50,
+            bottomStartPercent = 50
+        )
         val contentColor = MaterialTheme.colorScheme.onSurface
 
         Box(

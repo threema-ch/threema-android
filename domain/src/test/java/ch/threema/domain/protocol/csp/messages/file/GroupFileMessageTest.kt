@@ -176,7 +176,10 @@ open class GroupFileMessageTest {
         )
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charsets.UTF_8), resultGroupFileMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charsets.UTF_8),
+            resultGroupFileMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, resultGroupFileMessage.apiGroupId.groupId)
         assertFileDataEquals(fileData, resultGroupFileMessage.fileData)
     }
@@ -195,7 +198,10 @@ open class GroupFileMessageTest {
         )
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charsets.UTF_8), resultGroupFileMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charsets.UTF_8),
+            resultGroupFileMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, resultGroupFileMessage.apiGroupId.groupId)
         assertFileDataEquals(fileData, resultGroupFileMessage.fileData)
     }

@@ -1,119 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/layout_wizard2"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_wizard2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/tablet_additional_padding_left_right"
+    android:paddingRight="@dimen/tablet_additional_padding_left_right"
+    android:background="?android:attr/colorBackground">
+
+    <TextView
+        style="@style/Threema.TextAppearance.Headline"
+        android:id="@+id/wizard_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="@string/ballot_add_choices"
+        android:textColor="?attr/colorPrimary" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ballot_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="14dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="2dp" />
+
+    <RelativeLayout
+        android:id="@+id/item_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ballotchoice_list_entry_height"
+        android:layout_marginBottom="@dimen/ballotchoice_bottom_margin"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_marginTop="2dp"
+        android:background="?android:attr/colorBackground"
+        android:minHeight="@dimen/ballotchoice_list_entry_height">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Threema.TextInputLayout.Compose"
+            android:id="@+id/textinputlayout_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/create_choice"
+            android:layout_gravity="bottom"
+            android:outlineProvider="none">
+
+            <ch.threema.app.ui.ComposeEditText
+                style="@style/Threema.EditText.Compose"
+                android:id="@+id/create_choice_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/tablet_additional_padding_left_right"
-                android:paddingRight="@dimen/tablet_additional_padding_left_right"
-				android:background="?android:attr/colorBackground">
+                android:layout_height="wrap_content"
+                android:hint="@string/ballot_choice_add"
+                android:imeActionId="@integer/ime_wizard_add_choice"
+                android:imeActionLabel="+"
+                android:minHeight="@dimen/input_text_height"
+                android:paddingLeft="16dp"
+                android:paddingTop="3dp"
+                android:paddingRight="80dp"
+                android:paddingBottom="4dp"
+                android:nextFocusDown="@id/create_choice_name"
+                android:singleLine="true"
+                android:textSize="16sp"
+                android:inputType="text" />
 
-	<TextView
-		style="@style/Threema.TextAppearance.Headline"
-		android:id="@+id/wizard_title"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="16dp"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:text="@string/ballot_add_choices"
-		android:textColor="?attr/colorPrimary"
-		/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/ballot_list"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:layout_marginTop="14dp"
-		android:divider="@android:color/transparent"
-		android:dividerHeight="2dp"
-		/>
-
-	<RelativeLayout
-		android:id="@+id/item_container"
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/ballotchoice_list_entry_height"
-		android:layout_marginBottom="@dimen/ballotchoice_bottom_margin"
-		android:paddingLeft="8dp"
-		android:paddingRight="8dp"
-		android:layout_marginTop="2dp"
-		android:background="?android:attr/colorBackground"
-		android:minHeight="@dimen/ballotchoice_list_entry_height">
-
-		<com.google.android.material.textfield.TextInputLayout
-			style="@style/Threema.TextInputLayout.Compose"
-			android:id="@+id/textinputlayout_compose"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_centerVertical="true"
-			android:layout_toLeftOf="@+id/create_choice"
-			android:layout_gravity="bottom"
-			android:outlineProvider="none">
-
-		<ch.threema.app.ui.ComposeEditText
-			style="@style/Threema.EditText.Compose"
-			android:id="@+id/create_choice_name"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/ballot_choice_add"
-			android:imeActionId="@integer/ime_wizard_add_choice"
-			android:imeActionLabel="+"
-			android:minHeight="@dimen/input_text_height"
-			android:paddingLeft="16dp"
-			android:paddingTop="3dp"
-			android:paddingRight="80dp"
-			android:paddingBottom="4dp"
-			android:nextFocusDown="@id/create_choice_name"
-			android:singleLine="true"
-			android:textSize="16sp"
-			android:inputType="text" />
-
-		</com.google.android.material.textfield.TextInputLayout>
-
-		<ImageButton
-			style="?android:attr/borderlessButtonStyle"
-			android:id="@+id/add_date"
-			android:layout_width="@dimen/emoji_button_width"
-			android:layout_height="@dimen/emoji_button_width"
-			android:layout_toLeftOf="@+id/add_time"
-			android:drawablePadding="0dp"
+        <ImageButton
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/add_date"
+            android:layout_width="@dimen/emoji_button_width"
+            android:layout_height="@dimen/emoji_button_width"
+            android:layout_toLeftOf="@+id/add_time"
+            android:drawablePadding="0dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/insert_date"
-			app:srcCompat="@drawable/ic_event"
-			android:background="@drawable/selector_compose_button"
-			app:tint="?attr/colorOnSurface" />
+            app:srcCompat="@drawable/ic_event"
+            android:background="@drawable/selector_compose_button"
+            app:tint="?attr/colorOnSurface" />
 
-		<ImageButton
-			style="?android:attr/borderlessButtonStyle"
-			android:id="@+id/add_time"
-			android:layout_width="@dimen/emoji_button_width"
-			android:layout_height="@dimen/emoji_button_width"
-			android:layout_toLeftOf="@+id/create_choice"
-			android:drawablePadding="0dp"
+        <ImageButton
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/add_time"
+            android:layout_width="@dimen/emoji_button_width"
+            android:layout_height="@dimen/emoji_button_width"
+            android:layout_toLeftOf="@+id/create_choice"
+            android:drawablePadding="0dp"
             android:layout_centerVertical="true"
             android:contentDescription="@string/insert_datetime"
-			app:srcCompat="@drawable/ic_schedule"
-			android:background="@drawable/selector_compose_button"
-			app:tint="?attr/colorOnSurface" />
+            app:srcCompat="@drawable/ic_schedule"
+            android:background="@drawable/selector_compose_button"
+            app:tint="?attr/colorOnSurface" />
 
-		<ImageButton
-			style="?android:attr/borderlessButtonStyle"
-			android:id="@+id/create_choice"
-			android:layout_width="@dimen/emoji_button_width"
-			android:layout_height="@dimen/emoji_button_width"
-			android:layout_alignParentRight="true"
+        <ImageButton
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/create_choice"
+            android:layout_width="@dimen/emoji_button_width"
+            android:layout_height="@dimen/emoji_button_width"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-			android:drawablePadding="0dp"
-			app:srcCompat="@drawable/ic_add_circle_black_24dp"
-			app:tint="@drawable/selector_button_tint"
-			android:contentDescription="@string/add_answer"
-			android:background="@drawable/selector_compose_button"
-			/>
+            android:drawablePadding="0dp"
+            app:srcCompat="@drawable/ic_add_circle_black_24dp"
+            app:tint="@drawable/selector_button_tint"
+            android:contentDescription="@string/add_answer"
+            android:background="@drawable/selector_compose_button" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </LinearLayout>
 

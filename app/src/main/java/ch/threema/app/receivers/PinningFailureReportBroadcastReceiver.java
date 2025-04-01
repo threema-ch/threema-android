@@ -36,21 +36,21 @@ import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
 
 public class PinningFailureReportBroadcastReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PinningFailureReportBroadcastReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PinningFailureReportBroadcastReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		PinningFailureReport report = (PinningFailureReport) intent.getSerializableExtra(BackgroundReporter.EXTRA_REPORT);
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        PinningFailureReport report = (PinningFailureReport) intent.getSerializableExtra(BackgroundReporter.EXTRA_REPORT);
 
-		logger.info("Certificate pinning failure");
-		logger.info("Server Hostname  : " + report.getServerHostname());
-		logger.info("Noted Hostname   : " + report.getNotedHostname());
-		logger.info("Validation Result: " + report.getValidationResult());
+        logger.info("Certificate pinning failure");
+        logger.info("Server Hostname  : " + report.getServerHostname());
+        logger.info("Noted Hostname   : " + report.getNotedHostname());
+        logger.info("Validation Result: " + report.getValidationResult());
 
-		if (report.getValidationResult() == PinningValidationResult.FAILED_CERTIFICATE_CHAIN_NOT_TRUSTED) {
-			Toast.makeText(context, R.string.pinning_not_trusted, Toast.LENGTH_LONG).show();
-		} else if (report.getValidationResult() == PinningValidationResult.FAILED) {
-			Toast.makeText(context, R.string.pinning_failed, Toast.LENGTH_LONG).show();
-		}
-	}
+        if (report.getValidationResult() == PinningValidationResult.FAILED_CERTIFICATE_CHAIN_NOT_TRUSTED) {
+            Toast.makeText(context, R.string.pinning_not_trusted, Toast.LENGTH_LONG).show();
+        } else if (report.getValidationResult() == PinningValidationResult.FAILED) {
+            Toast.makeText(context, R.string.pinning_failed, Toast.LENGTH_LONG).show();
+        }
+    }
 }

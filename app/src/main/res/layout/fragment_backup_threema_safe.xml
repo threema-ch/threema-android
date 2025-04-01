@@ -1,288 +1,286 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/fragment_top"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:clickable="false"
-	android:orientation="vertical">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:orientation="vertical">
 
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/switch_frame"
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/web_sessions_switch_frame_height"
-		app:cardBackgroundColor="?attr/colorSurface"
-		app:cardCornerRadius="0dp"
-		app:cardElevation="4dp"
-		app:contentPaddingBottom="8dp"
-		app:contentPaddingLeft="16dp"
-		app:contentPaddingRight="16dp"
-		app:contentPaddingTop="8dp"
-		app:strokeWidth="0dp"
-		android:outlineProvider="none">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/switch_frame"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/web_sessions_switch_frame_height"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="4dp"
+        app:contentPaddingBottom="8dp"
+        app:contentPaddingLeft="16dp"
+        app:contentPaddingRight="16dp"
+        app:contentPaddingTop="8dp"
+        app:strokeWidth="0dp"
+        android:outlineProvider="none">
 
-		<TextView
-			style="@style/Threema.TextAppearance.SwitchHeader"
-			android:id="@+id/switch_text"
-			android:layout_width="wrap_content"
-			android:layout_height="@dimen/web_sessions_switch_frame_height"
-			android:layout_gravity="center_vertical|left"
-			android:gravity="center_vertical"
-			android:text="@string/threema_safe" />
+        <TextView
+            style="@style/Threema.TextAppearance.SwitchHeader"
+            android:id="@+id/switch_text"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/web_sessions_switch_frame_height"
+            android:layout_gravity="center_vertical|left"
+            android:gravity="center_vertical"
+            android:text="@string/threema_safe" />
 
-		<ch.threema.app.ui.SilentSwitchCompat
-			android:id="@+id/switch_button"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_gravity="center_vertical|right"
-			android:contentDescription="@string/threema_safe"/>
+        <ch.threema.app.ui.SilentSwitchCompat
+            android:id="@+id/switch_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|right"
+            android:contentDescription="@string/threema_safe" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-	<FrameLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<RelativeLayout
-			android:id="@+id/config_layout"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:visibility="visible">
+        <RelativeLayout
+            android:id="@+id/config_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
-			<ScrollView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_alignParentTop="true"
-				android:background="@android:color/transparent">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:background="@android:color/transparent">
 
-				<RelativeLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:padding="16dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
 
-					<TextView
-						android:id="@+id/server_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:ellipsize="none"
-						android:gravity="left"
-						android:singleLine="true"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/safe_server_name"/>
+                    <TextView
+                        android:id="@+id/server_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="none"
+                        android:gravity="left"
+                        android:singleLine="true"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/safe_server_name" />
 
-					<TextView
-						android:id="@+id/server_text"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:layout_marginLeft="8dp"
-						android:layout_toRightOf="@+id/server_label"
-						android:ellipsize="middle"
-						android:gravity="right"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:singleLine="true"/>
+                    <TextView
+                        android:id="@+id/server_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="8dp"
+                        android:layout_toRightOf="@+id/server_label"
+                        android:ellipsize="middle"
+                        android:gravity="right"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:singleLine="true" />
 
-					<TextView
-						android:id="@+id/server_size_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_below="@+id/server_label"
-						android:layout_toLeftOf="@+id/server_size"
-						android:ellipsize="end"
-						android:maxLines="1"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/safe_max_backup_size"/>
+                    <TextView
+                        android:id="@+id/server_size_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@+id/server_label"
+                        android:layout_toLeftOf="@+id/server_size"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/safe_max_backup_size" />
 
-					<TextView
-						android:id="@+id/server_size"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:layout_below="@+id/server_label"/>
+                    <TextView
+                        android:id="@+id/server_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:layout_below="@+id/server_label" />
 
-					<TextView
-						android:id="@+id/server_retention_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_below="@id/server_size_label"
-						android:layout_toLeftOf="@+id/server_retention"
-						android:ellipsize="end"
-						android:maxLines="1"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/safe_retention"/>
+                    <TextView
+                        android:id="@+id/server_retention_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/server_size_label"
+                        android:layout_toLeftOf="@+id/server_retention"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/safe_retention" />
 
-					<TextView
-						android:id="@+id/server_retention"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:layout_below="@id/server_size_label"/>
+                    <TextView
+                        android:id="@+id/server_retention"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:layout_below="@id/server_size_label" />
 
-					<TextView
-						android:id="@+id/backup_date_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_below="@id/server_retention_label"
-						android:layout_marginTop="16dp"
-						android:layout_toLeftOf="@+id/backup_date"
-						android:ellipsize="end"
-						android:maxLines="1"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/android_backup_date"/>
+                    <TextView
+                        android:id="@+id/backup_date_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/server_retention_label"
+                        android:layout_marginTop="16dp"
+                        android:layout_toLeftOf="@+id/backup_date"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/android_backup_date" />
 
-					<TextView
-						android:id="@+id/backup_date"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:layout_below="@id/server_retention_label"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:layout_marginTop="16dp"/>
+                    <TextView
+                        android:id="@+id/backup_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/server_retention_label"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:layout_marginTop="16dp" />
 
-					<TextView
-						android:id="@+id/backup_size_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_below="@id/backup_date_label"
-						android:layout_toLeftOf="@+id/backup_size"
-						android:ellipsize="end"
-						android:maxLines="1"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/safe_size"/>
+                    <TextView
+                        android:id="@+id/backup_size_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/backup_date_label"
+                        android:layout_toLeftOf="@+id/backup_size"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/safe_size" />
 
-					<TextView
-						android:id="@+id/backup_size"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:layout_below="@id/backup_date_label"/>
+                    <TextView
+                        android:id="@+id/backup_size"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:layout_below="@id/backup_date_label" />
 
-					<TextView
-						android:id="@+id/backup_result_label"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentLeft="true"
-						android:layout_below="@id/backup_size_label"
-						android:layout_toLeftOf="@+id/backup_result"
-						android:ellipsize="end"
-						android:maxLines="1"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:text="@string/safe_result"/>
+                    <TextView
+                        android:id="@+id/backup_result_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_below="@id/backup_size_label"
+                        android:layout_toLeftOf="@+id/backup_result"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:text="@string/safe_result" />
 
-					<TextView
-						android:id="@+id/backup_result"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_alignParentRight="true"
-						android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
-						android:layout_below="@id/backup_size_label"/>
+                    <TextView
+                        android:id="@+id/backup_result"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+                        android:layout_below="@id/backup_size_label" />
 
-					<com.google.android.material.button.MaterialButton
-						style="@style/Threema.MaterialButton.Action.Outline"
-						android:id="@+id/threema_safe_change_password"
-						android:layout_marginTop="16dp"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_gravity="left"
-						android:layout_below="@id/backup_result_label"
-						android:ellipsize="middle"
-						android:text="@string/safe_change_password"/>
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Threema.MaterialButton.Action.Outline"
+                        android:id="@+id/threema_safe_change_password"
+                        android:layout_marginTop="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_below="@id/backup_result_label"
+                        android:ellipsize="middle"
+                        android:text="@string/safe_change_password" />
 
-				</RelativeLayout>
+                </RelativeLayout>
 
-			</ScrollView>
+            </ScrollView>
 
-		</RelativeLayout>
+        </RelativeLayout>
 
-		<ScrollView
-			android:id="@+id/explain_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical"
-			android:visibility="gone"
-			android:background="?android:attr/colorBackground">
+        <ScrollView
+            android:id="@+id/explain_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:visibility="gone"
+            android:background="?android:attr/colorBackground">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:layout_marginBottom="16dp"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp">
 
-			<FrameLayout
-				android:id="@+id/logo_frame"
-				android:layout_width="180dp"
-				android:layout_height="180dp"
-				android:layout_gravity="center_horizontal"
-				android:contentDescription="@string/image_placeholder">
+                <FrameLayout
+                    android:id="@+id/logo_frame"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="@string/image_placeholder">
 
-				<ch.threema.app.ui.SquareImageView
-					android:layout_width="180dp"
-					android:layout_height="180dp"
-					android:src="@drawable/ic_circle_white"
-					android:tint="?attr/colorSecondaryContainer"/>
+                    <ch.threema.app.ui.SquareImageView
+                        android:layout_width="180dp"
+                        android:layout_height="180dp"
+                        android:src="@drawable/ic_circle_white"
+                        android:tint="?attr/colorSecondaryContainer" />
 
-				<ImageView
-					android:layout_width="180dp"
-					android:layout_height="180dp"
-					android:adjustViewBounds="true"
-					app:srcCompat="@drawable/ic_safe_icon"/>
+                    <ImageView
+                        android:layout_width="180dp"
+                        android:layout_height="180dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@drawable/ic_safe_icon" />
 
-			</FrameLayout>
+                </FrameLayout>
 
-			<TextView
-				style="@style/Threema.TextAppearance.Emptyview"
-				android:id="@+id/empty_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginTop="16dp"
-				android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
-				android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
-				android:fontFamily="sans-serif-light"
-				android:gravity="center_horizontal"
-				android:text="@string/safe_enable_explain_short"
-				android:textColor="?attr/colorOnBackground"
-				android:textSize="18sp"/>
+                <TextView
+                    style="@style/Threema.TextAppearance.Emptyview"
+                    android:id="@+id/empty_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="@dimen/tablet_standard_padding_left_right"
+                    android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center_horizontal"
+                    android:text="@string/safe_enable_explain_short"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="18sp" />
 
-			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.MaterialButton.Action.Outline"
-				android:id="@+id/info"
-				android:contentDescription="@string/info"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginTop="16dp"
-				android:text="@string/safe_learn_more_button"/>
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Threema.MaterialButton.Action.Outline"
+                    android:id="@+id/info"
+                    android:contentDescription="@string/info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/safe_learn_more_button" />
 
-		</LinearLayout>
+            </LinearLayout>
 
-		</ScrollView>
+        </ScrollView>
 
-		<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-			android:id="@+id/floating"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="bottom|right"
-			android:layout_margin="@dimen/floating_button_margin"
-			android:contentDescription="@string/safe_backup_now"
-			android:text="@string/safe_backup_now"
-			app:icon="@drawable/ic_add_white_24dp"
-			android:tint="@android:color/white"
-			android:visibility="visible"
-			app:layout_anchorGravity="bottom|right|end"
-			/>
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/floating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="@dimen/floating_button_margin"
+            android:contentDescription="@string/safe_backup_now"
+            android:text="@string/safe_backup_now"
+            app:icon="@drawable/ic_add_white_24dp"
+            android:tint="@android:color/white"
+            android:visibility="visible"
+            app:layout_anchorGravity="bottom|right|end" />
 
-	</FrameLayout>
+    </FrameLayout>
 
 </LinearLayout>

@@ -60,271 +60,276 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @SuppressLint("UnsafeOptInUsageError")
 public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
 
-	private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
-	private WeakReference<DefaultTimeBar> timeBarRef;
-	private WeakReference<CircularProgressIndicator> progressBarRef;
-	private WeakReference<ImageButton> playRef, pauseRef;
+    private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
+    private WeakReference<DefaultTimeBar> timeBarRef;
+    private WeakReference<CircularProgressIndicator> progressBarRef;
+    private WeakReference<ImageButton> playRef, pauseRef;
 
-	private MediaPlayerStateWrapper mediaPlayer;
-	private boolean isImmediatePlay;
+    private MediaPlayerStateWrapper mediaPlayer;
+    private boolean isImmediatePlay;
 
-	private final Handler progressBarHandler = new Handler();
+    private final Handler progressBarHandler = new Handler();
 
-	public MediaPlayerViewFragment() { super(); }
+    public MediaPlayerViewFragment() {
+        super();
+    }
 
-	@Override
-	protected int getFragmentResourceId() {
-		return R.layout.fragment_media_viewer_mediaplayer;
-	}
+    @Override
+    protected int getFragmentResourceId() {
+        return R.layout.fragment_media_viewer_mediaplayer;
+    }
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			this.isImmediatePlay = arguments.getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
-		}
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            this.isImmediatePlay = arguments.getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+        }
 
-		this.mediaPlayer = new MediaPlayerStateWrapper();
-		this.mediaPlayer.setStateListener(this);
+        this.mediaPlayer = new MediaPlayerStateWrapper();
+        this.mediaPlayer.setStateListener(this);
 
-		return super.onCreateView(inflater, container, savedInstanceState);
-	}
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
-	@Override
-	protected void created(Bundle savedInstanceState) {
-		ViewGroup rootView = rootViewReference.get();
+    @Override
+    protected void created(Bundle savedInstanceState) {
+        ViewGroup rootView = rootViewReference.get();
 
-		this.filenameViewRef = new WeakReference<>(rootView.findViewById(R.id.filename_view));
-		this.positionRef = new WeakReference<>(rootView.findViewById(R.id.exo_position));
-		this.durationRef = new WeakReference<>(rootView.findViewById(R.id.exo_duration));
-		this.timeBarRef = new WeakReference<>(rootView.findViewById(R.id.time_bar));
-		this.playRef = new WeakReference<>(rootView.findViewById(R.id.exo_play));
-		this.pauseRef = new WeakReference<>(rootView.findViewById(R.id.exo_pause));
-		this.progressBarRef = new WeakReference<>(rootView.findViewById(R.id.progress_bar));
-		ViewCompat.setOnApplyWindowInsetsListener(filenameViewRef.get(), (v, insets) -> {
-			ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-			params.leftMargin = insets.getSystemWindowInsetLeft();
-			params.rightMargin = insets.getSystemWindowInsetRight();
-			params.bottomMargin = insets.getSystemWindowInsetBottom();
-			return insets;
-		});
+        this.filenameViewRef = new WeakReference<>(rootView.findViewById(R.id.filename_view));
+        this.positionRef = new WeakReference<>(rootView.findViewById(R.id.exo_position));
+        this.durationRef = new WeakReference<>(rootView.findViewById(R.id.exo_duration));
+        this.timeBarRef = new WeakReference<>(rootView.findViewById(R.id.time_bar));
+        this.playRef = new WeakReference<>(rootView.findViewById(R.id.exo_play));
+        this.pauseRef = new WeakReference<>(rootView.findViewById(R.id.exo_pause));
+        this.progressBarRef = new WeakReference<>(rootView.findViewById(R.id.progress_bar));
+        ViewCompat.setOnApplyWindowInsetsListener(filenameViewRef.get(), (v, insets) -> {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            params.leftMargin = insets.getSystemWindowInsetLeft();
+            params.rightMargin = insets.getSystemWindowInsetRight();
+            params.bottomMargin = insets.getSystemWindowInsetBottom();
+            return insets;
+        });
 
-		this.playRef.get().setVisibility(View.GONE);
-		this.pauseRef.get().setVisibility(View.GONE);
+        this.playRef.get().setVisibility(View.GONE);
+        this.pauseRef.get().setVisibility(View.GONE);
 
-		this.positionRef.get().setText(getDurationString(0));
-		this.durationRef.get().setText(getDurationString(0));
+        this.positionRef.get().setText(getDurationString(0));
+        this.durationRef.get().setText(getDurationString(0));
 
-		this.playRef.get().setOnClickListener(v -> resumeAudio());
+        this.playRef.get().setOnClickListener(v -> resumeAudio());
 
-		this.pauseRef.get().setOnClickListener(v -> pauseAudio());
+        this.pauseRef.get().setOnClickListener(v -> pauseAudio());
 
-		this.timeBarRef.get().addListener(this);
-	}
+        this.timeBarRef.get().addListener(this);
+    }
 
-	@Override
-	public void onDestroyView() {
-		abandonFocus();
+    @Override
+    public void onDestroyView() {
+        abandonFocus();
 
-		if (mediaPlayer != null) {
-			mediaPlayer.setScreenOnWhilePlaying(false);
-			mediaPlayer.stop();
-			mediaPlayer.reset();
-			mediaPlayer.release();
-		}
-		super.onDestroyView();
-	}
+        if (mediaPlayer != null) {
+            mediaPlayer.setScreenOnWhilePlaying(false);
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer.release();
+        }
+        super.onDestroyView();
+    }
 
-	@Override
-	public void onPause() {
-		pauseAudio();
-		super.onPause();
-	}
+    @Override
+    public void onPause() {
+        pauseAudio();
+        super.onPause();
+    }
 
-	@Override
-	protected void handleDecryptingFile() {
-		if (progressBarRef.get() != null) {
-			this.progressBarRef.get().setVisibility(View.VISIBLE);
-		}
-	}
+    @Override
+    protected void handleDecryptingFile() {
+        if (progressBarRef.get() != null) {
+            this.progressBarRef.get().setVisibility(View.VISIBLE);
+        }
+    }
 
-	@Override
-	protected void handleDecryptFailure() {
-		if (this.progressBarRef.get() != null) {
-			this.progressBarRef.get().setVisibility(View.GONE);
-			this.positionRef.get().setVisibility(View.GONE);
-			this.timeBarRef.get().setVisibility(View.GONE);
-			this.durationRef.get().setVisibility(View.GONE);
-		}
-		super.showBrokenImage();
-	}
+    @Override
+    protected void handleDecryptFailure() {
+        if (this.progressBarRef.get() != null) {
+            this.progressBarRef.get().setVisibility(View.GONE);
+            this.positionRef.get().setVisibility(View.GONE);
+            this.timeBarRef.get().setVisibility(View.GONE);
+            this.durationRef.get().setVisibility(View.GONE);
+        }
+        super.showBrokenImage();
+    }
 
-	@Override
-	protected void handleDecryptedFile(final File file) {
-		if (this.isAdded()) {
-			this.progressBarRef.get().setVisibility(View.GONE);
-			this.playRef.get().setVisibility(View.VISIBLE);
-			this.pauseRef.get().setVisibility(View.GONE);
+    @Override
+    protected void handleDecryptedFile(final File file) {
+        if (this.isAdded()) {
+            this.progressBarRef.get().setVisibility(View.GONE);
+            this.playRef.get().setVisibility(View.VISIBLE);
+            this.pauseRef.get().setVisibility(View.GONE);
 
-			if (this.mediaPlayer.getState() == MediaPlayerStateWrapper.State.PREPARED) {
-				// navigated back to fragment
-				if (this.mediaPlayer.getState() == MediaPlayerStateWrapper.State.PAUSED) {
-					if (this.isImmediatePlay) {
-						resumeAudio();
-					}
-				}
-			} else {
-				// new fragment
-				if (this.mediaPlayer.getState() != MediaPlayerStateWrapper.State.PREPARING) {
-					prepareAudio(Uri.fromFile(file));
-					if (this.isImmediatePlay) {
-						playAudio();
-					}
-				}
-			}
-		} else {
-			logger.debug("Fragment no longer added. Get out of here");
-		}
-	}
+            if (this.mediaPlayer.getState() == MediaPlayerStateWrapper.State.PREPARED) {
+                // navigated back to fragment
+                if (this.mediaPlayer.getState() == MediaPlayerStateWrapper.State.PAUSED) {
+                    if (this.isImmediatePlay) {
+                        resumeAudio();
+                    }
+                }
+            } else {
+                // new fragment
+                if (this.mediaPlayer.getState() != MediaPlayerStateWrapper.State.PREPARING) {
+                    prepareAudio(Uri.fromFile(file));
+                    if (this.isImmediatePlay) {
+                        playAudio();
+                    }
+                }
+            }
+        } else {
+            logger.debug("Fragment no longer added. Get out of here");
+        }
+    }
 
-	private void prepareAudio(Uri uri) {
-		if (this.mediaPlayer != null) {
-			this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			this.mediaPlayer.setDataSource(getContext(), uri);
-			try {
-				this.mediaPlayer.prepare();
-				this.durationRef.get().setText(getDurationString(this.mediaPlayer.getDuration()));
-				this.timeBarRef.get().setDuration(this.mediaPlayer.getDuration());
-			} catch (IOException e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    private void prepareAudio(Uri uri) {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            this.mediaPlayer.setDataSource(getContext(), uri);
+            try {
+                this.mediaPlayer.prepare();
+                this.durationRef.get().setText(getDurationString(this.mediaPlayer.getDuration()));
+                this.timeBarRef.get().setDuration(this.mediaPlayer.getDuration());
+            } catch (IOException e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	private void playAudio() {
-		if (this.mediaPlayer != null) {
-			if (requestFocus()) {
-				this.mediaPlayer.setScreenOnWhilePlaying(true);
-				if (this.mediaPlayer.getState() != MediaPlayerStateWrapper.State.PREPARED) {
-					try {
-						this.mediaPlayer.prepare();
-					} catch (IOException e) {
-						logger.error("Exception", e);
-					}
-				}
-				this.mediaPlayer.start();
-				this.pauseRef.get().setVisibility(View.VISIBLE);
-				this.playRef.get().setVisibility(View.GONE);
-				initProgressListener();
-			}
-		}
-	}
+    private void playAudio() {
+        if (this.mediaPlayer != null) {
+            if (requestFocus()) {
+                this.mediaPlayer.setScreenOnWhilePlaying(true);
+                if (this.mediaPlayer.getState() != MediaPlayerStateWrapper.State.PREPARED) {
+                    try {
+                        this.mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+                this.mediaPlayer.start();
+                this.pauseRef.get().setVisibility(View.VISIBLE);
+                this.playRef.get().setVisibility(View.GONE);
+                initProgressListener();
+            }
+        }
+    }
 
-	@Override
-	public void stopAudio() {
-		if (this.mediaPlayer != null) {
-			this.mediaPlayer.setScreenOnWhilePlaying(false);
-			this.mediaPlayer.stop();
-			this.pauseRef.get().setVisibility(View.GONE);
-			this.playRef.get().setVisibility(View.VISIBLE);
-			stopProgressListener();
-			abandonFocus();
-		}
-	}
+    @Override
+    public void stopAudio() {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.setScreenOnWhilePlaying(false);
+            this.mediaPlayer.stop();
+            this.pauseRef.get().setVisibility(View.GONE);
+            this.playRef.get().setVisibility(View.VISIBLE);
+            stopProgressListener();
+            abandonFocus();
+        }
+    }
 
-	@Override
-	public void pauseAudio() {
-		if (this.mediaPlayer != null) {
-			this.mediaPlayer.setScreenOnWhilePlaying(false);
-			this.mediaPlayer.pause();
-			this.pauseRef.get().setVisibility(View.GONE);
-			this.playRef.get().setVisibility(View.VISIBLE);
-			stopProgressListener();
-			abandonFocus();
-		}
-	}
+    @Override
+    public void pauseAudio() {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.setScreenOnWhilePlaying(false);
+            this.mediaPlayer.pause();
+            this.pauseRef.get().setVisibility(View.GONE);
+            this.playRef.get().setVisibility(View.VISIBLE);
+            stopProgressListener();
+            abandonFocus();
+        }
+    }
 
-	@Override
-	public void resumeAudio() {
-		if (this.mediaPlayer != null) {
-			switch (this.mediaPlayer.getState()) {
-				case STOPPED:
-				case PAUSED:
-				case PREPARED:
-					if (requestFocus()) {
-						playAudio();
-					}
-					break;
-				default:
-					break;
-			}
-		}
-	}
+    @Override
+    public void resumeAudio() {
+        if (this.mediaPlayer != null) {
+            switch (this.mediaPlayer.getState()) {
+                case STOPPED:
+                case PAUSED:
+                case PREPARED:
+                    if (requestFocus()) {
+                        playAudio();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-	@Override
-	public void setVolume(float volume) {
-		if (mediaPlayer != null) {
-			mediaPlayer.setVolume(volume, volume);
-		}
-	}
+    @Override
+    public void setVolume(float volume) {
+        if (mediaPlayer != null) {
+            mediaPlayer.setVolume(volume, volume);
+        }
+    }
 
-	private void initProgressListener() {
-		RuntimeUtil.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (mediaPlayer != null){
-					timeBarRef.get().setPosition(mediaPlayer.getCurrentPosition());
-					positionRef.get().setText(getDurationString(mediaPlayer.getCurrentPosition()));
-				}
-				progressBarHandler.postDelayed(this, 1000);
-			}
-		});
-	}
+    private void initProgressListener() {
+        RuntimeUtil.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null) {
+                    timeBarRef.get().setPosition(mediaPlayer.getCurrentPosition());
+                    positionRef.get().setText(getDurationString(mediaPlayer.getCurrentPosition()));
+                }
+                progressBarHandler.postDelayed(this, 1000);
+            }
+        });
+    }
 
-	private void stopProgressListener() {
-		progressBarHandler.removeCallbacksAndMessages(null);
-	}
+    private void stopProgressListener() {
+        progressBarHandler.removeCallbacksAndMessages(null);
+    }
 
-	@Override
-	public void onScrubStart(@NonNull TimeBar timeBar, long position) {}
+    @Override
+    public void onScrubStart(@NonNull TimeBar timeBar, long position) {
+    }
 
-	@Override
-	public void onScrubMove(@NonNull TimeBar timeBar, long position) {}
+    @Override
+    public void onScrubMove(@NonNull TimeBar timeBar, long position) {
+    }
 
-	@Override
-	public void onScrubStop(@NonNull TimeBar timeBar, long position, boolean canceled) {
-		if (!canceled) {
-			mediaPlayer.seekTo((int) position);
-		}
-	}
+    @Override
+    public void onScrubStop(@NonNull TimeBar timeBar, long position, boolean canceled) {
+        if (!canceled) {
+            mediaPlayer.seekTo((int) position);
+        }
+    }
 
-	@Override
-	public void onCompletion(MediaPlayer mp) {
-		stopAudio();
-	}
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+        stopAudio();
+    }
 
-	@Override
-	public void onPrepared(MediaPlayer mp) {}
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+    }
 
-	@Override
-	protected void handleFileName(@Nullable String filename) {
-		if (filenameViewRef != null && filenameViewRef.get() != null) {
-			if (filename != null) {
-				filenameViewRef.get().setText(filename);
-				filenameViewRef.get().setVisibility(View.VISIBLE);
-			} else {
-				filenameViewRef.get().setVisibility(View.INVISIBLE);
-			}
-		}
-	}
+    @Override
+    protected void handleFileName(@Nullable String filename) {
+        if (filenameViewRef != null && filenameViewRef.get() != null) {
+            if (filename != null) {
+                filenameViewRef.get().setText(filename);
+                filenameViewRef.get().setVisibility(View.VISIBLE);
+            } else {
+                filenameViewRef.get().setVisibility(View.INVISIBLE);
+            }
+        }
+    }
 
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		// stop player if fragment comes out of view
-		if (!isVisibleToUser) {
-			pauseAudio();
-		}
-	}
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        // stop player if fragment comes out of view
+        if (!isVisibleToUser) {
+            pauseAudio();
+        }
+    }
 }

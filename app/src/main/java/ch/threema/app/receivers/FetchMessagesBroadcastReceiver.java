@@ -31,13 +31,13 @@ import ch.threema.app.services.PollingHelper;
 import ch.threema.base.utils.LoggingUtil;
 
 public class FetchMessagesBroadcastReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("FetchMessagesBroadcastReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("FetchMessagesBroadcastReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		logger.info("FetchMessagesBroadcastReceiver: onReceive");
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        logger.info("FetchMessagesBroadcastReceiver: onReceive");
 
-		PollingHelper pollingHelper = new PollingHelper(context, "retryFromAlarmManager");
-		pollingHelper.poll(true);
-	}
+        PollingHelper pollingHelper = new PollingHelper(context, "retryFromAlarmManager");
+        pollingHelper.poll(true);
+    }
 }

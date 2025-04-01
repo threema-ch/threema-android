@@ -22,12 +22,12 @@
 package ch.threema.domain.protocol.csp.messages.protobuf;
 
 import androidx.annotation.NonNull;
+
 import com.google.protobuf.MessageLite;
 
 /**
- *
  * Interface for protobuf payload data classes.
- *
+ * <p>
  * When implementing this interface, classes must have static {@code parse}-methods returning a new (Non-Null) object
  * of itself (type T) according to these signatures:
  * <ul>
@@ -38,9 +38,10 @@ import com.google.protobuf.MessageLite;
  * @param <P> Protobuf Message Type
  */
 public interface ProtobufDataInterface<P extends MessageLite> {
-	@NonNull P toProtobufMessage();
+    @NonNull
+    P toProtobufMessage();
 
-	default byte[] toProtobufBytes() {
-		return toProtobufMessage().toByteArray();
-	}
+    default byte[] toProtobufBytes() {
+        return toProtobufMessage().toByteArray();
+    }
 }

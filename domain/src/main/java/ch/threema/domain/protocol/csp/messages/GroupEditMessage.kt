@@ -32,10 +32,11 @@ import java.nio.charset.StandardCharsets
  *  This does **not** edit groups.
  *  It edits messages within a group chat.
  */
-class GroupEditMessage(payloadData: EditMessageData) : AbstractProtobufGroupMessage<EditMessageData>(
-    ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE,
-    payloadData
-) {
+class GroupEditMessage(payloadData: EditMessageData) :
+    AbstractProtobufGroupMessage<EditMessageData>(
+        ProtocolDefines.MSGTYPE_GROUP_EDIT_MESSAGE,
+        payloadData
+    ) {
     override fun getMinimumRequiredForwardSecurityVersion() = Version.V1_2
 
     override fun allowUserProfileDistribution() = false
@@ -120,7 +121,8 @@ class GroupEditMessage(payloadData: EditMessageData) : AbstractProtobufGroupMess
             }
 
             var positionIndex = offset
-            val groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+            val groupCreator =
+                String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
             positionIndex += ProtocolDefines.IDENTITY_LEN
 
             val apiGroupId = GroupId(data, positionIndex)

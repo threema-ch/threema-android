@@ -109,11 +109,11 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         // Create group sync request message
         val groupSyncRequestMessage = GroupSyncRequestMessage()
             .apply {
-            fromIdentity = contact.identity
-            toIdentity = myContact.identity
-            apiGroupId = group.apiGroupId
-            groupCreator = group.groupCreator.identity
-        }
+                fromIdentity = contact.identity
+                toIdentity = myContact.identity
+                apiGroupId = group.apiGroupId
+                groupCreator = group.groupCreator.identity
+            }
 
         // Process sync request message
         processMessage(groupSyncRequestMessage, contact.identityStore)
@@ -152,11 +152,11 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         // Create group sync request message
         val groupSyncRequestMessage = GroupSyncRequestMessage()
             .apply {
-            fromIdentity = contact.identity
-            toIdentity = myContact.identity
-            apiGroupId = group.apiGroupId
-            groupCreator = group.groupCreator.identity
-        }
+                fromIdentity = contact.identity
+                toIdentity = myContact.identity
+                apiGroupId = group.apiGroupId
+                groupCreator = group.groupCreator.identity
+            }
 
         processMessage(groupSyncRequestMessage, contact.identityStore)
 
@@ -169,11 +169,11 @@ class IncomingGroupSyncRequestTest : GroupControlTest<GroupSyncRequestMessage>()
         // Create group sync request message
         val groupSyncRequestMessage = GroupSyncRequestMessage()
             .apply {
-            fromIdentity = contact.identity
-            toIdentity = myContact.identity
-            apiGroupId = group.apiGroupId
-            groupCreator = group.groupCreator.identity
-        }
+                fromIdentity = contact.identity
+                toIdentity = myContact.identity
+                apiGroupId = group.apiGroupId
+                groupCreator = group.groupCreator.identity
+            }
 
         processMessage(groupSyncRequestMessage, contact.identityStore)
 

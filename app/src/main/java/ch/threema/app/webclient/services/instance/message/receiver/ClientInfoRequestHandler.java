@@ -49,73 +49,74 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class ClientInfoRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfoRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfoRequestHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final PreferenceService preferenceService;
-	private final Context appContext;
-	private final Listener listener;
+    private final MessageDispatcher dispatcher;
+    private final PreferenceService preferenceService;
+    private final Context appContext;
+    private final Listener listener;
 
-	@WorkerThread
-	public interface Listener {
-		void onReceived(@NonNull String userAgent);
-		void onAnswered(@Nullable String pushToken);
-	}
+    @WorkerThread
+    public interface Listener {
+        void onReceived(@NonNull String userAgent);
 
-	@AnyThread
-	public ClientInfoRequestHandler(
-		MessageDispatcher dispatcher,
-		PreferenceService preferenceService,
-		Context appContext,
-		Listener listener
-	) {
-		super(Protocol.SUB_TYPE_CLIENT_INFO);
-		this.dispatcher = dispatcher;
-		this.preferenceService = preferenceService;
-		this.appContext = appContext;
-		this.listener = listener;
-	}
+        void onAnswered(@Nullable String pushToken);
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.info("Received client information request");
-		final Map<String, Value> data = this.getData(
-			message,
-			false,
-			new String[] { Protocol.ARGUMENT_USER_AGENT }
-		);
+    @AnyThread
+    public ClientInfoRequestHandler(
+        MessageDispatcher dispatcher,
+        PreferenceService preferenceService,
+        Context appContext,
+        Listener listener
+    ) {
+        super(Protocol.SUB_TYPE_CLIENT_INFO);
+        this.dispatcher = dispatcher;
+        this.preferenceService = preferenceService;
+        this.appContext = appContext;
+        this.listener = listener;
+    }
 
-		// Note: Right now we only use the user agent for browser detection,
-		// not the browserName or browserVersion fields.
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.info("Received client information request");
+        final Map<String, Value> data = this.getData(
+            message,
+            false,
+            new String[]{Protocol.ARGUMENT_USER_AGENT}
+        );
 
-		if (this.listener != null) {
-			// TODO: Store detected browser!
-			final String userAgent = data.get(Protocol.ARGUMENT_USER_AGENT).asStringValue().asString();
-			this.listener.onReceived(userAgent);
-		}
+        // Note: Right now we only use the user agent for browser detection,
+        // not the browserName or browserVersion fields.
 
-		this.respond();
-	}
+        if (this.listener != null) {
+            // TODO: Store detected browser!
+            final String userAgent = data.get(Protocol.ARGUMENT_USER_AGENT).asStringValue().asString();
+            this.listener.onReceived(userAgent);
+        }
 
-	private void respond() {
-		// Get the "current" Push Token from application
-		String currentPushToken = this.preferenceService.getPushToken();
-		if (currentPushToken.isEmpty()) {
-			currentPushToken = null;
-		}
-		try {
-			final MsgpackObjectBuilder data = ClientInfo.convert(this.appContext, currentPushToken);
-			this.send(this.dispatcher, data, null);
-			if (this.listener != null) {
-				this.listener.onAnswered(currentPushToken);
-			}
-		} catch (ConversionException e) {
-			logger.error("Could not convert ClientInfo", e);
-		}
-	}
+        this.respond();
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    private void respond() {
+        // Get the "current" Push Token from application
+        String currentPushToken = this.preferenceService.getPushToken();
+        if (currentPushToken.isEmpty()) {
+            currentPushToken = null;
+        }
+        try {
+            final MsgpackObjectBuilder data = ClientInfo.convert(this.appContext, currentPushToken);
+            this.send(this.dispatcher, data, null);
+            if (this.listener != null) {
+                this.listener.onAnswered(currentPushToken);
+            }
+        } catch (ConversionException e) {
+            logger.error("Could not convert ClientInfo", e);
+        }
+    }
+
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

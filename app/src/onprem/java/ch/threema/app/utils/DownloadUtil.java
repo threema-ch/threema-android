@@ -28,6 +28,7 @@ import android.content.Context;
  * Do not remove.
  */
 public class DownloadUtil {
-	// stub
-	public static void deleteOldAPKs(Context context) {	}
+    // stub
+    public static void deleteOldAPKs(Context context) {
+    }
 }

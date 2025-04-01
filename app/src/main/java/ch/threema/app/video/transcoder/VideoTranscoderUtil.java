@@ -38,67 +38,67 @@ import java.io.IOException;
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoTranscoderUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoderUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoderUtil");
     private static final String KEY_ROTATION = "rotation"; // not to be confused with MediaFormat.KEY_ROTATION
 
-	public static class OutputDimensions {
-		public int width, height;
-	}
+    public static class OutputDimensions {
+        public int width, height;
+    }
 
-	public static int getRoundedSize(float ratio, int size) {
-		// width/height need to be a multiple of 2 otherwise mediacodec encoder will crash
-		// with android.media.MediaCodec$CodecException: Error 0xfffffc0e
-		return 16 * Math.round(size * ratio / 16);
-	}
+    public static int getRoundedSize(float ratio, int size) {
+        // width/height need to be a multiple of 2 otherwise mediacodec encoder will crash
+        // with android.media.MediaCodec$CodecException: Error 0xfffffc0e
+        return 16 * Math.round(size * ratio / 16);
+    }
 
-	public static int getOrientationHint(Context context, MediaComponent mediaComponent, @NonNull Uri srcUri) {
-		MediaFormat trackFormat = mediaComponent.getTrackFormat();
+    public static int getOrientationHint(Context context, MediaComponent mediaComponent, @NonNull Uri srcUri) {
+        MediaFormat trackFormat = mediaComponent.getTrackFormat();
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && trackFormat != null && trackFormat.containsKey(KEY_ROTATION)) {
-			return trackFormat.getInteger(KEY_ROTATION);
-		} else {
-			// do not use automatic resource management on MediaMetadataRetriever
-			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			try {
-				retriever.setDataSource(context, srcUri);
-				String orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-				if (!TextUtils.isEmpty(orientation)) {
-					return Integer.parseInt(orientation);
-				}
-			} finally {
-				try {
-					retriever.release();
-				} catch (IOException e) {
-					logger.debug("Failed to release MediaMetadataRetriever");
-				}
-			}
-		}
-		return 0;
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && trackFormat != null && trackFormat.containsKey(KEY_ROTATION)) {
+            return trackFormat.getInteger(KEY_ROTATION);
+        } else {
+            // do not use automatic resource management on MediaMetadataRetriever
+            final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            try {
+                retriever.setDataSource(context, srcUri);
+                String orientation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+                if (!TextUtils.isEmpty(orientation)) {
+                    return Integer.parseInt(orientation);
+                }
+            } finally {
+                try {
+                    retriever.release();
+                } catch (IOException e) {
+                    logger.debug("Failed to release MediaMetadataRetriever");
+                }
+            }
+        }
+        return 0;
+    }
 
-	// smallest width should be equal or slightly larger than targetSize
-	@Nullable
-	public static OutputDimensions calculateOutputDimensions(@NonNull MediaComponent mediaComponent, int targetWidth, int targetHeight) {
-		OutputDimensions outputDimensions = new OutputDimensions();
-		MediaFormat trackFormat = mediaComponent.getTrackFormat();
+    // smallest width should be equal or slightly larger than targetSize
+    @Nullable
+    public static OutputDimensions calculateOutputDimensions(@NonNull MediaComponent mediaComponent, int targetWidth, int targetHeight) {
+        OutputDimensions outputDimensions = new OutputDimensions();
+        MediaFormat trackFormat = mediaComponent.getTrackFormat();
 
-		if (trackFormat != null) {
-			int inputWidth = trackFormat.getInteger(MediaFormat.KEY_WIDTH);
-			int inputHeight = trackFormat.getInteger(MediaFormat.KEY_HEIGHT);
+        if (trackFormat != null) {
+            int inputWidth = trackFormat.getInteger(MediaFormat.KEY_WIDTH);
+            int inputHeight = trackFormat.getInteger(MediaFormat.KEY_HEIGHT);
 
-			if (inputWidth > targetWidth || inputHeight > targetHeight) {
-				float ratio = Math.max(targetWidth / (float) inputWidth, targetHeight / (float) inputHeight);
-				outputDimensions.height = Math.round(inputHeight * ratio);
-				outputDimensions.width = Math.round(inputWidth * ratio);
-			} else {
-				outputDimensions.height = inputHeight;
-				outputDimensions.width = inputWidth;
-			}
+            if (inputWidth > targetWidth || inputHeight > targetHeight) {
+                float ratio = Math.max(targetWidth / (float) inputWidth, targetHeight / (float) inputHeight);
+                outputDimensions.height = Math.round(inputHeight * ratio);
+                outputDimensions.width = Math.round(inputWidth * ratio);
+            } else {
+                outputDimensions.height = inputHeight;
+                outputDimensions.width = inputWidth;
+            }
 
-			logger.info("Target size: {}x{}, Input dimensions: {}x{}, Output dimensions: {}x{}", targetWidth, targetHeight, inputWidth, inputHeight, outputDimensions.width, outputDimensions.height);
+            logger.info("Target size: {}x{}, Input dimensions: {}x{}, Output dimensions: {}x{}", targetWidth, targetHeight, inputWidth, inputHeight, outputDimensions.width, outputDimensions.height);
 
-			return outputDimensions;
-		}
-		return null;
-	}
+            return outputDimensions;
+        }
+        return null;
+    }
 }

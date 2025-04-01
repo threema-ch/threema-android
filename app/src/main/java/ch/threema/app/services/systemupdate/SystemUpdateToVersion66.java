@@ -41,58 +41,58 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion66 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 66;
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion66");
-	private Context context;
+    public static final int VERSION = 66;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion66");
+    private Context context;
 
-	public SystemUpdateToVersion66(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion66(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
-			return true; // best effort
-		}
+    @Override
+    public boolean runAsync() {
+        if (!ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.WRITE_CONTACTS)) {
+            return true; // best effort
+        }
 
-		forceContactResync();
+        forceContactResync();
 
-		return true;
-	}
+        return true;
+    }
 
-	@RequiresPermission(Manifest.permission.WRITE_CONTACTS)
-	private void forceContactResync() {
-		logger.info("Force a contacts resync");
+    @RequiresPermission(Manifest.permission.WRITE_CONTACTS)
+    private void forceContactResync() {
+        logger.info("Force a contacts resync");
 
-		AndroidContactUtil androidContactUtil = AndroidContactUtil.getInstance();
-		androidContactUtil.deleteAllThreemaRawContacts();
+        AndroidContactUtil androidContactUtil = AndroidContactUtil.getInstance();
+        androidContactUtil.deleteAllThreemaRawContacts();
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			PreferenceService preferenceService = serviceManager.getPreferenceService();
-			if (preferenceService != null) {
-				if (preferenceService.isSyncContacts()) {
-					final SynchronizeContactsService synchronizeContactService;
-					try {
-						synchronizeContactService = serviceManager.getSynchronizeContactsService();
-						if(synchronizeContactService != null) {
-							synchronizeContactService.instantiateSynchronizationAndRun();
-						}
-					} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
-	}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            PreferenceService preferenceService = serviceManager.getPreferenceService();
+            if (preferenceService != null) {
+                if (preferenceService.isSyncContacts()) {
+                    final SynchronizeContactsService synchronizeContactService;
+                    try {
+                        synchronizeContactService = serviceManager.getSynchronizeContactsService();
+                        if (synchronizeContactService != null) {
+                            synchronizeContactService.instantiateSynchronizationAndRun();
+                        }
+                    } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public String getText() {
-		return "force a contacts resync";
-	}
+    @Override
+    public String getText() {
+        return "force a contacts resync";
+    }
 }

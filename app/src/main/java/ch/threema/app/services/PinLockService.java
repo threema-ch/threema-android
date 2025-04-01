@@ -41,143 +41,143 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class PinLockService implements LockAppService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockService");
 
-	private final Context context;
-	private final PreferenceService preferencesService;
-	private NotificationService notificationService;
-	private final UserService userService;
-	private boolean locked;
-	private final AlarmManager alarmManager;
-	private PendingIntent lockTimerIntent;
-	private long lockTimeStamp = 0;
-	private final CopyOnWriteArrayList<OnLockAppStateChanged> lockAppStateChangedItems = new CopyOnWriteArrayList<>();
+    private final Context context;
+    private final PreferenceService preferencesService;
+    private NotificationService notificationService;
+    private final UserService userService;
+    private boolean locked;
+    private final AlarmManager alarmManager;
+    private PendingIntent lockTimerIntent;
+    private long lockTimeStamp = 0;
+    private final CopyOnWriteArrayList<OnLockAppStateChanged> lockAppStateChangedItems = new CopyOnWriteArrayList<>();
 
-	public PinLockService(Context context, PreferenceService preferencesService, UserService userService) {
-		this.context = context;
-		this.preferencesService = preferencesService;
-		this.userService = userService;
-		this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		this.locked = preferencesService.isAppLockEnabled();
-	}
+    public PinLockService(Context context, PreferenceService preferencesService, UserService userService) {
+        this.context = context;
+        this.preferencesService = preferencesService;
+        this.userService = userService;
+        this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        this.locked = preferencesService.isAppLockEnabled();
+    }
 
-	@Override
-	public boolean isLockingEnabled() {
-		logger.debug("isLockingEnabled");
+    @Override
+    public boolean isLockingEnabled() {
+        logger.debug("isLockingEnabled");
 
-		return (preferencesService.isAppLockEnabled() &&
-				this.userService.hasIdentity());
-	}
+        return (preferencesService.isAppLockEnabled() &&
+            this.userService.hasIdentity());
+    }
 
-	@Override
-	public boolean unlock(String pin) {
-		logger.debug("unlock");
+    @Override
+    public boolean unlock(String pin) {
+        logger.debug("unlock");
 
-		if ((PreferenceService.LockingMech_PIN.equals(preferencesService.getLockMechanism()) &&
-				this.preferencesService.isPinCodeCorrect(pin)) ||
-				PreferenceService.LockingMech_SYSTEM.equals(preferencesService.getLockMechanism()) ||
-				PreferenceService.LockingMech_BIOMETRIC.equals(preferencesService.getLockMechanism())) {
-			this.resetLockTimer(false);
-			this.updateState(false);
-			this.lockTimeStamp = 0;
-			return !this.locked;
-		}
-		return false;
-	}
+        if ((PreferenceService.LockingMech_PIN.equals(preferencesService.getLockMechanism()) &&
+            this.preferencesService.isPinCodeCorrect(pin)) ||
+            PreferenceService.LockingMech_SYSTEM.equals(preferencesService.getLockMechanism()) ||
+            PreferenceService.LockingMech_BIOMETRIC.equals(preferencesService.getLockMechanism())) {
+            this.resetLockTimer(false);
+            this.updateState(false);
+            this.lockTimeStamp = 0;
+            return !this.locked;
+        }
+        return false;
+    }
 
-	@Override
-	public void lock() {
-		logger.debug("lock");
+    @Override
+    public void lock() {
+        logger.debug("lock");
 
-		if (isLockingEnabled()) {
-			this.updateState(true);
+        if (isLockingEnabled()) {
+            this.updateState(true);
 
-			try {
-				if (this.notificationService == null) {
-					notificationService = ThreemaApplication.getServiceManager().getNotificationService();
-				}
-				if (this.notificationService != null) {
-					notificationService.cancelConversationNotificationsOnLockApp();
-				}
-			} catch (Exception e){
-				logger.warn("Could not cancel conversation notifications when locking app:");
-			}
-		}
-	}
+            try {
+                if (this.notificationService == null) {
+                    notificationService = ThreemaApplication.getServiceManager().getNotificationService();
+                }
+                if (this.notificationService != null) {
+                    notificationService.cancelConversationNotificationsOnLockApp();
+                }
+            } catch (Exception e) {
+                logger.warn("Could not cancel conversation notifications when locking app:");
+            }
+        }
+    }
 
-	@Override
-	public boolean checkLock() {
-		if (lockTimeStamp > 0 && System.currentTimeMillis() > lockTimeStamp) {
-			lock();
-		}
-		return true;
-	}
+    @Override
+    public boolean checkLock() {
+        if (lockTimeStamp > 0 && System.currentTimeMillis() > lockTimeStamp) {
+            lock();
+        }
+        return true;
+    }
 
-	private void updateState(boolean locked) {
-		logger.info("update locked stated to: {} ", isLocked());
-		if(this.locked != locked) {
+    private void updateState(boolean locked) {
+        logger.info("update locked stated to: {} ", isLocked());
+        if (this.locked != locked) {
 
-			this.locked = locked;
+            this.locked = locked;
 
-			synchronized (this.lockAppStateChangedItems) {
-				ArrayList<OnLockAppStateChanged> toRemove = new ArrayList<>();
+            synchronized (this.lockAppStateChangedItems) {
+                ArrayList<OnLockAppStateChanged> toRemove = new ArrayList<>();
 
-				for (OnLockAppStateChanged c: this.lockAppStateChangedItems) {
-					if (c.changed(locked)) {
-						toRemove.add(c);
-					}
-				}
-				this.lockAppStateChangedItems.removeAll(toRemove);
-			}
+                for (OnLockAppStateChanged c : this.lockAppStateChangedItems) {
+                    if (c.changed(locked)) {
+                        toRemove.add(c);
+                    }
+                }
+                this.lockAppStateChangedItems.removeAll(toRemove);
+            }
 
-			// update widget
-			WidgetUtil.updateWidgets(context);
-		}
-	}
+            // update widget
+            WidgetUtil.updateWidgets(context);
+        }
+    }
 
-	@Override
-	public boolean isLocked() {
-		return this.locked;
-	}
+    @Override
+    public boolean isLocked() {
+        return this.locked;
+    }
 
-	@Override
-	public LockAppService resetLockTimer(boolean restartAfterReset) {
+    @Override
+    public LockAppService resetLockTimer(boolean restartAfterReset) {
 
-		if(this.lockTimerIntent != null) {
-			this.lockTimeStamp = 0;
-			alarmManager.cancel(this.lockTimerIntent);
-		}
+        if (this.lockTimerIntent != null) {
+            this.lockTimeStamp = 0;
+            alarmManager.cancel(this.lockTimerIntent);
+        }
 
-		if(restartAfterReset) {
-			int time = this.preferencesService.getPinLockGraceTime();
-			if(time > 0) {
-				Intent lockingIntent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-				lockingIntent.putExtra(LifetimeServiceImpl.REQUEST_CODE_KEY, LifetimeServiceImpl.REQUEST_LOCK_APP);
-				this.lockTimerIntent = PendingIntent.getBroadcast(context, LifetimeServiceImpl.REQUEST_LOCK_APP, lockingIntent, PENDING_INTENT_FLAG_MUTABLE);
-				this.lockTimeStamp = System.currentTimeMillis() + time * DateUtils.SECOND_IN_MILLIS;
-				alarmManager.set(AlarmManager.RTC_WAKEUP, this.lockTimeStamp, this.lockTimerIntent);
-			} else {
-				this.lockTimeStamp = 0;
-			}
-		}
+        if (restartAfterReset) {
+            int time = this.preferencesService.getPinLockGraceTime();
+            if (time > 0) {
+                Intent lockingIntent = new Intent(context, AlarmManagerBroadcastReceiver.class);
+                lockingIntent.putExtra(LifetimeServiceImpl.REQUEST_CODE_KEY, LifetimeServiceImpl.REQUEST_LOCK_APP);
+                this.lockTimerIntent = PendingIntent.getBroadcast(context, LifetimeServiceImpl.REQUEST_LOCK_APP, lockingIntent, PENDING_INTENT_FLAG_MUTABLE);
+                this.lockTimeStamp = System.currentTimeMillis() + time * DateUtils.SECOND_IN_MILLIS;
+                alarmManager.set(AlarmManager.RTC_WAKEUP, this.lockTimeStamp, this.lockTimerIntent);
+            } else {
+                this.lockTimeStamp = 0;
+            }
+        }
 
-		return this;
-	}
+        return this;
+    }
 
-	@Override
-	public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
-		synchronized (this.lockAppStateChangedItems) {
-			this.lockAppStateChangedItems.add(c);
-		}
-	}
+    @Override
+    public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
+        synchronized (this.lockAppStateChangedItems) {
+            this.lockAppStateChangedItems.add(c);
+        }
+    }
 
-	@Override
-	public void removeOnLockAppStateChanged(OnLockAppStateChanged c) {
-		synchronized (this.lockAppStateChangedItems) {
-			int index = this.lockAppStateChangedItems.indexOf(c);
-			if (index >= 0) {
-				this.lockAppStateChangedItems.remove(index);
-			}
-		}
-	}
+    @Override
+    public void removeOnLockAppStateChanged(OnLockAppStateChanged c) {
+        synchronized (this.lockAppStateChangedItems) {
+            int index = this.lockAppStateChangedItems.indexOf(c);
+            if (index >= 0) {
+                this.lockAppStateChangedItems.remove(index);
+            }
+        }
+    }
 }

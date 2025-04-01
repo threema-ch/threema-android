@@ -74,7 +74,8 @@ fun InteropEmojiConversationTextView(
                     textViewRef?.onTouchEvent(it) ?: false
                 },
             factory = { context ->
-                val textView = EmojiConversationTextView(ContextThemeWrapper(context, R.style.AppBaseTheme))
+                val textView =
+                    EmojiConversationTextView(ContextThemeWrapper(context, R.style.AppBaseTheme))
                 TextViewCompat.setTextAppearance(textView, textAppearanceRes)
                 textView.setTextColor(contentColor.toArgb())
 
@@ -105,7 +106,8 @@ fun InteropEmojiConversationTextView(
                     setMaxLines(maxLines)
                     ellipsize = TextUtils.TruncateAt.END
                     if (shouldMarkupText) {
-                        LinkifyUtil.getInstance().linkify(context,null, null, textView, null, true, false, null)
+                        LinkifyUtil.getInstance()
+                            .linkify(context, null, null, textView, null, true, false, null)
                     }
                 }
             }

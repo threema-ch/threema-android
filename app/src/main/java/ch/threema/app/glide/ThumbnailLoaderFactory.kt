@@ -29,7 +29,8 @@ import com.bumptech.glide.load.model.MultiModelLoaderFactory
 
 class ThumbnailLoaderFactory : ModelLoaderFactory<AbstractMessageModel, Bitmap> {
 
-    override fun build(unused: MultiModelLoaderFactory): ModelLoader<AbstractMessageModel, Bitmap> = ThumbnailLoader()
+    override fun build(unused: MultiModelLoaderFactory): ModelLoader<AbstractMessageModel, Bitmap> =
+        ThumbnailLoader()
 
     override fun teardown() {
         // Nothing to do here

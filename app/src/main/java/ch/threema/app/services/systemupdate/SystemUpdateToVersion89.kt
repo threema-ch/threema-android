@@ -64,7 +64,8 @@ internal class SystemUpdateToVersion89(
         // Note that in a previous version of the update script (that has been applied for most
         // users), all message types have been used to determine the last update flag leading to
         // some chat reordering.
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE contacts
             SET lastUpdate = tmp.lastUpdate FROM (
                 SELECT m.identity, max(m.createdAtUtc) as lastUpdate
@@ -73,7 +74,8 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.identity
             ) tmp
             WHERE contacts.identity = tmp.identity;
-        """)
+        """
+        )
     }
 
     private fun calculateLastUpdateGroups() {
@@ -84,7 +86,8 @@ internal class SystemUpdateToVersion89(
         // a previous version of the update script (that has been applied for most users), all
         // message types have been used to determine the last update flag leading to some chat
         // reordering.
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE m_group
             SET lastUpdate = tmp.lastUpdate FROM (
                 SELECT m.groupId, max(m.createdAtUtc) as lastUpdate
@@ -93,22 +96,26 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.groupId
             ) tmp
             WHERE m_group.id = tmp.groupId;
-        """)
+        """
+        )
 
         // Set lastUpdate for groups without messages.
         // `createdAt` is stored in localtime and therefore needs to be converted to UTC.
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE m_group
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000
             WHERE lastUpdate IS NULL;
-        """)
+        """
+        )
     }
 
     private fun calculateLastUpdateDistributionLists() {
         logger.info("Calculate lastUpdate for distribution lists")
 
         // Set lastUpdate to the create date of the latest message if present
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE distribution_list
             SET lastUpdate = tmp.lastUpdate FROM (
                 SELECT m.distributionListId, max(m.createdAtUtc) as lastUpdate
@@ -117,15 +124,18 @@ internal class SystemUpdateToVersion89(
                 GROUP BY m.distributionListId
             ) tmp
             WHERE distribution_list.id = tmp.distributionListId;
-        """)
+        """
+        )
 
         // Set lastUpdate for distribution lists without messages.
         // `createdAt` is stored in localtime and therefore needs to be converted to UTC.
-        db.execSQL("""
+        db.execSQL(
+            """
             UPDATE distribution_list
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000
             WHERE lastUpdate IS NULL;
-        """)
+        """
+        )
     }
 
 }

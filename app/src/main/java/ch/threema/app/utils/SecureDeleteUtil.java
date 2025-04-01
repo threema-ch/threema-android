@@ -30,34 +30,34 @@ import java.io.RandomAccessFile;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SecureDeleteUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SecureDeleteUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SecureDeleteUtil");
 
     public static void secureDelete(File file) throws IOException {
         if (file != null && file.exists()) {
-			if (file.isDirectory()) {
-				File[] children = file.listFiles();
-				if (children != null) {
-					for (int i = 0; i < children.length; i++) {
-						SecureDeleteUtil.secureDelete(children[i]);
-					}
-				}
-				//remove directory
-				FileUtil.deleteFileOrWarn(file, "secureDelete", logger);
-				return;
-			}
+            if (file.isDirectory()) {
+                File[] children = file.listFiles();
+                if (children != null) {
+                    for (int i = 0; i < children.length; i++) {
+                        SecureDeleteUtil.secureDelete(children[i]);
+                    }
+                }
+                //remove directory
+                FileUtil.deleteFileOrWarn(file, "secureDelete", logger);
+                return;
+            }
 
             long length = file.length();
             try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-	            raf.seek(0);
-	            byte[] zero = new byte[16384];
-	            long pos = 0;
-	            while (pos < length) {
-		            int nwrite = (int) Math.min((long) zero.length, length - pos);
-		            raf.write(zero, 0, nwrite);
-		            pos += nwrite;
-	            }
+                raf.seek(0);
+                byte[] zero = new byte[16384];
+                long pos = 0;
+                while (pos < length) {
+                    int nwrite = (int) Math.min((long) zero.length, length - pos);
+                    raf.write(zero, 0, nwrite);
+                    pos += nwrite;
+                }
             }
-	        FileUtil.deleteFileOrWarn(file, "secureDelete", logger);
+            FileUtil.deleteFileOrWarn(file, "secureDelete", logger);
         }
     }
 }

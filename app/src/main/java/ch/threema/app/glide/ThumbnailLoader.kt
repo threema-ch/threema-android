@@ -29,7 +29,12 @@ import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
 class ThumbnailLoader : ModelLoader<AbstractMessageModel, Bitmap> {
-    override fun buildLoadData(model: AbstractMessageModel, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
+    override fun buildLoadData(
+        model: AbstractMessageModel,
+        width: Int,
+        height: Int,
+        options: Options
+    ): ModelLoader.LoadData<Bitmap> {
         return ModelLoader.LoadData(ObjectKey(model), ThumbnailFetcher(model))
     }
 

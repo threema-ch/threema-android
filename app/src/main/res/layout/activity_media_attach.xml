@@ -1,227 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/coordinator"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:elevation="1dp"
-	android:fitsSystemWindows="true">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="1dp"
+    android:fitsSystemWindows="true">
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/permission_container"
-		android:visibility="gone"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		app:layout_constraintBottom_toBottomOf="@id/media_grid_recycler"
-		app:layout_constraintLeft_toLeftOf="@id/media_grid_recycler"
-		app:layout_constraintRight_toRightOf="@id/media_grid_recycler"
-		app:layout_constraintTop_toTopOf="@id/media_grid_recycler">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/permission_container"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/media_grid_recycler"
+        app:layout_constraintLeft_toLeftOf="@id/media_grid_recycler"
+        app:layout_constraintRight_toRightOf="@id/media_grid_recycler"
+        app:layout_constraintTop_toTopOf="@id/media_grid_recycler">
 
-		<TextView
-			android:id="@+id/permission_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="8dp"
-			android:gravity="center_horizontal"
-			android:textAlignment="center"
-			android:textAppearance="@style/Threema.TextAppearance.Emptyview"
-			android:textColor="@android:color/white"
-			android:text="@string/enable_storage_access_for_media"
-			android:shadowColor="@android:color/black"
-			android:shadowDx="2"
-			android:shadowDy="2"
-			android:shadowRadius="3"
-			app:layout_constraintBottom_toTopOf="@+id/permission_button"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintVertical_chainStyle="packed"
-			/>
+        <TextView
+            android:id="@+id/permission_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+            android:textColor="@android:color/white"
+            android:text="@string/enable_storage_access_for_media"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="3"
+            app:layout_constraintBottom_toTopOf="@+id/permission_button"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-		<com.google.android.material.button.MaterialButton
-			android:id="@+id/permission_button"
-			style="@style/Threema.MaterialButton.Elevated"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:gravity="center"
-			android:text="@string/take_me_there"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/permission_text" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/permission_button"
+            style="@style/Threema.MaterialButton.Elevated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/take_me_there"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/permission_text" />
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-	<androidx.coordinatorlayout.widget.CoordinatorLayout
-		android:id="@+id/grid_container"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/grid_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-	<androidx.coordinatorlayout.widget.CoordinatorLayout
-		android:id="@+id/bottom_sheet_container"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_marginTop="20dp">
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/bottom_sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:id="@id/bottom_sheet"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			style="?attr/bottomSheetStyle"
-			android:elevation="1dp"
-			app:behavior_hideable="true"
-			app:behavior_saveFlags="all"
-			android:clipToPadding="false"
-			android:layout_gravity="center"
-			app:layout_behavior="@string/bottom_sheet_behavior">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@id/bottom_sheet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="?attr/bottomSheetStyle"
+                android:elevation="1dp"
+                app:behavior_hideable="true"
+                app:behavior_saveFlags="all"
+                android:clipToPadding="false"
+                android:layout_gravity="center"
+                app:layout_behavior="@string/bottom_sheet_behavior">
 
-			<ImageView
-				style="@style/Threema.BottomSheet.DragHandle"
-				android:id="@+id/drag_handle"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-				android:importantForAccessibility="no"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    style="@style/Threema.BottomSheet.DragHandle"
+                    android:id="@+id/drag_handle"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-			<include
-				layout="@layout/notice_select_media_permission"
-				android:id="@+id/select_media_permission_notice_container"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				android:layout_marginTop="@dimen/notice_views_vertical_margin"
-				android:layout_marginBottom="@dimen/notice_views_vertical_margin"
-				android:visibility="gone"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/drag_handle"
-				app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
+                <include
+                    layout="@layout/notice_select_media_permission"
+                    android:id="@+id/select_media_permission_notice_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="@dimen/notice_views_vertical_margin"
+                    android:layout_marginBottom="@dimen/notice_views_vertical_margin"
+                    android:visibility="gone"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/drag_handle"
+                    app:layout_constraintBottom_toTopOf="@id/media_grid_recycler" />
 
-			<ch.threema.app.ui.EmptyRecyclerView
-				android:id="@+id/media_grid_recycler"
-				android:layout_height="0dp"
-				android:layout_width="0dp"
-				android:layout_marginTop="8dp"
-				android:layout_marginLeft="8dp"
-				android:layout_marginRight="8dp"
-				app:layout_constraintBottom_toBottomOf="parent"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toBottomOf="@id/select_media_permission_notice_container" />
+                <ch.threema.app.ui.EmptyRecyclerView
+                    android:id="@+id/media_grid_recycler"
+                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/select_media_permission_notice_container" />
 
-		</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/appbar_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="?attr/colorSurface"
-		android:visibility="invisible"
-		app:elevation="0dp">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            android:visibility="invisible"
+            app:elevation="0dp">
 
-		<com.google.android.material.appbar.MaterialToolbar
-			android:id="@+id/toolbar"
-			style="@style/Threema.ToolbarStyle"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
-			app:menu="@menu/activity_media_attach"
-			app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
-			app:navigationIconTint="?attr/colorOnSurface">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                style="@style/Threema.ToolbarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:menu="@menu/activity_media_attach"
+                app:navigationIcon="@drawable/ic_chevron_down_slightly_bigger"
+                app:navigationIconTint="?attr/colorOnSurface">
 
-			<LinearLayout
-				android:id="@+id/toolbar_title"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:clickable="false"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless">
+                <LinearLayout
+                    android:id="@+id/toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clickable="false"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless">
 
-				<TextView
-					style="@style/Threema.TextAppearance.Toolbar.Title"
-					android:id="@+id/toolbar_title_textview"
-					android:layout_width="wrap_content"
-					android:layout_height="match_parent"
-					android:textColor="?attr/colorOnBackground"
-					android:textSize="20sp"
-					android:ellipsize="middle"/>
+                    <TextView
+                        style="@style/Threema.TextAppearance.Toolbar.Title"
+                        android:id="@+id/toolbar_title_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="20sp"
+                        android:ellipsize="middle" />
 
-				<ImageView
-					android:id="@+id/dropdown_icon"
-					android:layout_width="wrap_content"
-					android:layout_height="match_parent"
-					app:srcCompat="@drawable/ic_arrow_down_filled"
-					app:tint="?attr/colorOnBackground"
-					android:visibility="invisible"
-					android:contentDescription="@string/filter_by_album"/>
+                    <ImageView
+                        android:id="@+id/dropdown_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_arrow_down_filled"
+                        app:tint="?attr/colorOnBackground"
+                        android:visibility="invisible"
+                        android:contentDescription="@string/filter_by_album" />
 
-			</LinearLayout>
+                </LinearLayout>
 
-		</com.google.android.material.appbar.MaterialToolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
 
-	</com.google.android.material.appbar.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-	<ViewStub android:id="@+id/stub"
-		android:inflatedId="@+id/control_panel"
-		android:layout_width="match_parent"
-		android:layout_height="@dimen/control_panel_height"
-		android:layout_gravity="bottom"/>
+        <ViewStub
+            android:id="@+id/stub"
+            android:inflatedId="@+id/control_panel"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/control_panel_height"
+            android:layout_gravity="bottom" />
 
-	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-	<androidx.coordinatorlayout.widget.CoordinatorLayout
-		android:id="@+id/pager_container"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:visibility="gone">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/pager_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
-		<androidx.viewpager2.widget.ViewPager2
-			android:id="@+id/pager"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:background="@color/gallery_background" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gallery_background" />
 
-		<com.google.android.material.appbar.AppBarLayout
-			android:id="@+id/appbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/preview_navigation_area_bg"
-			app:elevation="0dp">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/preview_navigation_area_bg"
+            app:elevation="0dp">
 
-			<com.google.android.material.appbar.MaterialToolbar
-				android:id="@+id/preview_toolbar"
-				style="@style/Threema.ToolbarStyle"
-				android:layout_width="match_parent"
-				android:layout_height="?attr/actionBarSize"
-				android:background="@android:color/transparent"
-				app:navigationIcon="@drawable/ic_arrow_left"
-				app:navigationIconTint="@android:color/white">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/preview_toolbar"
+                style="@style/Threema.ToolbarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:navigationIcon="@drawable/ic_arrow_left"
+                app:navigationIconTint="@android:color/white">
 
-				<ch.threema.app.ui.CheckableView
-					android:id="@+id/check_box"
-					android:layout_width="32dp"
-					android:layout_height="32dp"
-					android:layout_gravity="top|right"
-					android:layout_marginTop="12dp"
-					android:layout_marginRight="16dp"
-					android:background="@drawable/selector_grid_checkbox" />
+                <ch.threema.app.ui.CheckableView
+                    android:id="@+id/check_box"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="top|right"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@drawable/selector_grid_checkbox" />
 
-			</com.google.android.material.appbar.MaterialToolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
 
-		</com.google.android.material.appbar.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-		<include layout="@layout/bottom_sheet_media_preview"/>
+        <include layout="@layout/bottom_sheet_media_preview" />
 
-	</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

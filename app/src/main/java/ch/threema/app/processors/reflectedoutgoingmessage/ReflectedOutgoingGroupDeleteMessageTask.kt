@@ -38,7 +38,11 @@ internal class ReflectedOutgoingGroupDeleteMessageTask(
 
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupDeleteMessage: GroupDeleteMessage by lazy { GroupDeleteMessage.fromReflected(message) }
+    private val groupDeleteMessage: GroupDeleteMessage by lazy {
+        GroupDeleteMessage.fromReflected(
+            message
+        )
+    }
 
     override val storeNonces: Boolean
         get() = groupDeleteMessage.protectAgainstReplay()
@@ -52,7 +56,10 @@ internal class ReflectedOutgoingGroupDeleteMessageTask(
             receiver = messageReceiver,
             messageService = messageService
         )?.let { validatedMessageModelToDelete ->
-            messageService.deleteMessageContentsAndRelatedData(validatedMessageModelToDelete, groupDeleteMessage.date)
+            messageService.deleteMessageContentsAndRelatedData(
+                validatedMessageModelToDelete,
+                groupDeleteMessage.date
+            )
         }
     }
 }

@@ -44,7 +44,8 @@ class IncomingGroupPollVoteTask(
         return processPollVoteMessage()
     }
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processPollVoteMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processPollVoteMessage()
 
     private fun processPollVoteMessage(): ReceiveStepsResult {
         val ballotVoteResult: BallotVoteResult? = ballotService.vote(groupPollVoteMessage)

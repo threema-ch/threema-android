@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/menu_identity_remove"
-            app:showAsAction="always"
-            android:icon="@drawable/ic_delete_outline"
-            app:iconTint="?attr/colorPrimary"
-            android:title="@string/backup_delete_confirm"
-            android:orderInCategory="70"/>
+        android:id="@+id/menu_identity_remove"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_delete_outline"
+        app:iconTint="?attr/colorPrimary"
+        android:title="@string/backup_delete_confirm"
+        android:orderInCategory="70" />
 
 </menu>

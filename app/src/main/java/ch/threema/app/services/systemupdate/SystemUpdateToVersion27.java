@@ -28,32 +28,32 @@ import ch.threema.app.services.UpdateSystemService;
 import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 public class SystemUpdateToVersion27 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion27(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion27(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
 
-	@Override
-	public boolean runDirectly() {
-		if(!fieldExists(this.sqLiteDatabase, "contacts", "featureLevel")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN featureLevel TINYINT(1) DEFAULT 1");
-		}
+    @Override
+    public boolean runDirectly() {
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "featureLevel")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN featureLevel TINYINT(1) DEFAULT 1");
+        }
 
-		//update feature level
-		sqLiteDatabase.rawExecSQL("UPDATE contacts SET featureLevel = 1 WHERE isGroupCapable = 1 and featureLevel < 1");
+        //update feature level
+        sqLiteDatabase.rawExecSQL("UPDATE contacts SET featureLevel = 1 WHERE isGroupCapable = 1 and featureLevel < 1");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 26";
-	}
+    @Override
+    public String getText() {
+        return "version 26";
+    }
 }

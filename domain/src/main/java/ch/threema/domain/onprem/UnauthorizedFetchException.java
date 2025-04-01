@@ -24,7 +24,7 @@ package ch.threema.domain.onprem;
 import ch.threema.base.ThreemaException;
 
 public class UnauthorizedFetchException extends ThreemaException {
-	public UnauthorizedFetchException(String msg) {
-		super(msg);
-	}
+    public UnauthorizedFetchException(String msg) {
+        super(msg);
+    }
 }

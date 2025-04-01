@@ -43,43 +43,43 @@ import static org.mockito.Mockito.times;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Log.class})
 public class LogcatBackendTest {
-	private final ArgumentCaptor<String> tagCaptor = ArgumentCaptor.forClass(String.class);
-	private final ArgumentCaptor<String> msgCaptor = ArgumentCaptor.forClass(String.class);
-	private final ArgumentCaptor<Integer> levelCaptor = ArgumentCaptor.forClass(Integer.class);
+    private final ArgumentCaptor<String> tagCaptor = ArgumentCaptor.forClass(String.class);
+    private final ArgumentCaptor<String> msgCaptor = ArgumentCaptor.forClass(String.class);
+    private final ArgumentCaptor<Integer> levelCaptor = ArgumentCaptor.forClass(Integer.class);
 
-	private void assertLogArguments(@LogLevel int level, String tag, String msg) {
-		Assert.assertEquals(Integer.valueOf(level), levelCaptor.getValue());
-		Assert.assertEquals(tag, tagCaptor.getValue());
-		Assert.assertEquals(msg, msgCaptor.getValue());
-	}
+    private void assertLogArguments(@LogLevel int level, String tag, String msg) {
+        Assert.assertEquals(Integer.valueOf(level), levelCaptor.getValue());
+        Assert.assertEquals(tag, tagCaptor.getValue());
+        Assert.assertEquals(msg, msgCaptor.getValue());
+    }
 
-	/**
-	 * Make sure that enabling the debug log file actually creates the debug log file.
-	 * Also test that the file is only created when enabled.
-	 */
-	@Test
-	public void testTagCleaning() {
-		PowerMockito.mockStatic(Log.class);
-		final LogcatBackend backend = new LogcatBackend(Log.INFO);
+    /**
+     * Make sure that enabling the debug log file actually creates the debug log file.
+     * Also test that the file is only created when enabled.
+     */
+    @Test
+    public void testTagCleaning() {
+        PowerMockito.mockStatic(Log.class);
+        final LogcatBackend backend = new LogcatBackend(Log.INFO);
 
-		backend.print(Log.WARN, "ch.threema.app.Hello", null, "hello");
-		PowerMockito.verifyStatic(Log.class, times(1));
-		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.WARN, BuildConfig.LOG_TAG, "Hello: hello");
+        backend.print(Log.WARN, "ch.threema.app.Hello", null, "hello");
+        PowerMockito.verifyStatic(Log.class, times(1));
+        Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
+        this.assertLogArguments(Log.WARN, BuildConfig.LOG_TAG, "Hello: hello");
 
-		backend.print(Log.INFO, "ch.threema.domain.Bye", null, "goodbye");
-		PowerMockito.verifyStatic(Log.class, times(2));
-		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "Bye: goodbye");
+        backend.print(Log.INFO, "ch.threema.domain.Bye", null, "goodbye");
+        PowerMockito.verifyStatic(Log.class, times(2));
+        Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
+        this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "Bye: goodbye");
 
-		backend.print(Log.INFO, "ch.threema.app.subpackage.Abcd", null, "msg");
-		PowerMockito.verifyStatic(Log.class, times(3));
-		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "subpackage.Abcd: msg");
+        backend.print(Log.INFO, "ch.threema.app.subpackage.Abcd", null, "msg");
+        PowerMockito.verifyStatic(Log.class, times(3));
+        Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
+        this.assertLogArguments(Log.INFO, BuildConfig.LOG_TAG, "subpackage.Abcd: msg");
 
-		backend.print(Log.ERROR, "any.other.package", null, "hmmmm");
-		PowerMockito.verifyStatic(Log.class, times(4));
-		Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
-		this.assertLogArguments(Log.ERROR, BuildConfig.LOG_TAG, "any.other.package: hmmmm");
-	}
+        backend.print(Log.ERROR, "any.other.package", null, "hmmmm");
+        PowerMockito.verifyStatic(Log.class, times(4));
+        Log.println(levelCaptor.capture(), tagCaptor.capture(), msgCaptor.capture());
+        this.assertLogArguments(Log.ERROR, BuildConfig.LOG_TAG, "any.other.package: hmmmm");
+    }
 }

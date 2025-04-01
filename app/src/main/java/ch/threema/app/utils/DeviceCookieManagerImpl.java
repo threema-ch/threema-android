@@ -38,79 +38,79 @@ import ch.threema.storage.DatabaseServiceNew;
 import ch.threema.storage.models.ServerMessageModel;
 
 public class DeviceCookieManagerImpl implements DeviceCookieManager {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceCookieManagerImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceCookieManagerImpl");
 
-	private static final int DEVICE_COOKIE_SIZE = 16;
+    private static final int DEVICE_COOKIE_SIZE = 16;
 
-	@NonNull
-	private final PreferenceStoreInterface preferenceStore;
-	@NonNull
-	private final DatabaseServiceNew databaseService;
-	@Nullable
-	private NotificationService notificationService;
-	private boolean skipNextIndication;
+    @NonNull
+    private final PreferenceStoreInterface preferenceStore;
+    @NonNull
+    private final DatabaseServiceNew databaseService;
+    @Nullable
+    private NotificationService notificationService;
+    private boolean skipNextIndication;
 
-	public DeviceCookieManagerImpl(
-		@NonNull PreferenceStoreInterface preferenceStore,
-		@NonNull DatabaseServiceNew databaseService
-	) {
-		this.preferenceStore = preferenceStore;
-		this.databaseService = databaseService;
-		this.skipNextIndication = false;
-	}
+    public DeviceCookieManagerImpl(
+        @NonNull PreferenceStoreInterface preferenceStore,
+        @NonNull DatabaseServiceNew databaseService
+    ) {
+        this.preferenceStore = preferenceStore;
+        this.databaseService = databaseService;
+        this.skipNextIndication = false;
+    }
 
-	public void setNotificationService(@NonNull NotificationService notificationService) {
-		this.notificationService = notificationService;
-	}
+    public void setNotificationService(@NonNull NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
-	@Override
-	public byte[] obtainDeviceCookie() {
-		// TODO(ANDR-2155): When the target API level is >= 23, use Android Keystore to store the device cookie
+    @Override
+    public byte[] obtainDeviceCookie() {
+        // TODO(ANDR-2155): When the target API level is >= 23, use Android Keystore to store the device cookie
 
-		byte[] deviceCookie = preferenceStore.getBytes(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), true);
-		if (deviceCookie != null && deviceCookie.length == DEVICE_COOKIE_SIZE) {
-			logger.debug("Got existing device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
-			return deviceCookie;
-		}
+        byte[] deviceCookie = preferenceStore.getBytes(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), true);
+        if (deviceCookie != null && deviceCookie.length == DEVICE_COOKIE_SIZE) {
+            logger.debug("Got existing device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
+            return deviceCookie;
+        }
 
-		// Generate and store new random device cookie
-		deviceCookie = new byte[DEVICE_COOKIE_SIZE];
-		SecureRandom random = new SecureRandom();
-		random.nextBytes(deviceCookie);
-		preferenceStore.save(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), deviceCookie, true);
+        // Generate and store new random device cookie
+        deviceCookie = new byte[DEVICE_COOKIE_SIZE];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(deviceCookie);
+        preferenceStore.save(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), deviceCookie, true);
 
-		logger.info("Generated new device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
+        logger.info("Generated new device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
 
-		// Skip the next indication, as we have just generated a new cookie and
-		// will get an indication for sure if this is a restored ID (where the
-		// server has already stored a device cookie).
-		this.skipNextIndication = true;
+        // Skip the next indication, as we have just generated a new cookie and
+        // will get an indication for sure if this is a restored ID (where the
+        // server has already stored a device cookie).
+        this.skipNextIndication = true;
 
-		return deviceCookie;
-	}
+        return deviceCookie;
+    }
 
-	@Override
-	public void changeIndicationReceived() {
-		if (this.skipNextIndication) {
-			logger.info("Skipping change indication because new cookie has been generated");
-			this.skipNextIndication = false;
-			return;
-		}
+    @Override
+    public void changeIndicationReceived() {
+        if (this.skipNextIndication) {
+            logger.info("Skipping change indication because new cookie has been generated");
+            this.skipNextIndication = false;
+            return;
+        }
 
-		logger.info("Device cookie change indication received, showing warning message");
+        logger.info("Device cookie change indication received, showing warning message");
 
-		ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
-		databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+        ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
+        databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
 
-		if (notificationService == null) {
-			logger.error("Could not display device cookie change indication as notification service is null");
-		} else {
-			notificationService.showServerMessage(serverMessageModel);
-		}
-	}
+        if (notificationService == null) {
+            logger.error("Could not display device cookie change indication as notification service is null");
+        } else {
+            notificationService.showServerMessage(serverMessageModel);
+        }
+    }
 
-	@Override
-	public void deleteDeviceCookie() {
-		preferenceStore.remove(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie));
-	}
+    @Override
+    public void deleteDeviceCookie() {
+        preferenceStore.remove(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie));
+    }
 }

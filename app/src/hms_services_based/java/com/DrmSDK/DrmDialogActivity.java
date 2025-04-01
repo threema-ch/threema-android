@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @since 2020/07/01
  */
 public class DrmDialogActivity extends Activity implements DialogObserver {
-	private final Logger logger = LoggerFactory.getLogger(DrmDialogActivity.class);
+    private final Logger logger = LoggerFactory.getLogger(DrmDialogActivity.class);
     /**
      * 透明状态栏属性
      * Transparent Status Bar Properties
@@ -58,7 +58,7 @@ public class DrmDialogActivity extends Activity implements DialogObserver {
         super.onCreate(savedInstanceState);
         View view = new View(this);
         view.setBackgroundColor(getResources().getColor(
-                android.R.color.transparent));
+            android.R.color.transparent));
         setContentView(view);
         // 根据传递的Action启动Activity
         // Initiate an activity based on the transferred action.
@@ -83,7 +83,7 @@ public class DrmDialogActivity extends Activity implements DialogObserver {
         }
 
         int dialog = data.getInt(Constants.KEY_EXTRA_DIALOG,
-                ViewHelper.NO_DIALOG_INFO);
+            ViewHelper.NO_DIALOG_INFO);
         logger.info("DrmDialogActivity dialog" + dialog);
         String extra = data.getString(Constants.KEY_EXTRA_EXTRA);
         switch (dialog) {
@@ -126,7 +126,7 @@ public class DrmDialogActivity extends Activity implements DialogObserver {
                 break;
             default:
                 int errorCode = data.getInt(Constants.KEY_EXTRA_CODE,
-                        DrmStatusCodes.CODE_DEFAULT);
+                    DrmStatusCodes.CODE_DEFAULT);
                 ViewHelper.showDailog(this, dialog, extra, errorCode);
                 break;
         }
@@ -194,8 +194,8 @@ public class DrmDialogActivity extends Activity implements DialogObserver {
         try {
             Window w = activity.getWindow();
             HwInvoke.invokeFun(w.getClass(), w, "setHwFloating", new Class[]
-                    {boolean.class}, new Object[]
-                    {boolHwFloating});
+                {boolean.class}, new Object[]
+                {boolHwFloating});
             return true;
         } catch (Exception e) {
             Log.e("DrmDialogActivity", "Exception");

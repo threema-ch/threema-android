@@ -4,82 +4,82 @@
   -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/notice_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		android:clickable="false"
-		android:orientation="vertical"
-		android:outlineProvider="none"
-		android:visibility="visible"
-		app:cardBackgroundColor="?android:attr/colorBackground"
-		app:cardCornerRadius="@dimen/cardview_border_radius"
-		app:cardElevation="@dimen/notice_views_elevation"
-		app:contentPaddingBottom="6dp"
-		app:contentPaddingLeft="12dp"
-		app:contentPaddingRight="8dp"
-		app:contentPaddingTop="12dp"
-		app:strokeWidth="0dp">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/notice_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:clickable="false"
+        android:orientation="vertical"
+        android:outlineProvider="none"
+        android:visibility="visible"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="@dimen/cardview_border_radius"
+        app:cardElevation="@dimen/notice_views_elevation"
+        app:contentPaddingBottom="6dp"
+        app:contentPaddingLeft="12dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="12dp"
+        app:strokeWidth="0dp">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-			<FrameLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-				<TextView
-					style="@style/Threema.TextAppearance.BodyLarge"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="top|start"
-					android:layout_marginTop="0dp"
-					android:text="@string/ballot_open" />
+                <TextView
+                    style="@style/Threema.TextAppearance.BodyLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/ballot_open" />
 
-				<ImageView
-					android:id="@+id/button_cancel"
-					android:layout_width="24dp"
-					android:layout_height="24dp"
-					android:layout_gravity="top|end"
-					android:contentDescription="@string/ballot_window_hide"
-					android:foreground="@drawable/selector_avatar"
-					android:padding="2dp"
-					android:src="@drawable/ic_close"
-					app:tint="?attr/colorOnBackground" />
+                <ImageView
+                    android:id="@+id/button_cancel"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="top|end"
+                    android:contentDescription="@string/ballot_window_hide"
+                    android:foreground="@drawable/selector_avatar"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="?attr/colorOnBackground" />
 
-			</FrameLayout>
+            </FrameLayout>
 
-			<HorizontalScrollView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginEnd="4dp"
-				android:scrollbarSize="0dp"
-				android:scrollbars="none"
-				android:requiresFadingEdge="horizontal"
-				android:fadingEdgeLength="40dp">
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:scrollbarSize="0dp"
+                android:scrollbars="none"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="40dp">
 
-				<com.google.android.material.chip.ChipGroup
-					android:id="@+id/chip_group"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					app:chipSpacingHorizontal="4dp"
-					app:chipSpacingVertical="0dp"
-					app:layout_constraintBottom_toBottomOf="parent"
-					app:layout_constraintLeft_toLeftOf="parent"
-					app:layout_constraintTop_toTopOf="parent"
-					app:singleLine="true"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="4dp"
+                    app:chipSpacingVertical="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:singleLine="true"
                     android:animateLayoutChanges="true" />
 
-			</HorizontalScrollView>
+            </HorizontalScrollView>
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </merge>

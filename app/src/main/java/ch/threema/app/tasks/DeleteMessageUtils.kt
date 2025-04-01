@@ -39,16 +39,26 @@ fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: DeleteMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonDeleteMessageReceiveSteps(deleteMessage, deleteMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonDeleteMessageReceiveSteps(
+        deleteMessage,
+        deleteMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: GroupDeleteMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonDeleteMessageReceiveSteps(deleteMessage, deleteMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonDeleteMessageReceiveSteps(
+        deleteMessage,
+        deleteMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 private fun runCommonDeleteMessageReceiveSteps(
@@ -56,7 +66,7 @@ private fun runCommonDeleteMessageReceiveSteps(
     messageId: Long,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
+): AbstractMessageModel? {
     // Lookup the message with `message_id` originally sent by the sender within
     //  the associated conversation and let `message` be the result.
     val apiMessageId = MessageId(messageId).toString()
@@ -70,7 +80,11 @@ private fun runCommonDeleteMessageReceiveSteps(
     // 2. If `message` is not ... or the sender is not the original sender of `message`, discard the message and abort these steps.
     // Note: We only perform this check if the message is inbox
     if (!message.isOutbox && deleteMessage.fromIdentity != message.identity) {
-        logger.warn("Delete Message: original message's sender {} does not equal deleted message's sender {}", message.identity, deleteMessage.fromIdentity)
+        logger.warn(
+            "Delete Message: original message's sender {} does not equal deleted message's sender {}",
+            message.identity,
+            deleteMessage.fromIdentity
+        )
         return null
     }
 

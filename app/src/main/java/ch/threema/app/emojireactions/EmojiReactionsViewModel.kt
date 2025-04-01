@@ -82,10 +82,14 @@ class EmojiReactionsViewModel(
         } ?: MutableStateFlow(EmojiReactionsUiState(emptyList()))
 
 
-    private fun getMessageModel(): AbstractMessageModel? = when (reactionMessageIdentifier.messageType) {
-        TargetMessageType.ONE_TO_ONE -> messageService.getContactMessageModel(reactionMessageIdentifier.messageId)
-        TargetMessageType.GROUP -> messageService.getGroupMessageModel(reactionMessageIdentifier.messageId)
-    }
+    private fun getMessageModel(): AbstractMessageModel? =
+        when (reactionMessageIdentifier.messageType) {
+            TargetMessageType.ONE_TO_ONE -> messageService.getContactMessageModel(
+                reactionMessageIdentifier.messageId
+            )
+
+            TargetMessageType.GROUP -> messageService.getGroupMessageModel(reactionMessageIdentifier.messageId)
+        }
 
     data class EmojiReactionsUiState(
         val emojiReactions: List<EmojiReactionData>

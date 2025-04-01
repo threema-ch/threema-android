@@ -2,15 +2,15 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-		style="@style/Widget.Material3.CircularProgressIndicator.Medium"
-		android:indeterminate="true"
-		android:id="@+id/loading_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:gravity="center"
-		android:visibility="gone"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        style="@style/Widget.Material3.CircularProgressIndicator.Medium"
+        android:indeterminate="true"
+        android:id="@+id/loading_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/empty_image"

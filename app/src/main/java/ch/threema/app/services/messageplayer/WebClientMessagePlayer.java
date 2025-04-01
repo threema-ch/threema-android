@@ -35,80 +35,87 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
  * A subclass of the MessagePlayer made for downloading files and sending them to Threema Web.
  */
 public class WebClientMessagePlayer extends MessagePlayer {
-	public WebClientMessagePlayer(Context context,
-	                                 MessageService messageService,
-	                                 FileService fileService,
-	                                 MessageReceiver messageReceiver,
-	                                 AbstractMessageModel messageModel) {
-		super(context, messageService, fileService, messageReceiver, messageModel);
-	}
+    public WebClientMessagePlayer(Context context,
+                                  MessageService messageService,
+                                  FileService fileService,
+                                  MessageReceiver messageReceiver,
+                                  AbstractMessageModel messageModel) {
+        super(context, messageService, fileService, messageReceiver, messageModel);
+    }
 
-	@Override
-	protected MediaMessageDataInterface getData() {
-		switch (getMessageModel().getType()) {
-			case VOICEMESSAGE:
-				return this.getMessageModel().getAudioData();
-			case FILE:
-				return this.getMessageModel().getFileData();
-			case VIDEO:
-				return this.getMessageModel().getVideoData();
-			case IMAGE:
-				return new MediaMessageDataInterface() {
-					@Override
-					public byte[] getEncryptionKey() {
-						return new byte[0];
-					}
+    @Override
+    protected MediaMessageDataInterface getData() {
+        switch (getMessageModel().getType()) {
+            case VOICEMESSAGE:
+                return this.getMessageModel().getAudioData();
+            case FILE:
+                return this.getMessageModel().getFileData();
+            case VIDEO:
+                return this.getMessageModel().getVideoData();
+            case IMAGE:
+                return new MediaMessageDataInterface() {
+                    @Override
+                    public byte[] getEncryptionKey() {
+                        return new byte[0];
+                    }
 
-					@Override
-					public byte[] getBlobId() {
-						return new byte[0];
-					}
+                    @Override
+                    public byte[] getBlobId() {
+                        return new byte[0];
+                    }
 
-					@Override
-					public boolean isDownloaded() {
-						return true;
-					}
+                    @Override
+                    public boolean isDownloaded() {
+                        return true;
+                    }
 
-					@Override
-					public void isDownloaded(boolean isDownloaded) { }
+                    @Override
+                    public void isDownloaded(boolean isDownloaded) {
+                    }
 
-					@Override
-					public byte[] getNonce() { return new byte[0]; }
-				};
-		}
-		return null;
-	}
+                    @Override
+                    public byte[] getNonce() {
+                        return new byte[0];
+                    }
+                };
+        }
+        return null;
+    }
 
-	@Override
-	protected AbstractMessageModel setData(MediaMessageDataInterface data) {
-		return null;
-	}
+    @Override
+    protected AbstractMessageModel setData(MediaMessageDataInterface data) {
+        return null;
+    }
 
-	@Override
-	public boolean open() {
-		markAsConsumed();
-		return super.open();
-	}
+    @Override
+    public boolean open() {
+        markAsConsumed();
+        return super.open();
+    }
 
-	@Override
-	protected void open(File decryptedFile) { }
+    @Override
+    protected void open(File decryptedFile) {
+    }
 
-	@Override
-	protected void makePause(int source) { }
+    @Override
+    protected void makePause(int source) {
+    }
 
-	@Override
-	protected void makeResume(int source) { }
+    @Override
+    protected void makeResume(int source) {
+    }
 
-	@Override
-	public void seekTo(int pos) { }
+    @Override
+    public void seekTo(int pos) {
+    }
 
-	@Override
-	public int getDuration() {
-		return 0;
-	}
+    @Override
+    public int getDuration() {
+        return 0;
+    }
 
-	@Override
-	public int getPosition() {
-		return 0;
-	}
+    @Override
+    public int getPosition() {
+        return 0;
+    }
 }

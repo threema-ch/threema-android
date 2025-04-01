@@ -26,5 +26,5 @@ package ch.threema.domain.protocol;
  */
 public class ProtocolStrings {
 
-	public static final String USER_AGENT = "Threema";
+    public static final String USER_AGENT = "Threema";
 }

@@ -24,7 +24,8 @@ package ch.threema.app.services.systemupdate
 import ch.threema.app.services.UpdateSystemService
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDatabase) : UpdateSystemService.SystemUpdate {
+internal class SystemUpdateToVersion102(private val sqLiteDatabase: SQLiteDatabase) :
+    UpdateSystemService.SystemUpdate {
 
     companion object {
         const val VERSION = 102

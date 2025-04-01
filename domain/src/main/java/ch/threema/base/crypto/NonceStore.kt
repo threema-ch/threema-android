@@ -49,7 +49,13 @@ interface NonceStore {
      * @param offset the offset where reading the nonces starts
      * @param nonces The list to which the nonces should be added
      */
-    fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>)
+    fun addHashedNoncesChunk(
+        scope: NonceScope,
+        chunkSize: Int,
+        offset: Int,
+        nonces: MutableList<HashedNonce>
+    )
+
     fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>): Boolean
 }
 
@@ -63,12 +69,12 @@ class NonceFactory(
     private val nonceProvider: NonceFactoryNonceBytesProvider
 ) {
     constructor(nonceStore: NonceStore)
-        : this(nonceStore, { length -> SecureRandomUtil.generateRandomBytes(length)})
+        : this(nonceStore, { length -> SecureRandomUtil.generateRandomBytes(length) })
 
     @JvmName("nextNonce")
     fun next(scope: NonceScope): Nonce {
         return sequence {
-            while(true) {
+            while (true) {
                 val nonce = Nonce(nonceProvider.next(NaCl.NONCEBYTES))
                 yield(nonce)
             }
@@ -92,14 +98,19 @@ class NonceFactory(
     /**
      * @see NonceStore.addHashedNoncesChunk
      */
-    fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {
+    fun addHashedNoncesChunk(
+        scope: NonceScope,
+        chunkSize: Int,
+        offset: Int,
+        nonces: MutableList<HashedNonce>
+    ) {
         nonceStore.addHashedNoncesChunk(scope, chunkSize, offset, nonces)
     }
 
     fun insertHashedNonces(scope: NonceScope, nonces: List<HashedNonce>) =
         nonceStore.insertHashedNonces(scope, nonces)
 
-    fun insertHashedNoncesJava (scope: NonceScope, nonces: List<ByteArray>): Boolean {
+    fun insertHashedNoncesJava(scope: NonceScope, nonces: List<ByteArray>): Boolean {
         return insertHashedNonces(scope, nonces.map { HashedNonce(it) })
     }
 }

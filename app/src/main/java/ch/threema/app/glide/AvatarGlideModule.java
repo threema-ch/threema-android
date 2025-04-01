@@ -41,16 +41,16 @@ import ch.threema.storage.models.AbstractMessageModel;
 @GlideModule
 public class AvatarGlideModule extends AppGlideModule {
 
-	@Override
-	public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
-		builder.setDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_ARGB_8888));
-	}
+    @Override
+    public void applyOptions(@NonNull Context context, @NonNull GlideBuilder builder) {
+        builder.setDefaultRequestOptions(new RequestOptions().format(DecodeFormat.PREFER_ARGB_8888));
+    }
 
-	@Override
-	public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
-		registry.prepend(AvatarCacheServiceImpl.ContactAvatarConfig.class, Bitmap.class, new ContactAvatarModelLoaderFactory(context));
-		registry.prepend(AvatarCacheServiceImpl.GroupAvatarConfig.class, Bitmap.class, new GroupAvatarModelLoaderFactory(context));
-		registry.prepend(AvatarCacheServiceImpl.DistributionListAvatarConfig.class, Bitmap.class, new DistributionListAvatarModelLoaderFactory(context));
-		registry.prepend(AbstractMessageModel.class, Bitmap.class, new ThumbnailLoaderFactory());
-	}
+    @Override
+    public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry) {
+        registry.prepend(AvatarCacheServiceImpl.ContactAvatarConfig.class, Bitmap.class, new ContactAvatarModelLoaderFactory(context));
+        registry.prepend(AvatarCacheServiceImpl.GroupAvatarConfig.class, Bitmap.class, new GroupAvatarModelLoaderFactory(context));
+        registry.prepend(AvatarCacheServiceImpl.DistributionListAvatarConfig.class, Bitmap.class, new DistributionListAvatarModelLoaderFactory(context));
+        registry.prepend(AbstractMessageModel.class, Bitmap.class, new ThumbnailLoaderFactory());
+    }
 }

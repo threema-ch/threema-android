@@ -120,10 +120,15 @@ data class LocationMessageData(
             }
 
             //  Determine poiName if present
-            val poiName: String? = if (locationStringLines.size >= 3) locationStringLines[1] else null
+            val poiName: String? =
+                if (locationStringLines.size >= 3) locationStringLines[1] else null
 
             val poi: Poi? = when {
-                !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(name = poiName, address = poiAddress)
+                !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(
+                    name = poiName,
+                    address = poiAddress
+                )
+
                 !poiAddress.isNullOrBlank() -> Poi.Unnamed(address = poiAddress)
                 else -> null
             }

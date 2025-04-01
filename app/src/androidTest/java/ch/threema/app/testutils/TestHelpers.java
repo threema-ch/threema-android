@@ -58,265 +58,265 @@ import ch.threema.storage.models.GroupModel;
 import static org.junit.Assert.assertNotNull;
 
 public class TestHelpers {
-	private static final String TAG = "TestHelpers";
+    private static final String TAG = "TestHelpers";
 
-	public static final TestContact TEST_CONTACT = new TestContact(
-		"XERCUKNS",
-		Utils.hexStringToByteArray("2bbc16092ff45ffcd0045c00f2f5e1e9597621f89360bbca23a2a2956b3c3b36"),
-		Utils.hexStringToByteArray("977aba4ab367041f6137afef69ab9676d445011ca7aca0455a5c64805b80b77a")
-	);
+    public static final TestContact TEST_CONTACT = new TestContact(
+        "XERCUKNS",
+        Utils.hexStringToByteArray("2bbc16092ff45ffcd0045c00f2f5e1e9597621f89360bbca23a2a2956b3c3b36"),
+        Utils.hexStringToByteArray("977aba4ab367041f6137afef69ab9676d445011ca7aca0455a5c64805b80b77a")
+    );
 
-	public static final class TestContact {
-		@NonNull
-		public final String identity;
-		@NonNull
-		public final byte[] publicKey;
-		@NonNull
-		public final byte[] privateKey;
+    public static final class TestContact {
+        @NonNull
+        public final String identity;
+        @NonNull
+        public final byte[] publicKey;
+        @NonNull
+        public final byte[] privateKey;
 
-		public TestContact(@NonNull String identity) {
-			this.identity = identity;
-			publicKey = new byte[NaCl.PUBLICKEYBYTES];
-			privateKey = new byte[NaCl.SECRETKEYBYTES];
+        public TestContact(@NonNull String identity) {
+            this.identity = identity;
+            publicKey = new byte[NaCl.PUBLICKEYBYTES];
+            privateKey = new byte[NaCl.SECRETKEYBYTES];
 
-			NaCl.genkeypair(publicKey, privateKey);
-		}
+            NaCl.genkeypair(publicKey, privateKey);
+        }
 
-		public TestContact(@NonNull String identity, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
-			this.identity = identity;
-			this.publicKey = publicKey;
-			this.privateKey = privateKey;
-		}
+        public TestContact(@NonNull String identity, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
+            this.identity = identity;
+            this.publicKey = publicKey;
+            this.privateKey = privateKey;
+        }
 
-		@NonNull
-		public Contact getContact() {
-			return new Contact(this.identity, this.publicKey, VerificationLevel.UNVERIFIED);
-		}
+        @NonNull
+        public Contact getContact() {
+            return new Contact(this.identity, this.publicKey, VerificationLevel.UNVERIFIED);
+        }
 
-		@NonNull
-		public ContactModel getContactModel() {
-			return new ContactModel(this.identity, this.publicKey);
-		}
+        @NonNull
+        public ContactModel getContactModel() {
+            return new ContactModel(this.identity, this.publicKey);
+        }
 
-		@NonNull
-		public IdentityStoreInterface getIdentityStore() {
-			return new InMemoryIdentityStore(
-				this.identity,
-				"",
-				this.privateKey,
-				null
-			);
-		}
+        @NonNull
+        public IdentityStoreInterface getIdentityStore() {
+            return new InMemoryIdentityStore(
+                this.identity,
+                "",
+                this.privateKey,
+                null
+            );
+        }
 
-		@NonNull
-		public BasicContact toBasicContact() {
-			return BasicContact.javaCreate(
-				identity,
-				publicKey,
-				new ThreemaFeature.Builder()
-					.audio(true)
-					.group(true)
-					.ballot(true)
-					.file(true)
-					.voip(true)
-					.videocalls(true)
-					.forwardSecurity(true)
-					.groupCalls(true)
-					.editMessages(true)
-					.deleteMessages(true)
-					.build(),
-				IdentityState.ACTIVE,
-				IdentityType.NORMAL
-			);
-		}
-	}
+        @NonNull
+        public BasicContact toBasicContact() {
+            return BasicContact.javaCreate(
+                identity,
+                publicKey,
+                new ThreemaFeature.Builder()
+                    .audio(true)
+                    .group(true)
+                    .ballot(true)
+                    .file(true)
+                    .voip(true)
+                    .videocalls(true)
+                    .forwardSecurity(true)
+                    .groupCalls(true)
+                    .editMessages(true)
+                    .deleteMessages(true)
+                    .build(),
+                IdentityState.ACTIVE,
+                IdentityType.NORMAL
+            );
+        }
+    }
 
-	public static final class TestGroup {
-		private int localGroupId = -1;
+    public static final class TestGroup {
+        private int localGroupId = -1;
 
-		@NonNull
-		public final GroupId apiGroupId;
+        @NonNull
+        public final GroupId apiGroupId;
 
-		@NonNull
-		public final TestContact groupCreator;
+        @NonNull
+        public final TestContact groupCreator;
 
-		@NonNull
-		public final List<TestContact> members;
+        @NonNull
+        public final List<TestContact> members;
 
-		@NonNull
-		public final String groupName;
+        @NonNull
+        public final String groupName;
 
-		@Nullable
-		public final byte[] profilePicture;
+        @Nullable
+        public final byte[] profilePicture;
 
-		/**
-		 * Note that the user identity is used to set the correct group user state.
-		 */
-		@NonNull
-		public final String userIdentity;
+        /**
+         * Note that the user identity is used to set the correct group user state.
+         */
+        @NonNull
+        public final String userIdentity;
 
-		public TestGroup(
-			@NonNull GroupId apiGroupId,
-			@NonNull TestContact groupCreator,
-			@NonNull List<TestContact> members,
-			@NonNull String groupName,
-			@NonNull String userIdentity
-		) {
-			this(apiGroupId, groupCreator, members, groupName, null, userIdentity);
-		}
+        public TestGroup(
+            @NonNull GroupId apiGroupId,
+            @NonNull TestContact groupCreator,
+            @NonNull List<TestContact> members,
+            @NonNull String groupName,
+            @NonNull String userIdentity
+        ) {
+            this(apiGroupId, groupCreator, members, groupName, null, userIdentity);
+        }
 
-		public TestGroup(
-			@NonNull GroupId apiGroupId,
-			@NonNull TestContact groupCreator,
-			@NonNull List<TestContact> members,
-			@NonNull String groupName,
-			@Nullable byte[] profilePicture,
-			@NonNull String userIdentity
-		) {
-			this.apiGroupId = apiGroupId;
-			this.groupCreator = groupCreator;
-			this.members = members;
-			this.groupName = groupName;
-			this.profilePicture = profilePicture;
-			this.userIdentity = userIdentity;
-		}
+        public TestGroup(
+            @NonNull GroupId apiGroupId,
+            @NonNull TestContact groupCreator,
+            @NonNull List<TestContact> members,
+            @NonNull String groupName,
+            @Nullable byte[] profilePicture,
+            @NonNull String userIdentity
+        ) {
+            this.apiGroupId = apiGroupId;
+            this.groupCreator = groupCreator;
+            this.members = members;
+            this.groupName = groupName;
+            this.profilePicture = profilePicture;
+            this.userIdentity = userIdentity;
+        }
 
-		@NonNull
-		public GroupModel getGroupModel() {
-			boolean isMember = false;
-			for (TestContact member : members) {
-				if (member.identity.equals(userIdentity)) {
-					isMember = true;
-					break;
-				}
-			}
-			return getGroupModel(isMember ? GroupModel.UserState.MEMBER : GroupModel.UserState.LEFT);
-		}
+        @NonNull
+        public GroupModel getGroupModel() {
+            boolean isMember = false;
+            for (TestContact member : members) {
+                if (member.identity.equals(userIdentity)) {
+                    isMember = true;
+                    break;
+                }
+            }
+            return getGroupModel(isMember ? GroupModel.UserState.MEMBER : GroupModel.UserState.LEFT);
+        }
 
-		@NonNull
-		private GroupModel getGroupModel(@NonNull GroupModel.UserState userState) {
-			return new GroupModel()
-				.setApiGroupId(apiGroupId)
-				.setCreatedAt(new Date())
-				.setName(this.groupName)
-				.setCreatorIdentity(this.groupCreator.identity)
-				.setId(localGroupId)
-				.setUserState(userState);
-		}
+        @NonNull
+        private GroupModel getGroupModel(@NonNull GroupModel.UserState userState) {
+            return new GroupModel()
+                .setApiGroupId(apiGroupId)
+                .setCreatedAt(new Date())
+                .setName(this.groupName)
+                .setCreatorIdentity(this.groupCreator.identity)
+                .setId(localGroupId)
+                .setUserState(userState);
+        }
 
-		public void setLocalGroupId(int localGroupId) {
-			this.localGroupId = localGroupId;
-		}
-	}
+        public void setLocalGroupId(int localGroupId) {
+            this.localGroupId = localGroupId;
+        }
+    }
 
-	/**
-	 * Open the notification area and wait for the notifications to become visible.
-	 *
-	 * @param device UiDevice instance
-	 */
-	public static void openNotificationArea(@NonNull UiDevice device) throws AssertionError {
-		device.openNotification();
+    /**
+     * Open the notification area and wait for the notifications to become visible.
+     *
+     * @param device UiDevice instance
+     */
+    public static void openNotificationArea(@NonNull UiDevice device) throws AssertionError {
+        device.openNotification();
 
-		// Wait for notifications to appear
-		final BySelector selector = By.res("android:id/status_bar_latest_event_content");
-		assertNotNull(
-			"Notification bar latest event content not found",
-			device.wait(Until.findObject(selector), 1000)
-		);
-	}
+        // Wait for notifications to appear
+        final BySelector selector = By.res("android:id/status_bar_latest_event_content");
+        assertNotNull(
+            "Notification bar latest event content not found",
+            device.wait(Until.findObject(selector), 1000)
+        );
+    }
 
-	/**
-	 * Source: https://stackoverflow.com/a/5921190/284318
-	 */
-	public static boolean iServiceRunning(@NonNull Context appContext, @NonNull Class<?> serviceClass) {
-		ActivityManager manager = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
-		assert manager != null;
-		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (serviceClass.getName().equals(service.service.getClassName())) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Source: https://stackoverflow.com/a/5921190/284318
+     */
+    public static boolean iServiceRunning(@NonNull Context appContext, @NonNull Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
+        assert manager != null;
+        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Ensure that an identity is set up.
-	 */
-	public static String ensureIdentity(@NonNull ServiceManager serviceManager) throws Exception {
-		// Check whether identity already exists
-		final UserService userService = serviceManager.getUserService();
-		if (userService.hasIdentity()) {
+    /**
+     * Ensure that an identity is set up.
+     */
+    public static String ensureIdentity(@NonNull ServiceManager serviceManager) throws Exception {
+        // Check whether identity already exists
+        final UserService userService = serviceManager.getUserService();
+        if (userService.hasIdentity()) {
             final String identity = userService.getIdentity();
             Log.i(TAG, "Identity already exists: " + identity);
             return identity;
-		}
+        }
 
-		// Otherwise, create identity
-		userService.restoreIdentity(
-			TEST_CONTACT.identity,
-			TEST_CONTACT.privateKey,
-			TEST_CONTACT.publicKey
-		);
-		Log.i(TAG, "Test identity restored: " + TEST_CONTACT.identity);
-		return TEST_CONTACT.identity;
-	}
+        // Otherwise, create identity
+        userService.restoreIdentity(
+            TEST_CONTACT.identity,
+            TEST_CONTACT.privateKey,
+            TEST_CONTACT.publicKey
+        );
+        Log.i(TAG, "Test identity restored: " + TEST_CONTACT.identity);
+        return TEST_CONTACT.identity;
+    }
 
-	public static void clearLogcat() {
-		try {
-			Runtime.getRuntime().exec(new String[] { "logcat", "-c" });
-		} catch (IOException e) {
-			Log.e(TAG, "Could not clear logcat", e);
-		}
-	}
+    public static void clearLogcat() {
+        try {
+            Runtime.getRuntime().exec(new String[]{"logcat", "-c"});
+        } catch (IOException e) {
+            Log.e(TAG, "Could not clear logcat", e);
+        }
+    }
 
-	/**
-	 * Return adb logs since the start of the specified test.
-	 *
-	 * Based on https://www.braze.com/resources/articles/logcat-junit-android-tests
-	 */
-	public static String getTestLogs(@NonNull String testName) {
-		final StringBuilder logLines = new StringBuilder();
+    /**
+     * Return adb logs since the start of the specified test.
+     * <p>
+     * Based on https://www.braze.com/resources/articles/logcat-junit-android-tests
+     */
+    public static String getTestLogs(@NonNull String testName) {
+        final StringBuilder logLines = new StringBuilder();
 
-		// Process id is used to filter messages
-		final String currentProcessId = Integer.toString(android.os.Process.myPid());
+        // Process id is used to filter messages
+        final String currentProcessId = Integer.toString(android.os.Process.myPid());
 
-		// A snippet of text that uniquely determines where the relevant logs start in the logcat
-		final String testStartMessage = "TestRunner: started: " + testName;
+        // A snippet of text that uniquely determines where the relevant logs start in the logcat
+        final String testStartMessage = "TestRunner: started: " + testName;
 
-		// When true, write every line from the logcat buffer to the string builder
-		boolean recording = false;
+        // When true, write every line from the logcat buffer to the string builder
+        boolean recording = false;
 
-		// Logcat command:
-		//   -d asks the command to completely dump to our buffer, then return
-		//   -v threadtime sets the output log format
-		final String[] command = new String[] { "logcat", "-d", "-v", "threadtime" };
+        // Logcat command:
+        //   -d asks the command to completely dump to our buffer, then return
+        //   -v threadtime sets the output log format
+        final String[] command = new String[]{"logcat", "-d", "-v", "threadtime"};
 
-		BufferedReader bufferedReader = null;
-		try {
-			final Process process = Runtime.getRuntime().exec(command);
-			bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line;
-			while ((line = bufferedReader.readLine()) != null) {
-				if (line.contains(testStartMessage)) {
-					recording = true;
-				}
-				if (recording) {
-					logLines.append(line);
-					logLines.append('\n');
-				}
-			}
-		} catch (IOException e) {
-			Log.e(TAG, "Failed to run logcat command", e);
-		} finally {
-			if (bufferedReader != null) {
-				try {
-					bufferedReader.close();
-				} catch (IOException e) {
-					Log.e(TAG, "Failed to close buffered reader", e);
-				}
-			}
-		}
+        BufferedReader bufferedReader = null;
+        try {
+            final Process process = Runtime.getRuntime().exec(command);
+            bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                if (line.contains(testStartMessage)) {
+                    recording = true;
+                }
+                if (recording) {
+                    logLines.append(line);
+                    logLines.append('\n');
+                }
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to run logcat command", e);
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to close buffered reader", e);
+                }
+            }
+        }
 
-		return logLines.toString();
-	}
+        return logLines.toString();
+    }
 }

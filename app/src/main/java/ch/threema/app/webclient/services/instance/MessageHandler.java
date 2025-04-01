@@ -43,175 +43,176 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 
 @WorkerThread
 abstract public class MessageHandler {
-	protected final String subType;
+    protected final String subType;
 
-	@AnyThread
-	public MessageHandler(String subType) {
-		this.subType = subType;
-	}
+    @AnyThread
+    public MessageHandler(String subType) {
+        this.subType = subType;
+    }
 
-	@AnyThread
-	public final String getSubType() {
-		return this.subType;
-	}
+    @AnyThread
+    public final String getSubType() {
+        return this.subType;
+    }
 
-	protected void send(MessageDispatcher dispatcher, MsgpackBuilder data, MsgpackBuilder args) {
-		dispatcher.send(this.subType, data, args);
-	}
+    protected void send(MessageDispatcher dispatcher, MsgpackBuilder data, MsgpackBuilder args) {
+        dispatcher.send(this.subType, data, args);
+    }
 
-	protected void send(MessageDispatcher dispatcher, List<MsgpackBuilder> data, MsgpackBuilder args) {
-		dispatcher.send(this.subType, data, args);
-	}
+    protected void send(MessageDispatcher dispatcher, List<MsgpackBuilder> data, MsgpackBuilder args) {
+        dispatcher.send(this.subType, data, args);
+    }
 
-	protected void send(MessageDispatcher dispatcher, String data, MsgpackBuilder args) {
-		dispatcher.send(this.subType, data, args);
-	}
+    protected void send(MessageDispatcher dispatcher, String data, MsgpackBuilder args) {
+        dispatcher.send(this.subType, data, args);
+    }
 
-	protected void send(MessageDispatcher dispatcher, byte[] data, MsgpackBuilder args) {
-		dispatcher.send(this.subType, data, args);
-	}
+    protected void send(MessageDispatcher dispatcher, byte[] data, MsgpackBuilder args) {
+        dispatcher.send(this.subType, data, args);
+    }
 
-	protected void sendConfirmActionSuccess(MessageDispatcher responseDispatcher, String temporaryId) {
-		if (!Protocol.TYPE_RESPONSE.equals(responseDispatcher.type)) {
-			throw new AssertionError("Cannot send a confirmAction message with a '"
-				+ responseDispatcher.type + "' dispatcher (must be '"
-				+ Protocol.TYPE_RESPONSE + "')");
-		}
+    protected void sendConfirmActionSuccess(MessageDispatcher responseDispatcher, String temporaryId) {
+        if (!Protocol.TYPE_RESPONSE.equals(responseDispatcher.type)) {
+            throw new AssertionError("Cannot send a confirmAction message with a '"
+                + responseDispatcher.type + "' dispatcher (must be '"
+                + Protocol.TYPE_RESPONSE + "')");
+        }
 
-		final MsgpackBuilder args = new MsgpackObjectBuilder()
-			.put(Protocol.ARGUMENT_SUCCESS, true)
-			.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
-		final MsgpackBuilder data = new MsgpackObjectBuilder();
-		responseDispatcher.send(Protocol.SUB_TYPE_CONFIRM_ACTION, data, args);
-	}
+        final MsgpackBuilder args = new MsgpackObjectBuilder()
+            .put(Protocol.ARGUMENT_SUCCESS, true)
+            .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
+        final MsgpackBuilder data = new MsgpackObjectBuilder();
+        responseDispatcher.send(Protocol.SUB_TYPE_CONFIRM_ACTION, data, args);
+    }
 
-	protected void sendConfirmActionFailure(MessageDispatcher responseDispatcher, String temporaryId, String errorCode) {
-		if (!Protocol.TYPE_RESPONSE.equals(responseDispatcher.type)) {
-			throw new AssertionError("Cannot send a confirmAction message with a '"
-				+ responseDispatcher.type + "' dispatcher (must be '"
-				+ Protocol.TYPE_RESPONSE + "')");
-		}
+    protected void sendConfirmActionFailure(MessageDispatcher responseDispatcher, String temporaryId, String errorCode) {
+        if (!Protocol.TYPE_RESPONSE.equals(responseDispatcher.type)) {
+            throw new AssertionError("Cannot send a confirmAction message with a '"
+                + responseDispatcher.type + "' dispatcher (must be '"
+                + Protocol.TYPE_RESPONSE + "')");
+        }
 
-		final MsgpackBuilder args = new MsgpackObjectBuilder()
-			.put(Protocol.ARGUMENT_SUCCESS, false)
-			.put(Protocol.ARGUMENT_ERROR, errorCode)
-			.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
-		final MsgpackBuilder data = new MsgpackObjectBuilder();
-		responseDispatcher.send(Protocol.SUB_TYPE_CONFIRM_ACTION, data, args);
-	}
+        final MsgpackBuilder args = new MsgpackObjectBuilder()
+            .put(Protocol.ARGUMENT_SUCCESS, false)
+            .put(Protocol.ARGUMENT_ERROR, errorCode)
+            .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
+        final MsgpackBuilder data = new MsgpackObjectBuilder();
+        responseDispatcher.send(Protocol.SUB_TYPE_CONFIRM_ACTION, data, args);
+    }
 
-	@AnyThread
-	protected Utils.ModelWrapper getModel(Map<String, Value> args) throws MessagePackException, ConversionException {
-		// Get receiver model
-		String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		String id = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
-		return Receiver.getModel(type, id);
-	}
+    @AnyThread
+    protected Utils.ModelWrapper getModel(Map<String, Value> args) throws MessagePackException, ConversionException {
+        // Get receiver model
+        String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        String id = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        return Receiver.getModel(type, id);
+    }
 
-	@AnyThread
-	protected MessageReceiver getReceiver(Map<String, Value> args) throws MessagePackException, ConversionException {
-		// Get receiver instance
-		String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		String id = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
-		return Receiver.getReceiver(type, id);
-	}
+    @AnyThread
+    protected MessageReceiver getReceiver(Map<String, Value> args) throws MessagePackException, ConversionException {
+        // Get receiver instance
+        String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        String id = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        return Receiver.getReceiver(type, id);
+    }
 
-	/**
-	 * Extract data without list of required keys.
-	 */
-	@AnyThread
-	protected Map<String, Value> getData(Map<String, Value> message, boolean isOptional)
-			throws MessagePackException {
-		return this.getData(message, isOptional, null);
-	}
+    /**
+     * Extract data without list of required keys.
+     */
+    @AnyThread
+    protected Map<String, Value> getData(Map<String, Value> message, boolean isOptional)
+        throws MessagePackException {
+        return this.getData(message, isOptional, null);
+    }
 
-	/**
-	 * Extract data from a message value.
-	 *
-	 * @param message The message value map.
-	 * @param isOptional Set this to `false` to throw an exception if arguments are missing.
-	 */
-	@AnyThread
-	protected Map<String, Value> getData(Map<String, Value> message, boolean isOptional,
-	                                     @Nullable String[] requiredArguments)
-										 throws MessagePackException {
-		return this.getMap(message, Protocol.FIELD_DATA, isOptional, requiredArguments);
-	}
+    /**
+     * Extract data from a message value.
+     *
+     * @param message    The message value map.
+     * @param isOptional Set this to `false` to throw an exception if arguments are missing.
+     */
+    @AnyThread
+    protected Map<String, Value> getData(Map<String, Value> message, boolean isOptional,
+                                         @Nullable String[] requiredArguments)
+        throws MessagePackException {
+        return this.getMap(message, Protocol.FIELD_DATA, isOptional, requiredArguments);
+    }
 
-	/**
-	 * Extract arguments without list of required keys.
-	 */
-	@AnyThread
-	protected Map<String, Value> getArguments(Map<String, Value> message, boolean isOptional)
-			throws MessagePackException {
-		return this.getArguments(message, isOptional, null);
-	}
+    /**
+     * Extract arguments without list of required keys.
+     */
+    @AnyThread
+    protected Map<String, Value> getArguments(Map<String, Value> message, boolean isOptional)
+        throws MessagePackException {
+        return this.getArguments(message, isOptional, null);
+    }
 
-	/**
-	 * Extract arguments from a message value.
-	 *
-	 * @param message The message value map.
-	 * @param isOptional Set this to `false` to throw an exception if arguments are missing.
-	 * @param requiredArguments Optional list of required arguments.
-	 */
-	@AnyThread
-	protected Map<String, Value> getArguments(Map<String, Value> message, boolean isOptional,
-	                                          @Nullable String[] requiredArguments)
-			                                  throws MessagePackException {
-		return this.getMap(message, Protocol.FIELD_ARGUMENTS, isOptional, requiredArguments);
-	}
+    /**
+     * Extract arguments from a message value.
+     *
+     * @param message           The message value map.
+     * @param isOptional        Set this to `false` to throw an exception if arguments are missing.
+     * @param requiredArguments Optional list of required arguments.
+     */
+    @AnyThread
+    protected Map<String, Value> getArguments(Map<String, Value> message, boolean isOptional,
+                                              @Nullable String[] requiredArguments)
+        throws MessagePackException {
+        return this.getMap(message, Protocol.FIELD_ARGUMENTS, isOptional, requiredArguments);
+    }
 
-	@AnyThread
-	protected Map<String, Value> getMap(@NonNull Map<String, Value> message, @NonNull String fieldName,
-	                                  boolean isOptional, @Nullable String[] requiredFields)
-									  throws MessagePackException {
-		// Get map field
-		if (!message.containsKey(fieldName) && isOptional) {
-			return null;
-		} else if (!message.containsKey(fieldName)) {
-			throw new MessagePackException("Field '" + fieldName + "' is not optional");
-		}
+    @AnyThread
+    protected Map<String, Value> getMap(@NonNull Map<String, Value> message, @NonNull String fieldName,
+                                        boolean isOptional, @Nullable String[] requiredFields)
+        throws MessagePackException {
+        // Get map field
+        if (!message.containsKey(fieldName) && isOptional) {
+            return null;
+        } else if (!message.containsKey(fieldName)) {
+            throw new MessagePackException("Field '" + fieldName + "' is not optional");
+        }
 
-		// Convert to a map
-		final Value argumentsValue = message.get(fieldName);
-		final Map<String, Value> map = new HashMap<>();
-		if (!argumentsValue.isMapValue()) {
-			throw new MessagePackException("Field '" + fieldName + "' must be a map");
-		}
-		for (Map.Entry<Value, Value> entry : argumentsValue.asMapValue().entrySet()) {
-			map.put(entry.getKey().asStringValue().asString(), entry.getValue());
-		}
+        // Convert to a map
+        final Value argumentsValue = message.get(fieldName);
+        final Map<String, Value> map = new HashMap<>();
+        if (!argumentsValue.isMapValue()) {
+            throw new MessagePackException("Field '" + fieldName + "' must be a map");
+        }
+        for (Map.Entry<Value, Value> entry : argumentsValue.asMapValue().entrySet()) {
+            map.put(entry.getKey().asStringValue().asString(), entry.getValue());
+        }
 
-		// Check required fields
-		if (requiredFields != null && requiredFields.length > 0) {
-			for (String requiredKey : requiredFields) {
-				if (!map.containsKey(requiredKey)) {
-					throw new MessagePackException(
-							"Required " + fieldName + " field " + requiredKey + " not found");
-				}
-			}
-		}
+        // Check required fields
+        if (requiredFields != null && requiredFields.length > 0) {
+            for (String requiredKey : requiredFields) {
+                if (!map.containsKey(requiredKey)) {
+                    throw new MessagePackException(
+                        "Required " + fieldName + " field " + requiredKey + " not found");
+                }
+            }
+        }
 
-		return map;
-	}
+        return map;
+    }
 
-	/**
-	 * Get a string value, if the value is null a blank string will be returned
-	 * @param value
-	 * @return
-	 */
-	@AnyThread
-	protected String getValueString(Value value) {
-		return this.getValueString(value, "");
-	}
+    /**
+     * Get a string value, if the value is null a blank string will be returned
+     *
+     * @param value
+     * @return
+     */
+    @AnyThread
+    protected String getValueString(Value value) {
+        return this.getValueString(value, "");
+    }
 
-	@AnyThread
-	protected String getValueString(Value value, String defaultValue) {
-		if(value == null || value.isNilValue()) {
-			return defaultValue;
-		}
+    @AnyThread
+    protected String getValueString(Value value, String defaultValue) {
+        if (value == null || value.isNilValue()) {
+            return defaultValue;
+        }
 
-		return value.asStringValue().toString();
-	}
+        return value.asStringValue().toString();
+    }
 
 }

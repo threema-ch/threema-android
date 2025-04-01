@@ -33,16 +33,16 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 
 public class WhatsNewActivity extends ThreemaAppCompatActivity {
-	public static final String EXTRA_NO_ANIMATION = "noanim";
+    public static final String EXTRA_NO_ANIMATION = "noanim";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-		ConfigUtils.configureSystemBars(this);
+        ConfigUtils.configureSystemBars(this);
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_whatsnew);
+        setContentView(R.layout.activity_whatsnew);
 
         String title = getString(
             R.string.whatsnew_title,
@@ -51,17 +51,17 @@ public class WhatsNewActivity extends ThreemaAppCompatActivity {
         );
         CharSequence body = Html.fromHtml(getString(R.string.whatsnew_headline));
 
-		((TextView) findViewById(R.id.whatsnew_title)).setText(title);
-		((TextView) findViewById(R.id.whatsnew_body)).setText(body);
+        ((TextView) findViewById(R.id.whatsnew_title)).setText(title);
+        ((TextView) findViewById(R.id.whatsnew_body)).setText(body);
 
-		findViewById(R.id.next_text).setOnClickListener(v -> finish());
+        findViewById(R.id.next_text).setOnClickListener(v -> finish());
 
-		if (!getIntent().getBooleanExtra(EXTRA_NO_ANIMATION, false)) {
-			LinearLayout buttonLayout = findViewById(R.id.button_layout);
-			if (savedInstanceState == null) {
-				buttonLayout.setVisibility(View.GONE);
-				buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
-			}
-		}
-	}
+        if (!getIntent().getBooleanExtra(EXTRA_NO_ANIMATION, false)) {
+            LinearLayout buttonLayout = findViewById(R.id.button_layout);
+            if (savedInstanceState == null) {
+                buttonLayout.setVisibility(View.GONE);
+                buttonLayout.postDelayed(() -> AnimationUtil.slideInFromBottomOvershoot(buttonLayout), 200);
+            }
+        }
+    }
 }

@@ -40,6 +40,7 @@ class DropDeviceTask(private val deviceId: DeviceId) : ActiveTask<Unit> {
                 } else {
                     MessageFilterInstruction.BYPASS_OR_BACKLOG
                 }
+
                 else -> MessageFilterInstruction.BYPASS_OR_BACKLOG
             }
         }

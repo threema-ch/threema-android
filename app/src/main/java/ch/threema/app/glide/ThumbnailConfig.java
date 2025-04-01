@@ -27,19 +27,19 @@ import androidx.annotation.Nullable;
 import ch.threema.storage.models.MessageModel;
 
 public class ThumbnailConfig {
-	final MessageModel model;
+    final MessageModel model;
 
-	public ThumbnailConfig(@NonNull MessageModel model) {
-		this.model = model;
-	}
+    public ThumbnailConfig(@NonNull MessageModel model) {
+        this.model = model;
+    }
 
-	@Override
-	public boolean equals(@Nullable Object obj) {
-		return obj instanceof  MessageModel && ((MessageModel) obj).getId() == model.getId();
-	}
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return obj instanceof MessageModel && ((MessageModel) obj).getId() == model.getId();
+    }
 
-	@Override
-	public int hashCode() {
-		return model.getId();
-	}
+    @Override
+    public int hashCode() {
+        return model.getId();
+    }
 }

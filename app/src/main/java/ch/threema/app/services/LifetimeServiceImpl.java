@@ -54,325 +54,326 @@ import java8.util.stream.StreamSupport;
  */
 @AnyThread
 public class LifetimeServiceImpl implements LifetimeService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LifetimeServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LifetimeServiceImpl");
 
-	public static final String REQUEST_CODE_KEY = "requestCode";
-	public static final int REQUEST_CODE_RELEASE = 1;
-	public static final int REQUEST_CODE_RESEND = 2;
-	public static final int REQUEST_LOCK_APP = 3;
+    public static final String REQUEST_CODE_KEY = "requestCode";
+    public static final int REQUEST_CODE_RELEASE = 1;
+    public static final int REQUEST_CODE_RESEND = 2;
+    public static final int REQUEST_LOCK_APP = 3;
 
-	private static final int MESSAGE_SEND_TIME = 30*1000;
-	private static final int MESSAGE_RESEND_INTERVAL = 5*60*1000;   /* 5 minutes */
+    private static final int MESSAGE_SEND_TIME = 30 * 1000;
+    private static final int MESSAGE_RESEND_INTERVAL = 5 * 60 * 1000;   /* 5 minutes */
 
-	private final @NonNull Context context;
-	private final @NonNull AlarmManager alarmManager;
+    private final @NonNull Context context;
+    private final @NonNull AlarmManager alarmManager;
 
-	private final  @NonNull Map<String, ConnectionSlot> connectionSlots = new HashMap<>();
-	private volatile boolean active = false;
-	private volatile boolean paused = false;
-	private long lingerUntil = 0;   /* time (in SystemClock.elapsedRealtime()) until which the connection must stay active in any case */
+    private final @NonNull Map<String, ConnectionSlot> connectionSlots = new HashMap<>();
+    private volatile boolean active = false;
+    private volatile boolean paused = false;
+    private long lingerUntil = 0;   /* time (in SystemClock.elapsedRealtime()) until which the connection must stay active in any case */
 
-	private final List<LifetimeServiceListener> listeners = new ArrayList<>();
+    private final List<LifetimeServiceListener> listeners = new ArrayList<>();
 
-	/**
-	 * A reserved "connection slot".
-	 */
-	private static class ConnectionSlot {
-		final boolean unpauseable;
-		public ConnectionSlot(boolean unpauseable) {
-			this.unpauseable = unpauseable;
-		}
-	}
+    /**
+     * A reserved "connection slot".
+     */
+    private static class ConnectionSlot {
+        final boolean unpauseable;
 
-	public LifetimeServiceImpl(@NonNull Context context) {
-		this.context = context;
-		this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-	}
+        public ConnectionSlot(boolean unpauseable) {
+            this.unpauseable = unpauseable;
+        }
+    }
 
-	@Override
-	public synchronized void acquireConnection(@NonNull String sourceTag, boolean unpauseable) {
-		// Ensure that a connection slot is not acquired twice
-		if (this.connectionSlots.containsKey(sourceTag)) {
-			logger.error("acquireConnection: tag {} already present in connectionSlots", sourceTag);
-			return;
-		}
+    public LifetimeServiceImpl(@NonNull Context context) {
+        this.context = context;
+        this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+    }
 
-		// Store connection slot
-		this.connectionSlots.put(sourceTag, new ConnectionSlot(unpauseable));
-		logger.info("acquireConnection: tag={}, new #slots={}", sourceTag, this.connectionSlots.size());
+    @Override
+    public synchronized void acquireConnection(@NonNull String sourceTag, boolean unpauseable) {
+        // Ensure that a connection slot is not acquired twice
+        if (this.connectionSlots.containsKey(sourceTag)) {
+            logger.error("acquireConnection: tag {} already present in connectionSlots", sourceTag);
+            return;
+        }
 
-		// Establish connection
-		this.ensureConnection();
-	}
+        // Store connection slot
+        this.connectionSlots.put(sourceTag, new ConnectionSlot(unpauseable));
+        logger.info("acquireConnection: tag={}, new #slots={}", sourceTag, this.connectionSlots.size());
 
-	@Override
-	public synchronized void releaseConnection(@NonNull String sourceTag) {
-		// Ensure that there are any connections registered
-		if (this.connectionSlots.isEmpty()) {
-			logger.warn("releaseConnection: #slots is already 0! (source = {})", sourceTag);
-			return;
-		}
+        // Establish connection
+        this.ensureConnection();
+    }
 
-		// Remove slot
-		@Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
-		if (previousSlot == null) {
-			logger.error("releaseConnection: tag {} was not present in connectionSlots", sourceTag);
-		}
+    @Override
+    public synchronized void releaseConnection(@NonNull String sourceTag) {
+        // Ensure that there are any connections registered
+        if (this.connectionSlots.isEmpty()) {
+            logger.warn("releaseConnection: #slots is already 0! (source = {})", sourceTag);
+            return;
+        }
 
-		logger.info("releaseConnection: tag={}, #slots={}", sourceTag, this.connectionSlots.size());
+        // Remove slot
+        @Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
+        if (previousSlot == null) {
+            logger.error("releaseConnection: tag {} was not present in connectionSlots", sourceTag);
+        }
 
-		this.cleanupConnection();
-	}
+        logger.info("releaseConnection: tag={}, #slots={}", sourceTag, this.connectionSlots.size());
 
-	@Override
-	public synchronized void releaseConnectionLinger(@NonNull String sourceTag, long timeoutMs) {
-		// Ensure that there are any connections registered
-		if (this.connectionSlots.isEmpty()) {
-			logger.warn("releaseConnectionLinger: #slots is already 0! (source={})", sourceTag);
-			return;
-		}
+        this.cleanupConnection();
+    }
 
-		// Remove slot
-		@Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
-		if (previousSlot == null) {
-			logger.error("releaseConnectionLinger: tag {} was not present in connectionSlots", sourceTag);
-		}
+    @Override
+    public synchronized void releaseConnectionLinger(@NonNull String sourceTag, long timeoutMs) {
+        // Ensure that there are any connections registered
+        if (this.connectionSlots.isEmpty()) {
+            logger.warn("releaseConnectionLinger: #slots is already 0! (source={})", sourceTag);
+            return;
+        }
 
-		logger.info("releaseConnectionLinger: tag={}, #slots={}, linger={}s",
-			sourceTag, this.connectionSlots.size(), timeoutMs / 1000);
+        // Remove slot
+        @Nullable ConnectionSlot previousSlot = this.connectionSlots.remove(sourceTag);
+        if (previousSlot == null) {
+            logger.error("releaseConnectionLinger: tag {} was not present in connectionSlots", sourceTag);
+        }
 
-		long newLingerUntil = SystemClock.elapsedRealtime() + timeoutMs;
-		if (newLingerUntil > lingerUntil) {
-			/* must re-schedule alarm */
-			lingerUntil = newLingerUntil;
+        logger.info("releaseConnectionLinger: tag={}, #slots={}, linger={}s",
+            sourceTag, this.connectionSlots.size(), timeoutMs / 1000);
 
-			cancelAlarm(REQUEST_CODE_RELEASE);
-			scheduleAlarm(REQUEST_CODE_RELEASE, lingerUntil);
-		}
-	}
+        long newLingerUntil = SystemClock.elapsedRealtime() + timeoutMs;
+        if (newLingerUntil > lingerUntil) {
+            /* must re-schedule alarm */
+            lingerUntil = newLingerUntil;
 
-	@Override
-	public synchronized void ensureConnection() {
-		if (this.connectionSlots.isEmpty()) {
-			logger.info("ensureConnection: No connection slots active");
-			return;
-		}
-		if (this.active) {
-			logger.info("ensureConnection: A connection is already active");
-			return;
-		}
+            cancelAlarm(REQUEST_CODE_RELEASE);
+            scheduleAlarm(REQUEST_CODE_RELEASE, lingerUntil);
+        }
+    }
 
-		// Do not start a connection if a backup or restore is in progress
-		if (RestoreService.isRunning()) {
-			logger.warn("ensureConnection: Skipping, restore in progress");
-			return;
-		}
-		if (BackupService.isRunning()) {
-			logger.warn("ensureConnection: Skipping, backup in progress");
-			return;
-		}
+    @Override
+    public synchronized void ensureConnection() {
+        if (this.connectionSlots.isEmpty()) {
+            logger.info("ensureConnection: No connection slots active");
+            return;
+        }
+        if (this.active) {
+            logger.info("ensureConnection: A connection is already active");
+            return;
+        }
 
-		// Start connection
-		try {
-			ThreemaApplication.getServiceManager().startConnection();
-		} catch (Exception e) {
-			logger.error("ensureConnection: startConnection failed", e);
-			return;
-		}
-		logger.info("ensureConnection: Connection started");
-		this.active = true;
-	}
+        // Do not start a connection if a backup or restore is in progress
+        if (RestoreService.isRunning()) {
+            logger.warn("ensureConnection: Skipping, restore in progress");
+            return;
+        }
+        if (BackupService.isRunning()) {
+            logger.warn("ensureConnection: Skipping, backup in progress");
+            return;
+        }
 
-	public synchronized void alarm(Intent intent) {
-		int requestCode = intent.getIntExtra("requestCode", 0);
-		long time = System.currentTimeMillis();
+        // Start connection
+        try {
+            ThreemaApplication.getServiceManager().startConnection();
+        } catch (Exception e) {
+            logger.error("ensureConnection: startConnection failed", e);
+            return;
+        }
+        logger.info("ensureConnection: Connection started");
+        this.active = true;
+    }
 
-		logger.info("Alarm type {} (handling) START", requestCode);
+    public synchronized void alarm(Intent intent) {
+        int requestCode = intent.getIntExtra("requestCode", 0);
+        long time = System.currentTimeMillis();
 
-		switch (requestCode) {
-			case REQUEST_CODE_RELEASE:
-				this.cleanupConnection();
-				break;
-			case REQUEST_CODE_RESEND:
-				/* resend attempt - acquire connection for a moment */
-				acquireConnection("resendAlarm");
-				releaseConnectionLinger("resendAlarm", MESSAGE_SEND_TIME);
-				break;
-			case REQUEST_LOCK_APP:
-				lockApp();
-				break;
-		}
-		logger.info("Alarm type {} (handling) DONE. Duration={} ms", requestCode, System.currentTimeMillis() - time);
-	}
+        logger.info("Alarm type {} (handling) START", requestCode);
 
-	@Override
-	public synchronized boolean isActive() {
-		return this.active;
-	}
+        switch (requestCode) {
+            case REQUEST_CODE_RELEASE:
+                this.cleanupConnection();
+                break;
+            case REQUEST_CODE_RESEND:
+                /* resend attempt - acquire connection for a moment */
+                acquireConnection("resendAlarm");
+                releaseConnectionLinger("resendAlarm", MESSAGE_SEND_TIME);
+                break;
+            case REQUEST_LOCK_APP:
+                lockApp();
+                break;
+        }
+        logger.info("Alarm type {} (handling) DONE. Duration={} ms", requestCode, System.currentTimeMillis() - time);
+    }
 
-	@Override
-	public synchronized void pause() {
-		logger.info("Pausing connection");
+    @Override
+    public synchronized boolean isActive() {
+        return this.active;
+    }
 
-		// Pause connection
-		this.paused = true;
-		this.cleanupConnection();
-	}
+    @Override
+    public synchronized void pause() {
+        logger.info("Pausing connection");
 
-	@Override
-	public synchronized void unpause() {
-		logger.info("Unpausing connection");
+        // Pause connection
+        this.paused = true;
+        this.cleanupConnection();
+    }
 
-		// Restore connection
-		if (this.paused) {
-			this.paused = false;
-		} else {
-			logger.info("Cannot unpause, connection is not paused");
-		}
-		this.ensureConnection();
-	}
+    @Override
+    public synchronized void unpause() {
+        logger.info("Unpausing connection");
 
-	@Override
-	public void addListener(LifetimeServiceListener listener) {
-		synchronized (this.listeners) {
-			if (!this.listeners.contains(listener)) {
-				this.listeners.add(listener);
-			}
-		}
-	}
+        // Restore connection
+        if (this.paused) {
+            this.paused = false;
+        } else {
+            logger.info("Cannot unpause, connection is not paused");
+        }
+        this.ensureConnection();
+    }
 
-	/**
-	 * If the connection slots are empty or if the state is paused, disconnect.
-	 */
-	private synchronized void cleanupConnection() {
-		boolean interrupted = false;
-		long unpausableSlots = StreamSupport.stream(this.connectionSlots.values())
-				.filter(slot -> slot.unpauseable)
-				.count();
+    @Override
+    public void addListener(LifetimeServiceListener listener) {
+        synchronized (this.listeners) {
+            if (!this.listeners.contains(listener)) {
+                this.listeners.add(listener);
+            }
+        }
+    }
 
-		// We can only disconnect if
-		//
-		// - there are no unpausable slots, and
-		// - a pause was either requested or there are no slots at all.
-		//
-		// Note: This is required to circumvent a bug where a broadcast never unpauses the
-		// connection, see ANDR-2337. All vital components need to acquire an unpausable
-		// connection.
-		if (unpausableSlots == 0 && (this.connectionSlots.isEmpty() || this.paused)) {
-			long curTime = SystemClock.elapsedRealtime();
+    /**
+     * If the connection slots are empty or if the state is paused, disconnect.
+     */
+    private synchronized void cleanupConnection() {
+        boolean interrupted = false;
+        long unpausableSlots = StreamSupport.stream(this.connectionSlots.values())
+            .filter(slot -> slot.unpauseable)
+            .count();
 
-			DownloadService downloadService = getDownloadService();
+        // We can only disconnect if
+        //
+        // - there are no unpausable slots, and
+        // - a pause was either requested or there are no slots at all.
+        //
+        // Note: This is required to circumvent a bug where a broadcast never unpauses the
+        // connection, see ANDR-2337. All vital components need to acquire an unpausable
+        // connection.
+        if (unpausableSlots == 0 && (this.connectionSlots.isEmpty() || this.paused)) {
+            long curTime = SystemClock.elapsedRealtime();
 
-			if (!this.active) {
-				logger.info("cleanupConnection: Connection not active");
-			} else if (lingerUntil > curTime && !ThreemaApplication.isIsDeviceIdle()) {
-				logger.info("cleanupConnection: Connection must linger for another {} milliseconds", lingerUntil - curTime);
-			} else if (downloadService != null && downloadService.isDownloading()) {
-				logger.info("cleanupConnection: Still downloading - linger on");
-				cancelAlarm(REQUEST_CODE_RELEASE);
-				acquireConnection("ongoingDownload");
-				releaseConnectionLinger("ongoingDownload", MESSAGE_SEND_TIME);
-			} else {
-				try {
-					ThreemaApplication.getServiceManager().stopConnection();
-				} catch (InterruptedException e) {
-					logger.error("Interrupted while stopping connection");
-					interrupted = true;
-					// Connection cleanup is important, so postpone the interruption here.
-				}
+            DownloadService downloadService = getDownloadService();
 
-				synchronized (this.listeners) {
-					Iterator<LifetimeServiceListener> listIterator = this.listeners.iterator();
-					while(listIterator.hasNext()) {
-						LifetimeServiceListener l = listIterator.next();
-						if(l.connectionStopped()) {
-							listIterator.remove();
-						}
-					}
-				}
+            if (!this.active) {
+                logger.info("cleanupConnection: Connection not active");
+            } else if (lingerUntil > curTime && !ThreemaApplication.isIsDeviceIdle()) {
+                logger.info("cleanupConnection: Connection must linger for another {} milliseconds", lingerUntil - curTime);
+            } else if (downloadService != null && downloadService.isDownloading()) {
+                logger.info("cleanupConnection: Still downloading - linger on");
+                cancelAlarm(REQUEST_CODE_RELEASE);
+                acquireConnection("ongoingDownload");
+                releaseConnectionLinger("ongoingDownload", MESSAGE_SEND_TIME);
+            } else {
+                try {
+                    ThreemaApplication.getServiceManager().stopConnection();
+                } catch (InterruptedException e) {
+                    logger.error("Interrupted while stopping connection");
+                    interrupted = true;
+                    // Connection cleanup is important, so postpone the interruption here.
+                }
 
-				this.active = false;
-				logger.info("cleanupConnection: Connection closed, #slots={}", this.connectionSlots.size());
+                synchronized (this.listeners) {
+                    Iterator<LifetimeServiceListener> listIterator = this.listeners.iterator();
+                    while (listIterator.hasNext()) {
+                        LifetimeServiceListener l = listIterator.next();
+                        if (l.connectionStopped()) {
+                            listIterator.remove();
+                        }
+                    }
+                }
 
-				// Check if there are any unprocessed messages in the task queue
-				TaskManager taskManager = getTaskManager();
-				if (taskManager != null && taskManager.hasPendingTasks()) {
-					long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
-					logger.info("cleanupConnection: tasks are pending; scheduling resend in {}ms", MESSAGE_RESEND_INTERVAL);
-					scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
-				}
-			}
-		} else {
-			logger.info("cleanupConnection: Not cleaning up #slots={}, #unpausable-slots={}", this.connectionSlots.size(), unpausableSlots);
-		}
+                this.active = false;
+                logger.info("cleanupConnection: Connection closed, #slots={}", this.connectionSlots.size());
 
-		if (interrupted) {
-			// Re-set interrupted flag
-			Thread.currentThread().interrupt();
-		}
-	}
+                // Check if there are any unprocessed messages in the task queue
+                TaskManager taskManager = getTaskManager();
+                if (taskManager != null && taskManager.hasPendingTasks()) {
+                    long resendTime = SystemClock.elapsedRealtime() + MESSAGE_RESEND_INTERVAL;
+                    logger.info("cleanupConnection: tasks are pending; scheduling resend in {}ms", MESSAGE_RESEND_INTERVAL);
+                    scheduleAlarm(REQUEST_CODE_RESEND, resendTime);
+                }
+            }
+        } else {
+            logger.info("cleanupConnection: Not cleaning up #slots={}, #unpausable-slots={}", this.connectionSlots.size(), unpausableSlots);
+        }
 
-	private void scheduleAlarm(int requestCode, long triggerAtMillis) {
-		long curTime = SystemClock.elapsedRealtime();
+        if (interrupted) {
+            // Re-set interrupted flag
+            Thread.currentThread().interrupt();
+        }
+    }
 
-		logger.info("Alarm type {} schedule in {} ms", requestCode, triggerAtMillis - curTime);
+    private void scheduleAlarm(int requestCode, long triggerAtMillis) {
+        long curTime = SystemClock.elapsedRealtime();
 
-		try {
-			alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis,
-					makePendingIntentForRequestCode(requestCode));
-		} catch (Exception e) {
-			// KD Interactive C15100m (Pixi3-7_KD), 1024MB RAM, Android 5.0 throws SecurityException here
-			logger.error("Exception", e);
-		}
-	}
+        logger.info("Alarm type {} schedule in {} ms", requestCode, triggerAtMillis - curTime);
 
-	private void cancelAlarm(int requestCode) {
-		logger.info("Alarm type {} cancel", requestCode);
-		alarmManager.cancel(makePendingIntentForRequestCode(requestCode));
-	}
+        try {
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis,
+                makePendingIntentForRequestCode(requestCode));
+        } catch (Exception e) {
+            // KD Interactive C15100m (Pixi3-7_KD), 1024MB RAM, Android 5.0 throws SecurityException here
+            logger.error("Exception", e);
+        }
+    }
 
-	private PendingIntent makePendingIntentForRequestCode(int requestCode) {
-		Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
-		intent.putExtra(AlarmManagerBroadcastReceiver.EXTRA_REQUEST_CODE, requestCode);
+    private void cancelAlarm(int requestCode) {
+        logger.info("Alarm type {} cancel", requestCode);
+        alarmManager.cancel(makePendingIntentForRequestCode(requestCode));
+    }
 
-		return PendingIntent.getBroadcast(
-			context,
-			requestCode,
-			intent,
-			IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
-	}
+    private PendingIntent makePendingIntentForRequestCode(int requestCode) {
+        Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
+        intent.putExtra(AlarmManagerBroadcastReceiver.EXTRA_REQUEST_CODE, requestCode);
 
-	private void lockApp(){
-		try {
-			final LockAppService lockAppService = ThreemaApplication.getServiceManager().getLockAppService();
-			if (lockAppService != null) {
-				lockAppService.lock();
-			}
-		} catch (Exception e) {
-			logger.warn("Exception: Could not lock app ", e);
-		}
-	}
+        return PendingIntent.getBroadcast(
+            context,
+            requestCode,
+            intent,
+            IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
+    }
 
-	@Nullable
-	private DownloadService getDownloadService() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				return serviceManager.getDownloadService();
-			} catch (Exception e) {
-				logger.error("Could not get download service", e);
-			}
-		}
+    private void lockApp() {
+        try {
+            final LockAppService lockAppService = ThreemaApplication.getServiceManager().getLockAppService();
+            if (lockAppService != null) {
+                lockAppService.lock();
+            }
+        } catch (Exception e) {
+            logger.warn("Exception: Could not lock app ", e);
+        }
+    }
 
-		return null;
-	}
+    @Nullable
+    private DownloadService getDownloadService() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                return serviceManager.getDownloadService();
+            } catch (Exception e) {
+                logger.error("Could not get download service", e);
+            }
+        }
 
-	@Nullable
-	private TaskManager getTaskManager() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			return serviceManager.getTaskManager();
-		}
-		return null;
-	}
+        return null;
+    }
+
+    @Nullable
+    private TaskManager getTaskManager() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            return serviceManager.getTaskManager();
+        }
+        return null;
+    }
 }

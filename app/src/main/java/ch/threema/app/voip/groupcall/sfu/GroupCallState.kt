@@ -34,7 +34,12 @@ data class GroupCallState(
         fun fromProtobufBytes(bytes: ByteArray): GroupCallState {
             val state = CallState.parseFrom(bytes)
             val participants = state.participantsMap
-                .map { (id, participant) -> mapParticipant(ParticipantId(id.toUInt()), participant) }
+                .map { (id, participant) ->
+                    mapParticipant(
+                        ParticipantId(id.toUInt()),
+                        participant
+                    )
+                }
                 .toSet()
             return GroupCallState(
                 ParticipantId(state.stateCreatedBy.toUInt()),
@@ -43,7 +48,10 @@ data class GroupCallState(
             )
         }
 
-        private fun mapParticipant(id: ParticipantId, participant: CallState.Participant): ParticipantDescription {
+        private fun mapParticipant(
+            id: ParticipantId,
+            participant: CallState.Participant
+        ): ParticipantDescription {
             return when {
                 participant.hasThreema() -> mapNormalParticipant(id, participant)
                 participant.hasGuest() -> mapGuestParticipant(id, participant)
@@ -51,7 +59,10 @@ data class GroupCallState(
             }
         }
 
-        private fun mapNormalParticipant(id: ParticipantId, participant: CallState.Participant): NormalParticipantDescription {
+        private fun mapNormalParticipant(
+            id: ParticipantId,
+            participant: CallState.Participant
+        ): NormalParticipantDescription {
             return SimpleNormalParticipantDescription(
                 id,
                 participant.threema.identity,
@@ -59,7 +70,10 @@ data class GroupCallState(
             )
         }
 
-        private fun mapGuestParticipant(id: ParticipantId, participant: CallState.Participant): GuestParticipantDescription {
+        private fun mapGuestParticipant(
+            id: ParticipantId,
+            participant: CallState.Participant
+        ): GuestParticipantDescription {
             return SimpleGuestParticipantDescription(
                 id,
                 participant.guest.name

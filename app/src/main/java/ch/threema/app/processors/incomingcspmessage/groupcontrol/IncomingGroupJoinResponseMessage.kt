@@ -42,7 +42,8 @@ class IncomingGroupJoinResponseMessage(
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupJoinResponseMessage>(message, triggerSource, serviceManager) {
-    private val outgoingGroupJoinRequestModelFactory = serviceManager.databaseServiceNew.outgoingGroupJoinRequestModelFactory
+    private val outgoingGroupJoinRequestModelFactory =
+        serviceManager.databaseServiceNew.outgoingGroupJoinRequestModelFactory
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         val responseData: GroupJoinResponseData = message.data
@@ -80,6 +81,7 @@ class IncomingGroupJoinResponseMessage(
                 updatedRequestBuilder.withGroupApiId(GroupId(groupId)).build()
                 OutgoingGroupJoinRequestModel.Status.ACCEPTED
             }
+
             is GroupJoinResponseData.Reject -> OutgoingGroupJoinRequestModel.Status.REJECTED
             is GroupJoinResponseData.GroupFull -> OutgoingGroupJoinRequestModel.Status.GROUP_FULL
             is GroupJoinResponseData.Expired -> OutgoingGroupJoinRequestModel.Status.EXPIRED

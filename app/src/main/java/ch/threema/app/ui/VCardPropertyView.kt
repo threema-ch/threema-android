@@ -116,13 +116,16 @@ class VCardPropertyView(context: Context) : FrameLayout(context) {
         if (property is ImageProperty && property.data != null) {
             try {
                 val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(property.data))
-                drawableIncluded = RoundedBitmapDrawableFactory.create(context.resources, bitmap).apply {
-                    isCircular = true
-                }
-                drawableExcluded = RoundedBitmapDrawableFactory.create(context.resources, bitmap).apply {
-                    isCircular = true
-                    colorFilter = ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
-                }
+                drawableIncluded =
+                    RoundedBitmapDrawableFactory.create(context.resources, bitmap).apply {
+                        isCircular = true
+                    }
+                drawableExcluded =
+                    RoundedBitmapDrawableFactory.create(context.resources, bitmap).apply {
+                        isCircular = true
+                        colorFilter =
+                            ColorMatrixColorFilter(ColorMatrix().apply { setSaturation(0f) })
+                    }
                 contactPropertyPhoto.apply {
                     visibility = View.VISIBLE
                     setImageDrawable(drawableIncluded)
@@ -156,13 +159,33 @@ class VCardPropertyView(context: Context) : FrameLayout(context) {
         if (checkbox.isChecked) {
             iconIncluded?.let { contactPropertyIcon.setBackgroundResource(it) }
             contactPropertyPhoto.setImageDrawable(drawableIncluded)
-            contactPropertyText.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnBackground))
-            contactPropertyType.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurface))
+            contactPropertyText.setTextColor(
+                ConfigUtils.getColorFromAttribute(
+                    context,
+                    R.attr.colorOnBackground
+                )
+            )
+            contactPropertyType.setTextColor(
+                ConfigUtils.getColorFromAttribute(
+                    context,
+                    R.attr.colorOnSurface
+                )
+            )
         } else {
             iconExcluded?.let { contactPropertyIcon.setBackgroundResource(it) }
             contactPropertyPhoto.setImageDrawable(drawableExcluded)
-            contactPropertyText.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurfaceVariant))
-            contactPropertyType.setTextColor(ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSurfaceVariant))
+            contactPropertyText.setTextColor(
+                ConfigUtils.getColorFromAttribute(
+                    context,
+                    R.attr.colorOnSurfaceVariant
+                )
+            )
+            contactPropertyType.setTextColor(
+                ConfigUtils.getColorFromAttribute(
+                    context,
+                    R.attr.colorOnSurfaceVariant
+                )
+            )
         }
     }
 }

@@ -56,185 +56,185 @@ import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public class NotificationActionService extends IntentService {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationActionService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationActionService");
 
-	private static final String TAG = "notificationAction";
-	public static final String ACTION_REPLY = BuildConfig.APPLICATION_ID + ".REPLY";
-	public static final String ACTION_MARK_AS_READ = BuildConfig.APPLICATION_ID + ".MARK_AS_READ";
-	public static final String ACTION_ACK = BuildConfig.APPLICATION_ID + ".ACK";
-	public static final String ACTION_DEC = BuildConfig.APPLICATION_ID + ".DEC";
-	public static final String ACTION_GROUP_REQUEST_ACCEPT = BuildConfig.APPLICATION_ID + ".ACCEPT";
-	public static final String ACTION_GROUP_REQUEST_REJECT = BuildConfig.APPLICATION_ID + ".REJECT";
+    private static final String TAG = "notificationAction";
+    public static final String ACTION_REPLY = BuildConfig.APPLICATION_ID + ".REPLY";
+    public static final String ACTION_MARK_AS_READ = BuildConfig.APPLICATION_ID + ".MARK_AS_READ";
+    public static final String ACTION_ACK = BuildConfig.APPLICATION_ID + ".ACK";
+    public static final String ACTION_DEC = BuildConfig.APPLICATION_ID + ".DEC";
+    public static final String ACTION_GROUP_REQUEST_ACCEPT = BuildConfig.APPLICATION_ID + ".ACCEPT";
+    public static final String ACTION_GROUP_REQUEST_REJECT = BuildConfig.APPLICATION_ID + ".REJECT";
 
-	private static final int NOTIFICATION_ACTION_CONNECTION_LINGER = 1000 * 5;
+    private static final int NOTIFICATION_ACTION_CONNECTION_LINGER = 1000 * 5;
 
-	private MessageService messageService;
-	private LifetimeService lifetimeService;
-	private NotificationService notificationService;
-	private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
+    private MessageService messageService;
+    private LifetimeService lifetimeService;
+    private NotificationService notificationService;
+    private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
 
-	public NotificationActionService() {
-		super(TAG);
+    public NotificationActionService() {
+        super(TAG);
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				this.messageService = serviceManager.getMessageService();
-				this.lifetimeService = serviceManager.getLifetimeService();
-				this.notificationService = serviceManager.getNotificationService();
-				this.incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                this.messageService = serviceManager.getMessageService();
+                this.lifetimeService = serviceManager.getLifetimeService();
+                this.notificationService = serviceManager.getNotificationService();
+                this.incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	@Override
-	protected void onHandleIntent(@Nullable Intent intent) {
-		if (intent != null) {
-			String action = intent.getAction();
-			if (action != null) {
-				MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, intent);
-				if (messageReceiver != null) {
-					AbstractMessageModel messageModel = IntentDataUtil.getMessageModelFromReceiver(intent, messageReceiver);
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action != null) {
+                MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, intent);
+                if (messageReceiver != null) {
+                    AbstractMessageModel messageModel = IntentDataUtil.getMessageModelFromReceiver(intent, messageReceiver);
 
-					switch (action) {
-						case ACTION_REPLY:
-							if (reply(messageReceiver, intent)) {
-								return;
-							}
-							break;
-						case ACTION_MARK_AS_READ:
-							markAsRead(messageReceiver);
-							return;
-						case ACTION_ACK:
-							if (messageModel != null) {
-								ack(messageReceiver, messageModel);
-								return;
-							}
-							break;
-						case ACTION_DEC:
-							if (messageModel != null) {
-								dec(messageReceiver, messageModel);
-								return;
-							}
-							break;
-						default:
-							logger.info("Unknown action {}", action);
-					}
-				}
-				IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = (IncomingGroupJoinRequestModel) intent.getSerializableExtra(ThreemaApplication.INTENT_DATA_INCOMING_GROUP_REQUEST);
-				if (incomingGroupJoinRequestModel != null) {
-					int notificationId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, 0);
-					logger.info("action {}", action);
-					switch (action) {
-						case ACTION_GROUP_REQUEST_ACCEPT:
-							acceptGroupRequest(incomingGroupJoinRequestModel);
-							notificationService.cancel(notificationId);
-							return;
-						case ACTION_GROUP_REQUEST_REJECT:
-							rejectGroupRequest(incomingGroupJoinRequestModel);
-							notificationService.cancel(notificationId);
-							return;
-						default:
-							logger.info("Unknown action {}", action);
-							break;
-					}
-				}
-			}
-		}
-		showToast(R.string.verify_failed);
-		logger.info("Failed to handle notification action");
-	}
+                    switch (action) {
+                        case ACTION_REPLY:
+                            if (reply(messageReceiver, intent)) {
+                                return;
+                            }
+                            break;
+                        case ACTION_MARK_AS_READ:
+                            markAsRead(messageReceiver);
+                            return;
+                        case ACTION_ACK:
+                            if (messageModel != null) {
+                                ack(messageReceiver, messageModel);
+                                return;
+                            }
+                            break;
+                        case ACTION_DEC:
+                            if (messageModel != null) {
+                                dec(messageReceiver, messageModel);
+                                return;
+                            }
+                            break;
+                        default:
+                            logger.info("Unknown action {}", action);
+                    }
+                }
+                IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = (IncomingGroupJoinRequestModel) intent.getSerializableExtra(ThreemaApplication.INTENT_DATA_INCOMING_GROUP_REQUEST);
+                if (incomingGroupJoinRequestModel != null) {
+                    int notificationId = intent.getIntExtra(ThreemaApplication.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, 0);
+                    logger.info("action {}", action);
+                    switch (action) {
+                        case ACTION_GROUP_REQUEST_ACCEPT:
+                            acceptGroupRequest(incomingGroupJoinRequestModel);
+                            notificationService.cancel(notificationId);
+                            return;
+                        case ACTION_GROUP_REQUEST_REJECT:
+                            rejectGroupRequest(incomingGroupJoinRequestModel);
+                            notificationService.cancel(notificationId);
+                            return;
+                        default:
+                            logger.info("Unknown action {}", action);
+                            break;
+                    }
+                }
+            }
+        }
+        showToast(R.string.verify_failed);
+        logger.info("Failed to handle notification action");
+    }
 
-	@WorkerThread
-	private void ack(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
-		lifetimeService.acquireConnection(TAG);
-		try {
-			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, true);
+    @WorkerThread
+    private void ack(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
+        lifetimeService.acquireConnection(TAG);
+        try {
+            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, true);
             notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
-			showToast(R.string.message_acknowledged);
-		} catch (Exception e) {
-			logger.error("Failed to send emoji reaction", e);
-		}
-		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-	}
+            showToast(R.string.message_acknowledged);
+        } catch (Exception e) {
+            logger.error("Failed to send emoji reaction", e);
+        }
+        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+    }
 
-	@WorkerThread
-	private void dec(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
-		lifetimeService.acquireConnection(TAG);
-		try {
-			messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, true);
+    @WorkerThread
+    private void dec(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
+        lifetimeService.acquireConnection(TAG);
+        try {
+            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, true);
             notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
             showToast(R.string.message_declined);
-		} catch (Exception e) {
-			logger.error("Failed to send emoji reaction", e);
-		}
-		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-	}
+        } catch (Exception e) {
+            logger.error("Failed to send emoji reaction", e);
+        }
+        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+    }
 
-	private boolean reply(@NonNull MessageReceiver messageReceiver, @NonNull Intent intent) {
-		Bundle results = RemoteInput.getResultsFromIntent(intent);
-		if (results != null) {
-			String message = null;
-			CharSequence messageCs = results.getCharSequence(ThreemaApplication.EXTRA_VOICE_REPLY);
-			if (messageCs != null) {
-				message = messageCs.toString();
-			}
+    private boolean reply(@NonNull MessageReceiver messageReceiver, @NonNull Intent intent) {
+        Bundle results = RemoteInput.getResultsFromIntent(intent);
+        if (results != null) {
+            String message = null;
+            CharSequence messageCs = results.getCharSequence(ThreemaApplication.EXTRA_VOICE_REPLY);
+            if (messageCs != null) {
+                message = messageCs.toString();
+            }
 
-			if (!TestUtil.isEmptyOrNull(message)) {
-				lifetimeService.acquireConnection(TAG);
+            if (!TestUtil.isEmptyOrNull(message)) {
+                lifetimeService.acquireConnection(TAG);
 
-				try {
-					messageService.sendText(message, messageReceiver);
-					messageService.markConversationAsRead(messageReceiver, notificationService);
-					notificationService.cancel(messageReceiver);
+                try {
+                    messageService.sendText(message, messageReceiver);
+                    messageService.markConversationAsRead(messageReceiver, notificationService);
+                    notificationService.cancel(messageReceiver);
 
-					showToast(R.string.message_sent);
-					return true;
-				} catch (Exception e) {
-					logger.error("Failed to send message", e);
-				}
-				lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-			}
-		}
-		logger.info("Reply message is empty");
-		return false;
-	}
+                    showToast(R.string.message_sent);
+                    return true;
+                } catch (Exception e) {
+                    logger.error("Failed to send message", e);
+                }
+                lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+            }
+        }
+        logger.info("Reply message is empty");
+        return false;
+    }
 
-	private void markAsRead(@NonNull MessageReceiver messageReceiver) {
-		lifetimeService.acquireConnection(TAG);
-		messageService.markConversationAsRead(messageReceiver, notificationService);
-		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-		notificationService.cancel(messageReceiver);
-	}
+    private void markAsRead(@NonNull MessageReceiver messageReceiver) {
+        lifetimeService.acquireConnection(TAG);
+        messageService.markConversationAsRead(messageReceiver, notificationService);
+        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+        notificationService.cancel(messageReceiver);
+    }
 
-	private void acceptGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
-		lifetimeService.acquireConnection(TAG);
-		try {
-			incomingGroupJoinRequestService.accept(incomingGroupJoinRequestModel);
-		} catch (Exception e) {
-			logger.error("Exception, failed to accept group request ", e);
-		}
-		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-	}
+    private void acceptGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
+        lifetimeService.acquireConnection(TAG);
+        try {
+            incomingGroupJoinRequestService.accept(incomingGroupJoinRequestModel);
+        } catch (Exception e) {
+            logger.error("Exception, failed to accept group request ", e);
+        }
+        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+    }
 
-	private void rejectGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
-		lifetimeService.acquireConnection(TAG);
-		try {
-			incomingGroupJoinRequestService.reject(incomingGroupJoinRequestModel);
-		} catch (ThreemaException e) {
-			logger.error("Exception, failed to reject group request ", e);
-		}
-		lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-	}
+    private void rejectGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
+        lifetimeService.acquireConnection(TAG);
+        try {
+            incomingGroupJoinRequestService.reject(incomingGroupJoinRequestModel);
+        } catch (ThreemaException e) {
+            logger.error("Exception, failed to reject group request ", e);
+        }
+        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
+    }
 
-	private void showToast(final @StringRes int stringRes) {
-		UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
-		if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR) {
-			logger.info("Toast suppressed due to car connection: {}", getString(stringRes));
-		} else {
-			RuntimeUtil.runOnUiThread(() -> Toast.makeText(NotificationActionService.this, stringRes, Toast.LENGTH_LONG).show());
-		}
-	}
+    private void showToast(final @StringRes int stringRes) {
+        UiModeManager uiModeManager = (UiModeManager) getSystemService(Context.UI_MODE_SERVICE);
+        if (uiModeManager != null && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_CAR) {
+            logger.info("Toast suppressed due to car connection: {}", getString(stringRes));
+        } else {
+            RuntimeUtil.runOnUiThread(() -> Toast.makeText(NotificationActionService.this, stringRes, Toast.LENGTH_LONG).show());
+        }
+    }
 }

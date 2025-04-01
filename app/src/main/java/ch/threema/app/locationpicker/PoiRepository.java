@@ -56,153 +56,153 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.ProtocolStrings;
 
 class PoiRepository {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PoiRepository");
-	public static final int QUERY_MIN_LENGTH = 3;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PoiRepository");
+    public static final int QUERY_MIN_LENGTH = 3;
 
-	private List<Poi> places = new ArrayList<>();
-	private final MutableLiveData<List<Poi>> mutableLiveData = new MutableLiveData<>();
-	private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private List<Poi> places = new ArrayList<>();
+    private final MutableLiveData<List<Poi>> mutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
-	@SuppressLint("StaticFieldLeak")
-	MutableLiveData<List<Poi>> getMutableLiveData(PoiQuery poiQuery) {
-		logger.debug("getMutableLiveData");
+    @SuppressLint("StaticFieldLeak")
+    MutableLiveData<List<Poi>> getMutableLiveData(PoiQuery poiQuery) {
+        logger.debug("getMutableLiveData");
 
-		new AsyncTask<Void, Void, Void>() {
-			@Override
-			protected void onPreExecute() {
-				isLoading.setValue(true);
-			}
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                isLoading.setValue(true);
+            }
 
-			@Override
-			protected Void doInBackground(Void... voids) {
-				places.clear();
+            @Override
+            protected Void doInBackground(Void... voids) {
+                places.clear();
 
-				if (TestUtil.isEmptyOrNull(poiQuery.getQuery()) || poiQuery.getCenter() == null ) {
-					return null;
-				}
-				if (poiQuery.getCenter().getLatitude() == 0.0d &&  poiQuery.getCenter().getLongitude() == 0.0d) {
-					return null;
-				}
-				if (poiQuery.getQuery().length() < QUERY_MIN_LENGTH) {
-					return null;
-				}
+                if (TestUtil.isEmptyOrNull(poiQuery.getQuery()) || poiQuery.getCenter() == null) {
+                    return null;
+                }
+                if (poiQuery.getCenter().getLatitude() == 0.0d && poiQuery.getCenter().getLongitude() == 0.0d) {
+                    return null;
+                }
+                if (poiQuery.getQuery().length() < QUERY_MIN_LENGTH) {
+                    return null;
+                }
 
-				final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-				if (serviceManager == null) {
-					logger.error("Could not obtain service manager");
-					return null;
-				}
-				final PreferenceService preferenceService = serviceManager.getPreferenceService();
-				if (preferenceService == null) {
-					logger.error("Could not obtain preference service");
-					return null;
-				}
+                final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+                if (serviceManager == null) {
+                    logger.error("Could not obtain service manager");
+                    return null;
+                }
+                final PreferenceService preferenceService = serviceManager.getPreferenceService();
+                if (preferenceService == null) {
+                    logger.error("Could not obtain preference service");
+                    return null;
+                }
 
-				try {
-					if (!"".equals(poiQuery.getQuery())) {
-						final String placesUrl = LocationUtil.getPlacesUrl(preferenceService);
-						URL serverUrl = new URL(String.format(
-							Locale.US,
-							placesUrl,
-							poiQuery.getCenter().getLatitude(),
-							poiQuery.getCenter().getLongitude(),
-							Uri.encode(poiQuery.getQuery())
-						));
-						logger.debug("query: " + serverUrl.toString());
-						HttpsURLConnection urlConnection = null;
-						try {
-							urlConnection = (HttpsURLConnection) serverUrl.openConnection();
-							urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
-							urlConnection.setConnectTimeout(15000);
-							urlConnection.setReadTimeout(30000);
-							urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT);
-							urlConnection.setRequestMethod("GET");
-							urlConnection.setDoOutput(false);
+                try {
+                    if (!"".equals(poiQuery.getQuery())) {
+                        final String placesUrl = LocationUtil.getPlacesUrl(preferenceService);
+                        URL serverUrl = new URL(String.format(
+                            Locale.US,
+                            placesUrl,
+                            poiQuery.getCenter().getLatitude(),
+                            poiQuery.getCenter().getLongitude(),
+                            Uri.encode(poiQuery.getQuery())
+                        ));
+                        logger.debug("query: " + serverUrl.toString());
+                        HttpsURLConnection urlConnection = null;
+                        try {
+                            urlConnection = (HttpsURLConnection) serverUrl.openConnection();
+                            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
+                            urlConnection.setConnectTimeout(15000);
+                            urlConnection.setReadTimeout(30000);
+                            urlConnection.setRequestProperty("User-Agent", ProtocolStrings.USER_AGENT);
+                            urlConnection.setRequestMethod("GET");
+                            urlConnection.setDoOutput(false);
 
-							int responseCode = urlConnection.getResponseCode();
+                            int responseCode = urlConnection.getResponseCode();
 
-							if (responseCode == HttpsURLConnection.HTTP_OK) {
-								StringBuilder sb = new StringBuilder();
-								try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
-									String line;
-									while ((line = br.readLine()) != null) {
-										sb.append(line).append("\n");
-									}
-								}
-								try {
-									parseJson(sb.toString());
-								} catch (JSONException e) {
-									logger.error("Exception", e);
-								}
-							} else if (responseCode != 400 && responseCode != 504) {
-								// Server returns a 400 if string is too short
-								RuntimeUtil.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										Toast.makeText(ThreemaApplication.getAppContext(), "Server Error: " + responseCode, Toast.LENGTH_SHORT).show();
-									}
-								});
-							} else {
-								logger.info("Unable to fetch POI names: " + urlConnection.getResponseMessage());
-							}
-						} finally {
-							if (urlConnection != null) {
-								urlConnection.disconnect();
-							}
-						}
-					}
-				} catch (IOException e) {
-					logger.error("Exception", e);
-				}
+                            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                                StringBuilder sb = new StringBuilder();
+                                try (BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                                    String line;
+                                    while ((line = br.readLine()) != null) {
+                                        sb.append(line).append("\n");
+                                    }
+                                }
+                                try {
+                                    parseJson(sb.toString());
+                                } catch (JSONException e) {
+                                    logger.error("Exception", e);
+                                }
+                            } else if (responseCode != 400 && responseCode != 504) {
+                                // Server returns a 400 if string is too short
+                                RuntimeUtil.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(ThreemaApplication.getAppContext(), "Server Error: " + responseCode, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                logger.info("Unable to fetch POI names: " + urlConnection.getResponseMessage());
+                            }
+                        } finally {
+                            if (urlConnection != null) {
+                                urlConnection.disconnect();
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.error("Exception", e);
+                }
 
-				return null;
-			}
+                return null;
+            }
 
-			@Override
-			protected void onPostExecute(Void aVoid) {
-				isLoading.setValue(false);
-				mutableLiveData.setValue(places);
-			}
-		}.execute();
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                isLoading.setValue(false);
+                mutableLiveData.setValue(places);
+            }
+        }.execute();
 
-		return mutableLiveData;
-	}
+        return mutableLiveData;
+    }
 
-	MutableLiveData<Boolean> getIsLoading() {
-		return isLoading;
-	}
+    MutableLiveData<Boolean> getIsLoading() {
+        return isLoading;
+    }
 
-	private void parseJson(@NonNull String json) throws JSONException {
-		JSONArray jsonArray = new JSONArray(json);
-		if (jsonArray.length() > 0) {
-			for (int i = 0; i < jsonArray.length(); i++) {
-				JSONObject result = jsonArray.getJSONObject(i);
+    private void parseJson(@NonNull String json) throws JSONException {
+        JSONArray jsonArray = new JSONArray(json);
+        if (jsonArray.length() > 0) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject result = jsonArray.getJSONObject(i);
 
-				if (result != null) {
-					Poi place = new Poi();
-					double lat = result.getDouble("lat");
-					double lng = result.getDouble("lon");
-					place.setLatLng(new LatLng(lat, lng));
-					place.setName(result.getString("name"));
+                if (result != null) {
+                    Poi place = new Poi();
+                    double lat = result.getDouble("lat");
+                    double lng = result.getDouble("lon");
+                    place.setLatLng(new LatLng(lat, lng));
+                    place.setName(result.getString("name"));
 
-					String placeS = result.optString("place");
-					String highway = result.optString("highway");
+                    String placeS = result.optString("place");
+                    String highway = result.optString("highway");
 
-					if (result.has("dist")) {
-						place.setDistance(result.getInt("dist"));
-					} else {
-						place.setDistance(-1);
-					}
+                    if (result.has("dist")) {
+                        place.setDistance(result.getInt("dist"));
+                    } else {
+                        place.setDistance(-1);
+                    }
 
-					if (!TestUtil.isEmptyOrNull(highway)) {
-						place.setDescription("street");
-					} else {
-						place.setDescription(placeS);
-					}
+                    if (!TestUtil.isEmptyOrNull(highway)) {
+                        place.setDescription("street");
+                    } else {
+                        place.setDescription(placeS);
+                    }
 
-					places.add(place);
-				}
-			}
-		}
-	}
+                    places.add(place);
+                }
+            }
+        }
+    }
 }

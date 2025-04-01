@@ -45,7 +45,11 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
     private val messageService by lazy { serviceManager.messageService }
     private val myIdentity by lazy { serviceManager.identityStore.identity }
 
-    private val groupDeliveryReceiptMessage by lazy { GroupDeliveryReceiptMessage.fromReflected(message) }
+    private val groupDeliveryReceiptMessage by lazy {
+        GroupDeliveryReceiptMessage.fromReflected(
+            message
+        )
+    }
 
     override val shouldBumpLastUpdate: Boolean = false
 
@@ -53,9 +57,13 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
         get() = groupDeliveryReceiptMessage.protectAgainstReplay()
 
     override fun processOutgoingMessage() {
-        logger.info("Processing message {}: reflected outgoing group delivery receipt", message.messageId)
+        logger.info(
+            "Processing message {}: reflected outgoing group delivery receipt",
+            message.messageId
+        )
 
-        val messageState: MessageState? = MessageUtil.receiptTypeToMessageState(groupDeliveryReceiptMessage.receiptType)
+        val messageState: MessageState? =
+            MessageUtil.receiptTypeToMessageState(groupDeliveryReceiptMessage.receiptType)
         if (messageState == null || !MessageUtil.isReaction(messageState)) {
             logger.warn(
                 "Message {} error: unknown or unsupported delivery receipt type: {}",
@@ -78,7 +86,10 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
                 groupDeliveryReceiptMessage.apiGroupId
             )
             if (groupMessageModel == null) {
-                logger.warn("Group message model ({}) for reflected outgoing group delivery receipt is null", receiptMessageId)
+                logger.warn(
+                    "Group message model ({}) for reflected outgoing group delivery receipt is null",
+                    receiptMessageId
+                )
                 continue
             }
             messageService.addMessageReaction(

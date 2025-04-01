@@ -24,9 +24,18 @@ package ch.threema.app.listeners;
 import androidx.annotation.AnyThread;
 
 public interface ContactSettingsListener {
-	@AnyThread void onSortingChanged();
-	@AnyThread void onNameFormatChanged();
-	@AnyThread void onAvatarSettingChanged();
-	@AnyThread void onInactiveContactsSettingChanged();
-	@AnyThread void onNotificationSettingChanged(String uid);
+    @AnyThread
+    void onSortingChanged();
+
+    @AnyThread
+    void onNameFormatChanged();
+
+    @AnyThread
+    void onAvatarSettingChanged();
+
+    @AnyThread
+    void onInactiveContactsSettingChanged();
+
+    @AnyThread
+    void onNotificationSettingChanged(String uid);
 }

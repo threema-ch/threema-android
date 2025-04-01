@@ -37,17 +37,17 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE)
 public class ClassNamingConventionsTest {
-	@ArchTest
-	public static final ArchRule viewModelImplementations = classes().that().areAssignableTo(ViewModel.class)
+    @ArchTest
+    public static final ArchRule viewModelImplementations = classes().that().areAssignableTo(ViewModel.class)
         .should().haveSimpleNameEndingWith("ViewModel");
 
-	@ArchTest
-	public static final ArchRule viewModelName = classes().that().haveSimpleNameEndingWith("ViewModel")
-		.should().beAssignableTo(ViewModel.class);
+    @ArchTest
+    public static final ArchRule viewModelName = classes().that().haveSimpleNameEndingWith("ViewModel")
+        .should().beAssignableTo(ViewModel.class);
 
 
-	@ArchTest
-	public static final ArchRule abstractMessageSpecialization =
-		classes().that().areAssignableTo(AbstractMessage.class)
-			.should().haveSimpleNameEndingWith("Message");
+    @ArchTest
+    public static final ArchRule abstractMessageSpecialization =
+        classes().that().areAssignableTo(AbstractMessage.class)
+            .should().haveSimpleNameEndingWith("Message");
 }

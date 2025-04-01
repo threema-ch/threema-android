@@ -41,58 +41,58 @@ import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
 
 public abstract class GroupEditActivity extends ThreemaToolbarActivity {
-	protected static final String DIALOG_TAG_GROUPNAME = "groupName";
+    protected static final String DIALOG_TAG_GROUPNAME = "groupName";
 
-	protected ContactService contactService;
-	protected GroupService groupService;
-	protected @NonNull GroupModelRepository groupModelRepository;
-	protected UserService userService;
-	protected FileService fileService;
-	protected DeadlineListService hiddenChatsListService;
-	private File avatarFile = null;
-	private boolean isAvatarRemoved = false;
+    protected ContactService contactService;
+    protected GroupService groupService;
+    protected @NonNull GroupModelRepository groupModelRepository;
+    protected UserService userService;
+    protected FileService fileService;
+    protected DeadlineListService hiddenChatsListService;
+    private File avatarFile = null;
+    private boolean isAvatarRemoved = false;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		try {
-			this.contactService = this.serviceManager.getContactService();
-			this.groupService = this.serviceManager.getGroupService();
-			this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
-			this.userService = this.serviceManager.getUserService();
-			this.fileService = this.serviceManager.getFileService();
-			this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
-		} catch (Exception e) {
-			LogUtil.exception(e, this);
-			return;
-		}
-	}
+        try {
+            this.contactService = this.serviceManager.getContactService();
+            this.groupService = this.serviceManager.getGroupService();
+            this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
+            this.userService = this.serviceManager.getUserService();
+            this.fileService = this.serviceManager.getFileService();
+            this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
+        } catch (Exception e) {
+            LogUtil.exception(e, this);
+            return;
+        }
+    }
 
-	protected void launchGroupSetNameAndAvatarDialog() {
-		final int inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
-		ContactEditDialog.newInstance(
-					R.string.edit_name,
-					R.string.group_name,
-					-1,
-					inputType,
-					avatarFile,
-					isAvatarRemoved,
-					GroupModel.GROUP_NAME_MAX_LENGTH_BYTES)
-			.show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
-	}
+    protected void launchGroupSetNameAndAvatarDialog() {
+        final int inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME;
+        ContactEditDialog.newInstance(
+                R.string.edit_name,
+                R.string.group_name,
+                -1,
+                inputType,
+                avatarFile,
+                isAvatarRemoved,
+                GroupModel.GROUP_NAME_MAX_LENGTH_BYTES)
+            .show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-		try {
-			Fragment fragment = getSupportFragmentManager().findFragmentByTag(DIALOG_TAG_GROUPNAME);
-			if (fragment != null && fragment.isAdded()) {
-				fragment.onActivityResult(requestCode, resultCode, data);
-			}
-		} catch (Exception e) {
-			//
-		}
-	}
+        try {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(DIALOG_TAG_GROUPNAME);
+            if (fragment != null && fragment.isAdded()) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
+        } catch (Exception e) {
+            //
+        }
+    }
 }

@@ -33,5 +33,6 @@ import ch.threema.storage.models.WebClientSessionModel;
 @WorkerThread
 public interface WebClientMessageListener {
     void onMessage(MapValue message);
+
     boolean handle(WebClientSessionModel sessionModel);
 }

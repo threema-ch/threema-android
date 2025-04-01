@@ -50,15 +50,16 @@ class PermissionRegistry(private val activity: AppCompatActivity) {
         ConfigUtils.requestCameraPermissions(activity, null, code)
     }
 
-    suspend fun requestBluetoothPermission(showHelpDialog: Boolean): PermissionResponse = requestPermissions { code ->
-        logger.info("Request nearby devices permission (#{})", code)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ConfigUtils.requestBluetoothConnectPermissions(activity, null, code, showHelpDialog)
-        } else {
-            // Permission not required pre version S and therefore we can treat it as granted
-            true
+    suspend fun requestBluetoothPermission(showHelpDialog: Boolean): PermissionResponse =
+        requestPermissions { code ->
+            logger.info("Request nearby devices permission (#{})", code)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ConfigUtils.requestBluetoothConnectPermissions(activity, null, code, showHelpDialog)
+            } else {
+                // Permission not required pre version S and therefore we can treat it as granted
+                true
+            }
         }
-    }
 
     fun handlePermissionResult(
         requestCode: Int,
@@ -72,10 +73,12 @@ class PermissionRegistry(private val activity: AppCompatActivity) {
             logger.warn("No request found for permission result, permissions: '{}'", permissions)
             return
         }
-        val applied = pendingRequest.complete(PermissionResponse(
-            granted = granted,
-            prompted = true
-        ))
+        val applied = pendingRequest.complete(
+            PermissionResponse(
+                granted = granted,
+                prompted = true
+            )
+        )
         if (applied) {
             logger.debug("Permissions granted: '{}'", permissions)
         } else {

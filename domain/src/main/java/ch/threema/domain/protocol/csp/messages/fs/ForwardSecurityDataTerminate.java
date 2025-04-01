@@ -29,29 +29,29 @@ import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
 
 public class ForwardSecurityDataTerminate extends ForwardSecurityData {
-	private final @NonNull Terminate.Cause cause;
+    private final @NonNull Terminate.Cause cause;
 
-	public ForwardSecurityDataTerminate(
-		@NonNull DHSessionId sessionId,
-		@NonNull Terminate.Cause cause
-	) {
-		super(sessionId);
-		this.cause = cause;
-	}
+    public ForwardSecurityDataTerminate(
+        @NonNull DHSessionId sessionId,
+        @NonNull Terminate.Cause cause
+    ) {
+        super(sessionId);
+        this.cause = cause;
+    }
 
-	@NonNull
-	public Terminate.Cause getCause() {
-		return cause;
-	}
+    @NonNull
+    public Terminate.Cause getCause() {
+        return cause;
+    }
 
-	@NonNull
-	@Override
-	public Envelope toProtobufMessage() {
-		return Envelope.newBuilder()
-			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
-			.setTerminate(Terminate.newBuilder()
-				.setCause(this.cause)
-				.build())
-			.build();
-	}
+    @NonNull
+    @Override
+    public Envelope toProtobufMessage() {
+        return Envelope.newBuilder()
+            .setSessionId(ByteString.copyFrom(this.getSessionId().get()))
+            .setTerminate(Terminate.newBuilder()
+                .setCause(this.cause)
+                .build())
+            .build();
+    }
 }

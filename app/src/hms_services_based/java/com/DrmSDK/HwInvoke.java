@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @since 2020/07/01
  */
 public class HwInvoke {
-	private static final Logger logger = LoggerFactory.getLogger(EMUISupportUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(EMUISupportUtil.class);
 
     private static void paramsCheck(Class cls, Class[] paramsType,
                                     Object[] params) throws IllegalArgumentException {
@@ -41,7 +41,7 @@ public class HwInvoke {
         if (null == paramsType) {
             if (params != null) {
                 throw new IllegalArgumentException(
-                        "paramsType is null, but params is not null");
+                    "paramsType is null, but params is not null");
             }
         } else {
             if (null == params) {
@@ -49,7 +49,7 @@ public class HwInvoke {
             }
             if (paramsType.length != params.length) {
                 throw new IllegalArgumentException("paramsType len:" + paramsType.length
-                        + " should equal params.len:" + params.length);
+                    + " should equal params.len:" + params.length);
             }
         }
     }

@@ -1,67 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                     android:id="@+id/coordinator"
-                                                     android:layout_width="match_parent"
-                                                     android:layout_height="match_parent"
-                                                     android:fitsSystemWindows="true"
-													 android:background="?android:attr/colorBackground">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="?android:attr/colorBackground">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:fitsSystemWindows="true">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
 
-		<FrameLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-		<com.google.android.material.appbar.MaterialToolbar
-			android:id="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"/>
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize" />
 
-		<ch.threema.app.ui.ThreemaEditText
-			android:id="@+id/search_view"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@android:color/transparent"
-			android:textSize="18dp"
-			android:layout_marginLeft="60dp"
-			android:layout_gravity="center_vertical"
-			android:hint="@string/lp_search_place"
-			android:inputType="textNoSuggestions|textFilter"
-			android:imeOptions="flagNoExtractUi"
-			android:cursorVisible="true">
-			<requestFocus/>
-		</ch.threema.app.ui.ThreemaEditText>
+            <ch.threema.app.ui.ThreemaEditText
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:textSize="18dp"
+                android:layout_marginLeft="60dp"
+                android:layout_gravity="center_vertical"
+                android:hint="@string/lp_search_place"
+                android:inputType="textNoSuggestions|textFilter"
+                android:imeOptions="flagNoExtractUi"
+                android:cursorVisible="true">
 
-		</FrameLayout>
+                <requestFocus />
+            </ch.threema.app.ui.ThreemaEditText>
 
-	</com.google.android.material.appbar.AppBarLayout>
+        </FrameLayout>
 
-	<ch.threema.app.ui.EmptyRecyclerView
-		android:id="@+id/recycler"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-	<com.google.android.material.progressindicator.LinearProgressIndicator
-		android:id="@+id/progress"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="top"
-		android:indeterminate="true"
-		app:trackColor="?attr/colorPrimaryContainer"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"
-		android:visibility="gone"/>
+    <ch.threema.app.ui.EmptyRecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:indeterminate="true"
+        app:trackColor="?attr/colorPrimaryContainer"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

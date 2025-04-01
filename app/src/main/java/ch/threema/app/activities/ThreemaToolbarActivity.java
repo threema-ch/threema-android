@@ -65,317 +65,321 @@ import ch.threema.localcrypto.MasterKey;
  * Helper class for activities that use the new toolbar
  */
 public abstract class ThreemaToolbarActivity extends ThreemaActivity implements ConnectionStateListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaToolbarActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaToolbarActivity");
 
-	private Toolbar toolbar;
-	private View connectionIndicator;
-	protected ServiceManager serviceManager;
-	protected LockAppService lockAppService;
-	protected PreferenceService preferenceService;
+    private Toolbar toolbar;
+    private View connectionIndicator;
+    protected ServiceManager serviceManager;
+    protected LockAppService lockAppService;
+    protected PreferenceService preferenceService;
     private NotificationPreferenceService notificationPreferenceService;
-	protected ServerConnection connection;
+    protected ServerConnection connection;
 
-	@Override
-	protected void onResume() {
-		if (connection != null) {
-			connection.addConnectionStateListener(this);
-			ConnectionState connectionState = connection.getConnectionState();
-			ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
-		}
-		super.onResume();
-	}
+    @Override
+    protected void onResume() {
+        if (connection != null) {
+            connection.addConnectionStateListener(this);
+            ConnectionState connectionState = connection.getConnectionState();
+            ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
+        }
+        super.onResume();
+    }
 
-	@Override
-	protected void onPause() {
-		if (connection != null) {
-			connection.removeConnectionStateListener(this);
-		}
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        if (connection != null) {
+            connection.removeConnectionStateListener(this);
+        }
+        super.onPause();
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		logger.debug("onCreate");
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        logger.debug("onCreate");
 
-		ConfigUtils.configureSystemBars(this);
-		resetKeyboard();
+        ConfigUtils.configureSystemBars(this);
+        resetKeyboard();
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		//check master key
-		MasterKey masterKey = ThreemaApplication.getMasterKey();
+        //check master key
+        MasterKey masterKey = ThreemaApplication.getMasterKey();
 
-		if (masterKey != null && masterKey.isLocked()) {
-			startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
-			return;
-		} else {
-			if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-				startActivity(new Intent(this, EnterSerialActivity.class));
-				finish();
-				return;
-			}
-		}
+        if (masterKey != null && masterKey.isLocked()) {
+            startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
+            return;
+        } else {
+            if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+                startActivity(new Intent(this, EnterSerialActivity.class));
+                finish();
+                return;
+            }
+        }
 
-		initServices();
+        initServices();
 
-		if (!(this instanceof ComposeMessageActivity)) {
-			if (!this.initActivity(savedInstanceState)) {
-				finish();
-			}
-		}
-	}
+        if (!(this instanceof ComposeMessageActivity)) {
+            if (!this.initActivity(savedInstanceState)) {
+                finish();
+            }
+        }
+    }
 
-	protected void initServices() {
-		if (serviceManager == null) {
-			serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager == null) {
-				// app is probably locked
-				Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
-				finish();
-				return;
-			}
+    protected void initServices() {
+        if (serviceManager == null) {
+            serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager == null) {
+                // app is probably locked
+                Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
 
-			lockAppService = serviceManager.getLockAppService();
-			preferenceService = serviceManager.getPreferenceService();
+            lockAppService = serviceManager.getLockAppService();
+            preferenceService = serviceManager.getPreferenceService();
             notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-		}
-	}
+        }
+    }
 
-	/**
-	 * This method sets up the layout, the connection indicator, language override and screenshot blocker. It is called from onCreate() after all the basic initialization has been done.
-	 * Override this to do your own initialization, such as instantiating services
-	 * @param savedInstanceState the bundle provided to onCreate()
-	 * @return true on success, false otherwise
-	 */
-	protected boolean initActivity(@Nullable Bundle savedInstanceState) {
-		logger.debug("initActivity");
+    /**
+     * This method sets up the layout, the connection indicator, language override and screenshot blocker. It is called from onCreate() after all the basic initialization has been done.
+     * Override this to do your own initialization, such as instantiating services
+     *
+     * @param savedInstanceState the bundle provided to onCreate()
+     * @return true on success, false otherwise
+     */
+    protected boolean initActivity(@Nullable Bundle savedInstanceState) {
+        logger.debug("initActivity");
 
-		@LayoutRes int layoutResource = getLayoutResource();
+        @LayoutRes int layoutResource = getLayoutResource();
 
-		initServices();
+        initServices();
 
-		try {
-			connection = serviceManager.getConnection();
-		} catch (Exception e) {
-			logger.info("Unable to get Threema connection.");
-			finish();
-		}
+        try {
+            connection = serviceManager.getConnection();
+        } catch (Exception e) {
+            logger.info("Unable to get Threema connection.");
+            finish();
+        }
 
-		if (notificationPreferenceService != null && notificationPreferenceService.getWizardRunning()) {
-			startActivity(new Intent(this, WizardIntroActivity.class));
-			return false;
-		}
+        if (notificationPreferenceService != null && notificationPreferenceService.getWizardRunning()) {
+            startActivity(new Intent(this, WizardIntroActivity.class));
+            return false;
+        }
 
-		// hide contents in app switcher and inhibit screenshots
-		ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
+        // hide contents in app switcher and inhibit screenshots
+        ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
 
-		if (layoutResource != 0) {
-			logger.debug("setContentView");
+        if (layoutResource != 0) {
+            logger.debug("setContentView");
 
-			setContentView(layoutResource);
+            setContentView(layoutResource);
 
-			this.toolbar = findViewById(R.id.toolbar);
-			if (toolbar != null) {
-				setSupportActionBar(toolbar);
-			}
-			AppBarLayout appBarLayout = findViewById(R.id.appbar);
-			if (appBarLayout != null) {
-				appBarLayout.addLiftOnScrollListener((elevation, backgroundColor) -> getWindow().setStatusBarColor(backgroundColor));
-			}
+            this.toolbar = findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+            }
+            AppBarLayout appBarLayout = findViewById(R.id.appbar);
+            if (appBarLayout != null) {
+                appBarLayout.addLiftOnScrollListener((elevation, backgroundColor) -> getWindow().setStatusBarColor(backgroundColor));
+            }
 
-			connectionIndicator = findViewById(R.id.connection_indicator);
-		}
+            connectionIndicator = findViewById(R.id.connection_indicator);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public abstract @LayoutRes int getLayoutResource();
+    public abstract @LayoutRes int getLayoutResource();
 
-	public void setToolbar(Toolbar toolbar) {
-		this.toolbar = toolbar;
-	}
+    public void setToolbar(Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
 
-	public Toolbar getToolbar() {
-		return this.toolbar;
-	}
+    public Toolbar getToolbar() {
+        return this.toolbar;
+    }
 
-	protected View getConnectionIndicator() {
-		return connectionIndicator;
-	}
+    protected View getConnectionIndicator() {
+        return connectionIndicator;
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode,
-									Intent data) {
-		switch (requestCode) {
-			case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-				if (ThreemaApplication.getMasterKey().isLocked()) {
-					new MaterialAlertDialogBuilder(this)
-							.setTitle(R.string.master_key_locked)
-							.setMessage(R.string.master_key_locked_want_exit)
-							.setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
-							.setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
-				} else {
-					this.initActivity(null);
-				}
-				break;
-			default:
-				super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        switch (requestCode) {
+            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
+                if (ThreemaApplication.getMasterKey().isLocked()) {
+                    new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.master_key_locked)
+                        .setMessage(R.string.master_key_locked_want_exit)
+                        .setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
+                } else {
+                    this.initActivity(null);
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public void updateConnectionState(final ConnectionState connectionState) {
-		RuntimeUtil.runOnUiThread(() -> ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState));
-	}
+    @Override
+    public void updateConnectionState(final ConnectionState connectionState) {
+        RuntimeUtil.runOnUiThread(() -> ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState));
+    }
 
-	/* Soft keyboard tracking */
+    /* Soft keyboard tracking */
 
-	private static final String PORTRAIT_HEIGHT = "kbd_portrait_height";
-	private static final String LANDSCAPE_HEIGHT = "kbd_landscape_height";
-	private final Set<OnSoftKeyboardChangedListener> softKeyboardChangedListeners = new HashSet<>();
-	private boolean softKeyboardOpen = false;
-	private int minEmojiPickerHeight;
+    private static final String PORTRAIT_HEIGHT = "kbd_portrait_height";
+    private static final String LANDSCAPE_HEIGHT = "kbd_landscape_height";
+    private final Set<OnSoftKeyboardChangedListener> softKeyboardChangedListeners = new HashSet<>();
+    private boolean softKeyboardOpen = false;
+    private int minEmojiPickerHeight;
 
-	public interface OnSoftKeyboardChangedListener {
-		void onKeyboardHidden();
-		void onKeyboardShown();
-	}
+    public interface OnSoftKeyboardChangedListener {
+        void onKeyboardHidden();
 
-	public void addOnSoftKeyboardChangedListener(OnSoftKeyboardChangedListener listener) {
-		softKeyboardChangedListeners.add(listener);
-	}
+        void onKeyboardShown();
+    }
 
-	public void removeOnSoftKeyboardChangedListener(OnSoftKeyboardChangedListener listener) {
-		softKeyboardChangedListeners.remove(listener);
-	}
+    public void addOnSoftKeyboardChangedListener(OnSoftKeyboardChangedListener listener) {
+        softKeyboardChangedListeners.add(listener);
+    }
 
-	public void removeAllListeners() {
-		softKeyboardChangedListeners.clear();
-	}
+    public void removeOnSoftKeyboardChangedListener(OnSoftKeyboardChangedListener listener) {
+        softKeyboardChangedListeners.remove(listener);
+    }
 
-	public void notifySoftKeyboardHidden() {
-		final Set<OnSoftKeyboardChangedListener> listeners = new HashSet<>(softKeyboardChangedListeners);
-		for (OnSoftKeyboardChangedListener listener : listeners) {
-			listener.onKeyboardHidden();
-		}
-	}
+    public void removeAllListeners() {
+        softKeyboardChangedListeners.clear();
+    }
 
-	public void notifySoftKeyboardShown() {
-		final Set<OnSoftKeyboardChangedListener> listeners = new HashSet<>(softKeyboardChangedListeners);
-		for (OnSoftKeyboardChangedListener listener : listeners) {
-			listener.onKeyboardShown();
-		}
-	}
+    public void notifySoftKeyboardHidden() {
+        final Set<OnSoftKeyboardChangedListener> listeners = new HashSet<>(softKeyboardChangedListeners);
+        for (OnSoftKeyboardChangedListener listener : listeners) {
+            listener.onKeyboardHidden();
+        }
+    }
 
-	public void onSoftKeyboardOpened(int softKeyboardHeight) {
-		logger.debug("Soft keyboard open detected");
+    public void notifySoftKeyboardShown() {
+        final Set<OnSoftKeyboardChangedListener> listeners = new HashSet<>(softKeyboardChangedListeners);
+        for (OnSoftKeyboardChangedListener listener : listeners) {
+            listener.onKeyboardShown();
+        }
+    }
 
-		if (!this.softKeyboardOpen) {
-			this.softKeyboardOpen = true;
-			saveSoftKeyboardHeight(softKeyboardHeight);
-			notifySoftKeyboardShown();
-		}
-	}
+    public void onSoftKeyboardOpened(int softKeyboardHeight) {
+        logger.debug("Soft keyboard open detected");
 
-	public void onSoftKeyboardClosed() {
-		logger.debug("Soft keyboard closed");
+        if (!this.softKeyboardOpen) {
+            this.softKeyboardOpen = true;
+            saveSoftKeyboardHeight(softKeyboardHeight);
+            notifySoftKeyboardShown();
+        }
+    }
 
-		if (this.softKeyboardOpen) {
-			this.softKeyboardOpen = false;
-			notifySoftKeyboardHidden();
-		}
-	}
+    public void onSoftKeyboardClosed() {
+        logger.debug("Soft keyboard closed");
 
-	public void runOnSoftKeyboardClose(final Runnable runnable) {
-		if (this.softKeyboardOpen) {
-			addOnSoftKeyboardChangedListener(new OnSoftKeyboardChangedListener() {
-				@Override
-				public void onKeyboardHidden() {
-					removeOnSoftKeyboardChangedListener(this);
-					runnable.run();
-				}
+        if (this.softKeyboardOpen) {
+            this.softKeyboardOpen = false;
+            notifySoftKeyboardHidden();
+        }
+    }
 
-				@Override
-				public void onKeyboardShown() {}
-			});
-		} else {
-			runnable.run();
-		}
-	}
+    public void runOnSoftKeyboardClose(final Runnable runnable) {
+        if (this.softKeyboardOpen) {
+            addOnSoftKeyboardChangedListener(new OnSoftKeyboardChangedListener() {
+                @Override
+                public void onKeyboardHidden() {
+                    removeOnSoftKeyboardChangedListener(this);
+                    runnable.run();
+                }
 
-	public void runOnSoftKeyboardOpen(@NonNull final Runnable runnable) {
-		if (!isSoftKeyboardOpen()) {
-			addOnSoftKeyboardChangedListener(new OnSoftKeyboardChangedListener() {
-				@Override
-				public void onKeyboardShown() {
-					removeOnSoftKeyboardChangedListener(this);
-					runnable.run();
-				}
+                @Override
+                public void onKeyboardShown() {
+                }
+            });
+        } else {
+            runnable.run();
+        }
+    }
 
-				@Override
-				public void onKeyboardHidden() {}
-			});
-		} else {
-			runnable.run();
-		}
-	}
+    public void runOnSoftKeyboardOpen(@NonNull final Runnable runnable) {
+        if (!isSoftKeyboardOpen()) {
+            addOnSoftKeyboardChangedListener(new OnSoftKeyboardChangedListener() {
+                @Override
+                public void onKeyboardShown() {
+                    removeOnSoftKeyboardChangedListener(this);
+                    runnable.run();
+                }
 
-	@UiThread
-	public void openSoftKeyboard(@NonNull final EmojiPicker emojiPicker, @NonNull final EditText messageText) {
-		EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
-	}
+                @Override
+                public void onKeyboardHidden() {
+                }
+            });
+        } else {
+            runnable.run();
+        }
+    }
 
-	public boolean isSoftKeyboardOpen() {
-		return softKeyboardOpen;
-	}
+    @UiThread
+    public void openSoftKeyboard(@NonNull final EmojiPicker emojiPicker, @NonNull final EditText messageText) {
+        EditTextUtil.focusWindowAndShowSoftKeyboard(messageText);
+    }
 
-	public void saveSoftKeyboardHeight(int softKeyboardHeight) {
-		if (ConfigUtils.isLandscape(this)) {
-			logger.info("Keyboard height (landscape): " + softKeyboardHeight);
-			PreferenceManager.getDefaultSharedPreferences(this)
-				.edit().putInt(LANDSCAPE_HEIGHT, softKeyboardHeight).apply();
-		} else {
-			logger.info("Keyboard height (portrait): " + softKeyboardHeight);
-			PreferenceManager.getDefaultSharedPreferences(this)
-				.edit().putInt(PORTRAIT_HEIGHT, softKeyboardHeight).apply();
-		}
-	}
+    public boolean isSoftKeyboardOpen() {
+        return softKeyboardOpen;
+    }
 
-	public int loadStoredSoftKeyboardHeight() {
-		boolean isLandscape = ConfigUtils.isLandscape(this);
+    public void saveSoftKeyboardHeight(int softKeyboardHeight) {
+        if (ConfigUtils.isLandscape(this)) {
+            logger.info("Keyboard height (landscape): " + softKeyboardHeight);
+            PreferenceManager.getDefaultSharedPreferences(this)
+                .edit().putInt(LANDSCAPE_HEIGHT, softKeyboardHeight).apply();
+        } else {
+            logger.info("Keyboard height (portrait): " + softKeyboardHeight);
+            PreferenceManager.getDefaultSharedPreferences(this)
+                .edit().putInt(PORTRAIT_HEIGHT, softKeyboardHeight).apply();
+        }
+    }
 
-		int savedSoftKeyboardHeight = isLandscape ?
-			PreferenceManager.getDefaultSharedPreferences(this).getInt(LANDSCAPE_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height_landscape)) :
-			PreferenceManager.getDefaultSharedPreferences(this).getInt(PORTRAIT_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height));
+    public int loadStoredSoftKeyboardHeight() {
+        boolean isLandscape = ConfigUtils.isLandscape(this);
 
-		if (savedSoftKeyboardHeight < minEmojiPickerHeight) {
-			return getResources().getDimensionPixelSize(isLandscape ?
-				R.dimen.default_emoji_picker_height_landscape :
-				R.dimen.default_emoji_picker_height);
-		}
+        int savedSoftKeyboardHeight = isLandscape ?
+            PreferenceManager.getDefaultSharedPreferences(this).getInt(LANDSCAPE_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height_landscape)) :
+            PreferenceManager.getDefaultSharedPreferences(this).getInt(PORTRAIT_HEIGHT, getResources().getDimensionPixelSize(R.dimen.default_emoji_picker_height));
 
-		return savedSoftKeyboardHeight;
-	}
+        if (savedSoftKeyboardHeight < minEmojiPickerHeight) {
+            return getResources().getDimensionPixelSize(isLandscape ?
+                R.dimen.default_emoji_picker_height_landscape :
+                R.dimen.default_emoji_picker_height);
+        }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		loadStoredSoftKeyboardHeight();
+        return savedSoftKeyboardHeight;
+    }
 
-		super.onConfigurationChanged(newConfig);
-	}
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        loadStoredSoftKeyboardHeight();
 
-	public void resetKeyboard() {
-		minEmojiPickerHeight = getResources().getDimensionPixelSize(R.dimen.min_emoji_keyboard_height);
+        super.onConfigurationChanged(newConfig);
+    }
 
-		removeAllListeners();
-		softKeyboardOpen = false;
-	}
+    public void resetKeyboard() {
+        minEmojiPickerHeight = getResources().getDimensionPixelSize(R.dimen.min_emoji_keyboard_height);
 
-	@Override
-	protected void onDestroy() {
-		removeAllListeners();
+        removeAllListeners();
+        softKeyboardOpen = false;
+    }
 
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        removeAllListeners();
+
+        super.onDestroy();
+    }
 }

@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/parent_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<FrameLayout
-		android:id="@+id/cardview"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_alignParentTop="true"
-		android:orientation="vertical">
+    <FrameLayout
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
 
-				<ImageView
-					android:id="@+id/preview_image"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_gravity="center"
-					android:adjustViewBounds="true"
-					android:scaleType="center"
-					android:visibility="invisible"/>
+        <ImageView
+            android:id="@+id/preview_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="center"
+            android:visibility="invisible" />
 
-				<com.google.android.material.progressindicator.CircularProgressIndicator
-					android:id="@+id/progress"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center"
-					android:indeterminate="true"
-					android:visibility="gone"/>
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
 
-				<ch.threema.app.camera.VideoEditView
-					android:id="@+id/video_edit_view"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_gravity="center"
-					android:visibility="invisible"/>
+        <ch.threema.app.camera.VideoEditView
+            android:id="@+id/video_edit_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
 
-	</FrameLayout>
+    </FrameLayout>
 
-	<ch.threema.app.ui.BigFileView
-		android:id="@+id/big_file_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_gravity="center"
-		android:visibility="invisible" />
+    <ch.threema.app.ui.BigFileView
+        android:id="@+id/big_file_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

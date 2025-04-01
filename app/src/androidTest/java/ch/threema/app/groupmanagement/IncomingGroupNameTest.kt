@@ -67,7 +67,13 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
         // Create group rename message
         val groupARenamed =
-            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed", myContact.identity)
+            TestGroup(
+                groupA.apiGroupId,
+                groupA.groupCreator,
+                groupA.members,
+                "GroupARenamed",
+                myContact.identity
+            )
 
         val renameTracker = GroupRenameTracker(groupARenamed).apply { start() }
 
@@ -103,7 +109,13 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
         // Create group rename message (from wrong sender)
         val groupARenamed =
-            TestGroup(groupA.apiGroupId, groupA.groupCreator, groupA.members, "GroupARenamed", myContact.identity)
+            TestGroup(
+                groupA.apiGroupId,
+                groupA.groupCreator,
+                groupA.members,
+                "GroupARenamed",
+                myContact.identity
+            )
 
         val renameTracker = GroupRenameTracker(null).apply { start() }
 

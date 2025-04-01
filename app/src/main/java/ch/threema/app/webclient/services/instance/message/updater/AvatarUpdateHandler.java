@@ -45,113 +45,113 @@ import ch.threema.storage.models.GroupModel;
  */
 @WorkerThread
 public class AvatarUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarUpdateHandler");
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final @NonNull ContactListener contactListener;
-	private final @NonNull GroupListener groupListener;
+    // Listeners
+    private final @NonNull ContactListener contactListener;
+    private final @NonNull GroupListener groupListener;
 
-	// Dispatchers
-	private final @NonNull MessageDispatcher updateDispatcher;
+    // Dispatchers
+    private final @NonNull MessageDispatcher updateDispatcher;
 
     // Services
     private final @NonNull ContactService contactService;
 
-	@AnyThread
-	public AvatarUpdateHandler(
+    @AnyThread
+    public AvatarUpdateHandler(
         @NonNull HandlerExecutor handler,
         @NonNull MessageDispatcher updateDispatcher,
         @NonNull ContactService contactService
     ) {
-		super(Protocol.SUB_TYPE_AVATAR);
-		this.handler = handler;
+        super(Protocol.SUB_TYPE_AVATAR);
+        this.handler = handler;
 
-		// Dispatchers
-		this.updateDispatcher = updateDispatcher;
+        // Dispatchers
+        this.updateDispatcher = updateDispatcher;
 
         // Services
         this.contactService = contactService;
 
-		// Create receiver listeners
-		this.contactListener = new ContactListener();
-		this.groupListener = new GroupListener();
-	}
+        // Create receiver listeners
+        this.contactListener = new ContactListener();
+        this.groupListener = new GroupListener();
+    }
 
-	@Override
-	public void register() {
-		logger.debug("register()");
-		ListenerManager.contactListeners.add(this.contactListener);
-		ListenerManager.groupListeners.add(this.groupListener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register()");
+        ListenerManager.contactListeners.add(this.contactListener);
+        ListenerManager.groupListeners.add(this.groupListener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister()");
-		ListenerManager.contactListeners.remove(this.contactListener);
-		ListenerManager.groupListeners.remove(this.groupListener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister()");
+        ListenerManager.contactListeners.remove(this.contactListener);
+        ListenerManager.groupListeners.remove(this.groupListener);
+    }
 
-	/**
-	 * Update a contact avatar.
-	 */
-	private void update(@NonNull final ContactModel contact) {
-		this.update(new Utils.ModelWrapper(contact));
-	}
+    /**
+     * Update a contact avatar.
+     */
+    private void update(@NonNull final ContactModel contact) {
+        this.update(new Utils.ModelWrapper(contact));
+    }
 
-	/**
-	 * Update a group avatar.
-	 */
-	private void update(GroupModel group) {
-		this.update(new Utils.ModelWrapper(group));
-	}
+    /**
+     * Update a group avatar.
+     */
+    private void update(GroupModel group) {
+        this.update(new Utils.ModelWrapper(group));
+    }
 
-	private void update(final Utils.ModelWrapper model) {
-		try {
-			// Get avatar
-			byte[] data = model.getAvatar(true, Protocol.SIZE_AVATAR_HIRES_MAX_PX);
+    private void update(final Utils.ModelWrapper model) {
+        try {
+            // Get avatar
+            byte[] data = model.getAvatar(true, Protocol.SIZE_AVATAR_HIRES_MAX_PX);
 
-			// Convert message and prepare arguments
-			MsgpackObjectBuilder args = new MsgpackObjectBuilder();
-			args.put(Protocol.ARGUMENT_RECEIVER_TYPE, model.getType());
-			args.put(Protocol.ARGUMENT_RECEIVER_ID, model.getId());
+            // Convert message and prepare arguments
+            MsgpackObjectBuilder args = new MsgpackObjectBuilder();
+            args.put(Protocol.ARGUMENT_RECEIVER_TYPE, model.getType());
+            args.put(Protocol.ARGUMENT_RECEIVER_ID, model.getId());
 
-			// Send message
-			logger.debug("Sending {} avatar update", model.getType());
-			send(updateDispatcher, data, args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Send message
+            logger.debug("Sending {} avatar update", model.getType());
+            send(updateDispatcher, data, args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	/**
-	 * Listen for contact changes.
-	 */
-	@AnyThread
-	private class ContactListener implements ch.threema.app.listeners.ContactListener {
-		@Override
-		public void onAvatarChanged(final @NonNull String identity) {
-			logger.debug("Contact Listener: onAvatarChanged");
+    /**
+     * Listen for contact changes.
+     */
+    @AnyThread
+    private class ContactListener implements ch.threema.app.listeners.ContactListener {
+        @Override
+        public void onAvatarChanged(final @NonNull String identity) {
+            logger.debug("Contact Listener: onAvatarChanged");
             ContactModel contactModel = contactService.getByIdentity(identity);
             if (contactModel == null) {
                 logger.error("Got an avatar update for an unknown contact");
             } else {
                 handler.post(() -> AvatarUpdateHandler.this.update(contactModel));
             }
-		}
-	}
+        }
+    }
 
-	@AnyThread
-	private class GroupListener implements ch.threema.app.listeners.GroupListener {
-		@Override
-		public void onUpdatePhoto(GroupModel groupModel) {
-			logger.debug("Group Listener: onUpdatePhoto");
-			handler.post(() -> AvatarUpdateHandler.this.update(groupModel));
-		}
-	}
+    @AnyThread
+    private class GroupListener implements ch.threema.app.listeners.GroupListener {
+        @Override
+        public void onUpdatePhoto(GroupModel groupModel) {
+            logger.debug("Group Listener: onUpdatePhoto");
+            handler.post(() -> AvatarUpdateHandler.this.update(groupModel));
+        }
+    }
 }

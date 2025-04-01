@@ -27,10 +27,11 @@ import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public interface IncomingGroupJoinRequestService {
-	// TODO(ANDR-2607): include into tasks
-	@NonNull boolean process(@NonNull GroupJoinRequestMessage message);
+    // TODO(ANDR-2607): include into tasks
+    @NonNull
+    boolean process(@NonNull GroupJoinRequestMessage message);
 
-	void accept(@NonNull IncomingGroupJoinRequestModel model) throws Exception;
+    void accept(@NonNull IncomingGroupJoinRequestModel model) throws Exception;
 
-	void reject(@NonNull IncomingGroupJoinRequestModel model) throws ThreemaException;
+    void reject(@NonNull IncomingGroupJoinRequestModel model) throws ThreemaException;
 }

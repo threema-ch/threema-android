@@ -41,60 +41,60 @@ import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 
 public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
-	protected static final String TAG = "ActionBroadcastReceiver";
-	private static final Logger logger = LoggingUtil.getThreemaLogger(TAG);
+    protected static final String TAG = "ActionBroadcastReceiver";
+    private static final Logger logger = LoggingUtil.getThreemaLogger(TAG);
 
-	protected static final int WEARABLE_CONNECTION_LINGER = 1000 * 5;
+    protected static final int WEARABLE_CONNECTION_LINGER = 1000 * 5;
 
-	protected MessageService messageService;
-	protected LifetimeService lifetimeService;
-	protected NotificationService notificationService;
-	protected ContactService contactService;
-	protected DistributionListService distributionListService;
-	protected GroupService groupService;
-	protected ContactModelRepository contactModelRepository;
-	protected APIConnector apiConnector;
+    protected MessageService messageService;
+    protected LifetimeService lifetimeService;
+    protected NotificationService notificationService;
+    protected ContactService contactService;
+    protected DistributionListService distributionListService;
+    protected GroupService groupService;
+    protected ContactModelRepository contactModelRepository;
+    protected APIConnector apiConnector;
 
-	@NonNull
-	protected BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
+    @NonNull
+    protected BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
-	public ActionBroadcastReceiver() {
-		this.instantiate();
-	}
+    public ActionBroadcastReceiver() {
+        this.instantiate();
+    }
 
-	final protected boolean requiredInstances() {
-		if (!this.checkInstances()) {
-			this.instantiate();
-		}
-		return this.checkInstances();
-	}
+    final protected boolean requiredInstances() {
+        if (!this.checkInstances()) {
+            this.instantiate();
+        }
+        return this.checkInstances();
+    }
 
-	protected boolean checkInstances() {
-		return TestUtil.required(
-				this.messageService,
-				this.lifetimeService,
-				this.notificationService,
-				this.contactService,
-				this.distributionListService,
-				this.groupService
-		);
-	}
+    protected boolean checkInstances() {
+        return TestUtil.required(
+            this.messageService,
+            this.lifetimeService,
+            this.notificationService,
+            this.contactService,
+            this.distributionListService,
+            this.groupService
+        );
+    }
 
-	protected void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				this.messageService = serviceManager.getMessageService();
-				this.lifetimeService = serviceManager.getLifetimeService();
-				this.notificationService = serviceManager.getNotificationService();
-				this.contactService = serviceManager.getContactService();
-				this.distributionListService = serviceManager.getDistributionListService();
-				this.groupService = serviceManager.getGroupService();
-				this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-				this.apiConnector = serviceManager.getAPIConnector();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    protected void instantiate() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                this.messageService = serviceManager.getMessageService();
+                this.lifetimeService = serviceManager.getLifetimeService();
+                this.notificationService = serviceManager.getNotificationService();
+                this.contactService = serviceManager.getContactService();
+                this.distributionListService = serviceManager.getDistributionListService();
+                this.groupService = serviceManager.getGroupService();
+                this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+                this.apiConnector = serviceManager.getAPIConnector();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 }

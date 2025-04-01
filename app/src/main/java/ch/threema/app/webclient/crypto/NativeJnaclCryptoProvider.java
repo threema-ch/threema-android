@@ -34,51 +34,51 @@ import org.slf4j.Logger;
 
 @AnyThread
 public class NativeJnaclCryptoProvider implements CryptoProvider {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("NativeJnaclCryptoProvider");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("NativeJnaclCryptoProvider");
 
-	/**
-	 * @see CryptoProvider#generateKeypair(byte[], byte[])
-	 */
-	@Override
-	public void generateKeypair(@NonNull byte[] publickey, @NonNull byte[] privatekey) {
-		logger.debug("generateKeypair");
-		NaCl.genkeypair(publickey, privatekey);
-	}
+    /**
+     * @see CryptoProvider#generateKeypair(byte[], byte[])
+     */
+    @Override
+    public void generateKeypair(@NonNull byte[] publickey, @NonNull byte[] privatekey) {
+        logger.debug("generateKeypair");
+        NaCl.genkeypair(publickey, privatekey);
+    }
 
-	/**
-	 * @see CryptoProvider#derivePublicKey(byte[])
-	 */
-	@NonNull
-	@Override
-	public byte[] derivePublicKey(@NonNull byte[] privateKey) throws CryptoException {
-		logger.debug("derivePublicKey");
+    /**
+     * @see CryptoProvider#derivePublicKey(byte[])
+     */
+    @NonNull
+    @Override
+    public byte[] derivePublicKey(@NonNull byte[] privateKey) throws CryptoException {
+        logger.debug("derivePublicKey");
         try {
             return NaCl.derivePublicKey(privateKey);
         } catch (Error e) {
             throw new CryptoException("Deriving public key from private key failed: " + e.toString(), e);
         }
-	}
+    }
 
-	/**
-	 * @see CryptoProvider#symmetricEncrypt(byte[], byte[], byte[])
-	 */
-	@NonNull
-	@Override
-	public byte[] symmetricEncrypt(@NonNull byte[] data, @NonNull byte[] key, @NonNull byte[] nonce) throws CryptoException {
+    /**
+     * @see CryptoProvider#symmetricEncrypt(byte[], byte[], byte[])
+     */
+    @NonNull
+    @Override
+    public byte[] symmetricEncrypt(@NonNull byte[] data, @NonNull byte[] key, @NonNull byte[] nonce) throws CryptoException {
         try {
             return NaCl.symmetricEncryptData(data, key, nonce);
         } catch (Error e) {
             throw new CryptoException("Could not encrypt data: " + e.toString(), e);
         }
-	}
+    }
 
-	/**
-	 * @see CryptoProvider#symmetricDecrypt(byte[], byte[], byte[])
-	 */
-	@NonNull
-	@Override
-	public byte[] symmetricDecrypt(@NonNull byte[] data, @NonNull byte[] key, @NonNull byte[] nonce) throws CryptoException {
-		final byte[] decrypted;
+    /**
+     * @see CryptoProvider#symmetricDecrypt(byte[], byte[], byte[])
+     */
+    @NonNull
+    @Override
+    public byte[] symmetricDecrypt(@NonNull byte[] data, @NonNull byte[] key, @NonNull byte[] nonce) throws CryptoException {
+        final byte[] decrypted;
         try {
             decrypted = NaCl.symmetricDecryptData(data, key, nonce);
         } catch (Error e) {
@@ -88,15 +88,15 @@ public class NativeJnaclCryptoProvider implements CryptoProvider {
             throw new CryptoException("Could not decrypt data (data is null)");
         }
         return decrypted;
-	}
+    }
 
-	/**
-	 * @see CryptoProvider#getInstance(byte[], byte[])
-	 */
-	@NonNull
-	@Override
-	public CryptoInstance getInstance(@NonNull byte[] ownPrivateKey, @NonNull byte[] otherPublicKey) throws CryptoException {
-		logger.debug("getInstance");
-		return new NativeJnaclCryptoInstance(ownPrivateKey, otherPublicKey);
-	}
+    /**
+     * @see CryptoProvider#getInstance(byte[], byte[])
+     */
+    @NonNull
+    @Override
+    public CryptoInstance getInstance(@NonNull byte[] ownPrivateKey, @NonNull byte[] otherPublicKey) throws CryptoException {
+        logger.debug("getInstance");
+        return new NativeJnaclCryptoInstance(ownPrivateKey, otherPublicKey);
+    }
 }

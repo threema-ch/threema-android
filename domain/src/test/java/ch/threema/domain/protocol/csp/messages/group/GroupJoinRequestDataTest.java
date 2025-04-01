@@ -30,49 +30,49 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.protobuf.csp.e2e.GroupJoinRequest;
 
 public class GroupJoinRequestDataTest {
-	static final String TEST_GROUP_NAME = "GroupName";
-	static final String TEST_MESSAGE = "MyMessage";
-	static GroupInviteToken TEST_TOKEN_VALID;
+    static final String TEST_GROUP_NAME = "GroupName";
+    static final String TEST_MESSAGE = "MyMessage";
+    static GroupInviteToken TEST_TOKEN_VALID;
 
-	static {
-		try {
-			TEST_TOKEN_VALID = new GroupInviteToken(new byte[] { 0, 1, 2 , 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 });
-		} catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
-			e.printStackTrace();
-		}
-	}
+    static {
+        try {
+            TEST_TOKEN_VALID = new GroupInviteToken(new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+        } catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
+            e.printStackTrace();
+        }
+    }
 
-	static final GroupJoinRequest TEST_PROTOBUF_MESSAGE = GroupJoinRequest.newBuilder()
-		.setToken(ByteString.copyFrom(TEST_TOKEN_VALID.get()))
-		.setGroupName(TEST_GROUP_NAME)
-		.setMessage(TEST_MESSAGE)
-		.build();
+    static final GroupJoinRequest TEST_PROTOBUF_MESSAGE = GroupJoinRequest.newBuilder()
+        .setToken(ByteString.copyFrom(TEST_TOKEN_VALID.get()))
+        .setGroupName(TEST_GROUP_NAME)
+        .setMessage(TEST_MESSAGE)
+        .build();
 
-	static void assertEqualsTestProperties(GroupJoinRequestData data) {
-		Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
-		Assert.assertEquals(TEST_GROUP_NAME, data.getGroupName());
-		Assert.assertEquals(TEST_MESSAGE, data.getMessage());
-	}
+    static void assertEqualsTestProperties(GroupJoinRequestData data) {
+        Assert.assertEquals(TEST_TOKEN_VALID, data.getToken());
+        Assert.assertEquals(TEST_GROUP_NAME, data.getGroupName());
+        Assert.assertEquals(TEST_MESSAGE, data.getMessage());
+    }
 
-	@Test
-	public void testValidData() throws BadMessageException {
-		final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
-		assertEqualsTestProperties(data);
-	}
+    @Test
+    public void testValidData() throws BadMessageException {
+        final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
+        assertEqualsTestProperties(data);
+    }
 
 
-	@Test
-	public void testFromProtobuf() throws BadMessageException {
-		final byte[] rawMessage = TEST_PROTOBUF_MESSAGE.toByteArray();
-		final GroupJoinRequestData data = GroupJoinRequestData.fromProtobuf(rawMessage);
-		assertEqualsTestProperties(data);
-	}
+    @Test
+    public void testFromProtobuf() throws BadMessageException {
+        final byte[] rawMessage = TEST_PROTOBUF_MESSAGE.toByteArray();
+        final GroupJoinRequestData data = GroupJoinRequestData.fromProtobuf(rawMessage);
+        assertEqualsTestProperties(data);
+    }
 
-	@Test
-	public void testToProtobufMessage() throws BadMessageException {
-		final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
-		final GroupJoinRequest generatedProtobufMessage = data.toProtobufMessage();
+    @Test
+    public void testToProtobufMessage() throws BadMessageException {
+        final GroupJoinRequestData data = new GroupJoinRequestData(TEST_TOKEN_VALID, TEST_GROUP_NAME, TEST_MESSAGE);
+        final GroupJoinRequest generatedProtobufMessage = data.toProtobufMessage();
 
-		Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
-	}
+        Assert.assertEquals(TEST_PROTOBUF_MESSAGE, generatedProtobufMessage);
+    }
 }

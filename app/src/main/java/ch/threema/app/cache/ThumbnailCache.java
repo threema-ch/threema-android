@@ -30,73 +30,74 @@ import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ThumbnailCache<T> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailCache");
-	private final Object lock = new Object();
-	private final LruCache<T, Bitmap> thumbnails;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailCache");
+    private final Object lock = new Object();
+    private final LruCache<T, Bitmap> thumbnails;
 
-	/**
-	 * @param maxCacheSizeLimitKb Set this to limit the cache size (in kilobytes).
-	 */
-	public ThumbnailCache(@Nullable Integer maxCacheSizeLimitKb) {
-		// Get max available VM memory, exceeding this amount will throw an
-		// OutOfMemory exception. Stored in kilobytes as LruCache takes an
-		// int in its constructor.
-		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+    /**
+     * @param maxCacheSizeLimitKb Set this to limit the cache size (in kilobytes).
+     */
+    public ThumbnailCache(@Nullable Integer maxCacheSizeLimitKb) {
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-		final int cacheSizeDefault = Math.min(maxMemory / 16, 1024 * 16); // 16 MB max
-		final int cacheSize;
-		if (maxCacheSizeLimitKb == null) {
-			cacheSize = cacheSizeDefault;
-		} else {
-			cacheSize = Math.min(cacheSizeDefault, maxCacheSizeLimitKb);
-		}
-		logger.debug("init size = " + cacheSize);
+        final int cacheSizeDefault = Math.min(maxMemory / 16, 1024 * 16); // 16 MB max
+        final int cacheSize;
+        if (maxCacheSizeLimitKb == null) {
+            cacheSize = cacheSizeDefault;
+        } else {
+            cacheSize = Math.min(cacheSizeDefault, maxCacheSizeLimitKb);
+        }
+        logger.debug("init size = " + cacheSize);
 
 
-		this.thumbnails = new LruCache<T, Bitmap>(cacheSize) {
+        this.thumbnails = new LruCache<T, Bitmap>(cacheSize) {
 
-			@Override
-			protected int sizeOf(T key, Bitmap bitmap) {
-				// The cache size will be measured in kilobytes rather than
-				// number of items.
-				return bitmap.getByteCount() / 1024;
-			}
+            @Override
+            protected int sizeOf(T key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
 
-			@Override
-			protected void entryRemoved(boolean evicted, T key, Bitmap oldValue, Bitmap newValue) {
-				super.entryRemoved(evicted, key, oldValue, newValue);
+            @Override
+            protected void entryRemoved(boolean evicted, T key, Bitmap oldValue, Bitmap newValue) {
+                super.entryRemoved(evicted, key, oldValue, newValue);
 
-				/*
-				* We should not recycle bitmaps here. they might still be referenced by an image view
-				* but the cache is too small to hold it. instead, we rely on the garbage collector.
-				*/
+                /*
+                 * We should not recycle bitmaps here. they might still be referenced by an image view
+                 * but the cache is too small to hold it. instead, we rely on the garbage collector.
+                 */
 
 /*				if (evicted) {
 					BitmapUtil.recycle(oldValue);
 				}
-*/			}
-		};
-	}
+*/
+            }
+        };
+    }
 
-	public Bitmap get(T index) {
-		synchronized (this.lock) {
-			return this.thumbnails.get(index);
-		}
-	}
+    public Bitmap get(T index) {
+        synchronized (this.lock) {
+            return this.thumbnails.get(index);
+        }
+    }
 
-	public void set(T index, Bitmap bitmap) {
-		synchronized (this.lock) {
-			if (index != null && bitmap != null) {
-				this.thumbnails.put(index, bitmap);
-			}
-		}
-	}
+    public void set(T index, Bitmap bitmap) {
+        synchronized (this.lock) {
+            if (index != null && bitmap != null) {
+                this.thumbnails.put(index, bitmap);
+            }
+        }
+    }
 
-	public void flush() {
-		synchronized (this.lock) {
-			logger.debug("evictAll");
+    public void flush() {
+        synchronized (this.lock) {
+            logger.debug("evictAll");
 
-			this.thumbnails.evictAll();
-		}
-	}
+            this.thumbnails.evictAll();
+        }
+    }
 }

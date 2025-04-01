@@ -33,25 +33,25 @@ import ch.threema.domain.stores.TokenStoreInterface;
  */
 public class AuthTokenStore implements TokenStoreInterface {
 
-	@Nullable
-	private String authToken;
+    @Nullable
+    private String authToken;
 
-	private long ttl = 0;
+    private long ttl = 0;
 
-	@Override
-	public String getToken() {
-		// If the time to live is in the past, we set the token to null
-		if (ttl < SystemClock.elapsedRealtime()) {
-			authToken = null;
-		}
+    @Override
+    public String getToken() {
+        // If the time to live is in the past, we set the token to null
+        if (ttl < SystemClock.elapsedRealtime()) {
+            authToken = null;
+        }
 
-		return authToken;
-	}
+        return authToken;
+    }
 
-	@Override
-	public void storeToken(@Nullable String authToken) {
-		this.authToken = authToken;
-		// Set the ttl to 24 hours in the future
-		this.ttl = SystemClock.elapsedRealtime() + DateUtils.DAY_IN_MILLIS;
-	}
+    @Override
+    public void storeToken(@Nullable String authToken) {
+        this.authToken = authToken;
+        // Set the ttl to 24 hours in the future
+        this.ttl = SystemClock.elapsedRealtime() + DateUtils.DAY_IN_MILLIS;
+    }
 }

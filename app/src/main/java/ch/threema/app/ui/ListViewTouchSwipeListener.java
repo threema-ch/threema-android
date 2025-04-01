@@ -55,251 +55,252 @@ import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ListViewTouchSwipeListener implements View.OnTouchListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewSwipeListener");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewSwipeListener");
 
-	// Cached ViewConfiguration and system-wide constant values
-	private int mSlop;
-	private long mAnimationTime;
+    // Cached ViewConfiguration and system-wide constant values
+    private int mSlop;
+    private long mAnimationTime;
 
-	// Fixed properties
-	private ListView mListView;
-	private DismissCallbacks mCallbacks;
-	private int mViewWidth = 1; // 1 and not 0 to prevent dividing by zero
+    // Fixed properties
+    private ListView mListView;
+    private DismissCallbacks mCallbacks;
+    private int mViewWidth = 1; // 1 and not 0 to prevent dividing by zero
 
-	// Transient properties
-	private float mDownX;
-	private float mDownY;
-	private boolean mSwiping;
-	private boolean mHasSwipeStarted = false;
-	private int mSwipingSlop;
-	private int mDownPosition;
-	private View mDownView;
-	private boolean mPaused;
-	private ImageView quoteIcon;
-	private long mOnDownTime;
-	private boolean isRelayDownEvent;
-	private Runnable relayLongClickRunnable;
+    // Transient properties
+    private float mDownX;
+    private float mDownY;
+    private boolean mSwiping;
+    private boolean mHasSwipeStarted = false;
+    private int mSwipingSlop;
+    private int mDownPosition;
+    private View mDownView;
+    private boolean mPaused;
+    private ImageView quoteIcon;
+    private long mOnDownTime;
+    private boolean isRelayDownEvent;
+    private Runnable relayLongClickRunnable;
 
-	public interface DismissCallbacks {
-		boolean canSwipe(int position);
-		void onSwiped(int position);
-	}
+    public interface DismissCallbacks {
+        boolean canSwipe(int position);
 
-	public ListViewTouchSwipeListener(ListView listView, DismissCallbacks callbacks) {
-		ViewConfiguration vc = ViewConfiguration.get(listView.getContext());
-		mSlop = vc.getScaledTouchSlop();
-		mAnimationTime = listView.getContext().getResources().getInteger(
-			android.R.integer.config_shortAnimTime);
-		mListView = listView;
-		mCallbacks = callbacks;
-	}
+        void onSwiped(int position);
+    }
 
-	public void setEnabled(boolean enabled) {
-		mPaused = !enabled;
-		if (!enabled && mDownView != null) {
-			mDownView.removeCallbacks(relayLongClickRunnable);
-		}
-	}
+    public ListViewTouchSwipeListener(ListView listView, DismissCallbacks callbacks) {
+        ViewConfiguration vc = ViewConfiguration.get(listView.getContext());
+        mSlop = vc.getScaledTouchSlop();
+        mAnimationTime = listView.getContext().getResources().getInteger(
+            android.R.integer.config_shortAnimTime);
+        mListView = listView;
+        mCallbacks = callbacks;
+    }
 
-	@SuppressLint("ClickableViewAccessibility")
-	@Override
-	public boolean onTouch(View view, MotionEvent motionEvent) {
-		if (mViewWidth < 2) {
-			mViewWidth = mListView.getWidth();
-		}
+    public void setEnabled(boolean enabled) {
+        mPaused = !enabled;
+        if (!enabled && mDownView != null) {
+            mDownView.removeCallbacks(relayLongClickRunnable);
+        }
+    }
 
-		switch (motionEvent.getActionMasked()) {
-			case MotionEvent.ACTION_DOWN: {
-				logger.debug("*** ACTION_DOWN");
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (mViewWidth < 2) {
+            mViewWidth = mListView.getWidth();
+        }
 
-				mOnDownTime = SystemClock.uptimeMillis();
-				if (isRelayDownEvent) {
-					isRelayDownEvent = false;
-					return false;
-				}
+        switch (motionEvent.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: {
+                logger.debug("*** ACTION_DOWN");
 
-				if (mPaused) {
-					return false;
-				}
+                mOnDownTime = SystemClock.uptimeMillis();
+                if (isRelayDownEvent) {
+                    isRelayDownEvent = false;
+                    return false;
+                }
 
-				// Find the child view that was touched (perform a hit test)
-				Rect rect = new Rect();
-				int childCount = mListView.getChildCount();
-				int[] listViewCoords = new int[2];
-				mListView.getLocationOnScreen(listViewCoords);
-				int x = (int) motionEvent.getRawX() - listViewCoords[0];
-				int y = (int) motionEvent.getRawY() - listViewCoords[1];
-				View child;
-				for (int i = 0; i < childCount; i++) {
-					child = mListView.getChildAt(i);
-					child.getHitRect(rect);
-					if (rect.contains(x, y)) {
-						mDownView = child;
-						break;
-					}
-				}
+                if (mPaused) {
+                    return false;
+                }
 
-				if (mDownView != null) {
-					mDownX = motionEvent.getRawX();
-					mDownY = motionEvent.getRawY();
-					mDownPosition = mListView.getPositionForView(mDownView);
-					if (!mCallbacks.canSwipe(mDownPosition)) {
-						mDownView = null;
-						return false;
-					} else {
-						quoteIcon = null;
+                // Find the child view that was touched (perform a hit test)
+                Rect rect = new Rect();
+                int childCount = mListView.getChildCount();
+                int[] listViewCoords = new int[2];
+                mListView.getLocationOnScreen(listViewCoords);
+                int x = (int) motionEvent.getRawX() - listViewCoords[0];
+                int y = (int) motionEvent.getRawY() - listViewCoords[1];
+                View child;
+                for (int i = 0; i < childCount; i++) {
+                    child = mListView.getChildAt(i);
+                    child.getHitRect(rect);
+                    if (rect.contains(x, y)) {
+                        mDownView = child;
+                        break;
+                    }
+                }
 
-						View messageBlock = mDownView.findViewById(R.id.message_block);
+                if (mDownView != null) {
+                    mDownX = motionEvent.getRawX();
+                    mDownY = motionEvent.getRawY();
+                    mDownPosition = mListView.getPositionForView(mDownView);
+                    if (!mCallbacks.canSwipe(mDownPosition)) {
+                        mDownView = null;
+                        return false;
+                    } else {
+                        quoteIcon = null;
 
-						if (messageBlock != null) {
-							mViewWidth = messageBlock.getWidth();
-						}
-					}
-				} else {
-					return false;
-				}
+                        View messageBlock = mDownView.findViewById(R.id.message_block);
 
-				// delay long click handling
-				relayLongClickRunnable = () -> relayOnDownEvent(view);
-				mDownView.postDelayed(relayLongClickRunnable, 100);
+                        if (messageBlock != null) {
+                            mViewWidth = messageBlock.getWidth();
+                        }
+                    }
+                } else {
+                    return false;
+                }
 
-				return true;
-			}
+                // delay long click handling
+                relayLongClickRunnable = () -> relayOnDownEvent(view);
+                mDownView.postDelayed(relayLongClickRunnable, 100);
 
-			case MotionEvent.ACTION_CANCEL: {
-				logger.debug("*** ACTION_CANCEL");
+                return true;
+            }
 
-				if (mDownView == null) {
-					break;
-				}
+            case MotionEvent.ACTION_CANCEL: {
+                logger.debug("*** ACTION_CANCEL");
 
-				if (mSwiping) {
-					// cancel
-					mDownView.animate()
-						.translationX(0)
-						.alpha(1)
-						.setDuration(mAnimationTime)
-						.setListener(null);
-				}
+                if (mDownView == null) {
+                    break;
+                }
 
-				mDownView.removeCallbacks(relayLongClickRunnable);
-				resetSwipeStates();
+                if (mSwiping) {
+                    // cancel
+                    mDownView.animate()
+                        .translationX(0)
+                        .alpha(1)
+                        .setDuration(mAnimationTime)
+                        .setListener(null);
+                }
 
-				break;
-			}
+                mDownView.removeCallbacks(relayLongClickRunnable);
+                resetSwipeStates();
 
-			case MotionEvent.ACTION_UP: {
-				logger.debug("*** ACTION_UP");
+                break;
+            }
 
-				if (mDownView != null) {
-					float deltaX = motionEvent.getRawX() - mDownX;
-					if (Math.abs(deltaX) > mViewWidth / 4 && mSwiping && mDownPosition != ListView.INVALID_POSITION) {
-						// ok
-						final int downPosition = mDownPosition;
-						mDownView.animate()
-							.translationX(0)
-							.setDuration(mAnimationTime)
-							.setListener(new AnimatorListenerAdapter() {
-								@Override
-								public void onAnimationEnd(Animator animation) {
-									mCallbacks.onSwiped(downPosition);
-									mDownPosition = ListView.INVALID_POSITION;
-								}
-							});
-					} else {
-						// cancel
-						mDownView.animate()
-							.translationX(0)
-							.setDuration(mAnimationTime)
-							.setListener(null);
+            case MotionEvent.ACTION_UP: {
+                logger.debug("*** ACTION_UP");
 
-						if (!mHasSwipeStarted) {
-							// single click
-							mDownView.removeCallbacks(relayLongClickRunnable);
-							relayOnDownEvent(view);
-						}
-					}
-					resetSwipeStates();
-				}
-				return false;
-			}
+                if (mDownView != null) {
+                    float deltaX = motionEvent.getRawX() - mDownX;
+                    if (Math.abs(deltaX) > mViewWidth / 4 && mSwiping && mDownPosition != ListView.INVALID_POSITION) {
+                        // ok
+                        final int downPosition = mDownPosition;
+                        mDownView.animate()
+                            .translationX(0)
+                            .setDuration(mAnimationTime)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    mCallbacks.onSwiped(downPosition);
+                                    mDownPosition = ListView.INVALID_POSITION;
+                                }
+                            });
+                    } else {
+                        // cancel
+                        mDownView.animate()
+                            .translationX(0)
+                            .setDuration(mAnimationTime)
+                            .setListener(null);
 
-			case MotionEvent.ACTION_MOVE: {
-				logger.debug("*** ACTION_MOVE");
+                        if (!mHasSwipeStarted) {
+                            // single click
+                            mDownView.removeCallbacks(relayLongClickRunnable);
+                            relayOnDownEvent(view);
+                        }
+                    }
+                    resetSwipeStates();
+                }
+                return false;
+            }
 
-				if (mPaused || mDownView == null) {
-					break;
-				}
+            case MotionEvent.ACTION_MOVE: {
+                logger.debug("*** ACTION_MOVE");
 
-				float deltaX = motionEvent.getRawX() - mDownX;
-				float deltaY = motionEvent.getRawY() - mDownY;
+                if (mPaused || mDownView == null) {
+                    break;
+                }
 
-				if (deltaX < 0) {
-					deltaX = 0;
-				}
+                float deltaX = motionEvent.getRawX() - mDownX;
+                float deltaY = motionEvent.getRawY() - mDownY;
 
-				if (deltaX > mSlop && Math.abs(deltaY) < Math.abs(deltaX) / 2) {
-					mSwiping = true;
-					mSwipingSlop = mSlop;
-					mListView.requestDisallowInterceptTouchEvent(true);
+                if (deltaX < 0) {
+                    deltaX = 0;
+                }
 
-					if (deltaX > 0) {
-						setQuoteIconVisibility(View.VISIBLE);
-					}
+                if (deltaX > mSlop && Math.abs(deltaY) < Math.abs(deltaX) / 2) {
+                    mSwiping = true;
+                    mSwipingSlop = mSlop;
+                    mListView.requestDisallowInterceptTouchEvent(true);
 
-					// Cancel ListView's touch (un-highlighting the item)
-					MotionEvent cancelEvent = MotionEvent.obtain(motionEvent);
-					cancelEvent.setAction(MotionEvent.ACTION_CANCEL |
-						(motionEvent.getActionIndex()
-							<< MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-					mListView.onTouchEvent(cancelEvent);
-					cancelEvent.recycle();
-				}
+                    if (deltaX > 0) {
+                        setQuoteIconVisibility(View.VISIBLE);
+                    }
 
-				if (mSwiping) {
-					mDownView.removeCallbacks(relayLongClickRunnable);
-					mHasSwipeStarted = true;
-					mDownView.setTranslationX(deltaX - mSwipingSlop);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
+                    // Cancel ListView's touch (un-highlighting the item)
+                    MotionEvent cancelEvent = MotionEvent.obtain(motionEvent);
+                    cancelEvent.setAction(MotionEvent.ACTION_CANCEL |
+                        (motionEvent.getActionIndex()
+                            << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                    mListView.onTouchEvent(cancelEvent);
+                    cancelEvent.recycle();
+                }
 
-	private void relayOnDownEvent(View view) {
-		isRelayDownEvent = true;
-		view.dispatchTouchEvent(
-			MotionEvent.obtain(
-				mOnDownTime,
-				SystemClock.uptimeMillis(),
-				MotionEvent.ACTION_DOWN,
-				mDownX,
-				mDownY,
-				0)
-		);
-	}
+                if (mSwiping) {
+                    mDownView.removeCallbacks(relayLongClickRunnable);
+                    mHasSwipeStarted = true;
+                    mDownView.setTranslationX(deltaX - mSwipingSlop);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private void setQuoteIconVisibility(int visibility) {
-		if (quoteIcon != null) {
-			if (quoteIcon.getVisibility() != visibility) {
-				if (visibility == View.VISIBLE) {
-					quoteIcon.setVisibility(View.VISIBLE);
-					ObjectAnimator.ofFloat(quoteIcon, View.ALPHA, 0.2f, 1.0f).setDuration(300).start();
-				} else {
-					quoteIcon.setVisibility(View.GONE);
-				}
-			}
-		}
-	}
+    private void relayOnDownEvent(View view) {
+        isRelayDownEvent = true;
+        view.dispatchTouchEvent(
+            MotionEvent.obtain(
+                mOnDownTime,
+                SystemClock.uptimeMillis(),
+                MotionEvent.ACTION_DOWN,
+                mDownX,
+                mDownY,
+                0)
+        );
+    }
 
-	private void resetSwipeStates() {
-		mDownX = 0;
-		mDownY = 0;
-		mDownView = null;
-		mDownPosition = ListView.INVALID_POSITION;
-		mSwiping = false;
-		mHasSwipeStarted = false;
-		setQuoteIconVisibility(View.GONE);
-	}
+    private void setQuoteIconVisibility(int visibility) {
+        if (quoteIcon != null) {
+            if (quoteIcon.getVisibility() != visibility) {
+                if (visibility == View.VISIBLE) {
+                    quoteIcon.setVisibility(View.VISIBLE);
+                    ObjectAnimator.ofFloat(quoteIcon, View.ALPHA, 0.2f, 1.0f).setDuration(300).start();
+                } else {
+                    quoteIcon.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    private void resetSwipeStates() {
+        mDownX = 0;
+        mDownY = 0;
+        mDownView = null;
+        mDownPosition = ListView.INVALID_POSITION;
+        mSwiping = false;
+        mHasSwipeStarted = false;
+        setQuoteIconVisibility(View.GONE);
+    }
 }

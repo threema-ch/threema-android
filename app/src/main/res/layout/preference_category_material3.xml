@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
@@ -12,7 +11,7 @@
     android:layout_marginTop="16dp"
     android:gravity="center_vertical">
 
-    <include layout="@layout/preferences_icon_frame_material3"/>
+    <include layout="@layout/preferences_icon_frame_material3" />
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -27,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:textAlignment="viewStart"
-            style="@style/Threema.MaterialPreferenceCategory.Title"/>
+            style="@style/Threema.MaterialPreferenceCategory.Title" />
 
         <TextView
             android:id="@android:id/summary"
@@ -42,7 +41,7 @@
             android:textAlignment="viewStart"
             android:textColor="?attr/colorOnSurface"
             android:maxLines="10"
-            style="@style/PreferenceSummaryTextStyle"/>
+            style="@style/PreferenceSummaryTextStyle" />
 
     </RelativeLayout>
 </LinearLayout>

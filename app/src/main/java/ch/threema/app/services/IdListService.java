@@ -26,11 +26,15 @@ import android.content.Context;
 import ch.threema.storage.models.ContactModel;
 
 public interface IdListService {
-	void add(String id);
-	boolean has(String id);
-	void remove(String id);
+    void add(String id);
 
-	String[] getAll();
-	void removeAll();
+    boolean has(String id);
+
+    void remove(String id);
+
+    String[] getAll();
+
+    void removeAll();
+
     void replaceAll(String[] ids);
 }

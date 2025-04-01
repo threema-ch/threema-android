@@ -57,7 +57,10 @@ internal class D2mSession(
     override val isLoginDone: Boolean
         get() = loginState == LoginState.DONE
 
-    fun handleHandshakeMessage(message: InboundD2mMessage, outbound: InputPipe<in OutboundD2mMessage>) {
+    fun handleHandshakeMessage(
+        message: InboundD2mMessage,
+        outbound: InputPipe<in OutboundD2mMessage>
+    ) {
         dispatcher.assertDispatcherContext()
 
         loginState = when (message) {
@@ -65,16 +68,21 @@ internal class D2mSession(
                 processServerHello(message, outbound)
                 LoginState.AWAIT_SERVER_INFO
             }
+
             is InboundD2mMessage.ServerInfo -> {
                 processServerInfo(message)
                 LoginState.DONE
             }
+
             else -> throw getUnexpectedMessageException(message)
         }
 
     }
 
-    private fun processServerHello(serverHello: InboundD2mMessage.ServerHello, outbound: InputPipe<in OutboundD2mMessage>) {
+    private fun processServerHello(
+        serverHello: InboundD2mMessage.ServerHello,
+        outbound: InputPipe<in OutboundD2mMessage>
+    ) {
         if (loginState != LoginState.AWAIT_SERVER_HELLO) {
             throw getUnexpectedMessageException(serverHello)
         }
@@ -115,7 +123,7 @@ internal class D2mSession(
         withProperties { it.notifyServerInfo(serverInfo) }
     }
 
-    private fun <T>withProperties(block: (MultiDeviceProperties) -> T): T {
+    private fun <T> withProperties(block: (MultiDeviceProperties) -> T): T {
         return block.invoke(propertiesProvider.get())
     }
 

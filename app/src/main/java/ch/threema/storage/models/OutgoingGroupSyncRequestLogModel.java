@@ -32,55 +32,55 @@ import androidx.annotation.NonNull;
  */
 public class OutgoingGroupSyncRequestLogModel {
 
-	public static final String TABLE = "m_group_request_sync_log";
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_API_GROUP_ID = "apiGroupId";
-	public static final String COLUMN_CREATOR_IDENTITY = "creatorIdentity";
-	public static final String COLUMN_LAST_REQUEST = "lastRequest";
+    public static final String TABLE = "m_group_request_sync_log";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_API_GROUP_ID = "apiGroupId";
+    public static final String COLUMN_CREATOR_IDENTITY = "creatorIdentity";
+    public static final String COLUMN_LAST_REQUEST = "lastRequest";
 
-	private int id;
-	private String apiGroupId;
-	private String creatorIdentity;
-	private Date lastRequest;
+    private int id;
+    private String apiGroupId;
+    private String creatorIdentity;
+    private Date lastRequest;
 
-	public OutgoingGroupSyncRequestLogModel() {
-	}
+    public OutgoingGroupSyncRequestLogModel() {
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public OutgoingGroupSyncRequestLogModel setId(int id) {
-		this.id = id;
-		return this;
-	}
+    public OutgoingGroupSyncRequestLogModel setId(int id) {
+        this.id = id;
+        return this;
+    }
 
-	@NonNull
-	@Override
-	public String toString() {
-		return "m_group_request_sync_log.id = " + this.getId();
-	}
+    @NonNull
+    @Override
+    public String toString() {
+        return "m_group_request_sync_log.id = " + this.getId();
+    }
 
-	public OutgoingGroupSyncRequestLogModel setAPIGroupId(String apiGroupId, String creatorIdentity) {
-		this.apiGroupId = apiGroupId;
-		this.creatorIdentity = creatorIdentity;
-		return this;
-	}
+    public OutgoingGroupSyncRequestLogModel setAPIGroupId(String apiGroupId, String creatorIdentity) {
+        this.apiGroupId = apiGroupId;
+        this.creatorIdentity = creatorIdentity;
+        return this;
+    }
 
-	public String getCreatorIdentity() {
-		return this.creatorIdentity;
-	}
+    public String getCreatorIdentity() {
+        return this.creatorIdentity;
+    }
 
-	public String getApiGroupId() {
-		return this.apiGroupId;
-	}
+    public String getApiGroupId() {
+        return this.apiGroupId;
+    }
 
-	public Date getLastRequest() {
-		return this.lastRequest;
-	}
+    public Date getLastRequest() {
+        return this.lastRequest;
+    }
 
-	public OutgoingGroupSyncRequestLogModel setLastRequest(Date lastRequest) {
-		this.lastRequest = lastRequest;
-		return this;
-	}
+    public OutgoingGroupSyncRequestLogModel setLastRequest(Date lastRequest) {
+        this.lastRequest = lastRequest;
+        return this;
+    }
 }

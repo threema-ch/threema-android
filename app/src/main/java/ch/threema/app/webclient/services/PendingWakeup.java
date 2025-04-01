@@ -31,17 +31,19 @@ import ch.threema.annotation.SameThread;
  */
 @SameThread
 class PendingWakeup {
-	@NonNull final String publicKeySha256String;
-	@Nullable String affiliationId;
-	long expiration;
+    @NonNull
+    final String publicKeySha256String;
+    @Nullable
+    String affiliationId;
+    long expiration;
 
-	PendingWakeup(
-		@NonNull final String publicKeySha256String,
-		@Nullable final String affiliationId,
-		final long expiration
-	) {
-		this.publicKeySha256String = publicKeySha256String;
-		this.affiliationId = affiliationId;
-		this.expiration = expiration;
-	}
+    PendingWakeup(
+        @NonNull final String publicKeySha256String,
+        @Nullable final String affiliationId,
+        final long expiration
+    ) {
+        this.publicKeySha256String = publicKeySha256String;
+        this.affiliationId = affiliationId;
+        this.expiration = expiration;
+    }
 }

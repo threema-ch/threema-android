@@ -45,7 +45,8 @@ interface ModelDataFactory<TDataType, TDbType> {
 /**
  * This exception is thrown when a model, which was deleted, is being mutated.
  */
-class ModelDeletedException(modelName: String, methodName: String) : RuntimeException("Cannot call method $methodName: $modelName was deleted")
+class ModelDeletedException(modelName: String, methodName: String) :
+    RuntimeException("Cannot call method $methodName: $modelName was deleted")
 
 /**
  * The base model is extended by every model.

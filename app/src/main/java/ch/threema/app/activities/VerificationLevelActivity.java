@@ -35,29 +35,29 @@ import android.webkit.WebView;
 
 public class VerificationLevelActivity extends ThreemaToolbarActivity {
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.verification_levels_title);
-		}
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.verification_levels_title);
+        }
 
-	}
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_verification_level;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_verification_level;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return false;
+    }
 }

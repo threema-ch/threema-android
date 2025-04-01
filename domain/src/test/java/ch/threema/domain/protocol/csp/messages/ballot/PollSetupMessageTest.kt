@@ -260,17 +260,29 @@ open class PollSetupMessageTest {
         assertEquals(pollSetupMessage.ballotCreatorIdentity, actual.ballotCreatorIdentity)
         assertEquals(pollSetupMessage.ballotData!!.description, actual.ballotData!!.description)
         assertEquals(pollSetupMessage.ballotData!!.state, actual.ballotData!!.state)
-        assertEquals(pollSetupMessage.ballotData!!.assessmentType, actual.ballotData!!.assessmentType)
+        assertEquals(
+            pollSetupMessage.ballotData!!.assessmentType,
+            actual.ballotData!!.assessmentType
+        )
         assertEquals(pollSetupMessage.ballotData!!.type, actual.ballotData!!.type)
         assertEquals(pollSetupMessage.ballotData!!.choiceType, actual.ballotData!!.choiceType)
-        assertContentEquals(pollSetupMessage.ballotData!!.participants, actual.ballotData!!.participants)
+        assertContentEquals(
+            pollSetupMessage.ballotData!!.participants,
+            actual.ballotData!!.participants
+        )
         assertEquals(pollSetupMessage.ballotData!!.displayType, actual.ballotData!!.displayType)
-        assertEquals(pollSetupMessage.ballotData!!.choiceList.size, actual.ballotData!!.choiceList.size)
+        assertEquals(
+            pollSetupMessage.ballotData!!.choiceList.size,
+            actual.ballotData!!.choiceList.size
+        )
         pollSetupMessage.ballotData!!.choiceList.forEachIndexed { index, value ->
             assertEquals(value.id, actual.ballotData!!.choiceList[index].id)
             assertEquals(value.name, actual.ballotData!!.choiceList[index].name)
             assertEquals(value.order, actual.ballotData!!.choiceList[index].order)
-            assertContentEquals(value.ballotDataChoiceResults, actual.ballotData!!.choiceList[index].ballotDataChoiceResults)
+            assertContentEquals(
+                value.ballotDataChoiceResults,
+                actual.ballotData!!.choiceList[index].ballotDataChoiceResults
+            )
             assertEquals(value.totalVotes, actual.ballotData!!.choiceList[index].totalVotes)
         }
     }

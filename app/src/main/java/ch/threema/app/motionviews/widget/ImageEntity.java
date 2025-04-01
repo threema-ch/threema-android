@@ -32,7 +32,8 @@ import ch.threema.app.motionviews.viewmodel.Layer;
 
 public class ImageEntity extends MotionEntity {
 
-    @NonNull private final Bitmap bitmap;
+    @NonNull
+    private final Bitmap bitmap;
 
     public ImageEntity(@NonNull Layer layer,
                        @NonNull Bitmap bitmap,
@@ -67,17 +68,17 @@ public class ImageEntity extends MotionEntity {
         canvas.drawBitmap(bitmap, matrix, drawingPaint);
     }
 
-	@Override
-	public boolean canMove() {
-		return true;
-	}
+    @Override
+    public boolean canMove() {
+        return true;
+    }
 
-	@Override
-	public boolean canChangeColor() {
-		return false;
-	}
+    @Override
+    public boolean canChangeColor() {
+        return false;
+    }
 
-	@Override
+    @Override
     public int getWidth() {
         return bitmap.getWidth();
     }

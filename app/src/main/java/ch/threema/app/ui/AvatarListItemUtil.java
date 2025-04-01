@@ -44,92 +44,92 @@ import ch.threema.storage.models.ReceiverModel;
 
 public class AvatarListItemUtil {
 
-	public static void loadAvatar(
-		final ConversationModel conversationModel,
-		final ContactService contactService,
-		final GroupService groupService,
-		final DistributionListService distributionListService,
-		AvatarListItemHolder holder,
-		@NonNull RequestManager requestManager
-	) {
+    public static void loadAvatar(
+        final ConversationModel conversationModel,
+        final ContactService contactService,
+        final GroupService groupService,
+        final DistributionListService distributionListService,
+        AvatarListItemHolder holder,
+        @NonNull RequestManager requestManager
+    ) {
 
-		// load avatars asynchronously
-		ImageView avatarView = holder.avatarView.getAvatarView();
-		if (conversationModel.isContactConversation()) {
-			holder.avatarView.setContentDescription(
-				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
-					ThreemaApplication.getAppContext().getString(R.string.mime_contact),
-					NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
-			contactService.loadAvatarIntoImage(
-				conversationModel.getContact(),
-				avatarView,
-				AvatarOptions.PRESET_DEFAULT_FALLBACK,
-				requestManager
-			);
-		} else if (conversationModel.isGroupConversation()) {
-			holder.avatarView.setContentDescription(
-				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
-					ThreemaApplication.getAppContext().getString(R.string.group),
-					NameUtil.getDisplayName(conversationModel.getGroup(), groupService)));
-			groupService.loadAvatarIntoImage(
-				conversationModel.getGroup(),
-				avatarView,
-				AvatarOptions.PRESET_DEFAULT_FALLBACK,
-				requestManager
-			);
-		} else if (conversationModel.isDistributionListConversation()) {
-			holder.avatarView.setContentDescription(
-				ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
-					ThreemaApplication.getAppContext().getString(R.string.distribution_list),
-					NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService)));
-			distributionListService.loadAvatarIntoImage(
-				conversationModel.getDistributionList(),
-				avatarView,
-				AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
-				requestManager
-			);
-		}
+        // load avatars asynchronously
+        ImageView avatarView = holder.avatarView.getAvatarView();
+        if (conversationModel.isContactConversation()) {
+            holder.avatarView.setContentDescription(
+                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                    ThreemaApplication.getAppContext().getString(R.string.mime_contact),
+                    NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
+            contactService.loadAvatarIntoImage(
+                conversationModel.getContact(),
+                avatarView,
+                AvatarOptions.PRESET_DEFAULT_FALLBACK,
+                requestManager
+            );
+        } else if (conversationModel.isGroupConversation()) {
+            holder.avatarView.setContentDescription(
+                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                    ThreemaApplication.getAppContext().getString(R.string.group),
+                    NameUtil.getDisplayName(conversationModel.getGroup(), groupService)));
+            groupService.loadAvatarIntoImage(
+                conversationModel.getGroup(),
+                avatarView,
+                AvatarOptions.PRESET_DEFAULT_FALLBACK,
+                requestManager
+            );
+        } else if (conversationModel.isDistributionListConversation()) {
+            holder.avatarView.setContentDescription(
+                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                    ThreemaApplication.getAppContext().getString(R.string.distribution_list),
+                    NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService)));
+            distributionListService.loadAvatarIntoImage(
+                conversationModel.getDistributionList(),
+                avatarView,
+                AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
+                requestManager
+            );
+        }
 
-		// Set work badge
-		boolean isWork = contactService.showBadge(conversationModel.getContact());
-		holder.avatarView.setBadgeVisible(isWork);
-	}
+        // Set work badge
+        boolean isWork = contactService.showBadge(conversationModel.getContact());
+        holder.avatarView.setBadgeVisible(isWork);
+    }
 
-	public static <M extends ReceiverModel> void loadAvatar(
-		final M model,
-		final AvatarService<M> avatarService,
-		AvatarListItemHolder holder,
-		@NonNull RequestManager requestManager
-	) {
+    public static <M extends ReceiverModel> void loadAvatar(
+        final M model,
+        final AvatarService<M> avatarService,
+        AvatarListItemHolder holder,
+        @NonNull RequestManager requestManager
+    ) {
 
-		//do nothing
-		if (!TestUtil.required(model, avatarService, holder) || holder.avatarView == null) {
-			return;
-		}
+        //do nothing
+        if (!TestUtil.required(model, avatarService, holder) || holder.avatarView == null) {
+            return;
+        }
 
-		if (model instanceof ContactModel) {
-			holder.avatarView.setBadgeVisible(((ContactService) avatarService).showBadge((ContactModel) model));
-		} else {
-			holder.avatarView.setBadgeVisible(false);
-		}
+        if (model instanceof ContactModel) {
+            holder.avatarView.setBadgeVisible(((ContactService) avatarService).showBadge((ContactModel) model));
+        } else {
+            holder.avatarView.setBadgeVisible(false);
+        }
 
-		AvatarOptions options;
-		if (model instanceof ContactModel) {
-			options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
-		} else if (model instanceof GroupModel) {
-			options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
-		} else {
-			options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;
-		}
+        AvatarOptions options;
+        if (model instanceof ContactModel) {
+            options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
+        } else if (model instanceof GroupModel) {
+            options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
+        } else {
+            options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;
+        }
 
-		avatarService.loadAvatarIntoImage(
-			model,
-			holder.avatarView.getAvatarView(),
-			options,
-			requestManager
-		);
+        avatarService.loadAvatarIntoImage(
+            model,
+            holder.avatarView.getAvatarView(),
+            options,
+            requestManager
+        );
 
-		holder.avatarView.setVisibility(View.VISIBLE);
-	}
+        holder.avatarView.setVisibility(View.VISIBLE);
+    }
 
 }

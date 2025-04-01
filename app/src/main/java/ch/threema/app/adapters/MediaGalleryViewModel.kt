@@ -47,7 +47,8 @@ class MediaGalleryViewModel @Keep constructor(messageReceiver: MessageReceiver<*
         repository.onDataChanged()
     }
 
-    class MediaGalleryViewModelFactory(val messageReceiver: MessageReceiver<*>) : ViewModelProvider.Factory {
+    class MediaGalleryViewModelFactory(val messageReceiver: MessageReceiver<*>) :
+        ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return modelClass.getConstructor(MessageReceiver::class.java)
                 .newInstance(messageReceiver)

@@ -38,119 +38,119 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 public class NameUtilTest {
-	private UserService userServiceMock;
+    private UserService userServiceMock;
 
-	private static String meIdentity = "MEMEMEME";
-	private static String otherIdentity = "OTHERRRR";
+    private static String meIdentity = "MEMEMEME";
+    private static String otherIdentity = "OTHERRRR";
 
-	@Before
-	public void setUp() {
-		this.userServiceMock = PowerMockito.mock(UserService.class);
-		when(this.userServiceMock.isMe(Matchers.eq(meIdentity))).thenReturn(true);
-		when(this.userServiceMock.isMe(Matchers.eq(otherIdentity))).thenReturn(false);
-		when(this.userServiceMock.getIdentity()).thenReturn(meIdentity);
-	}
+    @Before
+    public void setUp() {
+        this.userServiceMock = PowerMockito.mock(UserService.class);
+        when(this.userServiceMock.isMe(Matchers.eq(meIdentity))).thenReturn(true);
+        when(this.userServiceMock.isMe(Matchers.eq(otherIdentity))).thenReturn(false);
+        when(this.userServiceMock.getIdentity()).thenReturn(meIdentity);
+    }
 
-	@Test
-	public void testGetQuoteNameNull() {
-		final String name = NameUtil.getQuoteName(null, this.userServiceMock);
-		assertEquals("", name);
-	}
+    @Test
+    public void testGetQuoteNameNull() {
+        final String name = NameUtil.getQuoteName(null, this.userServiceMock);
+        assertEquals("", name);
+    }
 
-	@Test
-	public void testGetQuoteNameMeNickname() {
-		when(this.userServiceMock.getPublicNickname()).thenReturn("Mr. Dushi");
+    @Test
+    public void testGetQuoteNameMeNickname() {
+        when(this.userServiceMock.getPublicNickname()).thenReturn("Mr. Dushi");
 
-		final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
-		contactModel.setFirstName("Moi");
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("Mr. Dushi", name);
-	}
+        final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
+        contactModel.setFirstName("Moi");
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("Mr. Dushi", name);
+    }
 
-	@Test
-	public void testGetQuoteNameMeIdentityNickname() {
-		when(this.userServiceMock.getPublicNickname()).thenReturn(meIdentity);
+    @Test
+    public void testGetQuoteNameMeIdentityNickname() {
+        when(this.userServiceMock.getPublicNickname()).thenReturn(meIdentity);
 
-		final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
-		contactModel.setFirstName("Moi");
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("Moi", name);
-	}
+        final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
+        contactModel.setFirstName("Moi");
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("Moi", name);
+    }
 
-	@Test
-	public void testGetQuoteNameMeEmptyNickname() {
-		when(this.userServiceMock.getPublicNickname()).thenReturn("");
+    @Test
+    public void testGetQuoteNameMeEmptyNickname() {
+        when(this.userServiceMock.getPublicNickname()).thenReturn("");
 
-		final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
-		contactModel.setFirstName("Moi");
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("Moi", name);
-	}
+        final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
+        contactModel.setFirstName("Moi");
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("Moi", name);
+    }
 
-	@Test
-	public void testGetQuoteNameMeNullNickname() {
-		when(this.userServiceMock.getPublicNickname()).thenReturn(null);
+    @Test
+    public void testGetQuoteNameMeNullNickname() {
+        when(this.userServiceMock.getPublicNickname()).thenReturn(null);
 
-		final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
-		contactModel.setFirstName("Moi");
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("Moi", name);
-	}
+        final ContactModel contactModel = new ContactModel(meIdentity, new byte[]{0, 0, 0});
+        contactModel.setFirstName("Moi");
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("Moi", name);
+    }
 
-	@Test
-	public void testGetQuoteNameOtherName() {
-		final ContactModel contactModel = new ContactModel(otherIdentity, new byte[]{0, 0, 0});
-		contactModel.setPublicNickName("nickname");
-		contactModel.setFirstName("Joggeli");
-		contactModel.setLastName("Rüdisüli");
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("Joggeli Rüdisüli", name);
-	}
+    @Test
+    public void testGetQuoteNameOtherName() {
+        final ContactModel contactModel = new ContactModel(otherIdentity, new byte[]{0, 0, 0});
+        contactModel.setPublicNickName("nickname");
+        contactModel.setFirstName("Joggeli");
+        contactModel.setLastName("Rüdisüli");
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("Joggeli Rüdisüli", name);
+    }
 
-	@Test
-	public void testGetQuoteNameOtherNoName() {
-		final ContactModel contactModel = new ContactModel(otherIdentity, new byte[]{0, 0, 0});
-		contactModel.setPublicNickName("nickname");
-		contactModel.setFirstName(null);
-		contactModel.setLastName(null);
-		final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
-		assertEquals("~nickname", name);
-	}
+    @Test
+    public void testGetQuoteNameOtherNoName() {
+        final ContactModel contactModel = new ContactModel(otherIdentity, new byte[]{0, 0, 0});
+        contactModel.setPublicNickName("nickname");
+        contactModel.setFirstName(null);
+        contactModel.setLastName(null);
+        final String name = NameUtil.getQuoteName(contactModel, this.userServiceMock);
+        assertEquals("~nickname", name);
+    }
 
-	@Test
-	public void testGetFirstLastNameFromDisplayNameNull() {
-		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName(null);
-		Assert.assertEquals("", firstLastName.first);
-		Assert.assertEquals("", firstLastName.second);
-	}
+    @Test
+    public void testGetFirstLastNameFromDisplayNameNull() {
+        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName(null);
+        Assert.assertEquals("", firstLastName.first);
+        Assert.assertEquals("", firstLastName.second);
+    }
 
-	@Test
-	public void testGetFirstLastNameFromDisplayNameEmpty() {
-		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("");
-		Assert.assertEquals("", firstLastName.first);
-		Assert.assertEquals("", firstLastName.second);
-	}
+    @Test
+    public void testGetFirstLastNameFromDisplayNameEmpty() {
+        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("");
+        Assert.assertEquals("", firstLastName.first);
+        Assert.assertEquals("", firstLastName.second);
+    }
 
-	@Test
-	public void testGetFirstLastNameFromDisplayNameOnlyFirst() {
-		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("joe");
-		Assert.assertEquals("joe", firstLastName.first);
-		Assert.assertEquals("", firstLastName.second);
-	}
+    @Test
+    public void testGetFirstLastNameFromDisplayNameOnlyFirst() {
+        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("joe");
+        Assert.assertEquals("joe", firstLastName.first);
+        Assert.assertEquals("", firstLastName.second);
+    }
 
-	@Test
-	public void testGetFirstLastNameFromDisplayNameTwoParts() {
-		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("john doe");
-		Assert.assertEquals("john", firstLastName.first);
-		Assert.assertEquals("doe", firstLastName.second);
-	}
+    @Test
+    public void testGetFirstLastNameFromDisplayNameTwoParts() {
+        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("john doe");
+        Assert.assertEquals("john", firstLastName.first);
+        Assert.assertEquals("doe", firstLastName.second);
+    }
 
-	@Test
-	public void testGetFirstLastNameFromDisplayNameSpanishCraziness() {
-		final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("Pablo Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso");
-		// Yes, this is actually wrong, but we cannot know how to properly split first and last name.
-		Assert.assertEquals("Pablo", firstLastName.first);
-		Assert.assertEquals("Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso", firstLastName.second);
-	}
+    @Test
+    public void testGetFirstLastNameFromDisplayNameSpanishCraziness() {
+        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName("Pablo Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso");
+        // Yes, this is actually wrong, but we cannot know how to properly split first and last name.
+        Assert.assertEquals("Pablo", firstLastName.first);
+        Assert.assertEquals("Diego José Francisco de Paula Juan Nepomuceno María de los Remedios Cipriano de la Santísima Trinidad Ruiz y Picasso", firstLastName.second);
+    }
 
 }

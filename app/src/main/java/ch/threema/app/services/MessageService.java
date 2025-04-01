@@ -220,45 +220,46 @@ public interface MessageService {
      * Save the edited text of a message. If editedAt is not null, an edit history entry will be created with the previous text of the message.
      * Note that if editedAt is null, the message will not be marked as edited
      *
-     * @param message Message model containing the previous text of the message
-     * @param text the new text for this message
+     * @param message  Message model containing the previous text of the message
+     * @param text     the new text for this message
      * @param editedAt the date when the message was edited or null
      */
     void saveEditedMessageText(@NonNull AbstractMessageModel message, String text, @Nullable Date editedAt);
 
-	/**
-	 * Save a reaction message
-	 *
-	 * @param targetMessage Message model this reaction refers to
-	 * @param senderIdentity Identity of the sender of this message
-	 * @param actionCase The action to take
-	 * @param emojiSequence The emoji for the reaction
-	 */
-	void saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, Reaction.ActionCase actionCase, @NonNull String emojiSequence);
+    /**
+     * Save a reaction message
+     *
+     * @param targetMessage  Message model this reaction refers to
+     * @param senderIdentity Identity of the sender of this message
+     * @param actionCase     The action to take
+     * @param emojiSequence  The emoji for the reaction
+     */
+    void saveEmojiReactionMessage(@NonNull AbstractMessageModel targetMessage, @NonNull String senderIdentity, Reaction.ActionCase actionCase, @NonNull String emojiSequence);
 
-	/**
-	 * Clear the MessageState of the supplied message if the current state is either USERACK or USERDEC
-	 * @param targetMessage Message to clear the state for
-	 */
+    /**
+     * Clear the MessageState of the supplied message if the current state is either USERACK or USERDEC
+     *
+     * @param targetMessage Message to clear the state for
+     */
     // TODO(ANDR-3325): Remove ACK/DEC compatibility
-	void clearMessageState(@NonNull AbstractMessageModel targetMessage);
+    void clearMessageState(@NonNull AbstractMessageModel targetMessage);
 
-	/**
-	 * Send an emoji reaction to a receiver and save it locally.
+    /**
+     * Send an emoji reaction to a receiver and save it locally.
      * If the emoji reaction is not a fully-qualified emoji sequence, nothing is sent and `true` is returned
-	 * Performs "Legacy Reaction Mapping Steps" and sends an ack / dec message to some or all receivers instead if applicable.
-	 *
-	 * @param message message to react to
-	 * @param emojiSequence emoji sequence of the reaction
-	 * @param receiver receiver to send the reaction to
-	 * @param markAsRead true if the message should be marked as read
-	 * @return false if and only if sending failed for compatibility reasons
-     *         true if the reaction has been sent, or the emojiSequence is not a fully-qualified emoji sequence
-	 */
-	@WorkerThread
-	boolean sendEmojiReaction(@NonNull AbstractMessageModel message, @NonNull String emojiSequence, @NonNull MessageReceiver receiver, boolean markAsRead) throws ThreemaException;
+     * Performs "Legacy Reaction Mapping Steps" and sends an ack / dec message to some or all receivers instead if applicable.
+     *
+     * @param message       message to react to
+     * @param emojiSequence emoji sequence of the reaction
+     * @param receiver      receiver to send the reaction to
+     * @param markAsRead    true if the message should be marked as read
+     * @return false if and only if sending failed for compatibility reasons
+     * true if the reaction has been sent, or the emojiSequence is not a fully-qualified emoji sequence
+     */
+    @WorkerThread
+    boolean sendEmojiReaction(@NonNull AbstractMessageModel message, @NonNull String emojiSequence, @NonNull MessageReceiver receiver, boolean markAsRead) throws ThreemaException;
 
-	/**
+    /**
      * Delete a message's content and any related data (e.g. edit history, emoji reactions)
      *
      * @param message original message to delete
@@ -305,46 +306,46 @@ public interface MessageService {
         @NonNull TriggerSource triggerSource
     ) throws MessageTooLongException;
 
-	boolean sendGroupDeliveryReceipt(@NonNull Set<String> identities, GroupMessageModel messageModel, int receiptType);
+    boolean sendGroupDeliveryReceipt(@NonNull Set<String> identities, GroupMessageModel messageModel, int receiptType);
 
-	/**
-	 * Update message state of an outgoing message. Note that the state is only changed if it is a
-	 * legal transition. E.g. a message's state won't be changed from read to delivered. See
-	 * {@link ch.threema.app.utils.MessageUtil#canChangeToState(MessageState, MessageState, boolean)}
-	 * for possible state transitions.
-	 *
-	 * The corresponding timestamps are changed in any case. E.g. the delivered at timestamp will be
-	 * saved even if the message has already been marked as read.
-	 *
-	 * Do not use this method for reactions: Use
-	 * {@link #addMessageReaction(AbstractMessageModel, MessageState, String, Date)} instead.
-	 *
-	 * @param messageModel the message model that should be updated
-	 * @param state        the mew state
-	 * @param date         the date of the state change
-	 */
-	void updateOutgoingMessageState(
-		@NonNull final AbstractMessageModel messageModel,
-		@NonNull MessageState state,
-		@NonNull Date date
-	);
+    /**
+     * Update message state of an outgoing message. Note that the state is only changed if it is a
+     * legal transition. E.g. a message's state won't be changed from read to delivered. See
+     * {@link ch.threema.app.utils.MessageUtil#canChangeToState(MessageState, MessageState, boolean)}
+     * for possible state transitions.
+     * <p>
+     * The corresponding timestamps are changed in any case. E.g. the delivered at timestamp will be
+     * saved even if the message has already been marked as read.
+     * <p>
+     * Do not use this method for reactions: Use
+     * {@link #addMessageReaction(AbstractMessageModel, MessageState, String, Date)} instead.
+     *
+     * @param messageModel the message model that should be updated
+     * @param state        the mew state
+     * @param date         the date of the state change
+     */
+    void updateOutgoingMessageState(
+        @NonNull final AbstractMessageModel messageModel,
+        @NonNull MessageState state,
+        @NonNull Date date
+    );
 
-	/**
-	 * Add a reaction to a contact or group message.
-	 *
-	 * @param messageModel the message model that should be updated
-	 * @param state        the reaction (as state, but only ACK and DEC allowed)
-	 * @param fromIdentity the identity that reacted to the message
-	 * @param date         the date of the state change
-	 */
-	void addMessageReaction(
-		@NonNull AbstractMessageModel messageModel,
-		@NonNull MessageState state,
-		@NonNull String fromIdentity,
-		@NonNull Date date
-	);
+    /**
+     * Add a reaction to a contact or group message.
+     *
+     * @param messageModel the message model that should be updated
+     * @param state        the reaction (as state, but only ACK and DEC allowed)
+     * @param fromIdentity the identity that reacted to the message
+     * @param date         the date of the state change
+     */
+    void addMessageReaction(
+        @NonNull AbstractMessageModel messageModel,
+        @NonNull MessageState state,
+        @NonNull String fromIdentity,
+        @NonNull Date date
+    );
 
-	boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
+    boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
 
     @WorkerThread
     boolean markAsConsumed(AbstractMessageModel message) throws ThreemaException;
@@ -397,39 +398,40 @@ public interface MessageService {
     @Nullable
     MessageModel getContactMessageModel(final Integer id);
 
-	@Nullable
-	MessageModel getContactMessageModel(String uid);
+    @Nullable
+    MessageModel getContactMessageModel(String uid);
 
-	@Nullable
+    @Nullable
     GroupMessageModel getGroupMessageModel(final Integer id);
 
-	@Nullable
-	GroupMessageModel getGroupMessageModel(String uid);
+    @Nullable
+    GroupMessageModel getGroupMessageModel(String uid);
 
-	@Nullable
+    @Nullable
     DistributionListMessageModel getDistributionListMessageModel(long id);
 
-	/**
-	 * Get the contact message model by message id and identity.
-	 */
-	@Nullable
-	MessageModel getContactMessageModel(
-		@NonNull final MessageId messageId,
-		@NonNull final String identity
-	);
+    /**
+     * Get the contact message model by message id and identity.
+     */
+    @Nullable
+    MessageModel getContactMessageModel(
+        @NonNull final MessageId messageId,
+        @NonNull final String identity
+    );
 
-	/**
-	 * Get the group message model by message id, creator identity, and group id.
-	 */
-	@Nullable
-	GroupMessageModel getGroupMessageModel(
-		@NonNull MessageId messageId,
-		@NonNull String creatorIdentity,
-		@NonNull GroupId groupId
-	);
+    /**
+     * Get the group message model by message id, creator identity, and group id.
+     */
+    @Nullable
+    GroupMessageModel getGroupMessageModel(
+        @NonNull MessageId messageId,
+        @NonNull String creatorIdentity,
+        @NonNull GroupId groupId
+    );
 
-	MessageString getMessageString(AbstractMessageModel messageModel, int maxLength);
-	MessageString getMessageString(AbstractMessageModel messageModel, int maxLength, boolean withPrefix);
+    MessageString getMessageString(AbstractMessageModel messageModel, int maxLength);
+
+    MessageString getMessageString(AbstractMessageModel messageModel, int maxLength, boolean withPrefix);
 
     void saveIncomingServerMessage(ServerMessageModel msg);
 
@@ -451,7 +453,7 @@ public interface MessageService {
         int messageFlags,
         @Nullable ForwardSecurityMode forwardSecurityMode,
         @NonNull TriggerSource triggerSource
-        ) throws ThreemaException, BadMessageException;
+    ) throws ThreemaException, BadMessageException;
 
     /**
      * Get all messages in any chat that match the specified criteria - excluding distribution lists

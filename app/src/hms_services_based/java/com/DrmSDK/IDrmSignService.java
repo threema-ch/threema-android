@@ -27,7 +27,7 @@ public interface IDrmSignService extends android.os.IInterface {
      * Local-side IPC implementation stub class.
      */
     public static abstract class Stub extends android.os.Binder implements
-            IDrmSignService {
+        IDrmSignService {
         private static final String DESCRIPTOR = "com.huawei.appmarket.service.pay.drm.IDrmSignService";
 
         /**
@@ -43,7 +43,7 @@ public interface IDrmSignService extends android.os.IInterface {
          * generating a proxy if needed.
          */
         public static IDrmSignService asInterface(
-                android.os.IBinder obj) {
+            android.os.IBinder obj) {
             if ((obj == null)) {
                 return null;
             }
@@ -52,7 +52,7 @@ public interface IDrmSignService extends android.os.IInterface {
                 return ((IDrmSignService) iin);
             }
             return new IDrmSignService.Stub.Proxy(
-                    obj);
+                obj);
         }
 
         @Override
@@ -62,7 +62,7 @@ public interface IDrmSignService extends android.os.IInterface {
 
         @Override
         public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags)
-                throws android.os.RemoteException {
+            throws android.os.RemoteException {
             switch (code) {
                 case INTERFACE_TRANSACTION: {
                     reply.writeString(DESCRIPTOR);
@@ -72,11 +72,11 @@ public interface IDrmSignService extends android.os.IInterface {
                     data.enforceInterface(DESCRIPTOR);
                     java.util.Map arg0;
                     ClassLoader cl = (ClassLoader) this
-                            .getClass().getClassLoader();
+                        .getClass().getClassLoader();
                     arg0 = data.readHashMap(cl);
-                   ICallback arg1;
+                    ICallback arg1;
                     arg1 = ICallback.Stub
-                            .asInterface(data.readStrongBinder());
+                        .asInterface(data.readStrongBinder());
                     this.getSign(arg0, arg1);
                     reply.writeNoException();
                     return true;
@@ -85,7 +85,7 @@ public interface IDrmSignService extends android.os.IInterface {
                     data.enforceInterface(DESCRIPTOR);
                     java.util.Map arg0;
                     ClassLoader cl = (ClassLoader) this
-                            .getClass().getClassLoader();
+                        .getClass().getClassLoader();
                     arg0 = data.readHashMap(cl);
                     this.report(arg0);
                     reply.writeNoException();
@@ -96,7 +96,7 @@ public interface IDrmSignService extends android.os.IInterface {
         }
 
         private static class Proxy implements
-                IDrmSignService {
+            IDrmSignService {
             private android.os.IBinder mRemote;
 
             Proxy(android.os.IBinder remote) {
@@ -115,14 +115,14 @@ public interface IDrmSignService extends android.os.IInterface {
             @Override
             public void getSign(java.util.Map params,
                                 ICallback callback)
-                    throws android.os.RemoteException {
+                throws android.os.RemoteException {
                 android.os.Parcel data = android.os.Parcel.obtain();
                 android.os.Parcel reply = android.os.Parcel.obtain();
                 try {
                     data.writeInterfaceToken(DESCRIPTOR);
                     data.writeMap(params);
                     data.writeStrongBinder((((callback != null)) ? (callback
-                            .asBinder()) : (null)));
+                        .asBinder()) : (null)));
                     mRemote.transact(Stub.TRANSACTION_GET_SIGN, data, reply, 0);
                     reply.readException();
                 } finally {
@@ -133,7 +133,7 @@ public interface IDrmSignService extends android.os.IInterface {
 
             @Override
             public void report(java.util.Map params)
-                    throws android.os.RemoteException {
+                throws android.os.RemoteException {
                 android.os.Parcel data = android.os.Parcel.obtain();
                 android.os.Parcel reply = android.os.Parcel.obtain();
                 try {
@@ -155,13 +155,13 @@ public interface IDrmSignService extends android.os.IInterface {
     /**
      * 获取签名串(Obtains the signature string.)
      *
-     * @param params 签名串(Signature string)
+     * @param params   签名串(Signature string)
      * @param callback 回调(Callback)
      * @throws android.os.RemoteException 远程连接异常(Remote connection exception.)
      */
     public void getSign(java.util.Map params,
                         ICallback callback)
-            throws android.os.RemoteException;
+        throws android.os.RemoteException;
 
     /**
      * 上报日志(Report logs.)

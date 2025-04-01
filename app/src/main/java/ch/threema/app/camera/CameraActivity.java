@@ -52,146 +52,146 @@ import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 
 public class CameraActivity extends ThreemaAppCompatActivity implements CameraFragment.CameraCallback, CameraFragment.CameraConfiguration {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CameraActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CameraActivity");
 
-	public static final String KEY_EVENT_ACTION = "key_event_action";
-	public static final String KEY_EVENT_EXTRA = "key_event_extra";
-	public static final String EXTRA_VIDEO_OUTPUT = "vidOut";
-	public static final String EXTRA_VIDEO_RESULT = "videoResult";
-	public static final String EXTRA_NO_VIDEO = "noVideo";
+    public static final String KEY_EVENT_ACTION = "key_event_action";
+    public static final String KEY_EVENT_EXTRA = "key_event_extra";
+    public static final String EXTRA_VIDEO_OUTPUT = "vidOut";
+    public static final String EXTRA_VIDEO_RESULT = "videoResult";
+    public static final String EXTRA_NO_VIDEO = "noVideo";
 
-	private String cameraFilePath, videoFilePath;
-	private boolean noVideo;
+    private String cameraFilePath, videoFilePath;
+    private boolean noVideo;
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		logger.info("onCreate");
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        logger.info("onCreate");
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.camerax_activity_camera);
+        setContentView(R.layout.camerax_activity_camera);
 
-		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		getWindow().setStatusBarColor(Color.TRANSPARENT);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			// we want dark icons, i.e. a light status bar
-			getWindow().getDecorView().setSystemUiVisibility(
-					getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-		}
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // we want dark icons, i.e. a light status bar
+            getWindow().getDecorView().setSystemUiVisibility(
+                getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
 
-		if (getIntent() != null) {
-			cameraFilePath = getIntent().getStringExtra(MediaStore.EXTRA_OUTPUT);
-			videoFilePath = getIntent().getStringExtra(EXTRA_VIDEO_OUTPUT);
-			noVideo = getIntent().getBooleanExtra(EXTRA_NO_VIDEO, false);
-		}
+        if (getIntent() != null) {
+            cameraFilePath = getIntent().getStringExtra(MediaStore.EXTRA_OUTPUT);
+            videoFilePath = getIntent().getStringExtra(EXTRA_VIDEO_OUTPUT);
+            noVideo = getIntent().getBooleanExtra(EXTRA_NO_VIDEO, false);
+        }
 
-		if (cameraFilePath == null) {
-			finish();
-		}
-	}
+        if (cameraFilePath == null) {
+            finish();
+        }
+    }
 
-	@Override
-	protected void onDestroy() {
-		logger.info("onDestroy");
+    @Override
+    protected void onDestroy() {
+        logger.info("onDestroy");
 
-		if (isFinishing()) {
-			teardownCamera();
-		}
+        if (isFinishing()) {
+            teardownCamera();
+        }
 
-		try {
-			super.onDestroy();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-	}
+        try {
+            super.onDestroy();
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// Use volume down key as shutter button
-		if (keyCode == KEYCODE_VOLUME_DOWN || keyCode == KEYCODE_VOLUME_UP) {
-			Intent intent = new Intent(KEY_EVENT_ACTION);
-			intent.putExtra(KEY_EVENT_EXTRA, keyCode);
-			LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-		} else {
-			return super.onKeyDown(keyCode, event);
-		}
-		return true;
-	}
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Use volume down key as shutter button
+        if (keyCode == KEYCODE_VOLUME_DOWN || keyCode == KEYCODE_VOLUME_UP) {
+            Intent intent = new Intent(KEY_EVENT_ACTION);
+            intent.putExtra(KEY_EVENT_EXTRA, keyCode);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+        return true;
+    }
 
-	@Override
-	protected void onResume() {
-		logger.info("onResume");
+    @Override
+    protected void onResume() {
+        logger.info("onResume");
 
-		super.onResume();
-	}
+        super.onResume();
+    }
 
-	@Override
-	public void onImageReady() {
-		removeFragment();
-		setResult(RESULT_OK);
-		this.finish();
-	}
+    @Override
+    public void onImageReady() {
+        removeFragment();
+        setResult(RESULT_OK);
+        this.finish();
+    }
 
-	@Override
-	public void onVideoReady() {
-		Intent intent = new Intent();
-		intent.putExtra(EXTRA_VIDEO_RESULT, true);
-		setResult(RESULT_OK, intent);
-		this.finish();
-	}
+    @Override
+    public void onVideoReady() {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_VIDEO_RESULT, true);
+        setResult(RESULT_OK, intent);
+        this.finish();
+    }
 
-	@Override
-	public void onError(String message) {
+    @Override
+    public void onError(String message) {
         logger.error("Could not take a picture or record a video: {}", message);
-		setResult(RESULT_CANCELED);
-		this.finish();
-	}
+        setResult(RESULT_CANCELED);
+        this.finish();
+    }
 
-	@Override
-	public String getVideoFilePath() {
-		return videoFilePath;
-	}
+    @Override
+    public String getVideoFilePath() {
+        return videoFilePath;
+    }
 
-	@Override
-	public String getCameraFilePath() {
-		return cameraFilePath;
-	}
+    @Override
+    public String getCameraFilePath() {
+        return cameraFilePath;
+    }
 
-	private void removeFragment() {
-		FragmentManager fragmentManager = getSupportFragmentManager();
+    private void removeFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
-		Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
-		if (fragment != null && fragment.isAdded()) {
-			fragmentManager.beginTransaction().remove(fragment).commit();
-		}
-	}
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        if (fragment != null && fragment.isAdded()) {
+            fragmentManager.beginTransaction().remove(fragment).commit();
+        }
+    }
 
-	@SuppressLint("RestrictedApi")
-	private void teardownCamera() {
-		// Workaround for framework memory leak https://issuetracker.google.com/issues/141188637
-		try {
-			ListenableFuture<ProcessCameraProvider> processCameraProviderFuture = ProcessCameraProvider.getInstance(ThreemaApplication.getAppContext());
-			processCameraProviderFuture.addListener(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
-						processCameraProvider.shutdown();
-					} catch (Exception e) {
-						logger.error("Exception", e);
-					}
-				}
-			}, ContextCompat.getMainExecutor(ThreemaApplication.getAppContext()));
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-	}
+    @SuppressLint("RestrictedApi")
+    private void teardownCamera() {
+        // Workaround for framework memory leak https://issuetracker.google.com/issues/141188637
+        try {
+            ListenableFuture<ProcessCameraProvider> processCameraProviderFuture = ProcessCameraProvider.getInstance(ThreemaApplication.getAppContext());
+            processCameraProviderFuture.addListener(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ProcessCameraProvider processCameraProvider = processCameraProviderFuture.get();
+                        processCameraProvider.shutdown();
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            }, ContextCompat.getMainExecutor(ThreemaApplication.getAppContext()));
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	public boolean getVideoEnable() {
-		return ConfigUtils.supportsVideoCapture() && !noVideo;
-	}
+    @Override
+    public boolean getVideoEnable() {
+        return ConfigUtils.supportsVideoCapture() && !noVideo;
+    }
 }

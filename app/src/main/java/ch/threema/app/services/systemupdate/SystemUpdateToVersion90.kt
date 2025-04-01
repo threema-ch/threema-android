@@ -36,23 +36,29 @@ class SystemUpdateToVersion90(
     override fun runDirectly(): Boolean {
         db.execSQL("DROP INDEX IF EXISTS `message_queue_idx`")
 
-        db.execSQL("CREATE INDEX IF NOT EXISTS `message_state_idx` ON `message` ( " +
-            "`type`, " +
-            "`state`, " +
-            "`outbox` " +
-            ")")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `message_state_idx` ON `message` ( " +
+                "`type`, " +
+                "`state`, " +
+                "`outbox` " +
+                ")"
+        )
 
-        db.execSQL("CREATE INDEX IF NOT EXISTS `group_message_state_idx` ON `m_group_message` ( " +
-            "`type`, " +
-            "`state`, " +
-            "`outbox` " +
-            ")")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `group_message_state_idx` ON `m_group_message` ( " +
+                "`type`, " +
+                "`state`, " +
+                "`outbox` " +
+                ")"
+        )
 
-        db.execSQL("CREATE INDEX IF NOT EXISTS `distribution_list_message_state_idx` ON `distribution_list_message` ( " +
-            "`type`, " +
-            "`state`, " +
-            "`outbox` " +
-            ")")
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `distribution_list_message_state_idx` ON `distribution_list_message` ( " +
+                "`type`, " +
+                "`state`, " +
+                "`outbox` " +
+                ")"
+        )
         return true
     }
 

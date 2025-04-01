@@ -37,84 +37,84 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.base.utils.LoggingUtil;
 
 public abstract class DialogUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DialogUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DialogUtil");
 
-	public static void dismissDialog(FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
-		logger.debug("dismissDialog: " + tag);
+    public static void dismissDialog(FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
+        logger.debug("dismissDialog: " + tag);
 
-		if (fragmentManager == null) {
-			return;
-		}
+        if (fragmentManager == null) {
+            return;
+        }
 
-		DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
+        DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
 
-		if (dialogFragment == null && !fragmentManager.isDestroyed()) {
-			// make sure dialogfragment is really shown before removing it
-			try {
-				fragmentManager.executePendingTransactions();
-			} catch (IllegalStateException e) {
-				// catch illegal state exception
-			}
-			dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
-		}
+        if (dialogFragment == null && !fragmentManager.isDestroyed()) {
+            // make sure dialogfragment is really shown before removing it
+            try {
+                fragmentManager.executePendingTransactions();
+            } catch (IllegalStateException e) {
+                // catch illegal state exception
+            }
+            dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
+        }
 
-		if (dialogFragment != null) {
-			if (allowStateLoss) {
-				try {
-					dialogFragment.dismissAllowingStateLoss();
-				} catch (Exception e) {
-					// catch illegal state exception
-				}
-			} else {
-				try {
-					dialogFragment.dismiss();
-				} catch (Exception e) {
-					// catch illegal state exception
-				}
-			}
-		}
-	}
+        if (dialogFragment != null) {
+            if (allowStateLoss) {
+                try {
+                    dialogFragment.dismissAllowingStateLoss();
+                } catch (Exception e) {
+                    // catch illegal state exception
+                }
+            } else {
+                try {
+                    dialogFragment.dismiss();
+                } catch (Exception e) {
+                    // catch illegal state exception
+                }
+            }
+        }
+    }
 
-	@UiThread
-	public static void updateProgress(FragmentManager fragmentManager, String tag, int progress) {
-		if (fragmentManager != null) {
-			DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
-			if (dialogFragment instanceof CancelableHorizontalProgressDialog) {
-				CancelableHorizontalProgressDialog progressDialog = (CancelableHorizontalProgressDialog) dialogFragment;
-				progressDialog.setProgress(progress);
-			}
-		}
-	}
+    @UiThread
+    public static void updateProgress(FragmentManager fragmentManager, String tag, int progress) {
+        if (fragmentManager != null) {
+            DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
+            if (dialogFragment instanceof CancelableHorizontalProgressDialog) {
+                CancelableHorizontalProgressDialog progressDialog = (CancelableHorizontalProgressDialog) dialogFragment;
+                progressDialog.setProgress(progress);
+            }
+        }
+    }
 
-	@UiThread
-	public static void updateMessage(FragmentManager fragmentManager, String tag, String message) {
-		if (fragmentManager != null) {
-			DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
-			if (dialogFragment instanceof GenericProgressDialog) {
-				GenericProgressDialog progressDialog = (GenericProgressDialog) dialogFragment;
-				progressDialog.setMessage(message);
-			}
-		}
-	}
+    @UiThread
+    public static void updateMessage(FragmentManager fragmentManager, String tag, String message) {
+        if (fragmentManager != null) {
+            DialogFragment dialogFragment = (DialogFragment) fragmentManager.findFragmentByTag(tag);
+            if (dialogFragment instanceof GenericProgressDialog) {
+                GenericProgressDialog progressDialog = (GenericProgressDialog) dialogFragment;
+                progressDialog.setMessage(message);
+            }
+        }
+    }
 
-	public static ColorStateList getButtonColorStateList(Context context) {
-		// Fix for appcompat bug. Set button text color from theme
-		TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorPrimary});
-		int accentColor = a.getColor(0, 0);
-		a.recycle();
+    public static ColorStateList getButtonColorStateList(Context context) {
+        // Fix for appcompat bug. Set button text color from theme
+        TypedArray a = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorPrimary});
+        int accentColor = a.getColor(0, 0);
+        a.recycle();
 
-		// you can't have attrs in xml colorstatelists :-(
-		ColorStateList colorStateList = new ColorStateList(
-				new int[][]{
-						new int[]{-android.R.attr.state_enabled},
-						new int[]{}
-				},
-				new int[] {
-						context.getResources().getColor(R.color.material_grey_400),
-						accentColor,
-				}
-		);
+        // you can't have attrs in xml colorstatelists :-(
+        ColorStateList colorStateList = new ColorStateList(
+            new int[][]{
+                new int[]{-android.R.attr.state_enabled},
+                new int[]{}
+            },
+            new int[]{
+                context.getResources().getColor(R.color.material_grey_400),
+                accentColor,
+            }
+        );
 
-		return colorStateList;
-	}
+        return colorStateList;
+    }
 }

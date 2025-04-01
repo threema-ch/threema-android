@@ -97,10 +97,10 @@ class RejectedGroupMessageFactory(databaseService: DatabaseServiceNew) :
 
     override fun getStatements(): Array<String> = arrayOf(
         "CREATE TABLE `$tableName` (" +
-                "`$COLUMN_MESSAGE_ID` INTEGER NOT NULL, " +
-                "`$COLUMN_REJECTED_IDENTITY` VARCHAR NOT NULL, " +
-                "`$COLUMN_GROUP_ID` INTEGER NOT NULL, " +
-                "PRIMARY KEY (`$COLUMN_MESSAGE_ID`, `$COLUMN_REJECTED_IDENTITY`, `$COLUMN_GROUP_ID`) ON CONFLICT IGNORE " +
-                ")"
+            "`$COLUMN_MESSAGE_ID` INTEGER NOT NULL, " +
+            "`$COLUMN_REJECTED_IDENTITY` VARCHAR NOT NULL, " +
+            "`$COLUMN_GROUP_ID` INTEGER NOT NULL, " +
+            "PRIMARY KEY (`$COLUMN_MESSAGE_ID`, `$COLUMN_REJECTED_IDENTITY`, `$COLUMN_GROUP_ID`) ON CONFLICT IGNORE " +
+            ")"
     )
 }

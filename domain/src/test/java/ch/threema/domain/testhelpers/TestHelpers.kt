@@ -60,11 +60,19 @@ object TestHelpers {
     @JvmStatic
     val noopIdentityStore: IdentityStoreInterface
         get() = object : IdentityStoreInterface {
-            override fun encryptData(plaintext: ByteArray, nonce: ByteArray, receiverPublicKey: ByteArray): ByteArray {
+            override fun encryptData(
+                plaintext: ByteArray,
+                nonce: ByteArray,
+                receiverPublicKey: ByteArray
+            ): ByteArray {
                 return plaintext
             }
 
-            override fun decryptData(ciphertext: ByteArray, nonce: ByteArray, senderPublicKey: ByteArray): ByteArray {
+            override fun decryptData(
+                ciphertext: ByteArray,
+                nonce: ByteArray,
+                senderPublicKey: ByteArray
+            ): ByteArray {
                 return ciphertext
             }
 
@@ -92,7 +100,13 @@ object TestHelpers {
                 return ""
             }
 
-            override fun storeIdentity(identity: String, serverGroup: String, publicKey: ByteArray, privateKey: ByteArray) {}
+            override fun storeIdentity(
+                identity: String,
+                serverGroup: String,
+                publicKey: ByteArray,
+                privateKey: ByteArray
+            ) {
+            }
         }
 
     @JvmStatic
@@ -114,7 +128,12 @@ object TestHelpers {
                 return emptyList()
             }
 
-            override fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {
+            override fun addHashedNoncesChunk(
+                scope: NonceScope,
+                chunkSize: Int,
+                offset: Int,
+                nonces: MutableList<HashedNonce>
+            ) {
                 // noop
             }
 

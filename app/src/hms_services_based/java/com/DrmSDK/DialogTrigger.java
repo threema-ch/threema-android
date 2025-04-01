@@ -24,13 +24,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 弹框触发器
- *Pop-up trigger
+ * Pop-up trigger
  *
  * @since 2020/07/01
  */
 public final class DialogTrigger {
 
-	private final Logger logger = LoggerFactory.getLogger(DialogTrigger.class);
+    private final Logger logger = LoggerFactory.getLogger(DialogTrigger.class);
     /**
      * 单例
      * singleton

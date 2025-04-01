@@ -32,43 +32,43 @@ import androidx.annotation.Nullable;
 import ch.threema.base.utils.LoggingUtil;
 
 public class UpdateSystemServiceImpl implements UpdateSystemService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateSystemServiceImpl");
-	private final Queue<SystemUpdate> systemUpdates  = new LinkedList<>();
+    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateSystemServiceImpl");
+    private final Queue<SystemUpdate> systemUpdates = new LinkedList<>();
 
-	@Override
-	public void addUpdate(@NonNull SystemUpdate systemUpdate) {
-		//run directly
-		try {
-			logger.info("Run direct system update to {}", systemUpdate.getText());
-			systemUpdate.runDirectly();
-		} catch (SQLException e) {
-			throw new RuntimeException();
-		}
+    @Override
+    public void addUpdate(@NonNull SystemUpdate systemUpdate) {
+        //run directly
+        try {
+            logger.info("Run direct system update to {}", systemUpdate.getText());
+            systemUpdate.runDirectly();
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
 
-		//add to queue to run a sync in a queue
-		this.systemUpdates.add(systemUpdate);
-	}
+        //add to queue to run a sync in a queue
+        this.systemUpdates.add(systemUpdate);
+    }
 
-	@Override
-	public void update(@Nullable OnSystemUpdateRun onSystemUpdateRun) {
-		while (!this.systemUpdates.isEmpty()) {
-			final SystemUpdate update = this.systemUpdates.remove();
+    @Override
+    public void update(@Nullable OnSystemUpdateRun onSystemUpdateRun) {
+        while (!this.systemUpdates.isEmpty()) {
+            final SystemUpdate update = this.systemUpdates.remove();
 
-			if (onSystemUpdateRun != null) {
-				onSystemUpdateRun.onStart(update);
-			}
+            if (onSystemUpdateRun != null) {
+                onSystemUpdateRun.onStart(update);
+            }
 
-			boolean success = update.runAsync();
+            boolean success = update.runAsync();
 
-			if (onSystemUpdateRun != null) {
-				onSystemUpdateRun.onFinished(update, success);
-			}
-		}
+            if (onSystemUpdateRun != null) {
+                onSystemUpdateRun.onFinished(update, success);
+            }
+        }
 
-	}
+    }
 
-	@Override
-	public boolean hasUpdates() {
-		return !this.systemUpdates.isEmpty();
-	}
+    @Override
+    public boolean hasUpdates() {
+        return !this.systemUpdates.isEmpty();
+    }
 }

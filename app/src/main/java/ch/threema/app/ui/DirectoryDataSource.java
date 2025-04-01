@@ -48,151 +48,151 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
 
 public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, WorkDirectoryContact> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");
-	public static final int MIN_SEARCH_STRING_LENGTH = 3;
-	public static final String WILDCARD_SEARCH_ALL = "*";
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");
+    public static final int MIN_SEARCH_STRING_LENGTH = 3;
+    public static final String WILDCARD_SEARCH_ALL = "*";
 
-	private PreferenceService preferenceService;
-	private APIConnector apiConnector;
-	private IdentityStore identityStore;
-	private final boolean sortByFirstName;
-	private static String queryText;
-	private static List<WorkDirectoryCategory> queryCategories = new ArrayList<>();
+    private PreferenceService preferenceService;
+    private APIConnector apiConnector;
+    private IdentityStore identityStore;
+    private final boolean sortByFirstName;
+    private static String queryText;
+    private static List<WorkDirectoryCategory> queryCategories = new ArrayList<>();
 
-	public DirectoryDataSource() {
-		super();
+    public DirectoryDataSource() {
+        super();
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		try {
-			this.preferenceService = serviceManager.getPreferenceService();
-			this.apiConnector = serviceManager.getAPIConnector();
-			this.identityStore = serviceManager.getIdentityStore();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
+        try {
+            this.preferenceService = serviceManager.getPreferenceService();
+            this.apiConnector = serviceManager.getAPIConnector();
+            this.identityStore = serviceManager.getIdentityStore();
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
 
-		this.sortByFirstName = preferenceService.isContactListSortingFirstName();
-	}
+        this.sortByFirstName = preferenceService.isContactListSortingFirstName();
+    }
 
-	public void setQueryText(String query) {
-		queryText = query;
-	}
+    public void setQueryText(String query) {
+        queryText = query;
+    }
 
-	public void setQueryCategories(List<WorkDirectoryCategory> categories) {
-		queryCategories = categories;
-	}
+    public void setQueryCategories(List<WorkDirectoryCategory> categories) {
+        queryCategories = categories;
+    }
 
-	@Override
-	public void loadInitial(@NonNull LoadInitialParams<WorkDirectory> params, @NonNull LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		logger.debug("loadInitial");
+    @Override
+    public void loadInitial(@NonNull LoadInitialParams<WorkDirectory> params, @NonNull LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        logger.debug("loadInitial");
 
-		if (queryCategories.size() > 0) {
-			if (TestUtil.isEmptyOrNull(queryText)) {
-				queryText = WILDCARD_SEARCH_ALL;
-			}
-		} else {
-			if (queryText == null || queryText.length() < MIN_SEARCH_STRING_LENGTH) {
-				// return empty result
-				callback.onResult(new ArrayList<WorkDirectoryContact>(), null, null);
-				return;
-			}
-		}
+        if (queryCategories.size() > 0) {
+            if (TestUtil.isEmptyOrNull(queryText)) {
+                queryText = WILDCARD_SEARCH_ALL;
+            }
+        } else {
+            if (queryText == null || queryText.length() < MIN_SEARCH_STRING_LENGTH) {
+                // return empty result
+                callback.onResult(new ArrayList<WorkDirectoryContact>(), null, null);
+                return;
+            }
+        }
 
-		logger.debug("Fetching query {} #categories {}", queryText, queryCategories.size());
+        logger.debug("Fetching query {} #categories {}", queryText, queryCategories.size());
 
-		fetchInitialData(callback);
-	}
+        fetchInitialData(callback);
+    }
 
-	@Override
-	public void loadBefore(@NonNull LoadParams<WorkDirectory> params, @NonNull LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		fetchData(params.key.previousFilter, callback);
-	}
+    @Override
+    public void loadBefore(@NonNull LoadParams<WorkDirectory> params, @NonNull LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        fetchData(params.key.previousFilter, callback);
+    }
 
-	@Override
-	public void loadAfter(@NonNull LoadParams<WorkDirectory> params, @NonNull LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		logger.debug("*** loadAfter: " + params.key.nextFilter.getPage());
-		fetchData(params.key.nextFilter, callback);
-	}
+    @Override
+    public void loadAfter(@NonNull LoadParams<WorkDirectory> params, @NonNull LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        logger.debug("*** loadAfter: " + params.key.nextFilter.getPage());
+        fetchData(params.key.nextFilter, callback);
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void fetchData(final WorkDirectoryFilter workDirectoryFilter, final LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		if (workDirectoryFilter == null) {
-			// no more data
-			return;
-		}
+    @SuppressLint("StaticFieldLeak")
+    private void fetchData(final WorkDirectoryFilter workDirectoryFilter, final LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        if (workDirectoryFilter == null) {
+            // no more data
+            return;
+        }
 
-		new AsyncTask<Void, Void, WorkDirectory>() {
-			@Override
-			protected WorkDirectory doInBackground(Void... voids) {
-				WorkDirectory workDirectory;
+        new AsyncTask<Void, Void, WorkDirectory>() {
+            @Override
+            protected WorkDirectory doInBackground(Void... voids) {
+                WorkDirectory workDirectory;
 
-				try {
-					workDirectory = apiConnector.fetchWorkDirectory(
-						preferenceService.getLicenseUsername(),
-						preferenceService.getLicensePassword(),
-						identityStore,
-						workDirectoryFilter
-					);
-				} catch (Exception e) {
-					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
-					logger.error("Unable to fetch directory", e);
-					return null;
-				}
+                try {
+                    workDirectory = apiConnector.fetchWorkDirectory(
+                        preferenceService.getLicenseUsername(),
+                        preferenceService.getLicensePassword(),
+                        identityStore,
+                        workDirectoryFilter
+                    );
+                } catch (Exception e) {
+                    RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
+                    logger.error("Unable to fetch directory", e);
+                    return null;
+                }
 
-				return workDirectory;
-			}
+                return workDirectory;
+            }
 
-			@Override
-			protected void onPostExecute(WorkDirectory workDirectory) {
-				if (workDirectory != null) {
-					callback.onResult(workDirectory.workContacts, workDirectory);
-				}
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(WorkDirectory workDirectory) {
+                if (workDirectory != null) {
+                    callback.onResult(workDirectory.workContacts, workDirectory);
+                }
+            }
+        }.execute();
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void fetchInitialData(final LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
-		new AsyncTask<Void, Void, WorkDirectory>() {
-			@Override
-			protected WorkDirectory doInBackground(Void... voids) {
-				WorkDirectory workDirectory;
+    @SuppressLint("StaticFieldLeak")
+    private void fetchInitialData(final LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        new AsyncTask<Void, Void, WorkDirectory>() {
+            @Override
+            protected WorkDirectory doInBackground(Void... voids) {
+                WorkDirectory workDirectory;
 
-				WorkDirectoryFilter workDirectoryFilter = new WorkDirectoryFilter();
-				for (WorkDirectoryCategory queryCategory : queryCategories) {
-					workDirectoryFilter.addCategory(queryCategory);
-				}
-		        workDirectoryFilter.page(0);
-				workDirectoryFilter.sortBy(sortByFirstName ? WorkDirectoryFilter.SORT_BY_FIRST_NAME : WorkDirectoryFilter.SORT_BY_LAST_NAME, true);
-				workDirectoryFilter.query(queryText);
+                WorkDirectoryFilter workDirectoryFilter = new WorkDirectoryFilter();
+                for (WorkDirectoryCategory queryCategory : queryCategories) {
+                    workDirectoryFilter.addCategory(queryCategory);
+                }
+                workDirectoryFilter.page(0);
+                workDirectoryFilter.sortBy(sortByFirstName ? WorkDirectoryFilter.SORT_BY_FIRST_NAME : WorkDirectoryFilter.SORT_BY_LAST_NAME, true);
+                workDirectoryFilter.query(queryText);
 
-				try {
-					workDirectory = apiConnector.fetchWorkDirectory(
-						preferenceService.getLicenseUsername(),
-						preferenceService.getLicensePassword(),
-						identityStore,
-						workDirectoryFilter
-					);
-				} catch (Exception e) {
-					RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
-					logger.error("Unable to fetch directory", e);
-					return null;
-				}
+                try {
+                    workDirectory = apiConnector.fetchWorkDirectory(
+                        preferenceService.getLicenseUsername(),
+                        preferenceService.getLicensePassword(),
+                        identityStore,
+                        workDirectoryFilter
+                    );
+                } catch (Exception e) {
+                    RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.directory_request_failed, Toast.LENGTH_LONG).show());
+                    logger.error("Unable to fetch directory", e);
+                    return null;
+                }
 
-				return workDirectory;
-			}
+                return workDirectory;
+            }
 
-			@Override
-			protected void onPostExecute(WorkDirectory workDirectory) {
-				if (workDirectory != null) {
-					logger.debug("Fetch results {}", workDirectory.workContacts);
-					callback.onResult(workDirectory.workContacts, workDirectory, workDirectory);
-				} else {
-					logger.debug("Empty fetch result");
-					callback.onResult(new ArrayList<>(), null, null);
-				}
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(WorkDirectory workDirectory) {
+                if (workDirectory != null) {
+                    logger.debug("Fetch results {}", workDirectory.workContacts);
+                    callback.onResult(workDirectory.workContacts, workDirectory, workDirectory);
+                } else {
+                    logger.debug("Empty fetch result");
+                    callback.onResult(new ArrayList<>(), null, null);
+                }
+            }
+        }.execute();
+    }
 }

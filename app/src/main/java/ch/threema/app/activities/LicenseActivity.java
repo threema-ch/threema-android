@@ -22,25 +22,27 @@
 package ch.threema.app.activities;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.ActionBar;
+
 import android.view.MenuItem;
 import android.webkit.WebView;
 
 import ch.threema.app.R;
 
 public class LicenseActivity extends SimpleWebViewActivity {
-	@Override
-	protected int getWebViewTitle() {
-		return R.string.os_licenses;
-	}
+    @Override
+    protected int getWebViewTitle() {
+        return R.string.os_licenses;
+    }
 
-	@Override
-	protected String getWebViewUrl() {
-		return "file:///android_asset/license.html";
-	}
+    @Override
+    protected String getWebViewUrl() {
+        return "file:///android_asset/license.html";
+    }
 
-	@Override
-	protected boolean requiresConnection() {
-		return false;
-	}
+    @Override
+    protected boolean requiresConnection() {
+        return false;
+    }
 }

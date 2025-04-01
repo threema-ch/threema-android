@@ -1,110 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools" >
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/notice_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		android:layout_marginTop="@dimen/notice_views_vertical_margin"
-		android:layout_marginBottom="@dimen/notice_views_vertical_margin"
-		android:clickable="false"
-		android:orientation="vertical"
-		android:visibility="visible"
-		app:cardBackgroundColor="?android:attr/colorBackground"
-		app:cardCornerRadius="@dimen/cardview_border_radius"
-		app:cardElevation="@dimen/notice_views_elevation"
-		app:strokeWidth="0dp"
-		app:contentPaddingLeft="16dp"
-		app:contentPaddingRight="8dp"
-		app:contentPaddingTop="4dp"
-		app:contentPaddingBottom="4dp"
-		android:outlineProvider="none">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/notice_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="@dimen/notice_views_vertical_margin"
+        android:layout_marginBottom="@dimen/notice_views_vertical_margin"
+        android:clickable="false"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="@dimen/cardview_border_radius"
+        app:cardElevation="@dimen/notice_views_elevation"
+        app:strokeWidth="0dp"
+        app:contentPaddingLeft="16dp"
+        app:contentPaddingRight="8dp"
+        app:contentPaddingTop="4dp"
+        app:contentPaddingBottom="4dp"
+        android:outlineProvider="none">
 
-	<RelativeLayout
-		android:id="@+id/button_layout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:clickable="false">
+        <RelativeLayout
+            android:id="@+id/button_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false">
 
-		<RelativeLayout
-			android:id="@+id/call_container"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@+id/call_hangup"
-			android:layout_alignParentLeft="true"
-			android:layout_centerVertical="true"
-			android:gravity="center_vertical"
-			android:background="?android:selectableItemBackground"
-			android:clickable="true">
+            <RelativeLayout
+                android:id="@+id/call_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/call_hangup"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                android:clickable="true">
 
-			<TextView
-				style="@style/Threema.TextAppearance.BodyLarge"
-				android:id="@+id/call_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="8dp"
-				android:layout_alignParentLeft="true"
-				android:text="@string/voip_gc_ongoing_call"
-				android:textColor="?attr/colorOnBackground"
-				android:ellipsize="end"
-				android:maxLines="1"/>
+                <TextView
+                    style="@style/Threema.TextAppearance.BodyLarge"
+                    android:id="@+id/call_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:layout_alignParentLeft="true"
+                    android:text="@string/voip_gc_ongoing_call"
+                    android:textColor="?attr/colorOnBackground"
+                    android:ellipsize="end"
+                    android:maxLines="1" />
 
-			<Chronometer
-				style="@style/Threema.TextAppearance.BodyMedium"
-				android:id="@+id/call_duration"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
-				android:layout_below="@+id/call_text"
-				android:maxLines="1"
-				android:textColor="?attr/colorOnBackground"
-				android:textSize="12sp" />
+                <Chronometer
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:id="@+id/call_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/call_text"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="12sp" />
 
-			<TextView
-				style="@style/Threema.TextAppearance.BodyMedium"
-				android:id="@+id/ongoing_call_divider"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_toRightOf="@id/call_duration"
-				android:layout_alignWithParentIfMissing="true"
-				android:layout_below="@+id/call_text"
-				android:layout_marginLeft="2dp"
-				android:layout_marginRight="2dp"
-				android:text="|"
-				android:maxLines="1"
-				android:visibility="gone"
-				tools:ignore="HardcodedText" />
+                <TextView
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:id="@+id/ongoing_call_divider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/call_duration"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_below="@+id/call_text"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:text="|"
+                    android:maxLines="1"
+                    android:visibility="gone"
+                    tools:ignore="HardcodedText" />
 
-			<TextView
-				style="@style/Threema.TextAppearance.BodyMedium"
-				android:id="@+id/participants_count"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/call_text"
-				android:layout_toRightOf="@+id/ongoing_call_divider"
-				android:layout_alignWithParentIfMissing="true"
-				android:maxLines="1"
-				android:textColor="?attr/colorOnBackground"
-				android:textSize="12sp" />
+                <TextView
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:id="@+id/participants_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/call_text"
+                    android:layout_toRightOf="@+id/ongoing_call_divider"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="12sp" />
 
-		</RelativeLayout>
+            </RelativeLayout>
 
-		<com.google.android.material.button.MaterialButton
-			android:id="@+id/call_hangup"
-			style="@style/Threema.MaterialButton.Action"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_centerVertical="true"
-			android:text="@string/voip_hangup" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/call_hangup"
+                style="@style/Threema.MaterialButton.Action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="@string/voip_hangup" />
 
-	</RelativeLayout>
+        </RelativeLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </merge>

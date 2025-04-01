@@ -31,10 +31,11 @@ import ch.threema.protobuf.d2d.MdD2D
 import java.nio.charset.StandardCharsets
 import java.util.Arrays
 
-class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufGroupMessage<GroupCallStartData>(
-    ProtocolDefines.MSGTYPE_GROUP_CALL_START,
-    payloadData
-), GroupCallControlMessage {
+class GroupCallStartMessage(payloadData: GroupCallStartData) :
+    AbstractProtobufGroupMessage<GroupCallStartData>(
+        ProtocolDefines.MSGTYPE_GROUP_CALL_START,
+        payloadData
+    ), GroupCallControlMessage {
     override fun flagSendPush() = true
 
     override fun getMinimumRequiredForwardSecurityVersion(): Version = Version.V1_2
@@ -88,7 +89,10 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage, ownIdentity: String): GroupCallStartMessage {
+        fun fromReflected(
+            message: MdD2D.OutgoingMessage,
+            ownIdentity: String
+        ): GroupCallStartMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val groupCallStartMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)
             groupCallStartMessage.initializeCommonProperties(message)
@@ -125,7 +129,8 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) : AbstractProtobufG
 
             var positionIndex = offset
 
-            val groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+            val groupCreator =
+                String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
             positionIndex += ProtocolDefines.IDENTITY_LEN
 
             val apiGroupId = GroupId(data, positionIndex)

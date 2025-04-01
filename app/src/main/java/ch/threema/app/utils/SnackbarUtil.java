@@ -29,13 +29,13 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.annotation.NonNull;
 
 public class SnackbarUtil {
-	@NonNull
-	public static Snackbar make(View parentLayout, String text, int length, int maxLines) {
-		final Snackbar snackbar = Snackbar.make(parentLayout, text, length);
-		TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
-		if (textView != null) {
-			textView.setMaxLines(maxLines);
-		}
-		return snackbar;
-	}
+    @NonNull
+    public static Snackbar make(View parentLayout, String text, int length, int maxLines) {
+        final Snackbar snackbar = Snackbar.make(parentLayout, text, length);
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        if (textView != null) {
+            textView.setMaxLines(maxLines);
+        }
+        return snackbar;
+    }
 }

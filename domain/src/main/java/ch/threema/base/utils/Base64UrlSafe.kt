@@ -43,7 +43,7 @@ object Base64UrlSafe {
             .replace("-", "+")
             .replace("_", "/")
 
-        val padding = when(defaultBase64.length % 4) {
+        val padding = when (defaultBase64.length % 4) {
             2 -> "=="
             3 -> "="
             else -> ""

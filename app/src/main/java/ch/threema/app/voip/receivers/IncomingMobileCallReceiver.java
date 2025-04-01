@@ -46,59 +46,59 @@ import ch.threema.base.utils.LoggingUtil;
  * Attempt to reject regular phone call if a Threema Call is running
  */
 public class IncomingMobileCallReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingMobileCallReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingMobileCallReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (!intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-			return;
-		}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (!intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            return;
+        }
 
-		logger.info("Incoming mobile call");
+        logger.info("Incoming mobile call");
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Could not acquire service manager");
-			return;
-		}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            logger.error("Could not acquire service manager");
+            return;
+        }
 
-		VoipStateService voipStateService;
-		try {
-			voipStateService = serviceManager.getVoipStateService();
-		} catch (ThreemaException e) {
-			logger.error("Could not acquire VoipStateService");
-			return;
-		}
+        VoipStateService voipStateService;
+        try {
+            voipStateService = serviceManager.getVoipStateService();
+        } catch (ThreemaException e) {
+            logger.error("Could not acquire VoipStateService");
+            return;
+        }
 
-		if (!voipStateService.getCallState().isIdle()) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-				if (ContextCompat.checkSelfPermission(context, Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
-					TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
-					if (telecomManager != null) {
-						logger.info("Trying to end call via TelecomManager");
-						telecomManager.endCall();
-						logger.info("Mobile call rejected");
-					}
-				}
-			} else {
-				if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-					TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-					// Hacky, hacky
-					try {
-						logger.info("Trying to end call via TelephonyManager");
-						@SuppressLint("PrivateApi") Method getTelephony = telephonyManager.getClass().getDeclaredMethod("getITelephony");
-						getTelephony.setAccessible(true);
-						Object telephonyService = getTelephony.invoke(telephonyManager);
-						Method silenceRinger = telephonyService.getClass().getDeclaredMethod("silenceRinger");
-						silenceRinger.invoke(telephonyService);
-						Method endCall = telephonyService.getClass().getDeclaredMethod("endCall");
-						endCall.invoke(telephonyService);
-						logger.info("Mobile call rejected");
-					} catch (Exception e) {
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
-	}
+        if (!voipStateService.getCallState().isIdle()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
+                    TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
+                    if (telecomManager != null) {
+                        logger.info("Trying to end call via TelecomManager");
+                        telecomManager.endCall();
+                        logger.info("Mobile call rejected");
+                    }
+                }
+            } else {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                    // Hacky, hacky
+                    try {
+                        logger.info("Trying to end call via TelephonyManager");
+                        @SuppressLint("PrivateApi") Method getTelephony = telephonyManager.getClass().getDeclaredMethod("getITelephony");
+                        getTelephony.setAccessible(true);
+                        Object telephonyService = getTelephony.invoke(telephonyManager);
+                        Method silenceRinger = telephonyService.getClass().getDeclaredMethod("silenceRinger");
+                        silenceRinger.invoke(telephonyService);
+                        Method endCall = telephonyService.getClass().getDeclaredMethod("endCall");
+                        endCall.invoke(telephonyService);
+                        logger.info("Mobile call rejected");
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            }
+        }
+    }
 }

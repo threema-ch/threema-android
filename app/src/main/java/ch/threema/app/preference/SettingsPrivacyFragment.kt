@@ -55,7 +55,8 @@ import com.google.android.material.snackbar.Snackbar
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
 
-class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.DialogClickListener {
+class SettingsPrivacyFragment : ThreemaPreferenceFragment(),
+    GenericAlertDialog.DialogClickListener {
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
     private val preferenceService by lazy { serviceManager.preferenceService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
@@ -67,34 +68,47 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     private lateinit var contactSyncPreference: TwoStatePreference
 
-    private val synchronizeContactsService: SynchronizeContactsService? = getOrNull { requireSynchronizeContactsService() }
+    private val synchronizeContactsService: SynchronizeContactsService? =
+        getOrNull { requireSynchronizeContactsService() }
 
-    private val synchronizeContactsListener: SynchronizeContactsListener = object : SynchronizeContactsListener {
-        override fun onStarted(startedRoutine: SynchronizeContactsRoutine) {
-            RuntimeUtil.runOnUiThread {
-                updateView()
-                GenericProgressDialog.newInstance(R.string.wizard1_sync_contacts, R.string.please_wait).show(parentFragmentManager, DIALOG_TAG_SYNC_CONTACTS)
+    private val synchronizeContactsListener: SynchronizeContactsListener =
+        object : SynchronizeContactsListener {
+            override fun onStarted(startedRoutine: SynchronizeContactsRoutine) {
+                RuntimeUtil.runOnUiThread {
+                    updateView()
+                    GenericProgressDialog.newInstance(
+                        R.string.wizard1_sync_contacts,
+                        R.string.please_wait
+                    ).show(parentFragmentManager, DIALOG_TAG_SYNC_CONTACTS)
+                }
             }
-        }
 
-        override fun onFinished(finishedRoutine: SynchronizeContactsRoutine) {
-            RuntimeUtil.runOnUiThread {
-                updateView()
-                if (this@SettingsPrivacyFragment.isAdded) {
-                    DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_SYNC_CONTACTS, true)
+            override fun onFinished(finishedRoutine: SynchronizeContactsRoutine) {
+                RuntimeUtil.runOnUiThread {
+                    updateView()
+                    if (this@SettingsPrivacyFragment.isAdded) {
+                        DialogUtil.dismissDialog(
+                            parentFragmentManager,
+                            DIALOG_TAG_SYNC_CONTACTS,
+                            true
+                        )
+                    }
+                }
+            }
+
+            override fun onError(finishedRoutine: SynchronizeContactsRoutine) {
+                RuntimeUtil.runOnUiThread {
+                    updateView()
+                    if (this@SettingsPrivacyFragment.isAdded) {
+                        DialogUtil.dismissDialog(
+                            parentFragmentManager,
+                            DIALOG_TAG_SYNC_CONTACTS,
+                            true
+                        )
+                    }
                 }
             }
         }
-
-        override fun onError(finishedRoutine: SynchronizeContactsRoutine) {
-            RuntimeUtil.runOnUiThread {
-                updateView()
-                if (this@SettingsPrivacyFragment.isAdded) {
-                    DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_SYNC_CONTACTS, true)
-                }
-            }
-        }
-    }
 
     override fun initializePreferences() {
         super.initializePreferences()
@@ -130,7 +144,11 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     override fun getPreferenceResource(): Int = R.xml.preference_privacy
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         ListenerManager.synchronizeContactsListeners.add(synchronizeContactsListener)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
@@ -158,7 +176,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
     }
 
     private fun updateView() {
-        if (AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync)) == null && !SynchronizeContactsUtil.isRestrictedProfile(activity)) {
+        if (AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync)) == null && !SynchronizeContactsUtil.isRestrictedProfile(
+                activity
+            )
+        ) {
             contactSyncPreference.apply {
                 isEnabled = synchronizeContactsService?.isSynchronizationInProgress != true
             }
@@ -167,8 +188,10 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     private fun initContactSyncPref() {
         contactSyncPreference = getPref(resources.getString(R.string.preferences__sync_contacts))
-        contactSyncPreference.summaryOn = getString(R.string.prefs_sum_sync_contacts_on, getString(R.string.app_name))
-        contactSyncPreference.summaryOff = getString(R.string.prefs_sum_sync_contacts_off, getString(R.string.app_name))
+        contactSyncPreference.summaryOn =
+            getString(R.string.prefs_sum_sync_contacts_on, getString(R.string.app_name))
+        contactSyncPreference.summaryOff =
+            getString(R.string.prefs_sum_sync_contacts_off, getString(R.string.app_name))
 
         if (SynchronizeContactsUtil.isRestrictedProfile(activity)) {
             // restricted android profile (e.g. guest user)
@@ -176,38 +199,42 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
             contactSyncPreference.isEnabled = false
             contactSyncPreference.isSelectable = false
         } else {
-            contactSyncPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
-                val newCheckedValue = newValue == true
-                if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
-                    preferenceService.emailSyncHashCode = 0
-                    preferenceService.phoneNumberSyncHashCode = 0
-                    preferenceService.timeOfLastContactSync = 0L
+            contactSyncPreference.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
+                    val newCheckedValue = newValue == true
+                    if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
+                        preferenceService.emailSyncHashCode = 0
+                        preferenceService.phoneNumberSyncHashCode = 0
+                        preferenceService.timeOfLastContactSync = 0L
 
-                    if (newCheckedValue) {
-                        enableSync()
-                    } else {
-                        disableSync()
+                        if (newCheckedValue) {
+                            enableSync()
+                        } else {
+                            disableSync()
+                        }
                     }
+                    true
                 }
-                true
-            }
         }
     }
 
     private fun initWorkRestrictedPrefs() {
         if (ConfigUtils.isWorkRestricted()) {
-            var value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__block_unknown))
+            var value =
+                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__block_unknown))
             if (value != null) {
                 val blockUnknown: CheckBoxPreference = getPref(R.string.preferences__block_unknown)
                 blockUnknown.isEnabled = false
                 blockUnknown.isSelectable = false
             }
-            value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_screenshots))
+            value =
+                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_screenshots))
             if (value != null) {
                 disableScreenshot.isEnabled = false
                 disableScreenshot.isSelectable = false
             }
-            value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync))
+            value =
+                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync))
             if (value != null) {
                 contactSyncPreference.isEnabled = false
                 contactSyncPreference.isSelectable = false
@@ -231,28 +258,36 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
     }
 
     private fun initResetReceiptsPref() {
-        getPref<Preference>("pref_reset_receipts").onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            val dialog = GenericAlertDialog.newInstance(R.string.prefs_title_reset_receipts, getString(R.string.prefs_sum_reset_receipts) + "?", R.string.yes, R.string.no)
-            dialog.targetFragment = this@SettingsPrivacyFragment
-            dialog.show(parentFragmentManager, DIALOG_TAG_RESET_RECEIPTS)
-            false
-        }
+        getPref<Preference>("pref_reset_receipts").onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                val dialog = GenericAlertDialog.newInstance(
+                    R.string.prefs_title_reset_receipts,
+                    getString(R.string.prefs_sum_reset_receipts) + "?",
+                    R.string.yes,
+                    R.string.no
+                )
+                dialog.targetFragment = this@SettingsPrivacyFragment
+                dialog.show(parentFragmentManager, DIALOG_TAG_RESET_RECEIPTS)
+                false
+            }
     }
 
     private fun initDirectSharePref() {
         getPrefOrNull<Preference>(resources.getString(R.string.preferences__direct_share))?.apply {
-            onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
-                val newCheckedValue = newValue == true
-                if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
-                    if (newCheckedValue) {
-                        ThreemaApplication.scheduleShareTargetShortcutUpdate()
-                    } else {
-                        WorkManager.getInstance(context).cancelUniqueWork(ThreemaApplication.WORKER_SHARE_TARGET_UPDATE)
-                        ShortcutUtil.deleteAllShareTargetShortcuts()
+            onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference: Preference, newValue: Any ->
+                    val newCheckedValue = newValue == true
+                    if ((preference as TwoStatePreference).isChecked != newCheckedValue) {
+                        if (newCheckedValue) {
+                            ThreemaApplication.scheduleShareTargetShortcutUpdate()
+                        } else {
+                            WorkManager.getInstance(context)
+                                .cancelUniqueWork(ThreemaApplication.WORKER_SHARE_TARGET_UPDATE)
+                            ShortcutUtil.deleteAllShareTargetShortcuts()
+                        }
                     }
+                    true
                 }
-                true
-            }
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -265,13 +300,21 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             PERMISSION_REQUEST_CONTACTS -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 launchContactsSync()
             } else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                 disableSync()
-                ConfigUtils.showPermissionRationale(context, fragmentView, R.string.permission_contacts_sync_required, object : BaseCallback<Snackbar?>() {})
+                ConfigUtils.showPermissionRationale(
+                    context,
+                    fragmentView,
+                    R.string.permission_contacts_sync_required,
+                    object : BaseCallback<Snackbar?>() {})
             } else {
                 disableSync()
             }
@@ -286,7 +329,12 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
     private fun enableSync() {
         getOrNull { requireSynchronizeContactsService() }?.apply {
             try {
-                if (enableSync() && ConfigUtils.requestContactPermissions(requireActivity(), this@SettingsPrivacyFragment, PERMISSION_REQUEST_CONTACTS)) {
+                if (enableSync() && ConfigUtils.requestContactPermissions(
+                        requireActivity(),
+                        this@SettingsPrivacyFragment,
+                        PERMISSION_REQUEST_CONTACTS
+                    )
+                ) {
                     launchContactsSync()
                 }
             } catch (e: MasterKeyLockedException) {
@@ -299,11 +347,16 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     private fun disableSync() {
         getOrNull { requireSynchronizeContactsService() }?.apply {
-            GenericProgressDialog.newInstance(R.string.app_name, R.string.please_wait).show(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC)
-            Thread ({
+            GenericProgressDialog.newInstance(R.string.app_name, R.string.please_wait)
+                .show(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC)
+            Thread({
                 disableSync {
                     RuntimeUtil.runOnUiThread {
-                        DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_DISABLE_SYNC, true)
+                        DialogUtil.dismissDialog(
+                            parentFragmentManager,
+                            DIALOG_TAG_DISABLE_SYNC,
+                            true
+                        )
                         contactSyncPreference.isChecked = false
                     }
                 }
@@ -313,9 +366,15 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
 
     private fun resetReceipts() {
         getOrNull { requireContactService() }?.apply {
-            Thread ({
+            Thread({
                 resetReceiptsSettings()
-                RuntimeUtil.runOnUiThread { Toast.makeText(context, R.string.reset_successful, Toast.LENGTH_SHORT).show() }
+                RuntimeUtil.runOnUiThread {
+                    Toast.makeText(
+                        context,
+                        R.string.reset_successful,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }, "ResetReceiptSettings").start()
         }
     }
@@ -359,5 +418,5 @@ class SettingsPrivacyFragment : ThreemaPreferenceFragment(), GenericAlertDialog.
         resetReceipts()
     }
 
-    override fun onNo(tag: String?, data: Any?) { }
+    override fun onNo(tag: String?, data: Any?) {}
 }

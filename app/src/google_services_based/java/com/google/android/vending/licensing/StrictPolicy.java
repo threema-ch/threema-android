@@ -79,7 +79,7 @@ public class StrictPolicy implements Policy {
      * extra is still extracted in cases where the app is unlicensed.
      *
      * @param response the result from validating the server response
-     * @param rawData the raw server response data
+     * @param rawData  the raw server response data
      */
     public void processServerResponse(int response, ResponseData rawData) {
         mLastResponse = response;
@@ -92,7 +92,7 @@ public class StrictPolicy implements Policy {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This implementation allows access if and only if a LICENSED response
      * was received the last time the server was contacted.
      */

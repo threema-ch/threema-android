@@ -40,81 +40,80 @@ import ch.threema.storage.models.ServerMessageModel;
 
 @WorkerThread
 public class AlertHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AlertHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AlertHandler");
 
-	public static final String SOURCE_SERVER = "server";
-	public static final String SOURCE_DEVICE = "device";
+    public static final String SOURCE_SERVER = "server";
+    public static final String SOURCE_DEVICE = "device";
 
-	public static final String ALERT_TYPE_ERROR = "error";
-	public static final String ALERT_TYPE_WARNING = "warning";
-	public static final String ALERT_TYPE_INFO = "info";
+    public static final String ALERT_TYPE_ERROR = "error";
+    public static final String ALERT_TYPE_WARNING = "warning";
+    public static final String ALERT_TYPE_INFO = "info";
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final ServerMessageListener serverMessageListener;
+    // Listeners
+    private final ServerMessageListener serverMessageListener;
 
-	// Dispatchers
-	private MessageDispatcher updateDispatcher;
+    // Dispatchers
+    private MessageDispatcher updateDispatcher;
 
-	@AnyThread
-	public AlertHandler(@NonNull HandlerExecutor handler, MessageDispatcher updateDispatcher) {
-		super(Protocol.SUB_TYPE_ALERT);
-		this.handler = handler;
-		this.updateDispatcher = updateDispatcher;
-		this.serverMessageListener = new ServerMessageListener();
-	}
+    @AnyThread
+    public AlertHandler(@NonNull HandlerExecutor handler, MessageDispatcher updateDispatcher) {
+        super(Protocol.SUB_TYPE_ALERT);
+        this.handler = handler;
+        this.updateDispatcher = updateDispatcher;
+        this.serverMessageListener = new ServerMessageListener();
+    }
 
-	@Override
-	public void register() {
-		ListenerManager.serverMessageListeners.add(this.serverMessageListener);
-	}
+    @Override
+    public void register() {
+        ListenerManager.serverMessageListeners.add(this.serverMessageListener);
+    }
 
-	@Override
-	public void unregister() {
-		ListenerManager.serverMessageListeners.remove(this.serverMessageListener);
-	}
+    @Override
+    public void unregister() {
+        ListenerManager.serverMessageListeners.remove(this.serverMessageListener);
+    }
 
-	private void update(final String source, final String type, final String message) {
-		try {
-			// Send message
-			logger.debug("Sending alert");
-			send(updateDispatcher,
-					new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_ALERT_MESSAGE, message),
-					new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_ALERT_TYPE, type)
-						.put(Protocol.ARGUMENT_ALERT_SOURCE, source));
+    private void update(final String source, final String type, final String message) {
+        try {
+            // Send message
+            logger.debug("Sending alert");
+            send(updateDispatcher,
+                new MsgpackObjectBuilder()
+                    .put(Protocol.ARGUMENT_ALERT_MESSAGE, message),
+                new MsgpackObjectBuilder()
+                    .put(Protocol.ARGUMENT_ALERT_TYPE, type)
+                    .put(Protocol.ARGUMENT_ALERT_SOURCE, source));
 
-		} catch (MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+        } catch (MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@AnyThread
-	private class ServerMessageListener implements ch.threema.app.listeners.ServerMessageListener
-	{
-		@Override
-		public void onAlert(ServerMessageModel serverMessage) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					AlertHandler.this.update(SOURCE_SERVER, ALERT_TYPE_WARNING, serverMessage.getMessage());
-				}
-			});
-		}
+    @AnyThread
+    private class ServerMessageListener implements ch.threema.app.listeners.ServerMessageListener {
+        @Override
+        public void onAlert(ServerMessageModel serverMessage) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    AlertHandler.this.update(SOURCE_SERVER, ALERT_TYPE_WARNING, serverMessage.getMessage());
+                }
+            });
+        }
 
-		@Override
-		public void onError(ServerMessageModel serverMessage) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					AlertHandler.this.update(SOURCE_SERVER, ALERT_TYPE_ERROR, serverMessage.getMessage());
-				}
-			});
-		}
-	}
+        @Override
+        public void onError(ServerMessageModel serverMessage) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    AlertHandler.this.update(SOURCE_SERVER, ALERT_TYPE_ERROR, serverMessage.getMessage());
+                }
+            });
+        }
+    }
 }

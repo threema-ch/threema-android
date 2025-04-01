@@ -43,18 +43,19 @@ class EmojiReactionsButton : MaterialCardView {
 
     var onEmojiReactionButtonClickListener: OnEmojiReactionButtonClickListener? = null
 
-    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onSingleTapUp(e: MotionEvent): Boolean {
-            onEmojiReactionButtonClickListener?.onClick(emojiSequence)
-            performClick()
-            return true
-        }
+    private val gestureDetector =
+        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                onEmojiReactionButtonClickListener?.onClick(emojiSequence)
+                performClick()
+                return true
+            }
 
-        override fun onLongPress(e: MotionEvent) {
-            onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
-            performLongClick()
-        }
-    })
+            override fun onLongPress(e: MotionEvent) {
+                onEmojiReactionButtonClickListener?.onLongClick(emojiSequence)
+                performLongClick()
+            }
+        })
 
     private lateinit var labelView: TextView
     private lateinit var emojiView: EmojiTextView

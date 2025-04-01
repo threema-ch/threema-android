@@ -115,7 +115,8 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
         try {
             super.finish();
             overridePendingTransition(0, 0);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private void showBiometricPrompt() {

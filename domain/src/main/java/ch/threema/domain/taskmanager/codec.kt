@@ -192,7 +192,11 @@ class TransactionScope(
         }
     }
 
-    private suspend fun ActiveTaskCodec.startTransaction(keys: MultiDeviceKeys, scope: Scope, ttl: UInt) {
+    private suspend fun ActiveTaskCodec.startTransaction(
+        keys: MultiDeviceKeys,
+        scope: Scope,
+        ttl: UInt
+    ) {
         transactionLogger.trace("Start transaction (scope={}, ttl={})", scope, ttl)
         // TODO(ANDR-2699) Beware that scope USER_SYNC_SCOPE will not be encrypted correctly
         val encryptedScope = keys.encryptTransactionScope(scope)

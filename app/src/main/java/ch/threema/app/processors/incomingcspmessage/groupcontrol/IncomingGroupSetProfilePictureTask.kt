@@ -42,7 +42,11 @@ class IncomingGroupSetProfilePictureTask(
     message: GroupSetProfilePictureMessage,
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
-) : IncomingCspMessageSubTask<GroupSetProfilePictureMessage>(message, triggerSource, serviceManager) {
+) : IncomingCspMessageSubTask<GroupSetProfilePictureMessage>(
+    message,
+    triggerSource,
+    serviceManager
+) {
     private val fileService by lazy { serviceManager.fileService }
     private val apiService by lazy { serviceManager.apiService }
     private val avatarCacheService by lazy { serviceManager.avatarCacheService }

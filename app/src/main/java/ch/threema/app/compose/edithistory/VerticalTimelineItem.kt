@@ -60,51 +60,68 @@ fun VerticalTimelineItem(
     content: @Composable () -> Unit,
 ) {
     fun getLineBackgroundWithBottomFade(): Modifier {
-        return Modifier.background(brush = Brush.verticalGradient(
-            colorStops = arrayOf(
-                .5f to color,
-                1f to Color.Transparent
-            ),
-        ))
+        return Modifier.background(
+            brush = Brush.verticalGradient(
+                colorStops = arrayOf(
+                    .5f to color,
+                    1f to Color.Transparent
+                ),
+            )
+        )
     }
 
     fun getLineBackgroundWithTopFade(): Modifier {
-        return Modifier.background(brush = Brush.verticalGradient(
-            colorStops = arrayOf(
-                0.2f to Color.Transparent,
-                1f to color
-            ),
-        ))
+        return Modifier.background(
+            brush = Brush.verticalGradient(
+                colorStops = arrayOf(
+                    0.2f to Color.Transparent,
+                    1f to color
+                ),
+            )
+        )
     }
 
     Column(modifier) {
         val timelineMargin = 12.dp
-        Row(modifier = Modifier.height(IntrinsicSize.Min),
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Box(modifier = Modifier
-                    .fillMaxHeight()
-                    .width(lineWidth)
-                    .then(if (shouldFadeOutLineTop) getLineBackgroundWithTopFade() else Modifier.background(color))
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(lineWidth)
+                        .then(
+                            if (shouldFadeOutLineTop) getLineBackgroundWithTopFade() else Modifier.background(
+                                color
+                            )
+                        )
                 )
-                Box(modifier = Modifier
-                    .size(dotSize)
-                    .clip(CircleShape)
-                    .background(color)
+                Box(
+                    modifier = Modifier
+                        .size(dotSize)
+                        .clip(CircleShape)
+                        .background(color)
                 )
             }
             Spacer(modifier = Modifier.width(timelineMargin))
             labelContent?.invoke()
         }
-        Row(modifier = Modifier.height(IntrinsicSize.Min),
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier.width(dotSize), contentAlignment = Alignment.Center) {
-                Box(modifier = Modifier
-                    .fillMaxHeight()
-                    .width(lineWidth)
-                    .then(if (shouldFadeOutLineBottom) getLineBackgroundWithBottomFade() else Modifier.background(color))
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(lineWidth)
+                        .then(
+                            if (shouldFadeOutLineBottom) getLineBackgroundWithBottomFade() else Modifier.background(
+                                color
+                            )
+                        )
                 )
             }
             Spacer(modifier = Modifier.width(timelineMargin))
@@ -133,13 +150,14 @@ private fun VerticalTimelineItemPreview() {
             )
         }
     ) {
-        Box(modifier = Modifier
-            .height(100.dp)
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = RoundedCornerShape(8.dp)
-            )
+        Box(
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    shape = RoundedCornerShape(8.dp)
+                )
         )
     }
 }

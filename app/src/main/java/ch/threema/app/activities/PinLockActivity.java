@@ -48,235 +48,235 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class PinLockActivity extends ThreemaActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockActivity");
-	private static final long ERROR_MESSAGE_TIMEOUT = 3000;
-	private static final int FAILED_ATTEMPTS_BEFORE_TIMEOUT = 3;
-	private static final long FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS = 1000L;
-	private static final int DEFAULT_LOCKOUT_TIMEOUT = 30 * 1000;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockActivity");
+    private static final long ERROR_MESSAGE_TIMEOUT = 3000;
+    private static final int FAILED_ATTEMPTS_BEFORE_TIMEOUT = 3;
+    private static final long FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS = 1000L;
+    private static final int DEFAULT_LOCKOUT_TIMEOUT = 30 * 1000;
 
-	private TextView passwordEntry;
-	private TextView errorTextView;
-	private int numWrongConfirmAttempts;
-	private final Handler handler = new Handler();
-	private CountDownTimer countDownTimer;
-	private boolean isCheckOnly;
-	private String pinPreset;
+    private TextView passwordEntry;
+    private TextView errorTextView;
+    private int numWrongConfirmAttempts;
+    private final Handler handler = new Handler();
+    private CountDownTimer countDownTimer;
+    private boolean isCheckOnly;
+    private String pinPreset;
 
-	private LockAppService lockAppService;
-	private PreferenceService preferenceService;
+    private LockAppService lockAppService;
+    private PreferenceService preferenceService;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		logger.debug("onCreate");
+        logger.debug("onCreate");
 
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
-		ConfigUtils.configureSystemBars(this);
+        ConfigUtils.configureSystemBars(this);
 
-		isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
-		pinPreset = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_PIN);
+        isCheckOnly = getIntent().getBooleanExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, false);
+        pinPreset = getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_PIN);
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			finish();
-			return;
-		}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            finish();
+            return;
+        }
 
-		preferenceService = serviceManager.getPreferenceService();
-		lockAppService = serviceManager.getLockAppService();
+        preferenceService = serviceManager.getPreferenceService();
+        lockAppService = serviceManager.getLockAppService();
 
-		if (!lockAppService.isLocked() && !isCheckOnly) {
-			finish();
-		}
+        if (!lockAppService.isLocked() && !isCheckOnly) {
+            finish();
+        }
 
-		numWrongConfirmAttempts = preferenceService.getLockoutAttempts();
+        numWrongConfirmAttempts = preferenceService.getLockoutAttempts();
 
-		setContentView(R.layout.activity_pin_lock);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        setContentView(R.layout.activity_pin_lock);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-		passwordEntry = findViewById(R.id.password_entry);
-		passwordEntry.setOnEditorActionListener((v, actionId, event) -> {
-			// Check if this was the result of hitting the enter or "done" key
-			if (actionId == EditorInfo.IME_NULL
-					|| actionId == EditorInfo.IME_ACTION_DONE
-					|| actionId == EditorInfo.IME_ACTION_NEXT) {
-				handleNext();
-				return true;
-			}
-			return false;
-		});
-		passwordEntry.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ThreemaApplication.MAX_PIN_LENGTH)});
+        passwordEntry = findViewById(R.id.password_entry);
+        passwordEntry.setOnEditorActionListener((v, actionId, event) -> {
+            // Check if this was the result of hitting the enter or "done" key
+            if (actionId == EditorInfo.IME_NULL
+                || actionId == EditorInfo.IME_ACTION_DONE
+                || actionId == EditorInfo.IME_ACTION_NEXT) {
+                handleNext();
+                return true;
+            }
+            return false;
+        });
+        passwordEntry.setFilters(new InputFilter[]{new InputFilter.LengthFilter(ThreemaApplication.MAX_PIN_LENGTH)});
 
-		TextView headerTextView = findViewById(R.id.headerText);
-		TextView detailsTextView = findViewById(R.id.detailsText);
-		errorTextView = findViewById(R.id.errorText);
+        TextView headerTextView = findViewById(R.id.headerText);
+        TextView detailsTextView = findViewById(R.id.detailsText);
+        errorTextView = findViewById(R.id.errorText);
 
-		headerTextView.setText(R.string.confirm_your_pin);
-		detailsTextView.setText(getString(R.string.pinentry_enter_pin, getString(R.string.app_name)));
-		passwordEntry.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        headerTextView.setText(R.string.confirm_your_pin);
+        detailsTextView.setText(getString(R.string.pinentry_enter_pin, getString(R.string.app_name)));
+        passwordEntry.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD);
 
-		Button cancelButton = findViewById(R.id.cancelButton);
-		cancelButton.setOnClickListener(v -> quit());
-	}
+        Button cancelButton = findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(v -> quit());
+    }
 
-	@Override
-	protected boolean isPinLockable() {
-		return false;
-	}
+    @Override
+    protected boolean isPinLockable() {
+        return false;
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (countDownTimer != null) {
-			countDownTimer.cancel();
-			countDownTimer = null;
-		}
-		overridePendingTransition(0, 0);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+        overridePendingTransition(0, 0);
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		if (!lockAppService.isLocked() && !isCheckOnly) {
-			finish();
-		}
+        if (!lockAppService.isLocked() && !isCheckOnly) {
+            finish();
+        }
 
-		long deadline = getLockoutAttemptDeadline();
-		if (deadline != 0) {
-			handleAttemptLockout(deadline);
-		}
-	}
+        long deadline = getLockoutAttemptDeadline();
+        if (deadline != 0) {
+            handleAttemptLockout(deadline);
+        }
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		quit();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        quit();
+    }
 
-	private void quit() {
-		EditTextUtil.hideSoftKeyboard(passwordEntry);
+    private void quit() {
+        EditTextUtil.hideSoftKeyboard(passwordEntry);
 
-		if (isCheckOnly) {
-			setResult(RESULT_CANCELED);
-			finish();
-		} else {
-			NavigationUtil.navigateToLauncher(this);
-		}
-	}
+        if (isCheckOnly) {
+            setResult(RESULT_CANCELED);
+            finish();
+        } else {
+            NavigationUtil.navigateToLauncher(this);
+        }
+    }
 
-	private void handleNext() {
-		final String pin = passwordEntry.getText().toString();
-		// use MessageDigest for a timing-safe comparison
-		if (lockAppService.unlock(pin) || pinPreset != null && MessageDigest.isEqual(pin.getBytes(), pinPreset.getBytes())) {
-			EditTextUtil.hideSoftKeyboard(passwordEntry);
+    private void handleNext() {
+        final String pin = passwordEntry.getText().toString();
+        // use MessageDigest for a timing-safe comparison
+        if (lockAppService.unlock(pin) || pinPreset != null && MessageDigest.isEqual(pin.getBytes(), pinPreset.getBytes())) {
+            EditTextUtil.hideSoftKeyboard(passwordEntry);
 
-			setResult(RESULT_OK);
-			numWrongConfirmAttempts = 0;
-			finish();
-		} else {
-			if (++numWrongConfirmAttempts >= FAILED_ATTEMPTS_BEFORE_TIMEOUT) {
-				long deadline = setLockoutAttemptDeadline(DEFAULT_LOCKOUT_TIMEOUT);
-				handleAttemptLockout(deadline);
-			} else {
-				showError(R.string.pinentry_wrong_pin);
-			}
+            setResult(RESULT_OK);
+            numWrongConfirmAttempts = 0;
+            finish();
+        } else {
+            if (++numWrongConfirmAttempts >= FAILED_ATTEMPTS_BEFORE_TIMEOUT) {
+                long deadline = setLockoutAttemptDeadline(DEFAULT_LOCKOUT_TIMEOUT);
+                handleAttemptLockout(deadline);
+            } else {
+                showError(R.string.pinentry_wrong_pin);
+            }
 
-			if (isCheckOnly) {
-				passwordEntry.setEnabled(false);
+            if (isCheckOnly) {
+                passwordEntry.setEnabled(false);
 
-				handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::quit), 1000);
-			}
-		}
-	}
+                handler.postDelayed(() -> RuntimeUtil.runOnUiThread(this::quit), 1000);
+            }
+        }
+    }
 
-	private void handleAttemptLockout(long elapsedRealtimeDeadline) {
-		long elapsedRealtime = SystemClock.elapsedRealtime();
-		passwordEntry.setEnabled(false);
-		countDownTimer = new CountDownTimer(
-				elapsedRealtimeDeadline - elapsedRealtime,
-				FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS) {
-			@Override
-			public void onTick(long millisUntilFinished) {
-				final int secondsCountdown = (int) (millisUntilFinished / 1000);
-				showError(String.format(getString(R.string.too_many_incorrect_attempts), Integer.toString(secondsCountdown)), 0);
-			}
+    private void handleAttemptLockout(long elapsedRealtimeDeadline) {
+        long elapsedRealtime = SystemClock.elapsedRealtime();
+        passwordEntry.setEnabled(false);
+        countDownTimer = new CountDownTimer(
+            elapsedRealtimeDeadline - elapsedRealtime,
+            FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                final int secondsCountdown = (int) (millisUntilFinished / 1000);
+                showError(String.format(getString(R.string.too_many_incorrect_attempts), Integer.toString(secondsCountdown)), 0);
+            }
 
-			@Override
-			public void onFinish() {
-				passwordEntry.setEnabled(true);
-				errorTextView.setText("");
-				numWrongConfirmAttempts = 0;
-			}
-		}.start();
-	}
+            @Override
+            public void onFinish() {
+                passwordEntry.setEnabled(true);
+                errorTextView.setText("");
+                numWrongConfirmAttempts = 0;
+            }
+        }.start();
+    }
 
-	private void showError(int msg) {
-		showError(msg, ERROR_MESSAGE_TIMEOUT);
-	}
+    private void showError(int msg) {
+        showError(msg, ERROR_MESSAGE_TIMEOUT);
+    }
 
-	private final Runnable resetErrorRunnable = new Runnable() {
-		public void run() {
-			errorTextView.setText("");
-		}
-	};
+    private final Runnable resetErrorRunnable = new Runnable() {
+        public void run() {
+            errorTextView.setText("");
+        }
+    };
 
-	private void showError(CharSequence msg, long timeout) {
-		errorTextView.setText(msg);
-		errorTextView.announceForAccessibility(errorTextView.getText());
-		passwordEntry.setText(null);
-		handler.removeCallbacks(resetErrorRunnable);
-		if (timeout != 0) {
-			handler.postDelayed(resetErrorRunnable, timeout);
-		}
-	}
+    private void showError(CharSequence msg, long timeout) {
+        errorTextView.setText(msg);
+        errorTextView.announceForAccessibility(errorTextView.getText());
+        passwordEntry.setText(null);
+        handler.removeCallbacks(resetErrorRunnable);
+        if (timeout != 0) {
+            handler.postDelayed(resetErrorRunnable, timeout);
+        }
+    }
 
-	private void showError(int msg, long timeout) {
-		showError(getText(msg), timeout);
-	}
+    private void showError(int msg, long timeout) {
+        showError(getText(msg), timeout);
+    }
 
-	/**
-	 * Set and store the lockout deadline, meaning the user can't attempt his/her unlock
-	 * pattern until the deadline has passed.
-	 *
-	 * @return the chosen deadline.
-	 */
-	public long setLockoutAttemptDeadline(int timeoutMs) {
-		final long deadline = SystemClock.elapsedRealtime() + timeoutMs;
+    /**
+     * Set and store the lockout deadline, meaning the user can't attempt his/her unlock
+     * pattern until the deadline has passed.
+     *
+     * @return the chosen deadline.
+     */
+    public long setLockoutAttemptDeadline(int timeoutMs) {
+        final long deadline = SystemClock.elapsedRealtime() + timeoutMs;
 
-		preferenceService.setLockoutDeadline(deadline);
-		preferenceService.setLockoutTimeout(timeoutMs);
+        preferenceService.setLockoutDeadline(deadline);
+        preferenceService.setLockoutTimeout(timeoutMs);
 
-		return deadline;
-	}
+        return deadline;
+    }
 
-	/**
-	 * @return The elapsed time in millis in the future when the user is allowed to
-	 * attempt to enter his/her lock pattern, or 0 if the user is welcome to
-	 * enter a pattern.
-	 */
-	public long getLockoutAttemptDeadline() {
-		final long deadline = preferenceService.getLockoutDeadline();
-		final long timeoutMs = preferenceService.getLockoutTimeout();
+    /**
+     * @return The elapsed time in millis in the future when the user is allowed to
+     * attempt to enter his/her lock pattern, or 0 if the user is welcome to
+     * enter a pattern.
+     */
+    public long getLockoutAttemptDeadline() {
+        final long deadline = preferenceService.getLockoutDeadline();
+        final long timeoutMs = preferenceService.getLockoutTimeout();
 
-		final long now = SystemClock.elapsedRealtime();
-		if (deadline < now || deadline > (now + timeoutMs)) {
-			return 0L;
-		}
-		return deadline;
-	}
+        final long now = SystemClock.elapsedRealtime();
+        if (deadline < now || deadline > (now + timeoutMs)) {
+            return 0L;
+        }
+        return deadline;
+    }
 
-	@Override
-	protected void onDestroy() {
-		if (preferenceService != null) {
-			preferenceService.setLockoutAttempts(numWrongConfirmAttempts);
-		}
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        if (preferenceService != null) {
+            preferenceService.setLockoutAttempts(numWrongConfirmAttempts);
+        }
+        super.onDestroy();
+    }
 }

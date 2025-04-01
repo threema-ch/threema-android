@@ -36,9 +36,11 @@ class IncomingContactPollVoteTask(
 ) : IncomingCspMessageSubTask<Nothing?>(null, triggerSource, serviceManager) {
     private val ballotService = serviceManager.ballotService
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processPollVoteMessage()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processPollVoteMessage()
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processPollVoteMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processPollVoteMessage()
 
     private fun processPollVoteMessage(): ReceiveStepsResult {
         val ballotVoteResult: BallotVoteResult? = this.ballotService.vote(pollVoteMessage)

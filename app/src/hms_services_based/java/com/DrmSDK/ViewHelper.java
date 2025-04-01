@@ -177,7 +177,7 @@ public class ViewHelper {
 
         RelativeLayout layout = new RelativeLayout(activity);
         LayoutParams msgLayout = new LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
         DisplayMetrics metrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -185,11 +185,11 @@ public class ViewHelper {
         EMUISupportUtil util = EMUISupportUtil.getInstance();
 
         int marginRight = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 8, metrics);
+            TypedValue.COMPLEX_UNIT_DIP, 8, metrics);
         int marginLR = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 16, metrics);
+            TypedValue.COMPLEX_UNIT_DIP, 16, metrics);
         int marginTB = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 20, metrics);
+            TypedValue.COMPLEX_UNIT_DIP, 20, metrics);
         // EMUI3 的Dialog自带水平方向 16dip padding
         // EMUI3 Dialog has a 16-dip padding in the horizontal direction.
         if (util.isSupportEMUI() && util.isEMUI3()) {
@@ -199,7 +199,7 @@ public class ViewHelper {
 
         ProgressBar progress = new ProgressBar(activity);
         LayoutParams loadLayout = new LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         loadLayout.addRule(RelativeLayout.CENTER_VERTICAL);
         loadLayout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         loadLayout.addRule(RelativeLayout.ALIGN_PARENT_END);
@@ -208,7 +208,7 @@ public class ViewHelper {
 
         TextView message = new TextView(activity);
         message.setText(activity.getString(DrmResource.string(activity,
-                "drm_dialog_message_waiting")));
+            "drm_dialog_message_waiting")));
         message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         msgLayout.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
         msgLayout.addRule(RelativeLayout.ALIGN_PARENT_START);
@@ -220,7 +220,7 @@ public class ViewHelper {
         layout.addView(message, msgLayout);
 
         AlertDialog dialog = new AlertDialog.Builder(activity).setView(layout)
-                .create();
+            .create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnCancelListener(new OnCancelListener() {
 
@@ -241,6 +241,7 @@ public class ViewHelper {
         Log.i("ViewHelper", "showWaitingDialog");
         return dialog;
     }
+
     /**
      * 弹出Dialog
      * A basic dialog box is displayed.
@@ -250,58 +251,59 @@ public class ViewHelper {
      * @param errorCode  Error Code
      */
     private static AlertDialog showDailogPro(final Activity activity, int dialogType, String extra, final int errorCode,
-                                                int operation, String resourceNameMessage, String resourceNameText) {
+                                             int operation, String resourceNameMessage, String resourceNameText) {
         final int operationId = operation;
         int msgId = DrmResource.string(activity, resourceNameMessage);
         int textId = DrmResource.string(activity, resourceNameText);
         int quitId = DrmResource.string(activity, "drm_dialog_text_quit");
         String msg = activity.getString(msgId);
         if (dialogType == DIALOG_CHECK_FAILED || dialogType == DIALOG_OVER_LIMIT
-                || dialogType == DIALOG_UNKNOW_ERROR) {
+            || dialogType == DIALOG_UNKNOW_ERROR) {
             if (!isEmpty(extra)) {
                 msg = activity.getString(msgId, extra);
             }
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                .setMessage(msg)
-                .setOnCancelListener(new OnCancelListener() {
+            .setMessage(msg)
+            .setOnCancelListener(new OnCancelListener() {
+
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    activity.finish();
+                    DrmKernel.onDialogClicked(OPERATION_NONE, errorCode);
+                }
+            })
+            .setPositiveButton(textId,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        activity.finish();
+                        DrmKernel.onDialogClicked(operationId, errorCode);
+                    }
+                });
+        if (dialogType != DIALOG_UNKNOW_ERROR) {
+            builder.setNegativeButton(quitId,
+                new DialogInterface.OnClickListener() {
 
                     @Override
-                    public void onCancel(DialogInterface dialog) {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
                         activity.finish();
                         DrmKernel.onDialogClicked(OPERATION_NONE, errorCode);
                     }
-                })
-                .setPositiveButton(textId,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                activity.finish();
-                                DrmKernel.onDialogClicked(operationId, errorCode);
-                            }
-                        });
-        if (dialogType != DIALOG_UNKNOW_ERROR) {
-            builder.setNegativeButton(quitId,
-                    new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog,
-                                            int which) {
-                            activity.finish();
-                            DrmKernel.onDialogClicked(OPERATION_NONE, errorCode);
-                        }
-                    });
+                });
         }
         AlertDialog dialog = builder.create();
         dialog.show();
         return dialog;
     }
+
     /**
      * activity 有效性判断
      *
-     * @param activity   Dialog pops up the required context.
+     * @param activity Dialog pops up the required context.
      */
     private static boolean activityIsValid(final Activity activity) {
         if (activity == null || activity.isFinishing()) {
@@ -309,6 +311,7 @@ public class ViewHelper {
         }
         return true;
     }
+
     /**
      * 弹出一个基本的Dialog
      * A basic dialog box is displayed.
@@ -378,6 +381,7 @@ public class ViewHelper {
         }
         return showDailogPro(activity, dialogType, extra, errorCode, operation, resourceNameMessage, resourceNameText);
     }
+
     /**
      * 判断字符串是否为空。
      * Check whether the character string is empty.

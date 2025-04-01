@@ -44,7 +44,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("BaseSocket")
 internal abstract class BaseSocket(
     protected val ioProcessingStoppedSignal: CompletableDeferred<Unit>,
     private val inputDispatcher: CoroutineContext
-    ) : ServerSocket {
+) : ServerSocket {
 
     private val inbound = InputPipe<ByteArray>()
     protected val outbound = QueuedPipeHandler<ByteArray>()
@@ -86,16 +86,18 @@ internal abstract class BaseSocket(
         ioJob = CoroutineScope(Dispatchers.Default + errorHandler).launch {
             launch { setupReading() }
             launch { setupWriting() }
-        }.also { it.invokeOnCompletion { throwable ->
-            val alreadyCompleted = !ioProcessingStoppedSignal.complete(Unit)
-            val exceptionally = throwable != null
-            logger.info(
-                "IO job completed (exceptionally={}, alreadyCompleted={})",
-                exceptionally,
-                alreadyCompleted
-            )
-            closeSocketAndCompleteClosedSignal(ServerSocketCloseReason("IO processing has stopped (exceptionally=$exceptionally)"))
-        } }
+        }.also {
+            it.invokeOnCompletion { throwable ->
+                val alreadyCompleted = !ioProcessingStoppedSignal.complete(Unit)
+                val exceptionally = throwable != null
+                logger.info(
+                    "IO job completed (exceptionally={}, alreadyCompleted={})",
+                    exceptionally,
+                    alreadyCompleted
+                )
+                closeSocketAndCompleteClosedSignal(ServerSocketCloseReason("IO processing has stopped (exceptionally=$exceptionally)"))
+            }
+        }
     }
 
     final override fun close(reason: ServerSocketCloseReason) {

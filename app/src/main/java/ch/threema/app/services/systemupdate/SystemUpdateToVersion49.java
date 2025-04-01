@@ -34,29 +34,29 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion49 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion49(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion49(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		final String tableName = "contacts";
-		final String columnName = "isHidden";
-		if (!fieldExists(this.sqLiteDatabase, tableName, columnName)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " TINYINT DEFAULT 0");
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        final String tableName = "contacts";
+        final String columnName = "isHidden";
+        if (!fieldExists(this.sqLiteDatabase, tableName, columnName)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " TINYINT DEFAULT 0");
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 49";
-	}
+    @Override
+    public String getText() {
+        return "version 49";
+    }
 }

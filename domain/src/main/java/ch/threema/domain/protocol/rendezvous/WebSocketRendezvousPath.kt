@@ -112,7 +112,7 @@ internal class WebSocketRendezvousPath(
         if (!socket.send(bytes.toByteString())) {
             throw IOException("Could not write bytes")
         }
-        while(socket.queueSize() > 0) {
+        while (socket.queueSize() > 0) {
             if (closedSignal.isCompleted) {
                 throw IOException("Socket has been closed while writing")
             }

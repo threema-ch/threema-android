@@ -30,7 +30,8 @@ import ch.threema.storage.DatabaseServiceNew
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 
-abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, tableName: String) : ModelFactory(dbService, tableName) {
+abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, tableName: String) :
+    ModelFactory(dbService, tableName) {
 
     // This statement represents the first version if this table
     // It has been changed. See SystemUpdateToVersion102
@@ -48,7 +49,8 @@ abstract class EditHistoryEntryModelFactory(dbService: DatabaseServiceNew, table
     protected abstract fun getConstraints(): String
 }
 
-class ContactEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) : EditHistoryEntryModelFactory(dbService, TABLE) {
+class ContactEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
+    EditHistoryEntryModelFactory(dbService, TABLE) {
 
     companion object {
         const val TABLE = "contact_edit_history_entries"
@@ -62,7 +64,8 @@ class ContactEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) : EditH
     }
 }
 
-class GroupEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) : EditHistoryEntryModelFactory(dbService, TABLE) {
+class GroupEditHistoryEntryModelFactory(dbService: DatabaseServiceNew) :
+    EditHistoryEntryModelFactory(dbService, TABLE) {
 
     companion object {
         const val TABLE = "group_edit_history_entries"

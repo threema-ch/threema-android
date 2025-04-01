@@ -88,7 +88,9 @@ class IncomingSetProfilePictureTask(
         // other devices to remove the blob from the blob mirror.
         reflectProfilePicture(handle)
 
-        if (fileService.getContactDefinedProfilePictureStream(identity).contentEquals(encryptedBlob)) {
+        if (fileService.getContactDefinedProfilePictureStream(identity)
+                .contentEquals(encryptedBlob)
+        ) {
             logger.info("Profile picture did not change")
             return ReceiveStepsResult.SUCCESS
         }

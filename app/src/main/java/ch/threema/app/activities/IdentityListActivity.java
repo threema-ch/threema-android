@@ -117,16 +117,15 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
         recyclerView.setEmptyView(emptyView);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy){
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (dy >0) {
+                if (dy > 0) {
                     // Scroll Down
                     if (floatingActionButton.isShown()) {
                         floatingActionButton.shrink();
                     }
-                }
-                else if (dy <0) {
+                } else if (dy < 0) {
                     // Scroll Up
                     if (floatingActionButton.isShown()) {
                         floatingActionButton.extend();
@@ -145,10 +144,11 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     protected abstract String getBlankListText();
+
     protected abstract String getTitleText();
 
     private void updateListAdapter() {
-        if(this.getIdentityListHandle() == null) {
+        if (this.getIdentityListHandle() == null) {
             //do nothing;
             return;
         }
@@ -176,7 +176,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
         adapter.setData(identityList);
 
         // restore after rotate
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(BUNDLE_RECYCLER_LAYOUT);
             recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
 
@@ -222,7 +222,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void excludeIdentity(String identity) {
-        if(this.getIdentityListHandle() == null) {
+        if (this.getIdentityListHandle() == null) {
             return;
         }
 
@@ -235,7 +235,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void removeIdentity(String identity) {
-        if(this.getIdentityListHandle() == null) {
+        if (this.getIdentityListHandle() == null) {
             return;
         }
 
@@ -310,5 +310,6 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     @Override
-    public void onNo(String tag) {}
+    public void onNo(String tag) {
+    }
 }

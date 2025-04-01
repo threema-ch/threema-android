@@ -29,12 +29,12 @@ import androidx.annotation.NonNull;
  * Better assertions.
  */
 public class ThreemaAssert {
-	private final static String START = "=== Start ===\n";
-	private final static String END = "\n=== End ===";
+    private final static String START = "=== Start ===\n";
+    private final static String END = "\n=== End ===";
 
-	public static void assertContains(@NonNull String haystack, @NonNull CharSequence needle) {
-		if (!haystack.contains(needle)) {
-			Assert.fail("Substring '" + needle + "' not found in the following string:\n" + START + haystack + END);
-		}
-	}
+    public static void assertContains(@NonNull String haystack, @NonNull CharSequence needle) {
+        if (!haystack.contains(needle)) {
+            Assert.fail("Substring '" + needle + "' not found in the following string:\n" + START + haystack + END);
+        }
+    }
 }

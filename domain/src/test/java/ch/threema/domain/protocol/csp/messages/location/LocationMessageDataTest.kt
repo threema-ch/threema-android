@@ -476,7 +476,8 @@ class LocationMessageDataTest {
     fun shouldSucceedWithLatLongAccuracyPoiAddressAndPoiName() {
 
         // arrange
-        val messageString = "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002"
+        val messageString =
+            "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         // act
@@ -642,7 +643,8 @@ class LocationMessageDataTest {
     fun shouldIgnoreAnyLinesAfterTheThird() {
 
         // arrange
-        val messageString = "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002\nIgnored\nIgnored too"
+        val messageString =
+            "40.741895,-73.989308,1.000000\nGoogle NYC\nNew York City, Best Street, 1002\nIgnored\nIgnored too"
         val locationMessageBytes: ByteArray = messageString.toByteArray()
 
         // act

@@ -23,37 +23,39 @@ package ch.threema.app.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.widget.SearchView;
+
 import android.util.AttributeSet;
 
 import ch.threema.app.R;
 
 public class ThreemaSearchView extends SearchView {
 
-	public ThreemaSearchView(Context context) {
-		super(context);
+    public ThreemaSearchView(Context context) {
+        super(context);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaSearchView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    public ThreemaSearchView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaSearchView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public ThreemaSearchView(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	private void init(Context context) {
-		// PreferenceService may not yet be available at this time
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
-			setImeOptions(getImeOptions() | 0x1000000);
-		}
-	}
+    private void init(Context context) {
+        // PreferenceService may not yet be available at this time
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        if (sharedPreferences != null && sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false)) {
+            setImeOptions(getImeOptions() | 0x1000000);
+        }
+    }
 }

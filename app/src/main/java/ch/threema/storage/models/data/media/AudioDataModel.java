@@ -34,95 +34,93 @@ import ch.threema.base.utils.Utils;
 
 @Deprecated
 public class AudioDataModel implements MediaMessageDataInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioDataModel");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioDataModel");
 
-	private int duration;
-	private byte[] audioBlobId;
-	private byte[] encryptionKey;
-	private boolean isDownloaded;
+    private int duration;
+    private byte[] audioBlobId;
+    private byte[] encryptionKey;
+    private boolean isDownloaded;
 
-	private AudioDataModel() {
-	}
+    private AudioDataModel() {
+    }
 
-	public AudioDataModel(int duration, byte[] audioBlobId, byte[] encryptedKey) {
-		this.duration = duration;
-		this.audioBlobId = audioBlobId;
-		this.encryptionKey = encryptedKey;
-		this.isDownloaded = false;
-	}
+    public AudioDataModel(int duration, byte[] audioBlobId, byte[] encryptedKey) {
+        this.duration = duration;
+        this.audioBlobId = audioBlobId;
+        this.encryptionKey = encryptedKey;
+        this.isDownloaded = false;
+    }
 
-	public int getDuration() {
-		return this.duration;
-	}
+    public int getDuration() {
+        return this.duration;
+    }
 
-	@Override
-	public byte[] getBlobId() {
-		return this.audioBlobId;
-	}
+    @Override
+    public byte[] getBlobId() {
+        return this.audioBlobId;
+    }
 
-	@Override
-	public byte[] getEncryptionKey() {
-		return this.encryptionKey;
-	}
+    @Override
+    public byte[] getEncryptionKey() {
+        return this.encryptionKey;
+    }
 
-	@Override
-	public boolean isDownloaded() {
-		return this.isDownloaded;
-	}
+    @Override
+    public boolean isDownloaded() {
+        return this.isDownloaded;
+    }
 
-	@Override
-	public void isDownloaded(boolean isDownloaded) {
-		this.isDownloaded = isDownloaded;
-	}
+    @Override
+    public void isDownloaded(boolean isDownloaded) {
+        this.isDownloaded = isDownloaded;
+    }
 
-	@Override
-	public byte[] getNonce() {
-		return new byte[0];
-	}
+    @Override
+    public byte[] getNonce() {
+        return new byte[0];
+    }
 
-	public void fromString(String s) {
-		JsonReader r = new JsonReader(new StringReader(s));
+    public void fromString(String s) {
+        JsonReader r = new JsonReader(new StringReader(s));
 
-		try {
-			r.beginArray();
-			this.duration = r.nextInt();
-			this.isDownloaded = r.nextBoolean();
-			this.encryptionKey = Utils.hexStringToByteArray(r.nextString());
-			this.audioBlobId = Utils.hexStringToByteArray(r.nextString());
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			//DO NOTHING!!
-		}
+        try {
+            r.beginArray();
+            this.duration = r.nextInt();
+            this.isDownloaded = r.nextBoolean();
+            this.encryptionKey = Utils.hexStringToByteArray(r.nextString());
+            this.audioBlobId = Utils.hexStringToByteArray(r.nextString());
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            //DO NOTHING!!
+        }
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		StringWriter sw = new StringWriter();
-		JsonWriter j = new JsonWriter(sw);
+    @Override
+    public String toString() {
+        StringWriter sw = new StringWriter();
+        JsonWriter j = new JsonWriter(sw);
 
-		try {
-			j.beginArray();
-			j
-					.value(this.getDuration())
-					.value(this.isDownloaded())
-					.value(Utils.byteArrayToHexString(this.getEncryptionKey()))
-					.value(Utils.byteArrayToHexString(this.getBlobId()));
-			j.endArray();
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			return null;
-		}
+        try {
+            j.beginArray();
+            j
+                .value(this.getDuration())
+                .value(this.isDownloaded())
+                .value(Utils.byteArrayToHexString(this.getEncryptionKey()))
+                .value(Utils.byteArrayToHexString(this.getBlobId()));
+            j.endArray();
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            return null;
+        }
 
-		return sw.toString();
+        return sw.toString();
 
-	}
+    }
 
-	public static AudioDataModel create(String s) {
-		AudioDataModel m = new AudioDataModel();
-		m.fromString(s);
-		return m;
-	}
+    public static AudioDataModel create(String s) {
+        AudioDataModel m = new AudioDataModel();
+        m.fromString(s);
+        return m;
+    }
 }

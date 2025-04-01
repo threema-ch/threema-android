@@ -28,16 +28,17 @@ import ch.threema.app.R;
 
 public class MainActivity extends ThreemaAppCompatActivity {
 
-	// to avoid "class has no zero argument constructor" on some devices
-	public MainActivity() {}
+    // to avoid "class has no zero argument constructor" on some devices
+    public MainActivity() {
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		Intent intent = new Intent(this, HomeActivity.class);
-		startActivity(intent);
-		overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-		finish();
-	}
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        finish();
+    }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/camera_ui_container"
     android:layout_width="match_parent"
@@ -13,56 +12,56 @@
         android:layout_gravity="right"
         app:layout_constraintRight_toRightOf="parent">
 
-      <ch.threema.app.camera.ZoomView
+        <ch.threema.app.camera.ZoomView
             android:id="@+id/zoom_view"
             android:layout_width="12dp"
             android:layout_height="match_parent"
             android:layout_marginRight="16dp"
             app:layout_constraintRight_toLeftOf="@id/camera_capture_button"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- Camera control buttons -->
-    <ImageView
-        android:id="@id/camera_switch_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:padding="8dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginBottom="32dp"
-        app:srcCompat="@drawable/ic_flip_camera_android"
-        android:clickable="true"
-        android:foreground="?selectableItemBackground"
-        android:contentDescription="@string/voip_switch_cam"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:tint="@android:color/white" />
+        <!-- Camera control buttons -->
+        <ImageView
+            android:id="@id/camera_switch_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginBottom="32dp"
+            app:srcCompat="@drawable/ic_flip_camera_android"
+            android:clickable="true"
+            android:foreground="?selectableItemBackground"
+            android:contentDescription="@string/voip_switch_cam"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tint="@android:color/white" />
 
-    <ch.threema.app.camera.ShutterButtonView
-        android:id="@+id/camera_capture_button"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginRight="24dp"
-        android:clickable="true"
-        android:foreground="@drawable/selector_avatar"
-        android:contentDescription="@string/tap_for_picture_hold_for_video"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        <ch.threema.app.camera.ShutterButtonView
+            android:id="@+id/camera_capture_button"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="24dp"
+            android:clickable="true"
+            android:foreground="@drawable/selector_avatar"
+            android:contentDescription="@string/tap_for_picture_hold_for_video"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/flash_switch_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:padding="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginRight="40dp"
-        android:clickable="true"
-        android:contentDescription="@string/switch_flash"
-        android:foreground="?selectableItemBackground"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@android:color/white" />
+        <ImageView
+            android:id="@+id/flash_switch_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginRight="40dp"
+            android:clickable="true"
+            android:contentDescription="@string/switch_flash"
+            android:foreground="?selectableItemBackground"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@android:color/white" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -29,9 +29,9 @@ import androidx.annotation.NonNull;
 
 /**
  * Wrap a ReadWriteLock and return {@link AutoCloseable} instances when locking.
- *
+ * <p>
  * This way, the wrapper can be used in a try-with-resources block to ensure unlocking.
- *
+ * <p>
  * Example:
  *
  * <pre>
@@ -43,66 +43,67 @@ import androidx.annotation.NonNull;
  * </pre>
  */
 public class CloseableReadWriteLock {
-	private final @NonNull ReadWriteLock lock;
+    private final @NonNull ReadWriteLock lock;
 
-	public static class NotLocked extends Exception { }
+    public static class NotLocked extends Exception {
+    }
 
-	/**
-	 * Wrap a ReadWriteLock.
-	 *
-	 * @param lock The ReadWriteLock
-	 */
-	public CloseableReadWriteLock(@NonNull ReadWriteLock lock) {
-		this.lock = lock;
-	}
+    /**
+     * Wrap a ReadWriteLock.
+     *
+     * @param lock The ReadWriteLock
+     */
+    public CloseableReadWriteLock(@NonNull ReadWriteLock lock) {
+        this.lock = lock;
+    }
 
-	/**
-	 * Open this lock for reading.
-	 */
-	public CloseableLock read() throws IllegalStateException {
-		final Lock readLock = this.lock.readLock();
-		readLock.lock();
-		return readLock::unlock;
-	}
+    /**
+     * Open this lock for reading.
+     */
+    public CloseableLock read() throws IllegalStateException {
+        final Lock readLock = this.lock.readLock();
+        readLock.lock();
+        return readLock::unlock;
+    }
 
-	/**
-	 * Try opening this lock for reading.
-	 */
-	public CloseableLock tryRead(long time, TimeUnit unit) throws NotLocked {
-		final Lock readLock = this.lock.readLock();
-		try {
-			boolean locked = readLock.tryLock(time, unit);
-			if (!locked) {
-				throw new NotLocked();
-			}
-			return readLock::unlock;
-		} catch (InterruptedException e) {
-			throw new NotLocked();
-		}
-	}
+    /**
+     * Try opening this lock for reading.
+     */
+    public CloseableLock tryRead(long time, TimeUnit unit) throws NotLocked {
+        final Lock readLock = this.lock.readLock();
+        try {
+            boolean locked = readLock.tryLock(time, unit);
+            if (!locked) {
+                throw new NotLocked();
+            }
+            return readLock::unlock;
+        } catch (InterruptedException e) {
+            throw new NotLocked();
+        }
+    }
 
-	/**
-	 * Open this lock for writing.
-	 */
-	public CloseableLock write() {
-		final Lock writeLock = this.lock.writeLock();
-		writeLock.lock();
-		return writeLock::unlock;
-	}
+    /**
+     * Open this lock for writing.
+     */
+    public CloseableLock write() {
+        final Lock writeLock = this.lock.writeLock();
+        writeLock.lock();
+        return writeLock::unlock;
+    }
 
-	/**
-	 * Try opening this lock for writing.
-	 */
-	public CloseableLock tryWrite(long time, TimeUnit unit) throws NotLocked {
-		final Lock writeLock = this.lock.writeLock();
-		try {
-			boolean locked = writeLock.tryLock(time, unit);
-			if (!locked) {
-				throw new NotLocked();
-			}
-			return writeLock::unlock;
-		} catch (InterruptedException e) {
-			throw new NotLocked();
-		}
-	}
+    /**
+     * Try opening this lock for writing.
+     */
+    public CloseableLock tryWrite(long time, TimeUnit unit) throws NotLocked {
+        final Lock writeLock = this.lock.writeLock();
+        try {
+            boolean locked = writeLock.tryLock(time, unit);
+            if (!locked) {
+                throw new NotLocked();
+            }
+            return writeLock::unlock;
+        } catch (InterruptedException e) {
+            throw new NotLocked();
+        }
+    }
 }

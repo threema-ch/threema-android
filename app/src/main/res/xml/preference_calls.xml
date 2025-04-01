@@ -6,76 +6,75 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:key="pref_key_voip_settings"
-                  android:persistent="true"
-                  android:title="@string/prefs_title_calls">
+    android:key="pref_key_voip_settings"
+    android:persistent="true"
+    android:title="@string/prefs_title_calls">
 
-	<PreferenceCategory
-		android:key="pref_key_voip"
-		android:title="@string/prefs_title_voip">
+    <PreferenceCategory
+        android:key="pref_key_voip"
+        android:title="@string/prefs_title_voip">
 
-		<CheckBoxPreference
-			android:defaultValue="true"
-			android:key="@string/preferences__voip_enable"
-			android:icon="@drawable/ic_phone_locked_outline"
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:title="@string/prefs_title_voip_enable"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preferences__voip_enable"
+            android:icon="@drawable/ic_phone_locked_outline"
+            android:widgetLayout="@layout/preference_switch_layout"
+            android:title="@string/prefs_title_voip_enable" />
 
-		<CheckBoxPreference
-			android:defaultValue="true"
-			android:key="@string/preferences__voip_video_enable"
-			android:icon="@drawable/ic_camera_locked"
-			android:title="@string/prefs_title_voip_video_enable"
-			android:dependency="@string/preferences__voip_enable"
-			android:widgetLayout="@layout/preference_switch_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preferences__voip_video_enable"
+            android:icon="@drawable/ic_camera_locked"
+            android:title="@string/prefs_title_voip_video_enable"
+            android:dependency="@string/preferences__voip_enable"
+            android:widgetLayout="@layout/preference_switch_layout" />
 
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:defaultValue="false"
-			android:key="@string/preferences__voip_force_turn"
-			android:summaryOn="@string/prefs_summary_force_turn_on"
-			android:summaryOff="@string/prefs_summary_force_turn_off"
-			android:dependency="@string/preferences__voip_enable"
-			android:title="@string/prefs_title_force_turn"/>
+        <CheckBoxPreference
+            android:widgetLayout="@layout/preference_switch_layout"
+            android:defaultValue="false"
+            android:key="@string/preferences__voip_force_turn"
+            android:summaryOn="@string/prefs_summary_force_turn_on"
+            android:summaryOff="@string/prefs_summary_force_turn_off"
+            android:dependency="@string/preferences__voip_enable"
+            android:title="@string/prefs_title_force_turn" />
 
-		<CheckBoxPreference
-			android:widgetLayout="@layout/preference_switch_layout"
-			android:defaultValue="false"
-			android:key="@string/preferences__voip_reject_mobile_calls"
-			android:title="@string/prefs_voip_reject_incoming_calls_title"
-			android:summary="@string/prefs_voip_reject_incoming_calls_summary"
-			android:dependency="@string/preferences__voip_enable"/>
+        <CheckBoxPreference
+            android:widgetLayout="@layout/preference_switch_layout"
+            android:defaultValue="false"
+            android:key="@string/preferences__voip_reject_mobile_calls"
+            android:title="@string/prefs_voip_reject_incoming_calls_title"
+            android:summary="@string/prefs_voip_reject_incoming_calls_summary"
+            android:dependency="@string/preferences__voip_enable" />
 
-		<DropDownPreference
-			android:defaultValue="0"
-			android:entries="@array/list_videocall_profile"
-			android:entryValues="@array/list_videocall_profile_values"
-			android:key="@string/preferences__voip_video_profile"
-			android:title="@string/prefs_videocall_profile"
-			android:dependency="@string/preferences__voip_video_enable"
-			android:summary="%s"
-			/>
+        <DropDownPreference
+            android:defaultValue="0"
+            android:entries="@array/list_videocall_profile"
+            android:entryValues="@array/list_videocall_profile_values"
+            android:key="@string/preferences__voip_video_profile"
+            android:title="@string/prefs_videocall_profile"
+            android:dependency="@string/preferences__voip_video_enable"
+            android:summary="%s" />
 
-		<Preference
-			android:key="@string/preferences__videocall_profile_explain"
-			android:summary="@string/prefs_videocall_profile_explain"
-			android:icon="@drawable/ic_info_outline"
-			android:dependency="@string/preferences__voip_video_enable"
-			android:selectable="false"/>
+        <Preference
+            android:key="@string/preferences__videocall_profile_explain"
+            android:summary="@string/prefs_videocall_profile_explain"
+            android:icon="@drawable/ic_info_outline"
+            android:dependency="@string/preferences__voip_video_enable"
+            android:selectable="false" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_group_calls_settings"
-		android:title="@string/group_calls">
+    <PreferenceCategory
+        android:key="pref_key_group_calls_settings"
+        android:title="@string/group_calls">
 
-	<CheckBoxPreference
-		android:defaultValue="true"
-		android:key="@string/preferences__group_calls_enable"
-		android:icon="@drawable/ic_phone_locked_outline"
-		android:title="@string/prefs_title_group_calls_enable"
-		android:widgetLayout="@layout/preference_switch_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/preferences__group_calls_enable"
+            android:icon="@drawable/ic_phone_locked_outline"
+            android:title="@string/prefs_title_group_calls_enable"
+            android:widgetLayout="@layout/preference_switch_layout" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
 </PreferenceScreen>

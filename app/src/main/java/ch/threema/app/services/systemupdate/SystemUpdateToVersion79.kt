@@ -39,16 +39,19 @@ internal class SystemUpdateToVersion79(
 
         sqLiteDatabase.execSQL(
             "CREATE TABLE `group_call` (" +
-                    "`callId` TEXT PRIMARY KEY NOT NULL, " +
-                    "`groupId` INTEGER NOT NULL, " +
-                    "`sfuBaseUrl` TEXT NOT NULL, " +
-                    "`gck` TEXT NOT NULL, " +
-                    "`protocolVersion` INTEGER NOT NULL, " +
-                    "`startedAt` BIGINT NOT NULL)")
+                "`callId` TEXT PRIMARY KEY NOT NULL, " +
+                "`groupId` INTEGER NOT NULL, " +
+                "`sfuBaseUrl` TEXT NOT NULL, " +
+                "`gck` TEXT NOT NULL, " +
+                "`protocolVersion` INTEGER NOT NULL, " +
+                "`startedAt` BIGINT NOT NULL)"
+        )
 
-        sqLiteDatabase.execSQL("INSERT INTO `group_call` " +
+        sqLiteDatabase.execSQL(
+            "INSERT INTO `group_call` " +
                 "SELECT callId, groupId, sfuBaseUrl, gck, protocolVersion, CURRENT_TIMESTAMP as startedAt " +
-                "FROM `$tmpTableName`")
+                "FROM `$tmpTableName`"
+        )
 
         sqLiteDatabase.execSQL("DROP TABLE `$tmpTableName`")
 

@@ -33,30 +33,30 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * Create column for user-specific message states in group models.
  */
 public class SystemUpdateToVersion76 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 76;
+    public static final int VERSION = 76;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion76(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion76(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, "m_group_message", "groupMessageStates")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE m_group_message ADD COLUMN groupMessageStates VARCHAR DEFAULT NULL");
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, "m_group_message", "groupMessageStates")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE m_group_message ADD COLUMN groupMessageStates VARCHAR DEFAULT NULL");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 76 (groupMessageStates)";
-	}
+    @Override
+    public String getText() {
+        return "version 76 (groupMessageStates)";
+    }
 }

@@ -36,44 +36,47 @@ import ch.threema.app.webclient.state.WebClientSessionState;
  */
 @WorkerThread
 final class SessionStateDisconnected extends SessionState {
-	@AnyThread
-	SessionStateDisconnected(
-		@NonNull final SessionContext ctx
-	) {
-		super(WebClientSessionState.DISCONNECTED, ctx);
-		logger.info("Initializing with no connection");
-	}
+    @AnyThread
+    SessionStateDisconnected(
+        @NonNull final SessionContext ctx
+    ) {
+        super(WebClientSessionState.DISCONNECTED, ctx);
+        logger.info("Initializing with no connection");
+    }
 
-	SessionStateDisconnected(
-		@NonNull final SessionContext ctx,
-		@NonNull final SessionConnectionContext cctx,
-		@NonNull final DisconnectContext reason
-	) {
-		super(WebClientSessionState.DISCONNECTED, ctx);
-		logger.info("Initializing with existing connection, reason: {}", reason);
+    SessionStateDisconnected(
+        @NonNull final SessionContext ctx,
+        @NonNull final SessionConnectionContext cctx,
+        @NonNull final DisconnectContext reason
+    ) {
+        super(WebClientSessionState.DISCONNECTED, ctx);
+        logger.info("Initializing with existing connection, reason: {}", reason);
 
-		// Tear down the existing connection
-		logger.info("Cleanup");
-		CleanupHelper.cleanupSessionConnectionContext(logger, cctx);
-		CleanupHelper.cleanupSessionContext(logger, this.ctx);
-	}
+        // Tear down the existing connection
+        logger.info("Cleanup");
+        CleanupHelper.cleanupSessionConnectionContext(logger, cctx);
+        CleanupHelper.cleanupSessionContext(logger, this.ctx);
+    }
 
-	@Override
-	@NonNull SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason)
-		throws IgnoredStateTransition {
-		throw new IgnoredStateTransition("Already disconnected");
-	}
+    @Override
+    @NonNull
+    SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason)
+        throws IgnoredStateTransition {
+        throw new IgnoredStateTransition("Already disconnected");
+    }
 
-	@Override
-	@NonNull SessionStateConnecting setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId)
-		throws InvalidStateTransition {
-		logger.info("Connecting");
-		return new SessionStateConnecting(this.ctx, builder, affiliationId);
-	}
+    @Override
+    @NonNull
+    SessionStateConnecting setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId)
+        throws InvalidStateTransition {
+        logger.info("Connecting");
+        return new SessionStateConnecting(this.ctx, builder, affiliationId);
+    }
 
-	@Override
-	@NonNull SessionStateError setError(@NonNull final String reason) {
-		logger.error("Error: {}", reason);
-		return new SessionStateError(this.ctx);
-	}
+    @Override
+    @NonNull
+    SessionStateError setError(@NonNull final String reason) {
+        logger.error("Error: {}", reason);
+        return new SessionStateError(this.ctx);
+    }
 }

@@ -40,64 +40,64 @@ import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePe
 
 /**
  * When a test fails, take a screenshot.
- *
+ * <p>
  * Finally, close all open UI elements by pressing back and home buttons.
  */
 public class ScreenshotTakingRule extends TestWatcher {
-	private final static String TAG = "ScreenshotTakingRule";
+    private final static String TAG = "ScreenshotTakingRule";
 
-	private ScreenshotTakingRule() { /* Use getRuleChain instead */ }
+    private ScreenshotTakingRule() { /* Use getRuleChain instead */ }
 
-	public static RuleChain getRuleChain() {
-		return RuleChain
-			.outerRule(getReadWriteExternalStoragePermissionRule())
-			.around(new ScreenshotTakingRule());
-	}
+    public static RuleChain getRuleChain() {
+        return RuleChain
+            .outerRule(getReadWriteExternalStoragePermissionRule())
+            .around(new ScreenshotTakingRule());
+    }
 
-	@Override
-	protected void failed(Throwable e, Description description) {
-		final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-		if (device == null) {
-			Log.e(TAG, "failed: Device is null");
-			return;
-		}
+    @Override
+    protected void failed(Throwable e, Description description) {
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        if (device == null) {
+            Log.e(TAG, "failed: Device is null");
+            return;
+        }
 
-		// Create screenshot directory
-		final File baseDir = new File("/sdcard/testfailures/screenshots/" + description.getTestClass().getSimpleName() + "/");
-		if (!baseDir.exists() && !baseDir.mkdirs()) {
-			Log.e(TAG, "failed: Could not create screenshot directory");
-			return;
-		}
-		final String basePath = baseDir.getPath() + "/" + description.getMethodName();
+        // Create screenshot directory
+        final File baseDir = new File("/sdcard/testfailures/screenshots/" + description.getTestClass().getSimpleName() + "/");
+        if (!baseDir.exists() && !baseDir.mkdirs()) {
+            Log.e(TAG, "failed: Could not create screenshot directory");
+            return;
+        }
+        final String basePath = baseDir.getPath() + "/" + description.getMethodName();
 
-		// Dump UI state
-		try {
-			try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(basePath + ".uix"))) {
-				// Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
-				// method leaks a file descriptor.
-				device.dumpWindowHierarchy(stream);
-			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		device.takeScreenshot(new File(basePath + ".png"));
-	}
+        // Dump UI state
+        try {
+            try (OutputStream stream = new BufferedOutputStream(new FileOutputStream(basePath + ".uix"))) {
+                // Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
+                // method leaks a file descriptor.
+                device.dumpWindowHierarchy(stream);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        device.takeScreenshot(new File(basePath + ".png"));
+    }
 
-	/**
-	 * Close any open UI elements.
-	 *
-	 * This runs after {@link #failed(Throwable, Description)}.
-	 */
-	@Override
-	protected void finished(Description description) {
-		final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-		if (device == null) {
-			Log.e(TAG, "finished: Device is null");
-			return;
-		}
+    /**
+     * Close any open UI elements.
+     * <p>
+     * This runs after {@link #failed(Throwable, Description)}.
+     */
+    @Override
+    protected void finished(Description description) {
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        if (device == null) {
+            Log.e(TAG, "finished: Device is null");
+            return;
+        }
 
-		// Close all UI elements
-		device.pressBack();
-		device.pressHome();
-	}
+        // Close all UI elements
+        device.pressBack();
+        device.pressHome();
+    }
 }

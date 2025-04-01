@@ -25,24 +25,25 @@ package ch.threema.app.activities.ballot;
 import androidx.fragment.app.Fragment;
 
 abstract class BallotWizardFragment extends Fragment {
-	private BallotWizardActivity ballotWizardActivity = null;
+    private BallotWizardActivity ballotWizardActivity = null;
 
-	/**
-	 * update the data fields
-	 */
-	abstract void updateView();
+    /**
+     * update the data fields
+     */
+    abstract void updateView();
 
-	/**
-	 * cast activity to ballotActivity
-	 * @return
-	 */
-	public BallotWizardActivity getBallotActivity() {
-		if(this.ballotWizardActivity == null) {
-			if(super.getActivity() instanceof BallotWizardActivity) {
-				this.ballotWizardActivity = (BallotWizardActivity)this.getActivity();
-			}
-		}
+    /**
+     * cast activity to ballotActivity
+     *
+     * @return
+     */
+    public BallotWizardActivity getBallotActivity() {
+        if (this.ballotWizardActivity == null) {
+            if (super.getActivity() instanceof BallotWizardActivity) {
+                this.ballotWizardActivity = (BallotWizardActivity) this.getActivity();
+            }
+        }
 
-		return this.ballotWizardActivity;
-	}
+        return this.ballotWizardActivity;
+    }
 }

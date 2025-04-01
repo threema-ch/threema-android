@@ -70,7 +70,10 @@ internal sealed class ReflectedOutgoingBaseMessageTask<M : MessageReceiver<*>>(
                 if (nonceFactory.exists(NonceScope.CSP, nonce)) {
                     logger.info("Skip adding preexisting CSP nonce {}", nonce.bytes.toHexString())
                 } else if (!nonceFactory.store(NonceScope.CSP, nonce)) {
-                    logger.warn("CSP nonce {} of outgoing message could not be stored", nonce.bytes.toHexString())
+                    logger.warn(
+                        "CSP nonce {} of outgoing message could not be stored",
+                        nonce.bytes.toHexString()
+                    )
                 }
             }
         } else {
@@ -133,13 +136,25 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.TEXT -> ReflectedOutgoingTextTask(this, serviceManager)
     CspE2eMessageType.GROUP_TEXT -> ReflectedOutgoingGroupTextTask(this, serviceManager)
     CspE2eMessageType.DELIVERY_RECEIPT -> ReflectedOutgoingDeliveryReceiptTask(this, serviceManager)
-    CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> ReflectedOutgoingGroupDeliveryReceiptTask(this, serviceManager)
+    CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> ReflectedOutgoingGroupDeliveryReceiptTask(
+        this,
+        serviceManager
+    )
+
     CspE2eMessageType.FILE -> ReflectedOutgoingFileTask(this, serviceManager)
     CspE2eMessageType.GROUP_FILE -> ReflectedOutgoingGroupFileTask(this, serviceManager)
     CspE2eMessageType.POLL_SETUP -> ReflectedOutgoingPollSetupMessageTask(this, serviceManager)
     CspE2eMessageType.POLL_VOTE -> ReflectedOutgoingPollVoteMessageTask(this, serviceManager)
-    CspE2eMessageType.GROUP_POLL_SETUP -> ReflectedOutgoingGroupPollSetupMessageTask(this, serviceManager)
-    CspE2eMessageType.GROUP_POLL_VOTE -> ReflectedOutgoingGroupPollVoteMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_POLL_SETUP -> ReflectedOutgoingGroupPollSetupMessageTask(
+        this,
+        serviceManager
+    )
+
+    CspE2eMessageType.GROUP_POLL_VOTE -> ReflectedOutgoingGroupPollVoteMessageTask(
+        this,
+        serviceManager
+    )
+
     CspE2eMessageType.GROUP_CALL_START -> ReflectedOutgoingGroupCallStartTask(this, serviceManager)
     CspE2eMessageType.CALL_OFFER,
     CspE2eMessageType.CALL_RINGING,
@@ -151,16 +166,39 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     )
 
     CspE2eMessageType.CALL_ICE_CANDIDATE -> throw IllegalStateException("Reflected message of type ${type.name} should never be received as outgoing")
-    CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ReflectedOutgoingContactRequestProfilePictureTask(this, serviceManager)
-    CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> ReflectedOutgoingContactSetProfilePictureTask(this, serviceManager)
-    CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> ReflectedOutgoingDeleteProfilePictureTask(this, serviceManager)
+    CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ReflectedOutgoingContactRequestProfilePictureTask(
+        this,
+        serviceManager
+    )
+
+    CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> ReflectedOutgoingContactSetProfilePictureTask(
+        this,
+        serviceManager
+    )
+
+    CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> ReflectedOutgoingDeleteProfilePictureTask(
+        this,
+        serviceManager
+    )
+
     CspE2eMessageType.LOCATION -> ReflectedOutgoingLocationTask(this, serviceManager)
     CspE2eMessageType.GROUP_LOCATION -> ReflectedOutgoingGroupLocationTask(this, serviceManager)
     CspE2eMessageType.DELETE_MESSAGE -> ReflectedOutgoingDeleteMessageTask(this, serviceManager)
-    CspE2eMessageType.GROUP_DELETE_MESSAGE -> ReflectedOutgoingGroupDeleteMessageTask(this, serviceManager)
+    CspE2eMessageType.GROUP_DELETE_MESSAGE -> ReflectedOutgoingGroupDeleteMessageTask(
+        this,
+        serviceManager
+    )
+
     CspE2eMessageType.EDIT_MESSAGE -> ReflectedOutgoingEditMessageTask(this, serviceManager)
-    CspE2eMessageType.GROUP_EDIT_MESSAGE -> ReflectedOutgoingGroupEditMessageTask(this, serviceManager)
-    CspE2eMessageType.GROUP_SYNC_REQUEST -> ReflectedOutgoingGroupSyncRequestTask(this, serviceManager)
+    CspE2eMessageType.GROUP_EDIT_MESSAGE -> ReflectedOutgoingGroupEditMessageTask(
+        this,
+        serviceManager
+    )
+
+    CspE2eMessageType.GROUP_SYNC_REQUEST -> ReflectedOutgoingGroupSyncRequestTask(
+        this,
+        serviceManager
+    )
 
     // TODO(ANDR-3443): Process reflected outgoing deprecated messages
     CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")

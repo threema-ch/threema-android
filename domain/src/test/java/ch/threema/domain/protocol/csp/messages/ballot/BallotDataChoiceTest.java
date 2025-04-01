@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.csp.messages.ballot;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -29,87 +30,88 @@ import org.junit.Test;
 
 public class BallotDataChoiceTest {
 
-	class BallotDataChoiceString extends BallotDataChoice {
-		public BallotDataChoiceString(int resultSize) {
-			super(resultSize);
-		}
+    class BallotDataChoiceString extends BallotDataChoice {
+        public BallotDataChoiceString(int resultSize) {
+            super(resultSize);
+        }
 
-		@Override
-		public String toString() {
-			try {
-				return this.generateString();
-			} catch (BadMessageException e) {
-				return "ERROR: " + e.getMessage();
-			}
-		}
-	}
-	@Test
-	public void parseValidString() {
-		String correct = "{"
-				+ "\"i\": 0,"
-				+ "\"n\": \"desc\","
-				+ "\"o\": 123"
-				+ "}";
+        @Override
+        public String toString() {
+            try {
+                return this.generateString();
+            } catch (BadMessageException e) {
+                return "ERROR: " + e.getMessage();
+            }
+        }
+    }
 
-		BallotDataChoice result = null;
-		try {
-			result = BallotDataChoice.parse(correct);
-		} catch (BadMessageException e) {
-			Assert.fail(e.getMessage());
-		}
-		Assert.assertNotNull(result);
-	}
+    @Test
+    public void parseValidString() {
+        String correct = "{"
+            + "\"i\": 0,"
+            + "\"n\": \"desc\","
+            + "\"o\": 123"
+            + "}";
 
-	@Test
-	public void parseInvalidType() {
-		String correct = "{"
-				+ "\"i\": 0,"
-				+ "\"t\": 123123,"
-				+ "\"n\": \"desc\","
-				+ "\"v\": 200"
-				+ "}";
+        BallotDataChoice result = null;
+        try {
+            result = BallotDataChoice.parse(correct);
+        } catch (BadMessageException e) {
+            Assert.fail(e.getMessage());
+        }
+        Assert.assertNotNull(result);
+    }
 
-		try {
-			BallotDataChoice.parse(correct);
-			Assert.fail("wrong type parsed");
-		} catch (BadMessageException e) {
-			//cool!
-		}
-	}
+    @Test
+    public void parseInvalidType() {
+        String correct = "{"
+            + "\"i\": 0,"
+            + "\"t\": 123123,"
+            + "\"n\": \"desc\","
+            + "\"v\": 200"
+            + "}";
 
-	@Test
-	public void parseInvalidString() {
-		try {
-			BallotDataChoice.parse("i want to be a hippie");
-			Assert.fail("invalid string parsed");
-		} catch (BadMessageException e) {
-			//ok! exception received
-		}
-	}
+        try {
+            BallotDataChoice.parse(correct);
+            Assert.fail("wrong type parsed");
+        } catch (BadMessageException e) {
+            //cool!
+        }
+    }
 
-	@Test
-	public void toStringTest() {
-		BallotDataChoice c = new BallotDataChoiceString(4);
-		c.setId(100);
-		c.setOrder(123);
-		int pos = 0;
-		c
-				.addResult(pos++, 1)
-				.addResult(pos++, 0)
-				.addResult(pos++, 0)
-				.addResult(pos++, 1);
-		c.setName("Test");
-		c.setTotalVotes(4);
+    @Test
+    public void parseInvalidString() {
+        try {
+            BallotDataChoice.parse("i want to be a hippie");
+            Assert.fail("invalid string parsed");
+        } catch (BadMessageException e) {
+            //ok! exception received
+        }
+    }
 
-		try {
-			JSONObject o = new JSONObject("{\"i\":100,\"n\":\"Test\",\"o\":123, \"r\": [1,0,0,1], \"t\":4}");
-			Assert.assertEquals(
-					o.toString(),
-					c.toString()
-			);
-		} catch (JSONException e) {
-			Assert.fail("internal error");
-		}
+    @Test
+    public void toStringTest() {
+        BallotDataChoice c = new BallotDataChoiceString(4);
+        c.setId(100);
+        c.setOrder(123);
+        int pos = 0;
+        c
+            .addResult(pos++, 1)
+            .addResult(pos++, 0)
+            .addResult(pos++, 0)
+            .addResult(pos++, 1);
+        c.setName("Test");
+        c.setTotalVotes(4);
 
-	}
+        try {
+            JSONObject o = new JSONObject("{\"i\":100,\"n\":\"Test\",\"o\":123, \"r\": [1,0,0,1], \"t\":4}");
+            Assert.assertEquals(
+                o.toString(),
+                c.toString()
+            );
+        } catch (JSONException e) {
+            Assert.fail("internal error");
+        }
+
+    }
 }

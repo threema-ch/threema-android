@@ -36,37 +36,37 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * add contact restore state field to contact models
  */
 public class SystemUpdateToVersion56 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion56");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion56");
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion56(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion56(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		logger.info("runDirectly");
-		if (!fieldExists(this.sqLiteDatabase, "contacts", "isArchived")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isArchived TINYINT DEFAULT 0");
-		}
-		if (!fieldExists(this.sqLiteDatabase, "m_group", "isArchived")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE m_group ADD COLUMN isArchived TINYINT DEFAULT 0");
-		}
-		if (!fieldExists(this.sqLiteDatabase, "distribution_list", "isArchived")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE distribution_list ADD COLUMN isArchived TINYINT DEFAULT 0");
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        logger.info("runDirectly");
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "isArchived")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isArchived TINYINT DEFAULT 0");
+        }
+        if (!fieldExists(this.sqLiteDatabase, "m_group", "isArchived")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE m_group ADD COLUMN isArchived TINYINT DEFAULT 0");
+        }
+        if (!fieldExists(this.sqLiteDatabase, "distribution_list", "isArchived")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE distribution_list ADD COLUMN isArchived TINYINT DEFAULT 0");
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		logger.info("runAsync");
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        logger.info("runAsync");
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 56";
-	}
+    @Override
+    public String getText() {
+        return "version 56";
+    }
 }

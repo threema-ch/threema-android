@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/top_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:background="@android:color/black">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/top_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@android:color/black">
 
-	<FrameLayout android:layout_width="match_parent"
-				 android:layout_height="wrap_content">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<ImageView
-				android:id="@+id/wizard_background"
-				android:layout_width="wrap_content"
-				android:layout_height="fill_parent"
-				android:adjustViewBounds="true"
-				android:clickable="false"
-				android:src="@drawable/background_pic"
-				android:scaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/wizard_background"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:adjustViewBounds="true"
+            android:clickable="false"
+            android:src="@drawable/background_pic"
+            android:scaleType="centerCrop" />
 
-		<RelativeLayout
-				android:id="@+id/layout_parent_top"
-				android:orientation="vertical"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
-				android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-				android:paddingTop="@dimen/wizard_contents_padding"
-				android:paddingBottom="@dimen/wizard_contents_padding">
+        <RelativeLayout
+            android:id="@+id/layout_parent_top"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+            android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+            android:paddingTop="@dimen/wizard_contents_padding"
+            android:paddingBottom="@dimen/wizard_contents_padding">
 
             <ImageView
                 android:id="@+id/enter_serial_welcome_title"
@@ -39,169 +40,171 @@
                 android:scaleY="1.5"
                 android:layout_centerHorizontal="true" />
 
-			<TextView
-					style="@style/WizardMediumText"
-					android:id="@+id/layout_top"
-					android:layout_below="@id/enter_serial_welcome_title"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:gravity="center_horizontal"
-					android:layout_centerHorizontal="true"
-					android:linksClickable="true"
-					android:autoLink="web"
-					android:text="@string/enter_serial_body"
-					android:layout_marginBottom="5dp"
-			/>
+            <TextView
+                style="@style/WizardMediumText"
+                android:id="@+id/layout_top"
+                android:layout_below="@id/enter_serial_welcome_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_centerHorizontal="true"
+                android:linksClickable="true"
+                android:autoLink="web"
+                android:text="@string/enter_serial_body"
+                android:layout_marginBottom="5dp" />
 
-			<LinearLayout android:id="@+id/unlock_layout"
-						  android:layout_width="match_parent"
-						  android:layout_height="wrap_content"
-						  android:layout_marginTop="32dp"
-						  android:gravity="center_vertical"
-						  android:layout_below="@id/layout_top"
-						  android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/unlock_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center_vertical"
+                android:layout_below="@id/layout_top"
+                android:orientation="horizontal">
 
-				<ImageView
-						style="@style/WizardEditTextIcon"
-						android:id="@+id/unlock_logo"
-						android:layout_width="@dimen/wizard_default_view_height"
-						android:layout_height="@dimen/wizard_default_view_height"
-						app:srcCompat="@drawable/ic_person_outline"/>
+                <ImageView
+                    style="@style/WizardEditTextIcon"
+                    android:id="@+id/unlock_logo"
+                    android:layout_width="@dimen/wizard_default_view_height"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    app:srcCompat="@drawable/ic_person_outline" />
 
-				<ch.threema.app.emojis.EmojiEditText
-						style="@style/WizardEditText"
-						android:layout_width="fill_parent"
-						android:layout_height="@dimen/wizard_default_view_height"
-						android:layout_weight="2"
-						android:hint="@string/username_hint"
-						android:id="@+id/license_key"
-						android:inputType="textNoSuggestions"
-						android:imeOptions="actionNext"
-						android:nextFocusRight="@+id/password"
-						android:singleLine="true">
-					<requestFocus />
+                <ch.threema.app.emojis.EmojiEditText
+                    style="@style/WizardEditText"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    android:layout_weight="2"
+                    android:hint="@string/username_hint"
+                    android:id="@+id/license_key"
+                    android:inputType="textNoSuggestions"
+                    android:imeOptions="actionNext"
+                    android:nextFocusRight="@+id/password"
+                    android:singleLine="true">
 
-				</ch.threema.app.emojis.EmojiEditText>
+                    <requestFocus />
 
-			</LinearLayout>
+                </ch.threema.app.emojis.EmojiEditText>
 
-			<LinearLayout android:id="@+id/password_layout"
-						  android:layout_width="match_parent"
-						  android:layout_height="wrap_content"
-						  android:layout_marginTop="16dp"
-						  android:gravity="center_vertical"
-						  android:layout_below="@id/unlock_layout"
-						  android:orientation="horizontal">
+            </LinearLayout>
 
-				<ImageView
-						style="@style/WizardEditTextIcon"
-						android:id="@+id/password_logo"
-						android:layout_gravity="bottom"
-						android:layout_width="@dimen/wizard_default_view_height"
-						android:layout_height="@dimen/wizard_default_view_height"
-						app:srcCompat="@drawable/ic_key_outline"/>
+            <LinearLayout
+                android:id="@+id/password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:layout_below="@id/unlock_layout"
+                android:orientation="horizontal">
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:id="@+id/password_container"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					app:hintAnimationEnabled="false"
-					app:counterEnabled="false"
-					app:hintEnabled="false"
-					app:passwordToggleEnabled="true"
-					app:errorEnabled="false"
-					app:hintTextAppearance="@style/NoHintTextAppearance">
+                <ImageView
+                    style="@style/WizardEditTextIcon"
+                    android:id="@+id/password_logo"
+                    android:layout_gravity="bottom"
+                    android:layout_width="@dimen/wizard_default_view_height"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    app:srcCompat="@drawable/ic_key_outline" />
 
-					<ch.threema.app.ui.ThreemaTextInputEditText
-						style="@style/WizardEditText"
-						android:layout_width="match_parent"
-						android:layout_height="@dimen/wizard_default_view_height"
-						android:hint="@string/password_hint"
-						android:id="@+id/password"
-						android:nextFocusRight="@+id/unlock_button"
-						android:inputType="textNoSuggestions|textPassword"
-						android:imeOptions="actionGo"
-						android:singleLine="true"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/password_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hintAnimationEnabled="false"
+                    app:counterEnabled="false"
+                    app:hintEnabled="false"
+                    app:passwordToggleEnabled="true"
+                    app:errorEnabled="false"
+                    app:hintTextAppearance="@style/NoHintTextAppearance">
 
-				</com.google.android.material.textfield.TextInputLayout>
+                    <ch.threema.app.ui.ThreemaTextInputEditText
+                        style="@style/WizardEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wizard_default_view_height"
+                        android:hint="@string/password_hint"
+                        android:id="@+id/password"
+                        android:nextFocusRight="@+id/unlock_button"
+                        android:inputType="textNoSuggestions|textPassword"
+                        android:imeOptions="actionGo"
+                        android:singleLine="true" />
 
-			</LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-			<LinearLayout
-				android:id="@+id/server_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/password_layout"
-				android:layout_marginTop="16dp"
-				android:gravity="center_vertical"
-				android:orientation="horizontal">
+            </LinearLayout>
 
-				<ImageView
-					android:id="@+id/server_logo"
-					style="@style/WizardEditTextIcon"
-					android:layout_width="@dimen/wizard_default_view_height"
-					android:layout_height="@dimen/wizard_default_view_height"
-					android:layout_gravity="bottom"
-					app:srcCompat="@drawable/ic_cloud_outline" />
+            <LinearLayout
+                android:id="@+id/server_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/password_layout"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:id="@+id/server_container"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					app:counterEnabled="false"
-					app:errorEnabled="false"
-					app:hintAnimationEnabled="false"
-					app:hintEnabled="false"
-					app:hintTextAppearance="@style/NoHintTextAppearance"
-					app:prefixText="https://"
-					app:prefixTextAppearance="@style/WizardHintTextAppearance">
+                <ImageView
+                    android:id="@+id/server_logo"
+                    style="@style/WizardEditTextIcon"
+                    android:layout_width="@dimen/wizard_default_view_height"
+                    android:layout_height="@dimen/wizard_default_view_height"
+                    android:layout_gravity="bottom"
+                    app:srcCompat="@drawable/ic_cloud_outline" />
 
-					<ch.threema.app.ui.ThreemaTextInputEditText
-						android:id="@+id/server"
-						style="@style/WizardEditText"
-						android:layout_width="match_parent"
-						android:layout_height="@dimen/wizard_default_view_height"
-						android:hint="@string/safe_enter_server_address_explain"
-						android:imeOptions="actionGo"
-						android:inputType="textWebEditText"
-						android:nextFocusRight="@+id/unlock_button_work"
-						android:singleLine="true" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/server_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:counterEnabled="false"
+                    app:errorEnabled="false"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false"
+                    app:hintTextAppearance="@style/NoHintTextAppearance"
+                    app:prefixText="https://"
+                    app:prefixTextAppearance="@style/WizardHintTextAppearance">
 
-				</com.google.android.material.textfield.TextInputLayout>
+                    <ch.threema.app.ui.ThreemaTextInputEditText
+                        android:id="@+id/server"
+                        style="@style/WizardEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/wizard_default_view_height"
+                        android:hint="@string/safe_enter_server_address_explain"
+                        android:imeOptions="actionGo"
+                        android:inputType="textWebEditText"
+                        android:nextFocusRight="@+id/unlock_button_work"
+                        android:singleLine="true" />
 
-			</LinearLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
-			<TextView
-					android:id="@+id/unlock_state"
-					android:layout_width="fill_parent"
-					android:layout_height="wrap_content"
-					android:layout_below="@id/server_layout"
-					android:layout_marginLeft="@dimen/wizard_default_view_height"
-					android:layout_marginTop="8dp"
-					android:layout_marginBottom="8dp"
-					android:textSize="@dimen/wizard_text_medium"
-					android:textColor="@color/material_red"/>
+            </LinearLayout>
 
-			<androidx.appcompat.widget.AppCompatButton
-					style="@style/WizardButtonRegular"
-					android:id="@+id/unlock_button_work"
-					android:layout_below="@id/unlock_state"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignParentRight="true"
-					android:text="@string/next" />
+            <TextView
+                android:id="@+id/unlock_state"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/server_layout"
+                android:layout_marginLeft="@dimen/wizard_default_view_height"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="@dimen/wizard_text_medium"
+                android:textColor="@color/material_red" />
 
-			<TextView
-				style="@style/WizardMediumText"
-				android:id="@+id/work_lost_credential_help"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/unlock_button_work"
-				android:gravity="center_horizontal"
-				android:layout_marginTop="32dp" />
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/WizardButtonRegular"
+                android:id="@+id/unlock_button_work"
+                android:layout_below="@id/unlock_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="@string/next" />
 
-		</RelativeLayout>
+            <TextView
+                style="@style/WizardMediumText"
+                android:id="@+id/work_lost_credential_help"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/unlock_button_work"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="32dp" />
 
-	</FrameLayout>
+        </RelativeLayout>
+
+    </FrameLayout>
 
 </ScrollView>

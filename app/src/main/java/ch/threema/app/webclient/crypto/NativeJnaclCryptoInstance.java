@@ -31,12 +31,13 @@ import org.saltyrtc.client.crypto.CryptoInstance;
 
 @AnyThread
 public class NativeJnaclCryptoInstance implements CryptoInstance {
-	public static String TAG = "CryptoInstance";
+    public static String TAG = "CryptoInstance";
 
-    @NonNull private final NaCl nacl;
+    @NonNull
+    private final NaCl nacl;
 
     NativeJnaclCryptoInstance(@NonNull byte[] ownPrivateKey, @NonNull byte[] otherPublicKey) throws CryptoException {
-		try {
+        try {
             this.nacl = new NaCl(ownPrivateKey, otherPublicKey);
         } catch (Error e) {
             throw new CryptoException("Could not create NaCl instance: " + e.toString(), e);
@@ -56,7 +57,7 @@ public class NativeJnaclCryptoInstance implements CryptoInstance {
     @NonNull
     @Override
     public byte[] decrypt(@NonNull byte[] data, @NonNull byte[] nonce) throws CryptoException {
-	    final byte[] decrypted;
+        final byte[] decrypted;
         try {
             decrypted = this.nacl.decrypt(data, nonce);
         } catch (Error e) {

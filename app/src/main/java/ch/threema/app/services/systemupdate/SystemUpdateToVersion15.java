@@ -31,37 +31,37 @@ import ch.threema.storage.factories.ModelFactory;
 
 public class SystemUpdateToVersion15 implements UpdateSystemService.SystemUpdate {
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion15(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+    public SystemUpdateToVersion15(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
 
-		this.databaseService = databaseService;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+        this.databaseService = databaseService;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		for(ModelFactory f: new ModelFactory[]{
-				this.databaseService.getDistributionListModelFactory(),
-				this.databaseService.getDistributionListMemberModelFactory(),
-				this.databaseService.getDistributionListMessageModelFactory()
-		}){
-			for(String s: f.getStatements()) {
-				this.sqLiteDatabase.execSQL(s);
-			}
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        for (ModelFactory f : new ModelFactory[]{
+            this.databaseService.getDistributionListModelFactory(),
+            this.databaseService.getDistributionListMemberModelFactory(),
+            this.databaseService.getDistributionListMessageModelFactory()
+        }) {
+            for (String s : f.getStatements()) {
+                this.sqLiteDatabase.execSQL(s);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 15";
-	}
+    @Override
+    public String getText() {
+        return "version 15";
+    }
 }

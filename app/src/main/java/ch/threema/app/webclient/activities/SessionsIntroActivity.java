@@ -39,53 +39,53 @@ import ch.threema.app.activities.ThreemaToolbarActivity;
 @UiThread
 public class SessionsIntroActivity extends ThreemaToolbarActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.webclient);
-		}
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.webclient);
+        }
 
-		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		final Button launchButton = findViewById(R.id.launch_button);
-		final TextView linkText = findViewById(R.id.webclient_link);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final Button launchButton = findViewById(R.id.launch_button);
+        final TextView linkText = findViewById(R.id.webclient_link);
 
-		if (sharedPreferences.getBoolean(getString(R.string.preferences__web_client_welcome_shown), false)) {
-			launchButton.setText(R.string.ok);
-			linkText.setVisibility(View.VISIBLE);
-			linkText.setText(Html.fromHtml("<a href=\"" + getString(R.string.webclient_info_url)+ "\">" + getString(R.string.new_wizard_more_information) + "</a>"));
-			linkText.setMovementMethod (LinkMovementMethod.getInstance());
-		} else {
-			linkText.setVisibility(View.GONE);
-		}
+        if (sharedPreferences.getBoolean(getString(R.string.preferences__web_client_welcome_shown), false)) {
+            launchButton.setText(R.string.ok);
+            linkText.setVisibility(View.VISIBLE);
+            linkText.setText(Html.fromHtml("<a href=\"" + getString(R.string.webclient_info_url) + "\">" + getString(R.string.new_wizard_more_information) + "</a>"));
+            linkText.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            linkText.setVisibility(View.GONE);
+        }
 
-		launchButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				v.setEnabled(false);
-				sharedPreferences.edit().putBoolean(getString(R.string.preferences__web_client_welcome_shown), true).apply();
-				setResult(RESULT_OK);
-				finish();
-			}
-		});
-	}
+        launchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setEnabled(false);
+                sharedPreferences.edit().putBoolean(getString(R.string.preferences__web_client_welcome_shown), true).apply();
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_sessions_intro;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_sessions_intro;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

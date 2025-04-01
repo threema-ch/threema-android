@@ -50,14 +50,17 @@ import kotlin.concurrent.withLock
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallControllerImpl")
 
-internal class GroupCallControllerImpl (
+internal class GroupCallControllerImpl(
     override val callId: CallId,
     private val onLeave: Runnable,
     private val me: ContactModel,
 ) : GroupCallController, GroupCall {
     private val confirmCallSignal = CompletableDeferred<Unit>()
     private val descriptionSetSignal = CompletableDeferred<Unit>()
-    private val mutableParticipants = MutableSharedFlow<Set<Participant>>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    private val mutableParticipants = MutableSharedFlow<Set<Participant>>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
     private val mutableUpdateCaptureState = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private var remoteCtxs: MutableMap<ParticipantId, RemoteCtx> = mutableMapOf()
     private var remoteParticipants: MutableSet<NormalRemoteParticipant> = mutableSetOf()
@@ -96,8 +99,10 @@ internal class GroupCallControllerImpl (
     override val callLeftSignal: CompletableDeferred<Unit> = CompletableDeferred()
     override val callDisposedSignal: CompletableDeferred<Unit> = CompletableDeferred()
 
-    override val completableConnectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>> = CompletableDeferred()
-    override val connectedSignal: Deferred<Pair<ULong, Set<ParticipantId>>> = completableConnectedSignal
+    override val completableConnectedSignal: CompletableDeferred<Pair<ULong, Set<ParticipantId>>> =
+        CompletableDeferred()
+    override val connectedSignal: Deferred<Pair<ULong, Set<ParticipantId>>> =
+        completableConnectedSignal
 
     override val dislodgedParticipants = MutableSharedFlow<ParticipantId>()
 
@@ -128,7 +133,8 @@ internal class GroupCallControllerImpl (
         get() = ifCallIsRunning { localParticipant.microphoneActive }
         set(value) = ifCallIsRunning {
             localParticipant.microphoneActive = value
-            val stateUpdate = P2PMessageContent.CaptureState.Microphone(localParticipant.microphoneActive)
+            val stateUpdate =
+                P2PMessageContent.CaptureState.Microphone(localParticipant.microphoneActive)
             context.sendBroadcast(stateUpdate)
         }
 
@@ -267,6 +273,7 @@ internal class GroupCallControllerImpl (
                 groupCallLeaveTimer.disable()
                 onLeave.run()
             }
+
             else -> logger.debug("Unhandled state update: {}", state)
         }
     }
@@ -282,7 +289,12 @@ internal class GroupCallControllerImpl (
     }
 
     @WorkerThread
-    suspend fun join(context: Context, sfuBaseUrl: String, sfuConnection: SfuConnection, onError: () -> Unit) {
+    suspend fun join(
+        context: Context,
+        sfuBaseUrl: String,
+        sfuConnection: SfuConnection,
+        onError: () -> Unit
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
         GroupCallThreadUtil.exceptionHandler = object : GroupCallThreadUtil.ExceptionHandler {
             override fun handle(t: Throwable) {

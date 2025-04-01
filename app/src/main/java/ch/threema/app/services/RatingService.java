@@ -45,76 +45,76 @@ import ch.threema.domain.protocol.ServerAddressProvider;
  * Send ratings to the threema server
  */
 public class RatingService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("RatingService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("RatingService");
 
-	@NonNull
-	private final PreferenceService preferenceService;
-	@NonNull
-	private final ServerAddressProvider serverAddressProvider;
+    @NonNull
+    private final PreferenceService preferenceService;
+    @NonNull
+    private final ServerAddressProvider serverAddressProvider;
 
-	public RatingService(
-		@NonNull PreferenceService preferenceService,
-		@NonNull ServerAddressProvider serverAddressProvider
-	) {
-		this.preferenceService = preferenceService;
-		this.serverAddressProvider = serverAddressProvider;
-	}
+    public RatingService(
+        @NonNull PreferenceService preferenceService,
+        @NonNull ServerAddressProvider serverAddressProvider
+    ) {
+        this.preferenceService = preferenceService;
+        this.serverAddressProvider = serverAddressProvider;
+    }
 
-	private String getRatingUrl(int rating) throws ThreemaException {
-		return serverAddressProvider.getAppRatingUrl().replace("{rating}", Integer.toString(rating));
-	}
+    private String getRatingUrl(int rating) throws ThreemaException {
+        return serverAddressProvider.getAppRatingUrl().replace("{rating}", Integer.toString(rating));
+    }
 
-	@WorkerThread
-	public boolean sendRating(int rating, @NonNull String text, @NonNull String version) {
-		String ref = this.preferenceService.getRandomRatingRef();
-		boolean success = false;
+    @WorkerThread
+    public boolean sendRating(int rating, @NonNull String text, @NonNull String version) {
+        String ref = this.preferenceService.getRandomRatingRef();
+        boolean success = false;
 
-		if (TestUtil.isEmptyOrNull(ref)) {
-			// Create a new random ref
-			byte[] ratingRef = new byte[32];
-			SecureRandom rnd = new SecureRandom();
-			rnd.nextBytes(ratingRef);
-			ref = Utils.byteArrayToHexString(ratingRef);
+        if (TestUtil.isEmptyOrNull(ref)) {
+            // Create a new random ref
+            byte[] ratingRef = new byte[32];
+            SecureRandom rnd = new SecureRandom();
+            rnd.nextBytes(ratingRef);
+            ref = Utils.byteArrayToHexString(ratingRef);
 
-			// Save to preferences
-			this.preferenceService.setRandomRatingRef(ref);
-		}
+            // Save to preferences
+            this.preferenceService.setRandomRatingRef(ref);
+        }
 
-		// Append app version to rating text
-		String textWithVersion = text.strip() + "\n\n---\n" + version;
+        // Append app version to rating text
+        String textWithVersion = text.strip() + "\n\n---\n" + version;
 
-		HttpsURLConnection connection = null;
-		try {
-			byte[] query = new Uri.Builder()
-				.appendQueryParameter("ref", ref)
-				.appendQueryParameter("feedback", textWithVersion)
-				.build().getEncodedQuery().getBytes();
+        HttpsURLConnection connection = null;
+        try {
+            byte[] query = new Uri.Builder()
+                .appendQueryParameter("ref", ref)
+                .appendQueryParameter("feedback", textWithVersion)
+                .build().getEncodedQuery().getBytes();
 
-			URL url = new URL(this.getRatingUrl(rating));
-			connection = (HttpsURLConnection) url.openConnection();
-			connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
-			connection.setDoOutput(true);
-			try (OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream())) {
-				outputStream.write(query);
-				outputStream.flush();
-			}
+            URL url = new URL(this.getRatingUrl(rating));
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
+            connection.setDoOutput(true);
+            try (OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream())) {
+                outputStream.write(query);
+                outputStream.flush();
+            }
 
-			// Warning: This implicitly opens in/err streams!
-			final int responseCode = connection.getResponseCode();
-			if (responseCode != HttpsURLConnection.HTTP_NO_CONTENT) {
-				throw new ThreemaException("Failed to create rating (code " + responseCode + ")");
-			}
+            // Warning: This implicitly opens in/err streams!
+            final int responseCode = connection.getResponseCode();
+            if (responseCode != HttpsURLConnection.HTTP_NO_CONTENT) {
+                throw new ThreemaException("Failed to create rating (code " + responseCode + ")");
+            }
 
-			success = true;
-		} catch (Exception e) {
-			// Log to Logfile and ignore
-			logger.error("Could not send rating", e);
-		} finally {
-			if (connection != null) {
-				connection.disconnect();
-			}
-		}
+            success = true;
+        } catch (Exception e) {
+            // Log to Logfile and ignore
+            logger.error("Could not send rating", e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
 
-		return success;
-	}
+        return success;
+    }
 }

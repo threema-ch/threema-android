@@ -28,7 +28,8 @@ import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Stopped")
 
-class Stopped internal constructor(call: GroupCall) : GroupCallConnectionState(StateName.STOPPED, call) {
+class Stopped internal constructor(call: GroupCall) :
+    GroupCallConnectionState(StateName.STOPPED, call) {
     @WorkerThread
     override fun getStateProviders() = listOf(suspend {
         GroupCallThreadUtil.assertDispatcherThread()

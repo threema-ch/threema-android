@@ -26,8 +26,8 @@ import java.net.URLConnection;
 import androidx.annotation.NonNull;
 
 public interface APIAuthenticator {
-	/**
-	 * Add necessary auth headers to the URLConnection.
-	 */
-	void addAuthenticationToConnection(@NonNull URLConnection urlConnection);
+    /**
+     * Add necessary auth headers to the URLConnection.
+     */
+    void addAuthenticationToConnection(@NonNull URLConnection urlConnection);
 }

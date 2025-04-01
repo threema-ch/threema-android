@@ -1,56 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/notice_layout"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:layout_marginLeft="8dp"
-	android:layout_marginRight="8dp"
-	android:layout_marginTop="@dimen/notice_views_vertical_margin"
-	android:layout_marginBottom="@dimen/notice_views_vertical_margin"
-	android:clickable="false"
-	android:visibility="gone"
-	app:cardBackgroundColor="?android:attr/colorBackground"
-	app:cardCornerRadius="@dimen/cardview_border_radius"
-	app:cardElevation="@dimen/notice_views_elevation"
-	app:strokeWidth="0dp"
-	android:outlineProvider="none">
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/notice_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="@dimen/notice_views_vertical_margin"
+    android:layout_marginBottom="@dimen/notice_views_vertical_margin"
+    android:clickable="false"
+    android:visibility="gone"
+    app:cardBackgroundColor="?android:attr/colorBackground"
+    app:cardCornerRadius="@dimen/cardview_border_radius"
+    app:cardElevation="@dimen/notice_views_elevation"
+    app:strokeWidth="0dp"
+    android:outlineProvider="none">
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-		<TextView
-			style="@style/Threema.TextAppearance.BodyLarge"
-			android:id="@+id/notice_text"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="12dp"
-			android:layout_marginLeft="16dp"
-			android:layout_marginBottom="12dp"
-			android:clickable="false"
-			android:gravity="left"
-			android:textColor="?attr/colorOnBackground"
-			android:textSize="16sp"
-			android:hyphenationFrequency="full"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintRight_toLeftOf="@+id/close_button"/>
+        <TextView
+            style="@style/Threema.TextAppearance.BodyLarge"
+            android:id="@+id/notice_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginBottom="12dp"
+            android:clickable="false"
+            android:gravity="left"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="16sp"
+            android:hyphenationFrequency="full"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/close_button" />
 
-		<com.google.android.material.button.MaterialButton
-			style="@style/Threema.MaterialButton.Minimal"
-			android:id="@+id/close_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="0dp"
-			app:icon="@drawable/ic_close"
-			app:iconTint="?attr/colorOnBackground"
-			android:contentDescription="@string/close"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintRight_toRightOf="parent" />
+        <com.google.android.material.button.MaterialButton
+            style="@style/Threema.MaterialButton.Minimal"
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            app:icon="@drawable/ic_close"
+            app:iconTint="?attr/colorOnBackground"
+            android:contentDescription="@string/close"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

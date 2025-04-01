@@ -76,7 +76,8 @@ class GroupStatusAdapterDecorator(
             if (userService?.isMe(identity) == true) return context.getString(R.string.me_myself_and_i)
             if (contactService == null) return identity
             val contactModel = contactService.getByIdentity(identity) ?: return identity
-            val contactMessageReceiver = contactService.createReceiver(contactModel) ?: return identity
+            val contactMessageReceiver =
+                contactService.createReceiver(contactModel) ?: return identity
             return contactMessageReceiver.displayName ?: identity
         }
 
@@ -98,9 +99,23 @@ class GroupStatusAdapterDecorator(
                 MEMBER_KICKED -> context.getString(R.string.status_group_member_kicked, displayName)
                 IS_NOTES_GROUP -> context.getString(R.string.status_create_notes)
                 IS_PEOPLE_GROUP -> context.getString(R.string.status_create_notes_off)
-                FIRST_VOTE -> context.getString(R.string.status_ballot_user_first_vote, displayName, ballotName)
-                MODIFIED_VOTE -> context.getString(R.string.status_ballot_user_modified_vote, displayName, ballotName)
-                RECEIVED_VOTE -> context.getString(R.string.status_ballot_voting_changed, ballotName)
+                FIRST_VOTE -> context.getString(
+                    R.string.status_ballot_user_first_vote,
+                    displayName,
+                    ballotName
+                )
+
+                MODIFIED_VOTE -> context.getString(
+                    R.string.status_ballot_user_modified_vote,
+                    displayName,
+                    ballotName
+                )
+
+                RECEIVED_VOTE -> context.getString(
+                    R.string.status_ballot_voting_changed,
+                    ballotName
+                )
+
                 VOTES_COMPLETE -> context.getString(R.string.status_ballot_all_votes, ballotName)
                 GROUP_DESCRIPTION_CHANGED -> "" // TODO(ANDR-2386)
                 ORPHANED -> context.getString(R.string.status_orphaned_group)

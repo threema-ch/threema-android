@@ -41,81 +41,81 @@ import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class AcknowledgeRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AcknowledgeRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AcknowledgeRequestHandler");
 
-	private final MessageService messageService;
-	private final NotificationService notificationService;
+    private final MessageService messageService;
+    private final NotificationService notificationService;
 
-	@AnyThread
-	public AcknowledgeRequestHandler(MessageService messageService,
-	                                 NotificationService notificationService) {
-		super(Protocol.SUB_TYPE_ACK);
-		this.messageService = messageService;
-		this.notificationService = notificationService;
-	}
+    @AnyThread
+    public AcknowledgeRequestHandler(MessageService messageService,
+                                     NotificationService notificationService) {
+        super(Protocol.SUB_TYPE_ACK);
+        this.messageService = messageService;
+        this.notificationService = notificationService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.info("Received ack request");
-		Map<String, Value> args = this.getArguments(message, false, new String[]{
-			Protocol.ARGUMENT_RECEIVER_TYPE,
-			Protocol.ARGUMENT_RECEIVER_ID,
-			Protocol.ARGUMENT_MESSAGE_ID,
-			Protocol.ARGUMENT_MESSAGE_ACKNOWLEDGED
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.info("Received ack request");
+        Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_TYPE,
+            Protocol.ARGUMENT_RECEIVER_ID,
+            Protocol.ARGUMENT_MESSAGE_ID,
+            Protocol.ARGUMENT_MESSAGE_ACKNOWLEDGED
+        });
 
-		// Receiver is sending acknowledge or decline
-		boolean isAcknowledged = args.get(Protocol.ARGUMENT_MESSAGE_ACKNOWLEDGED).asBooleanValue().getBoolean();
-		final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
-		final int messageId = Integer.parseInt(messageIdStr);
+        // Receiver is sending acknowledge or decline
+        boolean isAcknowledged = args.get(Protocol.ARGUMENT_MESSAGE_ACKNOWLEDGED).asBooleanValue().getBoolean();
+        final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
+        final int messageId = Integer.parseInt(messageIdStr);
 
-		final ch.threema.app.messagereceiver.MessageReceiver receiver;
-		try {
-			receiver = this.getReceiver(args);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-			return;
-		}
+        final ch.threema.app.messagereceiver.MessageReceiver receiver;
+        try {
+            receiver = this.getReceiver(args);
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+            return;
+        }
 
-		if (receiver == null) {
-			logger.error("Invalid receiver");
-			return;
-		}
+        if (receiver == null) {
+            logger.error("Invalid receiver");
+            return;
+        }
 
-		//load message
-		AbstractMessageModel messageModel = null;
-		switch (receiver.getType()) {
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId);
-				break;
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId);
-				break;
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId);
-				break;
-		}
+        //load message
+        AbstractMessageModel messageModel = null;
+        switch (receiver.getType()) {
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
+                messageModel = this.messageService.getContactMessageModel(messageId);
+                break;
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
+                messageModel = this.messageService.getGroupMessageModel(messageId);
+                break;
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
+                messageModel = this.messageService.getDistributionListMessageModel(messageId);
+                break;
+        }
 
-		if (messageModel == null) {
-			logger.error("No valid message model to acknowledge found");
-			return;
-		}
+        if (messageModel == null) {
+            logger.error("No valid message model to acknowledge found");
+            return;
+        }
 
-		try {
-			if (isAcknowledged) {
-				this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, receiver, true);
-			} else {
-				this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, receiver, true);
-			}
-		} catch (Exception e) {
-			logger.error("Unable to send emoji reaction", e);
-		}
+        try {
+            if (isAcknowledged) {
+                this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, receiver, true);
+            } else {
+                this.messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, receiver, true);
+            }
+        } catch (Exception e) {
+            logger.error("Unable to send emoji reaction", e);
+        }
 
-		notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
-	}
+        notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return true;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return true;
+    }
 }

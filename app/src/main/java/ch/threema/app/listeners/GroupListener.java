@@ -26,28 +26,55 @@ import ch.threema.app.services.GroupService;
 import ch.threema.storage.models.GroupModel;
 
 public interface GroupListener {
-	@AnyThread default void onCreate(GroupModel newGroupModel) { }
-	@AnyThread default void onRename(GroupModel groupModel) { }
-	@AnyThread default void onUpdatePhoto(GroupModel groupModel) { }
-	@AnyThread default void onRemove(GroupModel groupModel) { }
+    @AnyThread
+    default void onCreate(GroupModel newGroupModel) {
+    }
 
-	@AnyThread default void onNewMember(GroupModel group, String newIdentity) { }
-	@AnyThread default void onMemberLeave(GroupModel group, String identity) { }
-	@AnyThread default void onMemberKicked(GroupModel group, String identity) { }
+    @AnyThread
+    default void onRename(GroupModel groupModel) {
+    }
 
-	/**
-	 * Group was updated.
-	 */
-	@AnyThread default void onUpdate(GroupModel groupModel) { }
+    @AnyThread
+    default void onUpdatePhoto(GroupModel groupModel) {
+    }
 
-	/**
-	 * User left his own group.
-	 */
-	@AnyThread default void onLeave(GroupModel groupModel) { }
+    @AnyThread
+    default void onRemove(GroupModel groupModel) {
+    }
 
-	/**
-	 * Group State has possibly changed
-	 * Note that oldState may be equal to newState
-	 */
-	@AnyThread default void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) { };
+    @AnyThread
+    default void onNewMember(GroupModel group, String newIdentity) {
+    }
+
+    @AnyThread
+    default void onMemberLeave(GroupModel group, String identity) {
+    }
+
+    @AnyThread
+    default void onMemberKicked(GroupModel group, String identity) {
+    }
+
+    /**
+     * Group was updated.
+     */
+    @AnyThread
+    default void onUpdate(GroupModel groupModel) {
+    }
+
+    /**
+     * User left his own group.
+     */
+    @AnyThread
+    default void onLeave(GroupModel groupModel) {
+    }
+
+    /**
+     * Group State has possibly changed
+     * Note that oldState may be equal to newState
+     */
+    @AnyThread
+    default void onGroupStateChanged(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
+    }
+
+    ;
 }

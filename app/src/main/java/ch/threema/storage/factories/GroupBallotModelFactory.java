@@ -31,107 +31,106 @@ import ch.threema.storage.models.ballot.GroupBallotModel;
 
 public class GroupBallotModelFactory extends ModelFactory {
 
-	public GroupBallotModelFactory(DatabaseServiceNew databaseService) {
-		super(databaseService, GroupBallotModel.TABLE);
-	}
+    public GroupBallotModelFactory(DatabaseServiceNew databaseService) {
+        super(databaseService, GroupBallotModel.TABLE);
+    }
 
-	public GroupBallotModel getByGroupIdAndBallotId(int groupId, int ballotId) {
-		return getFirst(
-				GroupBallotModel.COLUMN_GROUP_ID + "=? "
-						+ "AND " + GroupBallotModel.COLUMN_BALLOT_ID + "=?",
-				new String[]{
-						String.valueOf(groupId),
-						String.valueOf(ballotId)
-				});
-	}
+    public GroupBallotModel getByGroupIdAndBallotId(int groupId, int ballotId) {
+        return getFirst(
+            GroupBallotModel.COLUMN_GROUP_ID + "=? "
+                + "AND " + GroupBallotModel.COLUMN_BALLOT_ID + "=?",
+            new String[]{
+                String.valueOf(groupId),
+                String.valueOf(ballotId)
+            });
+    }
 
 
-	public GroupBallotModel getByBallotId(int ballotModelId) {
-		return getFirst(
-				GroupBallotModel.COLUMN_BALLOT_ID + "=?",
-				new String[]{
-						String.valueOf(ballotModelId)
-				});
-	}
+    public GroupBallotModel getByBallotId(int ballotModelId) {
+        return getFirst(
+            GroupBallotModel.COLUMN_BALLOT_ID + "=?",
+            new String[]{
+                String.valueOf(ballotModelId)
+            });
+    }
 
-	private GroupBallotModel convert(Cursor cursor) {
-		if(cursor != null && cursor.getPosition() >= 0) {
-			final GroupBallotModel c = new GroupBallotModel();
+    private GroupBallotModel convert(Cursor cursor) {
+        if (cursor != null && cursor.getPosition() >= 0) {
+            final GroupBallotModel c = new GroupBallotModel();
 
-			//convert default
-			new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
-				@Override
-				public boolean next(CursorHelper cursorHelper) {
-					c
-							.setId(cursorHelper.getInt(GroupBallotModel.COLUMN_ID))
-							.setBallotId(cursorHelper.getInt(GroupBallotModel.COLUMN_BALLOT_ID))
-							.setGroupId(cursorHelper.getInt(GroupBallotModel.COLUMN_GROUP_ID));
-					return false;
-				}
-			});
+            //convert default
+            new CursorHelper(cursor, columnIndexCache).current(new CursorHelper.Callback() {
+                @Override
+                public boolean next(CursorHelper cursorHelper) {
+                    c
+                        .setId(cursorHelper.getInt(GroupBallotModel.COLUMN_ID))
+                        .setBallotId(cursorHelper.getInt(GroupBallotModel.COLUMN_BALLOT_ID))
+                        .setGroupId(cursorHelper.getInt(GroupBallotModel.COLUMN_GROUP_ID));
+                    return false;
+                }
+            });
 
-			return c;
-		}
+            return c;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private ContentValues buildContentValues(GroupBallotModel groupBallotModel) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(GroupBallotModel.COLUMN_GROUP_ID, groupBallotModel.getGroupId());
-		contentValues.put(GroupBallotModel.COLUMN_BALLOT_ID, groupBallotModel.getBallotId());
+    private ContentValues buildContentValues(GroupBallotModel groupBallotModel) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(GroupBallotModel.COLUMN_GROUP_ID, groupBallotModel.getGroupId());
+        contentValues.put(GroupBallotModel.COLUMN_BALLOT_ID, groupBallotModel.getBallotId());
 
-		return contentValues;
-	}
+        return contentValues;
+    }
 
-	public boolean create(GroupBallotModel groupBallotModel) {
-		ContentValues contentValues = buildContentValues(groupBallotModel);
-		long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-		if (newId > 0) {
-			groupBallotModel.setId((int) newId);
-			return true;
-		}
-		return false;
-	}
+    public boolean create(GroupBallotModel groupBallotModel) {
+        ContentValues contentValues = buildContentValues(groupBallotModel);
+        long newId = this.databaseService.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        if (newId > 0) {
+            groupBallotModel.setId((int) newId);
+            return true;
+        }
+        return false;
+    }
 
-	public int deleteByBallotId(int ballotId) {
-		return this.databaseService.getWritableDatabase().delete(this.getTableName(),
-				GroupBallotModel.COLUMN_BALLOT_ID + "=?",
-				new String[]{
-						String.valueOf(ballotId)
-				});
-	}
+    public int deleteByBallotId(int ballotId) {
+        return this.databaseService.getWritableDatabase().delete(this.getTableName(),
+            GroupBallotModel.COLUMN_BALLOT_ID + "=?",
+            new String[]{
+                String.valueOf(ballotId)
+            });
+    }
 
-	private GroupBallotModel getFirst(String selection, String[] selectionArgs) {
-		Cursor cursor = this.databaseService.getReadableDatabase().query (
-				this.getTableName(),
-				null,
-				selection,
-				selectionArgs,
-				null,
-				null,
-				null
-		);
+    private GroupBallotModel getFirst(String selection, String[] selectionArgs) {
+        Cursor cursor = this.databaseService.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        );
 
-		if(cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					return convert(cursor);
-				}
-			}
-			finally {
-				cursor.close();
-			}
-		}
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    return convert(cursor);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public String[] getStatements() {
-		return new String[] {
-				"CREATE TABLE `group_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `groupId` INTEGER NOT NULL , `ballotId` INTEGER NOT NULL )",
-				"CREATE UNIQUE INDEX `groupBallotId` ON `group_ballot` ( `groupId`, `ballotId` )"
-		};
-	}
+    @Override
+    public String[] getStatements() {
+        return new String[]{
+            "CREATE TABLE `group_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `groupId` INTEGER NOT NULL , `ballotId` INTEGER NOT NULL )",
+            "CREATE UNIQUE INDEX `groupBallotId` ON `group_ballot` ( `groupId`, `ballotId` )"
+        };
+    }
 }

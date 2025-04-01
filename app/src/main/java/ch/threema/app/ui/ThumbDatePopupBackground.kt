@@ -43,9 +43,11 @@ internal class ThumbDatePopupBackground(context: Context) : Drawable() {
         paint.isAntiAlias = true
         paint.color = ConfigUtils.getColorFromAttribute(context, R.attr.colorSecondaryContainer)
         paint.style = Paint.Style.FILL
-        paddingStart = context.resources.getDimensionPixelSize(R.dimen.thumb_date_popup_padding_start);
+        paddingStart =
+            context.resources.getDimensionPixelSize(R.dimen.thumb_date_popup_padding_start);
         paddingEnd = context.resources.getDimensionPixelSize(R.dimen.thumb_date_popup_padding_end);
-        paddingTopBottom = context.resources.getDimensionPixelSize(R.dimen.thumb_date_popup_padding_top_bottom);
+        paddingTopBottom =
+            context.resources.getDimensionPixelSize(R.dimen.thumb_date_popup_padding_top_bottom);
     }
 
     override fun draw(canvas: Canvas) {

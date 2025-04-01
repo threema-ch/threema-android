@@ -5,311 +5,311 @@
         <item>@string/image_size_medium</item>
         <item>@string/image_size_large</item>
         <item>@string/image_size_xlarge</item>
-		<item>@string/image_size_original</item>
-	</string-array>
+        <item>@string/image_size_original</item>
+    </string-array>
     <string-array name="list_image_size_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-		<item>3</item>
-		<item>4</item>
-	</string-array>
-	<string-array name="list_video_size">
-		<item>@string/video_size_small</item>
-		<item>@string/video_size_large</item>
-		<item>@string/video_size_original</item>
-	</string-array>
-	<string-array name="list_video_size_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="list_video_size">
+        <item>@string/video_size_small</item>
+        <item>@string/video_size_large</item>
+        <item>@string/video_size_original</item>
+    </string-array>
+    <string-array name="list_video_size_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
-	<string-array name="list_pin_grace_time">
-		<item>@string/grace_thirty_seconds</item>
-		<item>@string/grace_one_minute</item>
-		<item>@string/grace_two_minutes</item>
-		<item>@string/grace_five_minutes</item>
-		<item>@string/grace_ten_minutes</item>
-		<item>@string/grace_thirty_minutes</item>
-		<item>@string/grace_never</item>
-	</string-array>
+    <string-array name="list_pin_grace_time">
+        <item>@string/grace_thirty_seconds</item>
+        <item>@string/grace_one_minute</item>
+        <item>@string/grace_two_minutes</item>
+        <item>@string/grace_five_minutes</item>
+        <item>@string/grace_ten_minutes</item>
+        <item>@string/grace_thirty_minutes</item>
+        <item>@string/grace_never</item>
+    </string-array>
 
-	<string-array name="list_pin_grace_time_values">
-		<item>30</item>
-		<item>60</item>
-		<item>120</item>
-		<item>300</item>
-		<item>600</item>
-		<item>1800</item>
-		<item>-1</item>
-	</string-array>
+    <string-array name="list_pin_grace_time_values">
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1800</item>
+        <item>-1</item>
+    </string-array>
 
-	<string-array name="list_contact_sorting">
-		<item>@string/contact_sorting_last_name</item>
-		<item>@string/contact_sorting_first_name</item>
-	</string-array>
+    <string-array name="list_contact_sorting">
+        <item>@string/contact_sorting_last_name</item>
+        <item>@string/contact_sorting_first_name</item>
+    </string-array>
 
-	<string-array name="list_contact_sorting_values">
-		<item>@string/contact_sorting__last_name</item>
-		<item>@string/contact_sorting__first_name</item>
-	</string-array>
+    <string-array name="list_contact_sorting_values">
+        <item>@string/contact_sorting__last_name</item>
+        <item>@string/contact_sorting__first_name</item>
+    </string-array>
 
-	<string-array name="list_contact_format">
-		<item>@string/contact_format_first_name_last_name</item>
-		<item>@string/contact_format_last_name_first_name</item>
-	</string-array>
+    <string-array name="list_contact_format">
+        <item>@string/contact_format_first_name_last_name</item>
+        <item>@string/contact_format_last_name_first_name</item>
+    </string-array>
 
-	<string-array name="list_contact_format_values">
-		<item>@string/contact_format__first_name_last_name</item>
-		<item>@string/contact_format__last_name_first_name</item>
-	</string-array>
+    <string-array name="list_contact_format_values">
+        <item>@string/contact_format__first_name_last_name</item>
+        <item>@string/contact_format__last_name_first_name</item>
+    </string-array>
 
-	<string-array name="media_gallery_spinner">
-		<item>@string/media_gallery_pictures</item>
-		<item>@string/media_gallery_gifs</item>
-		<item>@string/media_gallery_videos</item>
-		<item>@string/media_gallery_audio</item>
-		<item>@string/audio_placeholder</item>
-		<item>@string/media_gallery_files</item>
-	</string-array>
+    <string-array name="media_gallery_spinner">
+        <item>@string/media_gallery_pictures</item>
+        <item>@string/media_gallery_gifs</item>
+        <item>@string/media_gallery_videos</item>
+        <item>@string/media_gallery_audio</item>
+        <item>@string/audio_placeholder</item>
+        <item>@string/media_gallery_files</item>
+    </string-array>
 
-	<string-array name="list_theme">
-		<item>@string/list_theme_light</item>
-		<item>@string/list_theme_dark</item>
-		<item>@string/system_default</item>
-	</string-array>
-	<string-array name="list_theme_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
+    <string-array name="list_theme">
+        <item>@string/list_theme_light</item>
+        <item>@string/list_theme_dark</item>
+        <item>@string/system_default</item>
+    </string-array>
+    <string-array name="list_theme_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
-	<string-array name="storagemanager_timeout">
-		<item>@string/two_years</item>
-		<item>@string/one_year</item>
-		<item>@string/six_months</item>
-		<item>@string/three_months</item>
-		<item>@string/one_month</item>
-		<item>@string/one_week</item>
-		<item>@string/everything</item>
-	</string-array>
+    <string-array name="storagemanager_timeout">
+        <item>@string/two_years</item>
+        <item>@string/one_year</item>
+        <item>@string/six_months</item>
+        <item>@string/three_months</item>
+        <item>@string/one_month</item>
+        <item>@string/one_week</item>
+        <item>@string/everything</item>
+    </string-array>
 
-	<string-array name="keep_messages_timeout">
-		<item>@string/forever</item>
-		<item>@string/one_year</item>
-		<item>@string/six_months</item>
-		<item>@string/three_months</item>
-		<item>@string/one_month</item>
-		<item>@string/one_week</item>
-	</string-array>
+    <string-array name="keep_messages_timeout">
+        <item>@string/forever</item>
+        <item>@string/one_year</item>
+        <item>@string/six_months</item>
+        <item>@string/three_months</item>
+        <item>@string/one_month</item>
+        <item>@string/one_week</item>
+    </string-array>
 
-	<string-array name="list_emoji_style">
-		<item>@string/prefs_default_emojis</item>
-		<item>@string/prefs_android_emojis</item>
-	</string-array>
-	<string-array name="list_emoji_style_values">
-		<item>0</item>
-		<item>1</item>
-	</string-array>
-	<string-array name="list_fontstyle">
-		<item>@string/fontsize_normal</item>
-		<item>@string/fontsize_large</item>
-		<item>@string/fontsize_xlarge</item>
-	</string-array>
-	<string-array name="list_fontstyle_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
-	<string-array name="list_lock_options">
-		<item>@string/lock_option_none</item>
-		<item>@string/lock_option_pin</item>
-		<item>@string/lock_option_screenlock</item>
-		<item>@string/lock_option_biometric</item>
-	</string-array>
-	<string-array name="list_lock_options_values">
-		<item>none</item>
-		<item>pin</item>
-		<item>system</item>
-		<item>biometric</item>
-	</string-array>
-	<string-array name="list_app_languages">
+    <string-array name="list_emoji_style">
+        <item>@string/prefs_default_emojis</item>
+        <item>@string/prefs_android_emojis</item>
+    </string-array>
+    <string-array name="list_emoji_style_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="list_fontstyle">
+        <item>@string/fontsize_normal</item>
+        <item>@string/fontsize_large</item>
+        <item>@string/fontsize_xlarge</item>
+    </string-array>
+    <string-array name="list_fontstyle_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="list_lock_options">
+        <item>@string/lock_option_none</item>
+        <item>@string/lock_option_pin</item>
+        <item>@string/lock_option_screenlock</item>
+        <item>@string/lock_option_biometric</item>
+    </string-array>
+    <string-array name="list_lock_options_values">
+        <item>none</item>
+        <item>pin</item>
+        <item>system</item>
+        <item>biometric</item>
+    </string-array>
+    <string-array name="list_app_languages">
         <item>@string/notifications_default</item>
-		<item>Català</item> <!-- Catalan -->
-		<item>Čeština</item> <!-- Czech -->
-		<item>Deutsch</item>
-		<item>English</item>
-		<item>Español</item>
-		<item>Français</item>
-		<item>Italiano</item>
-		<item>Magyar</item> <!-- Hungarian -->
-		<item>Nederlands</item>
-		<item>Norsk bokmål</item> <!-- Norwegian -->
-		<item>Polski</item>
-		<item>Português (BR)</item>
-		<item>Rumantsch</item>
+        <item>Català</item> <!-- Catalan -->
+        <item>Čeština</item> <!-- Czech -->
+        <item>Deutsch</item>
+        <item>English</item>
+        <item>Español</item>
+        <item>Français</item>
+        <item>Italiano</item>
+        <item>Magyar</item> <!-- Hungarian -->
+        <item>Nederlands</item>
+        <item>Norsk bokmål</item> <!-- Norwegian -->
+        <item>Polski</item>
+        <item>Português (BR)</item>
+        <item>Rumantsch</item>
         <item>Schwiizertüütsch</item> <!-- Swiss German -->
-		<item>Slovenčina</item> <!-- Slovak -->
-		<item>Türkçe</item>
-		<item>Беларуская</item> <!-- Belarusian -->
-		<item>Pусский</item> <!-- Russian -->
-		<item>Українська</item> <!-- Ukrainian -->
-		<item>简体中文</item> <!-- Chinese simplified -->
-		<item>繁體中文</item> <!-- Chinese traditional -->
-		<item>日本語</item> <!-- Japanese -->
-	</string-array>
-	<!--suppress CheckTagEmptyBody -->
-	<string-array name="list_app_languages_values">
+        <item>Slovenčina</item> <!-- Slovak -->
+        <item>Türkçe</item>
+        <item>Беларуская</item> <!-- Belarusian -->
+        <item>Pусский</item> <!-- Russian -->
+        <item>Українська</item> <!-- Ukrainian -->
+        <item>简体中文</item> <!-- Chinese simplified -->
+        <item>繁體中文</item> <!-- Chinese traditional -->
+        <item>日本語</item> <!-- Japanese -->
+    </string-array>
+    <!--suppress CheckTagEmptyBody -->
+    <string-array name="list_app_languages_values">
         <item></item>
-		<item>ca</item> <!-- Catalan -->
-		<item>cs</item> <!-- Czech -->
-		<item>de</item>
-		<item>en</item>
-		<item>es</item>
-		<item>fr</item>
-		<item>it</item>
-		<item>hu</item> <!-- Hungarian -->
-		<item>nl</item>
-		<item>no</item> <!-- Norwegian -->
-		<item>pl</item>
-		<item>pt</item>
-		<item>rm</item>
+        <item>ca</item> <!-- Catalan -->
+        <item>cs</item> <!-- Czech -->
+        <item>de</item>
+        <item>en</item>
+        <item>es</item>
+        <item>fr</item>
+        <item>it</item>
+        <item>hu</item> <!-- Hungarian -->
+        <item>nl</item>
+        <item>no</item> <!-- Norwegian -->
+        <item>pl</item>
+        <item>pt</item>
+        <item>rm</item>
         <item>gsw</item> <!-- Swiss German -->
-		<item>sk</item> <!-- Slovak -->
-		<item>tr</item>
-		<item>be-BY</item> <!-- Belarusian -->
-		<item>ru</item> <!-- Russian -->
-		<item>uk</item> <!-- Ukrainian -->
-		<item>zh-hans-CN</item> <!-- Chinese simplified. Note that we need 'hans' in it to apply the script correctly in the settings. -->
-		<item>zh-hant-TW</item> <!-- Chinese traditional. Note that we need 'hant' in it to apply the script correctly in the settings. -->
-		<item>ja</item> <!-- Japanese -->
-	</string-array>
-	<string-array name="picrelease_choices">
-		<item>@string/picrelease_nobody</item>
-		<item>@string/picrelease_everyone</item>
-		<item>@string/picrelease_selected</item>
-	</string-array>
+        <item>sk</item> <!-- Slovak -->
+        <item>tr</item>
+        <item>be-BY</item> <!-- Belarusian -->
+        <item>ru</item> <!-- Russian -->
+        <item>uk</item> <!-- Ukrainian -->
+        <item>zh-hans-CN</item> <!-- Chinese simplified. Note that we need 'hans' in it to apply the script correctly in the settings. -->
+        <item>zh-hant-TW</item> <!-- Chinese traditional. Note that we need 'hant' in it to apply the script correctly in the settings. -->
+        <item>ja</item> <!-- Japanese -->
+    </string-array>
+    <string-array name="picrelease_choices">
+        <item>@string/picrelease_nobody</item>
+        <item>@string/picrelease_everyone</item>
+        <item>@string/picrelease_selected</item>
+    </string-array>
 
-	<string-array name="list_echocancel">
-		<item>@string/voip_prefs_aec_hw</item>
-		<item>@string/voip_prefs_aec_sw</item>
-	</string-array>
-	<string-array name="list_echocancel_values">
-		<item>hw</item>
-		<item>sw</item>
-	</string-array>
+    <string-array name="list_echocancel">
+        <item>@string/voip_prefs_aec_hw</item>
+        <item>@string/voip_prefs_aec_sw</item>
+    </string-array>
+    <string-array name="list_echocancel_values">
+        <item>hw</item>
+        <item>sw</item>
+    </string-array>
 
-	<string-array name="list_video_codec">
-		<item>@string/voip_prefs_video_aec_hw</item>
-		<item>@string/voip_prefs_video_codec_no_vp8</item>
-		<item>@string/voip_prefs_video_codec_no_h264hip</item>
-		<item>@string/voip_prefs_video_codec_sw</item>
-	</string-array>
-	<string-array name="list_video_codec_values">
-		<item>hw</item>
-		<item>no-vp8</item>
-		<item>no-h264hip</item>
-		<item>sw</item>
-	</string-array>
+    <string-array name="list_video_codec">
+        <item>@string/voip_prefs_video_aec_hw</item>
+        <item>@string/voip_prefs_video_codec_no_vp8</item>
+        <item>@string/voip_prefs_video_codec_no_h264hip</item>
+        <item>@string/voip_prefs_video_codec_sw</item>
+    </string-array>
+    <string-array name="list_video_codec_values">
+        <item>hw</item>
+        <item>no-vp8</item>
+        <item>no-h264hip</item>
+        <item>sw</item>
+    </string-array>
 
-	<string-array name="list_notification_priority">
-		<item>@string/notification_priority_default</item>
-		<item>@string/notification_priority_high</item>
-		<item>@string/notification_priority_max</item>
-	</string-array>
-	<string-array name="list_notification_priority_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
-	<string-array name="wearable_reply_choices">
-		<item>@string/reply_later</item>
-		<item>@string/reply_on_my_way</item>
-		<item>@string/reply_thank_you</item>
-		<item>@string/reply_youre_welcome</item>
-	</string-array>
+    <string-array name="list_notification_priority">
+        <item>@string/notification_priority_default</item>
+        <item>@string/notification_priority_high</item>
+        <item>@string/notification_priority_max</item>
+    </string-array>
+    <string-array name="list_notification_priority_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="wearable_reply_choices">
+        <item>@string/reply_later</item>
+        <item>@string/reply_on_my_way</item>
+        <item>@string/reply_thank_you</item>
+        <item>@string/reply_youre_welcome</item>
+    </string-array>
 
-	<string-array name="list_auto_download">
-		<item>@string/media_gallery_pictures</item>
-		<item>@string/media_gallery_audio</item>
-		<item>@string/media_gallery_videos</item>
-		<item>@string/media_files</item>
-	</string-array>
+    <string-array name="list_auto_download">
+        <item>@string/media_gallery_pictures</item>
+        <item>@string/media_gallery_audio</item>
+        <item>@string/media_gallery_videos</item>
+        <item>@string/media_files</item>
+    </string-array>
 
-	<!-- values correspond to MessageType ordinal -->
-	<string-array name="list_auto_download_values">
-		<item>1</item> <!-- image -->
-		<item>3</item> <!-- audio -->
-		<item>2</item> <!-- video -->
-		<item>8</item> <!-- files -->
-	</string-array>
+    <!-- values correspond to MessageType ordinal -->
+    <string-array name="list_auto_download_values">
+        <item>1</item> <!-- image -->
+        <item>3</item> <!-- audio -->
+        <item>2</item> <!-- video -->
+        <item>8</item> <!-- files -->
+    </string-array>
 
-	<string-array name="list_auto_download_mobile_default">
-		<item>1</item>
-	</string-array>
+    <string-array name="list_auto_download_mobile_default">
+        <item>1</item>
+    </string-array>
 
-	<!-- values correspond to MessageType ordinal -->
-	<string-array name="list_auto_download_wifi_default">
-		<item>1</item>
-		<item>3</item>
-		<item>2</item>
-		<item>8</item>
-	</string-array>
+    <!-- values correspond to MessageType ordinal -->
+    <string-array name="list_auto_download_wifi_default">
+        <item>1</item>
+        <item>3</item>
+        <item>2</item>
+        <item>8</item>
+    </string-array>
 
-	<string-array name="threema_safe_error">
-		<item>@string/safe_successful</item>
-		<item>@string/safe_connection_error</item>
-		<item>@string/safe_unsuccessful</item>
-		<item>@string/safe_unsuccessful</item>
-		<item>@string/safe_upload_failed</item>
-		<item>@string/safe_unsuccessful</item>
-		<item>@string/safe_upload_size_exceeded</item>
-	</string-array>
+    <string-array name="threema_safe_error">
+        <item>@string/safe_successful</item>
+        <item>@string/safe_connection_error</item>
+        <item>@string/safe_unsuccessful</item>
+        <item>@string/safe_unsuccessful</item>
+        <item>@string/safe_upload_failed</item>
+        <item>@string/safe_unsuccessful</item>
+        <item>@string/safe_upload_size_exceeded</item>
+    </string-array>
 
-	<string-array name="working_days">
-		<item>Sun</item>
-		<item>Mon</item>
-		<item>Tue</item>
-		<item>Wed</item>
-		<item>Thu</item>
-		<item>Fri</item>
-		<item>Sat</item>
-	</string-array>
+    <string-array name="working_days">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+    </string-array>
 
-	<string-array name="working_days_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-		<item>4</item>
-		<item>5</item>
-		<item>6</item>
-	</string-array>
+    <string-array name="working_days_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
 
-	<string-array name="working_days_default">
-		<item>1</item>
-		<item>2</item>
-		<item>3</item>
-		<item>4</item>
-		<item>5</item>
-	</string-array>
+    <string-array name="working_days_default">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 
-	<string-array name="list_videocall_profile">
-		<item>@string/videocall_profile_auto</item>
-		<item>@string/videocall_profile_low_bandwidth</item>
-		<item>@string/videocall_profile_max_quality</item>
-	</string-array>
+    <string-array name="list_videocall_profile">
+        <item>@string/videocall_profile_auto</item>
+        <item>@string/videocall_profile_low_bandwidth</item>
+        <item>@string/videocall_profile_max_quality</item>
+    </string-array>
 
-	<string-array name="list_videocall_profile_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
+    <string-array name="list_videocall_profile_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 
-	<string-array name="receipts_override_choices">
-		<item></item>
-		<item>@string/receipts_override_choice_send</item>
-		<item>@string/receipts_override_choice_dont_send</item>
-	</string-array>
+    <string-array name="receipts_override_choices">
+        <item></item>
+        <item>@string/receipts_override_choice_send</item>
+        <item>@string/receipts_override_choice_dont_send</item>
+    </string-array>
 </resources>

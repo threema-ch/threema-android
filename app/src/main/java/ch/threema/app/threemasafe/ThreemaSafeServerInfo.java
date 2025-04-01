@@ -42,167 +42,168 @@ import ch.threema.base.utils.Utils;
 import static ch.threema.app.threemasafe.ThreemaSafeService.BACKUP_ID_LENGTH;
 
 public class ThreemaSafeServerInfo {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServerInfo");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServerInfo");
 
-	private static final String SAFE_URL_PREFIX = "https://";
-	private static final String BACKUP_DIRECTORY_NAME = "backups/";
+    private static final String SAFE_URL_PREFIX = "https://";
+    private static final String BACKUP_DIRECTORY_NAME = "backups/";
 
-	// TODO(ANDR-2968): Remove the check for the legacy default server name
-	private static final String LEGACY_DEFAULT_SERVER_NAME = "safe-%h.threema.ch";
+    // TODO(ANDR-2968): Remove the check for the legacy default server name
+    private static final String LEGACY_DEFAULT_SERVER_NAME = "safe-%h.threema.ch";
 
-	@Nullable
-	private String customServerName;
-	@NonNull
-	private final String defaultServerName = getDefaultServerNameFromServerAddressProvider();
-	private String serverUsername;
-	private String serverPassword;
+    @Nullable
+    private String customServerName;
+    @NonNull
+    private final String defaultServerName = getDefaultServerNameFromServerAddressProvider();
+    private String serverUsername;
+    private String serverPassword;
 
-	public ThreemaSafeServerInfo() { }
+    public ThreemaSafeServerInfo() {
+    }
 
-	public ThreemaSafeServerInfo(String customServerName, String serverUsername, String serverPassword) {
-		this.serverUsername = serverUsername;
-		this.serverPassword = serverPassword;
-		this.setCustomServerName(customServerName);
-	}
+    public ThreemaSafeServerInfo(String customServerName, String serverUsername, String serverPassword) {
+        this.serverUsername = serverUsername;
+        this.serverPassword = serverPassword;
+        this.setCustomServerName(customServerName);
+    }
 
-	@Nullable
-	public String getCustomServerName() {
-		return customServerName;
-	}
+    @Nullable
+    public String getCustomServerName() {
+        return customServerName;
+    }
 
-	public void setCustomServerName(@Nullable String customServerName) {
-		if (!TestUtil.isEmptyOrNull(customServerName)) {
-			this.customServerName = customServerName.trim().replace(SAFE_URL_PREFIX, "");
-			if (defaultServerName.equals(this.customServerName) || LEGACY_DEFAULT_SERVER_NAME.equals(this.customServerName)) {
-				this.customServerName = null;
-				logger.warn("Tried to set default server as custom server: {}", customServerName);
-			}
-		} else {
-			this.customServerName = null;
-		}
-	}
+    public void setCustomServerName(@Nullable String customServerName) {
+        if (!TestUtil.isEmptyOrNull(customServerName)) {
+            this.customServerName = customServerName.trim().replace(SAFE_URL_PREFIX, "");
+            if (defaultServerName.equals(this.customServerName) || LEGACY_DEFAULT_SERVER_NAME.equals(this.customServerName)) {
+                this.customServerName = null;
+                logger.warn("Tried to set default server as custom server: {}", customServerName);
+            }
+        } else {
+            this.customServerName = null;
+        }
+    }
 
-	public String getServerUsername() {
-		return serverUsername;
-	}
+    public String getServerUsername() {
+        return serverUsername;
+    }
 
-	void setServerUsername(String serverUsername) {
-		this.serverUsername = serverUsername;
-	}
+    void setServerUsername(String serverUsername) {
+        this.serverUsername = serverUsername;
+    }
 
-	public String getServerPassword() {
-		return serverPassword;
-	}
+    public String getServerPassword() {
+        return serverPassword;
+    }
 
-	void setServerPassword(String serverPassword) {
-		this.serverPassword = serverPassword;
-	}
+    void setServerPassword(String serverPassword) {
+        this.serverPassword = serverPassword;
+    }
 
-	public boolean isDefaultServer() {
-		return TestUtil.isEmptyOrNull(customServerName);
-	}
+    public boolean isDefaultServer() {
+        return TestUtil.isEmptyOrNull(customServerName);
+    }
 
-	URL getBackupUrl(byte[] backupId) throws ThreemaException {
-		if (backupId == null || backupId.length != BACKUP_ID_LENGTH) {
-			throw new ThreemaException("Invalid Backup ID");
-		}
+    URL getBackupUrl(byte[] backupId) throws ThreemaException {
+        if (backupId == null || backupId.length != BACKUP_ID_LENGTH) {
+            throw new ThreemaException("Invalid Backup ID");
+        }
 
-		URL serverUrl = getServerUrl(backupId, BACKUP_DIRECTORY_NAME + Utils.byteArrayToHexString(backupId));
-		if (serverUrl == null) {
-			throw new ThreemaException("Invalid Server URL");
-		}
+        URL serverUrl = getServerUrl(backupId, BACKUP_DIRECTORY_NAME + Utils.byteArrayToHexString(backupId));
+        if (serverUrl == null) {
+            throw new ThreemaException("Invalid Server URL");
+        }
 
-		return serverUrl;
-	}
+        return serverUrl;
+    }
 
-	URL getConfigUrl(byte[] backupId) throws ThreemaException {
-		URL serverUrl = getServerUrl(backupId, "config");
-		if (serverUrl == null) {
-			throw new ThreemaException("Invalid URL");
-		}
+    URL getConfigUrl(byte[] backupId) throws ThreemaException {
+        URL serverUrl = getServerUrl(backupId, "config");
+        if (serverUrl == null) {
+            throw new ThreemaException("Invalid URL");
+        }
 
-		return serverUrl;
-	}
+        return serverUrl;
+    }
 
-	void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
-		String username = serverUsername, password = serverPassword;
+    void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
+        String username = serverUsername, password = serverPassword;
 
-		if ((TestUtil.isEmptyOrNull(serverUsername) || TestUtil.isEmptyOrNull(serverPassword)) && !TestUtil.isEmptyOrNull(customServerName)) {
-			int atPos = customServerName.indexOf("@");
-			if (atPos > 0) {
-				String userInfo = customServerName.substring(0, atPos);
+        if ((TestUtil.isEmptyOrNull(serverUsername) || TestUtil.isEmptyOrNull(serverPassword)) && !TestUtil.isEmptyOrNull(customServerName)) {
+            int atPos = customServerName.indexOf("@");
+            if (atPos > 0) {
+                String userInfo = customServerName.substring(0, atPos);
 
-				int colonPos = userInfo.indexOf(":");
-				if (colonPos > 0 && colonPos < userInfo.length() - 1) {
-					username = userInfo.substring(0, colonPos);
-					password = userInfo.substring(colonPos + 1);
-				}
-			}
-		}
+                int colonPos = userInfo.indexOf(":");
+                if (colonPos > 0 && colonPos < userInfo.length() - 1) {
+                    username = userInfo.substring(0, colonPos);
+                    password = userInfo.substring(colonPos + 1);
+                }
+            }
+        }
 
-		if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
-			String basicAuth = "Basic " + Base64.encodeBytes((username + ":" + password).getBytes());
-			urlConnection.setRequestProperty("Authorization", basicAuth);
-		} else if (ConfigUtils.isOnPremBuild()) {
-			urlConnection.setRequestProperty("Authorization", "Token " + ThreemaApplication.getServiceManager().getApiService().getAuthToken());
-		}
-	}
+        if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
+            String basicAuth = "Basic " + Base64.encodeBytes((username + ":" + password).getBytes());
+            urlConnection.setRequestProperty("Authorization", basicAuth);
+        } else if (ConfigUtils.isOnPremBuild()) {
+            urlConnection.setRequestProperty("Authorization", "Token " + ThreemaApplication.getServiceManager().getApiService().getAuthToken());
+        }
+    }
 
-	private String getCustomServerNameOrDefault() {
-		if (!TestUtil.isEmptyOrNull(customServerName)) {
-			return customServerName;
-		} else {
-			return defaultServerName;
-		}
-	}
+    private String getCustomServerNameOrDefault() {
+        if (!TestUtil.isEmptyOrNull(customServerName)) {
+            return customServerName;
+        } else {
+            return defaultServerName;
+        }
+    }
 
-	private URL getServerUrl(byte[] backupId, String filePart) {
-		try {
-			String shardHash = getShardHash(backupId);
-			String serverUrl = SAFE_URL_PREFIX + getCustomServerNameOrDefault().replace("{backupIdPrefix8}", shardHash);
+    private URL getServerUrl(byte[] backupId, String filePart) {
+        try {
+            String shardHash = getShardHash(backupId);
+            String serverUrl = SAFE_URL_PREFIX + getCustomServerNameOrDefault().replace("{backupIdPrefix8}", shardHash);
 
-			if (!serverUrl.endsWith("/")) {
-				serverUrl += "/";
-			}
-			serverUrl += filePart;
-			return new URL(serverUrl);
-		} catch (MalformedURLException e) {
-			return null;
-		}
-	}
+            if (!serverUrl.endsWith("/")) {
+                serverUrl += "/";
+            }
+            serverUrl += filePart;
+            return new URL(serverUrl);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
 
-	private String getShardHash(byte[] backupId) {
-		if (backupId != null && backupId.length == BACKUP_ID_LENGTH) {
-			return Utils.byteArrayToHexString(backupId).substring(0, 2);
-		}
-		return "xx";
-	}
+    private String getShardHash(byte[] backupId) {
+        if (backupId != null && backupId.length == BACKUP_ID_LENGTH) {
+            return Utils.byteArrayToHexString(backupId).substring(0, 2);
+        }
+        return "xx";
+    }
 
-	public String getHostName() {
-		try {
-			return new URL(SAFE_URL_PREFIX + getCustomServerNameOrDefault()).getHost();
-		} catch (MalformedURLException e) {
-			logger.error("Exception", e);
-		}
-		return "";
-	}
+    public String getHostName() {
+        try {
+            return new URL(SAFE_URL_PREFIX + getCustomServerNameOrDefault()).getHost();
+        } catch (MalformedURLException e) {
+            logger.error("Exception", e);
+        }
+        return "";
+    }
 
-	@NonNull
-	private String getDefaultServerNameFromServerAddressProvider() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Cannot retrieve default safe server name as the service manager is null");
-			return "";
-		}
-		try {
-			return serviceManager
-				.getServerAddressProviderService()
-				.getServerAddressProvider()
-				.getSafeServerUrl(false)
-				.replace(SAFE_URL_PREFIX, "");
-		} catch (ThreemaException e) {
-			logger.error("Could not get default safe server name", e);
-			return "";
-		}
-	}
+    @NonNull
+    private String getDefaultServerNameFromServerAddressProvider() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            logger.error("Cannot retrieve default safe server name as the service manager is null");
+            return "";
+        }
+        try {
+            return serviceManager
+                .getServerAddressProviderService()
+                .getServerAddressProvider()
+                .getSafeServerUrl(false)
+                .replace(SAFE_URL_PREFIX, "");
+        } catch (ThreemaException e) {
+            logger.error("Could not get default safe server name", e);
+            return "";
+        }
+    }
 }

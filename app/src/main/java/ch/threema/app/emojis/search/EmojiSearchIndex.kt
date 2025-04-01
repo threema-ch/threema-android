@@ -104,7 +104,11 @@ class EmojiSearchIndex(
         if (language in brokenSearchTermLanguages) {
             logger.warn("Search terms for language '{}' are broken", language)
         } else if (getLanguageVersion(language, dao) != SEARCH_INDEX_VERSION) {
-            logger.info("Prepare emoji search terms for language '{}' and version {}", language, SEARCH_INDEX_VERSION)
+            logger.info(
+                "Prepare emoji search terms for language '{}' and version {}",
+                language,
+                SEARCH_INDEX_VERSION
+            )
             dao.deleteSearchTermsForLanguage(language)
             val terms = readSearchTermsFromAssets(language)
             insertSearchTerms(language, terms, dao)

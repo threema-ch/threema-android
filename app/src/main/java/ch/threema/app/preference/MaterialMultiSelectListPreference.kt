@@ -33,9 +33,10 @@ class MaterialMultiSelectListPreference : MultiSelectListPreferenceDialogFragmen
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context: Context? = activity
         mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE
-        val builder = MaterialAlertDialogBuilder(requireActivity()).setTitle(preference.dialogTitle).setIcon(preference.dialogIcon)
-                .setPositiveButton(preference.positiveButtonText, this)
-                .setNegativeButton(preference.negativeButtonText, this)
+        val builder = MaterialAlertDialogBuilder(requireActivity()).setTitle(preference.dialogTitle)
+            .setIcon(preference.dialogIcon)
+            .setPositiveButton(preference.positiveButtonText, this)
+            .setNegativeButton(preference.negativeButtonText, this)
         val contentView = context?.let { onCreateDialogView(it) }
         if (contentView != null) {
             onBindDialogView(contentView)

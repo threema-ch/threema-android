@@ -34,51 +34,51 @@ import java.util.Arrays;
  */
 public class BallotId {
 
-	private final byte[] ballotId;
+    private final byte[] ballotId;
 
-	public BallotId() {
-		ballotId = new byte[ProtocolDefines.BALLOT_ID_LEN];
-		SecureRandom rnd = new SecureRandom();
-		rnd.nextBytes(ballotId);
-	}
+    public BallotId() {
+        ballotId = new byte[ProtocolDefines.BALLOT_ID_LEN];
+        SecureRandom rnd = new SecureRandom();
+        rnd.nextBytes(ballotId);
+    }
 
-	public BallotId(byte[] ballotId) throws ThreemaException {
-		if (ballotId.length != ProtocolDefines.BALLOT_ID_LEN)
-			/* Invalid ballot ID length */
-			throw new ThreemaException("TM028");
+    public BallotId(byte[] ballotId) throws ThreemaException {
+        if (ballotId.length != ProtocolDefines.BALLOT_ID_LEN)
+            /* Invalid ballot ID length */
+            throw new ThreemaException("TM028");
 
-		this.ballotId = ballotId;
-	}
+        this.ballotId = ballotId;
+    }
 
-	public BallotId(byte[] data, int offset) {
-		ballotId = new byte[ProtocolDefines.BALLOT_ID_LEN];
-		System.arraycopy(data, offset, ballotId, 0, ProtocolDefines.BALLOT_ID_LEN);
-	}
+    public BallotId(byte[] data, int offset) {
+        ballotId = new byte[ProtocolDefines.BALLOT_ID_LEN];
+        System.arraycopy(data, offset, ballotId, 0, ProtocolDefines.BALLOT_ID_LEN);
+    }
 
-	public byte[] getBallotId() {
-		return ballotId;
-	}
+    public byte[] getBallotId() {
+        return ballotId;
+    }
 
-	@Override
-	public String toString() {
-		return Utils.byteArrayToHexString(ballotId);
-	}
+    @Override
+    public String toString() {
+        return Utils.byteArrayToHexString(ballotId);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (obj.getClass() != getClass())
-			return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
 
-		return Arrays.equals(ballotId, ((BallotId)obj).ballotId);
-	}
+        return Arrays.equals(ballotId, ((BallotId) obj).ballotId);
+    }
 
-	@Override
-	public int hashCode() {
-		/* ballot IDs are usually random, so just taking the first four bytes is fine */
-		return ballotId[0] << 24 | (ballotId[1] & 0xFF) << 16 | (ballotId[2] & 0xFF) << 8 | (ballotId[3] & 0xFF);
-	}
+    @Override
+    public int hashCode() {
+        /* ballot IDs are usually random, so just taking the first four bytes is fine */
+        return ballotId[0] << 24 | (ballotId[1] & 0xFF) << 16 | (ballotId[2] & 0xFF) << 8 | (ballotId[3] & 0xFF);
+    }
 }

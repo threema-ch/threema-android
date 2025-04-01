@@ -27,7 +27,8 @@ import ch.threema.domain.protocol.connection.util.MdLayer4Controller
 import ch.threema.domain.protocol.connection.util.ServerConnectionController
 import ch.threema.domain.protocol.connection.util.ServerConnectionControllers
 
-internal class D2mControllers(d2mConnectionConfiguration: D2mConnectionConfiguration) : ServerConnectionControllers {
+internal class D2mControllers(d2mConnectionConfiguration: D2mConnectionConfiguration) :
+    ServerConnectionControllers {
     private val d2mController = D2mController(d2mConnectionConfiguration)
 
     override val serverConnectionController: ServerConnectionController = d2mController

@@ -91,7 +91,10 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
     companion object {
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage, fromIdentity: String): GroupPollSetupMessage =
+        fun fromReflected(
+            message: MdD2D.IncomingMessage,
+            fromIdentity: String
+        ): GroupPollSetupMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
                 fromIdentity = fromIdentity
@@ -100,13 +103,16 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
             }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage, fromIdentity: String): GroupPollSetupMessage =
-             fromByteArray(
-                 data = message.body.toByteArray(),
-                 fromIdentity = fromIdentity,
-             ).apply {
-                 initializeCommonProperties(message)
-             }
+        fun fromReflected(
+            message: MdD2D.OutgoingMessage,
+            fromIdentity: String
+        ): GroupPollSetupMessage =
+            fromByteArray(
+                data = message.body.toByteArray(),
+                fromIdentity = fromIdentity,
+            ).apply {
+                initializeCommonProperties(message)
+            }
 
         @JvmStatic
         fun fromByteArray(data: ByteArray, fromIdentity: String): GroupPollSetupMessage =
@@ -129,7 +135,12 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
          */
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, offset: Int, length: Int, fromIdentity: String): GroupPollSetupMessage {
+        fun fromByteArray(
+            data: ByteArray,
+            offset: Int,
+            length: Int,
+            fromIdentity: String
+        ): GroupPollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")
             } else if (offset < 0) {
@@ -143,7 +154,12 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
                 ballotCreatorIdentity = fromIdentity
 
                 var positionIndex = offset
-                groupCreator = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+                groupCreator = String(
+                    data,
+                    positionIndex,
+                    ProtocolDefines.IDENTITY_LEN,
+                    StandardCharsets.US_ASCII
+                )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
                 apiGroupId = GroupId(data, positionIndex)
@@ -152,7 +168,12 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
                 ballotId = BallotId(data, positionIndex)
                 positionIndex += ProtocolDefines.BALLOT_ID_LEN
 
-                val jsonObjectString = String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8)
+                val jsonObjectString = String(
+                    data,
+                    positionIndex,
+                    length + offset - positionIndex,
+                    StandardCharsets.UTF_8
+                )
                 ballotData = BallotData.parse(jsonObjectString)
 
                 // this is only used for debugging

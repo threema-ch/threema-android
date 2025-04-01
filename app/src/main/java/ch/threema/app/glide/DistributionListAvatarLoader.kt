@@ -29,11 +29,21 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
-class DistributionListAvatarLoader(val context: Context) : ModelLoader<AvatarCacheServiceImpl.DistributionListAvatarConfig, Bitmap> {
-    private val distributionListService = ThreemaApplication.getServiceManager()?.distributionListService
+class DistributionListAvatarLoader(val context: Context) :
+    ModelLoader<AvatarCacheServiceImpl.DistributionListAvatarConfig, Bitmap> {
+    private val distributionListService =
+        ThreemaApplication.getServiceManager()?.distributionListService
 
-    override fun buildLoadData(config: AvatarCacheServiceImpl.DistributionListAvatarConfig, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
-        return ModelLoader.LoadData(ObjectKey(config), DistributionListAvatarFetcher(context, distributionListService, config))
+    override fun buildLoadData(
+        config: AvatarCacheServiceImpl.DistributionListAvatarConfig,
+        width: Int,
+        height: Int,
+        options: Options
+    ): ModelLoader.LoadData<Bitmap> {
+        return ModelLoader.LoadData(
+            ObjectKey(config),
+            DistributionListAvatarFetcher(context, distributionListService, config)
+        )
     }
 
     override fun handles(model: AvatarCacheServiceImpl.DistributionListAvatarConfig) = true

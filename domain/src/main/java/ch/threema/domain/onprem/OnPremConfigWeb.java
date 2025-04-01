@@ -22,25 +22,25 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigWeb {
-	private final String url;
-	private final String overrideSaltyRtcHost;
-	private final int overrideSaltyRtcPort;
+    private final String url;
+    private final String overrideSaltyRtcHost;
+    private final int overrideSaltyRtcPort;
 
-	public OnPremConfigWeb(String url, String overrideSaltyRtcHost, int overrideSaltyRtcPort) {
-		this.url = url;
-		this.overrideSaltyRtcHost = overrideSaltyRtcHost;
-		this.overrideSaltyRtcPort = overrideSaltyRtcPort;
-	}
+    public OnPremConfigWeb(String url, String overrideSaltyRtcHost, int overrideSaltyRtcPort) {
+        this.url = url;
+        this.overrideSaltyRtcHost = overrideSaltyRtcHost;
+        this.overrideSaltyRtcPort = overrideSaltyRtcPort;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public String getOverrideSaltyRtcHost() {
-		return overrideSaltyRtcHost;
-	}
+    public String getOverrideSaltyRtcHost() {
+        return overrideSaltyRtcHost;
+    }
 
-	public int getOverrideSaltyRtcPort() {
-		return overrideSaltyRtcPort;
-	}
+    public int getOverrideSaltyRtcPort() {
+        return overrideSaltyRtcPort;
+    }
 }

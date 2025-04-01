@@ -46,69 +46,72 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 @AnyThread
 public abstract class Converter {
 
-	private static ServiceManager serviceManager = null;
+    private static ServiceManager serviceManager = null;
 
-	@NonNull
-	protected static ServiceManager getServiceManager() {
-		if (serviceManager == null) {
-			serviceManager = ThreemaApplication.requireServiceManager();
-		}
-		return serviceManager;
-	}
+    @NonNull
+    protected static ServiceManager getServiceManager() {
+        if (serviceManager == null) {
+            serviceManager = ThreemaApplication.requireServiceManager();
+        }
+        return serviceManager;
+    }
 
-	protected static BlockedIdentitiesService getBlockedContactsService() {
-		return getServiceManager().getBlockedIdentitiesService();
-	}
+    protected static BlockedIdentitiesService getBlockedContactsService() {
+        return getServiceManager().getBlockedIdentitiesService();
+    }
 
-	protected static ContactService getContactService() throws ConversionException {
-		try {
-			return getServiceManager().getContactService();
-		} catch (NullPointerException | MasterKeyLockedException | FileSystemNotPresentException e) {
-			throw new ConversionException(e);
-		}
-	}
+    protected static ContactService getContactService() throws ConversionException {
+        try {
+            return getServiceManager().getContactService();
+        } catch (NullPointerException | MasterKeyLockedException |
+                 FileSystemNotPresentException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	protected static DeadlineListService getHiddenChatListService() throws ConversionException {
-		try {
-			return getServiceManager().getHiddenChatsListService();
-		}
-		catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-	}
-	protected static Context getContext() {
-		return getServiceManager().getContext();
-	}
+    protected static DeadlineListService getHiddenChatListService() throws ConversionException {
+        try {
+            return getServiceManager().getHiddenChatsListService();
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	protected static GroupService getGroupService() throws ConversionException {
-		try {
-			return getServiceManager().getGroupService();
-		} catch (NullPointerException | MasterKeyLockedException | FileSystemNotPresentException e) {
-			throw new ConversionException(e);
-		}
-	}
+    protected static Context getContext() {
+        return getServiceManager().getContext();
+    }
 
-	protected static DistributionListService getDistributionListService() throws ConversionException {
-		try {
-			return getServiceManager().getDistributionListService();
-		} catch (NullPointerException | MasterKeyLockedException | NoIdentityException | FileSystemNotPresentException e) {
-			throw new ConversionException(e);
-		}
-	}
+    protected static GroupService getGroupService() throws ConversionException {
+        try {
+            return getServiceManager().getGroupService();
+        } catch (NullPointerException | MasterKeyLockedException |
+                 FileSystemNotPresentException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	protected static PreferenceService getPreferenceService()  throws ConversionException {
-		try {
-			return getServiceManager().getPreferenceService();
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-	}
+    protected static DistributionListService getDistributionListService() throws ConversionException {
+        try {
+            return getServiceManager().getDistributionListService();
+        } catch (NullPointerException | MasterKeyLockedException | NoIdentityException |
+                 FileSystemNotPresentException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	protected static FileService getFileService()  throws ConversionException {
-		try {
-			return getServiceManager().getFileService();
-		} catch (NullPointerException | FileSystemNotPresentException e) {
-			throw new ConversionException(e);
-		}
-	}
+    protected static PreferenceService getPreferenceService() throws ConversionException {
+        try {
+            return getServiceManager().getPreferenceService();
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    protected static FileService getFileService() throws ConversionException {
+        try {
+            return getServiceManager().getFileService();
+        } catch (NullPointerException | FileSystemNotPresentException e) {
+            throw new ConversionException(e);
+        }
+    }
 }

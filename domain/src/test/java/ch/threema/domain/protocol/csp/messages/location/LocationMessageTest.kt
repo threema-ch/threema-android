@@ -197,7 +197,8 @@ class LocationMessageTest {
         val body = locationMessage.body
 
         // assert
-        val expected = "30.876578,120.461526,20.340000\nPizza Place\nCool Street, Cool City, 50".toByteArray()
+        val expected =
+            "30.876578,120.461526,20.340000\nPizza Place\nCool Street, Cool City, 50".toByteArray()
         assertContentEquals(expected, body)
     }
 }

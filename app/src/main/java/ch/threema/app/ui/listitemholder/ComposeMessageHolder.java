@@ -37,34 +37,34 @@ import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.TranscoderView;
 
 public class ComposeMessageHolder extends AvatarListItemHolder {
-	public TextView bodyTextView;
-	public TextView secondaryTextView;
-	public TextView tertiaryTextView;
-	public TextView size;
-	public TextView senderName;
-	public TextView dateView;
-	public View senderView;
-	public ImageView deliveredIndicator, datePrefixIcon, starredIcon;
-	public ImageView attachmentImage;
-	public MaterialCardView messageBlockView;
-	public ViewGroup contentView;
-	public AudioProgressBarView seekBar;
-	public View quoteBar;
-	public ImageView quoteThumbnail, quoteTypeImage;
-	public TranscoderView transcoderView;
-	public FrameLayout readOnContainer;
-	public Chip readOnButton;
-	public ImageView audioMessageIcon;
-	public TextView tapToResend;
-	public View footerView;
-	public EmojiReactionGroup emojiReactionGroup;
+    public TextView bodyTextView;
+    public TextView secondaryTextView;
+    public TextView tertiaryTextView;
+    public TextView size;
+    public TextView senderName;
+    public TextView dateView;
+    public View senderView;
+    public ImageView deliveredIndicator, datePrefixIcon, starredIcon;
+    public ImageView attachmentImage;
+    public MaterialCardView messageBlockView;
+    public ViewGroup contentView;
+    public AudioProgressBarView seekBar;
+    public View quoteBar;
+    public ImageView quoteThumbnail, quoteTypeImage;
+    public TranscoderView transcoderView;
+    public FrameLayout readOnContainer;
+    public Chip readOnButton;
+    public ImageView audioMessageIcon;
+    public TextView tapToResend;
+    public View footerView;
+    public EmojiReactionGroup emojiReactionGroup;
 
-	public ControllerView controller;
+    public ControllerView controller;
 
-	// associated messageplayer
-	public MessagePlayer messagePlayer;
+    // associated messageplayer
+    public MessagePlayer messagePlayer;
 
-	public TextView editedText;
-	// content type of item represented by this holder (layout, decorator etc.)
-	public int itemType;
+    public TextView editedText;
+    // content type of item represented by this holder (layout, decorator etc.)
+    public int itemType;
 }

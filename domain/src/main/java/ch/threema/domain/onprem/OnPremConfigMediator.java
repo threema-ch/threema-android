@@ -22,19 +22,19 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigMediator {
-	private final String url;
-	private final OnPremConfigBlob blob;
+    private final String url;
+    private final OnPremConfigBlob blob;
 
-	public OnPremConfigMediator(String url, OnPremConfigBlob blob) {
-		this.url = url;
-		this.blob = blob;
-	}
+    public OnPremConfigMediator(String url, OnPremConfigBlob blob) {
+        this.url = url;
+        this.blob = blob;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public OnPremConfigBlob getBlob() {
-		return blob;
-	}
+    public OnPremConfigBlob getBlob() {
+        return blob;
+    }
 }

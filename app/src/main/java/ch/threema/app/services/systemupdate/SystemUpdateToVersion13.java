@@ -31,39 +31,39 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion13 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion13( SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion13(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM group_member LIMIT 0", null).getColumnNames();
+    @Override
+    public boolean runDirectly() {
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM group_member LIMIT 0", null).getColumnNames();
 
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("color");
-			}
-		}) != null;
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("color");
+            }
+        }) != null;
 
 
-		if(!hasField) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE group_member ADD COLUMN color INT DEFAULT 0");
-		}
+        if (!hasField) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE group_member ADD COLUMN color INT DEFAULT 0");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 13";
-	}
+    @Override
+    public String getText() {
+        return "version 13";
+    }
 }

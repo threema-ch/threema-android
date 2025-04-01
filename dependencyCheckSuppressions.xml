@@ -80,15 +80,18 @@
         <cpe>cpe:/a:jetbrains:kotlin</cpe>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib\-common@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib\-common@.*$
+        </packageUrl>
         <cpe>cpe:/a:jetbrains:kotlin</cpe>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/com\.google\.devtools\.ksp/symbol\-processing\-api@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/com\.google\.devtools\.ksp/symbol\-processing\-api@.*$
+        </packageUrl>
         <cpe>cpe:/a:processing:processing</cpe>
     </suppress>
     <suppress>
-        <packageUrl regex="true">^pkg:maven/androidx\.room/room\-compiler\-processing@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/androidx\.room/room\-compiler\-processing@.*$
+        </packageUrl>
         <cpe>cpe:/a:processing:processing</cpe>
     </suppress>
     <suppress>

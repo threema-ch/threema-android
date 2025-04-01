@@ -28,17 +28,21 @@ import ch.threema.storage.models.AbstractMessageModel;
  * Handling methods for messages
  */
 public interface MessageSendingService {
-	interface MessageSendingServiceState{
-		void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver);
-		void exception(Exception x, int tries);
-	}
+    interface MessageSendingServiceState {
+        void processingFailed(AbstractMessageModel messageModel, MessageReceiver<AbstractMessageModel> receiver);
 
-	interface MessageSendingProcess {
-		MessageReceiver<AbstractMessageModel> getReceiver();
-		AbstractMessageModel getMessageModel();
-		boolean send() throws Exception;
-	}
+        void exception(Exception x, int tries);
+    }
 
-	void addToQueue(MessageSendingProcess process);
-	void abort(String messageUid);
+    interface MessageSendingProcess {
+        MessageReceiver<AbstractMessageModel> getReceiver();
+
+        AbstractMessageModel getMessageModel();
+
+        boolean send() throws Exception;
+    }
+
+    void addToQueue(MessageSendingProcess process);
+
+    void abort(String messageUid);
 }

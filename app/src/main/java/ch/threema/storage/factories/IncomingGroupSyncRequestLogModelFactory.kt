@@ -53,9 +53,13 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
      * [IncomingGroupSyncRequestLogModel.lastHandledRequest] is set to 0.
      */
     @Synchronized
-    fun getByGroupIdAndSenderIdentity(localDbGroupId: Int, senderIdentity: String): IncomingGroupSyncRequestLogModel {
+    fun getByGroupIdAndSenderIdentity(
+        localDbGroupId: Int,
+        senderIdentity: String
+    ): IncomingGroupSyncRequestLogModel {
         val groupIdSelection = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?"
-        val senderIdentitySelection = "${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY} = ?"
+        val senderIdentitySelection =
+            "${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY} = ?"
         val selection = "$groupIdSelection AND $senderIdentitySelection"
         val selectionArgs = arrayOf(localDbGroupId.toString(), senderIdentity)
         readableDatabase.query(
@@ -86,9 +90,12 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseServiceNe
     }
 
     private fun Cursor.toGroupSyncRequestLogModel(): IncomingGroupSyncRequestLogModel {
-        val groupIdColumnIndex = getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID)
-        val senderIdentityColumnIndex = getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY)
-        val lastHandledRequestColumnIndex = getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST)
+        val groupIdColumnIndex =
+            getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID)
+        val senderIdentityColumnIndex =
+            getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY)
+        val lastHandledRequestColumnIndex =
+            getColumnIndexOrThrow(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST)
 
         return IncomingGroupSyncRequestLogModel(
             getInt(groupIdColumnIndex),

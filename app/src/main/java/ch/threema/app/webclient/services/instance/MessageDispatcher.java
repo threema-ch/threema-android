@@ -47,157 +47,163 @@ import ch.threema.domain.taskmanager.TaskManager;
 
 /**
  * Dispatch incoming messages to the receivers or send outgoing messages to the webclient.
- *
+ * <p>
  * An incoming message is offered to each receiver based on the subtype and message. The process is
  * done once a receiver accepts the message.
  */
 @WorkerThread
 public class MessageDispatcher {
-	@NonNull protected final SessionInstanceService service;
-	@NonNull protected final Logger logger;
-	@NonNull protected final LifetimeService lifetimeService;
-	@NonNull protected final String type;
-	@NonNull protected final Map<String, MessageReceiver> receivers = new ConcurrentHashMap<>();
+    @NonNull
+    protected final SessionInstanceService service;
+    @NonNull
+    protected final Logger logger;
+    @NonNull
+    protected final LifetimeService lifetimeService;
+    @NonNull
+    protected final String type;
+    @NonNull
+    protected final Map<String, MessageReceiver> receivers = new ConcurrentHashMap<>();
 
-	private static final @NonNull String LIFETIME_SERVICE_TAG = "wcMessageDispatcher";
+    private static final @NonNull String LIFETIME_SERVICE_TAG = "wcMessageDispatcher";
 
-	@AnyThread
-	public MessageDispatcher(
-		@NonNull final String type,
-		@NonNull final SessionInstanceServiceImpl service,
-		@NonNull final LifetimeService lifetimeService
-	) {
-		this.service = service;
-		this.logger = service.logger;
-		this.lifetimeService = lifetimeService;
-		this.type = type;
-	}
+    @AnyThread
+    public MessageDispatcher(
+        @NonNull final String type,
+        @NonNull final SessionInstanceServiceImpl service,
+        @NonNull final LifetimeService lifetimeService
+    ) {
+        this.service = service;
+        this.logger = service.logger;
+        this.lifetimeService = lifetimeService;
+        this.type = type;
+    }
 
-	/**
-	 * Add a new message receiver.
-	 */
-	@AnyThread
-	public void addReceiver(@NonNull final MessageReceiver receiver) {
-		this.receivers.put(receiver.getSubType(), receiver);
-	}
+    /**
+     * Add a new message receiver.
+     */
+    @AnyThread
+    public void addReceiver(@NonNull final MessageReceiver receiver) {
+        this.receivers.put(receiver.getSubType(), receiver);
+    }
 
-	/**
-	 * Dispatch according to subtype and message.
-	 */
-	private void dispatch(@NonNull final String subType, @NonNull final Map<String, Value> message)
-		throws DispatchException, MessagePackException {
-		if (!this.receivers.containsKey(subType)) {
-			throw new DispatchException("No receiver for type '" + this.type + "' with sub type '" + subType + "' found");
-		}
-		final MessageReceiver receiver = Objects.requireNonNull(this.receivers.get(subType));
-		receiver.receive(message);
+    /**
+     * Dispatch according to subtype and message.
+     */
+    private void dispatch(@NonNull final String subType, @NonNull final Map<String, Value> message)
+        throws DispatchException, MessagePackException {
+        if (!this.receivers.containsKey(subType)) {
+            throw new DispatchException("No receiver for type '" + this.type + "' with sub type '" + subType + "' found");
+        }
+        final MessageReceiver receiver = Objects.requireNonNull(this.receivers.get(subType));
+        receiver.receive(message);
 
-		// If the receiver indicates that messages might have been enqueued,
-		// check whether the queue is empty. If it isn't, acquire the connection
-		// for a short while to send those messages.
-		if (receiver.maybeNeedsConnection()) {
-			TaskManager taskManager = getTaskManager();
-			if (taskManager != null && taskManager.hasPendingTasks()) {
-				// We use 6000 as timeout. With respect to the previous (established) calculation
-				// this corresponds to 5000 as base timeout and 10 pending messages (100ms each).
-				int timeoutMs = 6000;
-				this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
-				this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, timeoutMs);
-			}
-		}
-	}
+        // If the receiver indicates that messages might have been enqueued,
+        // check whether the queue is empty. If it isn't, acquire the connection
+        // for a short while to send those messages.
+        if (receiver.maybeNeedsConnection()) {
+            TaskManager taskManager = getTaskManager();
+            if (taskManager != null && taskManager.hasPendingTasks()) {
+                // We use 6000 as timeout. With respect to the previous (established) calculation
+                // this corresponds to 5000 as base timeout and 10 pending messages (100ms each).
+                int timeoutMs = 6000;
+                this.lifetimeService.acquireConnection(LIFETIME_SERVICE_TAG);
+                this.lifetimeService.releaseConnectionLinger(LIFETIME_SERVICE_TAG, timeoutMs);
+            }
+        }
+    }
 
-	/**
-	 * Dispatch according to type, subtype and message.
-	 */
-	public boolean dispatch(@NonNull final String type, @NonNull final String subType, @NonNull final Map<String, Value> message)
-		throws DispatchException, MessagePackException {
-		// Are we receiving this type?
-		if (type.equals(this.type)) {
-			this.dispatch(subType, message);
-			return true;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * Dispatch according to type, subtype and message.
+     */
+    public boolean dispatch(@NonNull final String type, @NonNull final String subType, @NonNull final Map<String, Value> message)
+        throws DispatchException, MessagePackException {
+        // Are we receiving this type?
+        if (type.equals(this.type)) {
+            this.dispatch(subType, message);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public void send(@NonNull final String subType, @NonNull final MsgpackBuilder data, @NonNull final MsgpackBuilder args) {
-		this.send(this.type, subType, data, args);
-	}
-	public void send(@NonNull final String subType, @NonNull final List<MsgpackBuilder> data, @NonNull final MsgpackBuilder args) {
-		this.send(this.type, subType, data, args);
-	}
+    public void send(@NonNull final String subType, @NonNull final MsgpackBuilder data, @NonNull final MsgpackBuilder args) {
+        this.send(this.type, subType, data, args);
+    }
 
-	public void send(@NonNull final String subType, @NonNull final String data, @NonNull final MsgpackBuilder args) {
-		this.send(this.type, subType, data, args);
-	}
+    public void send(@NonNull final String subType, @NonNull final List<MsgpackBuilder> data, @NonNull final MsgpackBuilder args) {
+        this.send(this.type, subType, data, args);
+    }
 
-	public void send(@NonNull final String subType, @NonNull final byte[] data, @NonNull final MsgpackBuilder args) {
-		this.send(this.type, subType, data, args);
-	}
+    public void send(@NonNull final String subType, @NonNull final String data, @NonNull final MsgpackBuilder args) {
+        this.send(this.type, subType, data, args);
+    }
 
-	public void send(@NonNull final String type, @NonNull final String subType, @Nullable final MsgpackBuilder data, final @Nullable MsgpackBuilder args) {
-		final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
-		message.maybePut(Protocol.FIELD_DATA, data);
-		logger.debug("Sending {}/{}", type, subType);
-		this.send(message);
-	}
+    public void send(@NonNull final String subType, @NonNull final byte[] data, @NonNull final MsgpackBuilder args) {
+        this.send(this.type, subType, data, args);
+    }
 
-	public void send(@NonNull final String type, @NonNull final String subType, @Nullable final List<MsgpackBuilder> data, final @Nullable MsgpackBuilder args) {
-		final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
-		message.maybePut(Protocol.FIELD_DATA, data);
-		logger.debug("Sending {}/{}", type, subType);
-		this.send(message);
-	}
+    public void send(@NonNull final String type, @NonNull final String subType, @Nullable final MsgpackBuilder data, final @Nullable MsgpackBuilder args) {
+        final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
+        message.maybePut(Protocol.FIELD_DATA, data);
+        logger.debug("Sending {}/{}", type, subType);
+        this.send(message);
+    }
 
-	public void send(@NonNull final String type, @NonNull final String subType, @Nullable final String data, final @Nullable MsgpackBuilder args) {
-		final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
-		message.maybePut(Protocol.FIELD_DATA, data);
-		logger.debug("Sending {}/{}", type, subType);
-		this.send(message);
-	}
+    public void send(@NonNull final String type, @NonNull final String subType, @Nullable final List<MsgpackBuilder> data, final @Nullable MsgpackBuilder args) {
+        final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
+        message.maybePut(Protocol.FIELD_DATA, data);
+        logger.debug("Sending {}/{}", type, subType);
+        this.send(message);
+    }
 
-	public void send(@NonNull final String type, @NonNull final String subType, @Nullable final byte[] data, final @Nullable MsgpackBuilder args) {
-		final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
-		message.maybePut(Protocol.FIELD_DATA, data);
-		logger.debug("Sending {}/{}", type, subType);
-		this.send(message);
-	}
+    public void send(@NonNull final String type, @NonNull final String subType, @Nullable final String data, final @Nullable MsgpackBuilder args) {
+        final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
+        message.maybePut(Protocol.FIELD_DATA, data);
+        logger.debug("Sending {}/{}", type, subType);
+        this.send(message);
+    }
 
-	/**
-	 * Send a message to the webclient.
-	 */
-	private void send(@NonNull final MsgpackObjectBuilder message) {
-		try {
-			this.service.send(message.consume(), SendMode.ASYNC);
-		} catch (OutOfMemoryError error) {
-			logger.error("Out of memory while encoding outgoing data channel message");
-			this.service.stop(DisconnectContext.byUs(DisconnectContext.REASON_OUT_OF_MEMORY));
-		}
-	}
+    public void send(@NonNull final String type, @NonNull final String subType, @Nullable final byte[] data, final @Nullable MsgpackBuilder args) {
+        final MsgpackObjectBuilder message = this.createMessage(type, subType, args);
+        message.maybePut(Protocol.FIELD_DATA, data);
+        logger.debug("Sending {}/{}", type, subType);
+        this.send(message);
+    }
 
-	/**
-	 * Create a new message.
-	 */
-	private MsgpackObjectBuilder createMessage(
-		@NonNull final String type,
-		@NonNull final String subType,
-		@Nullable final MsgpackBuilder args
-	) {
-		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-		builder.put(Protocol.FIELD_TYPE, type);
-		builder.put(Protocol.FIELD_SUB_TYPE, subType);
-		builder.maybePut(Protocol.FIELD_ARGUMENTS, args);
-		return builder;
-	}
+    /**
+     * Send a message to the webclient.
+     */
+    private void send(@NonNull final MsgpackObjectBuilder message) {
+        try {
+            this.service.send(message.consume(), SendMode.ASYNC);
+        } catch (OutOfMemoryError error) {
+            logger.error("Out of memory while encoding outgoing data channel message");
+            this.service.stop(DisconnectContext.byUs(DisconnectContext.REASON_OUT_OF_MEMORY));
+        }
+    }
 
-	@Nullable
-	private TaskManager getTaskManager() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			return serviceManager.getTaskManager();
-		}
-		return null;
-	}
+    /**
+     * Create a new message.
+     */
+    private MsgpackObjectBuilder createMessage(
+        @NonNull final String type,
+        @NonNull final String subType,
+        @Nullable final MsgpackBuilder args
+    ) {
+        final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+        builder.put(Protocol.FIELD_TYPE, type);
+        builder.put(Protocol.FIELD_SUB_TYPE, subType);
+        builder.maybePut(Protocol.FIELD_ARGUMENTS, args);
+        return builder;
+    }
+
+    @Nullable
+    private TaskManager getTaskManager() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            return serviceManager.getTaskManager();
+        }
+        return null;
+    }
 
 }

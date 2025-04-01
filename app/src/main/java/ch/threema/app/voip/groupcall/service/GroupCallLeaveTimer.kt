@@ -43,7 +43,8 @@ class GroupCallLeaveTimer(
 ) {
     private val timeUntilLeaveMs = 180_000L
 
-    private val scheduledExecutorService: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    private val scheduledExecutorService: ScheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor()
     private var scheduledFuture: ScheduledFuture<*>? = null
 
     private var stopped = false

@@ -36,63 +36,63 @@ import ch.threema.storage.models.GroupModel;
 
 public class AvatarEditViewModel extends ViewModel {
 
-	private static final String KEY_CAMERA_FILE = "cam";
-	private static final String KEY_CROPPED_FILE = "crop";
-	private static final String KEY_GROUP_ID = "group";
-	private static final String KEY_CONTACT_IDENTITY = "contact";
+    private static final String KEY_CAMERA_FILE = "cam";
+    private static final String KEY_CROPPED_FILE = "crop";
+    private static final String KEY_GROUP_ID = "group";
+    private static final String KEY_CONTACT_IDENTITY = "contact";
 
-	private SavedStateHandle savedState;
-	private ContactService contactService;
-	private GroupService groupService;
+    private SavedStateHandle savedState;
+    private ContactService contactService;
+    private GroupService groupService;
 
-	public AvatarEditViewModel(SavedStateHandle savedStateHandle) {
-		this.savedState = savedStateHandle;
+    public AvatarEditViewModel(SavedStateHandle savedStateHandle) {
+        this.savedState = savedStateHandle;
 
-		try {
-			this.contactService = ThreemaApplication.getServiceManager().getContactService();
-			this.groupService = ThreemaApplication.getServiceManager().getGroupService();
-		} catch (Exception e) {
-			//
-		}
-	}
+        try {
+            this.contactService = ThreemaApplication.getServiceManager().getContactService();
+            this.groupService = ThreemaApplication.getServiceManager().getGroupService();
+        } catch (Exception e) {
+            //
+        }
+    }
 
-	public File getCameraFile() {
-		return this.savedState.get(KEY_CAMERA_FILE);
-	}
+    public File getCameraFile() {
+        return this.savedState.get(KEY_CAMERA_FILE);
+    }
 
-	public void setCameraFile(File cameraFile) {
-		this.savedState.set(KEY_CAMERA_FILE, cameraFile);
-	}
+    public void setCameraFile(File cameraFile) {
+        this.savedState.set(KEY_CAMERA_FILE, cameraFile);
+    }
 
-	public File getCroppedFile() {
-		return this.savedState.get(KEY_CROPPED_FILE);
-	}
+    public File getCroppedFile() {
+        return this.savedState.get(KEY_CROPPED_FILE);
+    }
 
-	public void setCroppedFile(File croppedFile) {
-		this.savedState.set(KEY_CROPPED_FILE, croppedFile);
-	}
+    public void setCroppedFile(File croppedFile) {
+        this.savedState.set(KEY_CROPPED_FILE, croppedFile);
+    }
 
-	public @Nullable GroupModel getGroupModel() {
-		Integer groupId = this.savedState.get(KEY_GROUP_ID);
-		if (groupService != null && groupId != null) {
-			return groupService.getById(groupId);
-		}
-		return null;
-	}
+    public @Nullable GroupModel getGroupModel() {
+        Integer groupId = this.savedState.get(KEY_GROUP_ID);
+        if (groupService != null && groupId != null) {
+            return groupService.getById(groupId);
+        }
+        return null;
+    }
 
-	public void setGroupModel(@NonNull GroupModel groupModel) {
-		this.savedState.set(KEY_GROUP_ID, groupModel.getId());
-	}
+    public void setGroupModel(@NonNull GroupModel groupModel) {
+        this.savedState.set(KEY_GROUP_ID, groupModel.getId());
+    }
 
-	public @Nullable ContactModel getContactModel() {
-		String identity = this.savedState.get(KEY_CONTACT_IDENTITY);
-		if (contactService != null && identity != null) {
-			return contactService.getByIdentity(identity);
-		}
-		return null;
-	}
+    public @Nullable ContactModel getContactModel() {
+        String identity = this.savedState.get(KEY_CONTACT_IDENTITY);
+        if (contactService != null && identity != null) {
+            return contactService.getByIdentity(identity);
+        }
+        return null;
+    }
 
-	public void setContactModel(@NonNull ContactModel contactModel) {
-		this.savedState.set(KEY_CONTACT_IDENTITY, contactModel.getIdentity());
-	}
+    public void setContactModel(@NonNull ContactModel contactModel) {
+        this.savedState.set(KEY_CONTACT_IDENTITY, contactModel.getIdentity());
+    }
 }

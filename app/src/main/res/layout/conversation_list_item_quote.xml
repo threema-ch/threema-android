@@ -1,127 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:paddingLeft="@dimen/chat_bubble_margin_end"
-	android:paddingRight="@dimen/chat_bubble_margin_end">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/chat_bubble_margin_end"
+    android:paddingRight="@dimen/chat_bubble_margin_end">
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/quote_layout"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="2dp"
-		android:background="#10000000"
-		app:layout_constraintHorizontal_bias="0.0"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/quote_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="#10000000"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-		<View
-			android:id="@+id/quote_bar"
-			android:layout_width="4dp"
-			android:layout_height="0dp"
-			android:background="?attr/colorPrimary"
-			app:layout_constraintTop_toTopOf="parent"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"
-			android:contentDescription="@string/quote_subj"/>
+        <View
+            android:id="@+id/quote_bar"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/quote_subj" />
 
-		<LinearLayout
-			android:id="@+id/quote_text_wrapper"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			app:layout_constrainedWidth="true"
-			android:paddingRight="8dp"
-			android:paddingTop="2dp"
-			android:paddingBottom="2dp"
-			app:layout_constraintLeft_toRightOf="@id/quote_bar"
-			app:layout_constraintRight_toLeftOf="@+id/quote_thumbnail"
-			app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:id="@+id/quote_text_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constrainedWidth="true"
+            android:paddingRight="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            app:layout_constraintLeft_toRightOf="@id/quote_bar"
+            app:layout_constraintRight_toLeftOf="@+id/quote_thumbnail"
+            app:layout_constraintTop_toTopOf="parent">
 
-			<ch.threema.app.emojis.EmojiConversationTextView
-				style="@style/Threema.Bubble.Text.Body.Small"
-				android:id="@+id/tertiaryTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="8dp"
-				android:textColor="@color/bubble_text_quote_colorstatelist"
-				android:textStyle="bold" />
+            <ch.threema.app.emojis.EmojiConversationTextView
+                style="@style/Threema.Bubble.Text.Body.Small"
+                android:id="@+id/tertiaryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/bubble_text_quote_colorstatelist"
+                android:textStyle="bold" />
 
-			<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-				<ImageView
-					android:id="@+id/quote_type_image"
-					android:layout_width="14dp"
-					android:layout_height="14dp"
-					android:layout_marginLeft="7dp"
-					android:layout_marginTop="3dp"
-					android:layout_marginBottom="3dp"
-					android:layout_marginRight="-2.5dp"
-					app:tint="@color/bubble_send_text_colorstatelist"/>
+                <ImageView
+                    android:id="@+id/quote_type_image"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginRight="-2.5dp"
+                    app:tint="@color/bubble_send_text_colorstatelist" />
 
-				<ch.threema.app.emojis.EmojiConversationTextView
-					style="@style/Threema.Bubble.Text.Body.Small"
-					android:id="@+id/secondary_text_view"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:linksClickable="true"
-					android:layout_marginLeft="8dp"
-					android:textSize="?attr/font_status"
-					android:ellipsize="end"
-					android:maxLength="@integer/max_quote_text_length" />
+                <ch.threema.app.emojis.EmojiConversationTextView
+                    style="@style/Threema.Bubble.Text.Body.Small"
+                    android:id="@+id/secondary_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:linksClickable="true"
+                    android:layout_marginLeft="8dp"
+                    android:textSize="?attr/font_status"
+                    android:ellipsize="end"
+                    android:maxLength="@integer/max_quote_text_length" />
 
-			</LinearLayout>
+            </LinearLayout>
 
-		</LinearLayout>
+        </LinearLayout>
 
-		<ImageView
-			android:id="@+id/quote_thumbnail"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			app:layout_constrainedWidth="true"
-			android:scaleType="centerCrop"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintLeft_toRightOf="@id/quote_text_wrapper"
-			app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/quote_thumbnail"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            app:layout_constrainedWidth="true"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/quote_text_wrapper"
+            app:layout_constraintTop_toTopOf="parent" />
 
-	</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-	<ch.threema.app.emojis.EmojiConversationTextView
-		style="@style/Threema.Bubble.Text.Body"
-		android:id="@+id/text_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="4dp"
-		android:linksClickable="true"
-		android:ellipsize="end"
-		android:maxLength="@integer/max_bubble_text_length"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/quote_layout"/>
+    <ch.threema.app.emojis.EmojiConversationTextView
+        style="@style/Threema.Bubble.Text.Body"
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:linksClickable="true"
+        android:ellipsize="end"
+        android:maxLength="@integer/max_bubble_text_length"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/quote_layout" />
 
-	<FrameLayout
-		android:id="@+id/read_on_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		android:paddingTop="36dp"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintLeft_toRightOf="parent"
-		app:layout_constraintBottom_toBottomOf="@id/text_view">
+    <FrameLayout
+        android:id="@+id/read_on_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingTop="36dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/text_view">
 
-		<com.google.android.material.chip.Chip
-			android:id="@+id/read_on_button"
-			style="@style/Threema.Chip.VideoTranscoder"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal"
-			android:text="@string/read_on" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/read_on_button"
+            style="@style/Threema.Chip.VideoTranscoder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/read_on" />
 
-	</FrameLayout>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

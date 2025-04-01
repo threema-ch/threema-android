@@ -187,10 +187,10 @@ public class DrmKernel {
      * Connectivity to markets connected via AIDL
      */
     private static DrmServiceConnection conn = new DrmServiceConnection();
-	/**
-	 * Coherent slf4j logger
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(DrmKernel.class);
+    /**
+     * Coherent slf4j logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(DrmKernel.class);
 
     /**
      * Checking whether user has purchased this application or not.
@@ -203,7 +203,7 @@ public class DrmKernel {
      * @param callback        Public key that assigned by The Huawei Developer.
      */
     public static void check(Activity activity, String pkgName, String drmId, String publicKey, String appStoreName,
-                                Boolean showErrorDailog, DrmCheckCallback callback) {
+                             Boolean showErrorDailog, DrmCheckCallback callback) {
         sCallback = callback;
         // Multiple authentication operations cannot be performed at the same time.
         if (sIsRunning) {
@@ -257,14 +257,14 @@ public class DrmKernel {
             case Constants.RESULT_CODE_AGREEMENT_DECLINED:
                 logger.info("RESULT_CODE_AGREEMENT_DECLINED Hiapp");
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_HIAPP_AGREEMENT_DECLINED, null);
+                    ReportUtils.CODE_HIAPP_AGREEMENT_DECLINED, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_HIAPP_AGREEMENT_DECLINED, DrmStatusCodes.CODE_PROTOCAL_UNAGREE);
                 break;
             // 不登陆不能继续使用程序
             // You cannot continue using the program without logging in.
             case Constants.RESULT_CODE_LOGIN_FAILED:
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_ACCOUNT_NOT_LOGGED, null);
+                    ReportUtils.CODE_ACCOUNT_NOT_LOGGED, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_NOT_LOGGED, DrmStatusCodes.CODE_LOGIN_FAILED);
                 break;
             case Constants.RESULT_CODE_JOIN_MEMBER_FAILED:
@@ -275,7 +275,7 @@ public class DrmKernel {
             case Activity.RESULT_CANCELED:
                 sIsInterrupt = true;
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_USER_INTERRUPT, null);
+                    ReportUtils.CODE_USER_INTERRUPT, null);
                 unbindService();
                 showDialogOrReturnCode(ViewHelper.DIALOG_USER_INTERRUPT, DrmStatusCodes.CODE_CANCEL);
                 break;
@@ -321,7 +321,7 @@ public class DrmKernel {
                     logger.debug("downloadurl: " + downloadurl);
                     try {
                         Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(downloadurl));
+                            Uri.parse(downloadurl));
                         sActivity.startActivity(intent);
                     } catch (ActivityNotFoundException e) {
                         logger.error("OPERATION_INSTALL ActivityNotFoundException!");
@@ -333,7 +333,7 @@ public class DrmKernel {
             case ViewHelper.OPERATION_USER_INTERRUPT:
                 sIsInterrupt = true;
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_USER_INTERRUPT, null);
+                    ReportUtils.CODE_USER_INTERRUPT, null);
                 unbindService();
                 showDialogOrReturnCode(ViewHelper.DIALOG_USER_INTERRUPT, DrmStatusCodes.CODE_CANCEL);
                 break;
@@ -344,16 +344,16 @@ public class DrmKernel {
                     // 获取HMS包名
                     // Obtaining the HMS Package Name
                     List<ResolveInfo> resolveInfoList = sActivity.getApplicationContext()
-                            .getPackageManager()
-                            .queryIntentServices(new Intent("com.huawei.hms.core.aidlservice"),
-                                    PackageManager.GET_META_DATA);
+                        .getPackageManager()
+                        .queryIntentServices(new Intent("com.huawei.hms.core.aidlservice"),
+                            PackageManager.GET_META_DATA);
                     if (resolveInfoList != null && resolveInfoList.size() > 0) {
-                    	ResolveInfo resolveInfo = resolveInfoList.get(0);
-                    	String packageName = "";
+                        ResolveInfo resolveInfo = resolveInfoList.get(0);
+                        String packageName = "";
 
-                    	if (resolveInfo != null) {
-		                    packageName = resolveInfo.serviceInfo.applicationInfo.packageName;
-	                    }
+                        if (resolveInfo != null) {
+                            packageName = resolveInfo.serviceInfo.applicationInfo.packageName;
+                        }
 
                         if (!TextUtils.isEmpty(packageName)) {
                             Intent intent = new Intent("com.huawei.hwid.ACTION_MAIN_SETTINGS");
@@ -417,7 +417,7 @@ public class DrmKernel {
         serviceIntent.setPackage(pkgName);
 
         isSuccess = sActivity.getApplicationContext().bindService(serviceIntent, conn,
-                Context.BIND_AUTO_CREATE);
+            Context.BIND_AUTO_CREATE);
         sIsBound = isSuccess;
         return isSuccess;
     }
@@ -448,8 +448,8 @@ public class DrmKernel {
      * @throws SignatureException
      */
     private static boolean verify(String payDeviceId, String publicKey, String signData, String sign)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
-            SignatureException, UnsupportedEncodingException, IllegalArgumentException {
+        throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
+        SignatureException, UnsupportedEncodingException, IllegalArgumentException {
 
         if (TextUtils.isEmpty(publicKey) || TextUtils.isEmpty(sign)) {
             logger.error("publicKey empty or sign empty");
@@ -467,10 +467,10 @@ public class DrmKernel {
         }
 
         PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(
-                encodedKey));
+            encodedKey));
 
         java.security.Signature signature = java.security.Signature
-                .getInstance("SHA256WithRSA");
+            .getInstance("SHA256WithRSA");
         signature.initVerify(pubKey);
         signature.update(signData.getBytes(CHARSET));
 
@@ -525,11 +525,11 @@ public class DrmKernel {
     private static void showDialogWhenStoreNotAvailable() {
         if (NetUtils.isNetworkAvailable(sActivity)) {
             report(ReportUtils.KEY_GET_SIGN_FAILED,
-                    ReportUtils.CODE_STORE_NOT_AVAILABLE, null);
+                ReportUtils.CODE_STORE_NOT_AVAILABLE, null);
             showDialogOrReturnCode(ViewHelper.DIALOG_STORE_NOT_AVAILABLE, DrmStatusCodes.CODE_APP_UNSUPPORT);
         } else {
             report(ReportUtils.KEY_GET_SIGN_FAILED,
-                    ReportUtils.CODE_NO_NETWORK, null);
+                ReportUtils.CODE_NO_NETWORK, null);
             showDialogOrReturnCode(ViewHelper.DIALOG_NO_NETWORK, DrmStatusCodes.CODE_NEED_INTERNET);
         }
     }
@@ -547,7 +547,7 @@ public class DrmKernel {
         if (result == null) {
             logger.error("result empty");
             report(ReportUtils.KEY_GET_SIGN_FAILED,
-                    ReportUtils.CODE_GET_SIGN_FAILED, null);
+                ReportUtils.CODE_GET_SIGN_FAILED, null);
             showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
             // 解除service绑定
             // Unbind a service.
@@ -605,7 +605,7 @@ public class DrmKernel {
         if (signList == null || signList.size() == 0) {
             logger.error("signList empty");
             report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                    ReportUtils.CODE_SIGN_EMPTY, null);
+                ReportUtils.CODE_SIGN_EMPTY, null);
             showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
             return;
         }
@@ -616,7 +616,7 @@ public class DrmKernel {
             if (map == null) {
                 logger.error("map empty");
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_SIGN_EMPTY, null);
+                    ReportUtils.CODE_SIGN_EMPTY, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
                 return;
             }
@@ -625,40 +625,40 @@ public class DrmKernel {
             String signItem = (String) map.get("signItem");
             // 构造验签的明文信息（顺序不能改变）
             String signData = payDeviceId + sPkgName + sDeveloperId + ts;
-	        final String formattedSignData = payDeviceId + '|' + sPkgName + '|' + sDeveloperId + '|' + ts;
+            final String formattedSignData = payDeviceId + '|' + sPkgName + '|' + sDeveloperId + '|' + ts;
 
             // 验签
             try {
                 verifyResult = verify(payDeviceId,
-                        sPublicKey, signData, signItem) || verifyResult;
+                    sPublicKey, signData, signItem) || verifyResult;
 
             } catch (InvalidKeyException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED, "InvalidKeyException");
+                    ReportUtils.CODE_CHECK_FAILED, "InvalidKeyException");
                 logger.error("InvalidKeyException ");
             } catch (NoSuchAlgorithmException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED,
-                        "NoSuchAlgorithmException");
+                    ReportUtils.CODE_CHECK_FAILED,
+                    "NoSuchAlgorithmException");
                 logger.error("NoSuchAlgorithmException ");
             } catch (InvalidKeySpecException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED,
-                        "InvalidKeySpecException");
+                    ReportUtils.CODE_CHECK_FAILED,
+                    "InvalidKeySpecException");
                 logger.error("InvalidKeySpecException ");
             } catch (SignatureException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED, "SignatureException");
+                    ReportUtils.CODE_CHECK_FAILED, "SignatureException");
                 logger.error("SignatureException ");
             } catch (UnsupportedEncodingException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED,
-                        "UnsupportedEncodingException");
+                    ReportUtils.CODE_CHECK_FAILED,
+                    "UnsupportedEncodingException");
                 logger.error("UnsupportedEncodingException ");
             } catch (IllegalArgumentException e) {
                 report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                        ReportUtils.CODE_CHECK_FAILED,
-                        "IllegalArgumentException");
+                    ReportUtils.CODE_CHECK_FAILED,
+                    "IllegalArgumentException");
                 logger.error("IllegalArgumentException：", e);
             }
             // 验签通过的话，直接返回
@@ -666,7 +666,7 @@ public class DrmKernel {
             if (verifyResult) {
                 logger.info("verifyResult success");
                 report(ReportUtils.KEY_CHECK_SIGN_SUCCESS,
-                        ReportUtils.CODE_SUCCESS, null);
+                    ReportUtils.CODE_SUCCESS, null);
                 final String successTips = (String) result.get("success_tips");
                 if (!TextUtils.isEmpty(successTips)) {
                     sActivity.runOnUiThread(new Runnable() {
@@ -685,11 +685,11 @@ public class DrmKernel {
         if (sTimes > 0) {
             logger.error("verifyResult failure CODE_SIGN_INVALID_WITH_INTERNET");
             report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                    ReportUtils.CODE_SIGN_INVALID_WITH_INTERNET, null);
+                ReportUtils.CODE_SIGN_INVALID_WITH_INTERNET, null);
         } else {
             logger.error("verifyResult failure CODE_CHECK_FAILED");
             report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                    ReportUtils.CODE_CHECK_FAILED, null);
+                ReportUtils.CODE_CHECK_FAILED, null);
         }
         showDialogOrReturnCode(ViewHelper.DIALOG_CHECK_FAILED, DrmStatusCodes.CODE_NO_ORDER);
     }
@@ -705,7 +705,7 @@ public class DrmKernel {
         if (ts == null || "".equals(ts)) {
             logger.error("ts empty");
             report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                    ReportUtils.CODE_TS_INVALID, null);
+                ReportUtils.CODE_TS_INVALID, null);
             showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
             return;
         }
@@ -716,7 +716,7 @@ public class DrmKernel {
         } catch (NumberFormatException e) {
             logger.error("NumberFormatException");
             report(ReportUtils.KEY_CHECK_SIGN_FAILED,
-                    ReportUtils.CODE_TS_INVALID, "NumberFormatException");
+                ReportUtils.CODE_TS_INVALID, "NumberFormatException");
             showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
             return;
         }
@@ -756,19 +756,19 @@ public class DrmKernel {
             // Signature obtained successfully.
             case DrmStatusCodes.CODE_SUCCESS:
                 report(ReportUtils.KEY_GET_SIGN_SUCCESS, ReportUtils.CODE_SUCCESS,
-                        null);
+                    null);
                 handleResultSuccess(result);
                 break;
             // No network connection
             case DrmStatusCodes.CODE_NEED_INTERNET:
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_NO_NETWORK, null);
+                    ReportUtils.CODE_NO_NETWORK, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_NO_NETWORK, code);
                 break;
             // Failed to log in to the HUAWEI ID.
             case DrmStatusCodes.CODE_LOGIN_FAILED:
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_STORE_NOT_LOGGED, null);
+                    ReportUtils.CODE_STORE_NOT_LOGGED, null);
                 handleResultLoginFail(code);
                 break;
             case DrmStatusCodes.CODE_NOT_LOGIN:
@@ -777,7 +777,7 @@ public class DrmKernel {
             case DrmStatusCodes.CODE_PROTOCAL_UNAGREE:
                 logger.info("RETURN_CODE_PROTOCAL_DISAGREE Hiapp");
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_HIAPP_AGREEMENT_DECLINED, null);
+                    ReportUtils.CODE_HIAPP_AGREEMENT_DECLINED, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_HIAPP_AGREEMENT_DECLINED, code);
                 break;
             // The activity needs to be started, and the app store needs to be started if the agreement is not agreed or the app store is not logged in.
@@ -799,20 +799,20 @@ public class DrmKernel {
                 sAppAction = (String) result.get("activity_action");
                 String extra = (String) result.get("account_name");
                 report(ReportUtils.KEY_GET_SIGN_FAILED, ReportUtils.CODE_NO_ORDER,
-                        null);
+                    null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_CHECK_FAILED, extra, code);
                 break;
             case DrmStatusCodes.CODE_OVER_LIMIT:
                 String nameextra = (String) result.get("account_name");
                 report(ReportUtils.KEY_GET_SIGN_FAILED, ReportUtils.CODE_OVER_LIMIT,
-                        null);
+                    null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_OVER_LIMIT, nameextra, code);
 
                 break;
             // Other Errors
             default:
                 report(ReportUtils.KEY_GET_SIGN_FAILED, ReportUtils.CODE_OTHERS,
-                        null);
+                    null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_UNKNOW_ERROR, code + "", code);
                 break;
         }
@@ -875,18 +875,18 @@ public class DrmKernel {
             String[] args = null;
             if (ReportUtils.KEY_GET_SIGN_SUCCESS.equals(key)) {
                 args = new String[]
-                        {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code)};
+                    {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code)};
             } else if (ReportUtils.KEY_CHECK_SIGN_SUCCESS.equals(key)) {
                 args = new String[]
-                        {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code),
-                                sPayDeviceId};
+                    {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code),
+                        sPayDeviceId};
             } else if (ReportUtils.KEY_GET_SIGN_FAILED.equals(key)) {
                 args = new String[]
-                        {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code)};
+                    {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code)};
             } else if (ReportUtils.KEY_CHECK_SIGN_FAILED.equals(key)) {
                 args = new String[]
-                        {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code),
-                                sPayDeviceId, reason};
+                    {VERSION_CODE, sPkgName, sDeveloperId, String.valueOf(code),
+                        sPayDeviceId, reason};
             }
             Map params = ReportUtils.generateReport(key, args);
             if (params != null && sSignService != null) {
@@ -931,7 +931,7 @@ public class DrmKernel {
             } catch (RemoteException e) {
                 logger.error("RemoteException");
                 report(ReportUtils.KEY_GET_SIGN_FAILED,
-                        ReportUtils.CODE_GET_SIGN_FAILED, null);
+                    ReportUtils.CODE_GET_SIGN_FAILED, null);
                 showDialogOrReturnCode(ViewHelper.DIALOG_GET_DRM_SIGN_FAILED, DrmStatusCodes.CODE_DEFAULT);
             }
 

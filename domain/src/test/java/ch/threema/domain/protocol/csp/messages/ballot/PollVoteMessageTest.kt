@@ -184,7 +184,8 @@ open class PollVoteMessageTest {
         }
 
         // act
-        val resultPollVoteMessage: PollVoteMessage = PollVoteMessage.fromReflected(incomingD2DMessage)
+        val resultPollVoteMessage: PollVoteMessage =
+            PollVoteMessage.fromReflected(incomingD2DMessage)
 
         // assert
         assertEquals(resultPollVoteMessage.messageId, MessageId(incomingMessageId))
@@ -206,7 +207,8 @@ open class PollVoteMessageTest {
         }
 
         // act
-        val resultPollVoteMessage: PollVoteMessage = PollVoteMessage.fromReflected(outgoingD2DMessage)
+        val resultPollVoteMessage: PollVoteMessage =
+            PollVoteMessage.fromReflected(outgoingD2DMessage)
 
         // assert
         assertEquals(outgoingMessageId, resultPollVoteMessage.messageId)

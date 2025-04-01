@@ -57,272 +57,273 @@ import ch.threema.localcrypto.MasterKeyLockedException;
 import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
 
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
 
-	// TODO Handle activity destruction after configuration change with "don't save activities" on
+    // TODO Handle activity destruction after configuration change with "don't save activities" on
 
-	private static final String ARG_TITLE = "title";
-	private static final String ARG_TEXT1 = "text1";
-	private static final String ARG_TEXT2 = "text2";
-	private static final String ARG_HINT1 = "hint1";
-	private static final String ARG_HINT2 = "hint2";
-	private static final String ARG_IDENTITY = "identity";
-	private static final String ARG_GROUP_ID = "groupId";
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_TEXT1 = "text1";
+    private static final String ARG_TEXT2 = "text2";
+    private static final String ARG_HINT1 = "hint1";
+    private static final String ARG_HINT2 = "hint2";
+    private static final String ARG_IDENTITY = "identity";
+    private static final String ARG_GROUP_ID = "groupId";
 
-	private static final String BUNDLE_CROPPED_AVATAR_FILE = "cropped_avatar_file";;
+    private static final String BUNDLE_CROPPED_AVATAR_FILE = "cropped_avatar_file";
+    ;
 
-	public static int CONTACT_AVATAR_HEIGHT_PX = 512;
-	public static int CONTACT_AVATAR_WIDTH_PX = 512;
+    public static int CONTACT_AVATAR_HEIGHT_PX = 512;
+    public static int CONTACT_AVATAR_WIDTH_PX = 512;
 
-	private WeakReference<ContactEditDialogClickListener> callbackRef = new WeakReference<>(null);
-	private Activity activity;
-	private AvatarEditView avatarEditView;
-	private File croppedAvatarFile = null;
+    private WeakReference<ContactEditDialogClickListener> callbackRef = new WeakReference<>(null);
+    private Activity activity;
+    private AvatarEditView avatarEditView;
+    private File croppedAvatarFile = null;
 
-	public static ContactEditDialog newInstance(@NonNull ContactModelData contactModelData) {
-		final int inputType = InputType.TYPE_CLASS_TEXT
-			| InputType.TYPE_TEXT_VARIATION_PERSON_NAME
-			| InputType.TYPE_TEXT_FLAG_CAP_WORDS;
+    public static ContactEditDialog newInstance(@NonNull ContactModelData contactModelData) {
+        final int inputType = InputType.TYPE_CLASS_TEXT
+            | InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+            | InputType.TYPE_TEXT_FLAG_CAP_WORDS;
 
-		if(ContactUtil.isGatewayContact(contactModelData.identity)) {
-			//business contact don't have a second name
-			return newInstance(
-					R.string.edit_name_only,
-					contactModelData.firstName,
-					null,
-					R.string.name,
-					0,
-					contactModelData.identity,
-					inputType,
-					ContactUtil.CHANNEL_NAME_MAX_LENGTH_BYTES);
+        if (ContactUtil.isGatewayContact(contactModelData.identity)) {
+            //business contact don't have a second name
+            return newInstance(
+                R.string.edit_name_only,
+                contactModelData.firstName,
+                null,
+                R.string.name,
+                0,
+                contactModelData.identity,
+                inputType,
+                ContactUtil.CHANNEL_NAME_MAX_LENGTH_BYTES);
 
-		}
-		else {
-			return newInstance(
-					R.string.edit_name_only,
-					contactModelData.firstName,
-					contactModelData.lastName,
-					R.string.first_name,
-					R.string.last_name,
-					contactModelData.identity,
-					inputType,
-					CONTACT_NAME_MAX_LENGTH_BYTES);
-		}
-	}
+        } else {
+            return newInstance(
+                R.string.edit_name_only,
+                contactModelData.firstName,
+                contactModelData.lastName,
+                R.string.first_name,
+                R.string.last_name,
+                contactModelData.identity,
+                inputType,
+                CONTACT_NAME_MAX_LENGTH_BYTES);
+        }
+    }
 
-	private static ContactEditDialog newInstance(Bundle args) {
-		ContactEditDialog dialog = new ContactEditDialog();
-		dialog.setArguments(args);
-		return dialog;
-	}
+    private static ContactEditDialog newInstance(Bundle args) {
+        ContactEditDialog dialog = new ContactEditDialog();
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	/**
-	 * Create a ContactEditDialog with two input fields.
-	 */
-	private static ContactEditDialog newInstance(@StringRes int title, String text1, String text2,
-	                                            @StringRes int hint1, @StringRes int hint2,
-	                                            String identity, int inputType, int maxLength) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putString(ARG_TEXT1, text1);
-		args.putString(ARG_TEXT2, text2);
-		args.putInt(ARG_HINT1, hint1);
-		args.putInt(ARG_HINT2, hint2);
-		args.putString(ARG_IDENTITY, identity);
-		args.putInt("inputType", inputType);
-		args.putInt("maxLength", maxLength);
-		return newInstance(args);
-	}
+    /**
+     * Create a ContactEditDialog with two input fields.
+     */
+    private static ContactEditDialog newInstance(@StringRes int title, String text1, String text2,
+                                                 @StringRes int hint1, @StringRes int hint2,
+                                                 String identity, int inputType, int maxLength) {
+        final Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putString(ARG_TEXT1, text1);
+        args.putString(ARG_TEXT2, text2);
+        args.putInt(ARG_HINT1, hint1);
+        args.putInt(ARG_HINT2, hint2);
+        args.putString(ARG_IDENTITY, identity);
+        args.putInt("inputType", inputType);
+        args.putInt("maxLength", maxLength);
+        return newInstance(args);
+    }
 
-	/**
-	 * Create a ContactEditDialog for a group
-	 */
-	public static ContactEditDialog newInstance(@StringRes int title, @StringRes int hint1,
-	                                            int groupId, int inputType, File avatarPreset,
-	                                            boolean useDefaultAvatar, int maxLength) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_HINT1, hint1);
-		args.putInt(ARG_GROUP_ID, groupId);
-		args.putInt("inputType", inputType);
-		args.putSerializable("avatarPreset", avatarPreset);
-		args.putBoolean("useDefaultAvatar", useDefaultAvatar);
-		args.putInt("maxLength", maxLength);
+    /**
+     * Create a ContactEditDialog for a group
+     */
+    public static ContactEditDialog newInstance(@StringRes int title, @StringRes int hint1,
+                                                int groupId, int inputType, File avatarPreset,
+                                                boolean useDefaultAvatar, int maxLength) {
+        final Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_HINT1, hint1);
+        args.putInt(ARG_GROUP_ID, groupId);
+        args.putInt("inputType", inputType);
+        args.putSerializable("avatarPreset", avatarPreset);
+        args.putBoolean("useDefaultAvatar", useDefaultAvatar);
+        args.putInt("maxLength", maxLength);
 
-		return newInstance(args);
-	}
+        return newInstance(args);
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		super.onActivityResult(requestCode, resultCode, intent);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
 
-		if (this.avatarEditView != null) {
-			this.avatarEditView.onActivityResult(requestCode, resultCode, intent);
-		}
-	}
+        if (this.avatarEditView != null) {
+            this.avatarEditView.onActivityResult(requestCode, resultCode, intent);
+        }
+    }
 
-	@Override
-	public void onAvatarSet(File avatarFile) {
-		croppedAvatarFile = avatarFile;
-	}
+    @Override
+    public void onAvatarSet(File avatarFile) {
+        croppedAvatarFile = avatarFile;
+    }
 
-	@Override
-	public void onAvatarRemoved() {
-		croppedAvatarFile = null;
-	}
+    @Override
+    public void onAvatarRemoved() {
+        croppedAvatarFile = null;
+    }
 
-	public interface ContactEditDialogClickListener {
-		void onYes(String tag, String text1, String text2, @Nullable File avatar);
-		void onNo(String tag);
-	}
+    public interface ContactEditDialogClickListener {
+        void onYes(String tag, String text1, String text2, @Nullable File avatar);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
+    }
 
-		try {
-			callbackRef = new WeakReference<>((ContactEditDialogClickListener) getTargetFragment());
-		} catch (ClassCastException e) {
-			//
-		}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// called from an activity rather than a fragment
-		if (callbackRef.get() == null) {
-			if (!(activity instanceof ContactEditDialogClickListener)) {
-				throw new ClassCastException("Calling fragment must implement ContactEditDialogClickListener interface");
-			}
-			callbackRef = new WeakReference<>((ContactEditDialogClickListener) activity);
-		}
-	}
+        try {
+            callbackRef = new WeakReference<>((ContactEditDialogClickListener) getTargetFragment());
+        } catch (ClassCastException e) {
+            //
+        }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        // called from an activity rather than a fragment
+        if (callbackRef.get() == null) {
+            if (!(activity instanceof ContactEditDialogClickListener)) {
+                throw new ClassCastException("Calling fragment must implement ContactEditDialogClickListener interface");
+            }
+            callbackRef = new WeakReference<>((ContactEditDialogClickListener) activity);
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt(ARG_TITLE);
-		String text1 = getArguments().getString(ARG_TEXT1);
-		String text2 = getArguments().getString(ARG_TEXT2);
-		int hint1 = getArguments().getInt(ARG_HINT1);
-		int hint2 = getArguments().getInt(ARG_HINT2);
-		String identity = getArguments().getString(ARG_IDENTITY);
-		int groupId = getArguments().getInt(ARG_GROUP_ID);
-		int inputType = getArguments().getInt("inputType");
-		int maxLength = getArguments().getInt("maxLength", 0);
+        this.activity = activity;
+    }
 
-		final String tag = this.getTag();
-		croppedAvatarFile = (File) getArguments().getSerializable("avatarPreset");
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt(ARG_TITLE);
+        String text1 = getArguments().getString(ARG_TEXT1);
+        String text2 = getArguments().getString(ARG_TEXT2);
+        int hint1 = getArguments().getInt(ARG_HINT1);
+        int hint2 = getArguments().getInt(ARG_HINT2);
+        String identity = getArguments().getString(ARG_IDENTITY);
+        int groupId = getArguments().getInt(ARG_GROUP_ID);
+        int inputType = getArguments().getInt("inputType");
+        int maxLength = getArguments().getInt("maxLength", 0);
 
-		ContactService contactService = null;
-		try {
-			contactService = ThreemaApplication.getServiceManager().getContactService();
-		} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-			logger.error("Exception", e);
-		}
+        final String tag = this.getTag();
+        croppedAvatarFile = (File) getArguments().getSerializable("avatarPreset");
 
-		if (savedInstanceState != null) {
-			croppedAvatarFile = (File) savedInstanceState.getSerializable(BUNDLE_CROPPED_AVATAR_FILE);
-		}
+        ContactService contactService = null;
+        try {
+            contactService = ThreemaApplication.getServiceManager().getContactService();
+        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+            logger.error("Exception", e);
+        }
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_contact_edit, null);
-		final EmojiEditText editText1 = dialogView.findViewById(R.id.first_name);
-		final EmojiEditText editText2 = dialogView.findViewById(R.id.last_name);
-		final TextInputLayout editText1Layout = dialogView.findViewById(R.id.firstname_layout);
-		final TextInputLayout editText2Layout = dialogView.findViewById(R.id.lastname_layout);
+        if (savedInstanceState != null) {
+            croppedAvatarFile = (File) savedInstanceState.getSerializable(BUNDLE_CROPPED_AVATAR_FILE);
+        }
 
-		avatarEditView = dialogView.findViewById(R.id.avatar_edit_view);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_contact_edit, null);
+        final EmojiEditText editText1 = dialogView.findViewById(R.id.first_name);
+        final EmojiEditText editText2 = dialogView.findViewById(R.id.last_name);
+        final TextInputLayout editText1Layout = dialogView.findViewById(R.id.firstname_layout);
+        final TextInputLayout editText2Layout = dialogView.findViewById(R.id.lastname_layout);
 
-		if (savedInstanceState == null) {
-			avatarEditView.setFragment(this);
-			avatarEditView.setListener(this);
-		}
+        avatarEditView = dialogView.findViewById(R.id.avatar_edit_view);
 
-		if (!TestUtil.isEmptyOrNull(identity)) {
-			avatarEditView.setVisibility(View.GONE);
-			if (contactService != null) {
-				// Hide second name on business contact
-				if (ContactUtil.isGatewayContact(identity)) {
-					ViewUtil.show(editText2, false);
-				}
-			}
-		} else if (groupId != 0) {
-			editText2.setVisibility(View.GONE);
+        if (savedInstanceState == null) {
+            avatarEditView.setFragment(this);
+            avatarEditView.setListener(this);
+        }
 
-			avatarEditView.setUndefinedAvatar(AvatarEditView.AVATAR_TYPE_GROUP);
-			avatarEditView.setEditable(true);
-		}
+        if (!TestUtil.isEmptyOrNull(identity)) {
+            avatarEditView.setVisibility(View.GONE);
+            if (contactService != null) {
+                // Hide second name on business contact
+                if (ContactUtil.isGatewayContact(identity)) {
+                    ViewUtil.show(editText2, false);
+                }
+            }
+        } else if (groupId != 0) {
+            editText2.setVisibility(View.GONE);
 
-		if (hint1 != 0) {
-			editText1Layout.setHint(getString(hint1));
-		}
+            avatarEditView.setUndefinedAvatar(AvatarEditView.AVATAR_TYPE_GROUP);
+            avatarEditView.setEditable(true);
+        }
 
-		if (hint2 != 0) {
-			editText2Layout.setHint(getString(hint2));
-		} else {
-			editText2.setVisibility(View.GONE);
-			editText2Layout.setVisibility(View.GONE);
-		}
+        if (hint1 != 0) {
+            editText1Layout.setHint(getString(hint1));
+        }
 
-		if (!TestUtil.isEmptyOrNull(text1)) {
-			editText1.setText(text1);
-		}
+        if (hint2 != 0) {
+            editText2Layout.setHint(getString(hint2));
+        } else {
+            editText2.setVisibility(View.GONE);
+            editText2Layout.setVisibility(View.GONE);
+        }
 
-		if (!TestUtil.isEmptyOrNull(text2)) {
-			editText2.setText(text2);
-		}
+        if (!TestUtil.isEmptyOrNull(text1)) {
+            editText1.setText(text1);
+        }
 
-		if (inputType != 0) {
-			editText1.setInputType(inputType);
-			editText2.setInputType(inputType);
-		}
+        if (!TestUtil.isEmptyOrNull(text2)) {
+            editText2.setText(text2);
+        }
 
-		if (maxLength > 0) {
-			editText1.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-			editText2.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-		}
+        if (inputType != 0) {
+            editText1.setInputType(inputType);
+            editText2.setInputType(inputType);
+        }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        if (maxLength > 0) {
+            editText1.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+            editText2.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+        }
 
-		if (title != 0) {
-			builder.setTitle(title);
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 
-		builder.setView(dialogView);
+        if (title != 0) {
+            builder.setTitle(title);
+        }
 
-		builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
-			if (callbackRef.get() != null) {
-				callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
-			}
-		}
-		);
-		builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {
-			if (callbackRef.get() != null) {
-				callbackRef.get().onNo(tag);
-			}
-		}
-		);
+        builder.setView(dialogView);
 
-		setCancelable(false);
+        builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
+                if (callbackRef.get() != null) {
+                    callbackRef.get().onYes(tag, editText1.getText().toString(), editText2.getText().toString(), croppedAvatarFile);
+                }
+            }
+        );
+        builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> {
+                if (callbackRef.get() != null) {
+                    callbackRef.get().onNo(tag);
+                }
+            }
+        );
 
-		return builder.create();
-	}
+        setCancelable(false);
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		if (callbackRef.get() != null) {
-			callbackRef.get().onNo(this.getTag());
-		}
-	}
+        return builder.create();
+    }
 
-	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
+        if (callbackRef.get() != null) {
+            callbackRef.get().onNo(this.getTag());
+        }
+    }
 
-		outState.putSerializable(BUNDLE_CROPPED_AVATAR_FILE, croppedAvatarFile);
-	}
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(BUNDLE_CROPPED_AVATAR_FILE, croppedAvatarFile);
+    }
 }

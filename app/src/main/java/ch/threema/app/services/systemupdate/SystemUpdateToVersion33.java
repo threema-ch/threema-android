@@ -35,48 +35,48 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
 
 public class SystemUpdateToVersion33 implements UpdateSystemService.SystemUpdate {
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion33(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
-		this.databaseService = databaseService;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion33(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+        this.databaseService = databaseService;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		this.sqLiteDatabase.execSQL(
-			"CREATE TABLE `m_group_message_pending_message_id`"
-			+ "("
-			+ "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
-			+ "`groupMessageId` INTEGER,"
-			+ "`apiMessageId` VARCHAR"
-			+ ")");
+    @Override
+    public boolean runDirectly() throws SQLException {
+        this.sqLiteDatabase.execSQL(
+            "CREATE TABLE `m_group_message_pending_message_id`"
+                + "("
+                + "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "`groupMessageId` INTEGER,"
+                + "`apiMessageId` VARCHAR"
+                + ")");
 
-		//add new isQueued field to message model fields
-		for(String table: new String[]{
-				MessageModel.TABLE,
-				GroupMessageModel.TABLE,
-				DistributionListMessageModel.TABLE
-		}) {
-			if(!fieldExists(this.sqLiteDatabase, table, "isQueued")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN isQueued TINYINT NOT NULL DEFAULT 0");
+        //add new isQueued field to message model fields
+        for (String table : new String[]{
+            MessageModel.TABLE,
+            GroupMessageModel.TABLE,
+            DistributionListMessageModel.TABLE
+        }) {
+            if (!fieldExists(this.sqLiteDatabase, table, "isQueued")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN isQueued TINYINT NOT NULL DEFAULT 0");
 
-				//update the existing records
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET isQueued=1");
-			}
-		}
-		return true;
-	}
+                //update the existing records
+                sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET isQueued=1");
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 33";
-	}
+    @Override
+    public String getText() {
+        return "version 33";
+    }
 }

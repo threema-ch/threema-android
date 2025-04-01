@@ -91,8 +91,8 @@ class ServerMessageModelFactory(databaseService: DatabaseServiceNew) :
 
     override fun getStatements(): Array<String> = arrayOf(
         "CREATE TABLE `${ServerMessageModel.TABLE}` (" +
-                "`${ServerMessageModel.COLUMN_MESSAGE}` VARCHAR PRIMARY KEY ON CONFLICT REPLACE," +
-                "`${ServerMessageModel.COLUMN_TYPE}` INTEGER" +
-                ")"
+            "`${ServerMessageModel.COLUMN_MESSAGE}` VARCHAR PRIMARY KEY ON CONFLICT REPLACE," +
+            "`${ServerMessageModel.COLUMN_TYPE}` INTEGER" +
+            ")"
     )
 }

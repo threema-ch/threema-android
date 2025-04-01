@@ -1,114 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/top_view"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/top_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+    android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+    android:background="?android:attr/colorBackground">
+
+    <RelativeLayout
+        android:id="@+id/layout_parent_top"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp">
+
+        <TextView
+            style="@style/Threema.TextAppearance.Headline"
+            android:id="@+id/unlock_masterkey_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/masterkey_title"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:textColor="?attr/colorOnBackground" />
+
+        <TextView
+            style="@style/Threema.TextAppearance.BodyLarge"
+            android:id="@+id/layout_top"
+            android:layout_below="@id/unlock_masterkey_title"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
-            android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-			android:background="?android:attr/colorBackground">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/masterkey_body"
+            android:paddingBottom="5dp" />
 
-	<RelativeLayout
-			android:id="@+id/layout_parent_top"
-			android:orientation="vertical"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:paddingTop="24dp">
+        <LinearLayout
+            android:id="@+id/unlock_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:layout_below="@id/layout_top"
+            android:orientation="horizontal">
 
-		<TextView
-				style="@style/Threema.TextAppearance.Headline"
-				android:id="@+id/unlock_masterkey_title"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/masterkey_title"
-				android:gravity="center_horizontal"
-				android:layout_centerHorizontal="true"
-				android:textColor="?attr/colorOnBackground"
-				/>
+            <ImageView
+                android:id="@+id/unlock_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="3dp"
+                android:layout_marginRight="8dp"
+                app:srcCompat="@drawable/ic_key_outline"
+                app:tint="?attr/colorOnSurface" />
 
-		<TextView
-				style="@style/Threema.TextAppearance.BodyLarge"
-				android:id="@+id/layout_top"
-				android:layout_below="@id/unlock_masterkey_title"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_horizontal"
-				android:layout_centerHorizontal="true"
-				android:layout_marginTop="16dp"
-				android:text="@string/masterkey_body"
-				android:paddingBottom="5dp"
-				/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passphrase_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_weight="2"
+                android:layout_gravity="center_vertical"
+                android:hint="@string/masterkey_passphrase_hint"
+                app:counterEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:errorEnabled="true">
 
-		<LinearLayout android:id="@+id/unlock_layout"
-					  android:layout_width="match_parent"
-					  android:layout_height="wrap_content"
-					  android:layout_marginTop="16dp"
-					  android:gravity="center_vertical"
-					  android:layout_below="@id/layout_top"
-					  android:orientation="horizontal">
+                <ch.threema.app.ui.ThreemaTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/passphrase"
+                    android:inputType="textPassword|textNoSuggestions"
+                    android:imeOptions="actionGo"
+                    android:singleLine="true">
 
-			<ImageView
-				android:id="@+id/unlock_logo"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_vertical"
-				android:layout_marginBottom="3dp"
-				android:layout_marginRight="8dp"
-				app:srcCompat="@drawable/ic_key_outline"
-				app:tint="?attr/colorOnSurface" />
+                    <requestFocus />
+                </ch.threema.app.ui.ThreemaTextInputEditText>
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:id="@+id/passphrase_layout"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="5dp"
-				android:layout_weight="2"
-				android:layout_gravity="center_vertical"
-				android:hint="@string/masterkey_passphrase_hint"
-				app:counterEnabled="false"
-				app:passwordToggleEnabled="true"
-				app:errorEnabled="true">
+            </com.google.android.material.textfield.TextInputLayout>
 
-				<ch.threema.app.ui.ThreemaTextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:id="@+id/passphrase"
-					android:inputType="textPassword|textNoSuggestions"
-					android:imeOptions="actionGo"
-					android:singleLine="true">
-					<requestFocus />
-				</ch.threema.app.ui.ThreemaTextInputEditText>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Threema.MaterialButton.Icon"
+                android:id="@+id/unlock_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="2dp"
+                android:layout_gravity="center_vertical"
+                app:icon="@drawable/ic_arrow_left"
+                android:rotation="180"
+                android:contentDescription="@string/label_continue"
+                android:enabled="false" />
 
-			</com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
-			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.MaterialButton.Icon"
-				android:id="@+id/unlock_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="8dp"
-				android:layout_marginBottom="2dp"
-				android:layout_gravity="center_vertical"
-				app:icon="@drawable/ic_arrow_left"
-				android:rotation="180"
-				android:contentDescription="@string/label_continue"
-				android:enabled="false"
-				/>
+        <TextView
+            style="@style/Threema.TextAppearance.BodyMedium"
+            android:id="@+id/unlock_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unlock_layout"
+            android:layout_marginBottom="5dp"
+            android:text="@string/masterkey_lock_explain"
+            app:drawableLeftCompat="@drawable/ic_info_outline"
+            android:drawablePadding="10dp" />
 
-		</LinearLayout>
-
-		<TextView
-				style="@style/Threema.TextAppearance.BodyMedium"
-				android:id="@+id/unlock_info"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/unlock_layout"
-				android:layout_marginBottom="5dp"
-				android:text="@string/masterkey_lock_explain"
-				app:drawableLeftCompat="@drawable/ic_info_outline"
-				android:drawablePadding="10dp"
-				/>
-
-	</RelativeLayout>
+    </RelativeLayout>
 
 </ScrollView>

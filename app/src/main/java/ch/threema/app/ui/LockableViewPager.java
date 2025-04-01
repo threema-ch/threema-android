@@ -31,48 +31,49 @@ import androidx.viewpager.widget.ViewPager;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LockableViewPager extends ViewPager {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LockableViewPager");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LockableViewPager");
 
-	private boolean locked = false;
+    private boolean locked = false;
 
-	public LockableViewPager(Context context) {
-		super(context);
-	}
+    public LockableViewPager(Context context) {
+        super(context);
+    }
 
-	public LockableViewPager(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public LockableViewPager(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public void lock(boolean lock) {
-		this.locked = lock;
-	}
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if (!this.locked) {
-			boolean result = false;
+    public void lock(boolean lock) {
+        this.locked = lock;
+    }
 
-			try {
-				result = super.onTouchEvent(event);
-			} catch (Exception e) {
-				logger.debug(e.getMessage());
-			}
-			return result;
-		}
-		return false;
-	}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!this.locked) {
+            boolean result = false;
 
-	@Override
-	public boolean onInterceptTouchEvent(MotionEvent event) {
-		if (!this.locked) {
-			boolean result = false;
+            try {
+                result = super.onTouchEvent(event);
+            } catch (Exception e) {
+                logger.debug(e.getMessage());
+            }
+            return result;
+        }
+        return false;
+    }
 
-			try {
-				result = super.onInterceptTouchEvent(event);
-			} catch (Exception e) {
-				logger.debug(e.getMessage());
-			}
-			return result;
-		}
-		return false;
-	}
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!this.locked) {
+            boolean result = false;
+
+            try {
+                result = super.onInterceptTouchEvent(event);
+            } catch (Exception e) {
+                logger.debug(e.getMessage());
+            }
+            return result;
+        }
+        return false;
+    }
 }

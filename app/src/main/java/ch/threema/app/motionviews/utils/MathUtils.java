@@ -22,6 +22,7 @@
 package ch.threema.app.motionviews.utils;
 
 import android.graphics.PointF;
+
 import androidx.annotation.NonNull;
 
 public class MathUtils {

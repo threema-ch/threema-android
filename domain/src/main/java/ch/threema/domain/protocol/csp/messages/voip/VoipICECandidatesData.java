@@ -23,6 +23,7 @@ package ch.threema.domain.protocol.csp.messages.voip;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,226 +41,231 @@ import ch.threema.base.utils.JSONUtil;
 import static java.nio.charset.StandardCharsets.*;
 
 public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> implements Serializable {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipICECandidatesData");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipICECandidatesData");
 
-	// Keys
-	private final static String KEY_REMOVED = "removed";
-	private final static String KEY_CANDIDATES = "candidates";
+    // Keys
+    private final static String KEY_REMOVED = "removed";
+    private final static String KEY_CANDIDATES = "candidates";
 
-	// Fields
-	private boolean removed = false;
-	private @Nullable Candidate[] candidates;
+    // Fields
+    private boolean removed = false;
+    private @Nullable Candidate[] candidates;
 
-	//region Removed
+    //region Removed
 
-	@Deprecated // ANDR-1145
-	public boolean isRemoved() {
-		return this.removed;
-	}
+    @Deprecated // ANDR-1145
+    public boolean isRemoved() {
+        return this.removed;
+    }
 
-	//endregion
+    //endregion
 
-	//region Candidates
+    //region Candidates
 
-	public interface CandidateFilter {
-		boolean keep(Candidate candidate);
-	}
+    public interface CandidateFilter {
+        boolean keep(Candidate candidate);
+    }
 
-	public static class Candidate implements Serializable {
-		private final static String KEY_CANDIDATE = "candidate";
-		private final static String KEY_SDP_MID = "sdpMid";
-		private final static String KEY_SDP_M_LINE_INDEX = "sdpMLineIndex";
-		private final static String KEY_UFRAG = "ufrag";
+    public static class Candidate implements Serializable {
+        private final static String KEY_CANDIDATE = "candidate";
+        private final static String KEY_SDP_MID = "sdpMid";
+        private final static String KEY_SDP_M_LINE_INDEX = "sdpMLineIndex";
+        private final static String KEY_UFRAG = "ufrag";
 
-		@Nullable String candidate;
-		@Nullable String sdpMid;
-		@Nullable Integer sdpMLineIndex;
-		@Nullable String ufrag;
+        @Nullable
+        String candidate;
+        @Nullable
+        String sdpMid;
+        @Nullable
+        Integer sdpMLineIndex;
+        @Nullable
+        String ufrag;
 
-		public Candidate() {}
+        public Candidate() {
+        }
 
-		public Candidate(
-			@NonNull String candidate,
-			@NonNull String sdpMid,
-			@NonNull Integer sdpMLineIndex,
-			@NonNull String ufrag
-		) {
-			this.candidate = candidate;
-			this.sdpMid = sdpMid;
-			this.sdpMLineIndex = sdpMLineIndex;
-			this.ufrag = ufrag;
-		}
+        public Candidate(
+            @NonNull String candidate,
+            @NonNull String sdpMid,
+            @NonNull Integer sdpMLineIndex,
+            @NonNull String ufrag
+        ) {
+            this.candidate = candidate;
+            this.sdpMid = sdpMid;
+            this.sdpMLineIndex = sdpMLineIndex;
+            this.ufrag = ufrag;
+        }
 
-		public @Nullable String getCandidate() {
-			return candidate;
-		}
+        public @Nullable String getCandidate() {
+            return candidate;
+        }
 
-		public Candidate setCandidate(@NonNull String candidate) {
-			this.candidate = candidate;
-			return this;
-		}
+        public Candidate setCandidate(@NonNull String candidate) {
+            this.candidate = candidate;
+            return this;
+        }
 
-		public @Nullable String getSdpMid() {
-			return sdpMid;
-		}
+        public @Nullable String getSdpMid() {
+            return sdpMid;
+        }
 
-		public Candidate setSdpMid(@NonNull String sdpMid) {
-			this.sdpMid = sdpMid;
-			return this;
-		}
+        public Candidate setSdpMid(@NonNull String sdpMid) {
+            this.sdpMid = sdpMid;
+            return this;
+        }
 
-		public @Nullable Integer getSdpMLineIndex() {
-			return sdpMLineIndex;
-		}
+        public @Nullable Integer getSdpMLineIndex() {
+            return sdpMLineIndex;
+        }
 
-		public Candidate setSdpMLineIndex(@NonNull Integer sdpMLineIndex) {
-			this.sdpMLineIndex = sdpMLineIndex;
-			return this;
-		}
+        public Candidate setSdpMLineIndex(@NonNull Integer sdpMLineIndex) {
+            this.sdpMLineIndex = sdpMLineIndex;
+            return this;
+        }
 
-		public @Nullable String getUfrag() {
-			return ufrag;
-		}
+        public @Nullable String getUfrag() {
+            return ufrag;
+        }
 
-		public Candidate setUfrag(@NonNull String ufrag) {
-			this.ufrag = ufrag;
-			return this;
-		}
+        public Candidate setUfrag(@NonNull String ufrag) {
+            this.ufrag = ufrag;
+            return this;
+        }
 
-		@Override
-		public String toString() {
-			return "Candidate{" +
-					"candidate='" + candidate + '\'' +
-					", sdpMid='" + sdpMid + '\'' +
-					", sdpMLineIndex=" + sdpMLineIndex +
-					", ufrag='" + ufrag + '\'' +
-					'}';
-		}
+        @Override
+        public String toString() {
+            return "Candidate{" +
+                "candidate='" + candidate + '\'' +
+                ", sdpMid='" + sdpMid + '\'' +
+                ", sdpMLineIndex=" + sdpMLineIndex +
+                ", ufrag='" + ufrag + '\'' +
+                '}';
+        }
 
-		public static @NonNull Candidate parse(@NonNull JSONObject o) throws BadMessageException {
-			try {
-				final Candidate candidate = new Candidate();
+        public static @NonNull Candidate parse(@NonNull JSONObject o) throws BadMessageException {
+            try {
+                final Candidate candidate = new Candidate();
 
-				final String candidateString = JSONUtil.getStringOrNull(o, KEY_CANDIDATE);
-				if (candidateString == null) {
-					logger.error("Bad Candidate: " + KEY_CANDIDATE + " must be defined");
-					throw new BadMessageException("TM062");
-				} else {
-					candidate.candidate = candidateString;
-				}
+                final String candidateString = JSONUtil.getStringOrNull(o, KEY_CANDIDATE);
+                if (candidateString == null) {
+                    logger.error("Bad Candidate: " + KEY_CANDIDATE + " must be defined");
+                    throw new BadMessageException("TM062");
+                } else {
+                    candidate.candidate = candidateString;
+                }
 
-				candidate.sdpMid = JSONUtil.getStringOrNull(o, KEY_SDP_MID);
-				candidate.sdpMLineIndex = JSONUtil.getIntegerOrNull(o, KEY_SDP_M_LINE_INDEX);
-				candidate.ufrag = JSONUtil.getStringOrNull(o, KEY_UFRAG);
+                candidate.sdpMid = JSONUtil.getStringOrNull(o, KEY_SDP_MID);
+                candidate.sdpMLineIndex = JSONUtil.getIntegerOrNull(o, KEY_SDP_M_LINE_INDEX);
+                candidate.ufrag = JSONUtil.getStringOrNull(o, KEY_UFRAG);
 
-				return candidate;
-			} catch (Exception e) {
-				throw new BadMessageException("TM062");
-			}
-		}
+                return candidate;
+            } catch (Exception e) {
+                throw new BadMessageException("TM062");
+            }
+        }
 
-		/**
-		 * Return Candidate as JSONObject.
-		 */
-		public @NonNull JSONObject toJSON() throws JSONException {
-			final JSONObject o = new JSONObject();
-			o.put(KEY_CANDIDATE, this.candidate);
-			o.put(KEY_SDP_MID, this.sdpMid == null ? JSONObject.NULL : this.sdpMid);
-			o.put(KEY_SDP_M_LINE_INDEX, this.sdpMLineIndex == null ? JSONObject.NULL : this.sdpMLineIndex);
-			o.put(KEY_UFRAG, this.ufrag == null ? JSONObject.NULL : this.ufrag);
-			return o;
-		}
-	}
+        /**
+         * Return Candidate as JSONObject.
+         */
+        public @NonNull JSONObject toJSON() throws JSONException {
+            final JSONObject o = new JSONObject();
+            o.put(KEY_CANDIDATE, this.candidate);
+            o.put(KEY_SDP_MID, this.sdpMid == null ? JSONObject.NULL : this.sdpMid);
+            o.put(KEY_SDP_M_LINE_INDEX, this.sdpMLineIndex == null ? JSONObject.NULL : this.sdpMLineIndex);
+            o.put(KEY_UFRAG, this.ufrag == null ? JSONObject.NULL : this.ufrag);
+            return o;
+        }
+    }
 
-	public @Nullable Candidate[] getCandidates() {
-		return this.candidates;
-	}
+    public @Nullable Candidate[] getCandidates() {
+        return this.candidates;
+    }
 
-	public VoipICECandidatesData setCandidates(@NonNull Candidate[] candidates) {
-		this.candidates = candidates;
-		return this;
-	}
+    public VoipICECandidatesData setCandidates(@NonNull Candidate[] candidates) {
+        this.candidates = candidates;
+        return this;
+    }
 
-	/**
-	 * Filter the list of candidates. Only entries where CandidateFilter.keep returns `true` are kept.
-	 */
-	public void filter(@NonNull CandidateFilter filter) {
-		if (this.candidates != null) {
-			List<Candidate> result = new ArrayList<>();
-			for (Candidate c : this.candidates) {
-				if (filter.keep(c)) {
-					result.add(c);
-				}
-			}
-			this.candidates = result.toArray(new Candidate[result.size()]);
-		}
-	}
+    /**
+     * Filter the list of candidates. Only entries where CandidateFilter.keep returns `true` are kept.
+     */
+    public void filter(@NonNull CandidateFilter filter) {
+        if (this.candidates != null) {
+            List<Candidate> result = new ArrayList<>();
+            for (Candidate c : this.candidates) {
+                if (filter.keep(c)) {
+                    result.add(c);
+                }
+            }
+            this.candidates = result.toArray(new Candidate[result.size()]);
+        }
+    }
 
-	//endregion
+    //endregion
 
-	//region Serialization
+    //region Serialization
 
-	public static @NonNull VoipICECandidatesData parse(@NonNull String jsonObjectString) throws BadMessageException {
-		final JSONObject o;
-		try {
-			o = new JSONObject(jsonObjectString);
-		} catch (JSONException e) {
-			logger.error("Bad VoipICECandidatesData: Invalid JSON string", e);
-			throw new BadMessageException("TM062");
-		}
+    public static @NonNull VoipICECandidatesData parse(@NonNull String jsonObjectString) throws BadMessageException {
+        final JSONObject o;
+        try {
+            o = new JSONObject(jsonObjectString);
+        } catch (JSONException e) {
+            logger.error("Bad VoipICECandidatesData: Invalid JSON string", e);
+            throw new BadMessageException("TM062");
+        }
 
-		final VoipICECandidatesData candidatesData = new VoipICECandidatesData();
+        final VoipICECandidatesData candidatesData = new VoipICECandidatesData();
 
-		try {
-			final Long callId = JSONUtil.getLongOrThrow(o, KEY_CALL_ID);
-			if (callId != null) {
-				candidatesData.setCallId(callId);
-			}
-		} catch (Exception e) {
-			logger.error("Bad VoipICECandidatesData: Invalid Call ID", e);
-			throw new BadMessageException("TM062");
-		}
+        try {
+            final Long callId = JSONUtil.getLongOrThrow(o, KEY_CALL_ID);
+            if (callId != null) {
+                candidatesData.setCallId(callId);
+            }
+        } catch (Exception e) {
+            logger.error("Bad VoipICECandidatesData: Invalid Call ID", e);
+            throw new BadMessageException("TM062");
+        }
 
-		try {
-			candidatesData.removed = o.getBoolean(KEY_REMOVED);
+        try {
+            candidatesData.removed = o.getBoolean(KEY_REMOVED);
 
-			final JSONArray candidates = o.getJSONArray(KEY_CANDIDATES);
-			if (candidates.length() == 0) {
-				logger.error("Bad VoipICECandidatesData: " + KEY_CANDIDATES + " may not be empty");
-				throw new BadMessageException("TM062");
-			}
-			candidatesData.candidates = new Candidate[candidates.length()];
-			for (int i = 0; i < candidates.length(); i++) {
-				final JSONObject c = candidates.getJSONObject(i);
-				candidatesData.candidates[i] = Candidate.parse(c);
-			}
-		} catch (Exception e) {
-			logger.error("Bad VoipICECandidatesData", e);
-			throw new BadMessageException("TM062");
-		}
+            final JSONArray candidates = o.getJSONArray(KEY_CANDIDATES);
+            if (candidates.length() == 0) {
+                logger.error("Bad VoipICECandidatesData: " + KEY_CANDIDATES + " may not be empty");
+                throw new BadMessageException("TM062");
+            }
+            candidatesData.candidates = new Candidate[candidates.length()];
+            for (int i = 0; i < candidates.length(); i++) {
+                final JSONObject c = candidates.getJSONObject(i);
+                candidatesData.candidates[i] = Candidate.parse(c);
+            }
+        } catch (Exception e) {
+            logger.error("Bad VoipICECandidatesData", e);
+            throw new BadMessageException("TM062");
+        }
 
-		return candidatesData;
-	}
+        return candidatesData;
+    }
 
-	public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
-		bos.write(this.generateString().getBytes(UTF_8));
-	}
+    public void write(@NonNull ByteArrayOutputStream bos) throws Exception {
+        bos.write(this.generateString().getBytes(UTF_8));
+    }
 
-	private @NonNull String generateString() throws Exception {
-		final JSONObject o = this.buildJsonObject();
-		try {
-			o.put(KEY_REMOVED, this.removed); // Deprecated, see ANDR-1145
-			final JSONArray candidateArray = new JSONArray();
-			for (Candidate candidate : this.candidates) {
-				candidateArray.put(candidate.toJSON());
-			}
-			o.put(KEY_CANDIDATES, candidateArray);
-		} catch (Exception e) {
-			throw new BadMessageException("TM062");
-		}
+    private @NonNull String generateString() throws Exception {
+        final JSONObject o = this.buildJsonObject();
+        try {
+            o.put(KEY_REMOVED, this.removed); // Deprecated, see ANDR-1145
+            final JSONArray candidateArray = new JSONArray();
+            for (Candidate candidate : this.candidates) {
+                candidateArray.put(candidate.toJSON());
+            }
+            o.put(KEY_CANDIDATES, candidateArray);
+        } catch (Exception e) {
+            throw new BadMessageException("TM062");
+        }
 
-		return o.toString();
-	}
+        return o.toString();
+    }
 
-	//endregion
+    //endregion
 }

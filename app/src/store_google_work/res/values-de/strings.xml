@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="about_title">Threema Work für Android</string>
-	<string name="enter_serial_body">Geben Sie Ihre Threema Work-Zugangsdaten ein, die Sie von Ihrem Unternehmen erhalten haben.</string>
-	<string name="serial_required_want_exit">Die Lizenz ist ungültig. Möchten Sie es nochmals versuchen oder Threema verlassen?</string>
-	<string name="checking_serial">Zugangsberechtigung wird überprüft</string>
-	<string name="username_hint">Benutzername</string>
-	<string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Kontakte können Sie über diese ID erreichen.</string>
-	<string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Kontakten angezeigt, wenn sie eine Nachricht empfangen.</string>
-	<string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden</string>
-	<string name="new_wizard_find_friends">Finden Sie Ihre Kontakte auf Threema</string>
-	<string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Kontakte Threema oder Threema Work nutzen.</string>
-	<string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in Kontaktlisten aufgeführt. Möchten Sie Threema Work wirklich komplett anonym nutzen?</string>
-	<string name="new_wizard_setup_threema">Jetzt einrichten</string>
-	<string name="new_wizard_welcome">Willkommen bei Threema Work</string>
-	<string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
+    <string name="about_title">Threema Work für Android</string>
+    <string name="enter_serial_body">Geben Sie Ihre Threema Work-Zugangsdaten ein, die Sie von Ihrem Unternehmen erhalten haben.</string>
+    <string name="serial_required_want_exit">Die Lizenz ist ungültig. Möchten Sie es nochmals versuchen oder Threema verlassen?</string>
+    <string name="checking_serial">Zugangsberechtigung wird überprüft</string>
+    <string name="username_hint">Benutzername</string>
+    <string name="new_wizard_works_like_phone_number">Ihre Threema-ID funktioniert wie eine Telefonnummer. Ihre Kontakte können Sie über diese ID erreichen.</string>
+    <string name="new_wizard_nickname_explain">Der Nickname wird bei Ihren Kontakten angezeigt, wenn sie eine Nachricht empfangen.</string>
+    <string name="new_wizard_help_your_friends_find_you">Damit Sie einfacher gefunden werden</string>
+    <string name="new_wizard_find_friends">Finden Sie Ihre Kontakte auf Threema</string>
+    <string name="new_wizard_sync_contacts_explain">Einschalten, um zu sehen, welche Ihrer Kontakte Threema oder Threema Work nutzen.</string>
+    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben. Sie werden deshalb nicht automatisch in Kontaktlisten aufgeführt. Möchten Sie Threema Work wirklich komplett anonym nutzen?</string>
+    <string name="new_wizard_setup_threema">Jetzt einrichten</string>
+    <string name="new_wizard_welcome">Willkommen bei Threema Work</string>
+    <string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie),
 		die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen Threema-ID verbunden. Es besteht aus einem
 		<b>öffentlichen Schlüssel</b>, der an Ihre Kontakte verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren
 		Kontakten wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand
 		anderes kann die Nachrichten wieder entschlüsseln.
 	</string>
-	<string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Work Ihren Kontakten helfen, Sie
+    <string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann Threema Work Ihren Kontakten helfen, Sie
 		automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form
 		auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie Threema Work anonym benutzen möchten.
 	</string>
-	<string name="threema_contact">Threema Work-Kontakt</string>
-	<string name="menu_about">Über Threema Work</string>
-	<string name="directory_search">Im Verzeichnis suchen</string>
-	<string name="directory_title">Unternehmensverzeichnis</string>
-	<string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
-	<string name="share_with_app">Mit Threema Work teilen</string>
+    <string name="threema_contact">Threema Work-Kontakt</string>
+    <string name="menu_about">Über Threema Work</string>
+    <string name="directory_search">Im Verzeichnis suchen</string>
+    <string name="directory_title">Unternehmensverzeichnis</string>
+    <string name="directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
+    <string name="share_with_app">Mit Threema Work teilen</string>
 </resources>
 

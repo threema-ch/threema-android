@@ -59,187 +59,188 @@ import ch.threema.app.utils.LocaleUtil;
 
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
 
-	private ControlPanelButton selectButton, cancelButton;
-	private Button selectCounterButton;
+    private ControlPanelButton selectButton, cancelButton;
+    private Button selectCounterButton;
 
 
-	@Override
-	protected void initActivity(Bundle savedInstanceState) {
-		super.initActivity(null);
-		setControlPanelLayout();
-		setupControlPanelListeners();
+    @Override
+    protected void initActivity(Bundle savedInstanceState) {
+        super.initActivity(null);
+        setControlPanelLayout();
+        setupControlPanelListeners();
 
-		// always open bottom sheet in expanded state right away
-		expandBottomSheet();
-		setInitialMediaGrid();
+        // always open bottom sheet in expanded state right away
+        expandBottomSheet();
+        setInitialMediaGrid();
 
-		handleSavedInstanceState(savedInstanceState);
-	}
+        handleSavedInstanceState(savedInstanceState);
+    }
 
-	@Override
-	protected void setInitialMediaGrid() {
-		super.setInitialMediaGrid();
-		// hide media items dependent views until we have data loaded and set to grid
+    @Override
+    protected void setInitialMediaGrid() {
+        super.setInitialMediaGrid();
+        // hide media items dependent views until we have data loaded and set to grid
 
-		// check for previous filter selection to be reset
-		Intent intent = getIntent();
-		int queryType = 0;
-		String query = null;
-		if (intent.hasExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY)) {
-			MediaFilterQuery lastFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
-			queryType = lastFilter.getType();
-			query = lastFilter.getQuery();
-		}
+        // check for previous filter selection to be reset
+        Intent intent = getIntent();
+        int queryType = 0;
+        String query = null;
+        if (intent.hasExtra(ComposeMessageFragment.EXTRA_LAST_MEDIA_SEARCH_QUERY)) {
+            MediaFilterQuery lastFilter = IntentDataUtil.getLastMediaFilterFromIntent(intent);
+            queryType = lastFilter.getType();
+            query = lastFilter.getQuery();
+        }
 
-		int finalPreviousQueryType = queryType;
-		String finalPreviousQuery = query;
+        int finalPreviousQueryType = queryType;
+        String finalPreviousQuery = query;
 
-		// because the MediaSelectionActivity subclass is initialized with expanded bottom sheet,
-		// we start fetching all data right away and listen for it be be available
-		mediaAttachViewModel.fetchAllMediaFromRepository(false);
-		registerOnAllDataFetchedListener(new Observer<List<MediaAttachItem>>() {
-			@Override
-			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
-				// ignore the first onChanged trigger, when there are not items yet
-				if (!mediaAttachItems.isEmpty()) {
-					// if we previously searched media, we reset the filter, otherwise we post all media to grid view
-					if (finalPreviousQuery != null) {
-						switch (finalPreviousQueryType) {
-							case FILTER_MEDIA_TYPE:
-								MediaSelectionActivity.this.filterMediaByMediaAttachType(finalPreviousQuery);
-								break;
-							case FILTER_MEDIA_BUCKET:
-								MediaSelectionActivity.this.filterMediaByBucket(finalPreviousQuery);
-								break;
-							default:
-								break;
-						}
-					} else {
-						mediaAttachViewModel.setAllMedia();
-					}
-					// remove listener after receiving full list as we listen to current selected media afterwards to update the grid view
-					mediaAttachViewModel.getAllMedia().removeObserver(this);
-				}
-			}
-		});
+        // because the MediaSelectionActivity subclass is initialized with expanded bottom sheet,
+        // we start fetching all data right away and listen for it be be available
+        mediaAttachViewModel.fetchAllMediaFromRepository(false);
+        registerOnAllDataFetchedListener(new Observer<List<MediaAttachItem>>() {
+            @Override
+            public void onChanged(List<MediaAttachItem> mediaAttachItems) {
+                // ignore the first onChanged trigger, when there are not items yet
+                if (!mediaAttachItems.isEmpty()) {
+                    // if we previously searched media, we reset the filter, otherwise we post all media to grid view
+                    if (finalPreviousQuery != null) {
+                        switch (finalPreviousQueryType) {
+                            case FILTER_MEDIA_TYPE:
+                                MediaSelectionActivity.this.filterMediaByMediaAttachType(finalPreviousQuery);
+                                break;
+                            case FILTER_MEDIA_BUCKET:
+                                MediaSelectionActivity.this.filterMediaByBucket(finalPreviousQuery);
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        mediaAttachViewModel.setAllMedia();
+                    }
+                    // remove listener after receiving full list as we listen to current selected media afterwards to update the grid view
+                    mediaAttachViewModel.getAllMedia().removeObserver(this);
+                }
+            }
+        });
 
-		mediaAttachViewModel.getCurrentMedia().observe(this, new Observer<List<MediaAttachItem>>() {
-			@Override
-			public void onChanged(List<MediaAttachItem> mediaAttachItems) {
-				if (mediaAttachItems.size() != 0) {
-					mediaAttachViewModel.getCurrentMedia().removeObserver(this);
-				}
-			}
-		});
-	}
+        mediaAttachViewModel.getCurrentMedia().observe(this, new Observer<List<MediaAttachItem>>() {
+            @Override
+            public void onChanged(List<MediaAttachItem> mediaAttachItems) {
+                if (mediaAttachItems.size() != 0) {
+                    mediaAttachViewModel.getCurrentMedia().removeObserver(this);
+                }
+            }
+        });
+    }
 
-	@Override
-	public void onItemChecked(int count) {
-		if (count > 0) {
-			selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
-			selectCounterButton.setVisibility(View.VISIBLE);
-			controlPanel.setVisibility(View.VISIBLE);
-			controlPanel.animate().translationY(0);
-			// align last grid element on top of control panel
-			controlPanel.postDelayed(() -> bottomSheetLayout.setPadding(
-				0,
-				0,
-				0,
-				0), 300);
-		} else {
-			controlPanel.animate().translationY(controlPanel.getHeight());
-			ValueAnimator animator = ValueAnimator.ofInt(bottomSheetLayout.getPaddingBottom(), 0);
-			animator.addUpdateListener(valueAnimator -> bottomSheetLayout.setPadding(
-				0,
-				0,
-				0,
-				(Integer) valueAnimator.getAnimatedValue()));
-			animator.setDuration(300);
-			animator.start();
-		}
-	}
+    @Override
+    public void onItemChecked(int count) {
+        if (count > 0) {
+            selectCounterButton.setText(String.format(LocaleUtil.getCurrentLocale(this), "%d", count));
+            selectCounterButton.setVisibility(View.VISIBLE);
+            controlPanel.setVisibility(View.VISIBLE);
+            controlPanel.animate().translationY(0);
+            // align last grid element on top of control panel
+            controlPanel.postDelayed(() -> bottomSheetLayout.setPadding(
+                0,
+                0,
+                0,
+                0), 300);
+        } else {
+            controlPanel.animate().translationY(controlPanel.getHeight());
+            ValueAnimator animator = ValueAnimator.ofInt(bottomSheetLayout.getPaddingBottom(), 0);
+            animator.addUpdateListener(valueAnimator -> bottomSheetLayout.setPadding(
+                0,
+                0,
+                0,
+                (Integer) valueAnimator.getAnimatedValue()));
+            animator.setDuration(300);
+            animator.start();
+        }
+    }
 
-	public void setControlPanelLayout() {
-		ViewStub stub = findViewById(R.id.stub);
-		stub.setLayoutResource(R.layout.media_selection_control_panel);
-		stub.inflate();
+    public void setControlPanelLayout() {
+        ViewStub stub = findViewById(R.id.stub);
+        stub.setLayoutResource(R.layout.media_selection_control_panel);
+        stub.inflate();
 
-		this.controlPanel = findViewById(R.id.control_panel);
-		controlPanel.setVisibility(View.GONE);
-		controlPanel.setTranslationY(controlPanel.getHeight());
-		ConstraintLayout selectPanel = findViewById(R.id.select_panel);
-		this.cancelButton = selectPanel.findViewById(R.id.cancel);
-		this.selectButton = selectPanel.findViewById(R.id.select);
-		this.selectCounterButton = selectPanel.findViewById(R.id.select_counter_button);
-		this.selectCounterButton.setContentDescription(ConfigUtils.getSafeQuantityString(this, R.plurals.selection_counter_label, 0, 0));
-	}
+        this.controlPanel = findViewById(R.id.control_panel);
+        controlPanel.setVisibility(View.GONE);
+        controlPanel.setTranslationY(controlPanel.getHeight());
+        ConstraintLayout selectPanel = findViewById(R.id.select_panel);
+        this.cancelButton = selectPanel.findViewById(R.id.cancel);
+        this.selectButton = selectPanel.findViewById(R.id.select);
+        this.selectCounterButton = selectPanel.findViewById(R.id.select_counter_button);
+        this.selectCounterButton.setContentDescription(ConfigUtils.getSafeQuantityString(this, R.plurals.selection_counter_label, 0, 0));
+    }
 
-	public void setupControlPanelListeners(){
-		this.selectCounterButton.setOnClickListener(this);
-		this.cancelButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MediaSelectionActivity.super.onClick(v);
-			}
-		});
-		this.selectButton.setOnClickListener(new DebouncedOnClickListener(1000) {
-			@Override
-			public void onDebouncedClick(View v) {
-				v.setAlpha(0.3f);
-				selectItemsAndClose(mediaAttachViewModel.getSelectedMediaUris());
-			}
-		});
-	}
+    public void setupControlPanelListeners() {
+        this.selectCounterButton.setOnClickListener(this);
+        this.cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MediaSelectionActivity.super.onClick(v);
+            }
+        });
+        this.selectButton.setOnClickListener(new DebouncedOnClickListener(1000) {
+            @Override
+            public void onDebouncedClick(View v) {
+                v.setAlpha(0.3f);
+                selectItemsAndClose(mediaAttachViewModel.getSelectedMediaUris());
+            }
+        });
+    }
 
-	private void selectItemsAndClose(List<Uri> uris) {
-		ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uris, this);
+    private void selectItemsAndClose(List<Uri> uris) {
+        ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uris, this);
 
-		Intent resultIntent = new Intent();
-		resultIntent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-		if (mediaAttachViewModel.getLastQuery() != null) {
-			IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
-				mediaAttachViewModel.getLastQuery(), mediaAttachViewModel.getLastQueryType());
-		}
-		setResult(RESULT_OK, resultIntent);
-		finish();
-	}
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
+        if (mediaAttachViewModel.getLastQuery() != null) {
+            IntentDataUtil.addLastMediaFilterToIntent(resultIntent,
+                mediaAttachViewModel.getLastQuery(), mediaAttachViewModel.getLastQueryType());
+        }
+        setResult(RESULT_OK, resultIntent);
+        finish();
+    }
 
-	/**
-	 * Check if the media attacher's selectable media grid can be shown
-	 * @return true if option has been enabled by user and permissions are available
-	 */
-	@Override
-	protected boolean shouldShowMediaGrid() {
-		return ConfigUtils.isVideoImagePermissionGranted(this);
-	}
+    /**
+     * Check if the media attacher's selectable media grid can be shown
+     *
+     * @return true if option has been enabled by user and permissions are available
+     */
+    @Override
+    protected boolean shouldShowMediaGrid() {
+        return ConfigUtils.isVideoImagePermissionGranted(this);
+    }
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-			switch (requestCode) {
-				case PERMISSION_REQUEST_ATTACH_FILE:
-					updateUI(BottomSheetBehavior.STATE_COLLAPSED);
-					toolbar.setVisibility(View.GONE);
-					selectButton.setAlpha(0.3f);
-					selectButton.setOnClickListener(v -> {
-						if (!ActivityCompat.shouldShowRequestPermissionRationale(MediaSelectionActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-							showPermissionRationale(R.string.permission_storage_required);
-						}
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            switch (requestCode) {
+                case PERMISSION_REQUEST_ATTACH_FILE:
+                    updateUI(BottomSheetBehavior.STATE_COLLAPSED);
+                    toolbar.setVisibility(View.GONE);
+                    selectButton.setAlpha(0.3f);
+                    selectButton.setOnClickListener(v -> {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(MediaSelectionActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            showPermissionRationale(R.string.permission_storage_required);
+                        }
 
-					});
-					cancelButton.setOnClickListener(v -> finish());
-			}
-		}
-	}
+                    });
+                    cancelButton.setOnClickListener(v -> finish());
+            }
+        }
+    }
 
-	@Override
-	protected ActivityResultLauncher<Intent> getFileAttachedResultLauncher() {
-		return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-			result -> {
-				if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-					selectItemsAndClose(FileUtil.getUrisFromResult(result.getData(), getContentResolver()));
-				}
-			});
-	}
+    @Override
+    protected ActivityResultLauncher<Intent> getFileAttachedResultLauncher() {
+        return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    selectItemsAndClose(FileUtil.getUrisFromResult(result.getData(), getContentResolver()));
+                }
+            });
+    }
 }

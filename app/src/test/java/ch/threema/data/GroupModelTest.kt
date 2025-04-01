@@ -115,15 +115,42 @@ class GroupModelTest {
     @Test
     fun testGroupIdentityToByteArray() {
         val identity = "TESTTEST"
-        assertArrayEquals(byteArrayOf(-42, -1, -1, -1, -1, -1, -1, -1), GroupIdentity(identity, -42).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(-1, -1, -1, -1, -1, -1, -1, -1), GroupIdentity(identity, -1).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0), GroupIdentity(identity, 0).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0), GroupIdentity(identity, 1).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(42, 0, 0, 0, 0, 0, 0, 0), GroupIdentity(identity, 42).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(0, 0, 0, 0, 0, 0, 0, -128), GroupIdentity(identity, Long.MIN_VALUE).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(-1, -1, -1, -1, -1, -1, -1, 127), GroupIdentity(identity, Long.MAX_VALUE).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(78, -88, 120, -3, -1, -1, -1, -1), GroupIdentity(identity, -42424242).groupIdByteArray)
-        assertArrayEquals(byteArrayOf(-78, 87, -121, 2, 0, 0, 0, 0), GroupIdentity(identity, 42424242).groupIdByteArray)
+        assertArrayEquals(
+            byteArrayOf(-42, -1, -1, -1, -1, -1, -1, -1),
+            GroupIdentity(identity, -42).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            GroupIdentity(identity, -1).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, 0),
+            GroupIdentity(identity, 0).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0),
+            GroupIdentity(identity, 1).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(42, 0, 0, 0, 0, 0, 0, 0),
+            GroupIdentity(identity, 42).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(0, 0, 0, 0, 0, 0, 0, -128),
+            GroupIdentity(identity, Long.MIN_VALUE).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(-1, -1, -1, -1, -1, -1, -1, 127),
+            GroupIdentity(identity, Long.MAX_VALUE).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(78, -88, 120, -3, -1, -1, -1, -1),
+            GroupIdentity(identity, -42424242).groupIdByteArray
+        )
+        assertArrayEquals(
+            byteArrayOf(-78, 87, -121, 2, 0, 0, 0, 0),
+            GroupIdentity(identity, 42424242).groupIdByteArray
+        )
     }
 
     /**

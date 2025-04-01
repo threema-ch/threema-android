@@ -37,7 +37,7 @@ public class NetUtils {
     public static boolean isNetworkAvailable(Activity activity) {
         Context context = activity.getApplicationContext();
         ConnectivityManager connectivityManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
+            .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager == null) {
             return false;
         } else {

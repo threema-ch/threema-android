@@ -59,214 +59,214 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 
 public class ExportIDResultActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, LifecycleOwner {
-	private static final String DIALOG_TAG_QUIT_CONFIRM = "qconf";
-	private static final int QRCODE_SMALL_DIMENSION_PIXEL = 200;
+    private static final String DIALOG_TAG_QUIT_CONFIRM = "qconf";
+    private static final int QRCODE_SMALL_DIMENSION_PIXEL = 200;
 
-	private Bitmap qrcodeBitmap;
-	private WebView printWebView;
-	private MaterialToolbar toolbar;
-	private TooltipPopup tooltipPopup;
+    private Bitmap qrcodeBitmap;
+    private WebView printWebView;
+    private MaterialToolbar toolbar;
+    private TooltipPopup tooltipPopup;
 
-	private String identity, backupData;
+    private String identity, backupData;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		this.toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(this.toolbar);
-		ActionBar actionBar = getSupportActionBar();
+        this.toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(this.toolbar);
+        ActionBar actionBar = getSupportActionBar();
 
-		if (actionBar == null) {
-			finish();
-			return;
-		}
+        if (actionBar == null) {
+            finish();
+            return;
+        }
 
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle("");
-		actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("");
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
 
-		this.backupData = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP);
-		this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
+        this.backupData = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_ID_BACKUP);
+        this.identity = this.getIntent().getStringExtra(ThreemaApplication.INTENT_DATA_CONTACT);
 
-		if (TestUtil.isEmptyOrNull(this.backupData)) {
-			finish();
-			return;
-		}
+        if (TestUtil.isEmptyOrNull(this.backupData)) {
+            finish();
+            return;
+        }
 
-		displayIDBackup();
+        displayIDBackup();
 
-		if (savedInstanceState == null) {
-			showTooltip();
-		}
-	}
+        if (savedInstanceState == null) {
+            showTooltip();
+        }
+    }
 
-	private void displayIDBackup() {
-		ScrollView layoutContainer = findViewById(R.id.qr_container_backup);
-		layoutContainer.setVisibility(View.VISIBLE);
+    private void displayIDBackup() {
+        ScrollView layoutContainer = findViewById(R.id.qr_container_backup);
+        layoutContainer.setVisibility(View.VISIBLE);
 
-		TextView textView = findViewById(R.id.threemaid);
-		textView.setText(backupData);
+        TextView textView = findViewById(R.id.threemaid);
+        textView.setText(backupData);
 
-		final ImageView imageView = findViewById(R.id.qrcode_backup);
-		this.qrcodeBitmap = serviceManager.getQRCodeService().getRawQR(backupData, false, QRCodeServiceImpl.QR_TYPE_ID_EXPORT);
+        final ImageView imageView = findViewById(R.id.qrcode_backup);
+        this.qrcodeBitmap = serviceManager.getQRCodeService().getRawQR(backupData, false, QRCodeServiceImpl.QR_TYPE_ID_EXPORT);
 
-		final int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, QRCODE_SMALL_DIMENSION_PIXEL, getResources().getDisplayMetrics());
-		Bitmap bmpScaled = Bitmap.createScaledBitmap(qrcodeBitmap, px, px, false);
-		bmpScaled.setDensity(Bitmap.DENSITY_NONE);
-		imageView.setImageBitmap(bmpScaled);
-		if (ConfigUtils.isTheDarkSide(this)) {
-			ConfigUtils.invertColors(imageView);
-		}
+        final int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, QRCODE_SMALL_DIMENSION_PIXEL, getResources().getDisplayMetrics());
+        Bitmap bmpScaled = Bitmap.createScaledBitmap(qrcodeBitmap, px, px, false);
+        bmpScaled.setDensity(Bitmap.DENSITY_NONE);
+        imageView.setImageBitmap(bmpScaled);
+        if (ConfigUtils.isTheDarkSide(this)) {
+            ConfigUtils.invertColors(imageView);
+        }
 
-		imageView.setOnClickListener(v -> new QRCodePopup(ExportIDResultActivity.this, getWindow().getDecorView(), ExportIDResultActivity.this).show(v, backupData, QRCodeServiceImpl.QR_TYPE_ID_EXPORT));
-	}
+        imageView.setOnClickListener(v -> new QRCodePopup(ExportIDResultActivity.this, getWindow().getDecorView(), ExportIDResultActivity.this).show(v, backupData, QRCodeServiceImpl.QR_TYPE_ID_EXPORT));
+    }
 
-	private void showTooltip() {
-		if (!preferenceService.getIsExportIdTooltipShown()) {
-			getToolbar().postDelayed(() -> {
+    private void showTooltip() {
+        if (!preferenceService.getIsExportIdTooltipShown()) {
+            getToolbar().postDelayed(() -> {
 
-				View menuItemView = findViewById(R.id.menu_backup_share);
-				int[] location = new int[2];
-				menuItemView.getLocationOnScreen(location);
-				location[0] += menuItemView.getWidth() / 2;
-				location[1] += menuItemView.getHeight();
+                View menuItemView = findViewById(R.id.menu_backup_share);
+                int[] location = new int[2];
+                menuItemView.getLocationOnScreen(location);
+                location[0] += menuItemView.getWidth() / 2;
+                location[1] += menuItemView.getHeight();
 
-				tooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_export_id_shown, this);
-				tooltipPopup.show(this, menuItemView, null, getString(R.string.tooltip_export_id), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT, location, 5000);
-			}, 1000);
-		}
-	}
+                tooltipPopup = new TooltipPopup(this, R.string.preferences__tooltip_export_id_shown, this);
+                tooltipPopup.show(this, menuItemView, null, getString(R.string.tooltip_export_id), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT, location, 5000);
+            }, 1000);
+        }
+    }
 
-	private void done() {
-		GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
-					R.string.backup_id,
-					R.string.really_leave_id_export,
-					R.string.ok,
-					R.string.back);
-		dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_QUIT_CONFIRM);
-	}
+    private void done() {
+        GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
+            R.string.backup_id,
+            R.string.really_leave_id_export,
+            R.string.ok,
+            R.string.back);
+        dialogFragment.show(getSupportFragmentManager(), DIALOG_TAG_QUIT_CONFIRM);
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_export_id;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_export_id;
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_export_id, menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_export_id, menu);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem printMenu = menu.findItem(R.id.menu_print);
-		printMenu.setVisible(true);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem printMenu = menu.findItem(R.id.menu_print);
+        printMenu.setVisible(true);
 
-		return super.onPrepareOptionsMenu(menu);
-	}
+        return super.onPrepareOptionsMenu(menu);
+    }
 
-	private void createWebPrintJob(WebView webView) {
+    private void createWebPrintJob(WebView webView) {
 
-		PrintManager printManager = (PrintManager) this
-				.getSystemService(Context.PRINT_SERVICE);
+        PrintManager printManager = (PrintManager) this
+            .getSystemService(Context.PRINT_SERVICE);
 
-		PrintDocumentAdapter printAdapter;
-		printAdapter = webView.createPrintDocumentAdapter("Threema_ID_" + identity);
-		String jobName = getString(R.string.app_name) + " " + getString(R.string.backup_id_title);
+        PrintDocumentAdapter printAdapter;
+        printAdapter = webView.createPrintDocumentAdapter("Threema_ID_" + identity);
+        String jobName = getString(R.string.app_name) + " " + getString(R.string.backup_id_title);
 
-		printManager.print(jobName, printAdapter,
-				new PrintAttributes.Builder().build());
-	}
+        printManager.print(jobName, printAdapter,
+            new PrintAttributes.Builder().build());
+    }
 
-	private void printBitmap(Bitmap bitmap) {
-		String html="<html><body><center><h1>" + getString(R.string.backup_share_subject) +
-				"</h1><h2>" + identity +
-				"</h2><br><br><img src='{IMAGE_URL}' width='350px' height='350px'/>" +
-				"<font face='monospace' size='8pt'><br><br>" +
-				backupData +
-				"</font></center></body></html>";
+    private void printBitmap(Bitmap bitmap) {
+        String html = "<html><body><center><h1>" + getString(R.string.backup_share_subject) +
+            "</h1><h2>" + identity +
+            "</h2><br><br><img src='{IMAGE_URL}' width='350px' height='350px'/>" +
+            "<font face='monospace' size='8pt'><br><br>" +
+            backupData +
+            "</font></center></body></html>";
 
-		WebView webView = new WebView(this);
-		webView.setWebViewClient(new WebViewClient() {
+        WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient() {
 
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				return false;
-			}
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
 
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				createWebPrintJob(view);
-				printWebView = null;
-			}
-		});
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                createWebPrintJob(view);
+                printWebView = null;
+            }
+        });
 
-		// Convert bitmap to Base64 encoded image
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-		byte[] byteArray = byteArrayOutputStream.toByteArray();
-		String imgageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-		String image = "data:image/png;base64," + imgageBase64;
+        // Convert bitmap to Base64 encoded image
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        String imgageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        String image = "data:image/png;base64," + imgageBase64;
 
-		html = html.replace("{IMAGE_URL}", image);
-		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+        html = html.replace("{IMAGE_URL}", image);
+        webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
 
-		// Keep a reference to WebView object until you pass the PrintDocumentAdapter
-    	// to the PrintManager
-		printWebView = webView;
-	}
+        // Keep a reference to WebView object until you pass the PrintDocumentAdapter
+        // to the PrintManager
+        printWebView = webView;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			done();
-		} else if (item.getItemId() == R.id.menu_print) {
-			printBitmap(qrcodeBitmap);
-		} else if (item.getItemId() == R.id.menu_backup_share) {
-			shareId();
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            done();
+        } else if (item.getItemId() == R.id.menu_print) {
+            printBitmap(qrcodeBitmap);
+        } else if (item.getItemId() == R.id.menu_backup_share) {
+            shareId();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	private void shareId() {
-		String shareText = getString(R.string.backup_share_content) + "\n\n" + backupData;
-		String shareSubject = getString(R.string.backup_share_subject) + " " + this.identity;
+    private void shareId() {
+        String shareText = getString(R.string.backup_share_content) + "\n\n" + backupData;
+        String shareSubject = getString(R.string.backup_share_subject) + " " + this.identity;
 
-		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("text/plain");
-		shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-		shareIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
 
-		startActivity(shareIntent);
-	}
+        startActivity(shareIntent);
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		done();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        done();
+    }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-		ConfigUtils.adjustToolbar(this, getToolbar());
-	}
+        ConfigUtils.adjustToolbar(this, getToolbar());
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		Intent upIntent = new Intent(ExportIDResultActivity.this, HomeActivity.class);
-		NavUtils.navigateUpTo(ExportIDResultActivity.this, upIntent);
+    @Override
+    public void onYes(String tag, Object data) {
+        Intent upIntent = new Intent(ExportIDResultActivity.this, HomeActivity.class);
+        NavUtils.navigateUpTo(ExportIDResultActivity.this, upIntent);
 
-		finish();
-	}
+        finish();
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
+    @Override
+    public void onNo(String tag, Object data) {
 
-	}
+    }
 }

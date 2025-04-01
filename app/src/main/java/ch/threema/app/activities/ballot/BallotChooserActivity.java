@@ -57,218 +57,220 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotChooserActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChooserActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChooserActivity");
 
-	private BallotService ballotService;
-	private ContactService contactService;
-	private GroupService groupService;
-	private String myIdentity;
+    private BallotService ballotService;
+    private ContactService contactService;
+    private GroupService groupService;
+    private String myIdentity;
 
-	private BallotOverviewListAdapter listAdapter = null;
-	private ListView listView;
+    private BallotOverviewListAdapter listAdapter = null;
+    private ListView listView;
 
-	private final BallotListener ballotListener = new BallotListener() {
-		@Override
-		public void onClosed(BallotModel ballotModel) {}
+    private final BallotListener ballotListener = new BallotListener() {
+        @Override
+        public void onClosed(BallotModel ballotModel) {
+        }
 
-		@Override
-		public void onModified(BallotModel ballotModel) {
-			RuntimeUtil.runOnUiThread(() -> updateList());
-		}
+        @Override
+        public void onModified(BallotModel ballotModel) {
+            RuntimeUtil.runOnUiThread(() -> updateList());
+        }
 
-		@Override
-		public void onCreated(BallotModel ballotModel) {
-			RuntimeUtil.runOnUiThread(() -> updateList());
-		}
+        @Override
+        public void onCreated(BallotModel ballotModel) {
+            RuntimeUtil.runOnUiThread(() -> updateList());
+        }
 
-		@Override
-		public void onRemoved(BallotModel ballotModel) {
-			RuntimeUtil.runOnUiThread(() -> updateList());
-		}
+        @Override
+        public void onRemoved(BallotModel ballotModel) {
+            RuntimeUtil.runOnUiThread(() -> updateList());
+        }
 
-		@Override
-		public boolean handle(BallotModel ballotModel) {
-			return true;
-		}
-	};
+        @Override
+        public boolean handle(BallotModel ballotModel) {
+            return true;
+        }
+    };
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if(!this.requireInstancesOrExit()) {
-			return;
-		}
+        if (!this.requireInstancesOrExit()) {
+            return;
+        }
 
-		listView = this.findViewById(android.R.id.list);
-		listView.setOnItemClickListener(this);
-		listView.setDividerHeight(0);
+        listView = this.findViewById(android.R.id.list);
+        listView.setOnItemClickListener(this);
+        listView.setDividerHeight(0);
 
-		// add text view if list is empty
-		EmptyView emptyView = new EmptyView(this);
-		emptyView.setup(R.string.ballot_no_ballots_yet);
-		((ViewGroup) listView.getParent()).addView(emptyView);
-		listView.setEmptyView(emptyView);
-		final AppBarLayout appBarLayout = findViewById(R.id.appbar);
-		appBarLayout.setLiftable(true);
-		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {}
+        // add text view if list is empty
+        EmptyView emptyView = new EmptyView(this);
+        emptyView.setup(R.string.ballot_no_ballots_yet);
+        ((ViewGroup) listView.getParent()).addView(emptyView);
+        listView.setEmptyView(emptyView);
+        final AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        appBarLayout.setLiftable(true);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-				boolean isAtTop = firstVisibleItem == 0 && (view.getChildCount() == 0 || view.getChildAt(0).getTop() == 0);
-				appBarLayout.setLifted(!isAtTop);
-			}
-		});
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                boolean isAtTop = firstVisibleItem == 0 && (view.getChildCount() == 0 || view.getChildAt(0).getTop() == 0);
+                appBarLayout.setLifted(!isAtTop);
+            }
+        });
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.ballot_copy);
-		} else {
-			setTitle(R.string.ballot_copy);
-		}
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.ballot_copy);
+        } else {
+            setTitle(R.string.ballot_copy);
+        }
 
-		this.setupList();
-		this.updateList();
+        this.setupList();
+        this.updateList();
 
-	}
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		ListenerManager.ballotListeners.add(this.ballotListener);
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ListenerManager.ballotListeners.add(this.ballotListener);
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_list_toolbar;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_list_toolbar;
+    }
 
-	@Override
-	protected void onDestroy() {
-		ListenerManager.ballotListeners.remove(this.ballotListener);
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        ListenerManager.ballotListeners.remove(this.ballotListener);
+        super.onDestroy();
+    }
 
-	private void setupList() {
-		final ListView listView = this.listView;
+    private void setupList() {
+        final ListView listView = this.listView;
 
-		if (listView != null) {
-			listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-		}
-	}
+        if (listView != null) {
+            listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        }
+    }
 
-	private void updateList() {
-		if(!this.requiredInstances()) {
-			return;
-		}
+    private void updateList() {
+        if (!this.requiredInstances()) {
+            return;
+        }
 
-		try {
-			List<BallotModel> ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
-				@Override
-				public MessageReceiver<?> getReceiver() {
-					return null;
-				}
+        try {
+            List<BallotModel> ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
+                @Override
+                public MessageReceiver<?> getReceiver() {
+                    return null;
+                }
 
-				@Override
-				public BallotModel.State[] getStates() {
-					return null;
-				}
+                @Override
+                public BallotModel.State[] getStates() {
+                    return null;
+                }
 
-				@Override
-				public boolean filter(BallotModel ballotModel) {
-					return true;
-				}
-			});
+                @Override
+                public boolean filter(BallotModel ballotModel) {
+                    return true;
+                }
+            });
 
-			if (ballots != null) {
-				this.listAdapter = new BallotOverviewListAdapter(
-					this,
-					ballots,
-					this.ballotService,
-					this.contactService,
-					Glide.with(this)
-				);
+            if (ballots != null) {
+                this.listAdapter = new BallotOverviewListAdapter(
+                    this,
+                    ballots,
+                    this.ballotService,
+                    this.contactService,
+                    Glide.with(this)
+                );
 
-				listView.setAdapter(this.listAdapter);
-			}
-		} catch (NotAllowedException e) {
-			logger.error("Exception", e);
-			finish();
-			return;
-		}
-	}
+                listView.setAdapter(this.listAdapter);
+            }
+        } catch (NotAllowedException e) {
+            logger.error("Exception", e);
+            finish();
+            return;
+        }
+    }
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		if (this.listAdapter == null) {
-			return;
-		}
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (this.listAdapter == null) {
+            return;
+        }
 
-		BallotModel b = listAdapter.getItem(position);
+        BallotModel b = listAdapter.getItem(position);
 
-		if(b != null) {
-			Intent resultIntent = this.getIntent();
-			//append ballot
-			IntentDataUtil.append(b, this.getIntent());
+        if (b != null) {
+            Intent resultIntent = this.getIntent();
+            //append ballot
+            IntentDataUtil.append(b, this.getIntent());
 
-			setResult(RESULT_OK, resultIntent);
-			finish();
-		}
-	}
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
+    }
 
-	@Override
-	protected boolean checkInstances() {
-		return !TestUtil.isEmptyOrNull(this.myIdentity) && TestUtil.required(
-				this.ballotService,
-				this.contactService,
-				this.groupService);
-	}
+    @Override
+    protected boolean checkInstances() {
+        return !TestUtil.isEmptyOrNull(this.myIdentity) && TestUtil.required(
+            this.ballotService,
+            this.contactService,
+            this.groupService);
+    }
 
-	@Override
-	protected void instantiate() {
-		if(serviceManager != null) {
-			try {
-				this.ballotService = serviceManager.getBallotService();
-				this.contactService = serviceManager.getContactService();
-				this.groupService = serviceManager.getGroupService();
-				this.myIdentity = serviceManager.getUserService().getIdentity();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    @Override
+    protected void instantiate() {
+        if (serviceManager != null) {
+            try {
+                this.ballotService = serviceManager.getBallotService();
+                this.contactService = serviceManager.getContactService();
+                this.groupService = serviceManager.getGroupService();
+                this.myIdentity = serviceManager.getUserService().getIdentity();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	private boolean requireInstancesOrExit() {
-		if(!this.requiredInstances()) {
-			logger.error("Required instances failed");
-			this.finish();
-			return false;
-		}
-		return true;
-	}
+    private boolean requireInstancesOrExit() {
+        if (!this.requiredInstances()) {
+            logger.error("Required instances failed");
+            this.finish();
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				setResult(RESULT_CANCELED);
-				finish();
-				break;
-		}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                setResult(RESULT_CANCELED);
+                finish();
+                break;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		setResult(RESULT_CANCELED);
-		finish();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        setResult(RESULT_CANCELED);
+        finish();
+    }
 }

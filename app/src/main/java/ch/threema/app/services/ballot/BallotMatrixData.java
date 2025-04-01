@@ -28,7 +28,9 @@ import ch.threema.app.services.ballot.BallotMatrixService.Participant;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public interface BallotMatrixData {
-	List<Participant> getParticipants();
-	List<Choice> getChoices();
-	BallotVoteModel getVote(final Participant participant , final Choice choice);
+    List<Participant> getParticipants();
+
+    List<Choice> getChoices();
+
+    BallotVoteModel getVote(final Participant participant, final Choice choice);
 }

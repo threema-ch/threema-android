@@ -35,29 +35,29 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion36 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion36(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion36(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_IS_WORK)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-					+ " ADD COLUMN " + ContactModel.COLUMN_IS_WORK + " TINYINT DEFAULT 0");
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_IS_WORK)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
+                + " ADD COLUMN " + ContactModel.COLUMN_IS_WORK + " TINYINT DEFAULT 0");
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 36";
-	}
+    @Override
+    public String getText() {
+        return "version 36";
+    }
 }

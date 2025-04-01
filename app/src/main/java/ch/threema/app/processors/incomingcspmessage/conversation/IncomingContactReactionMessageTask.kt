@@ -42,7 +42,8 @@ class IncomingContactReactionMessageTask(
     private val messageService by lazy { serviceManager.messageService }
     private val contactService by lazy { serviceManager.contactService }
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec) = processContactReactionMessage()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec) =
+        processContactReactionMessage()
 
     override suspend fun executeMessageStepsFromSync() = processContactReactionMessage()
 
@@ -58,10 +59,16 @@ class IncomingContactReactionMessageTask(
         val receiver = contactService.createReceiver(contactModel)
         val targetMessage = runCommonReactionMessageReceiveSteps(message, receiver, messageService)
             ?: return ReceiveStepsResult.DISCARD
-        val emojiSequence = runCommonReactionMessageReceiveEmojiSequenceConversion(message.data.emojiSequenceBytes)
-            ?: return ReceiveStepsResult.DISCARD
+        val emojiSequence =
+            runCommonReactionMessageReceiveEmojiSequenceConversion(message.data.emojiSequenceBytes)
+                ?: return ReceiveStepsResult.DISCARD
 
-        messageService.saveEmojiReactionMessage(targetMessage, message.fromIdentity, message.data.actionCase, emojiSequence)
+        messageService.saveEmojiReactionMessage(
+            targetMessage,
+            message.fromIdentity,
+            message.data.actionCase,
+            emojiSequence
+        )
 
         return ReceiveStepsResult.SUCCESS
     }

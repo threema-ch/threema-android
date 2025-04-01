@@ -32,75 +32,75 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 
 public class AnimatedEllipsisTextView extends androidx.appcompat.widget.AppCompatTextView {
-	private static final int MAX_DOTS = 3;
-	private static final String ellipsis = "...";
-	private CharSequence baseText;
+    private static final int MAX_DOTS = 3;
+    private static final String ellipsis = "...";
+    private CharSequence baseText;
 
-	public AnimatedEllipsisTextView(Context context) {
-		super(context);
-	}
+    public AnimatedEllipsisTextView(Context context) {
+        super(context);
+    }
 
-	public AnimatedEllipsisTextView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public AnimatedEllipsisTextView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public AnimatedEllipsisTextView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	}
+    public AnimatedEllipsisTextView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-	/**
-	 * Sets the text to be displayed and the {@link BufferType}.
-	 * <p/>
-	 * When required, TextView will use {@link Spannable.Factory} to create final or
-	 * intermediate {@link Spannable Spannables}. Likewise it will use
-	 * {@link Editable.Factory} to create final or intermediate
-	 * {@link Editable Editables}.
-	 *
-	 * Subclasses overriding this method should ensure that the following post condition holds,
-	 * in order to guarantee the safety of the view's measurement and layout operations:
-	 * regardless of the input, after calling #setText both {@code mText} and {@code mTransformed}
-	 * will be different from {@code null}.
-	 *
-	 * @param text text to be displayed
-	 * @param type a {@link BufferType} which defines whether the text is
-	 * stored as a static text, styleable/spannable text, or editable text
-	 * @attr ref android.R.styleable#TextView_text
-	 * @attr ref android.R.styleable#TextView_bufferType
-	 * @see #setText(CharSequence)
-	 * @see BufferType
-	 * @see #setSpannableFactory(Spannable.Factory)
-	 * @see #setEditableFactory(Editable.Factory)
-	 */
-	@Override
-	public void setText(CharSequence text, BufferType type) {
-		super.setText(text, type);
-		if (text != null) {
-			if (!(text instanceof SpannedString)) {
-				this.baseText = text;
-			}
-		}
-	}
+    /**
+     * Sets the text to be displayed and the {@link BufferType}.
+     * <p/>
+     * When required, TextView will use {@link Spannable.Factory} to create final or
+     * intermediate {@link Spannable Spannables}. Likewise it will use
+     * {@link Editable.Factory} to create final or intermediate
+     * {@link Editable Editables}.
+     * <p>
+     * Subclasses overriding this method should ensure that the following post condition holds,
+     * in order to guarantee the safety of the view's measurement and layout operations:
+     * regardless of the input, after calling #setText both {@code mText} and {@code mTransformed}
+     * will be different from {@code null}.
+     *
+     * @param text text to be displayed
+     * @param type a {@link BufferType} which defines whether the text is
+     *             stored as a static text, styleable/spannable text, or editable text
+     * @attr ref android.R.styleable#TextView_text
+     * @attr ref android.R.styleable#TextView_bufferType
+     * @see #setText(CharSequence)
+     * @see BufferType
+     * @see #setSpannableFactory(Spannable.Factory)
+     * @see #setEditableFactory(Editable.Factory)
+     */
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        super.setText(text, type);
+        if (text != null) {
+            if (!(text instanceof SpannedString)) {
+                this.baseText = text;
+            }
+        }
+    }
 
-	public void animateText(final int numDots) {
-		SpannableString spannableString = new SpannableString(ellipsis);
-		spannableString.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), numDots, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    public void animateText(final int numDots) {
+        SpannableString spannableString = new SpannableString(ellipsis);
+        spannableString.setSpan(new ForegroundColorSpan(Color.TRANSPARENT), numDots, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		if (this.baseText != null) {
-			setText(TextUtils.concat(this.baseText, spannableString));
-		}
+        if (this.baseText != null) {
+            setText(TextUtils.concat(this.baseText, spannableString));
+        }
 
-		postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				animateText(numDots >= MAX_DOTS ? 0 : numDots + 1);
-			}
-		}, 300);
-	}
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                animateText(numDots >= MAX_DOTS ? 0 : numDots + 1);
+            }
+        }, 300);
+    }
 
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
 
-		animateText(0);
-	}
+        animateText(0);
+    }
 }

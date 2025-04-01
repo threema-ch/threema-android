@@ -40,108 +40,108 @@ import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.utils.TestUtil;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
-	protected Activity activity;
-	@Nullable
-	private Runnable onDismissRunnable;
+    protected Activity activity;
+    @Nullable
+    private Runnable onDismissRunnable;
 
-	public static SimpleStringAlertDialog newInstance(int title, CharSequence message) {
-		SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putCharSequence("message", message);
+    public static SimpleStringAlertDialog newInstance(int title, CharSequence message) {
+        SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putCharSequence("message", message);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static SimpleStringAlertDialog newInstance(int title, int message) {
-		SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("messageInt", message);
+    public static SimpleStringAlertDialog newInstance(int title, int message) {
+        SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("messageInt", message);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static SimpleStringAlertDialog newInstance(int title, int message, boolean noButton) {
-		SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("messageInt", message);
-		args.putBoolean("noButton", noButton);
+    public static SimpleStringAlertDialog newInstance(int title, int message, boolean noButton) {
+        SimpleStringAlertDialog dialog = new SimpleStringAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("messageInt", message);
+        args.putBoolean("noButton", noButton);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		this.activity = activity;
-	}
+        this.activity = activity;
+    }
 
-	@Override
-	// generally allow state loss for simple string alerts
-	public void show(FragmentManager manager, String tag) {
-		FragmentTransaction ft = manager.beginTransaction();
-		ft.add(this, tag);
-		ft.commitAllowingStateLoss();
-	}
+    @Override
+    // generally allow state loss for simple string alerts
+    public void show(FragmentManager manager, String tag) {
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.add(this, tag);
+        ft.commitAllowingStateLoss();
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int messageInt = getArguments().getInt("messageInt");
-		CharSequence message = getArguments().getCharSequence("message");
-		boolean noButton = getArguments().getBoolean("noButton", false);
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt("title");
+        int messageInt = getArguments().getInt("messageInt");
+        CharSequence message = getArguments().getCharSequence("message");
+        boolean noButton = getArguments().getBoolean("noButton", false);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme())
-				.setCancelable(false);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme())
+            .setCancelable(false);
 
-		if (title != -1) {
-			builder.setTitle(title);
-		}
+        if (title != -1) {
+            builder.setTitle(title);
+        }
 
-		if (!noButton) {
-			builder.setPositiveButton(getString(R.string.ok), null);
-		} else {
-			setCancelable(false);
-		}
+        if (!noButton) {
+            builder.setPositiveButton(getString(R.string.ok), null);
+        } else {
+            setCancelable(false);
+        }
 
-		if (TestUtil.isBlankOrNull(message)) {
-			builder.setMessage(messageInt);
-		} else {
-			builder.setMessage(message);
-		}
-		AlertDialog alertDialog = builder.create();
-		alertDialog.setOnShowListener((dialog) -> applyEmojis(alertDialog));
-		return alertDialog;
-	}
+        if (TestUtil.isBlankOrNull(message)) {
+            builder.setMessage(messageInt);
+        } else {
+            builder.setMessage(message);
+        }
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setOnShowListener((dialog) -> applyEmojis(alertDialog));
+        return alertDialog;
+    }
 
-	private void applyEmojis(AlertDialog alertDialog) {
-		View messageView = alertDialog.findViewById(android.R.id.message);
-		if (messageView instanceof TextView) {
-			TextView textView = (TextView) messageView;
-			textView.setText(
-					EmojiMarkupUtil.getInstance().addTextSpans(getContext(), textView.getText(), textView, true, true, false, false)
-			);
-		}
-	}
+    private void applyEmojis(AlertDialog alertDialog) {
+        View messageView = alertDialog.findViewById(android.R.id.message);
+        if (messageView instanceof TextView) {
+            TextView textView = (TextView) messageView;
+            textView.setText(
+                EmojiMarkupUtil.getInstance().addTextSpans(getContext(), textView.getText(), textView, true, true, false, false)
+            );
+        }
+    }
 
-	public SimpleStringAlertDialog setOnDismissRunnable(Runnable onDismissRunnable) {
-		this.onDismissRunnable = onDismissRunnable;
-		return this;
-	}
+    public SimpleStringAlertDialog setOnDismissRunnable(Runnable onDismissRunnable) {
+        this.onDismissRunnable = onDismissRunnable;
+        return this;
+    }
 
-	@Override
-	public void onDismiss(@NonNull DialogInterface dialog) {
-		super.onDismiss(dialog);
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
 
-		if (onDismissRunnable != null) {
-			onDismissRunnable.run();
-		}
-	}
+        if (onDismissRunnable != null) {
+            onDismissRunnable.run();
+        }
+    }
 }

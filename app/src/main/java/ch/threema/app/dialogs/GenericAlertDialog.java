@@ -42,260 +42,265 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import ch.threema.app.utils.TestUtil;
 
 public class GenericAlertDialog extends ThreemaDialogFragment {
-	private DialogClickListener callback;
-	private Activity activity;
-	private AlertDialog alertDialog;
-	private boolean isHtml;
+    private DialogClickListener callback;
+    private Activity activity;
+    private AlertDialog alertDialog;
+    private boolean isHtml;
 
-	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-	                                             @StringRes int positive, @StringRes int negative) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
+    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+                                                 @StringRes int positive, @StringRes int negative) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-												 @StringRes int positive, @StringRes int negative,
-												 @StringRes int neutral, @DrawableRes int icon) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("neutral", neutral);
-		args.putInt("icon", icon);
+    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+                                                 @StringRes int positive, @StringRes int negative,
+                                                 @StringRes int neutral, @DrawableRes int icon) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putInt("neutral", neutral);
+        args.putInt("icon", icon);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-												 @StringRes int positive, @StringRes int negative,
-												 @DrawableRes int icon) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("icon", icon);
+    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+                                                 @StringRes int positive, @StringRes int negative,
+                                                 @DrawableRes int icon) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putInt("icon", icon);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-	                                             @StringRes int positive, @StringRes int negative, boolean cancelable) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("cancelable", cancelable);
+    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
+                                                 @StringRes int positive, @StringRes int negative, boolean cancelable) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("cancelable", cancelable);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(@StringRes int title, String messageString,
-	                                             @StringRes int positive, @StringRes int negative, boolean cancelable) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putString("messageString", messageString);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("cancelable", cancelable);
+    public static GenericAlertDialog newInstance(@StringRes int title, String messageString,
+                                                 @StringRes int positive, @StringRes int negative, boolean cancelable) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putString("messageString", messageString);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("cancelable", cancelable);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstanceHtml(@StringRes int title, String messageString,
-	                                             @StringRes int positive, @StringRes int negative, boolean cancelable) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putString("messageString", messageString);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putBoolean("cancelable", cancelable);
-		args.putBoolean("html", true);
+    public static GenericAlertDialog newInstanceHtml(@StringRes int title, String messageString,
+                                                     @StringRes int positive, @StringRes int negative, boolean cancelable) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putString("messageString", messageString);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putBoolean("cancelable", cancelable);
+        args.putBoolean("html", true);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(@StringRes int title, CharSequence messageString,
-	                                             @StringRes int positive, @StringRes int negative) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putCharSequence("messageString", messageString);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
+    public static GenericAlertDialog newInstance(@StringRes int title, CharSequence messageString,
+                                                 @StringRes int positive, @StringRes int negative) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putCharSequence("messageString", messageString);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
-	                                             @StringRes int positive, @StringRes int negative) {
-		GenericAlertDialog dialog = new GenericAlertDialog();
-		Bundle args = new Bundle();
-		args.putString("titleString", titleString);
-		args.putCharSequence("messageString", messageString);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
+    public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
+                                                 @StringRes int positive, @StringRes int negative) {
+        GenericAlertDialog dialog = new GenericAlertDialog();
+        Bundle args = new Bundle();
+        args.putString("titleString", titleString);
+        args.putCharSequence("messageString", messageString);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
-	                                             @StringRes int positive, @StringRes int negative, @StringRes int neutral) {
-		GenericAlertDialog dialog = newInstance(titleString, messageString, positive, negative);
-		if (dialog.getArguments() != null) {
-			dialog.getArguments().putInt("neutral", neutral);
-		}
-		return dialog;
-	}
-
-
-	public interface DialogClickListener {
-		void onYes(String tag, Object data);
-		default void onNo(String tag, Object data) {};
-		default void onNeutral(String tag, Object data) {
-			// optional interface
-		}
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		if (callback == null) {
-			try {
-				callback = (DialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
-
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if ((activity instanceof DialogClickListener)) {
-					callback = (DialogClickListener) activity;
-				} else {
-					throw new ClassCastException("Calling fragment must implement DialogClickListener interface");
-				}
-			}
-		}
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		this.activity = activity;
-	}
+    public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
+                                                 @StringRes int positive, @StringRes int negative, @StringRes int neutral) {
+        GenericAlertDialog dialog = newInstance(titleString, messageString, positive, negative);
+        if (dialog.getArguments() != null) {
+            dialog.getArguments().putInt("neutral", neutral);
+        }
+        return dialog;
+    }
 
 
-	@Override
-	public void onStart() {
-		super.onStart();
+    public interface DialogClickListener {
+        void onYes(String tag, Object data);
 
-		if (isHtml) {
-			View textView = alertDialog.findViewById(android.R.id.message);
+        default void onNo(String tag, Object data) {
+        }
 
-			if (textView instanceof TextView) {
-				((TextView) textView).setMovementMethod(LinkMovementMethod.getInstance());
-			}
-		}
-	}
+        ;
 
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		String titleString = getArguments().getString("titleString");
-		int message = getArguments().getInt("message");
-		CharSequence messageString = getArguments().getCharSequence("messageString");
-		int positive = getArguments().getInt("positive");
-		int negative = getArguments().getInt("negative");
-		int neutral = getArguments().getInt("neutral");
-		@DrawableRes int icon = getArguments().getInt("icon", 0);
-		boolean cancelable = getArguments().getBoolean("cancelable", true);
-		isHtml = getArguments().getBoolean("html", false);
+        default void onNeutral(String tag, Object data) {
+            // optional interface
+        }
+    }
 
-		final String tag = this.getTag();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-		if (TestUtil.isEmptyOrNull(titleString)) {
-			if (title != 0) {
-				builder.setTitle(title);
-			}
-		} else {
-			builder.setTitle(titleString);
-		}
-		if (TextUtils.isEmpty(messageString)) {
-			if (message != 0) {
-				builder.setMessage(message);
-			}
-		} else {
-			if (isHtml) {
-				builder.setMessage(Html.fromHtml(messageString.toString()));
-			} else {
-				builder.setMessage(messageString);
-			}
-		}
+        if (callback == null) {
+            try {
+                callback = (DialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
 
-		builder.setPositiveButton(getString(positive), (dialog, whichButton) -> callback.onYes(tag, object)
-		);
-		if (negative != 0) {
-			builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag, object));
-		}
+            // called from an activity rather than a fragment
+            if (callback == null) {
+                if ((activity instanceof DialogClickListener)) {
+                    callback = (DialogClickListener) activity;
+                } else {
+                    throw new ClassCastException("Calling fragment must implement DialogClickListener interface");
+                }
+            }
+        }
+    }
 
-		if (neutral != 0) {
-			builder.setNeutralButton(getString(neutral), (dialog, whichButton) -> callback.onNeutral(tag, object));
-			cancelable = false;
-		}
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.activity = activity;
+    }
 
-		if (icon != 0) {
-			builder.setIcon(icon);
-		}
 
-		alertDialog = builder.create();
+    @Override
+    public void onStart() {
+        super.onStart();
 
-		if (!cancelable) {
-			setCancelable(false);
-		}
+        if (isHtml) {
+            View textView = alertDialog.findViewById(android.R.id.message);
 
-		return alertDialog;
-	}
+            if (textView instanceof TextView) {
+                ((TextView) textView).setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        }
+    }
 
-	@Override
-	public void onCancel(DialogInterface dialogInterface) {
-		callback.onNo(getTag(), object);
-	}
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt("title");
+        String titleString = getArguments().getString("titleString");
+        int message = getArguments().getInt("message");
+        CharSequence messageString = getArguments().getCharSequence("messageString");
+        int positive = getArguments().getInt("positive");
+        int negative = getArguments().getInt("negative");
+        int neutral = getArguments().getInt("neutral");
+        @DrawableRes int icon = getArguments().getInt("icon", 0);
+        boolean cancelable = getArguments().getBoolean("cancelable", true);
+        isHtml = getArguments().getBoolean("html", false);
 
-	public GenericAlertDialog setTargetFragment(@Nullable Fragment fragment) {
-		setTargetFragment(fragment, 0);
-		return this;
-	}
+        final String tag = this.getTag();
 
-	/**
-	 * Set the callback of this dialog.
-	 *
-	 * @param dialogClickListener the listener
-	 */
-	public void setCallback(DialogClickListener dialogClickListener) {
-		callback = dialogClickListener;
-	}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        if (TestUtil.isEmptyOrNull(titleString)) {
+            if (title != 0) {
+                builder.setTitle(title);
+            }
+        } else {
+            builder.setTitle(titleString);
+        }
+        if (TextUtils.isEmpty(messageString)) {
+            if (message != 0) {
+                builder.setMessage(message);
+            }
+        } else {
+            if (isHtml) {
+                builder.setMessage(Html.fromHtml(messageString.toString()));
+            } else {
+                builder.setMessage(messageString);
+            }
+        }
+
+        builder.setPositiveButton(getString(positive), (dialog, whichButton) -> callback.onYes(tag, object)
+        );
+        if (negative != 0) {
+            builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag, object));
+        }
+
+        if (neutral != 0) {
+            builder.setNeutralButton(getString(neutral), (dialog, whichButton) -> callback.onNeutral(tag, object));
+            cancelable = false;
+        }
+
+        if (icon != 0) {
+            builder.setIcon(icon);
+        }
+
+        alertDialog = builder.create();
+
+        if (!cancelable) {
+            setCancelable(false);
+        }
+
+        return alertDialog;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        callback.onNo(getTag(), object);
+    }
+
+    public GenericAlertDialog setTargetFragment(@Nullable Fragment fragment) {
+        setTargetFragment(fragment, 0);
+        return this;
+    }
+
+    /**
+     * Set the callback of this dialog.
+     *
+     * @param dialogClickListener the listener
+     */
+    public void setCallback(DialogClickListener dialogClickListener) {
+        callback = dialogClickListener;
+    }
 }
 

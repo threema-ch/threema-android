@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:background="?selectableItemBackground"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/messagelist_item_height"
-                android:paddingLeft="@dimen/listitem_standard_margin_left_right"
-                android:paddingRight="@dimen/listitem_standard_margin_left_right">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/messagelist_item_height"
+    android:paddingLeft="@dimen/listitem_standard_margin_left_right"
+    android:paddingRight="@dimen/listitem_standard_margin_left_right">
 
-	<FrameLayout
-		android:id="@+id/avatar_frame"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_alignParentLeft="true"
-		android:clickable="false"
-		android:focusable="false">
+    <FrameLayout
+        android:id="@+id/avatar_frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:clickable="false"
+        android:focusable="false">
 
-		<ImageView
-			android:id="@+id/avatar"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:clickable="false"
-			app:srcCompat="@drawable/ic_business"
-			app:tint="?attr/colorOnSurface"
-			android:importantForAccessibility="no"
-			android:visibility="visible"
-			android:focusable="false"/>
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:clickable="false"
+            app:srcCompat="@drawable/ic_business"
+            app:tint="?attr/colorOnSurface"
+            android:importantForAccessibility="no"
+            android:visibility="visible"
+            android:focusable="false" />
 
-	</FrameLayout>
+    </FrameLayout>
 
-	<RelativeLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-		android:layout_toRightOf="@id/avatar_frame"
-		android:layout_toLeftOf="@+id/status">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:layout_toRightOf="@id/avatar_frame"
+        android:layout_toLeftOf="@+id/status">
 
-		<TextView
-			android:id="@+id/name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_alignWithParentIfMissing="true"
-			android:ellipsize="marquee"
-			android:singleLine="true"
-			android:text="Company"
-			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine.Bold" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:text="Company"
+            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine.Bold" />
 
-		<TextView
-			android:id="@+id/subject"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_below="@+id/name"
-			android:ellipsize="end"
-			android:fontFamily="sans-serif-light"
-			android:singleLine="true"
-			android:text="@string/directory_search"
-			android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+        <TextView
+            android:id="@+id/subject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/name"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            android:text="@string/directory_search"
+            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<ImageView
-		android:id="@+id/status"
-		android:clickable="false"
-		android:focusable="false"
-		android:layout_width="28dp"
-		android:layout_height="28dp"
-		android:layout_alignParentRight="true"
-		android:layout_marginLeft="16dp"
-		app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp"
-		android:layout_centerVertical="true"
-		android:visibility="visible"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/status"
+        android:clickable="false"
+        android:focusable="false"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="16dp"
+        app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:layout_centerVertical="true"
+        android:visibility="visible"
+        app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>
 

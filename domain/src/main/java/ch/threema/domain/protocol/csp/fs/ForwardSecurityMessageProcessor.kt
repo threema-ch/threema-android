@@ -746,7 +746,8 @@ class ForwardSecurityMessageProcessor(
 
         // A new key is used for each message, so the nonce can be zero
         val nonce = ByteArray(NaCl.NONCEBYTES)
-        val plaintext = NaCl.symmetricDecryptData(message.message, ratchet.currentEncryptionKey, nonce)
+        val plaintext =
+            NaCl.symmetricDecryptData(message.message, ratchet.currentEncryptionKey, nonce)
         if (plaintext == null) {
             logger.warn(
                 "Rejecting message in session {} with {}, cause: Message decryption failed (message-id={})",
@@ -1093,7 +1094,8 @@ class ForwardSecurityMessageProcessor(
         try {
             val myIdentity = identityStoreInterface.identity
             val peerIdentity = contact.identity
-            val sessions = dhSessionStoreInterface.getAllDHSessions(myIdentity, peerIdentity, handle)
+            val sessions =
+                dhSessionStoreInterface.getAllDHSessions(myIdentity, peerIdentity, handle)
 
             // Terminate and remove all sessions without renewing them except the last
             sessions.dropLast(1).forEach {

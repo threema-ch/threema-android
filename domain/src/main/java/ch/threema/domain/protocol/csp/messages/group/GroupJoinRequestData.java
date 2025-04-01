@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.protobuf.ProtobufDataInterface;
 import ch.threema.protobuf.csp.e2e.GroupJoinRequest;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -32,77 +33,76 @@ import java.util.Objects;
 
 public class GroupJoinRequestData implements ProtobufDataInterface<GroupJoinRequest> {
 
-	private final @NonNull GroupInviteToken token;
-	private final @NonNull String groupName;
-	private final @NonNull String message;
+    private final @NonNull GroupInviteToken token;
+    private final @NonNull String groupName;
+    private final @NonNull String message;
 
-	/**
-	 *
-	 * @param token Join Invite Token
-	 * @param groupName Name of the joining group
-	 * @param message Join request message, provided by user
-	 * @throws BadMessageException if invalid data was provided
-	 */
-	public GroupJoinRequestData(@NonNull GroupInviteToken token, @NonNull  String groupName, @NonNull String message) {
-		this.token = token;
-		this.groupName = groupName;
-		this.message = message;
-	}
+    /**
+     * @param token     Join Invite Token
+     * @param groupName Name of the joining group
+     * @param message   Join request message, provided by user
+     * @throws BadMessageException if invalid data was provided
+     */
+    public GroupJoinRequestData(@NonNull GroupInviteToken token, @NonNull String groupName, @NonNull String message) {
+        this.token = token;
+        this.groupName = groupName;
+        this.message = message;
+    }
 
-	@NonNull
-	public GroupInviteToken getToken() {
-		return this.token;
-	}
+    @NonNull
+    public GroupInviteToken getToken() {
+        return this.token;
+    }
 
-	@NonNull
-	public String getGroupName() {
-		return this.groupName;
-	}
+    @NonNull
+    public String getGroupName() {
+        return this.groupName;
+    }
 
-	@NonNull
-	public String getMessage() {
-		return this.message;
-	}
+    @NonNull
+    public String getMessage() {
+        return this.message;
+    }
 
-	//region Serialization
+    //region Serialization
 
-	public static GroupJoinRequestData fromProtobuf(@NonNull byte[] rawProtobufMessage) throws BadMessageException {
-		try {
-			GroupJoinRequest protobufMessage = GroupJoinRequest.parseFrom(rawProtobufMessage);
-			return new GroupJoinRequestData(
-				new GroupInviteToken(protobufMessage.getToken().toByteArray()),
-				protobufMessage.getGroupName(),
-				protobufMessage.getMessage()
-			);
-		} catch (InvalidProtocolBufferException e) {
-			throw new BadMessageException("Invalid Group Join Request Protobuf Data");
-		} catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
-			throw new BadMessageException("Invalid Group Invite Token Length");
-		}
-	}
+    public static GroupJoinRequestData fromProtobuf(@NonNull byte[] rawProtobufMessage) throws BadMessageException {
+        try {
+            GroupJoinRequest protobufMessage = GroupJoinRequest.parseFrom(rawProtobufMessage);
+            return new GroupJoinRequestData(
+                new GroupInviteToken(protobufMessage.getToken().toByteArray()),
+                protobufMessage.getGroupName(),
+                protobufMessage.getMessage()
+            );
+        } catch (InvalidProtocolBufferException e) {
+            throw new BadMessageException("Invalid Group Join Request Protobuf Data");
+        } catch (GroupInviteToken.InvalidGroupInviteTokenException e) {
+            throw new BadMessageException("Invalid Group Invite Token Length");
+        }
+    }
 
-	@Override
-	public @NonNull GroupJoinRequest toProtobufMessage() {
-		return GroupJoinRequest.newBuilder()
-			.setToken(ByteString.copyFrom(this.token.get()))
-			.setGroupName(this.groupName)
-			.setMessage(this.message).build();
-	}
+    @Override
+    public @NonNull GroupJoinRequest toProtobufMessage() {
+        return GroupJoinRequest.newBuilder()
+            .setToken(ByteString.copyFrom(this.token.get()))
+            .setGroupName(this.groupName)
+            .setMessage(this.message).build();
+    }
 
-	//endregion
+    //endregion
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
-		GroupJoinRequestData that = (GroupJoinRequestData) o;
-		return this.token.equals(that.token) &&
-			this.groupName.equals(that.groupName) &&
-			this.message.equals(that.message);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        GroupJoinRequestData that = (GroupJoinRequestData) o;
+        return this.token.equals(that.token) &&
+            this.groupName.equals(that.groupName) &&
+            this.message.equals(that.message);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.token, this.groupName, this.message);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.token, this.groupName, this.message);
+    }
 }

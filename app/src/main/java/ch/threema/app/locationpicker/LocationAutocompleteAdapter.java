@@ -40,127 +40,127 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.TestUtil;
 
 public class LocationAutocompleteAdapter extends EmptyRecyclerView.Adapter<EmptyRecyclerView.ViewHolder> {
-	private static final int TYPE_ITEM = 0;
-	private static final int TYPE_FOOTER = 1;
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_FOOTER = 1;
 
-	private List<Poi> places;
-	private OnItemClickListener onItemClickListener;
+    private List<Poi> places;
+    private OnItemClickListener onItemClickListener;
 
-	LocationAutocompleteAdapter(List<Poi> places) {
-		this.places = places;
-	}
+    LocationAutocompleteAdapter(List<Poi> places) {
+        this.places = places;
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull EmptyRecyclerView.ViewHolder holder, int position) {
-		if (holder instanceof PlacesViewHolder) {
-			((PlacesViewHolder) holder).onBind(position);
-			if (this.onItemClickListener != null) {
-				holder.itemView.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						if (places != null && position < places.size()) {
-							onItemClickListener.onClick(places.get(position), position);
-						}
-					}
-				});
-			}
-		}
-	}
+    @Override
+    public void onBindViewHolder(@NonNull EmptyRecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof PlacesViewHolder) {
+            ((PlacesViewHolder) holder).onBind(position);
+            if (this.onItemClickListener != null) {
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (places != null && position < places.size()) {
+                            onItemClickListener.onClick(places.get(position), position);
+                        }
+                    }
+                });
+            }
+        }
+    }
 
-	@NonNull
-	@Override
-	public EmptyRecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		if (viewType == TYPE_ITEM) {
-			return new PlacesViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location_picker_place, parent, false));
-		} else {
-			return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location_picker_copyright, parent, false));
-		}
-	}
+    @NonNull
+    @Override
+    public EmptyRecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            return new PlacesViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location_picker_place, parent, false));
+        } else {
+            return new FooterViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location_picker_copyright, parent, false));
+        }
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		return position >= places.size() ? TYPE_FOOTER : TYPE_ITEM;
-	}
+    @Override
+    public int getItemViewType(int position) {
+        return position >= places.size() ? TYPE_FOOTER : TYPE_ITEM;
+    }
 
-	@Override
-	public int getItemCount() {
-		if (places != null && places.size() > 0) {
-			return places.size() + 1;
-		} else {
-			return 0;
-		}
-	}
+    @Override
+    public int getItemCount() {
+        if (places != null && places.size() > 0) {
+            return places.size() + 1;
+        } else {
+            return 0;
+        }
+    }
 
-	public void setOnItemClickListener(OnItemClickListener listener) {
-		this.onItemClickListener = listener;
-	}
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+    }
 
-	public class PlacesViewHolder extends EmptyRecyclerView.ViewHolder {
-		private int currentPosition;
-		TextView name, description, distance;
+    public class PlacesViewHolder extends EmptyRecyclerView.ViewHolder {
+        private int currentPosition;
+        TextView name, description, distance;
 
-		PlacesViewHolder(View itemView) {
-			super(itemView);
+        PlacesViewHolder(View itemView) {
+            super(itemView);
 
-			name = itemView.findViewById(R.id.name);
-			description = itemView.findViewById(R.id.address);
-			distance = itemView.findViewById(R.id.distance);
-		}
+            name = itemView.findViewById(R.id.name);
+            description = itemView.findViewById(R.id.address);
+            distance = itemView.findViewById(R.id.distance);
+        }
 
-		protected void clear() {
-			name.setText("");
-			description.setText("");
-			distance.setText("");
-		}
+        protected void clear() {
+            name.setText("");
+            description.setText("");
+            distance.setText("");
+        }
 
-		void onBind(int position) {
-			currentPosition = position;
-			clear();
+        void onBind(int position) {
+            currentPosition = position;
+            clear();
 
-			final Poi place = places.get(position);
+            final Poi place = places.get(position);
 
-			if (place.getName() != null) {
-				name.setText(place.getName());
-			}
+            if (place.getName() != null) {
+                name.setText(place.getName());
+            }
 
-			description.setText(getLocalizedDescription(ThreemaApplication.getAppContext(), place.getDescription()));
+            description.setText(getLocalizedDescription(ThreemaApplication.getAppContext(), place.getDescription()));
 
-			if (place.getDistance() != -1) {
-				String pattern = "#.#";
-				if (place.getDistance() > 10000) {
-					pattern = "#,###";
-				}
-				String distanceS = new DecimalFormat(pattern + " km", DecimalFormatSymbols.getInstance(Locale.getDefault())).format((float) place.getDistance() / 1000);
-				distance.setText(distanceS);
-			}
-		}
+            if (place.getDistance() != -1) {
+                String pattern = "#.#";
+                if (place.getDistance() > 10000) {
+                    pattern = "#,###";
+                }
+                String distanceS = new DecimalFormat(pattern + " km", DecimalFormatSymbols.getInstance(Locale.getDefault())).format((float) place.getDistance() / 1000);
+                distance.setText(distanceS);
+            }
+        }
 
-		public int getCurrentPosition() {
-			return currentPosition;
-		}
-	}
+        public int getCurrentPosition() {
+            return currentPosition;
+        }
+    }
 
-	private @NonNull String getLocalizedDescription(Context context, String id) {
-		if (!TestUtil.isEmptyOrNull(id)) {
-			@StringRes int resId = context.getResources().getIdentifier(id, "string", context.getPackageName());
+    private @NonNull String getLocalizedDescription(Context context, String id) {
+        if (!TestUtil.isEmptyOrNull(id)) {
+            @StringRes int resId = context.getResources().getIdentifier(id, "string", context.getPackageName());
 
-			if (resId != 0) {
-				String value = context.getString(resId);
-				if (!TestUtil.isEmptyOrNull(value)) {
-					return value;
-				}
-			}
-		}
-		return "";
-	}
+            if (resId != 0) {
+                String value = context.getString(resId);
+                if (!TestUtil.isEmptyOrNull(value)) {
+                    return value;
+                }
+            }
+        }
+        return "";
+    }
 
-	public class FooterViewHolder extends EmptyRecyclerView.ViewHolder {
-		FooterViewHolder(View itemView) {
-			super(itemView);
-		}
-	}
+    public class FooterViewHolder extends EmptyRecyclerView.ViewHolder {
+        FooterViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
 
-	public interface OnItemClickListener {
-		void onClick(Poi poi, int position);
-	}
+    public interface OnItemClickListener {
+        void onClick(Poi poi, int position);
+    }
 }

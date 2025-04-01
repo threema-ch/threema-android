@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".camera.CameraActivity"
-    android:fitsSystemWindows="false"
-    >
+    android:fitsSystemWindows="false">
 
     <androidx.fragment.app.FragmentContainerView
         android:name="ch.threema.app.camera.CameraFragment"
         android:id="@+id/fragment_container"
         android:tag="camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </FrameLayout>

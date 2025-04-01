@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<!-- tablet specific dimensions -->
-	<dimen name="listitem_message_margin_left_right">24dp</dimen>
-	<dimen name="listitem_message_margin_top_bottom">12dp</dimen>
-	<dimen name="listitem_contacts_margin_left_right">24dp</dimen>
-	<dimen name="tablet_additional_padding_left_right">8dp</dimen>
-	<dimen name="tablet_standard_padding_left_right">24dp</dimen>
-	<dimen name="wizard_contents_padding_horizontal">32dp</dimen>
-	<dimen name="wizard_contents_padding">32dp</dimen>
+    <!-- tablet specific dimensions -->
+    <dimen name="listitem_message_margin_left_right">24dp</dimen>
+    <dimen name="listitem_message_margin_top_bottom">12dp</dimen>
+    <dimen name="listitem_contacts_margin_left_right">24dp</dimen>
+    <dimen name="tablet_additional_padding_left_right">8dp</dimen>
+    <dimen name="tablet_standard_padding_left_right">24dp</dimen>
+    <dimen name="wizard_contents_padding_horizontal">32dp</dimen>
+    <dimen name="wizard_contents_padding">32dp</dimen>
 </resources>

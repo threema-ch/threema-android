@@ -52,139 +52,140 @@ import ch.threema.app.adapters.BottomSheetListAdapter;
 import ch.threema.app.ui.BottomSheetItem;
 
 public abstract class BottomSheetAbstractDialog extends BottomSheetDialogFragment {
-	private BottomSheetDialogCallback callback;
-	private BottomSheetDialogInlineClickListener inlineCallback;
+    private BottomSheetDialogCallback callback;
+    private BottomSheetDialogInlineClickListener inlineCallback;
 
-	private Activity activity;
+    private Activity activity;
 
-	public interface BottomSheetDialogCallback {
-		void onSelected(String tag, @Nullable String data);
-	}
+    public interface BottomSheetDialogCallback {
+        void onSelected(String tag, @Nullable String data);
+    }
 
-	public interface BottomSheetDialogInlineClickListener extends Parcelable {
-		void onSelected(String tag, @Nullable String data);
-		void onCancel(String tag);
-	}
+    public interface BottomSheetDialogInlineClickListener extends Parcelable {
+        void onSelected(String tag, @Nullable String data);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onCancel(String tag);
+    }
 
-		if (callback == null) {
-			Fragment targetFragment = getTargetFragment();
-			if (targetFragment instanceof  BottomSheetDialogCallback) {
-				callback = (BottomSheetDialogCallback) targetFragment;
-			} else if (activity instanceof BottomSheetDialogCallback) {
-				callback = (BottomSheetDialogCallback) activity;
-			}
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        if (callback == null) {
+            Fragment targetFragment = getTargetFragment();
+            if (targetFragment instanceof BottomSheetDialogCallback) {
+                callback = (BottomSheetDialogCallback) targetFragment;
+            } else if (activity instanceof BottomSheetDialogCallback) {
+                callback = (BottomSheetDialogCallback) activity;
+            }
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-	@Override
-	public void onResume() {
-		super.onResume();
+        this.activity = activity;
+    }
 
-		// Hack to set width of bottom sheet
-		WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		DisplayMetrics metrics = new DisplayMetrics();
-		display.getMetrics(metrics);
-		int width = metrics.widthPixels < 1440 ? metrics.widthPixels : 1440;
-		int height = -1;
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		Window window = getDialog().getWindow();
-		if (window != null) {
-			window.setLayout(width, height);
-		}
-	}
+        // Hack to set width of bottom sheet
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels < 1440 ? metrics.widthPixels : 1440;
+        int height = -1;
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt("title");
-		int selectedItem = getArguments().getInt("selected");
-		final ArrayList<BottomSheetItem> items = getArguments().getParcelableArrayList("items");
-		BottomSheetDialogInlineClickListener listener = getArguments().getParcelable("listener");
+        Window window = getDialog().getWindow();
+        if (window != null) {
+            window.setLayout(width, height);
+        }
+    }
 
-		final BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt("title");
+        int selectedItem = getArguments().getInt("selected");
+        final ArrayList<BottomSheetItem> items = getArguments().getParcelableArrayList("items");
+        BottomSheetDialogInlineClickListener listener = getArguments().getParcelable("listener");
 
-		final View dialogView = activity.getLayoutInflater().inflate(
-					this instanceof BottomSheetGridDialog ?
-					R.layout.dialog_bottomsheet_grid :
-					R.layout.dialog_bottomsheet_list,
-					null);
-		final AbsListView listView = dialogView.findViewById(R.id.list_view);
-		final TextView titleView = dialogView.findViewById(R.id.title_text);
+        final BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
 
-		if (listener != null) {
-			inlineCallback = listener;
-		}
+        final View dialogView = activity.getLayoutInflater().inflate(
+            this instanceof BottomSheetGridDialog ?
+                R.layout.dialog_bottomsheet_grid :
+                R.layout.dialog_bottomsheet_list,
+            null);
+        final AbsListView listView = dialogView.findViewById(R.id.list_view);
+        final TextView titleView = dialogView.findViewById(R.id.title_text);
 
-		if (title != 0) {
-			titleView.setText(title);
-		} else {
-			titleView.setVisibility(View.GONE);
-		}
+        if (listener != null) {
+            inlineCallback = listener;
+        }
 
-		listView.setAdapter(
-				this instanceof BottomSheetGridDialog ?
-				new BottomSheetGridAdapter(getContext(), items) :
-				new BottomSheetListAdapter(getContext(), items, selectedItem));
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				if (items != null && i < items.size()) {
-					dismiss();
-					if (inlineCallback != null) {
-						inlineCallback.onSelected(items.get(i).getTag(), items.get(i).getData());
-					} else if (callback != null) {
-						callback.onSelected(items.get(i).getTag(), items.get(i).getData());
-					}
-				}
-			}
-		});
+        if (title != 0) {
+            titleView.setText(title);
+        } else {
+            titleView.setVisibility(View.GONE);
+        }
 
-		dialog.setContentView(dialogView);
-		dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-			@Override
-			public void onShow(DialogInterface dialog) {
-				BottomSheetDialog d = (BottomSheetDialog) dialog;
+        listView.setAdapter(
+            this instanceof BottomSheetGridDialog ?
+                new BottomSheetGridAdapter(getContext(), items) :
+                new BottomSheetListAdapter(getContext(), items, selectedItem));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (items != null && i < items.size()) {
+                    dismiss();
+                    if (inlineCallback != null) {
+                        inlineCallback.onSelected(items.get(i).getTag(), items.get(i).getData());
+                    } else if (callback != null) {
+                        callback.onSelected(items.get(i).getTag(), items.get(i).getData());
+                    }
+                }
+            }
+        });
 
-				final FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-				if (bottomSheet != null) {
-					bottomSheet.post(new Runnable() {
-						@Override
-						public void run() {
-							// there will be no rounded corners in expanded state due to this
-							// https://github.com/material-components/material-components-android/pull/437#issuecomment-536668983
-							BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
-						}
-					});
-				}
-			}
-		});
+        dialog.setContentView(dialogView);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                BottomSheetDialog d = (BottomSheetDialog) dialog;
 
-		return dialog;
-	}
+                final FrameLayout bottomSheet = d.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheet != null) {
+                    bottomSheet.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // there will be no rounded corners in expanded state due to this
+                            // https://github.com/material-components/material-components-android/pull/437#issuecomment-536668983
+                            BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
+                        }
+                    });
+                }
+            }
+        });
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialog) {
-		super.onCancel(dialog);
+        return dialog;
+    }
 
-		if (inlineCallback != null) {
-			inlineCallback.onCancel(this.getTag());
-		}
-	}
+    @Override
+    public void onCancel(@NonNull DialogInterface dialog) {
+        super.onCancel(dialog);
 
-	public void setCallback(BottomSheetDialogCallback callback) {
-		this.callback = callback;
-	}
+        if (inlineCallback != null) {
+            inlineCallback.onCancel(this.getTag());
+        }
+    }
+
+    public void setCallback(BottomSheetDialogCallback callback) {
+        this.callback = callback;
+    }
 
 }

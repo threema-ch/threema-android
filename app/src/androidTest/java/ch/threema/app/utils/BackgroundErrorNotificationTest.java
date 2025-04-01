@@ -60,125 +60,125 @@ import static org.junit.Assert.assertTrue;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class BackgroundErrorNotificationTest {
-	private UiDevice mDevice;
+    private UiDevice mDevice;
 
-	@Rule
-	public final RuleChain activityRule = ScreenshotTakingRule.getRuleChain().around(
-		getNotificationPermissionRule()
-	);
+    @Rule
+    public final RuleChain activityRule = ScreenshotTakingRule.getRuleChain().around(
+        getNotificationPermissionRule()
+    );
 
-	@Before
-	public void getDevice() {
-		// Get device instance
-		mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-	}
+    @Before
+    public void getDevice() {
+        // Get device instance
+        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    }
 
-	/**
-	 * Dump the UI state (screenshot + UI XML) to the /sdcard/ directory.
-	 */
-	@SuppressWarnings("unused") // Used for manual debugging
-	private static void dumpState(@NonNull UiDevice device) throws IOException {
-		device.takeScreenshot(new File("/sdcard/screenshot.png"));
-		try (OutputStream stream = new BufferedOutputStream(new FileOutputStream("/sdcard/screenshot.uix"))) {
-			// Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
-			// method leaks a file descriptor.
-			device.dumpWindowHierarchy(stream);
-		}
-	}
+    /**
+     * Dump the UI state (screenshot + UI XML) to the /sdcard/ directory.
+     */
+    @SuppressWarnings("unused") // Used for manual debugging
+    private static void dumpState(@NonNull UiDevice device) throws IOException {
+        device.takeScreenshot(new File("/sdcard/screenshot.png"));
+        try (OutputStream stream = new BufferedOutputStream(new FileOutputStream("/sdcard/screenshot.uix"))) {
+            // Note: Explicitly opening and closing stream since the UiAutomator dumpWindowHierarchy(File)
+            // method leaks a file descriptor.
+            device.dumpWindowHierarchy(stream);
+        }
+    }
 
-	/**
-	 * Ensure that a notification is shown, without a "send to support" action.
-	 */
-	@Test
-	public void testNotificationWithoutAction() {
-		// Go to home screen
-		mDevice.pressHome();
+    /**
+     * Ensure that a notification is shown, without a "send to support" action.
+     */
+    @Test
+    public void testNotificationWithoutAction() {
+        // Go to home screen
+        mDevice.pressHome();
 
-		// Show notification
-		final Context context = ApplicationProvider.getApplicationContext();
-		BackgroundErrorNotification.showNotification(
-			context,
-			"T1tl3",
-			"The body of the notification",
-			"BackgroundErrorNotificationTest",
-			false,
-			null
-		);
+        // Show notification
+        final Context context = ApplicationProvider.getApplicationContext();
+        BackgroundErrorNotification.showNotification(
+            context,
+            "T1tl3",
+            "The body of the notification",
+            "BackgroundErrorNotificationTest",
+            false,
+            null
+        );
 
-		// Get notification area object
-		TestHelpers.openNotificationArea(mDevice);
+        // Get notification area object
+        TestHelpers.openNotificationArea(mDevice);
 
-		// Verify notification contents
-		final BySelector titleSelector = By.res("android:id/title").text(context.getString(R.string.error) + ": T1tl3");
-		final BySelector bodySelector = By.text("The body of the notification");
-		assertNotNull("Notification title not found", mDevice.wait(Until.findObject(titleSelector), 1000));
-		assertNotNull("Notification text not found", mDevice.wait(Until.findObject(bodySelector), 1000));
+        // Verify notification contents
+        final BySelector titleSelector = By.res("android:id/title").text(context.getString(R.string.error) + ": T1tl3");
+        final BySelector bodySelector = By.text("The body of the notification");
+        assertNotNull("Notification title not found", mDevice.wait(Until.findObject(titleSelector), 1000));
+        assertNotNull("Notification text not found", mDevice.wait(Until.findObject(bodySelector), 1000));
 
-		// Ensure that no notifications are visible
-		assertNull(
-			"Actions found, but they shouldn't be there",
-			mDevice.findObject(
-				By
-					.pkg("com.android.systemui")
-					.res("com.android.systemui:id/notification_stack_scroller")
-					.hasDescendant(By.text(context.getString(R.string.send_to_support)))
-			)
-		);
-	}
+        // Ensure that no notifications are visible
+        assertNull(
+            "Actions found, but they shouldn't be there",
+            mDevice.findObject(
+                By
+                    .pkg("com.android.systemui")
+                    .res("com.android.systemui:id/notification_stack_scroller")
+                    .hasDescendant(By.text(context.getString(R.string.send_to_support)))
+            )
+        );
+    }
 
-	/**
-	 * Ensure that a notification with "send to support" action works.
-	 */
-	//@Test TODO danilo: Disabled until we have an empty test database
-	public void testNotificationWithAction() {
-		// Go to home screen
-		mDevice.pressHome();
+    /**
+     * Ensure that a notification with "send to support" action works.
+     */
+    //@Test TODO danilo: Disabled until we have an empty test database
+    public void testNotificationWithAction() {
+        // Go to home screen
+        mDevice.pressHome();
 
-		// Show notification
-		final Context context = ApplicationProvider.getApplicationContext();
-		final String scope = "BackgroundErrorNotificationTest";
-		final String notificationBody = "The body of the notification";
-		BackgroundErrorNotification.showNotification(
-			context,
-			"T1tl3",
-			notificationBody,
-			scope,
-			true,
-			null
-		);
+        // Show notification
+        final Context context = ApplicationProvider.getApplicationContext();
+        final String scope = "BackgroundErrorNotificationTest";
+        final String notificationBody = "The body of the notification";
+        BackgroundErrorNotification.showNotification(
+            context,
+            "T1tl3",
+            notificationBody,
+            scope,
+            true,
+            null
+        );
 
-		// Find notification
-		TestHelpers.openNotificationArea(mDevice);
+        // Find notification
+        TestHelpers.openNotificationArea(mDevice);
 
-		// Find action
-		final BySelector actionSelector = By
-			.res("android:id/action0")
-			.text(Pattern.compile(context.getString(R.string.send_to_support), Pattern.CASE_INSENSITIVE));
-		final UiObject2 action = mDevice.findObject(actionSelector);
-		assertNotNull("Action not found", action);
+        // Find action
+        final BySelector actionSelector = By
+            .res("android:id/action0")
+            .text(Pattern.compile(context.getString(R.string.send_to_support), Pattern.CASE_INSENSITIVE));
+        final UiObject2 action = mDevice.findObject(actionSelector);
+        assertNotNull("Action not found", action);
 
-		// Click action
-		action.click();
+        // Click action
+        action.click();
 
-		// Wait for app to appear
-		final BySelector chatPartnerSelector = By
-			.pkg("ch.threema.app")
-			.res("ch.threema.app:id/title");
-		mDevice.wait(Until.findObject(chatPartnerSelector), 3000);
-		final UiObject2 chatPartner = mDevice.findObject(chatPartnerSelector);
+        // Wait for app to appear
+        final BySelector chatPartnerSelector = By
+            .pkg("ch.threema.app")
+            .res("ch.threema.app:id/title");
+        mDevice.wait(Until.findObject(chatPartnerSelector), 3000);
+        final UiObject2 chatPartner = mDevice.findObject(chatPartnerSelector);
 
-		// Ensure that we're talking to the support user
-		assertEquals("*SUPPORT", chatPartner.getText());
+        // Ensure that we're talking to the support user
+        assertEquals("*SUPPORT", chatPartner.getText());
 
-		// Validate message
-		final BySelector messageSelector = By
-			.pkg("ch.threema.app")
-			.res("ch.threema.app:id/embedded_text_editor");
-		final String message = mDevice.findObject(
-			messageSelector
-		).getText();
-		assertTrue(message.contains("An error occurred in " + scope));
-		assertTrue(message.contains(notificationBody));
-		assertTrue(message.contains("My phone model"));
-	}
+        // Validate message
+        final BySelector messageSelector = By
+            .pkg("ch.threema.app")
+            .res("ch.threema.app:id/embedded_text_editor");
+        final String message = mDevice.findObject(
+            messageSelector
+        ).getText();
+        assertTrue(message.contains("An error occurred in " + scope));
+        assertTrue(message.contains(notificationBody));
+        assertTrue(message.contains("My phone model"));
+    }
 }

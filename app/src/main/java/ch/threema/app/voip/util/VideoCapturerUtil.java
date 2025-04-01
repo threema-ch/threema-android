@@ -39,114 +39,113 @@ import ch.threema.base.utils.LoggingUtil;
  * Enumerate and initialize device cameras.
  */
 public class VideoCapturerUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoCapturerUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoCapturerUtil");
 
-	/**
-	 * Return a flag indicating whether the Camera2 API should be used or not.
-	 */
-	private static boolean useCamera2(Context context) {
-		return Camera2Enumerator.isSupported(context);
-	}
+    /**
+     * Return a flag indicating whether the Camera2 API should be used or not.
+     */
+    private static boolean useCamera2(Context context) {
+        return Camera2Enumerator.isSupported(context);
+    }
 
-	/**
-	 * Create a video capturer.
-	 *
-	 * Return null if no cameras were found or if initialization failed.
-	 */
-	@Nullable
-	public static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createVideoCapturer(
-		@NonNull Context context,
-		@Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
-	) {
-		final Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> capturer;
-		if (VideoCapturerUtil.useCamera2(context)) {
-			logger.debug("Creating capturer using camera2 API");
-			capturer = VideoCapturerUtil.createCameraCapturer(new Camera2Enumerator(context), eventsHandler);
-		} else {
-			logger.debug("Creating capturer using camera1 API");
-			capturer = VideoCapturerUtil.createCameraCapturer(new Camera1Enumerator(), eventsHandler);
-		}
-		if (capturer == null) {
-			logger.error("Failed to initialize camera");
-		}
-		return capturer;
-	}
+    /**
+     * Create a video capturer.
+     * <p>
+     * Return null if no cameras were found or if initialization failed.
+     */
+    @Nullable
+    public static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createVideoCapturer(
+        @NonNull Context context,
+        @Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
+    ) {
+        final Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> capturer;
+        if (VideoCapturerUtil.useCamera2(context)) {
+            logger.debug("Creating capturer using camera2 API");
+            capturer = VideoCapturerUtil.createCameraCapturer(new Camera2Enumerator(context), eventsHandler);
+        } else {
+            logger.debug("Creating capturer using camera1 API");
+            capturer = VideoCapturerUtil.createCameraCapturer(new Camera1Enumerator(), eventsHandler);
+        }
+        if (capturer == null) {
+            logger.error("Failed to initialize camera");
+        }
+        return capturer;
+    }
 
-	/**
-	 * Enumerate cameras, return a VideoCapturer instance.
-	 *
-	 * Return null if no cameras were found or if initialization failed.
-	 */
-	@Nullable
-	private static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createCameraCapturer(
-		@NonNull CameraEnumerator enumerator,
-		@Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
-	) {
-		final String[] deviceNames = enumerator.getDeviceNames();
+    /**
+     * Enumerate cameras, return a VideoCapturer instance.
+     * <p>
+     * Return null if no cameras were found or if initialization failed.
+     */
+    @Nullable
+    private static Pair<CameraVideoCapturer, Pair<String, Camera.Facing>> createCameraCapturer(
+        @NonNull CameraEnumerator enumerator,
+        @Nullable CameraVideoCapturer.CameraEventsHandler eventsHandler
+    ) {
+        final String[] deviceNames = enumerator.getDeviceNames();
 
-		// Try to find front camera
-		logger.debug("Looking for front cameras");
-		for (String deviceName : deviceNames) {
-			if (enumerator.isFrontFacing(deviceName)) {
-				logger.debug("Found front camera, creating camera capturer");
-				final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, eventsHandler);
-				if (videoCapturer != null) {
-					return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.FRONT));
-				}
-			}
-		}
+        // Try to find front camera
+        logger.debug("Looking for front cameras");
+        for (String deviceName : deviceNames) {
+            if (enumerator.isFrontFacing(deviceName)) {
+                logger.debug("Found front camera, creating camera capturer");
+                final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, eventsHandler);
+                if (videoCapturer != null) {
+                    return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.FRONT));
+                }
+            }
+        }
 
-		// No front camera found, search for other cams
-		logger.debug("No front camera found, looking for other cameras");
-		for (String deviceName : deviceNames) {
-			if (!enumerator.isFrontFacing(deviceName)) {
-				logger.debug("Non-front facing camera found, creating camera capturer");
-				final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-				if (videoCapturer != null) {
-					return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.BACK));
-				}
-			}
-		}
-		return null;
-	}
+        // No front camera found, search for other cams
+        logger.debug("No front camera found, looking for other cameras");
+        for (String deviceName : deviceNames) {
+            if (!enumerator.isFrontFacing(deviceName)) {
+                logger.debug("Non-front facing camera found, creating camera capturer");
+                final CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+                if (videoCapturer != null) {
+                    return new Pair<>(videoCapturer, new Pair<>(deviceName, Camera.Facing.BACK));
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 *
-	 * Returns the primary camera names as Pair of {frontcamera, backcamera}.
-	 * Currently, the first available front/backcamera is used as primary.
-	 *
-	 * @param context
-	 * @return Pair of nullable camera name strings.
-	 */
-	public static Pair<String, String> getPrimaryCameraNames(Context context) {
-		CameraEnumerator enumerator;
-		String frontCamera = null, backCamera = null;
+    /**
+     * Returns the primary camera names as Pair of {frontcamera, backcamera}.
+     * Currently, the first available front/backcamera is used as primary.
+     *
+     * @param context
+     * @return Pair of nullable camera name strings.
+     */
+    public static Pair<String, String> getPrimaryCameraNames(Context context) {
+        CameraEnumerator enumerator;
+        String frontCamera = null, backCamera = null;
 
-		if (VideoCapturerUtil.useCamera2(context)) {
-			enumerator = new Camera2Enumerator(context);
-		} else {
-			enumerator = new Camera1Enumerator();
-		}
+        if (VideoCapturerUtil.useCamera2(context)) {
+            enumerator = new Camera2Enumerator(context);
+        } else {
+            enumerator = new Camera1Enumerator();
+        }
 
-		final String[] deviceNames = enumerator.getDeviceNames();
-		logger.info("Found {} camera devices", deviceNames.length);
-		for (String deviceName : deviceNames) {
-			if (enumerator.isFrontFacing(deviceName)) {
-				if (frontCamera == null) {
-					logger.info("Using {} as front camera", deviceName);
-					frontCamera = deviceName;
-				} else {
-					logger.info("Not using {} as front camera", deviceName);
-				}
-			} else if (enumerator.isBackFacing(deviceName)) {
-				if (backCamera == null) {
-					logger.info("Using {} as back camera", deviceName);
-					backCamera = deviceName;
-				} else {
-					logger.info("Not using {} as back camera", deviceName);
-				}
-			}
-		}
-		return new Pair<>(frontCamera, backCamera);
-	}
+        final String[] deviceNames = enumerator.getDeviceNames();
+        logger.info("Found {} camera devices", deviceNames.length);
+        for (String deviceName : deviceNames) {
+            if (enumerator.isFrontFacing(deviceName)) {
+                if (frontCamera == null) {
+                    logger.info("Using {} as front camera", deviceName);
+                    frontCamera = deviceName;
+                } else {
+                    logger.info("Not using {} as front camera", deviceName);
+                }
+            } else if (enumerator.isBackFacing(deviceName)) {
+                if (backCamera == null) {
+                    logger.info("Using {} as back camera", deviceName);
+                    backCamera = deviceName;
+                } else {
+                    logger.info("Not using {} as back camera", deviceName);
+                }
+            }
+        }
+        return new Pair<>(frontCamera, backCamera);
+    }
 }

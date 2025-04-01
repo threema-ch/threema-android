@@ -34,50 +34,50 @@ import static junit.framework.Assert.assertTrue;
 
 public class QRCodeParserImplTest {
 
-	@Test
-	public void parseServerKey() throws Exception {
-		String base64QrCodeContent = "BTkCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkIjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxM3EzcTNxM3EzcTNxM3EzcTNxM3EzcTNxM3EzcTNxM3BNJzYWx0eXJ0Yy5leGFtcGxlLm9yZw==";
+    @Test
+    public void parseServerKey() throws Exception {
+        String base64QrCodeContent = "BTkCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkIjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxM3EzcTNxM3EzcTNxM3EzcTNxM3EzcTNxM3EzcTNxM3BNJzYWx0eXJ0Yy5leGFtcGxlLm9yZw==";
 
-		QRCodeParser service = new QRCodeParserImpl();
-		QRCodeParser.Result result = service.parse(Base64.decode(base64QrCodeContent));
-		assertNotNull(result);
-		assertEquals("saltyrtc.example.org", result.saltyRtcHost);
-		assertEquals(1234, result.saltyRtcPort);
-		assertEquals(true, result.isPermanent);
-		assertTrue(Arrays.equals(result.authToken, new byte[]{
-				35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
-				35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
-		}));
-		assertTrue(Arrays.equals(result.key, new byte[]{
-				66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-				66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
-		}));
-		assertTrue(Arrays.equals(result.serverKey, new byte[] {
-				19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55,
-				19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55
-		}));
-	}
+        QRCodeParser service = new QRCodeParserImpl();
+        QRCodeParser.Result result = service.parse(Base64.decode(base64QrCodeContent));
+        assertNotNull(result);
+        assertEquals("saltyrtc.example.org", result.saltyRtcHost);
+        assertEquals(1234, result.saltyRtcPort);
+        assertEquals(true, result.isPermanent);
+        assertTrue(Arrays.equals(result.authToken, new byte[]{
+            35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
+            35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
+        }));
+        assertTrue(Arrays.equals(result.key, new byte[]{
+            66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+            66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+        }));
+        assertTrue(Arrays.equals(result.serverKey, new byte[]{
+            19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55,
+            19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55, 19, 55
+        }));
+    }
 
-	@Test
-	public void parseNoneServerKey() throws Exception {
-		String base64QrCodeContent = "BTkCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkIjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNJzYWx0eXJ0Yy5leGFtcGxlLm9yZw==";
+    @Test
+    public void parseNoneServerKey() throws Exception {
+        String base64QrCodeContent = "BTkCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkIjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABNJzYWx0eXJ0Yy5leGFtcGxlLm9yZw==";
 
-		QRCodeParser service = new QRCodeParserImpl();
-		QRCodeParser.Result result = service.parse(Base64.decode(base64QrCodeContent));
-		assertNotNull(result);
-		assertEquals("saltyrtc.example.org", result.saltyRtcHost);
-		assertEquals(1234, result.saltyRtcPort);
-		assertEquals(true, result.isPermanent);
-		assertTrue(Arrays.equals(result.authToken, new byte[]{
-				35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
-				35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
-		}));
-		assertTrue(Arrays.equals(result.key, new byte[]{
-				66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-				66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
-		}));
+        QRCodeParser service = new QRCodeParserImpl();
+        QRCodeParser.Result result = service.parse(Base64.decode(base64QrCodeContent));
+        assertNotNull(result);
+        assertEquals("saltyrtc.example.org", result.saltyRtcHost);
+        assertEquals(1234, result.saltyRtcPort);
+        assertEquals(true, result.isPermanent);
+        assertTrue(Arrays.equals(result.authToken, new byte[]{
+            35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
+            35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35
+        }));
+        assertTrue(Arrays.equals(result.key, new byte[]{
+            66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+            66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
+        }));
 
-		//no server key
-		assertNull(result.serverKey);
-	}
+        //no server key
+        assertNull(result.serverKey);
+    }
 }

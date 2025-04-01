@@ -520,21 +520,21 @@ public class DatabaseServiceNew extends SQLiteOpenHelper {
         return this.groupEditHistoryEntryModelFactory;
     }
 
-	@NonNull
-	private ContactEmojiReactionModelFactory getContactEmojiReactionModelFactory() {
-		if (this.contactEmojiReactionModelFactory == null) {
-			this.contactEmojiReactionModelFactory = new ContactEmojiReactionModelFactory(this);
-		}
-		return this.contactEmojiReactionModelFactory;
-	}
+    @NonNull
+    private ContactEmojiReactionModelFactory getContactEmojiReactionModelFactory() {
+        if (this.contactEmojiReactionModelFactory == null) {
+            this.contactEmojiReactionModelFactory = new ContactEmojiReactionModelFactory(this);
+        }
+        return this.contactEmojiReactionModelFactory;
+    }
 
-	@NonNull
-	private GroupEmojiReactionModelFactory getGroupEmojiReactionModelFactory() {
-		if (this.groupEmojiReactionModelFactory == null) {
-			this.groupEmojiReactionModelFactory = new GroupEmojiReactionModelFactory(this);
-		}
-		return this.groupEmojiReactionModelFactory;
-	}
+    @NonNull
+    private GroupEmojiReactionModelFactory getGroupEmojiReactionModelFactory() {
+        if (this.groupEmojiReactionModelFactory == null) {
+            this.groupEmojiReactionModelFactory = new GroupEmojiReactionModelFactory(this);
+        }
+        return this.groupEmojiReactionModelFactory;
+    }
 
     // Note: Enable this to allow database downgrades.
     //

@@ -39,65 +39,65 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SMSVerificationLinkActivity extends AppCompatActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
 
-	private UserService userService;
+    private UserService userService;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		Integer resultText = R.string.verify_failed_summary;
+        Integer resultText = R.string.verify_failed_summary;
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null) {
-			this.userService = serviceManager.getUserService();
-			if (this.userService != null) {
-				if (this.userService.getMobileLinkingState() == UserService.LinkingState_PENDING) {
-					Intent intent = getIntent();
-					Uri data = intent.getData();
-					if (data != null) {
-						final String code = data.getQueryParameter("code");
+        if (serviceManager != null) {
+            this.userService = serviceManager.getUserService();
+            if (this.userService != null) {
+                if (this.userService.getMobileLinkingState() == UserService.LinkingState_PENDING) {
+                    Intent intent = getIntent();
+                    Uri data = intent.getData();
+                    if (data != null) {
+                        final String code = data.getQueryParameter("code");
 
-						if (!TestUtil.isEmptyOrNull(code)) {
-							resultText = null;
+                        if (!TestUtil.isEmptyOrNull(code)) {
+                            resultText = null;
 
-							new AsyncTask<Void, Void, Boolean>() {
-								@Override
-								protected Boolean doInBackground(Void... params) {
-									try {
-										userService.verifyMobileNumber(code);
-										return true;
-									} catch (Exception x) {
-										logger.error("Exception", x);
-									}
-									return false;
-								}
+                            new AsyncTask<Void, Void, Boolean>() {
+                                @Override
+                                protected Boolean doInBackground(Void... params) {
+                                    try {
+                                        userService.verifyMobileNumber(code);
+                                        return true;
+                                    } catch (Exception x) {
+                                        logger.error("Exception", x);
+                                    }
+                                    return false;
+                                }
 
-								@Override
-								protected void onPostExecute(Boolean result) {
-									showConfirmation(result ? R.string.verify_success_text : R.string.verify_failed_summary);
-								}
-							}.execute();
-						}
-					}
-				} else if (this.userService.getMobileLinkingState() == UserService.LinkingState_LINKED) {
-					// already linked
-					resultText = R.string.verify_success_text;
-				} else if (this.userService.getMobileLinkingState() == UserService.LinkingState_NONE) {
-					resultText = R.string.verify_failed_not_linked;
-				}
-			}
-		}
-		showConfirmation(resultText);
-		finish();
-	}
+                                @Override
+                                protected void onPostExecute(Boolean result) {
+                                    showConfirmation(result ? R.string.verify_success_text : R.string.verify_failed_summary);
+                                }
+                            }.execute();
+                        }
+                    }
+                } else if (this.userService.getMobileLinkingState() == UserService.LinkingState_LINKED) {
+                    // already linked
+                    resultText = R.string.verify_success_text;
+                } else if (this.userService.getMobileLinkingState() == UserService.LinkingState_NONE) {
+                    resultText = R.string.verify_failed_not_linked;
+                }
+            }
+        }
+        showConfirmation(resultText);
+        finish();
+    }
 
-	private void showConfirmation(Integer resultText) {
-		if (resultText != null) {
-			@StringRes int resId = resultText;
+    private void showConfirmation(Integer resultText) {
+        if (resultText != null) {
+            @StringRes int resId = resultText;
 
-			Toast.makeText(getApplicationContext(), resId, Toast.LENGTH_LONG).show();
-		}
-	}
+            Toast.makeText(getApplicationContext(), resId, Toast.LENGTH_LONG).show();
+        }
+    }
 }

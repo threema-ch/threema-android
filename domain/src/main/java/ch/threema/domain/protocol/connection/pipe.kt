@@ -88,7 +88,8 @@ internal open class InputPipe<T> : Pipe<T> {
     }
 }
 
-internal class ProcessingPipe<I, O>(private val handler: (I) -> Unit): InputPipe<O>(), PipeProcessor<I, O> {
+internal class ProcessingPipe<I, O>(private val handler: (I) -> Unit) : InputPipe<O>(),
+    PipeProcessor<I, O> {
 
     override fun process(readable: Pipe<I>): Pipe<O> {
         readable.setHandler(handler)
@@ -99,7 +100,7 @@ internal class ProcessingPipe<I, O>(private val handler: (I) -> Unit): InputPipe
 /**
  * A [PipeProcessor] that transforms every message using the [mapper].
  */
-internal class MappingPipe<I, O>(private val mapper: (I) -> O): PipeProcessor<I, O> {
+internal class MappingPipe<I, O>(private val mapper: (I) -> O) : PipeProcessor<I, O> {
     private val pipe = InputPipe<O>()
 
     override fun process(readable: Pipe<I>): Pipe<O> {

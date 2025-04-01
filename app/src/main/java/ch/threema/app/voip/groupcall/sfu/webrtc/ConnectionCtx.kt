@@ -98,7 +98,10 @@ internal class ConnectionCtx(
         }
 
         @WorkerThread
-        private fun determineFactoryParameters(aecMode: String, videoCodec: String): FactoryCtx.Parameters = FactoryCtx.Parameters(
+        private fun determineFactoryParameters(
+            aecMode: String,
+            videoCodec: String
+        ): FactoryCtx.Parameters = FactoryCtx.Parameters(
             acousticEchoCancelerMode = when (aecMode) {
                 "sw" -> FactoryCtx.Parameters.AecMode.SOFTWARE
                 else -> FactoryCtx.Parameters.AecMode.HARDWARE
@@ -106,6 +109,7 @@ internal class ConnectionCtx(
             hardwareVideoCodecs = when (videoCodec) {
                 PreferenceService.VIDEO_CODEC_SW,
                 PreferenceService.VIDEO_CODEC_NO_VP8 -> emptySet()
+
                 else -> setOf(FactoryCtx.Parameters.HardwareVideoCodec.VP8)
             }
         )
@@ -146,7 +150,8 @@ internal class ConnectionCtx(
                 it.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
                 it.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
                 it.keyType = PeerConnection.KeyType.ECDSA
-                it.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+                it.continualGatheringPolicy =
+                    PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
                 it.turnPortPrunePolicy = PeerConnection.PortPrunePolicy.PRUNE_BASED_ON_PRIORITY
                 it.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
                 it.cryptoOptions = CryptoOptions.builder()
@@ -164,7 +169,8 @@ internal class ConnectionCtx(
     private val session = GroupCallSessionDescription(sessionParameters.participantId)
 
     private var _transceivers: TransceiversCtx? = TransceiversCtx(
-        local = null, remote = mutableMapOf())
+        local = null, remote = mutableMapOf()
+    )
     private val transceivers
         get() = checkNotNull(_transceivers) { "Transceivers already disposed" }
 
@@ -204,10 +210,12 @@ internal class ConnectionCtx(
         GroupCallThreadUtil.assertDispatcherThread()
 
         // Create offer
-        val description = session.generateRemoteDescription(RemoteSessionDescriptionInit(
-            parameters = sessionParameters,
-            remoteParticipants = remoteParticipants,
-        ))
+        val description = session.generateRemoteDescription(
+            RemoteSessionDescriptionInit(
+                parameters = sessionParameters,
+                remoteParticipants = remoteParticipants,
+            )
+        )
 
         // Apply offer
         logger.trace("Generated remote session description:\n{}", description)
@@ -240,18 +248,20 @@ internal class ConnectionCtx(
             addresses
                 .filter { address -> ipv6enabled || !address.isIpv6 }
                 .map { address ->
-                    IceCandidate("", 0, "candidate:${
-                        arrayOf(
-                            0, // Foundation is irrelevant because we bundle
-                            1, // Component ID is always RTP (1) because we bundle
-                            "udp", // Always UDP
-                            if (address.isIpv6) 2 else 1, // IPv6 takes priority but we only expect one address for each address family
-                            address.ip,
-                            address.port,
-                            "typ",
-                            "host",
-                        ).joinToString(" ")
-                    }")
+                    IceCandidate(
+                        "", 0, "candidate:${
+                            arrayOf(
+                                0, // Foundation is irrelevant because we bundle
+                                1, // Component ID is always RTP (1) because we bundle
+                                "udp", // Always UDP
+                                if (address.isIpv6) 2 else 1, // IPv6 takes priority but we only expect one address for each address family
+                                address.ip,
+                                address.port,
+                                "typ",
+                                "host",
+                            ).joinToString(" ")
+                        }"
+                    )
                 }
                 .map {
                     async {
@@ -286,14 +296,17 @@ internal class ConnectionCtx(
                     ?: throw Error("Local '${kind.sdpKind}' transceiver not found")
 
                 // Initial mapping: Set direction to activate correctly
-                logger.trace("Activating local transceiver (kind='{}', mid='{}')",
-                    transceiver.mediaType.name, transceiver.mid)
+                logger.trace(
+                    "Activating local transceiver (kind='{}', mid='{}')",
+                    transceiver.mediaType.name, transceiver.mid
+                )
                 transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
                 setCameraVideoSimulcastEncodingParameters(kind, transceiver)
 
                 // Add it to the encryptor
-                val tag = "${participantId.id}.${mid.mid}.${if (kind === MediaKind.VIDEO) "vp8" else "opus"}.sender"
+                val tag =
+                    "${participantId.id}.${mid.mid}.${if (kind === MediaKind.VIDEO) "vp8" else "opus"}.sender"
                 frameCrypto.encryptor.attach(transceiver.sender, tag)
 
                 // Attach to the correct local context
@@ -317,6 +330,7 @@ internal class ConnectionCtx(
                 logger.trace("Attaching local microphone audio track to transceiver")
                 localAudioVideoContext.microphoneAudioContext.sendTo(transceiver)
             }
+
             MediaKind.VIDEO -> {
                 logger.trace("Attaching local camera video track to transceiver")
                 localAudioVideoContext.cameraVideoContext.sendTo(transceiver)
@@ -325,7 +339,10 @@ internal class ConnectionCtx(
     }
 
     @WorkerThread
-    private fun setCameraVideoSimulcastEncodingParameters(kind: MediaKind, transceiver: RtpTransceiver) {
+    private fun setCameraVideoSimulcastEncodingParameters(
+        kind: MediaKind,
+        transceiver: RtpTransceiver
+    ) {
         // For camera video, we need to set simulcast encoding parameters
         if (kind == MediaKind.VIDEO) {
             logger.debug("Applying local video encoding parameters")
@@ -366,7 +383,10 @@ internal class ConnectionCtx(
         run {
             // The participants to be added are not yet in `transceivers.remote`, so we need to add
             // them explicitly.
-            logger.trace("Removed (now inactive) and existing (staying active): {}", transceivers.remote.keys)
+            logger.trace(
+                "Removed (now inactive) and existing (staying active): {}",
+                transceivers.remote.keys
+            )
             logger.trace("Added (becoming active): {}", add)
             val remoteParticipants = transceivers.remote.keys + add
             createAndApplyOffer(remoteParticipants)
@@ -400,8 +420,10 @@ internal class ConnectionCtx(
         for (participantId in remove) {
             if (participantId !in transceivers.remote) {
                 // Discard if the remote participant was not added
-                logger.warn("Cannot remove participant '{}', transceivers do not exist",
-                    participantId.id)
+                logger.warn(
+                    "Cannot remove participant '{}', transceivers do not exist",
+                    participantId.id
+                )
                 continue
             }
 
@@ -437,8 +459,10 @@ internal class ConnectionCtx(
         for (participantId in add) {
             // Discard if the remote participant is already added
             if (participantId in transceivers.remote) {
-                logger.warn("Cannot add participant '{}', transceivers already exist",
-                    participantId.id)
+                logger.warn(
+                    "Cannot add participant '{}', transceivers already exist",
+                    participantId.id
+                )
                 continue
             }
 
@@ -461,7 +485,8 @@ internal class ConnectionCtx(
         if (sessionParameters.participantId !in session.mLineOrder ||
             sessionParameters.participantId in transceivers.remote ||
             sessionParameters.participantId in add ||
-            sessionParameters.participantId in remove) {
+            sessionParameters.participantId in remove
+        ) {
             throw Error("remapLocalTransceivers sanity check failed")
         }
 
@@ -541,12 +566,15 @@ internal class ConnectionCtx(
                     ?: throw Error("Remote '${kind.sdpKind}' transceiver for MID '${mid.mid}' not found")
 
                 // First encounter: Set direction to activate correctly
-                logger.trace("Activating remote transceiver (kind='{}', mid='{}')",
-                    transceiver.mediaType.name, transceiver.mid)
+                logger.trace(
+                    "Activating remote transceiver (kind='{}', mid='{}')",
+                    transceiver.mediaType.name, transceiver.mid
+                )
                 transceiver.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
 
                 // Add stream to decryptor
-                val tag = "${participantId.id}.${mid.mid}.${if (kind === MediaKind.VIDEO) "vp8" else "opus"}.receiver"
+                val tag =
+                    "${participantId.id}.${mid.mid}.${if (kind === MediaKind.VIDEO) "vp8" else "opus"}.receiver"
                 decryptor.attach(transceiver.receiver, tag)
 
                 // Set transceiver
@@ -573,7 +601,10 @@ internal class ConnectionCtx(
                     logger.trace("Send message {} to sfu", message.type)
                     p2s.dc.send(buffer)
                 } else {
-                    logger.warn("Connection is being teared down. Not sending message {}", message.type)
+                    logger.warn(
+                        "Connection is being teared down. Not sending message {}",
+                        message.type
+                    )
                 }
             } catch (e: IllegalStateException) {
                 logger.error("Could not send message to sfu message=${message.type}", e)
@@ -635,7 +666,10 @@ internal class ConnectionCtx(
     }
 
     @WorkerThread
-    private fun setSfuHelloMessageObserver(dataChannelCtx: DataChannelCtx, connectedSignal: CompletableDeferred<Set<ParticipantId>>) {
+    private fun setSfuHelloMessageObserver(
+        dataChannelCtx: DataChannelCtx,
+        connectedSignal: CompletableDeferred<Set<ParticipantId>>
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         dataChannelCtx.observer.replace(object : SaneDataChannelObserver {
@@ -647,7 +681,9 @@ internal class ConnectionCtx(
                 when (state) {
                     DataChannel.State.CLOSING, DataChannel.State.CLOSED ->
                         connectedSignal.completeExceptionally(
-                            Error("P2S data channel closed during connection setup"))
+                            Error("P2S data channel closed during connection setup")
+                        )
+
                     else -> {
                         // noop
                     }
@@ -657,8 +693,10 @@ internal class ConnectionCtx(
             override fun onMessage(buffer: DataChannel.Buffer) {
                 // Note: Not dispatching here because no thread unsafe variables are accessed.
 
-                logger.trace("P2S data channel incoming message (length={}, binary={})",
-                    buffer.data.remaining(), buffer.binary)
+                logger.trace(
+                    "P2S data channel incoming message (length={}, binary={})",
+                    buffer.data.remaining(), buffer.binary
+                )
 
                 try {
                     // Expect S2P 'Hello' message

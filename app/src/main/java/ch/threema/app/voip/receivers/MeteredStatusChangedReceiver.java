@@ -35,41 +35,42 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 public class MeteredStatusChangedReceiver extends BroadcastReceiver implements DefaultLifecycleObserver {
-	private final Context context;
-	private final ConnectivityManager connectivityManager;
-	private final MutableLiveData<Boolean> metered;
+    private final Context context;
+    private final ConnectivityManager connectivityManager;
+    private final MutableLiveData<Boolean> metered;
 
-	/**
-	 * Broadcast receiver for network status
-	 * @param context Context
-	 * @param lifecycleOwner Lifecycle to bind to
-	 */
-	public MeteredStatusChangedReceiver(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner) {
-		this.context = context;
-		this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		this.metered = new MutableLiveData<>();
+    /**
+     * Broadcast receiver for network status
+     *
+     * @param context        Context
+     * @param lifecycleOwner Lifecycle to bind to
+     */
+    public MeteredStatusChangedReceiver(@NonNull Context context, @NonNull LifecycleOwner lifecycleOwner) {
+        this.context = context;
+        this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        this.metered = new MutableLiveData<>();
 
-		this.metered.setValue(ConnectivityManagerCompat.isActiveNetworkMetered(connectivityManager));
-		lifecycleOwner.getLifecycle().addObserver(this);
-	}
+        this.metered.setValue(ConnectivityManagerCompat.isActiveNetworkMetered(connectivityManager));
+        lifecycleOwner.getLifecycle().addObserver(this);
+    }
 
-	@Override
-	public void onCreate(@NonNull LifecycleOwner owner) {
-		context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-	}
+    @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {
+        context.registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
-	@Override
-	public void onDestroy(@NonNull LifecycleOwner owner) {
-		context.unregisterReceiver(this);
-	}
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        context.unregisterReceiver(this);
+    }
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		metered.postValue(ConnectivityManagerCompat.isActiveNetworkMetered(connectivityManager));
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        metered.postValue(ConnectivityManagerCompat.isActiveNetworkMetered(connectivityManager));
+    }
 
-	@NonNull
-	public LiveData<Boolean> getMetered() {
-		return metered;
-	}
+    @NonNull
+    public LiveData<Boolean> getMetered() {
+        return metered;
+    }
 }

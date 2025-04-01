@@ -27,7 +27,7 @@ public interface DrmCheckCallback {
      * Check successfully in the SDK，the developer can uses the callback parameters signData and signature
      * to carry out their own business processing, such as visiting their own business server for signature verification.
      *
-     * @param signData signed data for verification
+     * @param signData  signed data for verification
      * @param signature server signature
      */
     void onCheckSuccess(String signData, String signature);

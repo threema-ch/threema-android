@@ -36,24 +36,24 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <TextView
-        style="@style/Threema.TextAppearance.BodyMedium"
-        android:id="@+id/item_explain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/problemsolver_explain_background"/>
+        <TextView
+            style="@style/Threema.TextAppearance.BodyMedium"
+            android:id="@+id/item_explain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/problemsolver_explain_background" />
 
-    <com.google.android.material.button.MaterialButton
-        style="@style/Threema.MaterialButton.Icon"
-        android:id="@+id/item_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="right"
-        app:icon="@drawable/ic_settings_outline_24dp"
-        app:iconPadding="4dp"
-        android:text="@string/problemsolver_to_settings"/>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Threema.MaterialButton.Icon"
+            android:id="@+id/item_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="right"
+            app:icon="@drawable/ic_settings_outline_24dp"
+            app:iconPadding="4dp"
+            android:text="@string/problemsolver_to_settings" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

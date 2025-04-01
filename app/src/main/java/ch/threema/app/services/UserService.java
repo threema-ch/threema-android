@@ -39,76 +39,81 @@ import ch.threema.storage.models.ContactModel;
  */
 public interface UserService {
 
-	int LinkingState_NONE = 0;
-	int LinkingState_PENDING = 1;
-	int LinkingState_LINKED = 2;
+    int LinkingState_NONE = 0;
+    int LinkingState_PENDING = 1;
+    int LinkingState_LINKED = 2;
 
-	void createIdentity(byte[] newRandomSeed) throws Exception;
+    void createIdentity(byte[] newRandomSeed) throws Exception;
 
-	void removeIdentity() throws Exception;
+    void removeIdentity() throws Exception;
 
-	Account getAccount();
-	Account getAccount(boolean createIfNotExists);
-	boolean checkAccount();
+    Account getAccount();
 
-	boolean enableAccountAutoSync(boolean enable);
+    Account getAccount(boolean createIfNotExists);
 
-	/**
-	 * Remove the Account for the Sync Adapter (all Android-Threema Contacts will be deleted)
-	 */
-	void removeAccount();
+    boolean checkAccount();
 
-	/**
-	 * Remove the Account for the Sync Adapter, see {@removeAccount}
-	 * @param callback Callback after adding
-	 */
-	boolean removeAccount(AccountManagerCallback<Boolean> callback);
+    boolean enableAccountAutoSync(boolean enable);
 
-	boolean hasIdentity();
+    /**
+     * Remove the Account for the Sync Adapter (all Android-Threema Contacts will be deleted)
+     */
+    void removeAccount();
 
-	String getIdentity();
+    /**
+     * Remove the Account for the Sync Adapter, see {@removeAccount}
+     *
+     * @param callback Callback after adding
+     */
+    boolean removeAccount(AccountManagerCallback<Boolean> callback);
 
-	boolean isMe(String identity);
+    boolean hasIdentity();
 
-	byte[] getPublicKey();
+    String getIdentity();
 
-	byte[] getPrivateKey();
+    boolean isMe(String identity);
 
-	String getLinkedEmail();
+    byte[] getPublicKey();
 
-	String getLinkedMobileE164();
+    byte[] getPrivateKey();
 
-	String getLinkedMobile();
-	String getLinkedMobile(boolean returnPendingNumber);
+    String getLinkedEmail();
 
-	void linkWithEmail(String email) throws Exception;
+    String getLinkedMobileE164();
 
-	void unlinkEmail() throws Exception;
+    String getLinkedMobile();
 
-	int getEmailLinkingState();
+    String getLinkedMobile(boolean returnPendingNumber);
 
-	void checkEmailLinkState();
+    void linkWithEmail(String email) throws Exception;
 
-	Date linkWithMobileNumber(String number) throws Exception;
+    void unlinkEmail() throws Exception;
 
-	void makeMobileLinkCall() throws Exception;
+    int getEmailLinkingState();
 
-	void unlinkMobileNumber() throws Exception;
+    void checkEmailLinkState();
 
-	boolean verifyMobileNumber(String code) throws Exception;
+    Date linkWithMobileNumber(String number) throws Exception;
 
-	int getMobileLinkingState();
+    void makeMobileLinkCall() throws Exception;
 
-	long getMobileLinkingTime();
+    void unlinkMobileNumber() throws Exception;
 
-	String getPublicNickname();
+    boolean verifyMobileNumber(String code) throws Exception;
 
-	/**
-	 * Set the own public nickname and return the converted (size limit) string.
-	 *
-	 * @return converted and truncated string or null if an error happens.
-	 */
-	@Nullable String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource);
+    int getMobileLinkingState();
+
+    long getMobileLinkingTime();
+
+    String getPublicNickname();
+
+    /**
+     * Set the own public nickname and return the converted (size limit) string.
+     *
+     * @return converted and truncated string or null if an error happens.
+     */
+    @Nullable
+    String setPublicNickname(String publicNickname, @NonNull TriggerSource triggerSource);
 
     /**
      * Get the user profile picture. If no profile picture is set, then null is returned.
@@ -147,43 +152,43 @@ public interface UserService {
     ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData();
 
 
-	boolean restoreIdentity(String backupString, String password) throws Exception;
+    boolean restoreIdentity(String backupString, String password) throws Exception;
 
-	boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception;
+    boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception;
 
-	void setPolicyResponse(String responseData, String signature, int policyErrorCode);
+    void setPolicyResponse(String responseData, String signature, int policyErrorCode);
 
-	void setCredentials(LicenseService.Credentials credentials);
+    void setCredentials(LicenseService.Credentials credentials);
 
-	/**
-	 * Sends the feature mask to the server if it has changed or the last time the feature mask has
-	 * been sent is more than 24h ago.
-	 *
-	 * @return true if the feature mask has been updated (or no update is necessary) and false if
-	 * an exception has occurred and the feature mask wasn't updated.
-	 */
-	boolean sendFeatureMask();
+    /**
+     * Sends the feature mask to the server if it has changed or the last time the feature mask has
+     * been sent is more than 24h ago.
+     *
+     * @return true if the feature mask has been updated (or no update is necessary) and false if
+     * an exception has occurred and the feature mask wasn't updated.
+     */
+    boolean sendFeatureMask();
 
-	/**
-	 * Set whether the forward security flag should be set in the feature
-	 * mask. Note that if `ConfigUtils.isForwardSecurityEnabled() == false`,
-	 * the flag will never be set and the value set via this method is ignored.
-	 * <br>
-	 * This will not send the flags to the server. Use {@link #sendFeatureMask()} to
-	 * update the mask on the server
-	 *
-	 * TODO(ANDR-2519): Remove method when fs is allowed with md enabled
-	 */
-	void setForwardSecurityEnabled(boolean isFsEnabled);
+    /**
+     * Set whether the forward security flag should be set in the feature
+     * mask. Note that if `ConfigUtils.isForwardSecurityEnabled() == false`,
+     * the flag will never be set and the value set via this method is ignored.
+     * <br>
+     * This will not send the flags to the server. Use {@link #sendFeatureMask()} to
+     * update the mask on the server
+     * <p>
+     * TODO(ANDR-2519): Remove method when fs is allowed with md enabled
+     */
+    void setForwardSecurityEnabled(boolean isFsEnabled);
 
-	boolean setRevocationKey(String revocationKey);
+    boolean setRevocationKey(String revocationKey);
 
-	Date getLastRevocationKeySet();
+    Date getLastRevocationKeySet();
 
-	/**
-	 * Check revocation key
-	 *
-	 * @param force
-	 */
-	void checkRevocationKey(boolean force);
+    /**
+     * Check revocation key
+     *
+     * @param force
+     */
+    void checkRevocationKey(boolean force);
 }

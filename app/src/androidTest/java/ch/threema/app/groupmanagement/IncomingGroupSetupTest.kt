@@ -181,7 +181,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         // Assert that one message is for contact A and the other for contact B
         assertTrue(
             (first.toIdentity == contactA.identity && second.toIdentity == contactB.identity)
-                    || (first.toIdentity == contactB.identity && second.toIdentity == contactA.identity)
+                || (first.toIdentity == contactB.identity && second.toIdentity == contactA.identity)
         )
 
         // Assert that no action has been triggered
@@ -332,20 +332,39 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         setupTracker.stop()
 
         // Assert that the group has the correct members
-        val group = serviceManager.groupService.getByApiGroupIdAndCreator(newGroup.apiGroupId, newGroup.groupCreator.identity)
+        val group = serviceManager.groupService.getByApiGroupIdAndCreator(
+            newGroup.apiGroupId,
+            newGroup.groupCreator.identity
+        )
         assertNotNull(group!!)
         val expectedMemberCount = newGroup.members.size
         // Assert that there is one more member than member models (as the user is not stored into
         // the database).
-        assertEquals(expectedMemberCount, serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1)
-        assertEquals(expectedMemberCount, serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id).toInt() + 1)
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.databaseServiceNew.groupMemberModelFactory.getByGroupId(group.id).size + 1
+        )
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.databaseServiceNew.groupMemberModelFactory.countMembersWithoutUser(group.id)
+                .toInt() + 1
+        )
 
         // Assert that the group service returns the member lists including the user
         assertEquals(expectedMemberCount, serviceManager.groupService.getMembers(group).size)
-        assertEquals(expectedMemberCount, serviceManager.groupService.getGroupIdentities(group).size)
-        assertEquals(expectedMemberCount, serviceManager.groupService.getMembersWithoutUser(group).size + 1)
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.groupService.getGroupIdentities(group).size
+        )
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.groupService.getMembersWithoutUser(group).size + 1
+        )
         assertEquals(expectedMemberCount, serviceManager.groupService.countMembers(group))
-        assertEquals(expectedMemberCount, serviceManager.groupService.countMembersWithoutUser(group) + 1)
+        assertEquals(
+            expectedMemberCount,
+            serviceManager.groupService.countMembersWithoutUser(group) + 1
+        )
     }
 
     /**
@@ -445,14 +464,15 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     private fun createGroupSetupMessage(testGroup: TestGroup) = GroupSetupMessage()
         .apply {
-        apiGroupId = testGroup.apiGroupId
-        groupCreator = testGroup.groupCreator.identity
-        fromIdentity = testGroup.groupCreator.identity
-        toIdentity = myContact.identity
-        members =
-            testGroup.members.map { it.identity }.filter { it != testGroup.groupCreator.identity }
-                .toTypedArray()
-    }
+            apiGroupId = testGroup.apiGroupId
+            groupCreator = testGroup.groupCreator.identity
+            fromIdentity = testGroup.groupCreator.identity
+            toIdentity = myContact.identity
+            members =
+                testGroup.members.map { it.identity }
+                    .filter { it != testGroup.groupCreator.identity }
+                    .toTypedArray()
+        }
 
     private class GroupSetupTracker(
         private val group: TestGroup?,

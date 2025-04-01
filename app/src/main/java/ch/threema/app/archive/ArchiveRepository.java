@@ -38,59 +38,58 @@ import ch.threema.storage.models.ConversationModel;
 
 /**
  * A Repository is a class that abstracts access to multiple data sources.
- *
+ * <p>
  * The Repository is not part of the Architecture Components libraries, but is a
  * suggested best practice for code separation and architecture. A Repository class
  * handles data operations. It provides a clean API to the rest of the app for app data.
  */
 class ArchiveRepository {
-	private MutableLiveData<List<ConversationModel>> conversationModels;
-	private ConversationService conversationService;
-	private String filter = null;
+    private MutableLiveData<List<ConversationModel>> conversationModels;
+    private ConversationService conversationService;
+    private String filter = null;
 
-	ArchiveRepository() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			conversationService = null;
-			try {
-				conversationService = serviceManager.getConversationService();
-			} catch (ThreemaException e) {
-				return;
-			}
-			if (conversationService != null) {
-				conversationModels = new MutableLiveData<List<ConversationModel>>() {
-					@Nullable
-					@Override
-					public List<ConversationModel> getValue() {
-						return conversationService.getArchived(null);
-					}
-				};
-			}
-		}
-	}
+    ArchiveRepository() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            conversationService = null;
+            try {
+                conversationService = serviceManager.getConversationService();
+            } catch (ThreemaException e) {
+                return;
+            }
+            if (conversationService != null) {
+                conversationModels = new MutableLiveData<List<ConversationModel>>() {
+                    @Nullable
+                    @Override
+                    public List<ConversationModel> getValue() {
+                        return conversationService.getArchived(null);
+                    }
+                };
+            }
+        }
+    }
 
-	LiveData<List<ConversationModel>> getConversationModels() {
-		return conversationModels;
-	}
+    LiveData<List<ConversationModel>> getConversationModels() {
+        return conversationModels;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	public void onDataChanged() {
-		new AsyncTask<String, Void, Void>() {
-			@Override
-			protected Void doInBackground(String... strings) {
-				conversationModels.postValue(conversationService.getArchived(filter));
-				return null;
-			}
-		}.execute();
-	}
+    @SuppressLint("StaticFieldLeak")
+    public void onDataChanged() {
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... strings) {
+                conversationModels.postValue(conversationService.getArchived(filter));
+                return null;
+            }
+        }.execute();
+    }
 
 
-	public void setFilter(String constraint) {
-		if (!TestUtil.isEmptyOrNull(constraint)) {
-			this.filter = constraint.trim();
-		}
-		else {
-			this.filter = null;
-		}
-	}
+    public void setFilter(String constraint) {
+        if (!TestUtil.isEmptyOrNull(constraint)) {
+            this.filter = constraint.trim();
+        } else {
+            this.filter = null;
+        }
+    }
 }

@@ -284,11 +284,13 @@ class PermissionRequestActivity : ThreemaActivity() {
                 permissionGrantSettingsButton.visibility = View.INVISIBLE
                 permissionContinueButton.visibility = View.VISIBLE
             }
+
             permissionState.goToSettings -> {
                 permissionGrantButton.visibility = View.INVISIBLE
                 permissionGrantSettingsButton.visibility = View.VISIBLE
                 permissionContinueButton.visibility = View.INVISIBLE
             }
+
             else -> {
                 permissionGrantButton.visibility = View.VISIBLE
                 permissionGrantSettingsButton.visibility = View.INVISIBLE

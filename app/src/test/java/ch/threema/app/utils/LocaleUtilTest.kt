@@ -91,7 +91,10 @@ class LocaleUtilTest {
     fun testScript() {
         // Always fall back to simplified chinese if there is no explicit script set
         assertEquals("zh-hans-CN", mapLocaleToPredefinedLocales(Locale("zh"), predefinedLocales))
-        assertEquals("zh-hans-CN", mapLocaleToPredefinedLocales(Locale("zh", "TW"), predefinedLocales))
+        assertEquals(
+            "zh-hans-CN",
+            mapLocaleToPredefinedLocales(Locale("zh", "TW"), predefinedLocales)
+        )
     }
 
     private fun assertLocaleMap(from: String, to: String = from) {

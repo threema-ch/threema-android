@@ -41,65 +41,65 @@ import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.utils.ConfigUtils;
 
 public class BottomSheetListAdapter extends ArrayAdapter<BottomSheetItem> {
-	private List<BottomSheetItem> items;
-	private int selectedItem;
-	private LayoutInflater layoutInflater;
-	private int regularColor;
+    private List<BottomSheetItem> items;
+    private int selectedItem;
+    private LayoutInflater layoutInflater;
+    private int regularColor;
 
-	private class BottomSheetListHolder extends AbstractListItemHolder {
-		AppCompatImageView imageView;
-		TextView textView;
-	}
+    private class BottomSheetListHolder extends AbstractListItemHolder {
+        AppCompatImageView imageView;
+        TextView textView;
+    }
 
-	public BottomSheetListAdapter(Context context, List<BottomSheetItem> items, int selectedItem) {
-		super(context, R.layout.item_dialog_bottomsheet_list, items);
+    public BottomSheetListAdapter(Context context, List<BottomSheetItem> items, int selectedItem) {
+        super(context, R.layout.item_dialog_bottomsheet_list, items);
 
-		this.items = items;
-		this.selectedItem = selectedItem;
-		this.layoutInflater = LayoutInflater.from(context);
+        this.items = items;
+        this.selectedItem = selectedItem;
+        this.layoutInflater = LayoutInflater.from(context);
 
-		TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorOnSurface});
-		this.regularColor = typedArray.getColor(0, 0);
-		typedArray.recycle();
-	}
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{R.attr.colorOnSurface});
+        this.regularColor = typedArray.getColor(0, 0);
+        typedArray.recycle();
+    }
 
-	@NonNull
-	@Override
-	public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
-		View itemView = convertView;
-		BottomSheetListHolder holder;
+    @NonNull
+    @Override
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
+        View itemView = convertView;
+        BottomSheetListHolder holder;
 
-		if (convertView == null) {
-			holder = new BottomSheetListHolder();
+        if (convertView == null) {
+            holder = new BottomSheetListHolder();
 
-			// This a new view we inflate the new layout
-			itemView = layoutInflater.inflate(R.layout.item_dialog_bottomsheet_list, parent, false);
+            // This a new view we inflate the new layout
+            itemView = layoutInflater.inflate(R.layout.item_dialog_bottomsheet_list, parent, false);
 
-			holder.imageView = itemView.findViewById(R.id.icon);
-			holder.textView = itemView.findViewById(R.id.text);
+            holder.imageView = itemView.findViewById(R.id.icon);
+            holder.textView = itemView.findViewById(R.id.text);
 
-			itemView.setTag(holder);
-		} else {
-			holder = (BottomSheetListHolder) itemView.getTag();
-		}
+            itemView.setTag(holder);
+        } else {
+            holder = (BottomSheetListHolder) itemView.getTag();
+        }
 
-		final BottomSheetItem item = items.get(position);
+        final BottomSheetItem item = items.get(position);
 
-		if (item.getBitmap() != null) {
-			holder.imageView.setImageBitmap(item.getBitmap());
-		} else {
-			holder.imageView.setImageResource(item.getResource());
-		}
-		holder.textView.setText(item.getTitle());
+        if (item.getBitmap() != null) {
+            holder.imageView.setImageBitmap(item.getBitmap());
+        } else {
+            holder.imageView.setImageResource(item.getResource());
+        }
+        holder.textView.setText(item.getTitle());
 
-		if (position == selectedItem) {
-			holder.textView.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
-			holder.imageView.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary), PorterDuff.Mode.SRC_IN);
-		} else {
-			holder.textView.setTextColor(regularColor);
-			holder.imageView.setColorFilter(regularColor);
-		}
+        if (position == selectedItem) {
+            holder.textView.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
+            holder.imageView.setColorFilter(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary), PorterDuff.Mode.SRC_IN);
+        } else {
+            holder.textView.setTextColor(regularColor);
+            holder.imageView.setColorFilter(regularColor);
+        }
 
-		return itemView;
-	}
+        return itemView;
+    }
 }

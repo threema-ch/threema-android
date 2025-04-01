@@ -32,96 +32,96 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 
 public class IdentityListAdapter extends AbstractRecyclerAdapter<IdentityListAdapter.Entity, IdentityListAdapter.ViewHolder> {
-	private OnItemClickListener onItemClickListener;
-	private final Context context;
-	private final LayoutInflater inflater;
+    private OnItemClickListener onItemClickListener;
+    private final Context context;
+    private final LayoutInflater inflater;
 
-	public IdentityListAdapter(Context context) {
-		this.context = context;
-		this.inflater = LayoutInflater.from(context);
-	}
+    public IdentityListAdapter(Context context) {
+        this.context = context;
+        this.inflater = LayoutInflater.from(context);
+    }
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
-		public final TextView textView;
-		private Entity entity;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public final TextView textView;
+        private Entity entity;
 
-		public ViewHolder(View itemView) {
-			super(itemView);
-			textView = itemView.findViewById(android.R.id.text1);
-			textView.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (onItemClickListener != null) {
-						onItemClickListener.onItemClick(entity);
-					}
-				}
-			});
-		}
+        public ViewHolder(View itemView) {
+            super(itemView);
+            textView = itemView.findViewById(android.R.id.text1);
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onItemClickListener != null) {
+                        onItemClickListener.onItemClick(entity);
+                    }
+                }
+            });
+        }
 
-		public void bind(Entity entity) {
-			this.entity = entity;
-			this.textView.setText(entity.getText());
-		}
+        public void bind(Entity entity) {
+            this.entity = entity;
+            this.textView.setText(entity.getText());
+        }
 
-		@Override
-		public String toString() {
-			return "PlacesViewHolder{" + textView.getText() + "}";
-		}
-	}
+        @Override
+        public String toString() {
+            return "PlacesViewHolder{" + textView.getText() + "}";
+        }
+    }
 
-	@NonNull
-	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View itemView = inflater.inflate(android.R.layout.simple_list_item_activated_1, parent, false);
-		itemView.setClickable(true);
-		itemView.setBackgroundResource(R.drawable.listitem_background_selector);
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = inflater.inflate(android.R.layout.simple_list_item_activated_1, parent, false);
+        itemView.setClickable(true);
+        itemView.setBackgroundResource(R.drawable.listitem_background_selector);
 
-		return new ViewHolder(itemView);
-	}
+        return new ViewHolder(itemView);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-		Entity entity = data.get(position);
-		holder.bind(entity);
-		holder.itemView.setActivated(entity == getSelected());
-	}
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Entity entity = data.get(position);
+        holder.bind(entity);
+        holder.itemView.setActivated(entity == getSelected());
+    }
 
-	public void setOnItemClickListener(OnItemClickListener listener) {
-		onItemClickListener = listener;
-	}
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        onItemClickListener = listener;
+    }
 
-	public static class Entity {
-		private final String text;
+    public static class Entity {
+        private final String text;
 
-		public Entity(String title) {
-			text = title;
-		}
+        public Entity(String title) {
+            text = title;
+        }
 
-		public String getText() {
-			return text;
-		}
+        public String getText() {
+            return text;
+        }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
-			Entity entity = (Entity) o;
+            Entity entity = (Entity) o;
 
-			if (text != null ? !text.equals(entity.text) : entity.text != null) {
-				return false;
-			}
+            if (text != null ? !text.equals(entity.text) : entity.text != null) {
+                return false;
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		@Override
-		public int hashCode() {
-			return text != null ? text.hashCode() : 0;
-		}
-	}
+        @Override
+        public int hashCode() {
+            return text != null ? text.hashCode() : 0;
+        }
+    }
 
-	public interface OnItemClickListener {
-		void onItemClick(Entity entity);
-	}
+    public interface OnItemClickListener {
+        void onItemClick(Entity entity);
+    }
 }

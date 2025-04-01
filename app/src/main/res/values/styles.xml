@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools"
-           tools:ignore="NewApi">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="NewApi">
 
-	<style name="Threema.ActionMode" parent="@style/Widget.Material3.ActionMode">
-		<item name="background">?attr/colorSurface</item>
-		<item name="titleTextStyle">@style/Threema.ActionMode.TitleText</item>
-	</style>
+    <style name="Threema.ActionMode" parent="@style/Widget.Material3.ActionMode">
+        <item name="background">?attr/colorSurface</item>
+        <item name="titleTextStyle">@style/Threema.ActionMode.TitleText</item>
+    </style>
 
-	<style name="Threema.ActionMode.TitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
-		<item name="fontFamily">@font/lab_grotesque</item>
-		<item name="android:textColor">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.ActionMode.TitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="fontFamily">@font/lab_grotesque</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.ActionMode.CloseButton.Style" parent="@style/Widget.AppCompat.Light.ActionButton.CloseMode">
-		<item name="android:tint">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.ActionMode.CloseButton.Style" parent="@style/Widget.AppCompat.Light.ActionButton.CloseMode">
+        <item name="android:tint">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.ActionMode.StarredMessages" parent="@style/Threema.ActionMode">
-		<item name="height">88dp</item>
-	</style>
+    <style name="Threema.ActionMode.StarredMessages" parent="@style/Threema.ActionMode">
+        <item name="height">88dp</item>
+    </style>
 
     <style name="Threema.ActionOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:id">@id/action_overflow_button</item>
@@ -45,254 +44,254 @@
         <item name="android:lineHeight">16sp</item>
     </style>
 
-	<style name="Threema.Animation.None" parent="@android:style/Animation">
-		<item name="android:windowEnterAnimation">@null</item>
-		<item name="android:windowExitAnimation">@null</item>
-	</style>
+    <style name="Threema.Animation.None" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
 
-	<style name="Threema.Animation.ActivityTransitions" parent="@android:style/Animation.Activity">
-		<item name="android:activityOpenEnterAnimation">@anim/activity_open_enter</item>
-		<item name="android:activityOpenExitAnimation">@anim/activity_open_exit</item>
-		<item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
-		<item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
-	</style>
+    <style name="Threema.Animation.ActivityTransitions" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_open_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_open_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_close_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_close_exit</item>
+    </style>
 
-	<style name="Threema.ScrollView" parent="@android:style/Widget.ScrollView">
-		<item name="android:background">?android:attr/colorBackground</item>
-	</style>
+    <style name="Threema.ScrollView" parent="@android:style/Widget.ScrollView">
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Headline" parent="@style/TextAppearance.Material3.HeadlineSmall">
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.Headline" parent="@style/TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.TextAppearance.MediaViewer.Title" parent="@style/Threema.TextAppearance.Toolbar.Title">
-		<item name="android:textColor">@color/md_theme_dark_onSurface</item>
-	</style>
+    <style name="Threema.TextAppearance.MediaViewer.Title" parent="@style/Threema.TextAppearance.Toolbar.Title">
+        <item name="android:textColor">@color/md_theme_dark_onSurface</item>
+    </style>
 
-	<style name="Threema.TextAppearance.MediaViewer.SubTitle" parent="@style/Threema.TextAppearance.Toolbar.SubTitle">
-		<item name="android:textColor">@color/md_theme_dark_onSurface</item>
-	</style>
+    <style name="Threema.TextAppearance.MediaViewer.SubTitle" parent="@style/Threema.TextAppearance.Toolbar.SubTitle">
+        <item name="android:textColor">@color/md_theme_dark_onSurface</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Toolbar.Title" parent="@style/TextAppearance.Material3.ActionBar.Title">
-		<item name="android:textSize">21sp</item>
-		<item name="android:letterSpacing">0</item>
-		<item name="lineHeight">23sp</item>
-		<item name="android:lineHeight">23sp</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.Toolbar.Title" parent="@style/TextAppearance.Material3.ActionBar.Title">
+        <item name="android:textSize">21sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="lineHeight">23sp</item>
+        <item name="android:lineHeight">23sp</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Toolbar.SubTitle" parent="@style/TextAppearance.Material3.ActionBar.Subtitle">
-		<item name="android:letterSpacing">0</item>
-		<item name="android:textSize">14sp</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.Toolbar.SubTitle" parent="@style/TextAppearance.Material3.ActionBar.Subtitle">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.Text.Overline" parent="@style/TextAppearance.Material3.TitleMedium">
-		<item name="android:textColor">?attr/colorOnSurface</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="Threema.Text.Overline" parent="@style/TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Chip.ChatNotice" parent="@style/Threema.TextAppearance.BodyMedium">
-		<item name="android:letterSpacing">0</item>
-		<item name="android:textSize">@dimen/chip_text_size</item>
-	</style>
+    <style name="Threema.TextAppearance.Chip.ChatNotice" parent="@style/Threema.TextAppearance.BodyMedium">
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">@dimen/chip_text_size</item>
+    </style>
 
-	<style name="Threema.MaterialButton.CountView" parent="@style/Widget.Material3.Button">
-		<item name="shapeAppearance">@style/Threema.ShapeAppearance.CountView</item>
-		<item name="backgroundTint">@color/material_red</item>
-		<item name="android:textColor">@android:color/white</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-		<item name="android:letterSpacing">0</item>
-		<item name="android:gravity">center</item>
-		<item name="android:minWidth">24dp</item>
-		<item name="android:maxHeight">24dp</item>
-		<item name="android:height">24dp</item>
-		<item name="android:textSize">14dp</item> <!-- Don't use sp here! -->
-		<item name="android:clickable">false</item>
-		<item name="android:focusable">false</item>
-		<item name="android:paddingLeft">4dp</item>
-		<item name="android:paddingRight">4dp</item>
-		<item name="android:paddingTop">0dp</item>
-		<item name="android:paddingBottom">1dp</item>
-		<item name="android:insetTop">0dp</item>
-		<item name="android:insetBottom">0dp</item>
-		<item name="elevation">0dp</item>
-		<item name="iconSize">0dp</item>
-	</style>
+    <style name="Threema.MaterialButton.CountView" parent="@style/Widget.Material3.Button">
+        <item name="shapeAppearance">@style/Threema.ShapeAppearance.CountView</item>
+        <item name="backgroundTint">@color/material_red</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">24dp</item>
+        <item name="android:maxHeight">24dp</item>
+        <item name="android:height">24dp</item>
+        <item name="android:textSize">14dp</item> <!-- Don't use sp here! -->
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">1dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="elevation">0dp</item>
+        <item name="iconSize">0dp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.CountView" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">50%</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CountView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
-	<style name="Threema.Chip.MessageDetails" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="ensureMinTouchTargetSize">false</item>
-		<item name="chipMinTouchTargetSize">32dp</item>
-		<item name="textEndPadding">@dimen/chip_end_padding_text_only</item>
-		<item name="android:clickable">false</item>
-		<item name="android:focusable">false</item>
-	</style>
+    <style name="Threema.Chip.MessageDetails" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="chipMinTouchTargetSize">32dp</item>
+        <item name="textEndPadding">@dimen/chip_end_padding_text_only</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
 
-	<style name="Threema.Chip.ChatNotice.Overview" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
-		<item name="chipBackgroundColor">@android:color/transparent</item>
-		<item name="chipSurfaceColor">@android:color/transparent</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-		<item name="chipIconSize">26dp</item>
-		<item name="chipStrokeWidth">0dp</item>
-		<item name="closeIconVisible">false</item>
-		<item name="iconStartPadding">0dp</item>
-		<item name="iconEndPadding">0dp</item>
-		<item name="closeIconStartPadding">0dp</item>
-		<item name="closeIconEndPadding">0dp</item>
-		<item name="textStartPadding">6dp</item>
-		<item name="textEndPadding">0dp</item>
-	</style>
+    <style name="Threema.Chip.ChatNotice.Overview" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
+        <item name="chipBackgroundColor">@android:color/transparent</item>
+        <item name="chipSurfaceColor">@android:color/transparent</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="chipIconSize">26dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="closeIconVisible">false</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="closeIconStartPadding">0dp</item>
+        <item name="closeIconEndPadding">0dp</item>
+        <item name="textStartPadding">6dp</item>
+        <item name="textEndPadding">0dp</item>
+    </style>
 
-	<style name="Threema.Chip.ChatNotice.Overview.Intro" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
-		<item name="chipBackgroundColor">@android:color/transparent</item>
-		<item name="chipSurfaceColor">@android:color/transparent</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-		<item name="chipStartPadding">0dp</item>
-		<item name="chipEndPadding">0dp</item>
-		<item name="paddingStart">0dp</item>
-		<item name="paddingEnd">0dp</item>
-		<item name="chipStrokeWidth">0dp</item>
-		<item name="chipIconSize">0dp</item>
-		<item name="chipIconVisible">false</item>
-		<item name="closeIconVisible">true</item>
-		<item name="closeIcon">@drawable/ic_keyboard_arrow_right</item>
-		<item name="closeIconStartPadding">0dp</item>
-		<item name="iconStartPadding">0dp</item>
-		<item name="iconEndPadding">0dp</item>
-		<item name="textStartPadding">0dp</item>
-		<item name="textEndPadding">0dp</item>
-	</style>
+    <style name="Threema.Chip.ChatNotice.Overview.Intro" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
+        <item name="chipBackgroundColor">@android:color/transparent</item>
+        <item name="chipSurfaceColor">@android:color/transparent</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="chipStartPadding">0dp</item>
+        <item name="chipEndPadding">0dp</item>
+        <item name="paddingStart">0dp</item>
+        <item name="paddingEnd">0dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipIconSize">0dp</item>
+        <item name="chipIconVisible">false</item>
+        <item name="closeIconVisible">true</item>
+        <item name="closeIcon">@drawable/ic_keyboard_arrow_right</item>
+        <item name="closeIconStartPadding">0dp</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="textStartPadding">0dp</item>
+        <item name="textEndPadding">0dp</item>
+    </style>
 
-	<style name="Threema.Chip.Directory" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
-		<item name="chipStrokeWidth">0dp</item>
-		<item name="chipBackgroundColor">?attr/colorPrimaryContainer</item>
-		<item name="closeIconVisible">true</item>
-		<item name="closeIconTint">?attr/colorOnPrimaryContainer</item>
-		<item name="android:textColor">?attr/colorOnPrimaryContainer</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-		<item name="android:clickable">false</item>
-	</style>
+    <style name="Threema.Chip.Directory" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.ChatNotice</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipBackgroundColor">?attr/colorPrimaryContainer</item>
+        <item name="closeIconVisible">true</item>
+        <item name="closeIconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+        <item name="android:clickable">false</item>
+    </style>
 
-	<style name="Threema.SearchView" parent="@style/Widget.AppCompat.SearchView.ActionBar">
-		<item name="searchHintIcon">@null</item>
-		<item name="queryBackground">@null</item>
-		<item name="android:paddingStart">-16dp</item>
-		<item name="android:paddingLeft">-16dp</item>
-	</style>
+    <style name="Threema.SearchView" parent="@style/Widget.AppCompat.SearchView.ActionBar">
+        <item name="searchHintIcon">@null</item>
+        <item name="queryBackground">@null</item>
+        <item name="android:paddingStart">-16dp</item>
+        <item name="android:paddingLeft">-16dp</item>
+    </style>
 
-	<style name="Threema.AlertDialogStyle" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
+    <style name="Threema.AlertDialogStyle" parent="@style/ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="colorControlActivated">?attr/colorPrimary</item>
-	</style>
+    </style>
 
-	<style name="Threema.FingerprintAlertDialogStyle" parent="@style/Threema.AlertDialogStyle">
-		<item name="android:background">?attr/colorSurface</item>
-		<item name="android:dialogCornerRadius">@dimen/dialog_corner_radius</item>
-		<item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
-	</style>
+    <style name="Threema.FingerprintAlertDialogStyle" parent="@style/Threema.AlertDialogStyle">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:dialogCornerRadius">@dimen/dialog_corner_radius</item>
+        <item name="dialogCornerRadius">@dimen/dialog_corner_radius</item>
+    </style>
 
-	<style name="Threema.AlertDialog.ButtonStyle.Flush" parent="@style/Widget.Material3.Button.OutlinedButton">
-		<item name="android:layout_marginLeft">0dp</item>
-		<item name="android:layout_marginRight">0dp</item>
-		<item name="android:textAllCaps">false</item>
-		<item name="android:letterSpacing">0</item>
-		<item name="shapeAppearance">?attr/shapeAppearanceSmallComponent</item>
-		<item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Material3.Chip</item>
-	</style>
+    <style name="Threema.AlertDialog.ButtonStyle.Flush" parent="@style/Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="shapeAppearance">?attr/shapeAppearanceSmallComponent</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Material3.Chip</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.MediumComponent" parent="@style/ShapeAppearance.Material3.MediumComponent">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">@dimen/dialog_corner_radius</item>
-	</style>
+    <style name="Threema.ShapeAppearance.MediumComponent" parent="@style/ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/dialog_corner_radius</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.LargeComponent" parent="@style/ShapeAppearance.Material3.LargeComponent">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">16dp</item>
-	</style>
+    <style name="Threema.ShapeAppearance.LargeComponent" parent="@style/ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.SendMedia" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">@dimen/media_attach_button_radius</item>
-	</style>
+    <style name="Threema.ShapeAppearance.SendMedia" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/media_attach_button_radius</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.RecentlyAdded" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSizeBottomLeft">@dimen/recently_added_background_corner_size</item>
-		<item name="cornerSizeTopLeft">@dimen/recently_added_background_corner_size</item>
-		<item name="cornerSizeBottomRight">0dp</item>
-		<item name="cornerSizeTopRight">0dp</item>
-	</style>
+    <style name="Threema.ShapeAppearance.RecentlyAdded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomLeft">@dimen/recently_added_background_corner_size</item>
+        <item name="cornerSizeTopLeft">@dimen/recently_added_background_corner_size</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.DeleteMediaItem" parent="@style/ShapeAppearance.Material3.SmallComponent">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">50%</item>
-	</style>
+    <style name="Threema.ShapeAppearance.DeleteMediaItem" parent="@style/ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
-	<style name="Threema.ToolbarStyle" parent="@style/Widget.Material3.Toolbar">
-		<item name="titleTextAppearance">@style/Threema.TextAppearance.Toolbar.Title</item>
-		<item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
+    <style name="Threema.ToolbarStyle" parent="@style/Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/Threema.TextAppearance.Toolbar.Title</item>
+        <item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
         <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
-	</style>
+    </style>
 
-	<style name="Threema.ToolbarStyle.LocationPicker" parent="@style/Widget.Material3.Toolbar">
-		<item name="titleTextAppearance">@style/Threema.TextAppearance.Toolbar.Title</item>
-		<item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
-		<item name="titleTextColor">@color/md_theme_dark_onSurface</item>
-		<item name="subtitleTextColor">@color/md_theme_dark_onSurface</item>
+    <style name="Threema.ToolbarStyle.LocationPicker" parent="@style/Widget.Material3.Toolbar">
+        <item name="titleTextAppearance">@style/Threema.TextAppearance.Toolbar.Title</item>
+        <item name="subtitleTextAppearance">@style/Threema.TextAppearance.Toolbar.SubTitle</item>
+        <item name="titleTextColor">@color/md_theme_dark_onSurface</item>
+        <item name="subtitleTextColor">@color/md_theme_dark_onSurface</item>
         <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
-	</style>
+    </style>
 
-	<style name="Threema.ThemeOverlay.TransparentToolbar" parent="@style/ThemeOverlay.Material3.ActionBar">
-		<item name="background">@android:color/transparent</item>
-		<item name="windowActionBarOverlay">true</item>
+    <style name="Threema.ThemeOverlay.TransparentToolbar" parent="@style/ThemeOverlay.Material3.ActionBar">
+        <item name="background">@android:color/transparent</item>
+        <item name="windowActionBarOverlay">true</item>
         <item name="popupTheme">@style/Threema.PopupMenuStyle.Overflow</item>
-	</style>
+    </style>
 
-	<style name="Threema.Material.Header.Text" parent="@style/TextAppearance.MaterialComponents.Button">
-		<item name="android:textColor">?attr/colorPrimary</item>
-		<item name="android:textSize">@dimen/blue_header_text_size</item>
-		<item name="android:singleLine">true</item>
-	</style>
+    <style name="Threema.Material.Header.Text" parent="@style/TextAppearance.MaterialComponents.Button">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textSize">@dimen/blue_header_text_size</item>
+        <item name="android:singleLine">true</item>
+    </style>
 
-	<style name="Threema.Material.Header.Big.Text" parent="@style/TextAppearance.MaterialComponents.Button">
-		<item name="android:textColor">?attr/colorPrimary</item>
-		<item name="android:textSize">@dimen/blue_header_text_big_size</item>
-		<item name="android:singleLine">true</item>
-	</style>
+    <style name="Threema.Material.Header.Big.Text" parent="@style/TextAppearance.MaterialComponents.Button">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textSize">@dimen/blue_header_text_big_size</item>
+        <item name="android:singleLine">true</item>
+    </style>
 
-	<!-- text styles for bubbles; these styles scale according to the font size setting in the app's prefs -->
-	<style name="Threema.Bubble.Text.Body" parent="Threema.Bubble.Text.Body.Unscaled">
-		<item name="android:textSize">?attr/font_large</item>
-	</style>
+    <!-- text styles for bubbles; these styles scale according to the font size setting in the app's prefs -->
+    <style name="Threema.Bubble.Text.Body" parent="Threema.Bubble.Text.Body.Unscaled">
+        <item name="android:textSize">?attr/font_large</item>
+    </style>
 
-	<style name="Threema.Bubble.Text.Body.Unscaled" parent="">
-		<item name="fontFamily">sans-serif</item>
-		<item name="android:fontFamily">sans-serif</item>
-		<item name="android:textStyle">normal</item>
-		<item name="android:textSize">16sp</item>
-		<item name="android:letterSpacing">0.0</item>
-		<item name="android:textAllCaps">false</item>
-		<item name="android:textColorHint">?android:attr/textColorHint</item>
-		<item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
-		<item name="android:textColorLink">@color/bubble_text_link_colorstatelist</item>
-	</style>
+    <style name="Threema.Bubble.Text.Body.Unscaled" parent="">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:letterSpacing">0.0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColorHint">?android:attr/textColorHint</item>
+        <item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
+        <item name="android:textColorLink">@color/bubble_text_link_colorstatelist</item>
+    </style>
 
-	<style name="Threema.Bubble.Text.Body.Small" parent="@style/Threema.Bubble.Text.Body">
-		<item name="android:textSize">?attr/font_medium</item>
-	</style>
+    <style name="Threema.Bubble.Text.Body.Small" parent="@style/Threema.Bubble.Text.Body">
+        <item name="android:textSize">?attr/font_medium</item>
+    </style>
 
-	<style name="Threema.Bubble.Text.Footer" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:textSize">?attr/font_medium</item>
-		<item name="android:letterSpacing">0.012</item>
-	</style>
+    <style name="Threema.Bubble.Text.Footer" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">?attr/font_medium</item>
+        <item name="android:letterSpacing">0.012</item>
+    </style>
 
     <style name="Threema.Bubble.Text.Footer.Deleted" parent="Threema.Bubble.Text.Footer">
         <item name="android:textColor">@color/bubble_text_deleted_colorstatelist</item>
@@ -305,314 +304,313 @@
 
     <style name="Threema.Bubble.Text.Body.HistoryNoCaption" parent="@style/Threema.Bubble.Text.Body.Deleted" />
 
-	<style name="Threema.Bubble.Text.Body.Status" parent="">
-		<item name="fontFamily">@font/lab_grotesque</item>
-		<item name="android:textColor">@color/bubble_text_status_colorstatelist</item>
-		<item name="android:textSize">?attr/font_status</item>
-		<item name="android:letterSpacing">0.012</item>
-	</style>
-	<!-- end of bubble text styles -->
+    <style name="Threema.Bubble.Text.Body.Status" parent="">
+        <item name="fontFamily">@font/lab_grotesque</item>
+        <item name="android:textColor">@color/bubble_text_status_colorstatelist</item>
+        <item name="android:textSize">?attr/font_status</item>
+        <item name="android:letterSpacing">0.012</item>
+    </style>
+    <!-- end of bubble text styles -->
 
-	<style name="Threema.TextAppearance.BodyLarge" parent="@style/TextAppearance.Material3.BodyLarge">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="lineHeight">21sp</item>
-		<item name="android:lineHeight">21sp</item>
-	</style>
+    <style name="Threema.TextAppearance.BodyLarge" parent="@style/TextAppearance.Material3.BodyLarge">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">21sp</item>
+        <item name="android:lineHeight">21sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.BodyMedium" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="lineHeight">17sp</item>
-		<item name="android:lineHeight">17sp</item>
-	</style>
+    <style name="Threema.TextAppearance.BodyMedium" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">17sp</item>
+        <item name="android:lineHeight">17sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.BodySmall" parent="@style/TextAppearance.Material3.BodySmall">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="lineHeight">14sp</item>
-		<item name="android:lineHeight">14sp</item>
-	</style>
+    <style name="Threema.TextAppearance.BodySmall" parent="@style/TextAppearance.Material3.BodySmall">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">14sp</item>
+        <item name="android:lineHeight">14sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Title" parent="@style/TextAppearance.Material3.HeadlineMedium">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="android:textSize">28sp</item>
-		<item name="lineHeight">32sp</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.Title" parent="@style/TextAppearance.Material3.HeadlineMedium">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textSize">28sp</item>
+        <item name="lineHeight">32sp</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Subtitle" parent="@style/TextAppearance.Material3.TitleMedium">
-		<item name="android:letterSpacing">0.01</item>
-	</style>
+    <style name="Threema.TextAppearance.Subtitle" parent="@style/TextAppearance.Material3.TitleMedium">
+        <item name="android:letterSpacing">0.01</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.FirstLine" parent="@style/Threema.TextAppearance.BodyLarge">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="android:textSize">18sp</item>
-		<item name="lineHeight">24sp</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.List.FirstLine" parent="@style/Threema.TextAppearance.BodyLarge">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textSize">18sp</item>
+        <item name="lineHeight">24sp</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.FirstLine.Bold" parent="Threema.TextAppearance.List.FirstLine">
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="Threema.TextAppearance.List.FirstLine.Bold" parent="Threema.TextAppearance.List.FirstLine">
+        <item name="android:textStyle">bold</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.SecondLine" parent="@style/Threema.TextAppearance.BodyMedium">
-	</style>
+    <style name="Threema.TextAppearance.List.SecondLine" parent="@style/Threema.TextAppearance.BodyMedium"></style>
 
-	<style name="Threema.TextAppearance.List.SecondLine.Bold" parent="@style/Threema.TextAppearance.List.SecondLine">
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="Threema.TextAppearance.List.SecondLine.Bold" parent="@style/Threema.TextAppearance.List.SecondLine">
+        <item name="android:textStyle">bold</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.SecondLine.Light" parent="@style/Threema.TextAppearance.List.SecondLine">
-		<item name="android:fontFamily">sans-serif-light</item>
-	</style>
+    <style name="Threema.TextAppearance.List.SecondLine.Light" parent="@style/Threema.TextAppearance.List.SecondLine">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.SecondLine.Accent" parent="@style/Threema.TextAppearance.List.SecondLine">
-		<item name="android:textColor">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.TextAppearance.List.SecondLine.Accent" parent="@style/Threema.TextAppearance.List.SecondLine">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.ThirdLine" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:textSize">12sp</item>
-		<item name="android:textAllCaps">false</item>
-		<item name="android:textColor">?attr/colorOnSurface</item>
-	</style>
+    <style name="Threema.TextAppearance.List.ThirdLine" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.ThirdLine.Red" parent="@style/Threema.TextAppearance.List.ThirdLine">
-		<item name="android:textColor">@color/material_red</item>
-		<item name="android:textAllCaps">true</item>
-	</style>
+    <style name="Threema.TextAppearance.List.ThirdLine.Red" parent="@style/Threema.TextAppearance.List.ThirdLine">
+        <item name="android:textColor">@color/material_red</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 
-	<style name="Threema.TextAppearance.List.ThirdLine.Bold" parent="@style/Threema.TextAppearance.List.ThirdLine">
-		<item name="android:textColor">?attr/colorOnBackground</item>
-		<item name="android:textAllCaps">true</item>
-	</style>
+    <style name="Threema.TextAppearance.List.ThirdLine.Bold" parent="@style/Threema.TextAppearance.List.ThirdLine">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Emptyview" parent="@style/Threema.TextAppearance.Subtitle">
-		<item name="fontFamily">@font/lab_grotesque</item>
-		<item name="android:textSize">18sp</item>
-	</style>
+    <style name="Threema.TextAppearance.Emptyview" parent="@style/Threema.TextAppearance.Subtitle">
+        <item name="fontFamily">@font/lab_grotesque</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.SwitchHeader" parent="@style/TextAppearance.Material3.TitleLarge">
-		<item name="android:textSize">19sp</item>
-	</style>
+    <style name="Threema.TextAppearance.SwitchHeader" parent="@style/TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">19sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Chip" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:letterSpacing">0.01</item>
-	</style>
+    <style name="Threema.TextAppearance.Chip" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:letterSpacing">0.01</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Chip.VideoTranscoder" parent="@style/Threema.TextAppearance.Chip">
-		<item name="android:textSize">14sp</item>
-		<item name="android:fontFamily">sans-serif-condensed</item>
-		<item name="android:letterSpacing">0</item>
-	</style>
+    <style name="Threema.TextAppearance.Chip.VideoTranscoder" parent="@style/Threema.TextAppearance.Chip">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
-	<style name="Threema.TextAppearance.PublicKey" parent="@android:style/TextAppearance.Large">
-		<item name="android:fontFamily">monospace</item>
-		<item name="android:typeface">monospace</item>
-		<item name="android:textSize">24sp</item>
-		<item name="android:letterSpacing">0.2</item>
-	</style>
+    <style name="Threema.TextAppearance.PublicKey" parent="@android:style/TextAppearance.Large">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:letterSpacing">0.2</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Monospace.Large" parent="@android:style/TextAppearance.Large">
-		<item name="android:fontFamily">monospace</item>
-		<item name="android:typeface">monospace</item>
-		<item name="android:textSize">18sp</item>
-		<item name="lineHeight">24sp</item>
-		<item name="android:lineHeight">24sp</item>
-		<item name="android:letterSpacing">0.02</item>
-	</style>
+    <style name="Threema.TextAppearance.Monospace.Large" parent="@android:style/TextAppearance.Large">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textSize">18sp</item>
+        <item name="lineHeight">24sp</item>
+        <item name="android:lineHeight">24sp</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Dialog" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-		<item name="android:textSize">14sp</item>
-		<item name="android:letterSpacing">0.01</item>
-		<item name="lineHeight">18sp</item>
-		<item name="android:lineHeight">18sp</item>
-	</style>
+    <style name="Threema.TextAppearance.Dialog" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="lineHeight">18sp</item>
+        <item name="android:lineHeight">18sp</item>
+    </style>
 
-	<style name="Threema.Dialog.Wizard" parent="@style/Theme.Material3.Dark.Dialog.Alert">
-		<item name="colorSurface">@color/md_theme_dark_surface</item>
-		<item name="colorAccent">@color/md_theme_dark_primary</item>
-		<item name="colorPrimary">@color/md_theme_dark_primary</item>
-		<item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
-		<item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
-		<item name="colorOutline">@color/md_theme_dark_outline</item>
-		<item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
-		<item name="elevationOverlayColor">@color/md_theme_dark_outline</item>
-	</style>
+    <style name="Threema.Dialog.Wizard" parent="@style/Theme.Material3.Dark.Dialog.Alert">
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorAccent">@color/md_theme_dark_primary</item>
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
+        <item name="elevationOverlayColor">@color/md_theme_dark_outline</item>
+    </style>
 
-	<!-- Conversation bubble font sizes -->
-	<style name="FontStyle">
-	</style>
-	<style name="FontStyle.Normal">
-		<item name="font_small">10sp</item>
-		<item name="font_medium">12sp</item>
-		<item name="font_large">16sp</item>
-		<item name="font_status">14sp</item>
-		<item name="font_textentry">18sp</item>
-	</style>
+    <!-- Conversation bubble font sizes -->
+    <style name="FontStyle"></style>
 
-	<style name="FontStyle.Large">
-		<item name="font_small">12sp</item>
-		<item name="font_medium">14sp</item>
-		<item name="font_large">20sp</item>
-		<item name="font_status">16sp</item>
-		<item name="font_textentry">20sp</item>
-	</style>
+    <style name="FontStyle.Normal">
+        <item name="font_small">10sp</item>
+        <item name="font_medium">12sp</item>
+        <item name="font_large">16sp</item>
+        <item name="font_status">14sp</item>
+        <item name="font_textentry">18sp</item>
+    </style>
 
-	<style name="FontStyle.XLarge">
-		<item name="font_small">14sp</item>
-		<item name="font_medium">16sp</item>
-		<item name="font_large">26sp</item>
-		<item name="font_status">18sp</item>
-		<item name="font_textentry">26sp</item>
-	</style>
+    <style name="FontStyle.Large">
+        <item name="font_small">12sp</item>
+        <item name="font_medium">14sp</item>
+        <item name="font_large">20sp</item>
+        <item name="font_status">16sp</item>
+        <item name="font_textentry">20sp</item>
+    </style>
 
-	<style name="MediaAttachButtonLabel">
-		<item name="android:textColor">?attr/colorOnSurface</item>
-		<item name="android:textSize">13sp</item>
-	</style>
+    <style name="FontStyle.XLarge">
+        <item name="font_small">14sp</item>
+        <item name="font_medium">16sp</item>
+        <item name="font_large">26sp</item>
+        <item name="font_status">18sp</item>
+        <item name="font_textentry">26sp</item>
+    </style>
 
-	<!-- wizard -->
-	<style name="WizardButton" parent="android:style/Widget.Button">
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:minHeight">@dimen/wizard_button_height</item>
-		<item name="android:background">@drawable/selector_button_green</item>
-		<item name="android:textColor">@color/wizard_button_text_inverse</item>
-		<item name="android:textSize">@dimen/wizard_button_text_size</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textAllCaps">false</item>
-		<item name="android:paddingLeft">16dp</item>
-		<item name="android:paddingRight">16dp</item>
-		<item name="android:paddingTop">4dp</item>
-		<item name="android:paddingBottom">4dp</item>
-	</style>
+    <style name="MediaAttachButtonLabel">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">13sp</item>
+    </style>
 
-	<style name="WizardButtonRegular" parent="WizardButton">
-		<item name="android:background">@drawable/selector_button_green</item>
-		<item name="android:textColor">@color/wizard_button_text_inverse</item>
+    <!-- wizard -->
+    <style name="WizardButton" parent="android:style/Widget.Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/wizard_button_height</item>
+        <item name="android:background">@drawable/selector_button_green</item>
+        <item name="android:textColor">@color/wizard_button_text_inverse</item>
         <item name="android:textSize">@dimen/wizard_button_text_size</item>
-	</style>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
 
-	<style name="WizardButtonInverse" parent="WizardButton">
-		<item name="android:background">@drawable/selector_button_green_inverse</item>
-		<item name="android:textColor">@color/wizard_button_text</item>
-	</style>
+    <style name="WizardButtonRegular" parent="WizardButton">
+        <item name="android:background">@drawable/selector_button_green</item>
+        <item name="android:textColor">@color/wizard_button_text_inverse</item>
+        <item name="android:textSize">@dimen/wizard_button_text_size</item>
+    </style>
 
-	<style name="WizardTitleText">
-		<item name="android:textAlignment">center</item>
-		<item name="android:fontFamily">@font/lab_grotesque</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:textSize">@dimen/wizard_title_text_size</item>
-		<item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
-		<item name="android:textColor">@color/wizard_color_text_on_primary</item>
-		<item name="android:textColorHint">?android:attr/textColorHint</item>
-		<item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
-		<item name="android:textColorLink">@color/wizard_color_accent</item>
-	</style>
+    <style name="WizardButtonInverse" parent="WizardButton">
+        <item name="android:background">@drawable/selector_button_green_inverse</item>
+        <item name="android:textColor">@color/wizard_button_text</item>
+    </style>
 
-	<style name="WizardSubTitleText" parent="@style/WizardTitleText">
-		<item name="android:layout_marginTop">0dp</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textStyle">normal</item>
-		<item name="android:textSize">@dimen/wizard_subtitle_text_size</item>
-	</style>
+    <style name="WizardTitleText">
+        <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">@font/lab_grotesque</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/wizard_title_text_size</item>
+        <item name="android:layout_marginTop">@dimen/wizard_title_text_margin_top</item>
+        <item name="android:textColor">@color/wizard_color_text_on_primary</item>
+        <item name="android:textColorHint">?android:attr/textColorHint</item>
+        <item name="android:textColorHighlight">?android:attr/textColorHighlight</item>
+        <item name="android:textColorLink">@color/wizard_color_accent</item>
+    </style>
 
-	<style name="WizardDialogTitleText" parent="@style/WizardSubTitleText">
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="WizardSubTitleText" parent="@style/WizardTitleText">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">@dimen/wizard_subtitle_text_size</item>
+    </style>
 
-	<style name="WizardSmallText" parent="@style/WizardSubTitleText">
-		<item name="android:textSize">@dimen/wizard_small_text_size</item>
-	</style>
+    <style name="WizardDialogTitleText" parent="@style/WizardSubTitleText">
+        <item name="android:textStyle">bold</item>
+    </style>
 
-	<style name="WizardMediumText" parent="@style/WizardSubTitleText">
-		<item name="android:textSize">@dimen/wizard_medium_text_size</item>
-	</style>
+    <style name="WizardSmallText" parent="@style/WizardSubTitleText">
+        <item name="android:textSize">@dimen/wizard_small_text_size</item>
+    </style>
 
-	<style name="WizardSummaryTitleText" parent="@style/WizardSubTitleText">
-		<item name="android:textColor">?attr/colorOnSurface</item>
-		<item name="android:textSize">@dimen/wizard_summary_title_text_size</item>
-	</style>
+    <style name="WizardMediumText" parent="@style/WizardSubTitleText">
+        <item name="android:textSize">@dimen/wizard_medium_text_size</item>
+    </style>
 
-	<style name="WizardSummaryBodyText" parent="@style/WizardSubTitleText">
-		<item name="android:textColor">?attr/colorOnBackground</item>
-		<item name="android:textSize">@dimen/wizard_summary_body_text_size</item>
-	</style>
+    <style name="WizardSummaryTitleText" parent="@style/WizardSubTitleText">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">@dimen/wizard_summary_title_text_size</item>
+    </style>
+
+    <style name="WizardSummaryBodyText" parent="@style/WizardSubTitleText">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textSize">@dimen/wizard_summary_body_text_size</item>
+    </style>
 
     <style name="WorkIntroSubTitleText" parent="@style/WizardSubTitleText">
         <item name="android:lineHeight">21sp</item>
     </style>
 
-	<style name="WizardEditTextIcon">
-		<item name="android:height">@dimen/wizard_default_view_height</item>
-		<item name="android:width">@dimen/wizard_default_view_height</item>
-		<item name="android:background">@drawable/shape_edittext_icon</item>
-		<item name="android:gravity">center</item>
-		<item name="android:scaleType">center</item>
-		<item name="android:tint">@android:color/white</item>
-	</style>
+    <style name="WizardEditTextIcon">
+        <item name="android:height">@dimen/wizard_default_view_height</item>
+        <item name="android:width">@dimen/wizard_default_view_height</item>
+        <item name="android:background">@drawable/shape_edittext_icon</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:tint">@android:color/white</item>
+    </style>
 
-	<style name="WizardEditText">
-		<item name="android:height">@dimen/wizard_default_view_height</item>
-		<item name="android:padding">@dimen/wizard_edittext_padding</item>
-		<item name="android:background">@drawable/wizard_edittext_shape_selector</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
-		<item name="android:textColor">@drawable/wizard_edittext_selector</item>
-	</style>
+    <style name="WizardEditText">
+        <item name="android:height">@dimen/wizard_default_view_height</item>
+        <item name="android:padding">@dimen/wizard_edittext_padding</item>
+        <item name="android:background">@drawable/wizard_edittext_shape_selector</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/wizard_edittext_text_size</item>
+        <item name="android:textColor">@drawable/wizard_edittext_selector</item>
+    </style>
 
-	<style name="WizardHintedEditText">
-		<item name="android:height">@dimen/wizard_hinted_edittext_height</item>
-		<item name="android:paddingTop">@dimen/wizard_hinted_edittext_padding_top</item>
-		<item name="android:paddingLeft">@dimen/wizard_edittext_padding</item>
-		<item name="android:paddingRight">@dimen/wizard_edittext_padding</item>
-		<item name="android:paddingBottom">@dimen/wizard_edittext_padding</item>
-		<item name="android:background">@drawable/wizard_hinted_edittext_layerlist</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
-		<item name="android:textColor">@drawable/wizard_edittext_selector</item>
-	</style>
+    <style name="WizardHintedEditText">
+        <item name="android:height">@dimen/wizard_hinted_edittext_height</item>
+        <item name="android:paddingTop">@dimen/wizard_hinted_edittext_padding_top</item>
+        <item name="android:paddingLeft">@dimen/wizard_edittext_padding</item>
+        <item name="android:paddingRight">@dimen/wizard_edittext_padding</item>
+        <item name="android:paddingBottom">@dimen/wizard_edittext_padding</item>
+        <item name="android:background">@drawable/wizard_hinted_edittext_layerlist</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/wizard_edittext_text_size</item>
+        <item name="android:textColor">@drawable/wizard_edittext_selector</item>
+    </style>
 
-	<style name="WizardSwitch">
-		<item name="android:height">48dp</item>
-		<item name="android:paddingLeft">16dp</item>
-		<item name="android:paddingRight">16dp</item>
-		<item name="android:background">@drawable/shape_switch</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">@dimen/wizard_button_text_size</item>
-	</style>
+    <style name="WizardSwitch">
+        <item name="android:height">48dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:background">@drawable/shape_switch</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/wizard_button_text_size</item>
+    </style>
 
-	<style name="WizardSwitchSmallText">
-		<item name="android:height">48dp</item>
-		<item name="android:paddingLeft">16dp</item>
-		<item name="android:paddingRight">16dp</item>
-		<item name="android:background">@drawable/shape_switch</item>
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">@dimen/wizard_small_text_size</item>
-	</style>
+    <style name="WizardSwitchSmallText">
+        <item name="android:height">48dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:background">@drawable/shape_switch</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/wizard_small_text_size</item>
+    </style>
 
-	<style name="WizardSpinner" parent="Widget.AppCompat.Spinner">
-		<item name="android:background">@drawable/shape_spinner</item>
-		<item name="android:textSize">@dimen/wizard_small_text_size</item>
-	</style>
+    <style name="WizardSpinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/shape_spinner</item>
+        <item name="android:textSize">@dimen/wizard_small_text_size</item>
+    </style>
 
-	<style name="WizardSpinnerItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
-		<item name="dropdownListPreferredItemHeight">@dimen/wizard_button_height</item>
-		<item name="android:textSize">@dimen/wizard_small_text_size</item>
-	</style>
+    <style name="WizardSpinnerItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="dropdownListPreferredItemHeight">@dimen/wizard_button_height</item>
+        <item name="android:textSize">@dimen/wizard_small_text_size</item>
+    </style>
 
-	<style name="WizardHintTextAppearance" parent="@android:style/TextAppearance">
-		<item name="android:fontFamily">sans-serif-light</item>
-		<item name="android:textSize">@dimen/wizard_edittext_text_size</item>
-	</style>
+    <style name="WizardHintTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textSize">@dimen/wizard_edittext_text_size</item>
+    </style>
 
-	<style name="NoHintTextAppearance" parent="@android:style/TextAppearance">
-		<item name="android:textColor">@android:color/transparent</item>
-		<item name="android:textSize">0sp</item>
-	</style>
+    <style name="NoHintTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textSize">0sp</item>
+    </style>
 
-	<style name="TooltipAnimation">
-		<item name="android:windowEnterAnimation">@anim/medium_fade_in</item>
-		<item name="android:windowExitAnimation">@anim/medium_fade_out</item>
-	</style>
+    <style name="TooltipAnimation">
+        <item name="android:windowEnterAnimation">@anim/medium_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/medium_fade_out</item>
+    </style>
 
     <style name="Threema_Animation_QuotePopup">
         <item name="android:windowEnterAnimation">@anim/quote_slide_up</item>
@@ -620,628 +618,639 @@
     </style>
 
     <style name="DateSeparatorText" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:fontFamily">@font/lab_grotesque</item>
-		<item name="android:textStyle">normal</item>
-		<item name="android:textColor">@color/date_separator_text_color</item>
-		<item name="android:textSize">?attr/font_medium</item>
-		<item name="android:textAllCaps">true</item>
-	</style>
+        <item name="android:fontFamily">@font/lab_grotesque</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/date_separator_text_color</item>
+        <item name="android:textSize">?attr/font_medium</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 
-	<style name="Threema.BadgeStyle" parent="@style/Widget.Material3.Badge">
-		<item name="backgroundColor">@color/messagelist_highlight_color</item>
-		<item name="badgeTextColor">@android:color/white</item>
-	</style>
+    <style name="Threema.BadgeStyle" parent="@style/Widget.Material3.Badge">
+        <item name="backgroundColor">@color/messagelist_highlight_color</item>
+        <item name="badgeTextColor">@android:color/white</item>
+    </style>
 
-	<style name="Threema.Badge.Compose.TextAppearance" parent="@style/TextAppearance.Material3.LabelSmall">
-		<item name="android:textSize">16dp</item>
-	</style>
+    <style name="Threema.Badge.Compose.TextAppearance" parent="@style/TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">16dp</item>
+    </style>
 
-	<style name="Threema.Badge.Compose" parent="@style/Widget.MaterialComponents.Badge">
-		<item name="badgeTextAppearance">@style/Threema.Badge.Compose.TextAppearance</item>
-		<item name="badgeTextColor">@android:color/white</item>
-		<item name="backgroundColor">@color/material_red</item>
-		<item name="badgeWithTextWidth">20dp</item>
-		<item name="badgeWithTextHeight">20dp</item>
-		<item name="offsetAlignmentMode">legacy</item>
-		<item name="badgeGravity">TOP_START</item>
-	</style>
+    <style name="Threema.Badge.Compose" parent="@style/Widget.MaterialComponents.Badge">
+        <item name="badgeTextAppearance">@style/Threema.Badge.Compose.TextAppearance</item>
+        <item name="badgeTextColor">@android:color/white</item>
+        <item name="backgroundColor">@color/material_red</item>
+        <item name="badgeWithTextWidth">20dp</item>
+        <item name="badgeWithTextHeight">20dp</item>
+        <item name="offsetAlignmentMode">legacy</item>
+        <item name="badgeGravity">TOP_START</item>
+    </style>
 
-	<style name="Threema.BottomNavigationView" parent="@style/Widget.Material3.BottomNavigationView">
-		<item name="itemPaddingTop">8dp</item>
-		<item name="itemPaddingBottom">12dp</item>
-		<item name="labelVisibilityMode">labeled</item>
-		<item name="android:minHeight">72dp</item>
-		<item name="itemActiveIndicatorStyle">@style/Threema.BottomNavigationView.ActiveIndicator</item>
-		<item name="theme">@style/Threema.ThemeOverlay.BottomNavigation</item>
-	</style>
+    <style name="Threema.BottomNavigationView" parent="@style/Widget.Material3.BottomNavigationView">
+        <item name="itemPaddingTop">8dp</item>
+        <item name="itemPaddingBottom">12dp</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="android:minHeight">72dp</item>
+        <item name="itemActiveIndicatorStyle">@style/Threema.BottomNavigationView.ActiveIndicator
+        </item>
+        <item name="theme">@style/Threema.ThemeOverlay.BottomNavigation</item>
+    </style>
 
-	<style name="Threema.BottomNavigationView.ActiveIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
-		<item name="android:color">?attr/colorPrimaryContainer</item>
-	</style>
+    <style name="Threema.BottomNavigationView.ActiveIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorPrimaryContainer</item>
+    </style>
 
-	<style name="Threema.BottomSheetStyle" parent="@style/Widget.Material3.BottomSheet.Modal">
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearanceOverlay.BottomSheetDialog</item>
-	</style>
+    <style name="Threema.BottomSheetStyle" parent="@style/Widget.Material3.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">
+            @style/Threema.ShapeAppearanceOverlay.BottomSheetDialog
+        </item>
+    </style>
 
-	<style name="Threema.BottomSheetDialog" parent="@style/ThemeOverlay.Material3.BottomSheetDialog">
-		<item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
-		<item name="android:navigationBarColor">@android:color/transparent</item>
-	</style>
+    <style name="Threema.BottomSheetDialog" parent="@style/ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 
-	<style name="Threema.ShapeAppearanceOverlay.BottomSheetDialog" parent="">
-		<item name="cornerSize">0dp</item>
-		<item name="cornerFamilyTopLeft">rounded</item>
-		<item name="cornerSizeTopLeft">@dimen/bottomsheet_corner_size</item>
-		<item name="cornerSizeTopRight">@dimen/bottomsheet_corner_size</item>
-	</style>
+    <style name="Threema.ShapeAppearanceOverlay.BottomSheetDialog" parent="">
+        <item name="cornerSize">0dp</item>
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/bottomsheet_corner_size</item>
+        <item name="cornerSizeTopRight">@dimen/bottomsheet_corner_size</item>
+    </style>
 
-	<style name="Threema.BottomSheet.DragHandle" parent="@style/Widget.Material3.BottomSheet.DragHandle">
-		<item name="android:paddingBottom">0dp</item>
-		<item name="android:paddingTop">0dp</item>
-		<item name="android:minHeight">@dimen/drag_handle_height</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-	</style>
+    <style name="Threema.BottomSheet.DragHandle" parent="@style/Widget.Material3.BottomSheet.DragHandle">
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:minHeight">@dimen/drag_handle_height</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
 
-	<!-- default borderless button style used in dialogs etc. -->
-	<style name="Threema.MaterialButtonStyle" parent="@style/Widget.Material3.Button">
-		<item name="backgroundTint">?attr/colorPrimary</item>
-		<item name="android:textAllCaps">false</item>
-		<item name="android:letterSpacing">0</item>
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-	</style>
+    <!-- default borderless button style used in dialogs etc. -->
+    <style name="Threema.MaterialButtonStyle" parent="@style/Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Minimal" parent="@style/Widget.Material3.Button.IconButton">
-		<item name="android:paddingLeft">8dp</item>
-		<item name="android:paddingRight">8dp</item>
-		<item name="android:paddingTop">8dp</item>
-		<item name="android:paddingBottom">8dp</item>
-		<item name="android:padding">8dp</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-	</style>
+    <style name="Threema.MaterialButton.Minimal" parent="@style/Widget.Material3.Button.IconButton">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Minimal.SmallPadding" parent="@style/Widget.Material3.Button.IconButton">
-		<item name="android:paddingLeft">0dp</item>
-		<item name="android:paddingRight">0dp</item>
-		<item name="android:paddingTop">0dp</item>
-		<item name="android:paddingBottom">0dp</item>
-		<item name="android:padding">0dp</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-	</style>
+    <style name="Threema.MaterialButton.Minimal.SmallPadding" parent="@style/Widget.Material3.Button.IconButton">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Borderless.Flush" parent="@style/Threema.MaterialButton.Action.Outline">
-		<item name="strokeWidth">0dp</item>
-		<item name="android:paddingLeft">4dp</item>
-		<item name="android:paddingRight">4dp</item>
-		<item name="minWidth">0dp</item>
-		<item name="android:minWidth">0dp</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-	</style>
+    <style name="Threema.MaterialButton.Borderless.Flush" parent="@style/Threema.MaterialButton.Action.Outline">
+        <item name="strokeWidth">0dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="minWidth">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
-		<item name="android:textColor">@color/wizard_color_accent</item>
-	</style>
+    <style name="Threema.MaterialButton.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/wizard_color_accent</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Fatal" parent="@style/Widget.Material3.Button">
-		<item name="android:textColor">@android:color/white</item>
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="backgroundColor">@color/material_red</item>
-		<item name="android:backgroundTint">@color/material_red</item>
-	</style>
+    <style name="Threema.MaterialButton.Fatal" parent="@style/Widget.Material3.Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="backgroundColor">@color/material_red</item>
+        <item name="android:backgroundTint">@color/material_red</item>
+    </style>
 
-	<!-- action button with text and optional icon -->
-	<style name="Threema.MaterialButton.Action" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="android:backgroundTint">?attr/colorPrimaryContainer</item>
-		<item name="iconTint">?attr/colorOnPrimaryContainer</item>
-		<item name="android:textColor">?attr/colorOnPrimaryContainer</item>
-		<item name="android:paddingLeft">14dp</item>
-		<item name="android:paddingRight">11dp</item>
-		<item name="iconPadding">8dp</item>
-		<item name="android:minWidth">80dp</item>
-	</style>
+    <!-- action button with text and optional icon -->
+    <style name="Threema.MaterialButton.Action" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="android:backgroundTint">?attr/colorPrimaryContainer</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+        <item name="android:paddingLeft">14dp</item>
+        <item name="android:paddingRight">11dp</item>
+        <item name="iconPadding">8dp</item>
+        <item name="android:minWidth">80dp</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Action.Outline" parent="@style/Widget.Material3.Button.OutlinedButton">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="android:backgroundTint">?attr/colorSurface</item>
-		<item name="backgroundColor">?attr/colorSurface</item>
-		<item name="rippleColor">@color/m3_chip_ripple_color</item>
-	</style>
+    <style name="Threema.MaterialButton.Action.Outline" parent="@style/Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="android:backgroundTint">?attr/colorSurface</item>
+        <item name="backgroundColor">?attr/colorSurface</item>
+        <item name="rippleColor">@color/m3_chip_ripple_color</item>
+    </style>
 
-	<!-- unclickable outline "button" -->
-	<style name="Threema.MaterialButton.Action.Outline.Info" parent="@style/Widget.Material3.Button.OutlinedButton">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="android:textColor">?attr/colorOnBackground</item>
-		<item name="android:clickable">false</item>
-		<item name="android:focusable">false</item>
-	</style>
+    <!-- unclickable outline "button" -->
+    <style name="Threema.MaterialButton.Action.Outline.Info" parent="@style/Widget.Material3.Button.OutlinedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
 
-	<!-- square button with icon only -->
-	<style name="Threema.MaterialButton.Icon" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="backgroundColor">?attr/colorPrimaryContainer</item>
-		<item name="iconTint">?attr/colorOnPrimaryContainer</item>
-	</style>
+    <!-- square button with icon only -->
+    <style name="Threema.MaterialButton.Icon" parent="@style/Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="backgroundColor">?attr/colorPrimaryContainer</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+    </style>
 
-	<!-- outline text button with icon -->
-	<style name="Threema.MaterialButton.Icon.Outline" parent="@style/Widget.Material3.Button.IconButton.Outlined">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-		<item name="rippleColor">@color/m3_chip_ripple_color</item>
-	</style>
+    <!-- outline text button with icon -->
+    <style name="Threema.MaterialButton.Icon.Outline" parent="@style/Widget.Material3.Button.IconButton.Outlined">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+        <item name="rippleColor">@color/m3_chip_ripple_color</item>
+    </style>
 
-	<!-- a button with no decoration whatsoever -->
-	<style name="Threema.MaterialButton.Circle.Outline" parent="@style/Widget.Material3.Button.OutlinedButton.Icon">
-		<item name="rippleColor">@android:color/transparent</item>
-		<item name="strokeColor">@android:color/transparent</item>
-	</style>
+    <!-- a button with no decoration whatsoever -->
+    <style name="Threema.MaterialButton.Circle.Outline" parent="@style/Widget.Material3.Button.OutlinedButton.Icon">
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="strokeColor">@android:color/transparent</item>
+    </style>
 
-	<!-- a 48x48dp sized button containing an icon only and a circle stroke -->
-	<style name="Threema.MaterialButton.Icon.Circle.Filled" parent="@style/Widget.Material3.Button.IconButton.Filled">
-		<item name="android:elevation">4dp</item>
-		<item name="android:width">48dp</item>
-		<item name="android:height">48dp</item>
-		<item name="iconSize">24dp</item>
-		<item name="rippleColor">@color/m3_chip_ripple_color</item>
-		<item name="android:paddingLeft">12dp</item>
-		<item name="android:paddingRight">12dp</item>
-		<item name="android:paddingTop">12dp</item>
-		<item name="android:paddingBottom">12dp</item>
-		<item name="android:insetLeft">0dp</item>
-		<item name="android:insetRight">0dp</item>
-		<item name="android:insetTop">0dp</item>
-		<item name="android:insetBottom">0dp</item>
-	</style>
+    <!-- a 48x48dp sized button containing an icon only and a circle stroke -->
+    <style name="Threema.MaterialButton.Icon.Circle.Filled" parent="@style/Widget.Material3.Button.IconButton.Filled">
+        <item name="android:elevation">4dp</item>
+        <item name="android:width">48dp</item>
+        <item name="android:height">48dp</item>
+        <item name="iconSize">24dp</item>
+        <item name="rippleColor">@color/m3_chip_ripple_color</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
 
-	<!-- a 40x40dp sized button containing an icon only and a circle background -->
-	<style name="Threema.MaterialButton.Icon.Circle.Filled.Small" parent="@style/Widget.Material3.Button.IconButton.Filled">
-		<item name="android:elevation">0dp</item>
-		<item name="android:width">40dp</item>
-		<item name="android:height">40dp</item>
-		<item name="iconSize">20dp</item>
-		<item name="rippleColor">@color/m3_chip_ripple_color</item>
-		<item name="android:paddingLeft">10dp</item>
-		<item name="android:paddingRight">10dp</item>>
-		<item name="android:insetLeft">0dp</item>
-		<item name="android:insetRight">0dp</item>
-		<item name="android:insetTop">0dp</item>
-		<item name="android:insetBottom">0dp</item>
-		<item name="backgroundTint">?attr/colorPrimaryContainer</item>
-		<item name="iconTint">?attr/colorOnPrimaryContainer</item>
-	</style>
+    <!-- a 40x40dp sized button containing an icon only and a circle background -->
+    <style name="Threema.MaterialButton.Icon.Circle.Filled.Small" parent="@style/Widget.Material3.Button.IconButton.Filled">
+        <item name="android:elevation">0dp</item>
+        <item name="android:width">40dp</item>
+        <item name="android:height">40dp</item>
+        <item name="iconSize">20dp</item>
+        <item name="rippleColor">@color/m3_chip_ripple_color</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="backgroundTint">?attr/colorPrimaryContainer</item>
+        <item name="iconTint">?attr/colorOnPrimaryContainer</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Elevated" parent="@style/Widget.Material3.Button.ElevatedButton">
-		<item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
-	</style>
+    <style name="Threema.MaterialButton.Elevated" parent="@style/Widget.Material3.Button.ElevatedButton">
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Medium</item>
+    </style>
 
-	<style name="Threema.MaterialButton.Borderless.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
-		<item name="android:minWidth">48dp</item>
-		<item name="android:layout_marginLeft">0dp</item>
-		<item name="android:layout_marginStart">0dp</item>
-		<item name="ensureMinTouchTargetSize">false</item>
-	</style>
+    <style name="Threema.MaterialButton.Borderless.Wizard" parent="@style/Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
+    </style>
 
-	<style name="Threema.TextAppearance.DetailTitle" parent="@style/TextAppearance.Material3.DisplaySmall">
-		<item name="android:textSize">24sp</item>
-		<item name="android:textColor">@android:color/white</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.TextAppearance.DetailTitle" parent="@style/TextAppearance.Material3.DisplaySmall">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.RadioButton" parent="@style/Widget.Material3.CompoundButton.RadioButton">
-		<!-- we deliberately override minTouchTargetSize as this results in an ugly sprawled out appearance of RadioGroups -->
-		<item name="android:minHeight">18dp</item>
-	</style>
+    <style name="Threema.RadioButton" parent="@style/Widget.Material3.CompoundButton.RadioButton">
+        <!-- we deliberately override minTouchTargetSize as this results in an ugly sprawled out appearance of RadioGroups -->
+        <item name="android:minHeight">18dp</item>
+    </style>
 
-	<style name="Threema.SpinnerStyle" parent="@style/Widget.AppCompat.Spinner">
-		<item name="android:popupBackground">?attr/popupMenuBackground</item>
-		<item name="android:popupElevation">8dp</item>
-		<item name="android:elevation">8dp</item>
-	</style>
+    <style name="Threema.SpinnerStyle" parent="@style/Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">?attr/popupMenuBackground</item>
+        <item name="android:popupElevation">8dp</item>
+        <item name="android:elevation">8dp</item>
+    </style>
 
-	<style name="Threema.ChipStyle" parent="@style/Widget.Material3.Chip.Assist">
-	</style>
+    <style name="Threema.ChipStyle" parent="@style/Widget.Material3.Chip.Assist"></style>
 
-	<style name="Threema.Chip.Outline.Action.WithIcon" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textColor">?attr/colorPrimary</item>
-		<item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
-		<item name="chipStrokeWidth">1dp</item>
-		<item name="chipMinHeight">36dp</item>
-		<item name="chipIconTint">?attr/colorPrimary</item>
-		<item name="chipStartPadding">@dimen/chip_start_padding</item>
-	</style>
+    <style name="Threema.Chip.Outline.Action.WithIcon" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="chipBackgroundColor">?attr/colorSurfaceContainerHigh</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="chipIconTint">?attr/colorPrimary</item>
+        <item name="chipStartPadding">@dimen/chip_start_padding</item>
+    </style>
 
-	<style name="Threema.Chip.VideoTranscoder" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.VideoTranscoder</item>
-		<item name="android:textColor">?attr/colorOnPrimary</item>
-		<item name="chipBackgroundColor">?attr/colorPrimary</item>
-		<item name="chipCornerRadius">14dp</item>
-		<item name="chipMinTouchTargetSize">36dp</item>
-		<item name="chipMinHeight">28dp</item>
-		<item name="chipStrokeWidth">0dp</item>
-	</style>
+    <style name="Threema.Chip.VideoTranscoder" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.VideoTranscoder
+        </item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="chipBackgroundColor">?attr/colorPrimary</item>
+        <item name="chipCornerRadius">14dp</item>
+        <item name="chipMinTouchTargetSize">36dp</item>
+        <item name="chipMinHeight">28dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+    </style>
 
-	<style name="Threema.Chip.Choice" parent="@style/Widget.Material3.Chip.Filter">
-		<item name="chipBackgroundColor">@color/chip_colorstatelist</item>
-	</style>
+    <style name="Threema.Chip.Choice" parent="@style/Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_colorstatelist</item>
+    </style>
 
-	<style name="Threema.Chip.Suggestion" parent="@style/Widget.Material3.Chip.Suggestion"/>
+    <style name="Threema.Chip.Suggestion" parent="@style/Widget.Material3.Chip.Suggestion" />
 
-	<style name="Threema.TextButton" parent="@style/Widget.Material3.Button.TextButton">
-		<item name="android:textAllCaps">false</item>
-		<item name="android:letterSpacing">0</item>
-	</style>
+    <style name="Threema.TextButton" parent="@style/Widget.Material3.Button.TextButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
-	<style name="Threema.TabStyle" parent="@style/Widget.Material3.TabLayout">
-		<item name="tabIndicatorFullWidth">true</item>
-		<item name="tabGravity">fill</item>
-		<item name="tabMode">fixed</item>
-	</style>
+    <style name="Threema.TabStyle" parent="@style/Widget.Material3.TabLayout">
+        <item name="tabIndicatorFullWidth">true</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+    </style>
 
-	<style name="Threema.PopupMenuStyle.SendMedia" parent="@style/Widget.Material3.PopupMenu">
-		<item name="dropdownListPreferredItemHeight">40dp</item>
-		<item name="android:paddingLeft">0dp</item>
-		<item name="android:paddingRight">0dp</item>
-		<item name="android:layout_marginRight">0dp</item>
-		<item name="android:textSize">15sp</item>
-	</style>
+    <style name="Threema.PopupMenuStyle.SendMedia" parent="@style/Widget.Material3.PopupMenu">
+        <item name="dropdownListPreferredItemHeight">40dp</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearanceDirectoryOrganization" parent="@style/ShapeAppearance.Material3.SmallComponent">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">2dp</item>
-	</style>
+    <style name="Threema.ShapeAppearanceDirectoryOrganization" parent="@style/ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">2dp</item>
+    </style>
 
-	<style name="Threema.Chip.AudioMessage" parent="@style/Widget.Material3.Chip.Assist">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.Chip.AudioMessage</item>
-		<item name="android:textColor">?attr/colorOnPrimary</item>
-		<item name="chipBackgroundColor">?attr/colorPrimary</item>
-		<item name="chipCornerRadius">14dp</item>
-		<item name="chipMinTouchTargetSize">28dp</item>
-		<item name="chipMinHeight">28dp</item>
-		<item name="chipStartPadding">1dp</item>
-		<item name="chipEndPadding">1dp</item>
-		<item name="chipStrokeWidth">0dp</item>
-	</style>
+    <style name="Threema.Chip.AudioMessage" parent="@style/Widget.Material3.Chip.Assist">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.Chip.AudioMessage</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="chipBackgroundColor">?attr/colorPrimary</item>
+        <item name="chipCornerRadius">14dp</item>
+        <item name="chipMinTouchTargetSize">28dp</item>
+        <item name="chipMinHeight">28dp</item>
+        <item name="chipStartPadding">1dp</item>
+        <item name="chipEndPadding">1dp</item>
+        <item name="chipStrokeWidth">0dp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.Chip.AudioMessage" parent="@style/Threema.TextAppearance.Chip">
-		<item name="android:textSize">13sp</item>
-		<item name="android:fontFamily">sans-serif-condensed</item>
-		<item name="android:letterSpacing">0</item>
-	</style>
+    <style name="Threema.TextAppearance.Chip.AudioMessage" parent="@style/Threema.TextAppearance.Chip">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.Button.Circle.Outline" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">50%</item>
-	</style>
+    <style name="Threema.ShapeAppearance.Button.Circle.Outline" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
-	<style name="Threema.MediaGallery.FastScroll" parent="">
-		<item name="android:fastScrollThumbDrawable">@drawable/ic_thumbscroller</item>
-		<item name="android:fastScrollTrackDrawable">@null</item>
-	</style>
+    <style name="Threema.MediaGallery.FastScroll" parent="">
+        <item name="android:fastScrollThumbDrawable">@drawable/ic_thumbscroller</item>
+        <item name="android:fastScrollTrackDrawable">@null</item>
+    </style>
 
-	<style name="Threema.Preview.BottomSheetStyle" parent="@style/Widget.Design.BottomSheet.Modal">
-		<item name="android:background">@drawable/shape_rounded_bottomsheet</item>
-	</style>
+    <style name="Threema.Preview.BottomSheetStyle" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/shape_rounded_bottomsheet</item>
+    </style>
 
-	<style name="Threema.MaterialCalendarHeaderTitle" parent="@style/Widget.Material3.MaterialCalendar.HeaderTitle">
-		<item name="android:textAppearance">@style/Threema.Text.Overline</item>
-		<item name="autoSizeTextType">none</item>
-	</style>
+    <style name="Threema.MaterialCalendarHeaderTitle" parent="@style/Widget.Material3.MaterialCalendar.HeaderTitle">
+        <item name="android:textAppearance">@style/Threema.Text.Overline</item>
+        <item name="autoSizeTextType">none</item>
+    </style>
 
-	<style name="SeekBar.Audio" parent="@style/Widget.AppCompat.SeekBar">
-		<item name="android:progressBackgroundTint">@android:color/transparent</item>
-		<item name="android:progressTint">@android:color/transparent</item>
-		<item name="android:thumb">@drawable/seekbar_thumb_audio</item>
-	</style>
+    <style name="SeekBar.Audio" parent="@style/Widget.AppCompat.SeekBar">
+        <item name="android:progressBackgroundTint">@android:color/transparent</item>
+        <item name="android:progressTint">@android:color/transparent</item>
+        <item name="android:thumb">@drawable/seekbar_thumb_audio</item>
+    </style>
 
-	<style name="Threema.GroupCallParticipantRoundedCorner" parent="@style/ShapeAppearance.MaterialComponents">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">@dimen/media_attach_button_radius</item>
-	</style>
+    <style name="Threema.GroupCallParticipantRoundedCorner" parent="@style/ShapeAppearance.MaterialComponents">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/media_attach_button_radius</item>
+    </style>
 
-	<style name="Threema.CardView.MediaViewerCaption" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="cardBackgroundColor">@color/mediaviewer_caption_background_color</item>
-		<item name="cardCornerRadius">@dimen/mediaviewer_caption_background_radius</item>
-		<item name="strokeWidth">0dp</item>
-	</style>
+    <style name="Threema.CardView.MediaViewerCaption" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/mediaviewer_caption_background_color</item>
+        <item name="cardCornerRadius">@dimen/mediaviewer_caption_background_radius</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
 
-	<style name="Threema.CardView.MessageList" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="cardBackgroundColor">?attr/colorOnSurfaceInverse</item>
-	</style>
+    <style name="Threema.CardView.MessageList" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorOnSurfaceInverse</item>
+    </style>
 
-	<style name="Threema.CardView.MentionSelector" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="cardBackgroundColor">?attr/colorSurface</item>
-		<item name="cardElevation">@dimen/compose_edittext_elevation</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.TopRounded.Small</item>
-	</style>
+    <style name="Threema.CardView.MentionSelector" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="cardElevation">@dimen/compose_edittext_elevation</item>
+        <item name="shapeAppearanceOverlay">
+            @style/Threema.ShapeAppearance.CardView.TopRounded.Small
+        </item>
+    </style>
 
-	<style name="Threema.CardView.Bubble.Status" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_gravity">center</item>
-		<item name="android:layout_marginLeft">16dp</item>
-		<item name="android:layout_marginRight">16dp</item>
-		<item name="android:outlineProvider">none</item>
-		<item name="strokeWidth">0dp</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Status</item>
-		<item name="contentPaddingBottom">@dimen/message_status_padding_bottom</item>
-		<item name="contentPaddingLeft">12dp</item>
-		<item name="contentPaddingRight">12dp</item>
-		<item name="contentPaddingTop">@dimen/message_status_padding_top</item>
-	</style>
+    <style name="Threema.CardView.Bubble.Status" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Status
+        </item>
+        <item name="contentPaddingBottom">@dimen/message_status_padding_bottom</item>
+        <item name="contentPaddingLeft">12dp</item>
+        <item name="contentPaddingRight">12dp</item>
+        <item name="contentPaddingTop">@dimen/message_status_padding_top</item>
+    </style>
 
-	<style name="Threema.CardView.Bubble.Receive" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_marginRight">@dimen/chat_bubble_opposite_inset</item>
-		<item name="android:layout_toRightOf">@id/avatar_view</item>
-		<item name="android:minWidth">@dimen/chat_bubble_minwidth</item>
-		<item name="android:outlineProvider">none</item>
-		<item name="strokeWidth">0dp</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Receive</item>
-		<item name="cardBackgroundColor">@color/bubble_receive_colorstatelist</item>
-		<item name="cardPreventCornerOverlap">false</item>
-		<item name="contentPaddingBottom">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
-	</style>
+    <style name="Threema.CardView.Bubble.Receive" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/chat_bubble_opposite_inset</item>
+        <item name="android:layout_toRightOf">@id/avatar_view</item>
+        <item name="android:minWidth">@dimen/chat_bubble_minwidth</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Receive
+        </item>
+        <item name="cardBackgroundColor">@color/bubble_receive_colorstatelist</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="contentPaddingBottom">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
+    </style>
 
-	<style name="Threema.CardView.Bubble.Send" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_marginLeft">@dimen/chat_bubble_opposite_inset</item>
-		<item name="android:layout_alignParentRight">true</item>
-		<item name="android:minWidth">@dimen/chat_bubble_minwidth</item>
-		<item name="android:outlineProvider">none</item>
-		<item name="strokeWidth">0dp</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Send</item>
-		<item name="cardBackgroundColor">@color/bubble_send_colorstatelist</item>
-		<item name="cardPreventCornerOverlap">false</item>
-		<item name="contentPaddingBottom">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
-		<item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
-	</style>
+    <style name="Threema.CardView.Bubble.Send" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/chat_bubble_opposite_inset</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:minWidth">@dimen/chat_bubble_minwidth</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.Send
+        </item>
+        <item name="cardBackgroundColor">@color/bubble_send_colorstatelist</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="contentPaddingBottom">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
+        <item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
+    </style>
 
-	<style name="Threema.CardView.Bubble.FirstUnread" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="android:layout_width">match_parent</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:layout_gravity">center</item>
-		<item name="android:outlineProvider">none</item>
-		<item name="strokeWidth">0dp</item>
-		<item name="cardBackgroundColor">?attr/colorTertiaryContainer</item>
-		<item name="cardPreventCornerOverlap">false</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.ShapeAppearance.CardView.Bubble.FirstUnread</item>
-	</style>
+    <style name="Threema.CardView.Bubble.FirstUnread" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:outlineProvider">none</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorTertiaryContainer</item>
+        <item name="cardPreventCornerOverlap">false</item>
+        <item name="shapeAppearanceOverlay">
+            @style/Threema.ShapeAppearance.CardView.Bubble.FirstUnread
+        </item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.CardView.TopRounded" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSizeTopRight">24dp</item>
-		<item name="cornerSizeTopLeft">24dp</item>
-		<item name="cornerSizeBottomRight">0dp</item>
-		<item name="cornerSizeBottomLeft">0dp</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CardView.TopRounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
 
     <style name="Threema.ShapeAppearance.CardView.TopRounded.Small" parent="Threema.ShapeAppearance.CardView.TopRounded">
         <item name="cornerSizeTopRight">12dp</item>
         <item name="cornerSizeTopLeft">12dp</item>
     </style>
 
-	<style name="Threema.ShapeAppearance.CardView.Bubble.Status" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSizeTopRight">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeTopLeft">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CardView.Bubble.Status" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeTopLeft">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.CardView.Bubble.FirstUnread" parent="">
-		<item name="cornerFamily">cut</item>
-		<item name="cornerSizeTopRight">0dp</item>
-		<item name="cornerSizeTopLeft">0dp</item>
-		<item name="cornerSizeBottomRight">0dp</item>
-		<item name="cornerSizeBottomLeft">0dp</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CardView.Bubble.FirstUnread" parent="">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.CardView.Bubble.Receive" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSizeTopRight">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeTopLeft">0dp</item>
-		<item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CardView.Bubble.Receive" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.CardView.Bubble.Send" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSizeTopLeft">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeTopRight">0dp</item>
-		<item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
-		<item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
-	</style>
+    <style name="Threema.ShapeAppearance.CardView.Bubble.Send" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">@dimen/chat_bubble_border_radius</item>
+        <item name="cornerSizeBottomLeft">@dimen/chat_bubble_border_radius</item>
+    </style>
 
-	<style name="Threema.MaterialPreference" parent="@style/Preference.Material">
-		<item name="android:layout">@layout/preference_material3</item>
-		<item name="allowDividerBelow">false</item>
-	</style>
+    <style name="Threema.MaterialPreference" parent="@style/Preference.Material">
+        <item name="android:layout">@layout/preference_material3</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
 
-	<style name="Threema.MaterialPreference.Checkbox" parent="@style/Preference.CheckBoxPreference.Material">
-		<item name="android:layout">@layout/preference_checkbox_material3</item>
-	</style>
+    <style name="Threema.MaterialPreference.Checkbox" parent="@style/Preference.CheckBoxPreference.Material">
+        <item name="android:layout">@layout/preference_checkbox_material3</item>
+    </style>
 
-	<style name="Threema.MaterialPreference.Dropdown" parent="@style/Preference.DropDown.Material">
-		<item name="android:layout">@layout/preference_dropdown_material3</item>
-	</style>
+    <style name="Threema.MaterialPreference.Dropdown" parent="@style/Preference.DropDown.Material">
+        <item name="android:layout">@layout/preference_dropdown_material3</item>
+    </style>
 
-	<style name="Threema.MaterialPreference.Dialog" parent="@style/Preference.DialogPreference.Material">
-		<item name="android:layout">@layout/preference_material3</item>
-	</style>
+    <style name="Threema.MaterialPreference.Dialog" parent="@style/Preference.DialogPreference.Material">
+        <item name="android:layout">@layout/preference_material3</item>
+    </style>
 
-	<style name="Threema.MaterialPreference.Title" parent="@style/TextAppearance.Material3.HeadlineSmall">
-		<item name="android:textSize">20sp</item>
-		<item name="android:textColor">@color/preferences_text</item>
-		<item name="lineHeight">24sp</item>
-		<item name="android:lineHeight">24sp</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.MaterialPreference.Title" parent="@style/TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/preferences_text</item>
+        <item name="lineHeight">24sp</item>
+        <item name="android:lineHeight">24sp</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.MaterialPreference.Summary">
-		<item name="android:textColor">@color/preferences_text</item>
-		<item name="android:textAppearance">?android:attr/textAppearanceListItemSecondary</item>
-	</style>
+    <style name="Threema.MaterialPreference.Summary">
+        <item name="android:textColor">@color/preferences_text</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceListItemSecondary</item>
+    </style>
 
-	<style name="Threema.MaterialPreferencesFragment" parent="@style/PreferenceFragment">
-		<item name="android:layout">@layout/preferences_fragment_material3</item>
-		<item name="allowDividerAfterLastItem">false</item>
-	</style>
+    <style name="Threema.MaterialPreferencesFragment" parent="@style/PreferenceFragment">
+        <item name="android:layout">@layout/preferences_fragment_material3</item>
+        <item name="allowDividerAfterLastItem">false</item>
+    </style>
 
-	<style name="Threema.MaterialPreferencesFragment.Style">
-		<item name="android:background">?colorSurface</item>
-		<item name="android:layout_marginBottom">0dp</item>
-	</style>
+    <style name="Threema.MaterialPreferencesFragment.Style">
+        <item name="android:background">?colorSurface</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
 
-	<style name="Threema.MaterialPreferencesFragment.Title" parent="@style/TextAppearance.Material3.HeadlineLarge">
-		<item name="android:paddingTop">48dp</item>
-		<item name="android:paddingStart">20dp</item>
-		<item name="android:paddingBottom">20dp</item>
-		<item name="android:textColor">?attr/colorOnSurface</item>
-		<item name="android:textSize">36sp</item>
-		<item name="android:hyphenationFrequency">normal</item>
-		<item name="fontFamily">@font/lab_grotesque</item>
-	</style>
+    <style name="Threema.MaterialPreferencesFragment.Title" parent="@style/TextAppearance.Material3.HeadlineLarge">
+        <item name="android:paddingTop">48dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:hyphenationFrequency">normal</item>
+        <item name="fontFamily">@font/lab_grotesque</item>
+    </style>
 
-	<style name="Threema.MaterialPreferenceCategory" parent="@style/Preference.Category.Material">
-		<item name="allowDividerAbove">false</item>
-		<item name="android:layout">@layout/preference_category_material3</item>
-	</style>
+    <style name="Threema.MaterialPreferenceCategory" parent="@style/Preference.Category.Material">
+        <item name="allowDividerAbove">false</item>
+        <item name="android:layout">@layout/preference_category_material3</item>
+    </style>
 
-	<style name="Threema.MaterialPreferenceCategory.Title" parent="@style/Threema.Text.Overline">
-		<item name="android:textColor">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.MaterialPreferenceCategory.Title" parent="@style/Threema.Text.Overline">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.TextInputLayout.Compose" parent="@style/Widget.Material3.TextInputLayout.FilledBox">
-		<item name="hintEnabled">false</item>
-		<item name="boxStrokeWidth">0dp</item>
-		<item name="boxStrokeWidthFocused">0dp</item>
-		<item name="boxCornerRadiusBottomStart">@dimen/compose_textinputlayout_radius</item>
-		<item name="boxCornerRadiusBottomEnd">@dimen/compose_textinputlayout_radius</item>
-		<item name="boxCornerRadiusTopStart">@dimen/compose_textinputlayout_radius</item>
-		<item name="boxCornerRadiusTopEnd">@dimen/compose_textinputlayout_radius</item>
-		<item name="boxBackgroundColor">?attr/colorOnSurfaceInverse</item>
-	</style>
+    <style name="Threema.TextInputLayout.Compose" parent="@style/Widget.Material3.TextInputLayout.FilledBox">
+        <item name="hintEnabled">false</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/compose_textinputlayout_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/compose_textinputlayout_radius</item>
+        <item name="boxCornerRadiusTopStart">@dimen/compose_textinputlayout_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/compose_textinputlayout_radius</item>
+        <item name="boxBackgroundColor">?attr/colorOnSurfaceInverse</item>
+    </style>
 
-	<style name="Threema.EditText.Compose" parent="@style/Widget.Material3.TextInputEditText.FilledBox">
-		<item name="android:textColor">?attr/colorOnSurface</item>
-	</style>
+    <style name="Threema.EditText.Compose" parent="@style/Widget.Material3.TextInputEditText.FilledBox">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
 
-	<style name="Threema.EditText.Pin" parent="@style/Widget.AppCompat.EditText">
-		<item name="android:textColor">?attr/colorOnBackground</item>
-		<item name="colorControlActivated">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.EditText.Pin" parent="@style/Widget.AppCompat.EditText">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="colorControlActivated">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.Arrow.Up" parent="@style/ShapeAppearance.Material3.Corner.Medium">
-		<item name="cornerFamilyTopLeft">cut</item>
-		<item name="cornerFamilyTopRight">cut</item>
-		<item name="cornerSizeTopLeft">@dimen/identity_popup_arrow_height</item>
-		<item name="cornerSizeTopRight">@dimen/identity_popup_arrow_height</item>
-		<item name="cornerSizeBottomLeft">0dp</item>
-		<item name="cornerSizeBottomRight">0dp</item>
-	</style>
+    <style name="Threema.ShapeAppearance.Arrow.Up" parent="@style/ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerFamilyTopLeft">cut</item>
+        <item name="cornerFamilyTopRight">cut</item>
+        <item name="cornerSizeTopLeft">@dimen/identity_popup_arrow_height</item>
+        <item name="cornerSizeTopRight">@dimen/identity_popup_arrow_height</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
 
-	<style name="Threema.ShapeAppearance.Arrow.Down" parent="@style/ShapeAppearance.Material3.Corner.Medium">
-		<item name="cornerFamilyBottomLeft">cut</item>
-		<item name="cornerFamilyBottomRight">cut</item>
-		<item name="cornerSizeTopLeft">0dp</item>
-		<item name="cornerSizeTopRight">0dp</item>
-		<item name="cornerSizeBottomLeft">@dimen/identity_popup_arrow_height</item>
-		<item name="cornerSizeBottomRight">@dimen/identity_popup_arrow_height</item>
-	</style>
+    <style name="Threema.ShapeAppearance.Arrow.Down" parent="@style/ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerFamilyBottomLeft">cut</item>
+        <item name="cornerFamilyBottomRight">cut</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">@dimen/identity_popup_arrow_height</item>
+        <item name="cornerSizeBottomRight">@dimen/identity_popup_arrow_height</item>
+    </style>
 
-	<style name="Threema.Snackbar.Style" parent="@style/Widget.Material3.Snackbar">
-		<item name="android:background">@null</item>
-		<item name="backgroundTint">?attr/colorSurfaceVariant</item>
-		<item name="animationMode">slide</item>
-	</style>
+    <style name="Threema.Snackbar.Style" parent="@style/Widget.Material3.Snackbar">
+        <item name="android:background">@null</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
+        <item name="animationMode">slide</item>
+    </style>
 
-	<style name="Threema.Snackbar.ButtonStyle" parent="@style/Widget.Material3.Button.TextButton.Snackbar">
-		<item name="materialThemeOverlay">@style/Threema.ThemeOverlay.Snackbar.Button</item>
-	</style>
+    <style name="Threema.Snackbar.ButtonStyle" parent="@style/Widget.Material3.Button.TextButton.Snackbar">
+        <item name="materialThemeOverlay">@style/Threema.ThemeOverlay.Snackbar.Button</item>
+    </style>
 
-	<style name="Threema.Snackbar.TextViewStyle" parent="@style/Widget.Material3.Snackbar.TextView">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.BodyMedium</item>
-		<item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-	</style>
+    <style name="Threema.Snackbar.TextViewStyle" parent="@style/Widget.Material3.Snackbar.TextView">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.BodyMedium</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
 
-	<style name="Threema.ThemeOverlay.Snackbar.Button" parent="@style/ThemeOverlay.Material3.Button.TextButton.Snackbar">
-		<item name="colorOnContainer">?attr/colorPrimary</item>
-	</style>
+    <style name="Threema.ThemeOverlay.Snackbar.Button" parent="@style/ThemeOverlay.Material3.Button.TextButton.Snackbar">
+        <item name="colorOnContainer">?attr/colorPrimary</item>
+    </style>
 
-	<style name="Threema.SearchBar.Style" parent="@style/Widget.Material3.SearchBar">
-		<item name="android:textAppearance">@style/Threema.TextAppearance.SearchBar</item>
-	</style>
+    <style name="Threema.SearchBar.Style" parent="@style/Widget.Material3.SearchBar">
+        <item name="android:textAppearance">@style/Threema.TextAppearance.SearchBar</item>
+    </style>
 
-	<style name="Threema.TextAppearance.SearchBar" parent="@style/TextAppearance.Material3.SearchBar">
-		<item name="android:letterSpacing">0.01</item>
-		<item name="android:textSize">18sp</item>
-	</style>
+    <style name="Threema.TextAppearance.SearchBar" parent="@style/TextAppearance.Material3.SearchBar">
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
-	<style name="Threema.TextAppearance.BallotDetailText" parent="@style/Threema.TextAppearance.BodySmall">
-		<item name="android:textColor">@color/ballot_detail_highlight_text_color</item>
-	</style>
+    <style name="Threema.TextAppearance.BallotDetailText" parent="@style/Threema.TextAppearance.BodySmall">
+        <item name="android:textColor">@color/ballot_detail_highlight_text_color</item>
+    </style>
 
-	<!-- Theme overlays -->
-	<style name="Threema.ThemeOverlay.BottomNavigation" parent="">
-		<!-- item's active indicator animation duration -->
-		<item name="motionDurationLong2">200</item>
+    <!-- Theme overlays -->
+    <style name="Threema.ThemeOverlay.BottomNavigation" parent="">
+        <!-- item's active indicator animation duration -->
+        <item name="motionDurationLong2">200</item>
 
         <!-- We have to use the value of our onPrimaryContainer here because
              we use primaryContainer color to draw the selected item indicator. So the
              icons have the correct contrast while selected -->
-		<item name="colorOnSecondaryContainer">?attr/colorOnPrimaryContainer</item>
-	</style>
+        <item name="colorOnSecondaryContainer">?attr/colorOnPrimaryContainer</item>
+    </style>
 
     <style name="Threema_TextAppearance_StarredMessages_Count">
-		<item name="android:letterSpacing">0</item>
-		<item name="android:textSize">12sp</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:fontFamily">sans-serif-condensed</item>
-	</style>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
 
-	<!-- styles for emoji reactions -->
+    <!-- styles for emoji reactions -->
     <style name="Threema.EmojiReactions.Button" parent="">
         <item name="materialCardViewStyle">@style/Threema.EmojiReactions.Button.Style</item>
     </style>
 
-	<style name="Threema.EmojiReactions.Button.Style" parent="@style/Widget.Material3.CardView.Filled">
-		<item name="android:outlineProvider">none</item>
-		<item name="android:height">@dimen/emojireactions_height</item>
+    <style name="Threema.EmojiReactions.Button.Style" parent="@style/Widget.Material3.CardView.Filled">
+        <item name="android:outlineProvider">none</item>
+        <item name="android:height">@dimen/emojireactions_height</item>
         <item name="checkedIcon">@null</item>
-		<item name="strokeWidth">@dimen/emojireactions_stroke_width</item>
-		<item name="strokeColor">?android:colorBackground</item>
-		<item name="shapeAppearanceOverlay">@style/Threema.EmojiReactions.CardView.ShapeAppearance</item>
+        <item name="strokeWidth">@dimen/emojireactions_stroke_width</item>
+        <item name="strokeColor">?android:colorBackground</item>
+        <item name="shapeAppearanceOverlay">@style/Threema.EmojiReactions.CardView.ShapeAppearance
+        </item>
         <item name="cardForegroundColor">@android:color/transparent</item>
         <item name="cardBackgroundColor">@color/emojireactions_background_colorstatelist</item>
         <item name="cardPreventCornerOverlap">false</item>
-		<item name="contentPaddingLeft">@dimen/emojireactions_chip_padding_inside_left</item>
-		<item name="contentPaddingRight">@dimen/emojireactions_chip_padding_inside_right</item>
-		<item name="contentPaddingTop">@dimen/emojireactions_chip_padding_inside_top</item>
-		<item name="contentPaddingBottom">@dimen/emojireactions_chip_padding_inside_bottom</item>
-	</style>
+        <item name="contentPaddingLeft">@dimen/emojireactions_chip_padding_inside_left</item>
+        <item name="contentPaddingRight">@dimen/emojireactions_chip_padding_inside_right</item>
+        <item name="contentPaddingTop">@dimen/emojireactions_chip_padding_inside_top</item>
+        <item name="contentPaddingBottom">@dimen/emojireactions_chip_padding_inside_bottom</item>
+    </style>
 
-	<style name="Threema.EmojiReactions.CardView.ShapeAppearance" parent="">
-		<item name="cornerFamily">rounded</item>
-		<item name="cornerSize">@dimen/emojireactions_chip_border_radius</item>
-	</style>
+    <style name="Threema.EmojiReactions.CardView.ShapeAppearance" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/emojireactions_chip_border_radius</item>
+    </style>
 
-	<style name="Threema.EmojiReactions.Text.Emoji" parent="@style/TextAppearance.Material3.BodyMedium">
-		<item name="android:textSize">15dp</item>
-		<item name="android:fontFamily">sans-serif</item>
-		<item name="android:letterSpacing">0</item>
-	</style>
+    <style name="Threema.EmojiReactions.Text.Emoji" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">15dp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
-	<style name="Threema.EmojiReactions.Text.Count" parent="@style/TextAppearance.Material3.BodySmall">
-		<item name="android:textSize">12dp</item>
-		<item name="android:textColor">?attr/colorOnBackground</item>
-		<item name="android:fontFamily">sans-serif-condensed</item>
-		<item name="android:letterSpacing">0</item>
-	</style>
+    <style name="Threema.EmojiReactions.Text.Count" parent="@style/TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
     <style name="Threema.TabLayout.EmojiReactionsOverview" parent="@style/Widget.Material3.TabLayout">
         <item name="tabIndicatorFullWidth">true</item>

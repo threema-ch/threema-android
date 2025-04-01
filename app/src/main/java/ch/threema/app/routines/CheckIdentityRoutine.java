@@ -27,31 +27,31 @@ import ch.threema.app.services.UserService;
  * Check the state of the pending email linkBallot
  */
 public class CheckIdentityRoutine implements Runnable {
-	private final UserService userService;
-	private final OnStatusChanged onStatusChanged;
+    private final UserService userService;
+    private final OnStatusChanged onStatusChanged;
 
-	public interface OnStatusChanged {
-		void onFinished(boolean success);
-	}
+    public interface OnStatusChanged {
+        void onFinished(boolean success);
+    }
 
-	public CheckIdentityRoutine(UserService userService, OnStatusChanged onStatusChanged) {
-		this.userService = userService;
-		this.onStatusChanged = onStatusChanged;
-	}
+    public CheckIdentityRoutine(UserService userService, OnStatusChanged onStatusChanged) {
+        this.userService = userService;
+        this.onStatusChanged = onStatusChanged;
+    }
 
-	@Override
-	public void run() {
-		//check email linking state
-		if(this.userService.getEmailLinkingState() == UserService.LinkingState_PENDING) {
-			//only if linking state is pending
-			this.userService.checkEmailLinkState();
-		}
+    @Override
+    public void run() {
+        //check email linking state
+        if (this.userService.getEmailLinkingState() == UserService.LinkingState_PENDING) {
+            //only if linking state is pending
+            this.userService.checkEmailLinkState();
+        }
 
-		//check revocation key
-		this.userService.checkRevocationKey(false);
+        //check revocation key
+        this.userService.checkRevocationKey(false);
 
-		if(this.onStatusChanged != null) {
-			this.onStatusChanged.onFinished(true);
-		}
-	}
+        if (this.onStatusChanged != null) {
+            this.onStatusChanged.onFinished(true);
+        }
+    }
 }

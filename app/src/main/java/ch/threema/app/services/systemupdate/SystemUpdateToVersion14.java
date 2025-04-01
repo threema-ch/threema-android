@@ -33,47 +33,47 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion14 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion14");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion14");
 
-	@Override
-	public boolean runDirectly() {
-		return true;
-	}
+    @Override
+    public boolean runDirectly() {
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		//check if auto sync is enabled
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if(serviceManager != null) {
-			PreferenceService preferenceService = serviceManager.getPreferenceService();
-			if(preferenceService != null) {
-				if(preferenceService.isSyncContacts()) {
-					//disable sync
-					final SynchronizeContactsService synchronizeContactService;
-					try {
-						synchronizeContactService = serviceManager.getSynchronizeContactsService();
-						if(synchronizeContactService != null) {
-							synchronizeContactService.disableSync(new Runnable() {
-								@Override
-								public void run() {
-									synchronizeContactService.enableSync();
-								}
-							});
+    @Override
+    public boolean runAsync() {
+        //check if auto sync is enabled
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            PreferenceService preferenceService = serviceManager.getPreferenceService();
+            if (preferenceService != null) {
+                if (preferenceService.isSyncContacts()) {
+                    //disable sync
+                    final SynchronizeContactsService synchronizeContactService;
+                    try {
+                        synchronizeContactService = serviceManager.getSynchronizeContactsService();
+                        if (synchronizeContactService != null) {
+                            synchronizeContactService.disableSync(new Runnable() {
+                                @Override
+                                public void run() {
+                                    synchronizeContactService.enableSync();
+                                }
+                            });
 
-							return true;
-						}
-					} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
+                            return true;
+                        }
+                    } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public String getText() {
-		return "version 13";
-	}
+    @Override
+    public String getText() {
+        return "version 13";
+    }
 }

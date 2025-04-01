@@ -44,63 +44,63 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion12 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion12");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion12");
 
-	private final Context context;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final Context context;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion12(Context context, SQLiteDatabase sqLiteDatabase) {
-		this.context = context;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion12(Context context, SQLiteDatabase sqLiteDatabase) {
+        this.context = context;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
+    @Override
+    public boolean runDirectly() {
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
 
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("isSynchronized");
-			}
-		}) != null;
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("isSynchronized");
+            }
+        }) != null;
 
 
-		if(!hasField) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isSynchronized TINYINT(1) DEFAULT 0");
-		}
+        if (!hasField) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isSynchronized TINYINT(1) DEFAULT 0");
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		//make a manually sync
-		SynchronizeContactsUtil.startDirectly();
+    @Override
+    public boolean runAsync() {
+        //make a manually sync
+        SynchronizeContactsUtil.startDirectly();
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if(serviceManager != null) {
-			try {
-				ContactService contactService = serviceManager.getContactService();
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                ContactService contactService = serviceManager.getContactService();
 
-				PreferenceService preferenceService = serviceManager.getPreferenceService();
-				if(preferenceService != null && preferenceService.isSyncContacts()) {
-					UserService userService = serviceManager.getUserService();
-					if(userService != null) {
-						userService.enableAccountAutoSync(true);
-					}
-				}
-			} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-				logger.error("Exception", e);
-				return false;
-			}
-		}
-		return true;
-	}
+                PreferenceService preferenceService = serviceManager.getPreferenceService();
+                if (preferenceService != null && preferenceService.isSyncContacts()) {
+                    UserService userService = serviceManager.getUserService();
+                    if (userService != null) {
+                        userService.enableAccountAutoSync(true);
+                    }
+                }
+            } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                logger.error("Exception", e);
+                return false;
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 12";
-	}
+    @Override
+    public String getText() {
+        return "version 12";
+    }
 }

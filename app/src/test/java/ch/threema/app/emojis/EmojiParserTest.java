@@ -27,24 +27,24 @@ import static junit.framework.Assert.assertEquals;
 
 public class EmojiParserTest {
 
-	// Parse a single 1-codepoint emoji
-	@Test
-	public void parseSimple() throws Exception {
-		final int woman = 0x1F469;
-		final char[] chars = Character.toChars(woman);
-		final String string = new String(chars);
-		final EmojiParser.ParseResult res = EmojiParser.parseAt(string, 0);
-		assertEquals(Integer.valueOf(2), res.length);
-	}
+    // Parse a single 1-codepoint emoji
+    @Test
+    public void parseSimple() throws Exception {
+        final int woman = 0x1F469;
+        final char[] chars = Character.toChars(woman);
+        final String string = new String(chars);
+        final EmojiParser.ParseResult res = EmojiParser.parseAt(string, 0);
+        assertEquals(Integer.valueOf(2), res.length);
+    }
 
-	// Parse an emoji with a skintone modifier
-	@Test
-	public void parseSkintoneModifier() throws Exception {
-		final char[] woman = Character.toChars(0x1F469);
-		final char[] mediumDark = Character.toChars(0x1F3FE);
-		String string = new String(woman);
-		string += new String(mediumDark);
-		final EmojiParser.ParseResult res = EmojiParser.parseAt(string, 0);
-		assertEquals(Integer.valueOf(4), res.length);
-	}
+    // Parse an emoji with a skintone modifier
+    @Test
+    public void parseSkintoneModifier() throws Exception {
+        final char[] woman = Character.toChars(0x1F469);
+        final char[] mediumDark = Character.toChars(0x1F3FE);
+        String string = new String(woman);
+        string += new String(mediumDark);
+        final EmojiParser.ParseResult res = EmojiParser.parseAt(string, 0);
+        assertEquals(Integer.valueOf(4), res.length);
+    }
 }

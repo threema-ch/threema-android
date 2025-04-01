@@ -41,81 +41,81 @@ import ch.threema.app.stores.PreferenceStore;
 
 public class SystemUpdateToVersion6 implements UpdateSystemService.SystemUpdate {
 
-	private final Context context;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final Context context;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion6(Context context, SQLiteDatabase sqLiteDatabase) {
-		this.context = context;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion6(Context context, SQLiteDatabase sqLiteDatabase) {
+        this.context = context;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
+    @Override
+    public boolean runDirectly() {
 
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM contacts LIMIT 0", null).getColumnNames();
 
-		boolean threemaAndroidContactIdExists = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("threemaAndroidContactId");
-			}
-		}) != null;
+        boolean threemaAndroidContactIdExists = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("threemaAndroidContactId");
+            }
+        }) != null;
 
-		if(!threemaAndroidContactIdExists) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN threemaAndroidContactId VARCHAR(255) DEFAULT NULL");
-		}
+        if (!threemaAndroidContactIdExists) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN threemaAndroidContactId VARCHAR(255) DEFAULT NULL");
+        }
 
-		//get all contacts to save the threema android contact id
+        //get all contacts to save the threema android contact id
 
-		AccountManager accountManager = AccountManager.get(this.context);
-		final String myIdentity = PreferenceManager.getDefaultSharedPreferences(this.context).getString(PreferenceStore.PREFS_IDENTITY, null);
+        AccountManager accountManager = AccountManager.get(this.context);
+        final String myIdentity = PreferenceManager.getDefaultSharedPreferences(this.context).getString(PreferenceStore.PREFS_IDENTITY, null);
 
-		if(myIdentity != null) {
-			Account account = Functional.select(new HashSet<Account>(Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.package_name)))), new IPredicateNonNull<Account>() {
-				@Override
-				public boolean apply(@NonNull Account type) {
-					return type.name.equals(myIdentity);
-				}
-			});
+        if (myIdentity != null) {
+            Account account = Functional.select(new HashSet<Account>(Arrays.asList(accountManager.getAccountsByType(context.getString(R.string.package_name)))), new IPredicateNonNull<Account>() {
+                @Override
+                public boolean apply(@NonNull Account type) {
+                    return type.name.equals(myIdentity);
+                }
+            });
 
-			if(account != null) {
-				Cursor contacts = sqLiteDatabase.rawQuery("SELECT identity, androidContactId, firstName, lastName FROM contacts", null);
-				while(contacts.moveToNext()) {
-					String identity = contacts.getString(0);
-					String androidContactId = contacts.getString(1);
-					String f = contacts.getString(2);
-					String l = contacts.getString(3);
+            if (account != null) {
+                Cursor contacts = sqLiteDatabase.rawQuery("SELECT identity, androidContactId, firstName, lastName FROM contacts", null);
+                while (contacts.moveToNext()) {
+                    String identity = contacts.getString(0);
+                    String androidContactId = contacts.getString(1);
+                    String f = contacts.getString(2);
+                    String l = contacts.getString(3);
 
-					String name = new StringBuilder()
-							.append(f!=null?f:"")
-							.append(f!=null?" ":"")
-							.append(l!=null?l:"")
-							.toString()
-							.trim();
+                    String name = new StringBuilder()
+                        .append(f != null ? f : "")
+                        .append(f != null ? " " : "")
+                        .append(l != null ? l : "")
+                        .toString()
+                        .trim();
 
-					if ((name.length() == 0) || (f == null && l == null)) {
-						name = identity;
-					}
+                    if ((name.length() == 0) || (f == null && l == null)) {
+                        name = identity;
+                    }
 
-					if(identity == null || identity.length() == 0) {
-						continue;
-					}
-				}
-				contacts.close();
-			}
-		}
+                    if (identity == null || identity.length() == 0) {
+                        continue;
+                    }
+                }
+                contacts.close();
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 6";
-	}
+    @Override
+    public String getText() {
+        return "version 6";
+    }
 }

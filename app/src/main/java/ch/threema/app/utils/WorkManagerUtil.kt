@@ -54,7 +54,11 @@ object WorkManagerUtil {
      *      false if the work already exists and has the same schedule period
      */
     @JvmStatic
-    fun shouldScheduleNewWorkManagerInstance(workManager: WorkManager, uniqueWorkName: String, schedulePeriod: Long): Boolean {
+    fun shouldScheduleNewWorkManagerInstance(
+        workManager: WorkManager,
+        uniqueWorkName: String,
+        schedulePeriod: Long
+    ): Boolean {
         return try {
             workManager.getWorkInfosForUniqueWork(uniqueWorkName).get().none {
                 val state = it.state
@@ -87,7 +91,11 @@ object WorkManagerUtil {
             }
         } catch (e: Exception) {
             when (e) {
-                is ExecutionException, is InterruptedException -> logger.error("Could not get work info", e)
+                is ExecutionException, is InterruptedException -> logger.error(
+                    "Could not get work info",
+                    e
+                )
+
                 else -> throw e
             }
             false

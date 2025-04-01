@@ -1,61 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			android:id="@+id/widget_title"
-			android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#eaeaea">
+    android:id="@+id/widget_title"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#eaeaea">
 
-	<!-- absolutely do not use attr references for colors in this file! -->
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="48dp"
-		android:background="@color/md_theme_light_primary"
-		android:paddingLeft="16dp"
-		android:paddingRight="0dp">
+    <!-- absolutely do not use attr references for colors in this file! -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/md_theme_light_primary"
+        android:paddingLeft="16dp"
+        android:paddingRight="0dp">
 
-		<!-- do not use app:tint here! -->
-		<ImageView
-			android:id="@+id/widget_edit"
-			android:layout_width="56dp"
-			android:layout_height="48dp"
-			android:layout_alignParentRight="true"
-			android:layout_centerVertical="true"
-			android:scaleType="centerInside"
-			android:src="@drawable/ic_chat_bubble_bitmap_24dp"
-			android:tint="@color/md_theme_light_onPrimary" />
+        <!-- do not use app:tint here! -->
+        <ImageView
+            android:id="@+id/widget_edit"
+            android:layout_width="56dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_chat_bubble_bitmap_24dp"
+            android:tint="@color/md_theme_light_onPrimary" />
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_centerVertical="true"
-			android:layout_toEndOf="@+id/widget_edit"
-			android:text="@string/app_name"
-			android:textColor="@color/md_theme_light_onPrimary"
-			android:textSize="20sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/widget_edit"
+            android:text="@string/app_name"
+            android:textColor="@color/md_theme_light_onPrimary"
+            android:textSize="20sp" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<FrameLayout
-				 android:layout_width="match_parent"
-				 android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-	<ListView android:layout_width="match_parent"
-			  android:layout_height="match_parent"
-			  android:id="@+id/widget_list" />
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/widget_list" />
 
-	<TextView
-			  style="@style/Threema.TextAppearance.Emptyview"
-			  android:id="@+id/empty_view"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent"
-			  android:paddingLeft="16dp"
-			  android:paddingRight="16dp"
-			  android:gravity="center"
-			  android:textColor="@color/md_theme_light_onSurface"
-			  android:text="@string/no_unread_messages" />
+        <TextView
+            style="@style/Threema.TextAppearance.Emptyview"
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center"
+            android:textColor="@color/md_theme_light_onSurface"
+            android:text="@string/no_unread_messages" />
 
-	</FrameLayout>
+    </FrameLayout>
 
 </LinearLayout>

@@ -192,7 +192,10 @@ class DatabaseNonceStoreTest {
         }
     }
 
-    private fun assertSameHashedNonces(expected: Collection<HashedNonce>, actual: Collection<HashedNonce>) {
+    private fun assertSameHashedNonces(
+        expected: Collection<HashedNonce>,
+        actual: Collection<HashedNonce>
+    ) {
         assertEquals(expected.size, actual.size)
         expected.forEach { expectedNonce ->
             // If `actual.contains(expectedNonce)` is used only referential equality is checked
@@ -227,28 +230,34 @@ const val USER_IDENTITY = "01234567"
 private class TestIdentityStore : IdentityStoreInterface {
     override fun getIdentity(): String = USER_IDENTITY
 
-    override fun encryptData(plaintext: ByteArray, nonce: ByteArray, receiverPublicKey: ByteArray): ByteArray
-        = throw UnsupportedOperationException()
+    override fun encryptData(
+        plaintext: ByteArray,
+        nonce: ByteArray,
+        receiverPublicKey: ByteArray
+    ): ByteArray = throw UnsupportedOperationException()
 
-    override fun decryptData(ciphertext: ByteArray, nonce: ByteArray, senderPublicKey: ByteArray): ByteArray
-        = throw UnsupportedOperationException()
+    override fun decryptData(
+        ciphertext: ByteArray,
+        nonce: ByteArray,
+        senderPublicKey: ByteArray
+    ): ByteArray = throw UnsupportedOperationException()
 
-    override fun calcSharedSecret(publicKey: ByteArray): ByteArray
-        = throw UnsupportedOperationException()
+    override fun calcSharedSecret(publicKey: ByteArray): ByteArray =
+        throw UnsupportedOperationException()
 
-    override fun getServerGroup(): String
-        = throw UnsupportedOperationException()
+    override fun getServerGroup(): String = throw UnsupportedOperationException()
 
-    override fun getPublicKey(): ByteArray
-        = throw UnsupportedOperationException()
+    override fun getPublicKey(): ByteArray = throw UnsupportedOperationException()
 
-    override fun getPrivateKey(): ByteArray
-        = throw UnsupportedOperationException()
+    override fun getPrivateKey(): ByteArray = throw UnsupportedOperationException()
 
-    override fun getPublicNickname(): String
-        = throw UnsupportedOperationException()
+    override fun getPublicNickname(): String = throw UnsupportedOperationException()
 
-    override fun storeIdentity(identity: String, serverGroup: String, publicKey: ByteArray, privateKey: ByteArray)
-        = throw UnsupportedOperationException()
+    override fun storeIdentity(
+        identity: String,
+        serverGroup: String,
+        publicKey: ByteArray,
+        privateKey: ByteArray
+    ) = throw UnsupportedOperationException()
 
 }

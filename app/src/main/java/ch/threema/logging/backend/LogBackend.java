@@ -26,35 +26,35 @@ import androidx.annotation.Nullable;
 import ch.threema.logging.LogLevel;
 
 public interface LogBackend {
-	/**
-	 * Return whether this backend is enabled for the specified log level.
-	 */
-	boolean isEnabled(@LogLevel int level);
+    /**
+     * Return whether this backend is enabled for the specified log level.
+     */
+    boolean isEnabled(@LogLevel int level);
 
-	/**
-	 * Log a message to the backend.
-	 *
-	 * This method should automatically check using {@link #isEnabled(int)} method
-	 * if the message is allowed to be logged or not.
-	 *
-	 * @param level The log level
-	 * @param tag The log tag
-	 * @param throwable A throwable (may be null)
-	 * @param message A message (may be null)
-	 */
-	void print(@LogLevel int level, @NonNull String tag, @Nullable Throwable throwable, @Nullable String message);
+    /**
+     * Log a message to the backend.
+     * <p>
+     * This method should automatically check using {@link #isEnabled(int)} method
+     * if the message is allowed to be logged or not.
+     *
+     * @param level     The log level
+     * @param tag       The log tag
+     * @param throwable A throwable (may be null)
+     * @param message   A message (may be null)
+     */
+    void print(@LogLevel int level, @NonNull String tag, @Nullable Throwable throwable, @Nullable String message);
 
-	/**
-	 * Log a message to the backend.
-	 *
-	 * This method should automatically check using {@link #isEnabled(int)} method
-	 * if the message is allowed to be logged or not.
-	 *
-	 * @param level The log level
-	 * @param tag The log tag
-	 * @param throwable A throwable (may be null)
-	 * @param messageFormat A messag eformat string
-	 * @param args The message arguments
-	 */
-	void print(@LogLevel int level, @NonNull String tag, @Nullable Throwable throwable, @NonNull String messageFormat, Object... args);
+    /**
+     * Log a message to the backend.
+     * <p>
+     * This method should automatically check using {@link #isEnabled(int)} method
+     * if the message is allowed to be logged or not.
+     *
+     * @param level         The log level
+     * @param tag           The log tag
+     * @param throwable     A throwable (may be null)
+     * @param messageFormat A messag eformat string
+     * @param args          The message arguments
+     */
+    void print(@LogLevel int level, @NonNull String tag, @Nullable Throwable throwable, @NonNull String messageFormat, Object... args);
 }

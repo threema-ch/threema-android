@@ -50,68 +50,69 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class ReceiversRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiversRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiversRequestHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final ContactService contactService;
-	private final GroupService groupService;
-	private final DistributionListService distributionListService;
+    private final MessageDispatcher dispatcher;
+    private final ContactService contactService;
+    private final GroupService groupService;
+    private final DistributionListService distributionListService;
 
-	private Listener listener;
+    private Listener listener;
 
-	@WorkerThread
-	public interface Listener {
-		void onReceived();
-		void onAnswered();
-	}
+    @WorkerThread
+    public interface Listener {
+        void onReceived();
 
-	@AnyThread
-	public ReceiversRequestHandler(@NonNull MessageDispatcher dispatcher,
-	                               @NonNull ContactService contactService,
-	                               @NonNull GroupService groupService,
-	                               @NonNull DistributionListService distributionListService,
-	                               @Nullable Listener listener) {
-		super(Protocol.SUB_TYPE_RECEIVERS);
-		this.dispatcher = dispatcher;
-		this.contactService = contactService;
-		this.groupService = groupService;
-		this.distributionListService = distributionListService;
-		this.listener = listener;
-	}
+        void onAnswered();
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received receivers request");
-		this.respond();
-	}
+    @AnyThread
+    public ReceiversRequestHandler(@NonNull MessageDispatcher dispatcher,
+                                   @NonNull ContactService contactService,
+                                   @NonNull GroupService groupService,
+                                   @NonNull DistributionListService distributionListService,
+                                   @Nullable Listener listener) {
+        super(Protocol.SUB_TYPE_RECEIVERS);
+        this.dispatcher = dispatcher;
+        this.contactService = contactService;
+        this.groupService = groupService;
+        this.distributionListService = distributionListService;
+        this.listener = listener;
+    }
 
-	private void respond() {
-		try {
-			final MsgpackObjectBuilder data = Receiver.convert(
-					this.contactService.find(Contact.getContactFilter()),
-					this.groupService.getAll(Group.getGroupFilter()),
-					this.distributionListService.getAll()
-			);
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received receivers request");
+        this.respond();
+    }
 
-			// Notify listeners
-			this.listener.onReceived();
+    private void respond() {
+        try {
+            final MsgpackObjectBuilder data = Receiver.convert(
+                this.contactService.find(Contact.getContactFilter()),
+                this.groupService.getAll(Group.getGroupFilter()),
+                this.distributionListService.getAll()
+            );
 
-			// Send response
-			logger.debug("Sending receivers response");
-			final MsgpackObjectBuilder args = new MsgpackObjectBuilder();
-			this.send(this.dispatcher, data, args);
+            // Notify listeners
+            this.listener.onReceived();
 
-			// Notify listeners
-			if (this.listener != null) {
-				this.listener.onAnswered();
-			}
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Send response
+            logger.debug("Sending receivers response");
+            final MsgpackObjectBuilder args = new MsgpackObjectBuilder();
+            this.send(this.dispatcher, data, args);
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+            // Notify listeners
+            if (this.listener != null) {
+                this.listener.onAnswered();
+            }
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
+
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

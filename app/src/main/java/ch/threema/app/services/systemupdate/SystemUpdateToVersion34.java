@@ -30,29 +30,29 @@ import ch.threema.storage.models.DistributionListMemberModel;
 
 public class SystemUpdateToVersion34 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion34(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion34(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		sqLiteDatabase.rawExecSQL(
-				"CREATE INDEX IF NOT EXISTS `distribution_list_member_dis_idx`" +
-						" ON `" + DistributionListMemberModel.TABLE + "`(`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "`)");
+    @Override
+    public boolean runDirectly() throws SQLException {
+        sqLiteDatabase.rawExecSQL(
+            "CREATE INDEX IF NOT EXISTS `distribution_list_member_dis_idx`" +
+                " ON `" + DistributionListMemberModel.TABLE + "`(`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "`)");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 34 (db maintenance)";
-	}
+    @Override
+    public String getText() {
+        return "version 34 (db maintenance)";
+    }
 }

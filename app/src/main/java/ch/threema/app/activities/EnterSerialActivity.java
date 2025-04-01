@@ -70,401 +70,401 @@ import ch.threema.base.utils.LoggingUtil;
 
 // this should NOT extend ThreemaToolbarActivity
 public class EnterSerialActivity extends ThreemaActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("EnterSerialActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("EnterSerialActivity");
 
-	private static final String BUNDLE_PASSWORD = "bupw";
-	private static final String BUNDLE_LICENSE_KEY = "bulk";
-	private static final String BUNDLE_SERVER = "busv";
-	private static final String DIALOG_TAG_CHECKING = "check";
-	private TextView stateTextView = null;
-	private EditText licenseKeyOrUsernameText, passwordText, serverText;
-	private MaterialButton unlockButton;
-	private Button loginButton;
-	private LicenseService licenseService;
-	private PreferenceService preferenceService;
+    private static final String BUNDLE_PASSWORD = "bupw";
+    private static final String BUNDLE_LICENSE_KEY = "bulk";
+    private static final String BUNDLE_SERVER = "busv";
+    private static final String DIALOG_TAG_CHECKING = "check";
+    private TextView stateTextView = null;
+    private EditText licenseKeyOrUsernameText, passwordText, serverText;
+    private MaterialButton unlockButton;
+    private Button loginButton;
+    private LicenseService licenseService;
+    private PreferenceService preferenceService;
 
-	private final LazyProperty<BackgroundExecutor> backgroundExecutor =
-		new LazyProperty<>(BackgroundExecutor::new);
+    private final LazyProperty<BackgroundExecutor> backgroundExecutor =
+        new LazyProperty<>(BackgroundExecutor::new);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (!ConfigUtils.isSerialLicensed()) {
-			finish();
-			return;
-		}
+        if (!ConfigUtils.isSerialLicensed()) {
+            finish();
+            return;
+        }
 
-		setContentView(R.layout.activity_enter_serial);
+        setContentView(R.layout.activity_enter_serial);
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager == null) {
-			// Hide keyboard to make error message visible on low resolution displays
-			EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
-			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
-			finish();
-			return;
-		}
+        if (serviceManager == null) {
+            // Hide keyboard to make error message visible on low resolution displays
+            EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
+            Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
-		try {
-			licenseService = serviceManager.getLicenseService();
-			preferenceService = serviceManager.getPreferenceService();
-		} catch (NullPointerException|FileSystemNotPresentException e) {
-			logger.error("Exception", e);
-			Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
-			finish();
-			return;
-		}
+        try {
+            licenseService = serviceManager.getLicenseService();
+            preferenceService = serviceManager.getPreferenceService();
+        } catch (NullPointerException | FileSystemNotPresentException e) {
+            logger.error("Exception", e);
+            Toast.makeText(this, "Service Manager not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
-		if (licenseService == null) {
-			finish();
-			return;
-		}
+        if (licenseService == null) {
+            finish();
+            return;
+        }
 
-		checkForValidCredentialsInBackground();
+        checkForValidCredentialsInBackground();
 
-		stateTextView = findViewById(R.id.unlock_state);
-		licenseKeyOrUsernameText = findViewById(R.id.license_key);
-		passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
-		serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
+        stateTextView = findViewById(R.id.unlock_state);
+        licenseKeyOrUsernameText = findViewById(R.id.license_key);
+        passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
+        serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
 
-		TextView enterKeyExplainText = findViewById(R.id.layout_top);
-		enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
-		enterKeyExplainText.setClickable(true);
-		enterKeyExplainText.setMovementMethod(LinkMovementMethod.getInstance());
+        TextView enterKeyExplainText = findViewById(R.id.layout_top);
+        enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
+        enterKeyExplainText.setClickable(true);
+        enterKeyExplainText.setMovementMethod(LinkMovementMethod.getInstance());
 
-		if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
-			setupForShopBuild();
-		} else {
-			setupForWorkBuild();
-		}
+        if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
+            setupForShopBuild();
+        } else {
+            setupForWorkBuild();
+        }
 
-		handleUrlIntent(getIntent());
-	}
+        handleUrlIntent(getIntent());
+    }
 
-	private void checkForValidCredentialsInBackground() {
-		// In case there are credentials, we can validate them and skip this activity so that the
-		// user does not have to enter them again.
-		if (licenseService.hasCredentials()) {
-			backgroundExecutor.get().execute(new BackgroundTask<Boolean>() {
-				@Override
-				public void runBefore() {
-					// Nothing to do
-				}
+    private void checkForValidCredentialsInBackground() {
+        // In case there are credentials, we can validate them and skip this activity so that the
+        // user does not have to enter them again.
+        if (licenseService.hasCredentials()) {
+            backgroundExecutor.get().execute(new BackgroundTask<Boolean>() {
+                @Override
+                public void runBefore() {
+                    // Nothing to do
+                }
 
-				@Override
-				public Boolean runInBackground() {
-					return licenseService.validate(false) == null;
-				}
+                @Override
+                public Boolean runInBackground() {
+                    return licenseService.validate(false) == null;
+                }
 
-				@Override
-				public void runAfter(Boolean result) {
-					if (Boolean.TRUE.equals(result)) {
-						logger.info("Credentials are available and valid");
-						ConfigUtils.recreateActivity(EnterSerialActivity.this);
-					}
-				}
-			});
-		}
-	}
+                @Override
+                public void runAfter(Boolean result) {
+                    if (Boolean.TRUE.equals(result)) {
+                        logger.info("Credentials are available and valid");
+                        ConfigUtils.recreateActivity(EnterSerialActivity.this);
+                    }
+                }
+            });
+        }
+    }
 
-	private void setupForShopBuild() {
-		licenseKeyOrUsernameText.addTextChangedListener(new PasswordWatcher());
-		licenseKeyOrUsernameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-		licenseKeyOrUsernameText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(11)});
-		licenseKeyOrUsernameText.setOnKeyListener(new View.OnKeyListener() {
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-					if (licenseKeyOrUsernameText.getText().length() == 11) {
-						doUnlock();
-					}
-					return true;
-				}
-				return false;
-			}
-		});
-		unlockButton = findViewById(R.id.unlock_button);
-		unlockButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				doUnlock();
-			}
-		});
+    private void setupForShopBuild() {
+        licenseKeyOrUsernameText.addTextChangedListener(new PasswordWatcher());
+        licenseKeyOrUsernameText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        licenseKeyOrUsernameText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(11)});
+        licenseKeyOrUsernameText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (licenseKeyOrUsernameText.getText().length() == 11) {
+                        doUnlock();
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+        unlockButton = findViewById(R.id.unlock_button);
+        unlockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doUnlock();
+            }
+        });
 
-		this.enableLogin(false);
-	}
+        this.enableLogin(false);
+    }
 
-	@SuppressLint("StringFormatInvalid")
-	private void setupForWorkBuild() {
-		licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
-		passwordText.addTextChangedListener(new TextChangeWatcher());
-		loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
-		loginButton.setOnClickListener(v -> doUnlock());
+    @SuppressLint("StringFormatInvalid")
+    private void setupForWorkBuild() {
+        licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
+        passwordText.addTextChangedListener(new TextChangeWatcher());
+        loginButton = findViewById(getResources().getIdentifier("unlock_button_work", "id", getPackageName()));
+        loginButton.setOnClickListener(v -> doUnlock());
 
-		String appName = getString(R.string.app_name);
-		TextView lostCredentialsHelp = findViewById(getResources().getIdentifier("work_lost_credential_help", "id", getPackageName()));
-		lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help, appName));
+        String appName = getString(R.string.app_name);
+        TextView lostCredentialsHelp = findViewById(getResources().getIdentifier("work_lost_credential_help", "id", getPackageName()));
+        lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help, appName));
 
-		// Always enable login button
-		this.enableLogin(true);
-	}
+        // Always enable login button
+        this.enableLogin(true);
+    }
 
-	private void handleUrlIntent(@Nullable Intent intent) {
-		String scheme = null;
-		Uri data = null;
-		if (intent != null) {
-			data = intent.getData();
-			if (data != null) {
-				scheme = data.getScheme();
-			}
-		}
+    private void handleUrlIntent(@Nullable Intent intent) {
+        String scheme = null;
+        Uri data = null;
+        if (intent != null) {
+            data = intent.getData();
+            if (data != null) {
+                scheme = data.getScheme();
+            }
+        }
 
-		if (!ConfigUtils.isSerialLicenseValid()) {
-			if (scheme != null) {
-				if (scheme.startsWith(BuildConfig.uriScheme)) {
-					parseUrlAndCheck(data);
-				} else if (scheme.startsWith("https")) {
-					String path = data.getPath();
+        if (!ConfigUtils.isSerialLicenseValid()) {
+            if (scheme != null) {
+                if (scheme.startsWith(BuildConfig.uriScheme)) {
+                    parseUrlAndCheck(data);
+                } else if (scheme.startsWith("https")) {
+                    String path = data.getPath();
 
-					if (path != null && path.length() > 1) {
-						path = path.substring(1);
-						if (path.startsWith("license")) {
-							parseUrlAndCheck(data);
-						}
-					}
-				}
-			}
+                    if (path != null && path.length() > 1) {
+                        path = path.substring(1);
+                        if (path.startsWith("license")) {
+                            parseUrlAndCheck(data);
+                        }
+                    }
+                }
+            }
 
-			if (ConfigUtils.isWorkRestricted()) {
-				String username = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
-				String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
-				String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
+            if (ConfigUtils.isWorkRestricted()) {
+                String username = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
+                String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
+                String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
 
-				if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
-					check(new UserCredentials(username, password), server);
-				}
-			}
-		} else {
-			// We get here if called from url intent and we're already licensed
-			if (scheme != null) {
-				Toast.makeText(this, R.string.already_licensed, Toast.LENGTH_LONG).show();
-				finish();
-			}
-		}
-	}
+                if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
+                    check(new UserCredentials(username, password), server);
+                }
+            }
+        } else {
+            // We get here if called from url intent and we're already licensed
+            if (scheme != null) {
+                Toast.makeText(this, R.string.already_licensed, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
 
-	private void enableLogin(boolean enable) {
-		if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
-			if (this.unlockButton != null) {
-				unlockButton.setClickable(enable);
-				unlockButton.setEnabled(enable);
-			}
-		} else {
-			if (this.loginButton != null) {
-				this.loginButton.setClickable(true);
-				this.loginButton.setEnabled(true);
-			}
-		}
-	}
+    private void enableLogin(boolean enable) {
+        if (!ConfigUtils.isWorkBuild() && !ConfigUtils.isOnPremBuild()) {
+            if (this.unlockButton != null) {
+                unlockButton.setClickable(enable);
+                unlockButton.setEnabled(enable);
+            }
+        } else {
+            if (this.loginButton != null) {
+                this.loginButton.setClickable(true);
+                this.loginButton.setEnabled(true);
+            }
+        }
+    }
 
-	private void parseUrlAndCheck(Uri data) {
-		String query = data.getQuery();
-		if (!TestUtil.isEmptyOrNull(query)) {
-			if (licenseService instanceof LicenseServiceUser) {
-				parseWorkLicense(data);
-			} else {
-				parseConsumerLicense(data);
-			}
-		}
-	}
+    private void parseUrlAndCheck(Uri data) {
+        String query = data.getQuery();
+        if (!TestUtil.isEmptyOrNull(query)) {
+            if (licenseService instanceof LicenseServiceUser) {
+                parseWorkLicense(data);
+            } else {
+                parseConsumerLicense(data);
+            }
+        }
+    }
 
-	private void parseConsumerLicense(Uri data) {
-		final String key = data.getQueryParameter("key");
-		if (!TestUtil.isEmptyOrNull(key)) {
-			check(new SerialCredentials(key), null);
-		}
-	}
+    private void parseConsumerLicense(Uri data) {
+        final String key = data.getQueryParameter("key");
+        if (!TestUtil.isEmptyOrNull(key)) {
+            check(new SerialCredentials(key), null);
+        }
+    }
 
-	private void parseWorkLicense(Uri data) {
-		final String username = data.getQueryParameter("username");
-		final String password = data.getQueryParameter("password");
-		final String server = data.getQueryParameter("server");
+    private void parseWorkLicense(Uri data) {
+        final String username = data.getQueryParameter("username");
+        final String password = data.getQueryParameter("password");
+        final String server = data.getQueryParameter("server");
 
-		if (ConfigUtils.isOnPremBuild()) {
-			if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
-				check(new UserCredentials(username, password), server);
-			} else {
-				licenseKeyOrUsernameText.setText(username);
-				passwordText.setText(password);
-				serverText.setText(server);
-			}
-		} else {
-			if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
-				check(new UserCredentials(username, password), null);
-			} else {
-				licenseKeyOrUsernameText.setText(username);
-				passwordText.setText(password);
-			}
-		}
-	}
+        if (ConfigUtils.isOnPremBuild()) {
+            if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
+                check(new UserCredentials(username, password), server);
+            } else {
+                licenseKeyOrUsernameText.setText(username);
+                passwordText.setText(password);
+                serverText.setText(server);
+            }
+        } else {
+            if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
+                check(new UserCredentials(username, password), null);
+            } else {
+                licenseKeyOrUsernameText.setText(username);
+                passwordText.setText(password);
+            }
+        }
+    }
 
-	private void doUnlock() {
-		// hide keyboard to make error message visible on low resolution displays
-		EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
+    private void doUnlock() {
+        // hide keyboard to make error message visible on low resolution displays
+        EditTextUtil.hideSoftKeyboard(this.licenseKeyOrUsernameText);
 
-		this.enableLogin(false);
+        this.enableLogin(false);
 
-		if (ConfigUtils.isOnPremBuild()) {
-			if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString()) && !TestUtil.isEmptyOrNull(this.serverText.getText().toString())) {
-				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
-			} else {
-				this.enableLogin(true);
-				this.stateTextView.setText(getString(R.string.invalid_input));
-			}
-		} else if (ConfigUtils.isWorkBuild()) {
-			if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString())) {
-				this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
-			} else {
-				this.enableLogin(true);
-				this.stateTextView.setText(getString(R.string.invalid_input));
-			}
-		} else {
-			this.check(new SerialCredentials(this.licenseKeyOrUsernameText.getText().toString()), null);
-		}
-	}
+        if (ConfigUtils.isOnPremBuild()) {
+            if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString()) && !TestUtil.isEmptyOrNull(this.serverText.getText().toString())) {
+                this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
+            } else {
+                this.enableLogin(true);
+                this.stateTextView.setText(getString(R.string.invalid_input));
+            }
+        } else if (ConfigUtils.isWorkBuild()) {
+            if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString())) {
+                this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
+            } else {
+                this.enableLogin(true);
+                this.stateTextView.setText(getString(R.string.invalid_input));
+            }
+        } else {
+            this.check(new SerialCredentials(this.licenseKeyOrUsernameText.getText().toString()), null);
+        }
+    }
 
-	private class PasswordWatcher implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+    private class PasswordWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			String initial = s.toString();
-			String processed = initial.replaceAll("[^a-zA-Z0-9]", "");
-			processed = processed.replaceAll("([a-zA-Z0-9]{5})(?=[a-zA-Z0-9])", "$1-");
+        @Override
+        public void afterTextChanged(Editable s) {
+            String initial = s.toString();
+            String processed = initial.replaceAll("[^a-zA-Z0-9]", "");
+            processed = processed.replaceAll("([a-zA-Z0-9]{5})(?=[a-zA-Z0-9])", "$1-");
 
-			if (!initial.equals(processed)) {
-				s.replace(0, initial.length(), processed);
-			}
+            if (!initial.equals(processed)) {
+                s.replace(0, initial.length(), processed);
+            }
 
-			//enable login only if the length of the key is 11 chars
-			enableLogin(s.length() == 11);
-		}
-	}
+            //enable login only if the length of the key is 11 chars
+            enableLogin(s.length() == 11);
+        }
+    }
 
-	public class TextChangeWatcher implements TextWatcher {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+    public class TextChangeWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			if (stateTextView != null) {
-				stateTextView.setText("");
-			}
-		}
-	}
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (stateTextView != null) {
+                stateTextView.setText("");
+            }
+        }
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		if (licenseKeyOrUsernameText != null && !TestUtil.isBlankOrNull(licenseKeyOrUsernameText.getText())) {
-			outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
-		}
+        if (licenseKeyOrUsernameText != null && !TestUtil.isBlankOrNull(licenseKeyOrUsernameText.getText())) {
+            outState.putString(BUNDLE_LICENSE_KEY, licenseKeyOrUsernameText.getText().toString());
+        }
 
-		if (passwordText != null && !TestUtil.isBlankOrNull(passwordText.getText())) {
-			outState.putString(BUNDLE_PASSWORD, passwordText.getText().toString());
-		}
+        if (passwordText != null && !TestUtil.isBlankOrNull(passwordText.getText())) {
+            outState.putString(BUNDLE_PASSWORD, passwordText.getText().toString());
+        }
 
-		if (serverText != null && !TestUtil.isBlankOrNull(serverText.getText())) {
-			outState.putString(BUNDLE_SERVER, serverText.getText().toString());
-		}
-	}
+        if (serverText != null && !TestUtil.isBlankOrNull(serverText.getText())) {
+            outState.putString(BUNDLE_SERVER, serverText.getText().toString());
+        }
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void check(final LicenseService.Credentials credentials, String onPremServer) {
-		if (ConfigUtils.isOnPremBuild()) {
-			if (onPremServer != null) {
-				if (!onPremServer.startsWith("https://")) {
-					onPremServer = "https://" + onPremServer;
-				}
+    @SuppressLint("StaticFieldLeak")
+    private void check(final LicenseService.Credentials credentials, String onPremServer) {
+        if (ConfigUtils.isOnPremBuild()) {
+            if (onPremServer != null) {
+                if (!onPremServer.startsWith("https://")) {
+                    onPremServer = "https://" + onPremServer;
+                }
 
-				if (!onPremServer.endsWith(".oppf")) {
-					// Automatically expand hostnames to default provisioning URL
-					onPremServer += "/prov/config.oppf";
-				}
-			}
-			preferenceService.setOnPremServer(onPremServer);
-			preferenceService.setLicenseUsername(((UserCredentials)credentials).username);
-			preferenceService.setLicensePassword(((UserCredentials)credentials).password);
-		}
+                if (!onPremServer.endsWith(".oppf")) {
+                    // Automatically expand hostnames to default provisioning URL
+                    onPremServer += "/prov/config.oppf";
+                }
+            }
+            preferenceService.setOnPremServer(onPremServer);
+            preferenceService.setLicenseUsername(((UserCredentials) credentials).username);
+            preferenceService.setLicensePassword(((UserCredentials) credentials).password);
+        }
 
-		new AsyncTask<Void, Void, String>() {
-			@Override
-			protected void onPreExecute() {
-				GenericProgressDialog.newInstance(R.string.checking_serial, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CHECKING);
-			}
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                GenericProgressDialog.newInstance(R.string.checking_serial, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_CHECKING);
+            }
 
-			@Override
-			protected String doInBackground(Void... voids) {
-				String error = getString(R.string.error);
-				try {
-					error = licenseService.validate(credentials);
-					if (error == null) {
-						// validated
-						if (ConfigUtils.isWorkBuild()) {
-							AppRestrictionService.getInstance()
-									.fetchAndStoreWorkMDMSettings(
-											ThreemaApplication.getServiceManager().getAPIConnector(),
-											(UserCredentials) credentials
-									);
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-				return error;
-			}
+            @Override
+            protected String doInBackground(Void... voids) {
+                String error = getString(R.string.error);
+                try {
+                    error = licenseService.validate(credentials);
+                    if (error == null) {
+                        // validated
+                        if (ConfigUtils.isWorkBuild()) {
+                            AppRestrictionService.getInstance()
+                                .fetchAndStoreWorkMDMSettings(
+                                    ThreemaApplication.getServiceManager().getAPIConnector(),
+                                    (UserCredentials) credentials
+                                );
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Exception", e);
+                }
+                return error;
+            }
 
-			@Override
-			protected void onPostExecute(String error) {
-				DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CHECKING, true);
-				enableLogin(true);
-				if (error == null) {
-					ConfigUtils.recreateActivity(EnterSerialActivity.this);
-				} else {
-					changeState(error);
-				}
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(String error) {
+                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_CHECKING, true);
+                enableLogin(true);
+                if (error == null) {
+                    ConfigUtils.recreateActivity(EnterSerialActivity.this);
+                } else {
+                    changeState(error);
+                }
+            }
+        }.execute();
+    }
 
-	private void changeState(String state) {
-		this.stateTextView.setText(state);
-	}
+    private void changeState(String state) {
+        this.stateTextView.setText(state);
+    }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		// We override this method to avoid restarting the entire
-		// activity when the keyboard is opened or orientation changes
-		super.onConfigurationChanged(newConfig);
-	}
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        // We override this method to avoid restarting the entire
+        // activity when the keyboard is opened or orientation changes
+        super.onConfigurationChanged(newConfig);
+    }
 
-	@Override
-	protected void onNewIntent(@NonNull Intent intent) {
-		super.onNewIntent(intent);
-		handleUrlIntent(intent);
-	}
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        handleUrlIntent(intent);
+    }
 }

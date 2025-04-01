@@ -57,100 +57,101 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WorkerThread
 public class ModifyContactHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyContactHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyContactHandler");
 
-	private static final String FIELD_FIRST_NAME = "firstName";
-	private static final String FIELD_LAST_NAME = "lastName";
+    private static final String FIELD_FIRST_NAME = "firstName";
+    private static final String FIELD_LAST_NAME = "lastName";
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_INVALID_CONTACT,
-		Protocol.ERROR_NOT_ALLOWED_LINKED,
-		Protocol.ERROR_NOT_ALLOWED_BUSINESS,
-		Protocol.ERROR_VALUE_TOO_LONG,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_INVALID_CONTACT,
+        Protocol.ERROR_NOT_ALLOWED_LINKED,
+        Protocol.ERROR_NOT_ALLOWED_BUSINESS,
+        Protocol.ERROR_VALUE_TOO_LONG,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	private final MessageDispatcher dispatcher;
-	private final ContactService contactService;
+    private final MessageDispatcher dispatcher;
+    private final ContactService contactService;
 
-	@AnyThread
-	public ModifyContactHandler(MessageDispatcher dispatcher,
-	                            ContactService contactService) {
-		super(Protocol.SUB_TYPE_CONTACT);
-		this.dispatcher = dispatcher;
-		this.contactService = contactService;
-	}
+    @AnyThread
+    public ModifyContactHandler(MessageDispatcher dispatcher,
+                                ContactService contactService) {
+        super(Protocol.SUB_TYPE_CONTACT);
+        this.dispatcher = dispatcher;
+        this.contactService = contactService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received update contact message");
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received update contact message");
 
-		// Process args
-		final Map<String, Value> args = this.getArguments(message, false);
-		if (!args.containsKey(Protocol.ARGUMENT_TEMPORARY_ID)
-				|| !args.containsKey(Protocol.ARGUMENT_IDENTITY)) {
-			logger.error("Invalid contact update request, identity or temporaryId not set");
-			return;
-		}
-		final String identity = args.get(Protocol.ARGUMENT_IDENTITY).asStringValue().toString();
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        // Process args
+        final Map<String, Value> args = this.getArguments(message, false);
+        if (!args.containsKey(Protocol.ARGUMENT_TEMPORARY_ID)
+            || !args.containsKey(Protocol.ARGUMENT_IDENTITY)) {
+            logger.error("Invalid contact update request, identity or temporaryId not set");
+            return;
+        }
+        final String identity = args.get(Protocol.ARGUMENT_IDENTITY).asStringValue().toString();
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		// TODO(ANDR-3139): Use new contact model
-		// Validate identity
-		final ContactModel contactModel = this.contactService.getByIdentity(identity);
-		if (contactModel == null) {
-			this.failed(identity, temporaryId, Protocol.ERROR_INVALID_CONTACT);
-			return;
-		}
-		if (contactModel.isLinkedToAndroidContact()) {
-			this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_LINKED);
-			return;
-		}
+        // TODO(ANDR-3139): Use new contact model
+        // Validate identity
+        final ContactModel contactModel = this.contactService.getByIdentity(identity);
+        if (contactModel == null) {
+            this.failed(identity, temporaryId, Protocol.ERROR_INVALID_CONTACT);
+            return;
+        }
+        if (contactModel.isLinkedToAndroidContact()) {
+            this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_LINKED);
+            return;
+        }
 
-		contactModel.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
+        contactModel.setAcquaintanceLevel(AcquaintanceLevel.DIRECT);
 
-		// Process data
-		final Map<String, Value> data = this.getData(message, false);
+        // Process data
+        final Map<String, Value> data = this.getData(message, false);
 
-		if (data.containsKey(FIELD_FIRST_NAME)) {
-			final String firstName = this.getValueString(data.get(FIELD_FIRST_NAME));
-			if (firstName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_FIRST_NAME) {
-				this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-				return;
-			}
-			contactModel.setFirstName(firstName);
-		}
-		if (data.containsKey(FIELD_LAST_NAME)) {
-			final String lastName = this.getValueString(data.get(FIELD_LAST_NAME));
-			if (lastName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_LAST_NAME) {
-				this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-				return;
-			}
-			contactModel.setLastName(lastName);
-		}
+        if (data.containsKey(FIELD_FIRST_NAME)) {
+            final String firstName = this.getValueString(data.get(FIELD_FIRST_NAME));
+            if (firstName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_FIRST_NAME) {
+                this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
+                return;
+            }
+            contactModel.setFirstName(firstName);
+        }
+        if (data.containsKey(FIELD_LAST_NAME)) {
+            final String lastName = this.getValueString(data.get(FIELD_LAST_NAME));
+            if (lastName.getBytes(UTF_8).length > Protocol.LIMIT_BYTES_LAST_NAME) {
+                this.failed(identity, temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
+                return;
+            }
+            contactModel.setLastName(lastName);
+        }
 
-		// Update avatar
-		if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
-			if (ContactUtil.isGatewayContact(contactModel)) {
-				this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_BUSINESS);
-				return;
-			} else {
-				try {
-					final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
-					if (avatarValue == null || avatarValue.isNilValue()) {
-						// Clear avatar
-						this.contactService.removeUserDefinedProfilePicture(contactModel, TriggerSource.LOCAL);
-					} else {
-						// Set avatar
-						final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
-						if (bmp.length > 0) {
-							Bitmap avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
-							// Resize to max allowed size
-							avatar = BitmapUtil.resizeBitmap(avatar,
-									ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-									ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
+        // Update avatar
+        if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
+            if (ContactUtil.isGatewayContact(contactModel)) {
+                this.failed(identity, temporaryId, Protocol.ERROR_NOT_ALLOWED_BUSINESS);
+                return;
+            } else {
+                try {
+                    final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
+                    if (avatarValue == null || avatarValue.isNilValue()) {
+                        // Clear avatar
+                        this.contactService.removeUserDefinedProfilePicture(contactModel, TriggerSource.LOCAL);
+                    } else {
+                        // Set avatar
+                        final byte[] bmp = avatarValue.asBinaryValue().asByteArray();
+                        if (bmp.length > 0) {
+                            Bitmap avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+                            // Resize to max allowed size
+                            avatar = BitmapUtil.resizeBitmap(avatar,
+                                ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
+                                ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
                             this.contactService.setUserDefinedProfilePicture(
                                 contactModel,
                                 // Without quality loss
@@ -158,60 +159,60 @@ public class ModifyContactHandler extends MessageReceiver {
                                     100),
                                 TriggerSource.LOCAL
                             );
-						}
-					}
-				} catch (Exception e) {
-					logger.error("Failed to save avatar", e);
-					this.failed(identity, temporaryId, Protocol.ERROR_INTERNAL);
-					return;
-				}
-			}
-		}
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Failed to save avatar", e);
+                    this.failed(identity, temporaryId, Protocol.ERROR_INTERNAL);
+                    return;
+                }
+            }
+        }
 
-		// Save the contact model
-		this.contactService.save(contactModel);
+        // Save the contact model
+        this.contactService.save(contactModel);
 
-		// Return updated contact
-		this.success(identity, temporaryId, contactModel);
-	}
+        // Return updated contact
+        this.success(identity, temporaryId, contactModel);
+    }
 
-	/**
-	 * Respond with the modified contact model.
-	 */
-	private void success(String threemaId, String temporaryId, ContactModel contact) {
-		logger.debug("Respond modify contact success");
-		try {
-			this.send(this.dispatcher,
-					new MsgpackObjectBuilder()
-						.put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact)),
-					new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, true)
-						.put(Protocol.ARGUMENT_IDENTITY, threemaId)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-			);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+    /**
+     * Respond with the modified contact model.
+     */
+    private void success(String threemaId, String temporaryId, ContactModel contact) {
+        logger.debug("Respond modify contact success");
+        try {
+            this.send(this.dispatcher,
+                new MsgpackObjectBuilder()
+                    .put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact)),
+                new MsgpackObjectBuilder()
+                    .put(Protocol.ARGUMENT_SUCCESS, true)
+                    .put(Protocol.ARGUMENT_IDENTITY, threemaId)
+                    .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+            );
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	/**
-	 * Respond with an error code.
-	 */
-	private void failed(String threemaId, String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond modify contact failed ({})", errorCode);
-		this.send(this.dispatcher,
-				new MsgpackObjectBuilder()
-						.putNull(Protocol.SUB_TYPE_RECEIVER),
-				new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, false)
-						.put(Protocol.ARGUMENT_ERROR, errorCode)
-						.put(Protocol.ARGUMENT_IDENTITY, threemaId)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-		);
-	}
+    /**
+     * Respond with an error code.
+     */
+    private void failed(String threemaId, String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond modify contact failed ({})", errorCode);
+        this.send(this.dispatcher,
+            new MsgpackObjectBuilder()
+                .putNull(Protocol.SUB_TYPE_RECEIVER),
+            new MsgpackObjectBuilder()
+                .put(Protocol.ARGUMENT_SUCCESS, false)
+                .put(Protocol.ARGUMENT_ERROR, errorCode)
+                .put(Protocol.ARGUMENT_IDENTITY, threemaId)
+                .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+        );
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

@@ -57,321 +57,320 @@ import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListServiceImpl implements DistributionListService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListServiceImpl");
-	private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListServiceImpl");
+    private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
 
-	private final Context context;
-	private final AvatarCacheService avatarCacheService;
-	private final DatabaseServiceNew databaseServiceNew;
-	private final ContactService contactService;
-	private final @NonNull ConversationTagService conversationTagService;
+    private final Context context;
+    private final AvatarCacheService avatarCacheService;
+    private final DatabaseServiceNew databaseServiceNew;
+    private final ContactService contactService;
+    private final @NonNull ConversationTagService conversationTagService;
 
-	public DistributionListServiceImpl(
-			Context context,
-			AvatarCacheService avatarCacheService,
-			DatabaseServiceNew databaseServiceNew,
-			ContactService contactService,
-			@NonNull ConversationTagService conversationTagService
-	) {
-		this.context = context;
-		this.avatarCacheService = avatarCacheService;
-		this.databaseServiceNew = databaseServiceNew;
-		this.contactService = contactService;
-		this.conversationTagService = conversationTagService;
-	}
+    public DistributionListServiceImpl(
+        Context context,
+        AvatarCacheService avatarCacheService,
+        DatabaseServiceNew databaseServiceNew,
+        ContactService contactService,
+        @NonNull ConversationTagService conversationTagService
+    ) {
+        this.context = context;
+        this.avatarCacheService = avatarCacheService;
+        this.databaseServiceNew = databaseServiceNew;
+        this.contactService = contactService;
+        this.conversationTagService = conversationTagService;
+    }
 
-	@Override
-	public DistributionListModel getById(long id) {
-		return this.databaseServiceNew.getDistributionListModelFactory().getById(
-				id
-		);
-	}
+    @Override
+    public DistributionListModel getById(long id) {
+        return this.databaseServiceNew.getDistributionListModelFactory().getById(
+            id
+        );
+    }
 
-	@Override
-	public DistributionListModel createDistributionList(
-		@Nullable String name,
-		@NonNull String[] memberIdentities
-	) {
-		return createDistributionList(name, memberIdentities, false);
-	}
+    @Override
+    public DistributionListModel createDistributionList(
+        @Nullable String name,
+        @NonNull String[] memberIdentities
+    ) {
+        return createDistributionList(name, memberIdentities, false);
+    }
 
-	@Override
-	public DistributionListModel createDistributionList(
-		@Nullable String name,
-		@NonNull String[] memberIdentities,
-		boolean isAdHocDistributionList
-	) {
-		// Create group model in database
-		final Date now = new Date();
-		final DistributionListModel distributionListModel = new DistributionListModel()
-			.setName(name)
-			.setCreatedAt(now)
-			.setLastUpdate(now)
-			.setAdHocDistributionList(isAdHocDistributionList);
-		this.databaseServiceNew.getDistributionListModelFactory().create(
-			distributionListModel
-		);
+    @Override
+    public DistributionListModel createDistributionList(
+        @Nullable String name,
+        @NonNull String[] memberIdentities,
+        boolean isAdHocDistributionList
+    ) {
+        // Create group model in database
+        final Date now = new Date();
+        final DistributionListModel distributionListModel = new DistributionListModel()
+            .setName(name)
+            .setCreatedAt(now)
+            .setLastUpdate(now)
+            .setAdHocDistributionList(isAdHocDistributionList);
+        this.databaseServiceNew.getDistributionListModelFactory().create(
+            distributionListModel
+        );
 
-		// Add members to distribution list
-		for (String identity : memberIdentities) {
-			this.addMemberToDistributionList(distributionListModel, identity);
-		}
+        // Add members to distribution list
+        for (String identity : memberIdentities) {
+            this.addMemberToDistributionList(distributionListModel, identity);
+        }
 
-		// Notify listeners
-		ListenerManager.distributionListListeners.handle(listener -> listener.onCreate(distributionListModel));
+        // Notify listeners
+        ListenerManager.distributionListListeners.handle(listener -> listener.onCreate(distributionListModel));
 
-		return distributionListModel;
-	}
+        return distributionListModel;
+    }
 
-	@Override
-	public DistributionListModel updateDistributionList(final DistributionListModel distributionListModel, String name, String[] memberIdentities) {
-		distributionListModel.setName(name);
+    @Override
+    public DistributionListModel updateDistributionList(final DistributionListModel distributionListModel, String name, String[] memberIdentities) {
+        distributionListModel.setName(name);
 
-		//create
-		this.databaseServiceNew.getDistributionListModelFactory().update(
-				distributionListModel
-		);
+        //create
+        this.databaseServiceNew.getDistributionListModelFactory().update(
+            distributionListModel
+        );
 
-		if(this.removeMembers(distributionListModel)) {
-			for (String identity : memberIdentities) {
-				this.addMemberToDistributionList(distributionListModel, identity);
-			}
-		}
+        if (this.removeMembers(distributionListModel)) {
+            for (String identity : memberIdentities) {
+                this.addMemberToDistributionList(distributionListModel, identity);
+            }
+        }
 
-		ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-			@Override
-			public void handle(DistributionListListener listener) {
-				listener.onModify(distributionListModel);
-			}
-		});
-		return distributionListModel;
-	}
+        ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
+            @Override
+            public void handle(DistributionListListener listener) {
+                listener.onModify(distributionListModel);
+            }
+        });
+        return distributionListModel;
+    }
 
-	@Nullable
-	@Override
-	public Bitmap getAvatar(@Nullable DistributionListModel model, @Nullable AvatarOptions options) {
-		return avatarCacheService.getDistributionListAvatarLow(model);
-	}
+    @Nullable
+    @Override
+    public Bitmap getAvatar(@Nullable DistributionListModel model, @Nullable AvatarOptions options) {
+        return avatarCacheService.getDistributionListAvatarLow(model);
+    }
 
-	@Override
-	public void loadAvatarIntoImage(
-		@NonNull DistributionListModel model,
-		@NonNull ImageView imageView,
-		@NonNull AvatarOptions options,
-		@NonNull RequestManager requestManager
-	) {
-		avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options, requestManager);
-	}
+    @Override
+    public void loadAvatarIntoImage(
+        @NonNull DistributionListModel model,
+        @NonNull ImageView imageView,
+        @NonNull AvatarOptions options,
+        @NonNull RequestManager requestManager
+    ) {
+        avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options, requestManager);
+    }
 
-	@Override
-	public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
-		if (distributionList != null) {
-			return distributionList.getThemedColor(context);
-		}
-		return ColorUtil.getInstance().getCurrentThemeGray(context);
-	}
+    @Override
+    public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
+        if (distributionList != null) {
+            return distributionList.getThemedColor(context);
+        }
+        return ColorUtil.getInstance().getCurrentThemeGray(context);
+    }
 
-	@Override
-	public boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity) {
-		DistributionListMemberModel distributionListMemberModel = this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListIdAndIdentity(
-				distributionListModel.getId(),
-				identity
-		);
-		if(distributionListMemberModel == null) {
-			distributionListMemberModel = new DistributionListMemberModel();
-		}
-		distributionListMemberModel
-				.setDistributionListId(distributionListModel.getId())
-				.setIdentity(identity)
-				.setActive(true);
+    @Override
+    public boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity) {
+        DistributionListMemberModel distributionListMemberModel = this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListIdAndIdentity(
+            distributionListModel.getId(),
+            identity
+        );
+        if (distributionListMemberModel == null) {
+            distributionListMemberModel = new DistributionListMemberModel();
+        }
+        distributionListMemberModel
+            .setDistributionListId(distributionListModel.getId())
+            .setIdentity(identity)
+            .setActive(true);
 
-		if(distributionListMemberModel.getId() > 0) {
-			this.databaseServiceNew.getDistributionListMemberModelFactory().update(
-					distributionListMemberModel
-			);
-		}
-		else {
-			this.databaseServiceNew.getDistributionListMemberModelFactory().create(
-					distributionListMemberModel
-			);
-		}
-		return true;
-	}
+        if (distributionListMemberModel.getId() > 0) {
+            this.databaseServiceNew.getDistributionListMemberModelFactory().update(
+                distributionListMemberModel
+            );
+        } else {
+            this.databaseServiceNew.getDistributionListMemberModelFactory().create(
+                distributionListMemberModel
+            );
+        }
+        return true;
+    }
 
-	@Override
-	public boolean remove(final DistributionListModel distributionListModel) {
-		// Obtain some services through service manager
-		//
-		// Note: We cannot put these services in the constructor due to circular dependencies.
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Missing serviceManager, cannot remove distribution list");
-			return false;
-		}
-		final ConversationService conversationService;
-		try {
-			conversationService = serviceManager.getConversationService();
-		} catch (ThreemaException e) {
-			logger.error("Could not obtain services when removing distribution list", e);
-			return false;
-		}
+    @Override
+    public boolean remove(final DistributionListModel distributionListModel) {
+        // Obtain some services through service manager
+        //
+        // Note: We cannot put these services in the constructor due to circular dependencies.
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            logger.error("Missing serviceManager, cannot remove distribution list");
+            return false;
+        }
+        final ConversationService conversationService;
+        try {
+            conversationService = serviceManager.getConversationService();
+        } catch (ThreemaException e) {
+            logger.error("Could not obtain services when removing distribution list", e);
+            return false;
+        }
 
-		// Remove distribution list members
-		if(!this.removeMembers(distributionListModel)) {
-			return false;
-		}
+        // Remove distribution list members
+        if (!this.removeMembers(distributionListModel)) {
+            return false;
+        }
 
-		// Delete shortcuts
-		ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(distributionListModel));
-		ShortcutUtil.deletePinnedShortcut(getUniqueIdString(distributionListModel));
+        // Delete shortcuts
+        ShortcutUtil.deleteShareTargetShortcut(getUniqueIdString(distributionListModel));
+        ShortcutUtil.deletePinnedShortcut(getUniqueIdString(distributionListModel));
 
-		// Remove conversation
-		conversationService.removeFromCache(distributionListModel);
+        // Remove conversation
+        conversationService.removeFromCache(distributionListModel);
 
-		// Remove conversation tags
-		conversationTagService.removeAll(
-			ConversationUtil.getDistributionListConversationUid(distributionListModel.getId())
-		);
+        // Remove conversation tags
+        conversationTagService.removeAll(
+            ConversationUtil.getDistributionListConversationUid(distributionListModel.getId())
+        );
 
-		// Delete distribution list fully from database
-		this.databaseServiceNew.getDistributionListModelFactory().delete(distributionListModel);
+        // Delete distribution list fully from database
+        this.databaseServiceNew.getDistributionListModelFactory().delete(distributionListModel);
 
-		// Notify listeners
-		ListenerManager.distributionListListeners.handle(listener -> listener.onRemove(distributionListModel));
+        // Notify listeners
+        ListenerManager.distributionListListeners.handle(listener -> listener.onRemove(distributionListModel));
 
-		return true;
-	}
+        return true;
+    }
 
-	private boolean removeMembers(DistributionListModel distributionListModel) {
-		//remove all members first
-		this.databaseServiceNew.getDistributionListMemberModelFactory().deleteByDistributionListId(
-				distributionListModel.getId());
+    private boolean removeMembers(DistributionListModel distributionListModel) {
+        //remove all members first
+        this.databaseServiceNew.getDistributionListMemberModelFactory().deleteByDistributionListId(
+            distributionListModel.getId());
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean removeAll() {
-		//remove all members first
-		this.databaseServiceNew.getDistributionListMemberModelFactory().deleteAll();
+    @Override
+    public boolean removeAll() {
+        //remove all members first
+        this.databaseServiceNew.getDistributionListMemberModelFactory().deleteAll();
 
-		//...  messages
-		this.databaseServiceNew.getDistributionListMessageModelFactory().deleteAll();
+        //...  messages
+        this.databaseServiceNew.getDistributionListMessageModelFactory().deleteAll();
 
-		//.. remove lists
-		this.databaseServiceNew.getDistributionListModelFactory().deleteAll();
+        //.. remove lists
+        this.databaseServiceNew.getDistributionListModelFactory().deleteAll();
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String[] getDistributionListIdentities(DistributionListModel distributionListModel) {
-		List<DistributionListMemberModel> memberModels = this.getDistributionListMembers(distributionListModel);
-		if(memberModels != null) {
-			String[] res = new String[memberModels.size()];
-			for(int n = 0; n < res.length; n++) {
-				res[n] = memberModels.get(n).getIdentity();
-			}
-			return res;
-		}
+    @Override
+    public String[] getDistributionListIdentities(DistributionListModel distributionListModel) {
+        List<DistributionListMemberModel> memberModels = this.getDistributionListMembers(distributionListModel);
+        if (memberModels != null) {
+            String[] res = new String[memberModels.size()];
+            for (int n = 0; n < res.length; n++) {
+                res[n] = memberModels.get(n).getIdentity();
+            }
+            return res;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 
-	@Override
-	public List<DistributionListMemberModel> getDistributionListMembers(DistributionListModel distributionListModel) {
-		return this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListId(
-				distributionListModel.getId()
-		);
-	}
+    @Override
+    public List<DistributionListMemberModel> getDistributionListMembers(DistributionListModel distributionListModel) {
+        return this.databaseServiceNew.getDistributionListMemberModelFactory().getByDistributionListId(
+            distributionListModel.getId()
+        );
+    }
 
-	@Override
-	public List<DistributionListModel> getAll() {
-		return this.getAll(null);
-	}
+    @Override
+    public List<DistributionListModel> getAll() {
+        return this.getAll(null);
+    }
 
-	@Override
-	public List<DistributionListModel> getAll(DistributionListFilter filter) {
-		return this.databaseServiceNew.getDistributionListModelFactory().filter(
-				filter
-		);
-	}
+    @Override
+    public List<DistributionListModel> getAll(DistributionListFilter filter) {
+        return this.databaseServiceNew.getDistributionListModelFactory().filter(
+            filter
+        );
+    }
 
-	@Override
-	public List<ContactModel> getMembers(@Nullable DistributionListModel distributionListModel) {
-		List<ContactModel> contactModels = new ArrayList<>();
-		if (distributionListModel != null) {
-			for (DistributionListMemberModel distributionListMemberModel : this.getDistributionListMembers(distributionListModel)) {
-				ContactModel contactModel = this.contactService.getByIdentity(distributionListMemberModel.getIdentity());
-				if (contactModel != null) {
-					contactModels.add(contactModel);
-				}
-			}
-		}
-		return contactModels;
-	}
+    @Override
+    public List<ContactModel> getMembers(@Nullable DistributionListModel distributionListModel) {
+        List<ContactModel> contactModels = new ArrayList<>();
+        if (distributionListModel != null) {
+            for (DistributionListMemberModel distributionListMemberModel : this.getDistributionListMembers(distributionListModel)) {
+                ContactModel contactModel = this.contactService.getByIdentity(distributionListMemberModel.getIdentity());
+                if (contactModel != null) {
+                    contactModels.add(contactModel);
+                }
+            }
+        }
+        return contactModels;
+    }
 
-	@Override
-	public String getMembersString(DistributionListModel distributionListModel) {
-		StringBuilder builder = new StringBuilder();
-		for(ContactModel contactModel: this.getMembers(distributionListModel)) {
-			if(builder.length() > 0) {
-				builder.append(", ");
-			}
-			builder.append(NameUtil.getDisplayNameOrNickname(contactModel, true));
-		}
-		return builder.toString();
-	}
+    @Override
+    public String getMembersString(DistributionListModel distributionListModel) {
+        StringBuilder builder = new StringBuilder();
+        for (ContactModel contactModel : this.getMembers(distributionListModel)) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append(NameUtil.getDisplayNameOrNickname(contactModel, true));
+        }
+        return builder.toString();
+    }
 
-	@Override
-	public DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel) {
-		return new DistributionListMessageReceiver(
-				this.databaseServiceNew,
-				this.contactService,
-				distributionListModel,
-				this);
-	}
+    @Override
+    public DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel) {
+        return new DistributionListMessageReceiver(
+            this.databaseServiceNew,
+            this.contactService,
+            distributionListModel,
+            this);
+    }
 
-	@Override
-	public String getUniqueIdString(DistributionListModel distributionListModel) {
-		if (distributionListModel != null) {
-			try {
-				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + distributionListModel.getId()).getBytes());
-				return Base32.encode(messageDigest.digest());
-			} catch (NoSuchAlgorithmException e) {
-				logger.error("getUniqueIdString failed", e);
-			}
-		}
-		return "";
-	}
+    @Override
+    public String getUniqueIdString(DistributionListModel distributionListModel) {
+        if (distributionListModel != null) {
+            try {
+                MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+                messageDigest.update((DISTRIBUTION_LIST_UID_PREFIX + distributionListModel.getId()).getBytes());
+                return Base32.encode(messageDigest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("getUniqueIdString failed", e);
+            }
+        }
+        return "";
+    }
 
-	@Override
-	public void setIsArchived(DistributionListModel distributionListModel, boolean archived) {
-		if (distributionListModel != null && distributionListModel.isArchived() != archived) {
-			distributionListModel.setArchived(archived);
-			save(distributionListModel);
+    @Override
+    public void setIsArchived(DistributionListModel distributionListModel, boolean archived) {
+        if (distributionListModel != null && distributionListModel.isArchived() != archived) {
+            distributionListModel.setArchived(archived);
+            save(distributionListModel);
 
-			ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-				@Override
-				public void handle(DistributionListListener listener) {
-					listener.onModify(distributionListModel);
-				}
-			});
-		}
-	}
+            ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
+                @Override
+                public void handle(DistributionListListener listener) {
+                    listener.onModify(distributionListModel);
+                }
+            });
+        }
+    }
 
-	@Override
-	public void bumpLastUpdate(@NonNull DistributionListModel distributionListModel) {
-		distributionListModel.setLastUpdate(new Date());
-		save(distributionListModel);
-		ListenerManager.distributionListListeners.handle(listener -> listener.onModify(distributionListModel));
-	}
+    @Override
+    public void bumpLastUpdate(@NonNull DistributionListModel distributionListModel) {
+        distributionListModel.setLastUpdate(new Date());
+        save(distributionListModel);
+        ListenerManager.distributionListListeners.handle(listener -> listener.onModify(distributionListModel));
+    }
 
-	private void save(DistributionListModel distributionListModel) {
-		this.databaseServiceNew.getDistributionListModelFactory().createOrUpdate(
-			distributionListModel
-		);
-	}
+    private void save(DistributionListModel distributionListModel) {
+        this.databaseServiceNew.getDistributionListModelFactory().createOrUpdate(
+            distributionListModel
+        );
+    }
 }

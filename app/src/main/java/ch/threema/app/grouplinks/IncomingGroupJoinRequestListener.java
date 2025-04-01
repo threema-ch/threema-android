@@ -26,7 +26,8 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public interface IncomingGroupJoinRequestListener {
-	@AnyThread
-	void onReceived(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel);
-	void onRespond();
+    @AnyThread
+    void onReceived(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel);
+
+    void onRespond();
 }

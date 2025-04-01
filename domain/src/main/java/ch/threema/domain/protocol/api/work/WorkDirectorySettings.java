@@ -26,6 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkDirectorySettings implements Serializable {
-	public boolean enabled = false;
-	public List<WorkDirectoryCategory> categories = new ArrayList<>();
+    public boolean enabled = false;
+    public List<WorkDirectoryCategory> categories = new ArrayList<>();
 }

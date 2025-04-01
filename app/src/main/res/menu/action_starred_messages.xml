@@ -7,5 +7,5 @@
         app:iconTint="?attr/colorPrimary"
         android:orderInCategory="15"
         android:title="@string/remove_star"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

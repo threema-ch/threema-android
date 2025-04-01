@@ -52,7 +52,9 @@ public class ResponseData {
     public String versionCode;
     public String userId;
     public long timestamp;
-    /** Response-specific data. */
+    /**
+     * Response-specific data.
+     */
     public String extra;
 
     public String responseData;
@@ -62,8 +64,8 @@ public class ResponseData {
      * Parses response string into ResponseData.
      *
      * @param responseData response data string
-     * @throws IllegalArgumentException upon parsing error
      * @return ResponseData object
+     * @throws IllegalArgumentException upon parsing error
      */
     public static ResponseData parse(String responseData, String signature) {
         // Must parse out main response data and response-specific data.
@@ -100,9 +102,9 @@ public class ResponseData {
 
     @Override
     public String toString() {
-        return TextUtils.join("|", new Object[] {
-                responseCode, nonce, packageName, versionCode,
-                userId, timestamp
+        return TextUtils.join("|", new Object[]{
+            responseCode, nonce, packageName, versionCode,
+            userId, timestamp
         });
     }
 }

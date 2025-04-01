@@ -35,33 +35,33 @@ import ch.threema.base.utils.LoggingUtil;
  * Simple service to stop all webclient sessions - to be used from the persistent notification
  */
 public class StopSessionsAndroidService extends Service {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("StopSessionsAndroidService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("StopSessionsAndroidService");
 
-	private SessionService sessionService;
+    private SessionService sessionService;
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-		try {
-			sessionService = ThreemaApplication.getServiceManager().getWebClientServiceManager().getSessionService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        try {
+            sessionService = ThreemaApplication.getServiceManager().getWebClientServiceManager().getSessionService();
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (sessionService != null) {
-			sessionService.stopAll(DisconnectContext.byUs(DisconnectContext.REASON_SESSION_STOPPED));
-		}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (sessionService != null) {
+            sessionService.stopAll(DisconnectContext.byUs(DisconnectContext.REASON_SESSION_STOPPED));
+        }
 
-		stopSelf();
+        stopSelf();
 
-		return START_NOT_STICKY;
-	}
+        return START_NOT_STICKY;
+    }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }

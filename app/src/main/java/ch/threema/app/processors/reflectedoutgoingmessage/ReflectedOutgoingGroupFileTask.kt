@@ -84,7 +84,11 @@ internal class ReflectedOutgoingGroupFileTask(
 
         // 4. Save group message model and inform listeners about new message
         messageService.save(groupMessageModel)
-        ListenerManager.messageListeners.handle { messageListener -> messageListener.onNew(groupMessageModel) }
+        ListenerManager.messageListeners.handle { messageListener ->
+            messageListener.onNew(
+                groupMessageModel
+            )
+        }
 
         // 5. Download thumbnail and content blob (if auto download enabled)
         processMediaContent(fileData, groupMessageModel)

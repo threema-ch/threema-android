@@ -45,109 +45,109 @@ import ch.threema.storage.models.ContactModel;
 
 public class WorkUserMemberListFragment extends MemberListFragment {
 
-	@Override
-	protected String getBundleName() {
-		return "WorkerUserMemberListState";
-	}
+    @Override
+    protected String getBundleName() {
+        return "WorkerUserMemberListState";
+    }
 
-	@Override
-	protected int getEmptyText() {
-		return R.string.no_matching_work_contacts;
-	}
+    @Override
+    protected int getEmptyText() {
+        return R.string.no_matching_work_contacts;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	protected void createListAdapter(ArrayList<Integer> checkedItemPositions, final ArrayList<String> preselectedIdentities, ArrayList<String> excludedIdentities, boolean groups, boolean profilePics) {
-		new AsyncTask<Void, Void, List<ContactModel>>() {
-			@Override
-			protected List<ContactModel> doInBackground(Void... voids) {
-				final IdentityState[] contactStates;
-				if (preferenceService.showInactiveContacts()) {
-					contactStates = new IdentityState[]{
-						IdentityState.ACTIVE,
-						IdentityState.INACTIVE
-					};
-				} else {
-					contactStates = new IdentityState[]{
-						IdentityState.ACTIVE
-					};
-				}
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    protected void createListAdapter(ArrayList<Integer> checkedItemPositions, final ArrayList<String> preselectedIdentities, ArrayList<String> excludedIdentities, boolean groups, boolean profilePics) {
+        new AsyncTask<Void, Void, List<ContactModel>>() {
+            @Override
+            protected List<ContactModel> doInBackground(Void... voids) {
+                final IdentityState[] contactStates;
+                if (preferenceService.showInactiveContacts()) {
+                    contactStates = new IdentityState[]{
+                        IdentityState.ACTIVE,
+                        IdentityState.INACTIVE
+                    };
+                } else {
+                    contactStates = new IdentityState[]{
+                        IdentityState.ACTIVE
+                    };
+                }
 
-				List<ContactModel> contactModels = Functional.filter(contactService.find(new ContactService.Filter() {
-					@Override
-					public IdentityState[] states() {
-						return contactStates;
-					}
+                List<ContactModel> contactModels = Functional.filter(contactService.find(new ContactService.Filter() {
+                    @Override
+                    public IdentityState[] states() {
+                        return contactStates;
+                    }
 
-					@Override
-					public Long requiredFeature() {
-						return groups ? ThreemaFeature.GROUP_CHAT : null;
-					}
+                    @Override
+                    public Long requiredFeature() {
+                        return groups ? ThreemaFeature.GROUP_CHAT : null;
+                    }
 
-					@Override
-					public Boolean fetchMissingFeatureLevel() {
-						return groups;
-					}
+                    @Override
+                    public Boolean fetchMissingFeatureLevel() {
+                        return groups;
+                    }
 
-					@Override
-					public Boolean includeMyself() {
-						return false;
-					}
+                    @Override
+                    public Boolean includeMyself() {
+                        return false;
+                    }
 
-					@Override
-					public Boolean includeHidden() {
-						return false;
-					}
+                    @Override
+                    public Boolean includeHidden() {
+                        return false;
+                    }
 
-					@Override
-					public Boolean onlyWithReceiptSettings() {
-						return false;
-					}
-				}), new IPredicateNonNull<ContactModel>() {
-					@Override
-					public boolean apply(@NonNull ContactModel type) {
-						return type.isWork() && (!profilePics || !ContactUtil.isEchoEchoOrGatewayContact(type));
-					}
-				});
+                    @Override
+                    public Boolean onlyWithReceiptSettings() {
+                        return false;
+                    }
+                }), new IPredicateNonNull<ContactModel>() {
+                    @Override
+                    public boolean apply(@NonNull ContactModel type) {
+                        return type.isWork() && (!profilePics || !ContactUtil.isEchoEchoOrGatewayContact(type));
+                    }
+                });
 
-				if (excludedIdentities != null) {
-					//exclude existing ids
-					contactModels = Functional.filter(contactModels, new IPredicateNonNull<ContactModel>() {
-						@Override
-						public boolean apply(@NonNull ContactModel contactModel) {
-							return !excludedIdentities.contains(contactModel.getIdentity());
-						}
-					});
-				}
-				return contactModels;
-			}
+                if (excludedIdentities != null) {
+                    //exclude existing ids
+                    contactModels = Functional.filter(contactModels, new IPredicateNonNull<ContactModel>() {
+                        @Override
+                        public boolean apply(@NonNull ContactModel contactModel) {
+                            return !excludedIdentities.contains(contactModel.getIdentity());
+                        }
+                    });
+                }
+                return contactModels;
+            }
 
-			@Override
-			protected void onPostExecute(List<ContactModel> contactModels) {
-				if (isAdded()) {
-					adapter = new UserListAdapter(
-						activity,
-						contactModels,
-						preselectedIdentities,
-						checkedItemPositions,
-						contactService,
+            @Override
+            protected void onPostExecute(List<ContactModel> contactModels) {
+                if (isAdded()) {
+                    adapter = new UserListAdapter(
+                        activity,
+                        contactModels,
+                        preselectedIdentities,
+                        checkedItemPositions,
+                        contactService,
                         blockedIdentitiesService,
-						hiddenChatsListService,
-						preferenceService,
-						WorkUserMemberListFragment.this,
-						Glide.with(ThreemaApplication.getAppContext())
-					);
-					setListAdapter(adapter);
-					getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-					if (listInstanceState != null) {
-						if (isAdded() && getView() != null && getActivity() != null) {
-							getListView().onRestoreInstanceState(listInstanceState);
-						}
-						listInstanceState = null;
-					}
-					onAdapterCreated();
-				}
-			}
-		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	}
+                        hiddenChatsListService,
+                        preferenceService,
+                        WorkUserMemberListFragment.this,
+                        Glide.with(ThreemaApplication.getAppContext())
+                    );
+                    setListAdapter(adapter);
+                    getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+                    if (listInstanceState != null) {
+                        if (isAdded() && getView() != null && getActivity() != null) {
+                            getListView().onRestoreInstanceState(listInstanceState);
+                        }
+                        listInstanceState = null;
+                    }
+                    onAdapterCreated();
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 }

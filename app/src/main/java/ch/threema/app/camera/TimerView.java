@@ -40,79 +40,81 @@ import ch.threema.app.R;
 import ch.threema.app.utils.LocaleUtil;
 
 public class TimerView extends FrameLayout {
-	View parentView;
-	TextView counterView;
-	CircularProgressIndicator circularProgressBar;
-	private final Handler timeDisplayHandler = new Handler();
-	private Runnable timeDisplayRunnable;
-	private OnTimerExpiredListener timerExpiredListener;
-	private long startTimeMs;
-	private long maxTimeMs = 5 * DateUtils.MINUTE_IN_MILLIS;
-	
-	public TimerView(@NonNull Context context) {
-		this(context, null);
-	}
+    View parentView;
+    TextView counterView;
+    CircularProgressIndicator circularProgressBar;
+    private final Handler timeDisplayHandler = new Handler();
+    private Runnable timeDisplayRunnable;
+    private OnTimerExpiredListener timerExpiredListener;
+    private long startTimeMs;
+    private long maxTimeMs = 5 * DateUtils.MINUTE_IN_MILLIS;
 
-	public TimerView(@NonNull Context context, @Nullable AttributeSet attrs) {
-		this(context, attrs, 0);
-	}
+    public TimerView(@NonNull Context context) {
+        this(context, null);
+    }
 
-	public TimerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		init(context);
-	}
+    public TimerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-	private void init(Context context) {
-		LayoutInflater layoutInflater = LayoutInflater.from(context);
-		parentView = layoutInflater.inflate(R.layout.view_timer, this, true);
-		counterView = parentView.findViewById(R.id.counter);
-		circularProgressBar = parentView.findViewById(R.id.progress_circular);
+    public TimerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context);
+    }
 
-		ViewCompat.setOnApplyWindowInsetsListener(parentView, (v, insets) -> {
-			ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
-			lp.topMargin = insets.getSystemWindowInsetTop();
-			v.setLayoutParams(lp);
+    private void init(Context context) {
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        parentView = layoutInflater.inflate(R.layout.view_timer, this, true);
+        counterView = parentView.findViewById(R.id.counter);
+        circularProgressBar = parentView.findViewById(R.id.progress_circular);
 
-			return insets;
-		});
+        ViewCompat.setOnApplyWindowInsetsListener(parentView, (v, insets) -> {
+            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
+            lp.topMargin = insets.getSystemWindowInsetTop();
+            v.setLayoutParams(lp);
 
-		setVisibility(GONE);
-	}
+            return insets;
+        });
 
-	public void start(long durationMs, OnTimerExpiredListener listener) {
-		startTimeMs = System.currentTimeMillis();
-		maxTimeMs = Math.min(maxTimeMs, durationMs) - DateUtils.SECOND_IN_MILLIS; // deduct one second to compensate for timer delay
-		circularProgressBar.setMax((int) maxTimeMs);
-		timerExpiredListener = listener;
+        setVisibility(GONE);
+    }
 
-		timeDisplayRunnable = () -> {
-			long elapsedTime = System.currentTimeMillis() - startTimeMs;
-			if (elapsedTime > maxTimeMs) {
-				stop();
-				timerExpiredListener.onExpired(elapsedTime);
-			} else {
-				updateTimeDisplay(elapsedTime);
-				timeDisplayHandler.postDelayed(timeDisplayRunnable, DateUtils.SECOND_IN_MILLIS);
-			}
-		};
-		timeDisplayHandler.postDelayed(timeDisplayRunnable, DateUtils.SECOND_IN_MILLIS);
+    public void start(long durationMs, OnTimerExpiredListener listener) {
+        startTimeMs = System.currentTimeMillis();
+        maxTimeMs = Math.min(maxTimeMs, durationMs) - DateUtils.SECOND_IN_MILLIS; // deduct one second to compensate for timer delay
+        circularProgressBar.setMax((int) maxTimeMs);
+        timerExpiredListener = listener;
 
-		setVisibility(VISIBLE);
-	}
+        timeDisplayRunnable = () -> {
+            long elapsedTime = System.currentTimeMillis() - startTimeMs;
+            if (elapsedTime > maxTimeMs) {
+                stop();
+                timerExpiredListener.onExpired(elapsedTime);
+            } else {
+                updateTimeDisplay(elapsedTime);
+                timeDisplayHandler.postDelayed(timeDisplayRunnable, DateUtils.SECOND_IN_MILLIS);
+            }
+        };
+        timeDisplayHandler.postDelayed(timeDisplayRunnable, DateUtils.SECOND_IN_MILLIS);
 
-	public void stop() {
-		timeDisplayHandler.removeCallbacksAndMessages(null);
+        setVisibility(VISIBLE);
+    }
 
-		setVisibility(GONE);
-	}
+    public void stop() {
+        timeDisplayHandler.removeCallbacksAndMessages(null);
 
-	private void updateTimeDisplay(long elapsedTime) {
-		counterView.setText(LocaleUtil.formatTimerText(elapsedTime, false));
-		circularProgressBar.setProgress((int) elapsedTime);
-	}
+        setVisibility(GONE);
+    }
 
-	public interface OnTimerExpiredListener {
-		/** Called when the timer has expired */
-		void onExpired(long time);
-	}
+    private void updateTimeDisplay(long elapsedTime) {
+        counterView.setText(LocaleUtil.formatTimerText(elapsedTime, false));
+        circularProgressBar.setProgress((int) elapsedTime);
+    }
+
+    public interface OnTimerExpiredListener {
+        /**
+         * Called when the timer has expired
+         */
+        void onExpired(long time);
+    }
 }

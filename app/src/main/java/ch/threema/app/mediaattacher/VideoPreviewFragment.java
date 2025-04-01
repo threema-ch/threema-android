@@ -53,128 +53,130 @@ import ch.threema.app.utils.VideoUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class VideoPreviewFragment extends PreviewFragment implements DefaultLifecycleObserver, Player.Listener, PreviewFragmentInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoPreviewFragment");
 
-	private PlayerView videoView;
-	private ExoPlayer videoPlayer;
-	private GestureFrameLayout gestureFrameLayout;
-	private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
-		@OptIn(markerClass = UnstableApi.class)
-		@Override
-		public void onStateChanged(State state) {
-			if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
-				if (videoView != null && videoView.isControllerFullyVisible()) {
-					videoView.hideController();
-				}
-			}
-		}
+    private PlayerView videoView;
+    private ExoPlayer videoPlayer;
+    private GestureFrameLayout gestureFrameLayout;
+    private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
+        @OptIn(markerClass = UnstableApi.class)
+        @Override
+        public void onStateChanged(State state) {
+            if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
+                if (videoView != null && videoView.isControllerFullyVisible()) {
+                    videoView.hideController();
+                }
+            }
+        }
 
-		@Override
-		public void onStateReset(State oldState, State newState) {}
-	};
+        @Override
+        public void onStateReset(State oldState, State newState) {
+        }
+    };
 
-	VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
-		super(mediaItem, mediaAttachViewModel);
-	}
+    VideoPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
+        super(mediaItem, mediaAttachViewModel);
+    }
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		this.rootView = inflater.inflate(R.layout.fragment_video_preview, container, false);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.rootView = inflater.inflate(R.layout.fragment_video_preview, container, false);
 
-		this.getViewLifecycleOwner().getLifecycle().addObserver(this);
+        this.getViewLifecycleOwner().getLifecycle().addObserver(this);
 
-		return this.rootView;
-	}
+        return this.rootView;
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		if (rootView != null) {
-			this.videoView = rootView.findViewById(R.id.video_view);
-			this.gestureFrameLayout = rootView.findViewById(R.id.video_gesture_frame);
-			this.gestureFrameLayout.getController().getSettings().setMaxZoom(2.5f);
-			this.gestureFrameLayout.getController().addOnStateChangeListener(onGestureStateChangeListener);
-		}
-	}
+        if (rootView != null) {
+            this.videoView = rootView.findViewById(R.id.video_view);
+            this.gestureFrameLayout = rootView.findViewById(R.id.video_gesture_frame);
+            this.gestureFrameLayout.getController().getSettings().setMaxZoom(2.5f);
+            this.gestureFrameLayout.getController().addOnStateChangeListener(onGestureStateChangeListener);
+        }
+    }
 
-	@Override
-	public void onCreate(@NonNull LifecycleOwner owner) {}
+    @Override
+    public void onCreate(@NonNull LifecycleOwner owner) {
+    }
 
-	@Override
-	public void onResume(@NonNull LifecycleOwner owner) {
-		if (this.videoPlayer == null)  {
-			initializePlayer(true);
-		} else if (!this.videoPlayer.isPlaying()) {
-			this.videoPlayer.play();
-		}
-	}
+    @Override
+    public void onResume(@NonNull LifecycleOwner owner) {
+        if (this.videoPlayer == null) {
+            initializePlayer(true);
+        } else if (!this.videoPlayer.isPlaying()) {
+            this.videoPlayer.play();
+        }
+    }
 
-	@Override
-	public void onPause(@NonNull LifecycleOwner owner) {
-		if (this.videoPlayer != null) {
-			this.videoPlayer.pause();
-		}
-	}
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
+        if (this.videoPlayer != null) {
+            this.videoPlayer.pause();
+        }
+    }
 
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
 
-		if (isVisibleToUser) {
-			onResume(this);
-		} else {
-			onPause(this);
-		}
-	}
+        if (isVisibleToUser) {
+            onResume(this);
+        } else {
+            onPause(this);
+        }
+    }
 
-	@Override
-	public void onDestroy(@NonNull LifecycleOwner owner) {
-		releasePlayer();
-		if (gestureFrameLayout != null) {
-			gestureFrameLayout.getController().removeOnStateChangeListener(onGestureStateChangeListener);
-		}
-	}
+    @Override
+    public void onDestroy(@NonNull LifecycleOwner owner) {
+        releasePlayer();
+        if (gestureFrameLayout != null) {
+            gestureFrameLayout.getController().removeOnStateChangeListener(onGestureStateChangeListener);
+        }
+    }
 
-	@Override
-	public void onPlayerError(@NonNull PlaybackException error) {
-		RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Exoplayer error: " + error.getErrorCodeName(), Toast.LENGTH_LONG).show());
+    @Override
+    public void onPlayerError(@NonNull PlaybackException error) {
+        RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Exoplayer error: " + error.getErrorCodeName(), Toast.LENGTH_LONG).show());
 
-		releasePlayer();
-		initializePlayer(false);
-	}
+        releasePlayer();
+        initializePlayer(false);
+    }
 
-	@OptIn(markerClass = UnstableApi.class)
-	public void initializePlayer(boolean playWhenReady) {
-		try {
-			AudioAttributes audioAttributes = new AudioAttributes.Builder()
-				.setUsage(C.USAGE_MEDIA)
-				.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
-				.setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
-				.build();
+    @OptIn(markerClass = UnstableApi.class)
+    public void initializePlayer(boolean playWhenReady) {
+        try {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+                .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
+                .build();
 
-			this.videoPlayer = VideoUtil.getExoPlayer(getContext());
-			this.videoPlayer.setAudioAttributes(audioAttributes, true);
-			this.videoPlayer.addListener(this);
+            this.videoPlayer = VideoUtil.getExoPlayer(getContext());
+            this.videoPlayer.setAudioAttributes(audioAttributes, true);
+            this.videoPlayer.addListener(this);
 
-			this.videoView.setPlayer(videoPlayer);
-			this.videoView.setControllerHideOnTouch(true);
-			this.videoView.setControllerShowTimeoutMs(1500);
-			this.videoView.showController();
+            this.videoView.setPlayer(videoPlayer);
+            this.videoView.setControllerHideOnTouch(true);
+            this.videoView.setControllerShowTimeoutMs(1500);
+            this.videoView.showController();
 
-			this.videoPlayer.setMediaItem(MediaItem.fromUri(this.mediaAttachItem.getUri()));
-			this.videoPlayer.setPlayWhenReady(playWhenReady);
-			this.videoPlayer.prepare();
-		} catch (OutOfMemoryError e) {
-			logger.error("Exception", e);
-		}
-	}
+            this.videoPlayer.setMediaItem(MediaItem.fromUri(this.mediaAttachItem.getUri()));
+            this.videoPlayer.setPlayWhenReady(playWhenReady);
+            this.videoPlayer.prepare();
+        } catch (OutOfMemoryError e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	public void releasePlayer() {
-		if (videoPlayer != null) {
-			videoPlayer.stop();
-			videoPlayer.release();
-			videoPlayer = null;
-		}
-	}
+    public void releasePlayer() {
+        if (videoPlayer != null) {
+            videoPlayer.stop();
+            videoPlayer.release();
+            videoPlayer = null;
+        }
+    }
 }

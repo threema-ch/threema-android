@@ -77,384 +77,384 @@ import ch.threema.base.utils.LoggingUtil;
  */
 
 public class WizardFragment3 extends WizardFragment {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment3");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment3");
 
-	private EditText prefixText, emailEditText, phoneText;
-	private CountryListAdapter countryListAdapter;
-	private Spinner countrySpinner;
-	private AsYouTypeFormatter phoneNumberFormatter;
-	private AsyncTask<Void, Void, ArrayList<Map<String, String>>> countryListTask;
-	public static final int PAGE_ID = 3;
+    private EditText prefixText, emailEditText, phoneText;
+    private CountryListAdapter countryListAdapter;
+    private Spinner countrySpinner;
+    private AsYouTypeFormatter phoneNumberFormatter;
+    private AsyncTask<Void, Void, ArrayList<Map<String, String>>> countryListTask;
+    public static final int PAGE_ID = 3;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-							 Bundle savedInstanceState) {
-		View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
+    @Override
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
-		TextView title = rootView.findViewById(R.id.wizard_title);
-		title.setText(R.string.new_wizard_help_your_friends_find_you);
+        TextView title = rootView.findViewById(R.id.wizard_title);
+        title.setText(R.string.new_wizard_help_your_friends_find_you);
 
-		// inflate content layout
-		contentViewStub.setLayoutResource(R.layout.fragment_wizard3);
-		contentViewStub.inflate();
+        // inflate content layout
+        contentViewStub.setLayoutResource(R.layout.fragment_wizard3);
+        contentViewStub.inflate();
 
-		WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
+        WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
 
-		countrySpinner = rootView.findViewById(R.id.country_spinner);
-		emailEditText = rootView.findViewById(R.id.wizard_email);
-		prefixText = rootView.findViewById(R.id.wizard_prefix);
-		prefixText.setText("+");
-		phoneText = rootView.findViewById(R.id.wizard_phone);
+        countrySpinner = rootView.findViewById(R.id.country_spinner);
+        emailEditText = rootView.findViewById(R.id.wizard_email);
+        prefixText = rootView.findViewById(R.id.wizard_prefix);
+        prefixText.setText("+");
+        phoneText = rootView.findViewById(R.id.wizard_phone);
 
-		if (!ConfigUtils.isWorkBuild()) {
-			rootView.findViewById(R.id.wizard_email_layout).setVisibility(View.GONE);
-			((TextView)rootView.findViewById(R.id.scooter)).setText(getString(R.string.new_wizard_link_mobile_only));
-		}
+        if (!ConfigUtils.isWorkBuild()) {
+            rootView.findViewById(R.id.wizard_email_layout).setVisibility(View.GONE);
+            ((TextView) rootView.findViewById(R.id.scooter)).setText(getString(R.string.new_wizard_link_mobile_only));
+        }
 
-		if (callback.isReadOnlyProfile()) {
-			emailEditText.setEnabled(false);
-			prefixText.setEnabled(false);
-			phoneText.setEnabled(false);
-			countrySpinner.setEnabled(false);
-			rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
-		} else {
-			emailEditText.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				}
+        if (callback.isReadOnlyProfile()) {
+            emailEditText.setEnabled(false);
+            prefixText.setEnabled(false);
+            phoneText.setEnabled(false);
+            countrySpinner.setEnabled(false);
+            rootView.findViewById(R.id.disabled_by_policy).setVisibility(View.VISIBLE);
+        } else {
+            emailEditText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-				}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-				@Override
-				public void afterTextChanged(Editable s) {
-					if (getActivity() != null) {
-						((OnSettingsChangedListener) getActivity()).onEmailSet(s.toString());
-					}
-				}
-			});
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (getActivity() != null) {
+                        ((OnSettingsChangedListener) getActivity()).onEmailSet(s.toString());
+                    }
+                }
+            });
 
-			prefixText.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				}
+            prefixText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-				}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-				@Override
-				public void afterTextChanged(Editable s) {
-					String prefixString = s.toString();
-					if (!prefixString.startsWith("+")) {
-						prefixText.setText("+");
-						Selection.setSelection(prefixText.getText(), prefixText.getText().length());
-					} else if (prefixString.length() > 1 && countryListAdapter != null) {
-						try {
-							int countryCode = Integer.parseInt(prefixString.substring(1));
-							String region = PhoneNumberUtil.getInstance().getRegionCodeForCountryCode(countryCode);
-							int position = countryListAdapter.getPosition(region);
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String prefixString = s.toString();
+                    if (!prefixString.startsWith("+")) {
+                        prefixText.setText("+");
+                        Selection.setSelection(prefixText.getText(), prefixText.getText().length());
+                    } else if (prefixString.length() > 1 && countryListAdapter != null) {
+                        try {
+                            int countryCode = Integer.parseInt(prefixString.substring(1));
+                            String region = PhoneNumberUtil.getInstance().getRegionCodeForCountryCode(countryCode);
+                            int position = countryListAdapter.getPosition(region);
 
-							if (position > -1) {
-								countrySpinner.setSelection(position);
-								setPhoneNumberFormatter(countryCode);
-								((OnSettingsChangedListener) requireActivity()).onPrefixSet(prefixText.getText().toString());
-							}
-						} catch (NumberFormatException e) {
-							logger.error("Exception", e);
-						}
-					}
-				}
-			});
+                            if (position > -1) {
+                                countrySpinner.setSelection(position);
+                                setPhoneNumberFormatter(countryCode);
+                                ((OnSettingsChangedListener) requireActivity()).onPrefixSet(prefixText.getText().toString());
+                            }
+                        } catch (NumberFormatException e) {
+                            logger.error("Exception", e);
+                        }
+                    }
+                }
+            });
 
-			phoneText.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				}
+            phoneText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-				}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-				@Override
-				public void afterTextChanged(Editable s) {
-					if (!TextUtils.isEmpty(s) && phoneNumberFormatter != null) {
-						phoneNumberFormatter.clear();
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (!TextUtils.isEmpty(s) && phoneNumberFormatter != null) {
+                        phoneNumberFormatter.clear();
 
-						String number = s.toString().replaceAll("[^\\d.]", "");
-						String formattedNumber = null;
+                        String number = s.toString().replaceAll("[^\\d.]", "");
+                        String formattedNumber = null;
 
-						for (int i = 0; i < number.length(); i++) {
-							formattedNumber = phoneNumberFormatter.inputDigit(number.charAt(i));
-						}
+                        for (int i = 0; i < number.length(); i++) {
+                            formattedNumber = phoneNumberFormatter.inputDigit(number.charAt(i));
+                        }
 
-						if (formattedNumber != null && !s.toString().equals(formattedNumber)) {
-							s.replace(0, s.length(), formattedNumber);
-						}
-					}
-					Activity activity = getActivity();
-					if (activity != null) {
-						((OnSettingsChangedListener) activity).onPhoneSet(s.toString());
-					}
-				}
-			});
+                        if (formattedNumber != null && !s.toString().equals(formattedNumber)) {
+                            s.replace(0, s.length(), formattedNumber);
+                        }
+                    }
+                    Activity activity = getActivity();
+                    if (activity != null) {
+                        ((OnSettingsChangedListener) activity).onPhoneSet(s.toString());
+                    }
+                }
+            });
 
-			if (!ConfigUtils.isWorkBuild()) {
-				this.phoneText.setImeOptions(EditorInfo.IME_ACTION_GO);
-				this.phoneText.setOnKeyListener((v, keyCode, event) -> {
-					if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-						if (getActivity() != null && isAdded()) {
-							((WizardBaseActivity) getActivity()).nextPage();
-						}
-						return true;
-					}
-					return false;
-				});
-			}
-		}
+            if (!ConfigUtils.isWorkBuild()) {
+                this.phoneText.setImeOptions(EditorInfo.IME_ACTION_GO);
+                this.phoneText.setOnKeyListener((v, keyCode, event) -> {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                        if (getActivity() != null && isAdded()) {
+                            ((WizardBaseActivity) getActivity()).nextPage();
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        }
 
-		TextView presetEmailText = rootView.findViewById(R.id.preset_email_text);
-		TextView presetPhoneText = rootView.findViewById(R.id.preset_phone_text);
+        TextView presetEmailText = rootView.findViewById(R.id.preset_email_text);
+        TextView presetPhoneText = rootView.findViewById(R.id.preset_phone_text);
 
-		if (!TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
-			emailEditText.setVisibility(View.GONE);
-			presetEmailText.setText(R.string.linked);
-			presetEmailText.setVisibility(View.VISIBLE);
-		}
+        if (!TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
+            emailEditText.setVisibility(View.GONE);
+            presetEmailText.setText(R.string.linked);
+            presetEmailText.setVisibility(View.VISIBLE);
+        }
 
-		if (!TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
-			phoneText.setVisibility(View.GONE);
-			prefixText.setVisibility(View.GONE);
-			countrySpinner.setVisibility(View.GONE);
-			presetPhoneText.setText(R.string.linked);
-			presetPhoneText.setVisibility(View.VISIBLE);
-		} else {
-			// load country list
-			countryListTask = new AsyncTask<Void, Void, ArrayList<Map<String, String>>>() {
-				final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        if (!TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
+            phoneText.setVisibility(View.GONE);
+            prefixText.setVisibility(View.GONE);
+            countrySpinner.setVisibility(View.GONE);
+            presetPhoneText.setText(R.string.linked);
+            presetPhoneText.setVisibility(View.VISIBLE);
+        } else {
+            // load country list
+            countryListTask = new AsyncTask<Void, Void, ArrayList<Map<String, String>>>() {
+                final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 
-				@Override
-				protected ArrayList<Map<String, String>> doInBackground(Void... params) {
-					Set<String> regions = phoneNumberUtil.getSupportedRegions();
-					ArrayList<Map<String, String>> results = new ArrayList<Map<String, String>>(regions.size());
-					for (String region : regions) {
-						Map<String, String> data = new HashMap<String, String>(2);
-						data.put("name", getCountryName(region));
-						data.put("prefix", "+" + PhoneNumberUtil.getInstance().getCountryCodeForRegion(region));
-						results.add(data);
-					}
-					Collections.sort(results, new CountryNameComparator());
+                @Override
+                protected ArrayList<Map<String, String>> doInBackground(Void... params) {
+                    Set<String> regions = phoneNumberUtil.getSupportedRegions();
+                    ArrayList<Map<String, String>> results = new ArrayList<Map<String, String>>(regions.size());
+                    for (String region : regions) {
+                        Map<String, String> data = new HashMap<String, String>(2);
+                        data.put("name", getCountryName(region));
+                        data.put("prefix", "+" + PhoneNumberUtil.getInstance().getCountryCodeForRegion(region));
+                        results.add(data);
+                    }
+                    Collections.sort(results, new CountryNameComparator());
 
 
-					Map<String, String> data = new HashMap<String, String>(2);
-					data.put("name", getString(R.string.new_wizard_select_country));
-					data.put("prefix", "");
-					results.add(data);
+                    Map<String, String> data = new HashMap<String, String>(2);
+                    data.put("name", getString(R.string.new_wizard_select_country));
+                    data.put("prefix", "");
+                    results.add(data);
 
-					return results;
-				}
+                    return results;
+                }
 
-				@Override
-				protected void onPostExecute(final ArrayList<Map<String, String>> result) {
-					countryListAdapter = new CountryListAdapter(android.R.layout.simple_spinner_dropdown_item, result);
-					countrySpinner.setAdapter(countryListAdapter);
-					countrySpinner.setSelection(countryListAdapter.getCount());
-					countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-						@Override
-						public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-							if (position < result.size() - 1) {
-								String prefixString = result.get(position).get("prefix");
-								prefixText.setText(prefixString);
+                @Override
+                protected void onPostExecute(final ArrayList<Map<String, String>> result) {
+                    countryListAdapter = new CountryListAdapter(android.R.layout.simple_spinner_dropdown_item, result);
+                    countrySpinner.setAdapter(countryListAdapter);
+                    countrySpinner.setSelection(countryListAdapter.getCount());
+                    countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            if (position < result.size() - 1) {
+                                String prefixString = result.get(position).get("prefix");
+                                prefixText.setText(prefixString);
 
-								if (!TestUtil.isEmptyOrNull(prefixString) && prefixString.length() > 1) {
-									setPhoneNumberFormatter(Integer.parseInt(prefixString.substring(1)));
-								}
-								phoneText.requestFocus();
-							}
-						}
+                                if (!TestUtil.isEmptyOrNull(prefixString) && prefixString.length() > 1) {
+                                    setPhoneNumberFormatter(Integer.parseInt(prefixString.substring(1)));
+                                }
+                                phoneText.requestFocus();
+                            }
+                        }
 
-						@Override
-						public void onNothingSelected(AdapterView<?> parent) {
-							prefixText.setText("+");
-						}
-					});
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            prefixText.setText("+");
+                        }
+                    });
 
-					if (prefixText.getText().length() <= 1) {
-						String countryCode = localeService.getCountryCodePhonePrefix();
-						if (!TestUtil.isEmptyOrNull(countryCode)) {
-							prefixText.setText(countryCode);
-							((OnSettingsChangedListener) getActivity()).onPrefixSet(prefixText.getText().toString());
-							phoneText.requestFocus();
-						}
-					}
-				}
-			};
-			countryListTask.execute();
-		}
+                    if (prefixText.getText().length() <= 1) {
+                        String countryCode = localeService.getCountryCodePhonePrefix();
+                        if (!TestUtil.isEmptyOrNull(countryCode)) {
+                            prefixText.setText(countryCode);
+                            ((OnSettingsChangedListener) getActivity()).onPrefixSet(prefixText.getText().toString());
+                            phoneText.requestFocus();
+                        }
+                    }
+                }
+            };
+            countryListTask.execute();
+        }
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	@Override
-	protected int getAdditionalInfoText() {
-		return ConfigUtils.isWorkBuild() ? R.string.new_wizard_info_link : R.string.new_wizard_info_link_phone_only;
-	}
+    @Override
+    protected int getAdditionalInfoText() {
+        return ConfigUtils.isWorkBuild() ? R.string.new_wizard_info_link : R.string.new_wizard_info_link_phone_only;
+    }
 
-	private void showEditTextError(EditText editText, boolean show) {
-		editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, show ? R.drawable.ic_error_red_24dp : 0, 0);
-	}
+    private void showEditTextError(EditText editText, boolean show) {
+        editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, show ? R.drawable.ic_error_red_24dp : 0, 0);
+    }
 
-	private String getCountryName(String region) {
-		if (!TestUtil.isEmptyOrNull(region)) {
-			return new Locale("", region).getDisplayCountry(Locale.getDefault());
-		} else {
-			return "";
-		}
-	}
+    private String getCountryName(String region) {
+        if (!TestUtil.isEmptyOrNull(region)) {
+            return new Locale("", region).getDisplayCountry(Locale.getDefault());
+        } else {
+            return "";
+        }
+    }
 
-	void setPhoneNumberFormatter(int countryCode) {
-		PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-		String regionCode = phoneNumberUtil.getRegionCodeForCountryCode(countryCode);
+    void setPhoneNumberFormatter(int countryCode) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        String regionCode = phoneNumberUtil.getRegionCodeForCountryCode(countryCode);
 
-		if (!TestUtil.isEmptyOrNull(regionCode)) {
-			this.phoneNumberFormatter = phoneNumberUtil.getAsYouTypeFormatter(regionCode);
-		} else {
-			this.phoneNumberFormatter = null;
-		}
-	}
+        if (!TestUtil.isEmptyOrNull(regionCode)) {
+            this.phoneNumberFormatter = phoneNumberUtil.getAsYouTypeFormatter(regionCode);
+        } else {
+            this.phoneNumberFormatter = null;
+        }
+    }
 
-	private static class CountryNameComparator implements Comparator<Map<String, String>> {
-		@Override
-		public int compare(Map<String, String> lhs, Map<String, String> rhs) {
-			// Compare two strings in the default locale
-			Collator collator = Collator.getInstance();
-			return collator.compare(lhs.get("name"), rhs.get("name"));
-		}
-	}
+    private static class CountryNameComparator implements Comparator<Map<String, String>> {
+        @Override
+        public int compare(Map<String, String> lhs, Map<String, String> rhs) {
+            // Compare two strings in the default locale
+            Collator collator = Collator.getInstance();
+            return collator.compare(lhs.get("name"), rhs.get("name"));
+        }
+    }
 
-	private class CountryListAdapter extends BaseAdapter implements SpinnerAdapter {
-		private final List<Map<String, String>> list;
-		private final LayoutInflater inflater;
-		private final int resource;
+    private class CountryListAdapter extends BaseAdapter implements SpinnerAdapter {
+        private final List<Map<String, String>> list;
+        private final LayoutInflater inflater;
+        private final int resource;
 
-		public CountryListAdapter(int resource, List<Map<String, String>> objects) {
-			this.inflater = requireActivity().getLayoutInflater();
-			this.list = objects;
-			this.resource = resource;
-		}
+        public CountryListAdapter(int resource, List<Map<String, String>> objects) {
+            this.inflater = requireActivity().getLayoutInflater();
+            this.list = objects;
+            this.resource = resource;
+        }
 
-		private class ViewHolder {
-			TextView country;
-		}
+        private class ViewHolder {
+            TextView country;
+        }
 
-		@Override
-		public int getCount() {
-			int count = list.size();
-			return count > 0 ? count - 1 : count;
-		}
+        @Override
+        public int getCount() {
+            int count = list.size();
+            return count > 0 ? count - 1 : count;
+        }
 
-		@Override
-		public Map<String, String> getItem(int position) {
-			return list.get(position);
-		}
+        @Override
+        public Map<String, String> getItem(int position) {
+            return list.get(position);
+        }
 
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder viewHolder;
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
-			if (convertView == null) {
-				convertView = inflater.inflate(this.resource, parent, false);
-				viewHolder = new ViewHolder();
-				viewHolder.country = convertView.findViewById(android.R.id.text1);
+            if (convertView == null) {
+                convertView = inflater.inflate(this.resource, parent, false);
+                viewHolder = new ViewHolder();
+                viewHolder.country = convertView.findViewById(android.R.id.text1);
 
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (ViewHolder) convertView.getTag();
-			}
-			Map<String, String> map = list.get(position);
-			viewHolder.country.setText(map.get("name"));
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            Map<String, String> map = list.get(position);
+            viewHolder.country.setText(map.get("name"));
 
-			return convertView;
-		}
+            return convertView;
+        }
 
-		public int getPosition(String region) {
-			String countryName = getCountryName(region);
-			for (int i = 0; i < list.size(); i++) {
-				Map<String, String> map = list.get(i);
-				String name = map.get("name");
-				if (name != null && name.equalsIgnoreCase(countryName)) {
-					return i;
-				}
-			}
-			return -1;
-		}
-	}
+        public int getPosition(String region) {
+            String countryName = getCountryName(region);
+            for (int i = 0; i < list.size(); i++) {
+                Map<String, String> map = list.get(i);
+                String name = map.get("name");
+                if (name != null && name.equalsIgnoreCase(countryName)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
+    @Override
+    public void onDetach() {
+        super.onDetach();
 
-		// make sure asynctask is cancelled before detaching fragment
-		if (countryListTask != null) {
-			countryListTask.cancel(true);
-		}
-	}
+        // make sure asynctask is cancelled before detaching fragment
+        if (countryListTask != null) {
+            countryListTask.cancel(true);
+        }
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
+    @Override
+    public void onResume() {
+        super.onResume();
 
-		new Handler(Looper.getMainLooper()).postDelayed(() -> RuntimeUtil.runOnUiThread(() -> {
-			initValues();
-			if (phoneText != null) {
-				phoneText.requestFocus();
-				EditTextUtil.showSoftKeyboard(phoneText);
-			}
-		}), 50);
-	}
+        new Handler(Looper.getMainLooper()).postDelayed(() -> RuntimeUtil.runOnUiThread(() -> {
+            initValues();
+            if (phoneText != null) {
+                phoneText.requestFocus();
+                EditTextUtil.showSoftKeyboard(phoneText);
+            }
+        }), 50);
+    }
 
-	@Override
-	public void onPause() {
-		if (this.phoneText != null) {
-			this.phoneText.clearFocus();
-			EditTextUtil.hideSoftKeyboard(this.phoneText);
-		}
-		super.onPause();
-	}
+    @Override
+    public void onPause() {
+        if (this.phoneText != null) {
+            this.phoneText.clearFocus();
+            EditTextUtil.hideSoftKeyboard(this.phoneText);
+        }
+        super.onPause();
+    }
 
-	void initValues() {
-		if (isResumed()) {
-			WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
-			emailEditText.setText(callback.getEmail());
+    void initValues() {
+        if (isResumed()) {
+            WizardFragment4.SettingsInterface callback = (WizardFragment4.SettingsInterface) requireActivity();
+            emailEditText.setText(callback.getEmail());
 
-			if (TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
-				showEditTextError(emailEditText, !TestUtil.isEmptyOrNull(callback.getEmail()) && !Patterns.EMAIL_ADDRESS.matcher(callback.getEmail()).matches());
-			}
+            if (TestUtil.isEmptyOrNull(callback.getPresetEmail())) {
+                showEditTextError(emailEditText, !TestUtil.isEmptyOrNull(callback.getEmail()) && !Patterns.EMAIL_ADDRESS.matcher(callback.getEmail()).matches());
+            }
 
-			prefixText.setText(callback.getPrefix());
-			phoneText.setText(callback.getNumber());
-			if (TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
-				showEditTextError(phoneText, !TestUtil.isEmptyOrNull(callback.getNumber()) && TestUtil.isEmptyOrNull(callback.getPhone()));
-			}
-		}
-	}
+            prefixText.setText(callback.getPrefix());
+            phoneText.setText(callback.getNumber());
+            if (TestUtil.isEmptyOrNull(callback.getPresetPhone())) {
+                showEditTextError(phoneText, !TestUtil.isEmptyOrNull(callback.getNumber()) && TestUtil.isEmptyOrNull(callback.getPhone()));
+            }
+        }
+    }
 
-	public interface OnSettingsChangedListener {
-		void onPrefixSet(String prefix);
+    public interface OnSettingsChangedListener {
+        void onPrefixSet(String prefix);
 
-		void onPhoneSet(String phoneNumber);
+        void onPhoneSet(String phoneNumber);
 
-		void onEmailSet(String email);
-	}
+        void onEmailSet(String email);
+    }
 }

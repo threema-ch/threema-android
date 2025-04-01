@@ -6,13 +6,13 @@
   -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/list_item_section_text"
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/directory_header_height"
-          android:paddingTop="2dp"
-          android:background="?attr/colorSurfaceVariant"
-          android:paddingLeft="16dp"
-          android:paddingRight="16dp"
-          android:textColor="?attr/colorPrimary"
-          android:textSize="@dimen/blue_header_text_size"
-          android:textStyle="bold"/>
+    android:id="@+id/list_item_section_text"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/directory_header_height"
+    android:paddingTop="2dp"
+    android:background="?attr/colorSurfaceVariant"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:textColor="?attr/colorPrimary"
+    android:textSize="@dimen/blue_header_text_size"
+    android:textStyle="bold" />

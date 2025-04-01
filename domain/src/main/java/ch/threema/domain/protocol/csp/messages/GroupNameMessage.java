@@ -36,88 +36,88 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  */
 public class GroupNameMessage extends AbstractGroupMessage {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupRenameMessage");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupRenameMessage");
 
-	private String groupName;
+    private String groupName;
 
-	public GroupNameMessage() {
-		super();
-	}
+    public GroupNameMessage() {
+        super();
+    }
 
-	@Override
-	public int getType() {
-		return ProtocolDefines.MSGTYPE_GROUP_RENAME;
-	}
+    @Override
+    public int getType() {
+        return ProtocolDefines.MSGTYPE_GROUP_RENAME;
+    }
 
-	@Override
-	@Nullable
-	public Version getMinimumRequiredForwardSecurityVersion() {
-		return Version.V1_2;
-	}
+    @Override
+    @Nullable
+    public Version getMinimumRequiredForwardSecurityVersion() {
+        return Version.V1_2;
+    }
 
-	@Override
-	public boolean allowUserProfileDistribution() {
-		return true;
-	}
+    @Override
+    public boolean allowUserProfileDistribution() {
+        return true;
+    }
 
-	@Override
-	public boolean exemptFromBlocking() {
-		return true;
-	}
+    @Override
+    public boolean exemptFromBlocking() {
+        return true;
+    }
 
-	@Override
-	public boolean createImplicitlyDirectContact() {
-		return false;
-	}
+    @Override
+    public boolean createImplicitlyDirectContact() {
+        return false;
+    }
 
-	@Override
-	public boolean protectAgainstReplay() {
-		return true;
-	}
+    @Override
+    public boolean protectAgainstReplay() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectIncoming() {
-		return true;
-	}
+    @Override
+    public boolean reflectIncoming() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectOutgoing() {
-		return true;
-	}
+    @Override
+    public boolean reflectOutgoing() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectSentUpdate() {
-		return false;
-	}
+    @Override
+    public boolean reflectSentUpdate() {
+        return false;
+    }
 
-	@Override
-	public boolean sendAutomaticDeliveryReceipt() {
-		return false;
-	}
+    @Override
+    public boolean sendAutomaticDeliveryReceipt() {
+        return false;
+    }
 
-	@Override
-	public boolean bumpLastUpdate() {
-		return false;
-	}
+    @Override
+    public boolean bumpLastUpdate() {
+        return false;
+    }
 
-	@Override
-	public byte[] getBody() {
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bos.write(getApiGroupId().getGroupId());
-			bos.write(groupName.getBytes(StandardCharsets.UTF_8));
-			return bos.toByteArray();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return null;
-		}
-	}
+    @Override
+    public byte[] getBody() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bos.write(getApiGroupId().getGroupId());
+            bos.write(groupName.getBytes(StandardCharsets.UTF_8));
+            return bos.toByteArray();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+    }
 
-	public String getGroupName() {
-		return groupName;
-	}
+    public String getGroupName() {
+        return groupName;
+    }
 
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
 }

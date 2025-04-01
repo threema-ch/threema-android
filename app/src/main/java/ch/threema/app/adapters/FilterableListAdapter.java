@@ -39,61 +39,65 @@ import ch.threema.app.utils.TextUtil;
  * Meta class for list adapters in RecipientListActivity
  */
 public abstract class FilterableListAdapter extends ArrayAdapter<Object> implements Filterable {
-	protected HashSet<Integer> checkedItems = new HashSet<>();
+    protected HashSet<Integer> checkedItems = new HashSet<>();
 
-	public FilterableListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Object> values) {
-		super(context, resource, values);
-	}
+    public FilterableListAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Object> values) {
+        super(context, resource, values);
+    }
 
-	public Spannable highlightMatches(CharSequence fullText, String filterText) {
-		return highlightMatches(fullText, filterText, false);
-	}
+    public Spannable highlightMatches(CharSequence fullText, String filterText) {
+        return highlightMatches(fullText, filterText, false);
+    }
 
-	public Spannable highlightMatches(CharSequence fullText, String filterText, boolean normalize) {
-		return TextUtil.highlightMatches(getContext(), fullText, filterText, false, normalize);
-	}
+    public Spannable highlightMatches(CharSequence fullText, String filterText, boolean normalize) {
+        return TextUtil.highlightMatches(getContext(), fullText, filterText, false, normalize);
+    }
 
-	/* all of the following methods ignore any filtering */
+    /* all of the following methods ignore any filtering */
 
-	/**
-	 * Get a list of all unfiltered positions of checked elements
-	 * @return ArrayList of positions
-	 */
-	public ArrayList<Integer> getCheckedItemPositions() {
-		return new ArrayList<>(checkedItems);
-	}
+    /**
+     * Get a list of all unfiltered positions of checked elements
+     *
+     * @return ArrayList of positions
+     */
+    public ArrayList<Integer> getCheckedItemPositions() {
+        return new ArrayList<>(checkedItems);
+    }
 
-	/**
-	 * Get the count of checked items in the dataset
-	 * @return number of checked items
-	 */
-	public int getCheckedItemCount() {
-		return checkedItems.size();
-	}
+    /**
+     * Get the count of checked items in the dataset
+     *
+     * @return number of checked items
+     */
+    public int getCheckedItemCount() {
+        return checkedItems.size();
+    }
 
-	/**
-	 * Clear checked items to remove all selections
-	 */
-	public void clearCheckedItems() {
-		checkedItems.clear();
-	}
+    /**
+     * Clear checked items to remove all selections
+     */
+    public void clearCheckedItems() {
+        checkedItems.clear();
+    }
 
-	/**
-	 * Get a set of all checked items in the full dataset managed by this adapter
-	 * @return HashSet of items, identified by an object, typically a unique id of the element
-	 */
-	public abstract HashSet<?> getCheckedItems();
+    /**
+     * Get a set of all checked items in the full dataset managed by this adapter
+     *
+     * @return HashSet of items, identified by an object, typically a unique id of the element
+     */
+    public abstract HashSet<?> getCheckedItems();
 
-	/**
-	 * Get data of item in the item identified by its view
-	 * @param v
-	 * @return object represented by v
-	 */
-	public abstract Object getClickedItem(View v);
+    /**
+     * Get data of item in the item identified by its view
+     *
+     * @param v
+     * @return object represented by v
+     */
+    public abstract Object getClickedItem(View v);
 
-	@Override
-	public boolean isEmpty() {
-		// hack to make header/footer appear
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        // hack to make header/footer appear
+        return false;
+    }
 }

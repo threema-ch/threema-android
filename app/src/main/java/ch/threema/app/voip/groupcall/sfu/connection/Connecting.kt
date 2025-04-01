@@ -62,14 +62,22 @@ class Connecting internal constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         val connectedSignal = CompletableDeferred<Set<ParticipantId>>()
-        val ctx = ConnectionCtx.create(context, call, joinResponse.sessionParameters, certificate, connectedSignal)
+        val ctx = ConnectionCtx.create(
+            context,
+            call,
+            joinResponse.sessionParameters,
+            certificate,
+            connectedSignal
+        )
 
         call.addTeardownRoutine { ctx.teardown() }
 
-        ctx.pc.observer.replace(PeerConnectionObserver(
-            addTransceiver = ctx.pc::addTransceiverFromEvent,
-            failedSignal = connectedSignal
-        ))
+        ctx.pc.observer.replace(
+            PeerConnectionObserver(
+                addTransceiver = ctx.pc::addTransceiverFromEvent,
+                failedSignal = connectedSignal
+            )
+        )
 
         ctx.createAndApplyOffer(setOf())
 
@@ -101,7 +109,8 @@ class Connecting internal constructor(
 
             // set initial video/audio states
             participant.cameraActive = false
-            participant.microphoneActive = participantIds.size < MUTE_MICROPHONE_PARTICIPANT_THRESHOLD
+            participant.microphoneActive =
+                participantIds.size < MUTE_MICROPHONE_PARTICIPANT_THRESHOLD
 
             call.completableConnectedSignal.complete(joinResponse.startedAt to participantIds)
             logger.trace("Waiting for call confirmation")

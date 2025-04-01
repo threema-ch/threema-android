@@ -43,59 +43,59 @@ import ch.threema.app.R;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class ImagePreviewFragment extends PreviewFragment {
-	private SubsamplingScaleImageView scaleImageView;
-	private ImageView imageView;
+    private SubsamplingScaleImageView scaleImageView;
+    private ImageView imageView;
 
-	ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
-		super(mediaItem, mediaAttachViewModel);
-	}
+    ImagePreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
+        super(mediaItem, mediaAttachViewModel);
+    }
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		this.rootView = inflater.inflate(R.layout.fragment_image_preview, container, false);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.rootView = inflater.inflate(R.layout.fragment_image_preview, container, false);
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-		if (rootView != null) {
-			this.scaleImageView = rootView.findViewById(R.id.scale_image_view);
-			this.imageView = rootView.findViewById(R.id.image_view);
+        if (rootView != null) {
+            this.scaleImageView = rootView.findViewById(R.id.scale_image_view);
+            this.imageView = rootView.findViewById(R.id.image_view);
 
-			if (mediaAttachItem.getType() == MediaAttachItem.TYPE_GIF || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mediaAttachItem.getType() == MediaAttachItem.TYPE_WEBP)) {
-				Glide.with(this).load(mediaAttachItem.getUri())
-					.transition(withCrossFade())
-					.optionalFitCenter()
-					.error(R.drawable.ic_baseline_broken_image_200)
-					.into(imageView);
-			} else {
-				Glide.with(this)
-					.load(mediaAttachItem.getUri())
-					.transition(withCrossFade())
-					.optionalCenterInside()
-					.error(R.drawable.ic_baseline_broken_image_200)
-					.into(new CustomViewTarget<SubsamplingScaleImageView, Drawable>(scaleImageView) {
-						@Override
-						public void onLoadFailed(@Nullable Drawable errorDrawable) {
-						}
+            if (mediaAttachItem.getType() == MediaAttachItem.TYPE_GIF || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mediaAttachItem.getType() == MediaAttachItem.TYPE_WEBP)) {
+                Glide.with(this).load(mediaAttachItem.getUri())
+                    .transition(withCrossFade())
+                    .optionalFitCenter()
+                    .error(R.drawable.ic_baseline_broken_image_200)
+                    .into(imageView);
+            } else {
+                Glide.with(this)
+                    .load(mediaAttachItem.getUri())
+                    .transition(withCrossFade())
+                    .optionalCenterInside()
+                    .error(R.drawable.ic_baseline_broken_image_200)
+                    .into(new CustomViewTarget<SubsamplingScaleImageView, Drawable>(scaleImageView) {
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        }
 
-						@Override
-						public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-							scaleImageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            scaleImageView.setImage(ImageSource.bitmap(((BitmapDrawable) resource).getBitmap()));
 
-							scaleImageView.setVisibility(View.VISIBLE);
-							imageView.setVisibility(View.GONE);
-						}
+                            scaleImageView.setVisibility(View.VISIBLE);
+                            imageView.setVisibility(View.GONE);
+                        }
 
-						@Override
-						protected void onResourceCleared(@Nullable Drawable placeholder) {
-						}
-					});
-			}
+                        @Override
+                        protected void onResourceCleared(@Nullable Drawable placeholder) {
+                        }
+                    });
+            }
 
-		}
-	}
+        }
+    }
 }

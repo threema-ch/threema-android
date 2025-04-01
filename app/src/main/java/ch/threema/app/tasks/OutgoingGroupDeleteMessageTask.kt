@@ -57,12 +57,12 @@ class OutgoingGroupDeleteMessageTask(
             null,
             deletedAt,
             messageId,
-            createAbstractMessage =  { createDeleteMessage(editedMessageIdLong) },
+            createAbstractMessage = { createDeleteMessage(editedMessageIdLong) },
             handle
         )
     }
 
-    private fun createDeleteMessage(messageId: Long) : GroupDeleteMessage {
+    private fun createDeleteMessage(messageId: Long): GroupDeleteMessage {
         val deleteMessage = GroupDeleteMessage(
             DeleteMessageData(messageId = messageId)
         )

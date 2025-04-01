@@ -22,9 +22,13 @@
 package ch.threema.app.services;
 
 public interface LocaleService {
-	String getCountryIsoCode();
-	String getNormalizedPhoneNumber(String phoneNumber);
-	String getHRPhoneNumber(String phoneNumber);
-	boolean validatePhoneNumber(String phoneNumber);
-	String getCountryCodePhonePrefix();
+    String getCountryIsoCode();
+
+    String getNormalizedPhoneNumber(String phoneNumber);
+
+    String getHRPhoneNumber(String phoneNumber);
+
+    boolean validatePhoneNumber(String phoneNumber);
+
+    String getCountryCodePhonePrefix();
 }

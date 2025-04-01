@@ -54,115 +54,116 @@ import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
 public class CreateGroupHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CreateGroupHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CreateGroupHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final GroupService groupService;
+    private final MessageDispatcher dispatcher;
+    private final GroupService groupService;
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_DISABLED_BY_POLICY,
-		Protocol.ERROR_BAD_REQUEST,
-		Protocol.ERROR_VALUE_TOO_LONG,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_DISABLED_BY_POLICY,
+        Protocol.ERROR_BAD_REQUEST,
+        Protocol.ERROR_VALUE_TOO_LONG,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	@AnyThread
-	public CreateGroupHandler(MessageDispatcher dispatcher,
-	                          GroupService groupService) {
-		super(Protocol.SUB_TYPE_GROUP);
-		this.dispatcher = dispatcher;
-		this.groupService = groupService;
-	}
+    @AnyThread
+    public CreateGroupHandler(MessageDispatcher dispatcher,
+                              GroupService groupService) {
+        super(Protocol.SUB_TYPE_GROUP);
+        this.dispatcher = dispatcher;
+        this.groupService = groupService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received create group create");
-		final Map<String, Value> args = this.getArguments(message, false, new String[]{
-			Protocol.ARGUMENT_TEMPORARY_ID,
-		});
-		final Map<String, Value> data = this.getData(message, false);
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received create group create");
+        final Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_TEMPORARY_ID,
+        });
+        final Map<String, Value> data = this.getData(message, false);
 
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		// Parse members
-		if (!data.containsKey(Protocol.ARGUMENT_MEMBERS)) {
-			logger.error("Invalid request, members not set");
-			this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
-			return;
-		}
+        // Parse members
+        if (!data.containsKey(Protocol.ARGUMENT_MEMBERS)) {
+            logger.error("Invalid request, members not set");
+            this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
+            return;
+        }
 
-		final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
-		final Set<String> identities = new HashSet<>();
-		for (Value member : members) {
-			identities.add(member.asStringValue().toString());
-		}
+        final List<Value> members = data.get(Protocol.ARGUMENT_MEMBERS).asArrayValue().list();
+        final Set<String> identities = new HashSet<>();
+        for (Value member : members) {
+            identities.add(member.asStringValue().toString());
+        }
 
-		// Parse group name
-		String name = null;
-		if(data.containsKey(Protocol.ARGUMENT_NAME)
-			&& !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
-			name = data.get(Protocol.ARGUMENT_NAME).asStringValue().toString();
-			if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_GROUP_NAME) {
-				this.failed(temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
-				return;
-			}
-		}
+        // Parse group name
+        String name = null;
+        if (data.containsKey(Protocol.ARGUMENT_NAME)
+            && !data.get(Protocol.ARGUMENT_NAME).isNilValue()) {
+            name = data.get(Protocol.ARGUMENT_NAME).asStringValue().toString();
+            if (name.getBytes(StandardCharsets.UTF_8).length > Protocol.LIMIT_BYTES_GROUP_NAME) {
+                this.failed(temporaryId, Protocol.ERROR_VALUE_TOO_LONG);
+                return;
+            }
+        }
 
-		// Parse avatar
-		Bitmap avatar = null;
-		if (data.containsKey(Protocol.ARGUMENT_AVATAR)
-				&& !data.get(Protocol.ARGUMENT_AVATAR).isNilValue()) {
-			byte[] bmp = data.get(Protocol.ARGUMENT_AVATAR).asBinaryValue().asByteArray();
-			if (bmp.length > 0) {
-				avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
+        // Parse avatar
+        Bitmap avatar = null;
+        if (data.containsKey(Protocol.ARGUMENT_AVATAR)
+            && !data.get(Protocol.ARGUMENT_AVATAR).isNilValue()) {
+            byte[] bmp = data.get(Protocol.ARGUMENT_AVATAR).asBinaryValue().asByteArray();
+            if (bmp.length > 0) {
+                avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
 
-				// Resize to max allowed size
-				avatar = BitmapUtil.resizeBitmap(avatar, ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-						ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
-			}
-		}
+                // Resize to max allowed size
+                avatar = BitmapUtil.resizeBitmap(avatar, ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
+                    ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
+            }
+        }
 
-		// Create group
-		try {
-			final GroupModel groupModel = this.groupService.createGroupFromLocal(name, identities, avatar);
-			this.success(temporaryId, groupModel);
-		} catch (PolicyViolationException e) {
-			this.failed(temporaryId, Protocol.ERROR_DISABLED_BY_POLICY);
-		} catch (Exception e) {
-			this.failed(temporaryId, Protocol.ERROR_INTERNAL);
-		}
-	}
+        // Create group
+        try {
+            final GroupModel groupModel = this.groupService.createGroupFromLocal(name, identities, avatar);
+            this.success(temporaryId, groupModel);
+        } catch (PolicyViolationException e) {
+            this.failed(temporaryId, Protocol.ERROR_DISABLED_BY_POLICY);
+        } catch (Exception e) {
+            this.failed(temporaryId, Protocol.ERROR_INTERNAL);
+        }
+    }
 
-	private void success(String temporaryId, GroupModel group) {
-		logger.debug("Respond create group success");
-		try {
-			this.send(this.dispatcher,
-					new MsgpackObjectBuilder()
-						.put(Protocol.SUB_TYPE_RECEIVER, Group.convert(group)),
-					new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, true)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-			);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+    private void success(String temporaryId, GroupModel group) {
+        logger.debug("Respond create group success");
+        try {
+            this.send(this.dispatcher,
+                new MsgpackObjectBuilder()
+                    .put(Protocol.SUB_TYPE_RECEIVER, Group.convert(group)),
+                new MsgpackObjectBuilder()
+                    .put(Protocol.ARGUMENT_SUCCESS, true)
+                    .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+            );
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	private void failed(String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond create group failed ({})", errorCode);
-		this.send(this.dispatcher,
-				(MsgpackObjectBuilder) null,
-				new MsgpackObjectBuilder()
-						.put(Protocol.ARGUMENT_SUCCESS, false)
-						.put(Protocol.ARGUMENT_ERROR, errorCode)
-						.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
-		);
-	}
+    private void failed(String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond create group failed ({})", errorCode);
+        this.send(this.dispatcher,
+            (MsgpackObjectBuilder) null,
+            new MsgpackObjectBuilder()
+                .put(Protocol.ARGUMENT_SUCCESS, false)
+                .put(Protocol.ARGUMENT_ERROR, errorCode)
+                .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId)
+        );
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return true;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return true;
+    }
 }

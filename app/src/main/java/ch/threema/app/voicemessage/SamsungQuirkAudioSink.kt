@@ -33,7 +33,8 @@ import java.nio.ByteBuffer
  * Handle audio sink error on some Samsung devices when changing AudioAttributes by retrying
  */
 @UnstableApi
-class SamsungQuirkAudioSink(context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean,
+class SamsungQuirkAudioSink(
+    context: Context, enableFloatOutput: Boolean, enableAudioTrackPlaybackParams: Boolean,
     private val delegate: AudioSink = DefaultAudioSink.Builder()
         .setAudioCapabilities(AudioCapabilities.getCapabilities(context))
         .setEnableFloatOutput(enableFloatOutput)
@@ -42,7 +43,11 @@ class SamsungQuirkAudioSink(context: Context, enableFloatOutput: Boolean, enable
 ) : AudioSink by delegate {
     private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")
 
-    override fun handleBuffer(buffer: ByteBuffer, presentationTimeUs: Long, encodedAccessUnitCount: Int): Boolean {
+    override fun handleBuffer(
+        buffer: ByteBuffer,
+        presentationTimeUs: Long,
+        encodedAccessUnitCount: Int
+    ): Boolean {
         for (i in 0..4) {
             try {
                 return delegate.handleBuffer(buffer, presentationTimeUs, encodedAccessUnitCount)

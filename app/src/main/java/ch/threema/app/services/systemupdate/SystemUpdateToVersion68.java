@@ -33,36 +33,36 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * Create readAt and deliveredAt fields in message model
  */
 public class SystemUpdateToVersion68 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 68;
-	private final SQLiteDatabase sqLiteDatabase;
+    public static final int VERSION = 68;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion68(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion68(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		for(String table: new String[]{"message", "m_group_message", "distribution_list_message"}) {
-			if(!fieldExists(this.sqLiteDatabase, table, "deliveredAtUtc")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN deliveredAtUtc DATETIME DEFAULT NULL");
-			}
-			if(!fieldExists(this.sqLiteDatabase, table, "readAtUtc")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN readAtUtc DATETIME DEFAULT NULL");
-			}
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        for (String table : new String[]{"message", "m_group_message", "distribution_list_message"}) {
+            if (!fieldExists(this.sqLiteDatabase, table, "deliveredAtUtc")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN deliveredAtUtc DATETIME DEFAULT NULL");
+            }
+            if (!fieldExists(this.sqLiteDatabase, table, "readAtUtc")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN readAtUtc DATETIME DEFAULT NULL");
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 68 (correlationId)";
-	}
+    @Override
+    public String getText() {
+        return "version 68 (correlationId)";
+    }
 }

@@ -55,90 +55,90 @@ import ch.threema.storage.models.ContactModel;
  * start the call activity.
  */
 public class CallActionIntentActivity extends ThreemaActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CallActionIntentActivity");
-	private ServiceManager serviceManager;
-	private ContactService contactService;
-	private PreferenceService preferenceService;
-	private LicenseService licenseService;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CallActionIntentActivity");
+    private ServiceManager serviceManager;
+    private ContactService contactService;
+    private PreferenceService preferenceService;
+    private LicenseService licenseService;
 
-	@Override
-	protected boolean checkInstances() {
-		return TestUtil.required(
-				this.serviceManager,
-				this.contactService,
-				this.preferenceService,
-				this.licenseService
-		);
-	}
+    @Override
+    protected boolean checkInstances() {
+        return TestUtil.required(
+            this.serviceManager,
+            this.contactService,
+            this.preferenceService,
+            this.licenseService
+        );
+    }
 
-	@Override
-	protected void instantiate() {
-		this.serviceManager = ThreemaApplication.getServiceManager();
+    @Override
+    protected void instantiate() {
+        this.serviceManager = ThreemaApplication.getServiceManager();
 
-		if (this.serviceManager != null) {
-			try {
-				this.contactService = this.serviceManager.getContactService();
-				this.preferenceService = this.serviceManager.getPreferenceService();
-				this.licenseService = this.serviceManager.getLicenseService();
-			} catch (Exception e) {
-				logger.error("Could not instantiate services", e);
-			}
-		}
-	}
+        if (this.serviceManager != null) {
+            try {
+                this.contactService = this.serviceManager.getContactService();
+                this.preferenceService = this.serviceManager.getPreferenceService();
+                this.licenseService = this.serviceManager.getLicenseService();
+            } catch (Exception e) {
+                logger.error("Could not instantiate services", e);
+            }
+        }
+    }
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (!this.requiredInstances()) {
-			this.finish();
-			return;
-		}
+        if (!this.requiredInstances()) {
+            this.finish();
+            return;
+        }
 
-		if (!ConfigUtils.isCallsEnabled() || !licenseService.isLicensed()) {
-			Toast.makeText(getApplicationContext(), R.string.voip_disabled, Toast.LENGTH_LONG).show();
-			this.finish();
-			return;
-		}
+        if (!ConfigUtils.isCallsEnabled() || !licenseService.isLicensed()) {
+            Toast.makeText(getApplicationContext(), R.string.voip_disabled, Toast.LENGTH_LONG).show();
+            this.finish();
+            return;
+        }
 
-	//	String contactIdentity = null;
-		ContactModel contact = null;
+        //	String contactIdentity = null;
+        ContactModel contact = null;
 
-		// Validate intent
-		final Intent intent = getIntent();
-		if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-			if (getString(R.string.call_mime_type).equals(intent.getType())) {
-				Uri uri = intent.getData();
-				if (uri != null && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
-					try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
-						if (cursor != null && cursor.moveToNext()) {
-							String contactIdentity = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.RawContacts.Data.DATA1));
-							contact = contactService.getByIdentity(contactIdentity);
-						}
-					} catch (SecurityException e) {
-						logger.error("SecurityException", e);
-					}
-				}
-			}
-		} else if (Intent.ACTION_CALL.equals(intent.getAction())) {
-			final Uri uri = intent.getData();
-			if (uri != null && "tel".equals(uri.getScheme())) {
-				// Look up contact identity
-				contact = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
-			}
-		}
+        // Validate intent
+        final Intent intent = getIntent();
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            if (getString(R.string.call_mime_type).equals(intent.getType())) {
+                Uri uri = intent.getData();
+                if (uri != null && ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
+                    try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+                        if (cursor != null && cursor.moveToNext()) {
+                            String contactIdentity = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.RawContacts.Data.DATA1));
+                            contact = contactService.getByIdentity(contactIdentity);
+                        }
+                    } catch (SecurityException e) {
+                        logger.error("SecurityException", e);
+                    }
+                }
+            }
+        } else if (Intent.ACTION_CALL.equals(intent.getAction())) {
+            final Uri uri = intent.getData();
+            if (uri != null && "tel".equals(uri.getScheme())) {
+                // Look up contact identity
+                contact = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
+            }
+        }
 
-		if (contact == null) {
-			Toast.makeText(this, R.string.voip_contact_not_found, Toast.LENGTH_LONG).show();
-			logger.warn("Invalid call intent: Contact not found");
-			finish();
-			return;
-		}
+        if (contact == null) {
+            Toast.makeText(this, R.string.voip_contact_not_found, Toast.LENGTH_LONG).show();
+            logger.warn("Invalid call intent: Contact not found");
+            finish();
+            return;
+        }
 
-		logger.info("Calling {} via call intent action", contact.getIdentity());
+        logger.info("Calling {} via call intent action", contact.getIdentity());
 
-		if (!VoipUtil.initiateCall(this, contact, false, this::finish)) {
-			finish();
-		}
-	}
+        if (!VoipUtil.initiateCall(this, contact, false, this::finish)) {
+            finish();
+        }
+    }
 }

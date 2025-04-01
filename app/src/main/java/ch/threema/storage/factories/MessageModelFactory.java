@@ -247,7 +247,6 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
     }
 
 
-
     public List<MessageModel> getUnreadMessages(String identity) {
         return convertList(this.databaseService.getReadableDatabase().query(this.getTableName(),
             null,
@@ -496,7 +495,7 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
                 "`" + MessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
             //indices
-	        "CREATE INDEX `contact_message_uid_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
+            "CREATE INDEX `contact_message_uid_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
             "CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_IDENTITY + "` )",
             "CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_API_MESSAGE_ID + "` )",
             "CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_OUTBOX + "` )",

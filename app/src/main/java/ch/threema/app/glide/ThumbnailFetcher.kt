@@ -38,7 +38,7 @@ import com.bumptech.glide.load.data.DataFetcher
  */
 class ThumbnailFetcher(
     private val messageModel: AbstractMessageModel,
-    ) : DataFetcher<Bitmap> {
+) : DataFetcher<Bitmap> {
 
     private val fileService: FileService? by lazy { ThreemaApplication.getServiceManager()?.fileService }
 

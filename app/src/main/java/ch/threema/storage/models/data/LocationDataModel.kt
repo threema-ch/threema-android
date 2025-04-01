@@ -128,36 +128,43 @@ data class LocationDataModel(
                 val longitude: Double = jsonArray[1].jsonPrimitive.content.toDouble()
 
                 // Accuracy is not required, but if there is another value that is not a double, we throw
-                val accuracy: Double? = when (val jsonElement: JsonElement? = jsonArray.getOrNull(2)) {
-                    JsonNull, null -> null
-                    is JsonPrimitive -> jsonElement.content.toDouble()
-                    else -> throw IllegalStateException("Expected a double value or explicit null at array index 2")
-                }
-
-                // PoiAddress is not required, but if there is another value that is not a string, we throw
-                val poiAddress: String? = when (val jsonElement: JsonElement? = jsonArray.getOrNull(3)) {
-                    JsonNull, null -> null
-                    is JsonPrimitive -> if (jsonElement.isString) {
-                        jsonElement.content
-                    } else {
-                        throw IllegalStateException("Expected a string value or explicit null at array index 3")
+                val accuracy: Double? =
+                    when (val jsonElement: JsonElement? = jsonArray.getOrNull(2)) {
+                        JsonNull, null -> null
+                        is JsonPrimitive -> jsonElement.content.toDouble()
+                        else -> throw IllegalStateException("Expected a double value or explicit null at array index 2")
                     }
 
-                    else -> throw IllegalStateException("Expected a string value or explicit null at array index 3")
-                }
+                // PoiAddress is not required, but if there is another value that is not a string, we throw
+                val poiAddress: String? =
+                    when (val jsonElement: JsonElement? = jsonArray.getOrNull(3)) {
+                        JsonNull, null -> null
+                        is JsonPrimitive -> if (jsonElement.isString) {
+                            jsonElement.content
+                        } else {
+                            throw IllegalStateException("Expected a string value or explicit null at array index 3")
+                        }
+
+                        else -> throw IllegalStateException("Expected a string value or explicit null at array index 3")
+                    }
 
                 // PoiName is not required, but if there is another value that is not a string, we throw
-                val poiName: String? = when (val jsonElement: JsonElement? = jsonArray.getOrNull(4)) {
-                    JsonNull, null -> null
-                    is JsonPrimitive -> if (jsonElement.isString) {
-                        jsonElement.content
-                    } else throw IllegalStateException("Expected a string value or explicit null at array index 4")
+                val poiName: String? =
+                    when (val jsonElement: JsonElement? = jsonArray.getOrNull(4)) {
+                        JsonNull, null -> null
+                        is JsonPrimitive -> if (jsonElement.isString) {
+                            jsonElement.content
+                        } else throw IllegalStateException("Expected a string value or explicit null at array index 4")
 
-                    else -> throw IllegalStateException("Expected a string value or explicit null at array index 4")
-                }
+                        else -> throw IllegalStateException("Expected a string value or explicit null at array index 4")
+                    }
 
                 val poi: Poi? = when {
-                    !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(name = poiName, address = poiAddress)
+                    !poiName.isNullOrBlank() && !poiAddress.isNullOrBlank() -> Poi.Named(
+                        name = poiName,
+                        address = poiAddress
+                    )
+
                     !poiAddress.isNullOrBlank() -> Poi.Unnamed(address = poiAddress)
                     else -> null
                 }

@@ -187,6 +187,7 @@ public class BackupDataFragment extends Fragment implements
 
     /**
      * Get the name of a directory from an Uri selected with Intent.ACTION_OPEN_DOCUMENT_TREE
+     *
      * @param directoryTreeUri Uri returned by ACTION_OPEN_DOCUMENT_TREE
      * @return Name of directory, a localized string "not set" if an empty Uri was provided, or the complete Uri as a String as a fallback
      */
@@ -202,7 +203,8 @@ public class BackupDataFragment extends Fragment implements
                         return name;
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return directoryTreeUri.toString();
     }
@@ -306,7 +308,8 @@ public class BackupDataFragment extends Fragment implements
     }
 
     @Override
-    public void onNo(String tag) {}
+    public void onNo(String tag) {
+    }
 
     @Override
     public void onYes(String tag, Object data) {

@@ -48,7 +48,7 @@ class OutgoingGroupReactionMessageTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val messageModel = getGroupMessageModel(targetMessageModelId)
-                ?: throw ThreemaException("No group message model found for messageModelId=$targetMessageModelId")
+            ?: throw ThreemaException("No group message model found for messageModelId=$targetMessageModelId")
 
         val group = groupService.getById(messageModel.groupId)
             ?: throw ThreemaException("No group model found for groupId=${messageModel.groupId}")
@@ -66,7 +66,7 @@ class OutgoingGroupReactionMessageTask(
         )
     }
 
-    private fun createReactionMessage(targetMessageId: Long) : GroupReactionMessage {
+    private fun createReactionMessage(targetMessageId: Long): GroupReactionMessage {
         val groupReactionMessage = GroupReactionMessage(
             ReactionMessageData(
                 messageId = targetMessageId,

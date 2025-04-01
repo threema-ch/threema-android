@@ -37,85 +37,87 @@ import java8.util.Optional;
 
 public class OutgoingGroupJoinRequestServiceImpl implements OutgoingGroupJoinRequestService {
 
-	private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
+    private final @NonNull OutgoingGroupJoinRequestModelFactory outgoingGroupJoinRequestModelFactory;
 
-	public OutgoingGroupJoinRequestServiceImpl(
-		@NonNull final DatabaseServiceNew databaseService
-	) {
-		this.outgoingGroupJoinRequestModelFactory = databaseService.getOutgoingGroupJoinRequestModelFactory();
-	}
+    public OutgoingGroupJoinRequestServiceImpl(
+        @NonNull final DatabaseServiceNew databaseService
+    ) {
+        this.outgoingGroupJoinRequestModelFactory = databaseService.getOutgoingGroupJoinRequestModelFactory();
+    }
 
-	/**
-	 * Sends a join request for a corresponding group invite with a join request message for the group admin
-	 * @param groupInvite GroupInvite for which a request is sent
-	 * @param requestMessage String join request message
-	 * */
-	@Override
-	public void send(
-		@NonNull GroupInviteData groupInvite,
-		@NonNull String requestMessage) throws ThreemaException {
+    /**
+     * Sends a join request for a corresponding group invite with a join request message for the group admin
+     *
+     * @param groupInvite    GroupInvite for which a request is sent
+     * @param requestMessage String join request message
+     */
+    @Override
+    public void send(
+        @NonNull GroupInviteData groupInvite,
+        @NonNull String requestMessage) throws ThreemaException {
 
-		final GroupJoinRequestMessage message = new GroupJoinRequestMessage(new GroupJoinRequestData(
-			GroupInviteToken.fromHexString(groupInvite.getToken().toString()),
-			groupInvite.getGroupName(),
-			requestMessage)
-		);
+        final GroupJoinRequestMessage message = new GroupJoinRequestMessage(new GroupJoinRequestData(
+            GroupInviteToken.fromHexString(groupInvite.getToken().toString()),
+            groupInvite.getGroupName(),
+            requestMessage)
+        );
 
-		Optional<OutgoingGroupJoinRequestModel> previousRequest = this.outgoingGroupJoinRequestModelFactory
-			.getByInviteToken(groupInvite.getToken().toString());
+        Optional<OutgoingGroupJoinRequestModel> previousRequest = this.outgoingGroupJoinRequestModelFactory
+            .getByInviteToken(groupInvite.getToken().toString());
 
-		// reset state if resending a request else create and persists new request
-		if (previousRequest.isPresent()) {
-			this.outgoingGroupJoinRequestModelFactory
-				.updateStatusAndSentDate(previousRequest.get(), OutgoingGroupJoinRequestModel.Status.UNKNOWN);
-		} else {
-			final Result<OutgoingGroupJoinRequestModel, Exception> insertResult =
-				this.outgoingGroupJoinRequestModelFactory.insert(
-				new OutgoingGroupJoinRequestModel(-1,
-					groupInvite.getToken().toString(),
-					groupInvite.getGroupName(),
-					requestMessage,
-					groupInvite.getAdminIdentity(),
-					new Date(),
-					OutgoingGroupJoinRequestModel.Status.UNKNOWN,
-					null)
-			);
+        // reset state if resending a request else create and persists new request
+        if (previousRequest.isPresent()) {
+            this.outgoingGroupJoinRequestModelFactory
+                .updateStatusAndSentDate(previousRequest.get(), OutgoingGroupJoinRequestModel.Status.UNKNOWN);
+        } else {
+            final Result<OutgoingGroupJoinRequestModel, Exception> insertResult =
+                this.outgoingGroupJoinRequestModelFactory.insert(
+                    new OutgoingGroupJoinRequestModel(-1,
+                        groupInvite.getToken().toString(),
+                        groupInvite.getGroupName(),
+                        requestMessage,
+                        groupInvite.getAdminIdentity(),
+                        new Date(),
+                        OutgoingGroupJoinRequestModel.Status.UNKNOWN,
+                        null)
+                );
 
-			if (insertResult.isFailure()) {
-				throw new ThreemaException("Database insertion failed {}", insertResult.getError());
-			}
-		}
-		message.setToIdentity(groupInvite.getAdminIdentity());
-		// TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
-	}
+            if (insertResult.isFailure()) {
+                throw new ThreemaException("Database insertion failed {}", insertResult.getError());
+            }
+        }
+        message.setToIdentity(groupInvite.getAdminIdentity());
+        // TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
+    }
 
-	/**
-	 * Resend a join request for a existing outgoing request with a new request message for the group admin
-	 * @param groupJoinRequestModel OutgoingGroupJoinRequestModel for which a request is resent
-	 * @param requestMessage String join request message
-	 * */
-	@Override
-	public void resendRequest(
-		@NonNull OutgoingGroupJoinRequestModel groupJoinRequestModel,
-		@NonNull String requestMessage) throws ThreemaException {
+    /**
+     * Resend a join request for a existing outgoing request with a new request message for the group admin
+     *
+     * @param groupJoinRequestModel OutgoingGroupJoinRequestModel for which a request is resent
+     * @param requestMessage        String join request message
+     */
+    @Override
+    public void resendRequest(
+        @NonNull OutgoingGroupJoinRequestModel groupJoinRequestModel,
+        @NonNull String requestMessage) throws ThreemaException {
 
-		final GroupJoinRequestMessage message = new GroupJoinRequestMessage(new GroupJoinRequestData(
-			GroupInviteToken.fromHexString(groupJoinRequestModel.getInviteToken()),
-			groupJoinRequestModel.getGroupName(),
-			requestMessage)
-		);
+        final GroupJoinRequestMessage message = new GroupJoinRequestMessage(new GroupJoinRequestData(
+            GroupInviteToken.fromHexString(groupJoinRequestModel.getInviteToken()),
+            groupJoinRequestModel.getGroupName(),
+            requestMessage)
+        );
 
-		Optional<OutgoingGroupJoinRequestModel> previousRequest = this.outgoingGroupJoinRequestModelFactory
-			.getByInviteToken(groupJoinRequestModel.getInviteToken());
+        Optional<OutgoingGroupJoinRequestModel> previousRequest = this.outgoingGroupJoinRequestModelFactory
+            .getByInviteToken(groupJoinRequestModel.getInviteToken());
 
-		// reset state if request is actually there
-		if (previousRequest.isPresent()) {
-			this.outgoingGroupJoinRequestModelFactory
-				.updateStatusAndSentDate(previousRequest.get(), OutgoingGroupJoinRequestModel.Status.UNKNOWN);
-		} else {
-			throw new ThreemaException("No previous request found to resend");
-		}
-		message.setToIdentity(groupJoinRequestModel.getAdminIdentity());
-		// TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
-	}
+        // reset state if request is actually there
+        if (previousRequest.isPresent()) {
+            this.outgoingGroupJoinRequestModelFactory
+                .updateStatusAndSentDate(previousRequest.get(), OutgoingGroupJoinRequestModel.Status.UNKNOWN);
+        } else {
+            throw new ThreemaException("No previous request found to resend");
+        }
+        message.setToIdentity(groupJoinRequestModel.getAdminIdentity());
+        // TODO(ANDR-2607): message was enqueued here in the message queue. Create a task for this.
+    }
 }

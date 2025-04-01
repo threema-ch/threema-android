@@ -25,33 +25,34 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
+
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.neilalexander.jnacl.NaCl;
 
 public class MetadataCoder {
-	private final IdentityStoreInterface identityStore;
+    private final IdentityStoreInterface identityStore;
 
-	public MetadataCoder(IdentityStoreInterface identityStore) {
-		this.identityStore = identityStore;
-	}
+    public MetadataCoder(IdentityStoreInterface identityStore) {
+        this.identityStore = identityStore;
+    }
 
-	public MetadataBox encode(MessageMetadata metadata, byte[] nonce, byte[] publicKey) throws ThreemaException {
-		byte[] box = NaCl.symmetricEncryptData(metadata.toByteArray(), deriveMetadataKey(publicKey), nonce);
-		return new MetadataBox(box);
-	}
+    public MetadataBox encode(MessageMetadata metadata, byte[] nonce, byte[] publicKey) throws ThreemaException {
+        byte[] box = NaCl.symmetricEncryptData(metadata.toByteArray(), deriveMetadataKey(publicKey), nonce);
+        return new MetadataBox(box);
+    }
 
-	public MessageMetadata decode(byte[] nonce, MetadataBox metadataBox, byte[] publicKey) throws InvalidProtocolBufferException, ThreemaException {
-		byte[] pb = NaCl.symmetricDecryptData(metadataBox.getBox(), deriveMetadataKey(publicKey), nonce);
-		if (pb == null) {
-			throw new ThreemaException("Metadata decryption failed");
-		}
+    public MessageMetadata decode(byte[] nonce, MetadataBox metadataBox, byte[] publicKey) throws InvalidProtocolBufferException, ThreemaException {
+        byte[] pb = NaCl.symmetricDecryptData(metadataBox.getBox(), deriveMetadataKey(publicKey), nonce);
+        if (pb == null) {
+            throw new ThreemaException("Metadata decryption failed");
+        }
 
-		return MessageMetadata.parseFrom(pb);
-	}
+        return MessageMetadata.parseFrom(pb);
+    }
 
-	private byte[] deriveMetadataKey(byte[] publicKey) {
-		byte[] sharedSecret = identityStore.calcSharedSecret(publicKey);
-		ThreemaKDF kdf = new ThreemaKDF("3ma-csp");
-		return kdf.deriveKey("mm", sharedSecret);
-	}
+    private byte[] deriveMetadataKey(byte[] publicKey) {
+        byte[] sharedSecret = identityStore.calcSharedSecret(publicKey);
+        ThreemaKDF kdf = new ThreemaKDF("3ma-csp");
+        return kdf.deriveKey("mm", sharedSecret);
+    }
 }

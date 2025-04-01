@@ -54,6 +54,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("CspSession")
 interface CspSessionState {
     val isLoginDone: Boolean
 }
+
 internal class CspSession(
     private val configuration: BaseServerConnectionConfiguration,
     private val dispatcher: ServerConnectionDispatcher
@@ -72,7 +73,7 @@ internal class CspSession(
     private val identityStore: IdentityStoreInterface
         get() = configuration.identityStore
     private val cspDeviceId: DeviceId?
-        get() = when(configuration) {
+        get() = when (configuration) {
             is D2mConnectionConfiguration -> configuration.multiDevicePropertyProvider.get().cspDeviceId
             else -> null
         }
@@ -119,11 +120,13 @@ internal class CspSession(
                 sendClientLogin(serverTempKeyPub, outbound)
                 LoginState.AWAIT_LOGIN_ACK
             }
+
             LoginState.AWAIT_LOGIN_ACK -> {
                 timeMeasureUtil.stop()
                 processServerLoginAck(message)
                 LoginState.DONE
             }
+
             else -> throw ServerConnectionException("Unexpected CspLoginMessage message in login state $loginState")
         }
     }
@@ -138,7 +141,11 @@ internal class CspSession(
             ByteArray(3) +
             container.data
 
-        logger.trace("Encrypt CspContainer with {} data bytes (payload size: {} bytes)", container.data.size, payload.size)
+        logger.trace(
+            "Encrypt CspContainer with {} data bytes (payload size: {} bytes)",
+            container.data.size,
+            payload.size
+        )
         return CspFrame(kClientTempServerTemp.encrypt(payload, clientNonce.nextNonce()))
     }
 
@@ -230,12 +237,19 @@ internal class CspSession(
      */
     private fun assertCorrectClientCookie(serverHello: ByteArray) {
         val clientCookieFromServer = ByteArray(ProtocolDefines.COOKIE_LEN)
-        System.arraycopy(serverHello, NaCl.PUBLICKEYBYTES, clientCookieFromServer, 0, ProtocolDefines.COOKIE_LEN)
+        System.arraycopy(
+            serverHello,
+            NaCl.PUBLICKEYBYTES,
+            clientCookieFromServer,
+            0,
+            ProtocolDefines.COOKIE_LEN
+        )
 
         if (!clientCookieFromServer.contentEquals(clientCookie)) {
             throw ServerConnectionException("Client cookie mismatch")
         }
     }
+
     /**
      * Extract server tempkey from server hello.
      *
@@ -281,7 +295,10 @@ internal class CspSession(
         outbound.send(CspLoginMessage(clientHello))
     }
 
-    private fun sendClientLogin(serverTempKeyPub: ByteArray, outbound: InputPipe<in CspLoginMessage>) {
+    private fun sendClientLogin(
+        serverTempKeyPub: ByteArray,
+        outbound: InputPipe<in CspLoginMessage>
+    ) {
         dispatcher.assertDispatcherContext()
 
         val loginNonce = clientNonce.nextNonce()
@@ -309,7 +326,10 @@ internal class CspSession(
 
     private fun createExtensions(): ByteArray {
         /* Client info (0x00) */
-        val clientInfo = ProtocolExtension(ProtocolExtension.CLIENT_INFO_TYPE, version.fullVersionString.encodeToByteArray())
+        val clientInfo = ProtocolExtension(
+            ProtocolExtension.CLIENT_INFO_TYPE,
+            version.fullVersionString.encodeToByteArray()
+        )
 
         /* Csp device id (0x01) if multi device is active, omit if md is not active */
         val cspDeviceIdBytes = cspDeviceId
@@ -318,12 +338,18 @@ internal class CspSession(
         logger.trace("Csp  device id bytes {}", cspDeviceIdBytes.toHexString())
 
         /* Message payload version (0x02) */
-        val messagePayloadVersion = ProtocolExtension(ProtocolExtension.MESSAGE_PAYLOAD_VERSION_TYPE, byteArrayOf(ProtocolExtension.MESSAGE_PAYLOAD_VERSION.toByte()))
+        val messagePayloadVersion = ProtocolExtension(
+            ProtocolExtension.MESSAGE_PAYLOAD_VERSION_TYPE,
+            byteArrayOf(ProtocolExtension.MESSAGE_PAYLOAD_VERSION.toByte())
+        )
 
         /* Device cookie extension (0x03) */
-        val deviceCookie = ProtocolExtension(ProtocolExtension.DEVICE_COOKIE_TYPE, deviceCookieManager.obtainDeviceCookie())
+        val deviceCookie = ProtocolExtension(
+            ProtocolExtension.DEVICE_COOKIE_TYPE,
+            deviceCookieManager.obtainDeviceCookie()
+        )
 
-        return clientInfo.bytes + cspDeviceIdBytes +  messagePayloadVersion.bytes + deviceCookie.bytes
+        return clientInfo.bytes + cspDeviceIdBytes + messagePayloadVersion.bytes + deviceCookie.bytes
     }
 
     private fun createExtensionIndicator(extensionsBoxLength: Int): ByteArray {
@@ -338,7 +364,10 @@ internal class CspSession(
 
     private fun createVouch(serverTempKeyPub: ByteArray): ByteArray {
         val kdf = ThreemaKDF("3ma-csp")
-        val sharedSecrets = identityStore.calcSharedSecret(serverPubKeyPerm) + identityStore.calcSharedSecret(serverTempKeyPub)
+        val sharedSecrets =
+            identityStore.calcSharedSecret(serverPubKeyPerm) + identityStore.calcSharedSecret(
+                serverTempKeyPub
+            )
         val vouchKey = kdf.deriveKey("v2", sharedSecrets)
         val input = serverCookie + clientTempKeyPub
         return Blake2b.Mac.newInstance(vouchKey, ProtocolDefines.VOUCH_LEN).digest(input)

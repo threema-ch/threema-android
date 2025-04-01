@@ -36,69 +36,69 @@ import ch.threema.app.R;
 
 public class ThreemaEditText extends TextInputEditText {
 
-	public ThreemaEditText(Context context) {
-		super(context);
+    public ThreemaEditText(Context context) {
+        super(context);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    public ThreemaEditText(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ThreemaEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public ThreemaEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	private void init(Context context) {
-		// PreferenceService may not yet be available at this time
-		new AsyncTask<Void, Void, Boolean>() {
-			@Override
-			protected Boolean doInBackground(Void... voids) {
-				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-				if (sharedPreferences != null) {
-					return sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false);
-				}
-				return null;
-			}
+    private void init(Context context) {
+        // PreferenceService may not yet be available at this time
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                if (sharedPreferences != null) {
+                    return sharedPreferences.getBoolean(getResources().getString(R.string.preferences__incognito_keyboard), false);
+                }
+                return null;
+            }
 
-			@Override
-			protected void onPostExecute(Boolean aBoolean) {
-				if (aBoolean != null && aBoolean == true) {
-					setImeOptions(getImeOptions() | 0x1000000);
-				}
-			}
-		}.execute();
-	}
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (aBoolean != null && aBoolean == true) {
+                    setImeOptions(getImeOptions() | 0x1000000);
+                }
+            }
+        }.execute();
+    }
 
-	@Override
-	public boolean onTextContextMenuItem(int id) {
-		if (id == android.R.id.paste) {
-			/* Hack to prevent rich text pasting */
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-				id = android.R.id.pasteAsPlainText;
-			}
-		}
-		return super.onTextContextMenuItem(id);
-	}
+    @Override
+    public boolean onTextContextMenuItem(int id) {
+        if (id == android.R.id.paste) {
+            /* Hack to prevent rich text pasting */
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                id = android.R.id.pasteAsPlainText;
+            }
+        }
+        return super.onTextContextMenuItem(id);
+    }
 
-	@Override
-	@TargetApi(Build.VERSION_CODES.O)
-	public int getAutofillType() {
-		// disable Autofill in EditText due to privacy and TransactionTooLargeException as well as bug https://issuetracker.google.com/issues/67675432
-		return AUTOFILL_TYPE_NONE;
-	}
+    @Override
+    @TargetApi(Build.VERSION_CODES.O)
+    public int getAutofillType() {
+        // disable Autofill in EditText due to privacy and TransactionTooLargeException as well as bug https://issuetracker.google.com/issues/67675432
+        return AUTOFILL_TYPE_NONE;
+    }
 
-	@Override
-	public void dispatchWindowFocusChanged(boolean hasFocus) {
-		try {
-			super.dispatchWindowFocusChanged(hasFocus);
-		} catch (Exception ignore) {
-			// catch Security Exception in com.samsung.android.content.clipboard.SemClipboardManager.getLatestClip() on Samsung devices
-		}
-	}
+    @Override
+    public void dispatchWindowFocusChanged(boolean hasFocus) {
+        try {
+            super.dispatchWindowFocusChanged(hasFocus);
+        } catch (Exception ignore) {
+            // catch Security Exception in com.samsung.android.content.clipboard.SemClipboardManager.getLatestClip() on Samsung devices
+        }
+    }
 }

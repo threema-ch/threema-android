@@ -32,27 +32,27 @@ import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.services.PreferenceService;
 
 public class HiddenChatUtil {
-	public static void launchLockCheckDialog(Fragment fragment, PreferenceService preferenceService) {
-		launchLockCheckDialog(null, fragment, preferenceService, ThreemaActivity.ACTIVITY_ID_CHECK_LOCK);
-	}
+    public static void launchLockCheckDialog(Fragment fragment, PreferenceService preferenceService) {
+        launchLockCheckDialog(null, fragment, preferenceService, ThreemaActivity.ACTIVITY_ID_CHECK_LOCK);
+    }
 
-	public static void launchLockCheckDialog(ThreemaToolbarActivity activity, PreferenceService preferenceService) {
-		launchLockCheckDialog(activity, null, preferenceService, ThreemaActivity.ACTIVITY_ID_CHECK_LOCK);
-	}
+    public static void launchLockCheckDialog(ThreemaToolbarActivity activity, PreferenceService preferenceService) {
+        launchLockCheckDialog(activity, null, preferenceService, ThreemaActivity.ACTIVITY_ID_CHECK_LOCK);
+    }
 
-	public static void launchLockCheckDialog(ThreemaToolbarActivity activity, Fragment fragment, PreferenceService preferenceService, int id) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-			(preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
-				preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC))) {
-			BiometricUtil.showUnlockDialog(activity, fragment, true, id, null);
-		} else if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_PIN)) {
-			Intent intent = new Intent(activity != null ? activity : fragment.getActivity(), PinLockActivity.class);
-			intent.putExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, true);
-			if (activity != null) {
-				activity.startActivityForResult(intent, id);
-			} else {
-				fragment.startActivityForResult(intent, id);
-			}
-		}
-	}
+    public static void launchLockCheckDialog(ThreemaToolbarActivity activity, Fragment fragment, PreferenceService preferenceService, int id) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
+                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC))) {
+            BiometricUtil.showUnlockDialog(activity, fragment, true, id, null);
+        } else if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_PIN)) {
+            Intent intent = new Intent(activity != null ? activity : fragment.getActivity(), PinLockActivity.class);
+            intent.putExtra(ThreemaApplication.INTENT_DATA_CHECK_ONLY, true);
+            if (activity != null) {
+                activity.startActivityForResult(intent, id);
+            } else {
+                fragment.startActivityForResult(intent, id);
+            }
+        }
+    }
 }

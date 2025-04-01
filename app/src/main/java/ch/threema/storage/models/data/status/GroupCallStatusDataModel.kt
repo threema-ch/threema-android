@@ -36,7 +36,8 @@ open class GroupCallStatusDataModel protected constructor() : StatusDataModelInt
     var status = 0
         private set
 
-    @StatusType override fun getType(): Int {
+    @StatusType
+    override fun getType(): Int {
         return TYPE
     }
 

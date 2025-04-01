@@ -211,28 +211,41 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             return null
         }
 
-        val publicKey = cursor.getBlob(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_KEY))
-        val createdAt = cursor.getDate(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_CREATED_AT))
-        val firstName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FIRST_NAME))
-            ?: ""
-        val lastName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LAST_NAME))
-            ?: ""
+        val publicKey =
+            cursor.getBlob(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_KEY))
+        val createdAt =
+            cursor.getDate(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_CREATED_AT))
+        val firstName =
+            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FIRST_NAME))
+                ?: ""
+        val lastName =
+            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LAST_NAME))
+                ?: ""
         val nickname = cursor.getStringOrNull(
             getColumnIndexOrThrow(
                 cursor,
                 ContactModel.COLUMN_PUBLIC_NICK_NAME
             )
         )
-        var colorIndex = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ID_COLOR_INDEX))
-        val verificationLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_VERIFICATION_LEVEL))
-        val isWorkVerifiedRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_WORK))
+        var colorIndex =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ID_COLOR_INDEX))
+        val verificationLevelRaw =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_VERIFICATION_LEVEL))
+        val isWorkVerifiedRaw =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_WORK))
         val identityTypeRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPE))
-        val acquaintanceLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
-        val activityStateRaw = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_STATE))
-        val syncStateRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_SYNC_STATE))
-        var featureMask = cursor.getLong(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FEATURE_MASK))
-        val readReceipts = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_READ_RECEIPTS))
-        val typingIndicators = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPING_INDICATORS))
+        val acquaintanceLevelRaw =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
+        val activityStateRaw =
+            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_STATE))
+        val syncStateRaw =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_SYNC_STATE))
+        var featureMask =
+            cursor.getLong(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FEATURE_MASK))
+        val readReceipts =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_READ_RECEIPTS))
+        val typingIndicators =
+            cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPING_INDICATORS))
         val androidContactLookupKey = cursor.getStringOrNull(
             getColumnIndexOrThrow(
                 cursor,
@@ -245,16 +258,19 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                 ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES
             )
         )
-        val isRestored = cursor.getBooleanOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_RESTORED))
-            ?: false
+        val isRestored =
+            cursor.getBooleanOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_RESTORED))
+                ?: false
         val profilePictureBlobId = cursor.getBlobOrNull(
             getColumnIndexOrThrow(
                 cursor,
                 ContactModel.COLUMN_PROFILE_PIC_BLOB_ID
             )
         )
-        val jobTitle = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_JOB_TITLE))
-        val department = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_DEPARTMENT))
+        val jobTitle =
+            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_JOB_TITLE))
+        val department =
+            cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_DEPARTMENT))
 
         cursor.close()
 
@@ -560,41 +576,60 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                 return null
             }
 
-             val localDbId = cursor.getLong(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_ID))
-             val creatorIdentity = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATOR_IDENTITY))
-             val groupId = cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_API_GROUP_ID))
-             val name = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_NAME))
-             val createdAt = cursor.getDateByString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATED_AT))
-             val synchronizedAt = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_SYNCHRONIZED_AT))
-             val lastUpdate = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_LAST_UPDATE))
-             val deleted = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_DELETED))
-             val isArchived = cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_IS_ARCHIVED))
-             val colorIndex = cursor.getUByte(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_COLOR_INDEX))
-             val groupDesc = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC))
-             val groupDescChangedAt = cursor.getDateByStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP))
-             val members = getGroupMembers(localDbId)
-             val userStateValue = cursor.getInt(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_USER_STATE))
-             val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
-                 logger.error("Invalid group user state: {}", userStateValue)
-                 // We use member as fallback to not accidentally remove the user from the group
-                 GroupModel.UserState.MEMBER
-             }
+            val localDbId = cursor.getLong(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_ID))
+            val creatorIdentity =
+                cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATOR_IDENTITY))
+            val groupId =
+                cursor.getString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_API_GROUP_ID))
+            val name = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_NAME))
+            val createdAt =
+                cursor.getDateByString(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_CREATED_AT))
+            val synchronizedAt = cursor.getDateOrNull(
+                getColumnIndexOrThrow(
+                    cursor,
+                    GroupModel.COLUMN_SYNCHRONIZED_AT
+                )
+            )
+            val lastUpdate =
+                cursor.getDateOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_LAST_UPDATE))
+            val deleted =
+                cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_DELETED))
+            val isArchived =
+                cursor.getBoolean(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_IS_ARCHIVED))
+            val colorIndex =
+                cursor.getUByte(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_COLOR_INDEX))
+            val groupDesc =
+                cursor.getStringOrNull(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_GROUP_DESC))
+            val groupDescChangedAt = cursor.getDateByStringOrNull(
+                getColumnIndexOrThrow(
+                    cursor,
+                    GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP
+                )
+            )
+            val members = getGroupMembers(localDbId)
+            val userStateValue =
+                cursor.getInt(getColumnIndexOrThrow(cursor, GroupModel.COLUMN_USER_STATE))
+            val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
+                logger.error("Invalid group user state: {}", userStateValue)
+                // We use member as fallback to not accidentally remove the user from the group
+                GroupModel.UserState.MEMBER
+            }
 
-             return DbGroup(
-                 creatorIdentity = creatorIdentity,
-                 groupId = groupId,
-                 name = name,
-                 createdAt = createdAt,
-                 synchronizedAt = synchronizedAt,
-                 lastUpdate = lastUpdate,
-                 deleted = deleted,
-                 isArchived = isArchived,
-                 colorIndex = colorIndex,
-                 groupDescription = groupDesc,
-                 groupDescriptionChangedAt = groupDescChangedAt,
-                 members = members,
-                 userState = userState,
-             )
+            return DbGroup(
+                creatorIdentity = creatorIdentity,
+                groupId = groupId,
+                name = name,
+                createdAt = createdAt,
+                synchronizedAt = synchronizedAt,
+                lastUpdate = lastUpdate,
+                deleted = deleted,
+                isArchived = isArchived,
+                colorIndex = colorIndex,
+                groupDescription = groupDesc,
+                groupDescriptionChangedAt = groupDescChangedAt,
+                members = members,
+                userState = userState,
+            )
         }
     }
 
@@ -625,7 +660,10 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(GroupModel.COLUMN_IS_ARCHIVED, group.isArchived)
         put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex.toInt())
         put(GroupModel.COLUMN_GROUP_DESC, group.groupDescription)
-        put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, group.groupDescriptionChangedAt?.toDateStringOrNull())
+        put(
+            GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+            group.groupDescriptionChangedAt?.toDateStringOrNull()
+        )
         put(GroupModel.COLUMN_USER_STATE, group.userState.value)
     }
 

@@ -321,7 +321,10 @@ class TaskExecutionTest {
             // Launch new coroutine to restart the task manager
             CoroutineScope(Dispatchers.Default).launch {
                 taskManager.pauseRunningTasks()
-                taskManager.startRunningTasks(layer5Codec, mock(IncomingMessageProcessor::class.java))
+                taskManager.startRunningTasks(
+                    layer5Codec,
+                    mock(IncomingMessageProcessor::class.java)
+                )
             }
         }
         taskManager.startRunningTasks(layer5Codec, mock(IncomingMessageProcessor::class.java))

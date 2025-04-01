@@ -35,7 +35,10 @@ interface IncomingMessageProcessor {
     /**
      * Process an incoming d2m message.
      */
-    suspend fun processIncomingD2mMessage(message: InboundD2mMessage.Reflected, handle: ActiveTaskCodec)
+    suspend fun processIncomingD2mMessage(
+        message: InboundD2mMessage.Reflected,
+        handle: ActiveTaskCodec
+    )
 
     /**
      * Process an incoming server alert

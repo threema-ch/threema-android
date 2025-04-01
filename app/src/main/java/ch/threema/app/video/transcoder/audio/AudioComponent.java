@@ -29,7 +29,7 @@ import java.io.IOException;
 import ch.threema.app.video.transcoder.MediaComponent;
 
 public class AudioComponent extends MediaComponent {
-	public AudioComponent(Context context, Uri srcUri) throws IOException {
-		super(context, srcUri, MediaComponent.COMPONENT_TYPE_AUDIO);
-	}
+    public AudioComponent(Context context, Uri srcUri) throws IOException {
+        super(context, srcUri, MediaComponent.COMPONENT_TYPE_AUDIO);
+    }
 }

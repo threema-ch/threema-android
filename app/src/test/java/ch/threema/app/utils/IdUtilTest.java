@@ -30,19 +30,20 @@ import static junit.framework.Assert.assertEquals;
 
 public class IdUtilTest {
 
-	@Test
-	public void getTempUniqueId() {
-		final ContactModel contact1 = new ContactModel("AAAAAAAA", new byte[] {0});
-		final ContactModel contact2 = new ContactModel("BBBBBBBB", new byte[] {1});
-		final ContactModel contact3 = new ContactModel("CCCCCCCC", new byte[] {2});
-		final GroupModel group1 = new GroupModel(); group1.setId(1);
-		assertEquals(1, IdUtil.getTempId(contact1));
-		assertEquals(1, IdUtil.getTempId(contact1));
-		assertEquals(2, IdUtil.getTempId(contact3));
-		assertEquals(1, IdUtil.getTempId(contact1));
-		assertEquals(2, IdUtil.getTempId(contact3));
-		assertEquals(3, IdUtil.getTempId(group1));
-		assertEquals(4, IdUtil.getTempId(contact2));
-	}
+    @Test
+    public void getTempUniqueId() {
+        final ContactModel contact1 = new ContactModel("AAAAAAAA", new byte[]{0});
+        final ContactModel contact2 = new ContactModel("BBBBBBBB", new byte[]{1});
+        final ContactModel contact3 = new ContactModel("CCCCCCCC", new byte[]{2});
+        final GroupModel group1 = new GroupModel();
+        group1.setId(1);
+        assertEquals(1, IdUtil.getTempId(contact1));
+        assertEquals(1, IdUtil.getTempId(contact1));
+        assertEquals(2, IdUtil.getTempId(contact3));
+        assertEquals(1, IdUtil.getTempId(contact1));
+        assertEquals(2, IdUtil.getTempId(contact3));
+        assertEquals(3, IdUtil.getTempId(group1));
+        assertEquals(4, IdUtil.getTempId(contact2));
+    }
 
 }

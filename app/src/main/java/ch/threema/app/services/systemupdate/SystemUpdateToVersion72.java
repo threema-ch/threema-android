@@ -40,51 +40,51 @@ import ch.threema.storage.models.ContactModel;
  * For ID colors we store the first byte of the SHA-256 hash of the contact identity.
  */
 public class SystemUpdateToVersion72 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 72;
-	public static final String VERSION_STRING = "version " + VERSION;
+    public static final int VERSION = 72;
+    public static final String VERSION_STRING = "version " + VERSION;
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion72");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion72");
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion72(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion72(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		final String table = "contacts";
-		final String columnColor = "color";
-		final String columnColorIndex = "idColorIndex";
+    @Override
+    public boolean runDirectly() throws SQLException {
+        final String table = "contacts";
+        final String columnColor = "color";
+        final String columnColorIndex = "idColorIndex";
 
-		// Rename color column to id color index column
-		sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " RENAME " + columnColor + " TO " + columnColorIndex);
-		// Temporarily set value to -1 to prevent null pointer exception when loading the contacts
-		sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET " + columnColorIndex + " = -1");
-		return true;
-	}
+        // Rename color column to id color index column
+        sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " RENAME " + columnColor + " TO " + columnColorIndex);
+        // Temporarily set value to -1 to prevent null pointer exception when loading the contacts
+        sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET " + columnColorIndex + " = -1");
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		ServiceManager s = ThreemaApplication.getServiceManager();
-		if (s != null) {
-			try {
-				ContactService contactService = s.getContactService();
-				for (ContactModel contact : contactService.getAll()) {
-					contact.initializeIdColor();
-					contactService.save(contact);
-				}
-			} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-				logger.error("Exception", e);
-				return false;
-			}
-		}
+    @Override
+    public boolean runAsync() {
+        ServiceManager s = ThreemaApplication.getServiceManager();
+        if (s != null) {
+            try {
+                ContactService contactService = s.getContactService();
+                for (ContactModel contact : contactService.getAll()) {
+                    contact.initializeIdColor();
+                    contactService.save(contact);
+                }
+            } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                logger.error("Exception", e);
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return VERSION_STRING;
-	}
+    @Override
+    public String getText() {
+        return VERSION_STRING;
+    }
 }

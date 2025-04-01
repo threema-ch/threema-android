@@ -37,70 +37,70 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SynchronizeContactsUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsUtil");
 
-	public static void startDirectly() {
-		SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();
-		if(routine != null) {
-			routine.run();
-		}
-	}
+    public static void startDirectly() {
+        SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();
+        if (routine != null) {
+            routine.run();
+        }
+    }
 
-	public static void startDirectly(String forIdentity) {
-		logger.info("Starting single contact sync for identity {}", forIdentity);
-		SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();
-		if(routine != null) {
-			routine.addProcessIdentity(forIdentity);
-			routine.run();
-		}
-	}
+    public static void startDirectly(String forIdentity) {
+        logger.info("Starting single contact sync for identity {}", forIdentity);
+        SynchronizeContactsRoutine routine = getSynchronizeContactsRoutine();
+        if (routine != null) {
+            routine.addProcessIdentity(forIdentity);
+            routine.run();
+        }
+    }
 
-	private static SynchronizeContactsService getSynchronizeContactsService() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if(serviceManager == null) {
-			return null;
-		}
-		try {
-			SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
-			return synchronizeContactsService;
-		} catch (MasterKeyLockedException|FileSystemNotPresentException e) {
-			//do nothing
-			logger.error("Exception", e);
-		}
+    private static SynchronizeContactsService getSynchronizeContactsService() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            return null;
+        }
+        try {
+            SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
+            return synchronizeContactsService;
+        } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+            //do nothing
+            logger.error("Exception", e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private static SynchronizeContactsRoutine getSynchronizeContactsRoutine() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if(serviceManager == null) {
-			return null;
-		}
+    private static SynchronizeContactsRoutine getSynchronizeContactsRoutine() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            return null;
+        }
 
-		PreferenceService preferenceService = serviceManager.getPreferenceService();
-		if(preferenceService == null) {
-			return null;
-		}
+        PreferenceService preferenceService = serviceManager.getPreferenceService();
+        if (preferenceService == null) {
+            return null;
+        }
 
 
-		if(preferenceService.isSyncContacts()) {
-			SynchronizeContactsService synchronizeContactsService = getSynchronizeContactsService();
+        if (preferenceService.isSyncContacts()) {
+            SynchronizeContactsService synchronizeContactsService = getSynchronizeContactsService();
 
-			if(synchronizeContactsService != null ) {
-				return synchronizeContactsService.instantiateSynchronization();
-			}
-		}
+            if (synchronizeContactsService != null) {
+                return synchronizeContactsService.instantiateSynchronization();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static boolean isRestrictedProfile(Context context) {
-		UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
-		Bundle restrictions = um.getUserRestrictions();
-		if (restrictions.getBoolean(UserManager.DISALLOW_MODIFY_ACCOUNTS, false)) {
-			// cannot add accounts or modify sync profiles
-			return true;
-		}
-		return false;
-	}
+    public static boolean isRestrictedProfile(Context context) {
+        UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        Bundle restrictions = um.getUserRestrictions();
+        if (restrictions.getBoolean(UserManager.DISALLOW_MODIFY_ACCOUNTS, false)) {
+            // cannot add accounts or modify sync profiles
+            return true;
+        }
+        return false;
+    }
 }

@@ -81,6 +81,7 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
                                 switchFragment(null, LinkNewDeviceScanQrFragment::class.java)
                             }
                         }
+
                         override fun onAnimationCancel(animation: Animator) {}
                         override fun onAnimationRepeat(animation: Animator) {}
                     }
@@ -126,7 +127,10 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
      * If there is no more fragment to show, finish the activity signalling success
      */
     @UiThread
-    private fun switchFragment(previousFragment: Fragment?, nextFragmentClass: Class<out Fragment>?) {
+    private fun switchFragment(
+        previousFragment: Fragment?,
+        nextFragmentClass: Class<out Fragment>?
+    ) {
         if (previousFragment == null) {
             supportFragmentManager.beginTransaction()
                 .setCustomAnimations(
@@ -159,8 +163,12 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
             logger.debug("Finishing after successful linking")
             setResult(Activity.RESULT_OK)
         } else {
-            logger.debug("Finishing after cancel or linking error. Reason = {}", viewModel.failureReason ?: "user canceled")
-            val resultIntent = Intent().putExtra(ACTIVITY_RESULT_EXTRA_FAILURE_REASON, viewModel.failureReason)
+            logger.debug(
+                "Finishing after cancel or linking error. Reason = {}",
+                viewModel.failureReason ?: "user canceled"
+            )
+            val resultIntent =
+                Intent().putExtra(ACTIVITY_RESULT_EXTRA_FAILURE_REASON, viewModel.failureReason)
             setResult(Activity.RESULT_CANCELED, resultIntent)
         }
         finish()

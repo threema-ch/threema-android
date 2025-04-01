@@ -20,6 +20,7 @@
  */
 
 package ch.threema.app.services.license;
+
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -31,147 +32,147 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
-abstract public class  LicenseServiceThreema<T extends LicenseService.Credentials>  implements LicenseService<T> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseServiceThreema");
+abstract public class LicenseServiceThreema<T extends LicenseService.Credentials> implements LicenseService<T> {
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseServiceThreema");
 
-	protected final APIConnector apiConnector;
-	protected final PreferenceService preferenceService;
-	private final String deviceId;
-	private String updateMessage;
-	private String updateUrl;
-	private boolean updateMessageShown;     /* not the best place to track this... */
-	private boolean isLicensed;
+    protected final APIConnector apiConnector;
+    protected final PreferenceService preferenceService;
+    private final String deviceId;
+    private String updateMessage;
+    private String updateUrl;
+    private boolean updateMessageShown;     /* not the best place to track this... */
+    private boolean isLicensed;
 
-	public LicenseServiceThreema(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
-		this.apiConnector = apiConnector;
-		this.preferenceService = preferenceService;
-		this.deviceId = deviceId;
-		this.isLicensed = preferenceService.getLicensedStatus();
-	}
+    public LicenseServiceThreema(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
+        this.apiConnector = apiConnector;
+        this.preferenceService = preferenceService;
+        this.deviceId = deviceId;
+        this.isLicensed = preferenceService.getLicensedStatus();
+    }
 
-	@Override
-	public boolean hasCredentials() {
-		return
-				!TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber())
-						|| !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(), this.preferenceService.getLicensePassword());
-	}
+    @Override
+    public boolean hasCredentials() {
+        return
+            !TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber())
+                || !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(), this.preferenceService.getLicensePassword());
+    }
 
-	@Override
-	@Nullable
-	@WorkerThread
-	public String validate(T credentials) {
-		return this.validate(credentials, false);
-	}
+    @Override
+    @Nullable
+    @WorkerThread
+    public String validate(T credentials) {
+        return this.validate(credentials, false);
+    }
 
-	@Override
-	@Nullable
-	@WorkerThread
-	public String validate(boolean allowException) {
-		T credentials = this.loadCredentials();
-		if(credentials != null) {
-			return this.validate(credentials, allowException);
-		}
-		return "no license";
-	}
+    @Override
+    @Nullable
+    @WorkerThread
+    public String validate(boolean allowException) {
+        T credentials = this.loadCredentials();
+        if (credentials != null) {
+            return this.validate(credentials, allowException);
+        }
+        return "no license";
+    }
 
-	/**
-	 * Validate the license credentials. If the credentials validate, the licensed state
-	 * will be set to `true` and saved. In case of success also an update message and update url
-	 * (if available) are retrieved.
-	 * If the validation yields an invalid result, the licensed state will be set to `false`.
-	 *
-	 * @param credentials holder of the credential values
-	 * @param allowException If true, general exceptions will be ignored
-	 * @return In case of success `null` is returned. If validation failed an error message will be
-	 *         returned
-	 */
-	@Nullable
-	@WorkerThread
-	private String validate(T credentials, boolean allowException) {
-		logger.info("Validating credentials");
-		APIConnector.CheckLicenseResult result;
-		try {
-			result = this.checkLicense(credentials, deviceId);
-			if (result.success) {
-				logger.info("Validating credentials successful");
-				this.updateMessage = result.updateMessage;
-				this.updateUrl = result.updateUrl;
+    /**
+     * Validate the license credentials. If the credentials validate, the licensed state
+     * will be set to `true` and saved. In case of success also an update message and update url
+     * (if available) are retrieved.
+     * If the validation yields an invalid result, the licensed state will be set to `false`.
+     *
+     * @param credentials    holder of the credential values
+     * @param allowException If true, general exceptions will be ignored
+     * @return In case of success `null` is returned. If validation failed an error message will be
+     * returned
+     */
+    @Nullable
+    @WorkerThread
+    private String validate(T credentials, boolean allowException) {
+        logger.info("Validating credentials");
+        APIConnector.CheckLicenseResult result;
+        try {
+            result = this.checkLicense(credentials, deviceId);
+            if (result.success) {
+                logger.info("Validating credentials successful");
+                this.updateMessage = result.updateMessage;
+                this.updateUrl = result.updateUrl;
 
-				//save in preferences
-				this.saveCredentials(credentials);
-				this.preferenceService.setLicensedStatus(true);
-				this.isLicensed = true;
-			} else {
-				logger.info("Validating credentials failed: {}", result.error);
-				this.preferenceService.setLicensedStatus(false);
-				this.isLicensed = false;
-				if (result.error == null) {
-					return "No success but no error message provided";
-				}
-				return result.error;
-			}
-		} catch (UnauthorizedFetchException e) {
-			// Treat unauthorized OPPF fetch like (temporarily) bad license
-			this.isLicensed = false;
-			logger.warn("Could not validate credentials", e);
-			return getExceptionMessageOrDefault(
-				e,
-				"Unauthorized"
-			);
-		} catch (Exception e) {
-			if(!allowException) {
-				logger.warn("Could not validate credentials", e);
-				return getExceptionMessageOrDefault(
-					e,
-					"Error during validation"
-				);
-			} else {
-				logger.warn("Could not validate credentials", e);
-			}
-		}
-		return null;
-	}
+                //save in preferences
+                this.saveCredentials(credentials);
+                this.preferenceService.setLicensedStatus(true);
+                this.isLicensed = true;
+            } else {
+                logger.info("Validating credentials failed: {}", result.error);
+                this.preferenceService.setLicensedStatus(false);
+                this.isLicensed = false;
+                if (result.error == null) {
+                    return "No success but no error message provided";
+                }
+                return result.error;
+            }
+        } catch (UnauthorizedFetchException e) {
+            // Treat unauthorized OPPF fetch like (temporarily) bad license
+            this.isLicensed = false;
+            logger.warn("Could not validate credentials", e);
+            return getExceptionMessageOrDefault(
+                e,
+                "Unauthorized"
+            );
+        } catch (Exception e) {
+            if (!allowException) {
+                logger.warn("Could not validate credentials", e);
+                return getExceptionMessageOrDefault(
+                    e,
+                    "Error during validation"
+                );
+            } else {
+                logger.warn("Could not validate credentials", e);
+            }
+        }
+        return null;
+    }
 
-	@NonNull
-	private String getExceptionMessageOrDefault(
-		@NonNull Throwable t,
-		@NonNull String defaultMessage
-	) {
-		String message = t.getMessage();
-		return message == null
-			? defaultMessage
-			: message;
-	}
+    @NonNull
+    private String getExceptionMessageOrDefault(
+        @NonNull Throwable t,
+        @NonNull String defaultMessage
+    ) {
+        String message = t.getMessage();
+        return message == null
+            ? defaultMessage
+            : message;
+    }
 
-	public String getUpdateMessage() {
-		return updateMessage;
-	}
+    public String getUpdateMessage() {
+        return updateMessage;
+    }
 
-	public String getUpdateUrl() {
-		return updateUrl;
-	}
+    public String getUpdateUrl() {
+        return updateUrl;
+    }
 
-	public boolean isUpdateMessageShown() {
-		return updateMessageShown;
-	}
+    public boolean isUpdateMessageShown() {
+        return updateMessageShown;
+    }
 
-	public void setUpdateMessageShown(boolean updateMessageShown) {
-		this.updateMessageShown = updateMessageShown;
-	}
+    public void setUpdateMessageShown(boolean updateMessageShown) {
+        this.updateMessageShown = updateMessageShown;
+    }
 
-	@Override
-	public boolean isLicensed() {
-		return this.isLicensed;
-	}
+    @Override
+    public boolean isLicensed() {
+        return this.isLicensed;
+    }
 
-	/**
-	 * Save the credentials. Note that the credentials will override existing credentials, even if
-	 * the new credentials are invalid.
-	 *
-	 * @param credentials The credentials to save
-	 */
-	abstract public void saveCredentials(T credentials);
+    /**
+     * Save the credentials. Note that the credentials will override existing credentials, even if
+     * the new credentials are invalid.
+     *
+     * @param credentials The credentials to save
+     */
+    abstract public void saveCredentials(T credentials);
 
-	@WorkerThread
-	abstract protected APIConnector.CheckLicenseResult checkLicense(T credentials, String deviceId) throws Exception;
+    @WorkerThread
+    abstract protected APIConnector.CheckLicenseResult checkLicense(T credentials, String deviceId) throws Exception;
 }

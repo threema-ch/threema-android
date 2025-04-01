@@ -240,7 +240,8 @@ class BlobUploader private constructor(
             if (blobScope == null) {
                 throw ThreemaException("Missing parameter blobScope")
             }
-            val blobMirrorServerUploadUrl: String = serverAddressProvider.getBlobMirrorServerUploadUrl(multiDevicePropertyProvider)
+            val blobMirrorServerUploadUrl: String =
+                serverAddressProvider.getBlobMirrorServerUploadUrl(multiDevicePropertyProvider)
             return URL(
                 appendQueryParametersForMirrorServer(
                     blobMirrorServerUploadUrl,
@@ -276,9 +277,11 @@ class BlobUploader private constructor(
         multiDevicePropertyProvider: MultiDevicePropertyProvider,
         scope: BlobScope
     ): String {
-        val deviceGroupIdHex: String = Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
-            ?: throw ThreemaException("Could not read device group id")
-        val deviceIdHex: String = multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
+        val deviceGroupIdHex: String =
+            Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
+                ?: throw ThreemaException("Could not read device group id")
+        val deviceIdHex: String =
+            multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
         return "$rawUrl?deviceId=${deviceIdHex}&deviceGroupId=${deviceGroupIdHex}&scope=${scope.name}"
     }
 
@@ -308,9 +311,11 @@ class BlobUploader private constructor(
         private val bodyFooterBytes: ByteArray
     ) : RequestBody() {
 
-        override fun contentType(): MediaType = ("multipart/form-data; boundary=$MULTIPART_BOUNDARY").toMediaType()
+        override fun contentType(): MediaType =
+            ("multipart/form-data; boundary=$MULTIPART_BOUNDARY").toMediaType()
 
-        override fun contentLength(): Long = bodyHeaderBytes.size + blobLength + bodyFooterBytes.size
+        override fun contentLength(): Long =
+            bodyHeaderBytes.size + blobLength + bodyFooterBytes.size
 
         override fun isOneShot(): Boolean = true
 

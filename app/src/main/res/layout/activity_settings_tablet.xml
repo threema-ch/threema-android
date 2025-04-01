@@ -14,7 +14,7 @@
         android:id="@+id/settings_separator"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="?attr/colorOutlineVariant"/>
+        android:background="?attr/colorOutlineVariant" />
 
     <FrameLayout
         android:id="@+id/settings_detailed"

@@ -28,12 +28,12 @@ import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.TimeUnit
 
 class RestartWorker(val appContext: Context, workerParameters: WorkerParameters) :
-        Worker(appContext, workerParameters) {
+    Worker(appContext, workerParameters) {
 
     override fun doWork(): Result {
         logger.debug("Scheduling restart")
         val restartIntent: Intent? = appContext.packageManager
-                .getLaunchIntentForPackage(appContext.packageName)
+            .getLaunchIntentForPackage(appContext.packageName)
         return if (restartIntent != null) {
             restartIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             appContext.startActivity(restartIntent)
@@ -48,11 +48,12 @@ class RestartWorker(val appContext: Context, workerParameters: WorkerParameters)
     companion object {
         fun buildOneTimeWorkRequest(delayMs: Long): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<RestartWorker>()
-                    .apply {
-                        setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
-                    }
-                    .build()
+                .apply {
+                    setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
+                }
+                .build()
         }
+
         private val logger = LoggingUtil.getThreemaLogger("RestartWorker")
     }
 }

@@ -38,89 +38,90 @@ import java.util.Arrays;
  */
 public class MessageId implements Serializable {
 
-	private final byte[] messageId;
+    private final byte[] messageId;
 
-	/**
-	 * Create a MessageId from a String
-	 *
-	 * @throws ThreemaException If the message id is {@code null} or has an invalid length
-	 */
-	public static MessageId fromString(@Nullable String messageId) throws ThreemaException {
-		if (messageId == null) {
-			throw new ThreemaException("Message id is null");
-		}
-		return new MessageId(Utils.hexStringToByteArray(messageId));
-	}
+    /**
+     * Create a MessageId from a String
+     *
+     * @throws ThreemaException If the message id is {@code null} or has an invalid length
+     */
+    public static MessageId fromString(@Nullable String messageId) throws ThreemaException {
+        if (messageId == null) {
+            throw new ThreemaException("Message id is null");
+        }
+        return new MessageId(Utils.hexStringToByteArray(messageId));
+    }
 
-	/**
-	 * Create a new random MessageId.
-	 */
-	public MessageId() {
-		messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
-		SecureRandom rnd = new SecureRandom();
-		rnd.nextBytes(messageId);
-	}
+    /**
+     * Create a new random MessageId.
+     */
+    public MessageId() {
+        messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
+        SecureRandom rnd = new SecureRandom();
+        rnd.nextBytes(messageId);
+    }
 
-	/**
-	 * Create a MessageId from an 8-byte array.
-	 * @throws ThreemaException If the source array has the wrong length.
-	 */
-	public MessageId(byte[] messageId) throws BadMessageIdException {
-		if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN) {
-			throw new BadMessageIdException("Invalid message ID length");
-		}
-		this.messageId = messageId;
-	}
+    /**
+     * Create a MessageId from an 8-byte array.
+     *
+     * @throws ThreemaException If the source array has the wrong length.
+     */
+    public MessageId(byte[] messageId) throws BadMessageIdException {
+        if (messageId.length != ProtocolDefines.MESSAGE_ID_LEN) {
+            throw new BadMessageIdException("Invalid message ID length");
+        }
+        this.messageId = messageId;
+    }
 
-	/**
-	 * Create a MessageId from an array, starting at the specified offset.
-	 */
-	public MessageId(byte[] data, int offset) {
-		messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
-		System.arraycopy(data, offset, messageId, 0, ProtocolDefines.MESSAGE_ID_LEN);
-	}
+    /**
+     * Create a MessageId from an array, starting at the specified offset.
+     */
+    public MessageId(byte[] data, int offset) {
+        messageId = new byte[ProtocolDefines.MESSAGE_ID_LEN];
+        System.arraycopy(data, offset, messageId, 0, ProtocolDefines.MESSAGE_ID_LEN);
+    }
 
-	/**
-	 * Create a MessageId from an (unsigned) long in little-endian format
-	 */
-	public MessageId(long messageIdLong) {
-		messageId = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(messageIdLong).array();
-	}
+    /**
+     * Create a MessageId from an (unsigned) long in little-endian format
+     */
+    public MessageId(long messageIdLong) {
+        messageId = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(messageIdLong).array();
+    }
 
-	public byte[] getMessageId() {
-		return messageId;
-	}
+    public byte[] getMessageId() {
+        return messageId;
+    }
 
-	public long getMessageIdLong() {
-		return ByteBuffer.wrap(messageId).order(ByteOrder.LITTLE_ENDIAN).getLong();
-	}
+    public long getMessageIdLong() {
+        return ByteBuffer.wrap(messageId).order(ByteOrder.LITTLE_ENDIAN).getLong();
+    }
 
-	@Override
-	public String toString() {
-		return Utils.byteArrayToHexString(messageId);
-	}
+    @Override
+    public String toString() {
+        return Utils.byteArrayToHexString(messageId);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (obj.getClass() != getClass())
-			return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
 
-		return Arrays.equals(messageId, ((MessageId)obj).messageId);
-	}
+        return Arrays.equals(messageId, ((MessageId) obj).messageId);
+    }
 
-	@Override
-	public int hashCode() {
-		/* message IDs are usually random, so just taking the first four bytes is fine */
-		return messageId[0] << 24 | (messageId[1] & 0xFF) << 16 | (messageId[2] & 0xFF) << 8 | (messageId[3] & 0xFF);
-	}
+    @Override
+    public int hashCode() {
+        /* message IDs are usually random, so just taking the first four bytes is fine */
+        return messageId[0] << 24 | (messageId[1] & 0xFF) << 16 | (messageId[2] & 0xFF) << 8 | (messageId[3] & 0xFF);
+    }
 
-	public static class BadMessageIdException extends ThreemaException {
-		public BadMessageIdException(String msg) {
-			super(msg);
-		}
-	}
+    public static class BadMessageIdException extends ThreemaException {
+        public BadMessageIdException(String msg) {
+            super(msg);
+        }
+    }
 }

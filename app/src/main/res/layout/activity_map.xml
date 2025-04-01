@@ -1,126 +1,124 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/coordinator"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:fitsSystemWindows="false"
-	android:visibility="invisible">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:visibility="invisible">
 
-	<org.maplibre.android.maps.MapView
-		android:id="@+id/map"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:maplibre_cameraZoom="4"
-		app:maplibre_uiLogo="false"
-		app:maplibre_uiAttribution="false"
-		app:maplibre_uiCompass="true"
-		app:maplibre_uiCompassFadeFacingNorth="false"
-		app:maplibre_uiCompassGravity="top|right"
-		app:maplibre_uiCompassMarginTop="@dimen/map_compass_margin_top"
-		app:maplibre_uiCompassMarginRight="@dimen/map_compass_margin_right"/>
+    <org.maplibre.android.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:maplibre_cameraZoom="4"
+        app:maplibre_uiLogo="false"
+        app:maplibre_uiAttribution="false"
+        app:maplibre_uiCompass="true"
+        app:maplibre_uiCompassFadeFacingNorth="false"
+        app:maplibre_uiCompassGravity="top|right"
+        app:maplibre_uiCompassMarginTop="@dimen/map_compass_margin_top"
+        app:maplibre_uiCompassMarginRight="@dimen/map_compass_margin_right" />
 
-	<RelativeLayout
-		android:id="@+id/map_container"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:fitsSystemWindows="true">
+    <RelativeLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-		<com.google.android.material.card.MaterialCardView
-			android:id="@+id/cardview"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_marginBottom="6dp"
-			android:layout_marginLeft="5dp"
-			android:layout_marginRight="5dp"
-			app:cardElevation="4dp"
-			app:strokeWidth="0dp">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp">
 
-			<LinearLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:orientation="vertical"
-				android:paddingBottom="8dp"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:paddingTop="10dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="10dp">
 
-				<TextView
-					android:id="@+id/location_name"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Location Name"
-					android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+                <TextView
+                    android:id="@+id/location_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Location Name"
+                    android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
-				<TextView
-					android:id="@+id/location_coordinates"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="2dp"
-					android:text="Coordinates"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
+                <TextView
+                    android:id="@+id/location_coordinates"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Coordinates"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/open_button"
-					style="@style/Threema.MaterialButton.Action"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="4dp"
-					android:text="@string/open_in_maps_app"
-					app:icon="@drawable/ic_location_on_filled" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/open_button"
+                    style="@style/Threema.MaterialButton.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/open_in_maps_app"
+                    app:icon="@drawable/ic_location_on_filled" />
 
-				<com.google.android.material.button.MaterialButton
-					android:id="@+id/share_location_button"
-					style="@style/Threema.MaterialButton.Action"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="4dp"
-					android:text="@string/forward_location"
-					app:icon="@drawable/ic_forward_outline" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/share_location_button"
+                    style="@style/Threema.MaterialButton.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/forward_location"
+                    app:icon="@drawable/ic_forward_outline" />
 
-			</LinearLayout>
+            </LinearLayout>
 
-		</com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
 
-		<ch.threema.app.ui.VerticalTextView
-			style="@style/Threema.TextAppearance.BodyMedium"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_above="@+id/cardview"
-			android:layout_alignParentLeft="true"
-			android:layout_marginBottom="16dp"
-			android:background="#AAFFFFFF"
-			android:gravity="bottom"
-			android:paddingBottom="2dp"
-			android:paddingLeft="4dp"
-			android:paddingRight="4dp"
-			android:paddingTop="2dp"
-			android:text="@string/lp_map_copyright"
-			android:textColor="#FF111111"
-			android:textSize="11dp"/>
+        <ch.threema.app.ui.VerticalTextView
+            style="@style/Threema.TextAppearance.BodyMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/cardview"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="16dp"
+            android:background="#AAFFFFFF"
+            android:gravity="bottom"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="2dp"
+            android:text="@string/lp_map_copyright"
+            android:textColor="#FF111111"
+            android:textSize="11dp" />
 
-		<com.google.android.material.button.MaterialButton
-			style="@style/Threema.MaterialButton.Icon.Circle.Filled"
-			android:id="@+id/center_map"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_above="@+id/cardview"
-			android:layout_alignParentRight="true"
-			android:layout_marginBottom="@dimen/lp_default_margin"
-			android:layout_marginRight="@dimen/lp_default_margin"
-			app:icon="@drawable/ic_gps_fixed"
-			app:backgroundTint="?attr/colorSurface"
-			app:iconTint="?attr/colorOnSurface"
-			tools:ignore="ContentDescription" />
+        <com.google.android.material.button.MaterialButton
+            style="@style/Threema.MaterialButton.Icon.Circle.Filled"
+            android:id="@+id/center_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/cardview"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/lp_default_margin"
+            android:layout_marginRight="@dimen/lp_default_margin"
+            app:icon="@drawable/ic_gps_fixed"
+            app:backgroundTint="?attr/colorSurface"
+            app:iconTint="?attr/colorOnSurface"
+            tools:ignore="ContentDescription" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </FrameLayout>

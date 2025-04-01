@@ -49,173 +49,174 @@ import ch.threema.app.utils.DialogUtil;
 
 public class WizardSafeSearchPhoneDialog extends DialogFragment implements SelectorDialog.SelectorDialogClickListener {
 
-	private static final String DIALOG_TAG_PROGRESS = "pro";
-	private static final String DIALOG_TAG_SELECT_ID = "se";
+    private static final String DIALOG_TAG_PROGRESS = "pro";
+    private static final String DIALOG_TAG_SELECT_ID = "se";
 
-	private WizardSafeSearchPhoneDialogCallback callback;
-	private Activity activity;
-	private ThreemaSafeService threemaSafeService;
-	private LocaleService localeService;
+    private WizardSafeSearchPhoneDialogCallback callback;
+    private Activity activity;
+    private ThreemaSafeService threemaSafeService;
+    private LocaleService localeService;
 
-	private EditText emailEditText, phoneEditText;
+    private EditText emailEditText, phoneEditText;
 
-	private ArrayList<SelectorDialogItem> matchingIDs;
+    private ArrayList<SelectorDialogItem> matchingIDs;
 
-	public static WizardSafeSearchPhoneDialog newInstance() {
-		return new WizardSafeSearchPhoneDialog();
-	}
+    public static WizardSafeSearchPhoneDialog newInstance() {
+        return new WizardSafeSearchPhoneDialog();
+    }
 
-	public interface WizardSafeSearchPhoneDialogCallback {
-		void onYes(String tag, String id);
-		void onNo(String tag);
-	}
+    public interface WizardSafeSearchPhoneDialogCallback {
+        void onYes(String tag, String id);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
+    }
 
-		try {
-			callback = (WizardSafeSearchPhoneDialogCallback) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if (!(activity instanceof WizardSafeSearchPhoneDialogCallback)) {
-				throw new ClassCastException("Calling fragment must implement WizardSafeSearchPhoneDialogCallback interface");
-			}
-			callback = (WizardSafeSearchPhoneDialogCallback) activity;
-		}
-	}
+        try {
+            callback = (WizardSafeSearchPhoneDialogCallback) getTargetFragment();
+        } catch (ClassCastException e) {
+            //
+        }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if (!(activity instanceof WizardSafeSearchPhoneDialogCallback)) {
+                throw new ClassCastException("Calling fragment must implement WizardSafeSearchPhoneDialogCallback interface");
+            }
+            callback = (WizardSafeSearchPhoneDialogCallback) activity;
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		final String tag = this.getTag();
+        this.activity = activity;
+    }
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_wizard_safe_search_phone, null);
-		Button positiveButton = dialogView.findViewById(R.id.ok);
-		final Button negativeButton = dialogView.findViewById(R.id.cancel);
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        final String tag = this.getTag();
 
-		phoneEditText = dialogView.findViewById(R.id.safe_phone);
-		emailEditText = dialogView.findViewById(R.id.safe_email);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_wizard_safe_search_phone, null);
+        Button positiveButton = dialogView.findViewById(R.id.ok);
+        final Button negativeButton = dialogView.findViewById(R.id.cancel);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.Threema_Dialog_Wizard);
-		builder.setView(dialogView);
+        phoneEditText = dialogView.findViewById(R.id.safe_phone);
+        emailEditText = dialogView.findViewById(R.id.safe_email);
 
-		try {
-			threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
-			localeService = ThreemaApplication.getServiceManager().getLocaleService();
-		} catch (Exception e) {
-			dismiss();
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.Threema_Dialog_Wizard);
+        builder.setView(dialogView);
 
-		positiveButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				String phone = null, email = null;
-				if (phoneEditText.getText() != null) {
-					phone = localeService.getNormalizedPhoneNumber(phoneEditText.getText().toString());
-				}
-				if (emailEditText.getText() != null) {
-					email = emailEditText.getText().toString();
-				}
-				if (phone != null || email != null) {
-					searchID(phone, email);
-				} else {
-					dismiss();
-					callback.onYes(tag, null);
-				}
-			}
-		});
-		negativeButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dismiss();
-				callback.onNo(tag);
-			}
-		});
+        try {
+            threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
+            localeService = ThreemaApplication.getServiceManager().getLocaleService();
+        } catch (Exception e) {
+            dismiss();
+        }
 
-		phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phone = null, email = null;
+                if (phoneEditText.getText() != null) {
+                    phone = localeService.getNormalizedPhoneNumber(phoneEditText.getText().toString());
+                }
+                if (emailEditText.getText() != null) {
+                    email = emailEditText.getText().toString();
+                }
+                if (phone != null || email != null) {
+                    searchID(phone, email);
+                } else {
+                    dismiss();
+                    callback.onYes(tag, null);
+                }
+            }
+        });
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                callback.onNo(tag);
+            }
+        });
 
-		setCancelable(false);
+        phoneEditText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
 
-		return builder.create();
-	}
+        setCancelable(false);
 
-	private void searchID(String phone, String email) {
-		new SearchIdTask(this).execute(phone, email);
-	}
+        return builder.create();
+    }
 
-	@Override
-	public void onCancel(DialogInterface dialogInterface) {
-		callback.onNo(this.getTag());
-	}
+    private void searchID(String phone, String email) {
+        new SearchIdTask(this).execute(phone, email);
+    }
 
-	private static class SearchIdTask extends AsyncTask<String, Void, ArrayList<String>> {
-		private final WeakReference<WizardSafeSearchPhoneDialog> dialogReference;
+    @Override
+    public void onCancel(DialogInterface dialogInterface) {
+        callback.onNo(this.getTag());
+    }
 
-		SearchIdTask(WizardSafeSearchPhoneDialog dialog) {
-			dialogReference = new WeakReference<>(dialog);
-		}
+    private static class SearchIdTask extends AsyncTask<String, Void, ArrayList<String>> {
+        private final WeakReference<WizardSafeSearchPhoneDialog> dialogReference;
 
-		@Override
-		protected void onPreExecute() {
-			WizardSafeSearchPhoneDialog dialog = dialogReference.get();
-			if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
+        SearchIdTask(WizardSafeSearchPhoneDialog dialog) {
+            dialogReference = new WeakReference<>(dialog);
+        }
 
-			GenericProgressDialog.newInstance(R.string.safe_id_lookup, R.string.please_wait).show(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS);
-		}
+        @Override
+        protected void onPreExecute() {
+            WizardSafeSearchPhoneDialog dialog = dialogReference.get();
+            if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
 
-		@Override
-		protected ArrayList<String> doInBackground(String... params) {
-			return dialogReference.get().threemaSafeService.searchID(params[0], params[1]);
-		}
+            GenericProgressDialog.newInstance(R.string.safe_id_lookup, R.string.please_wait).show(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS);
+        }
 
-		@Override
-		protected void onPostExecute(ArrayList<String> ids) {
-			final WizardSafeSearchPhoneDialog dialog = dialogReference.get();
-			if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            return dialogReference.get().threemaSafeService.searchID(params[0], params[1]);
+        }
 
-			DialogUtil.dismissDialog(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS, true);
-			if (ids != null) {
-				ArrayList<SelectorDialogItem> selectorItems = new ArrayList<>();
-				for (String id : ids) {
-					selectorItems.add(new SelectorDialogItem(id, R.drawable.ic_person_outline));
-				}
+        @Override
+        protected void onPostExecute(ArrayList<String> ids) {
+            final WizardSafeSearchPhoneDialog dialog = dialogReference.get();
+            if (dialog == null || dialog.isRemoving() || dialog.isDetached()) return;
 
-				dialog.matchingIDs = selectorItems;
+            DialogUtil.dismissDialog(dialog.getFragmentManager(), DIALOG_TAG_PROGRESS, true);
+            if (ids != null) {
+                ArrayList<SelectorDialogItem> selectorItems = new ArrayList<>();
+                for (String id : ids) {
+                    selectorItems.add(new SelectorDialogItem(id, R.drawable.ic_person_outline));
+                }
 
-				if (ids.size() == 1) {
-					dialog.callback.onYes(dialog.getTag(), ids.get(0));
-					dialog.dismiss();
-				} else {
-					SelectorDialog selectorDialog = SelectorDialog.newInstance(dialog.getString(R.string.safe_select_id), selectorItems, null);
-					selectorDialog.setTargetFragment(dialog, 0);
-					selectorDialog.show(dialog.getFragmentManager(), DIALOG_TAG_SELECT_ID);
-				}
-			} else {
+                dialog.matchingIDs = selectorItems;
+
+                if (ids.size() == 1) {
+                    dialog.callback.onYes(dialog.getTag(), ids.get(0));
+                    dialog.dismiss();
+                } else {
+                    SelectorDialog selectorDialog = SelectorDialog.newInstance(dialog.getString(R.string.safe_select_id), selectorItems, null);
+                    selectorDialog.setTargetFragment(dialog, 0);
+                    selectorDialog.show(dialog.getFragmentManager(), DIALOG_TAG_SELECT_ID);
+                }
+            } else {
                 Optional.ofNullable(dialog)
                     .map(Fragment::getActivity)
                     .ifPresent(activity -> Toast.makeText(activity, R.string.safe_no_id_found, Toast.LENGTH_LONG).show());
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/*
-	 * Selector callbacks
-	 */
+    /*
+     * Selector callbacks
+     */
 
-	@Override
-	public void onClick(String tag, int which, Object data) {
-		callback.onYes(getTag(), matchingIDs.get(which).getText());
-		dismiss();
-	}
+    @Override
+    public void onClick(String tag, int which, Object data) {
+        callback.onYes(getTag(), matchingIDs.get(which).getText());
+        dismiss();
+    }
 }

@@ -2,14 +2,14 @@
 
 <ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
     <ContactsDataKind
-			android:icon="@mipmap/ic_launcher"
-			android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.red.profile"
-			android:summaryColumn="data2"
-			android:detailColumn="data3"
-			android:detailSocialSummary="true"/>
-	<ContactsDataKind
-			android:icon="@mipmap/ic_launcher"
-			android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.red.call"
-			android:summaryColumn="data2"
-			android:detailColumn="data3"/>
+        android:icon="@mipmap/ic_launcher"
+        android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.red.profile"
+        android:summaryColumn="data2"
+        android:detailColumn="data3"
+        android:detailSocialSummary="true" />
+    <ContactsDataKind
+        android:icon="@mipmap/ic_launcher"
+        android:mimeType="vnd.android.cursor.item/vnd.ch.threema.app.red.call"
+        android:summaryColumn="data2"
+        android:detailColumn="data3" />
 </ContactsSource>

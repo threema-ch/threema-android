@@ -30,31 +30,31 @@ import ch.threema.storage.models.ConversationModel;
 /**
  * The ViewModel's role is to provide data to the UI and survive configuration changes.
  * A ViewModel acts as a communication center between the Repository and the UI.
- *
+ * <p>
  * Never pass context into ViewModel instances. Do not store Activity, Fragment, or View instances or
  * their Context in the ViewModel.
  */
 
 public class ArchiveViewModel extends ViewModel {
-	private LiveData<List<ConversationModel>> conversationModels;
-	private ArchiveRepository repository;
+    private LiveData<List<ConversationModel>> conversationModels;
+    private ArchiveRepository repository;
 
-	public ArchiveViewModel() {
-		super();
-		repository = new ArchiveRepository();
-		conversationModels = repository.getConversationModels();
-	}
+    public ArchiveViewModel() {
+        super();
+        repository = new ArchiveRepository();
+        conversationModels = repository.getConversationModels();
+    }
 
-	LiveData<List<ConversationModel>> getConversationModels() {
-		return conversationModels;
-	}
+    LiveData<List<ConversationModel>> getConversationModels() {
+        return conversationModels;
+    }
 
-	public void onDataChanged() {
-		repository.onDataChanged();
-	}
+    public void onDataChanged() {
+        repository.onDataChanged();
+    }
 
-	public void filter(String constraint) {
-		repository.setFilter(constraint);
-		repository.onDataChanged();
-	}
+    public void filter(String constraint) {
+        repository.setFilter(constraint);
+        repository.onDataChanged();
+    }
 }

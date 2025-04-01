@@ -54,127 +54,127 @@ import static ch.threema.app.webclient.Protocol.ARGUMENT_MODE_REMOVED;
 
 @WorkerThread
 public class ConversationUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationUpdateHandler");
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final ConversationListener listener;
+    // Listeners
+    private final ConversationListener listener;
 
-	// Dispatchers
-	private final MessageDispatcher updateDispatcher;
+    // Dispatchers
+    private final MessageDispatcher updateDispatcher;
 
-	// Services
-	private final ContactService contactService;
-	private final GroupService groupService;
-	private final DistributionListService distributionListService;
-	private final DeadlineListService hiddenChatsListService;
+    // Services
+    private final ContactService contactService;
+    private final GroupService groupService;
+    private final DistributionListService distributionListService;
+    private final DeadlineListService hiddenChatsListService;
 
-	private final int sessionId;
+    private final int sessionId;
 
-	@AnyThread
-	public ConversationUpdateHandler(
-		@NonNull HandlerExecutor handler,
-		MessageDispatcher updateDispatcher,
-		ContactService contactService,
-		GroupService groupService,
-		DistributionListService distributionListService,
-		DeadlineListService hiddenChatsListService,
-		int sessionId
-	) {
-		super(Protocol.SUB_TYPE_CONVERSATION);
-		this.handler = handler;
-		this.updateDispatcher = updateDispatcher;
-		this.contactService = contactService;
-		this.groupService = groupService;
-		this.distributionListService = distributionListService;
-		this.hiddenChatsListService = hiddenChatsListService;
-		this.listener = new Listener();
-		this.sessionId = sessionId;
-	}
+    @AnyThread
+    public ConversationUpdateHandler(
+        @NonNull HandlerExecutor handler,
+        MessageDispatcher updateDispatcher,
+        ContactService contactService,
+        GroupService groupService,
+        DistributionListService distributionListService,
+        DeadlineListService hiddenChatsListService,
+        int sessionId
+    ) {
+        super(Protocol.SUB_TYPE_CONVERSATION);
+        this.handler = handler;
+        this.updateDispatcher = updateDispatcher;
+        this.contactService = contactService;
+        this.groupService = groupService;
+        this.distributionListService = distributionListService;
+        this.hiddenChatsListService = hiddenChatsListService;
+        this.listener = new Listener();
+        this.sessionId = sessionId;
+    }
 
-	@Override
-	public void register() {
-		logger.debug("register({})", this.sessionId);
-		ListenerManager.conversationListeners.add(this.listener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register({})", this.sessionId);
+        ListenerManager.conversationListeners.add(this.listener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister({})", this.sessionId);
-		ListenerManager.conversationListeners.remove(this.listener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister({})", this.sessionId);
+        ListenerManager.conversationListeners.remove(this.listener);
+    }
 
-	private void respond(final ConversationModel model, final String mode) {
-		// Respond only if the conversation is not a private chat
-		String uniqueId = null;
-		if (model.isGroupConversation()) {
-			uniqueId = this.groupService.getUniqueIdString(model.getGroup());
-		} else if (model.isContactConversation()) {
-			String identity = null;
-			if (model.getContact() != null) {
-				identity = model.getContact().getIdentity();
-			}
-			uniqueId = ContactUtil.getUniqueIdString(identity);
-		} else if (model.isDistributionListConversation()) {
-			uniqueId = this.distributionListService.getUniqueIdString(model.getDistributionList());
-		}
+    private void respond(final ConversationModel model, final String mode) {
+        // Respond only if the conversation is not a private chat
+        String uniqueId = null;
+        if (model.isGroupConversation()) {
+            uniqueId = this.groupService.getUniqueIdString(model.getGroup());
+        } else if (model.isContactConversation()) {
+            String identity = null;
+            if (model.getContact() != null) {
+                identity = model.getContact().getIdentity();
+            }
+            uniqueId = ContactUtil.getUniqueIdString(identity);
+        } else if (model.isDistributionListConversation()) {
+            uniqueId = this.distributionListService.getUniqueIdString(model.getDistributionList());
+        }
 
-		if (TestUtil.isEmptyOrNull(uniqueId)) {
-			logger.warn("Cannot send updates, unique ID is null");
-			return;
-		} else if (this.hiddenChatsListService.has(uniqueId)) {
-			logger.debug("Don't send updates for a private conversation");
-			return;
-		}
+        if (TestUtil.isEmptyOrNull(uniqueId)) {
+            logger.warn("Cannot send updates, unique ID is null");
+            return;
+        } else if (this.hiddenChatsListService.has(uniqueId)) {
+            logger.debug("Don't send updates for a private conversation");
+            return;
+        }
 
-		try {
-			final MsgpackObjectBuilder args = new MsgpackObjectBuilder()
-					.put(ARGUMENT_MODE, mode);
-			final MsgpackBuilder data = Conversation.convert(model);
-			logger.debug("Sending conversation update ({} mode {})", model.getUid(), mode);
-			send(updateDispatcher, data, args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+        try {
+            final MsgpackObjectBuilder args = new MsgpackObjectBuilder()
+                .put(ARGUMENT_MODE, mode);
+            final MsgpackBuilder data = Conversation.convert(model);
+            logger.debug("Sending conversation update ({} mode {})", model.getUid(), mode);
+            send(updateDispatcher, data, args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@AnyThread
-	private class Listener implements ConversationListener {
-		@Override
-		@AnyThread
-		public void onNew(ConversationModel conversationModel) {
-			logger.info("Conversation created, sending update to Threema Web (conversation={})", conversationModel.getUid());
-			// Notify webclient in background thread
-			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW));
-		}
+    @AnyThread
+    private class Listener implements ConversationListener {
+        @Override
+        @AnyThread
+        public void onNew(ConversationModel conversationModel) {
+            logger.info("Conversation created, sending update to Threema Web (conversation={})", conversationModel.getUid());
+            // Notify webclient in background thread
+            handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW));
+        }
 
-		@Override
-		@AnyThread
-		public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
-			logger.info("Conversation modified, sending update to Threema Web (conversation={})", modifiedConversationModel.getUid());
-			logger.info("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
-			// Notify webclient in background thread
-			handler.post(() -> ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED));
-		}
+        @Override
+        @AnyThread
+        public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
+            logger.info("Conversation modified, sending update to Threema Web (conversation={})", modifiedConversationModel.getUid());
+            logger.info("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
+            // Notify webclient in background thread
+            handler.post(() -> ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED));
+        }
 
-		@Override
-		@AnyThread
-		public void onRemoved(ConversationModel conversationModel) {
-			logger.info("Conversation removed, sending update to Threema Web (conversation={})", conversationModel.getUid());
-			// Notify webclient in background thread
-			handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED));
-		}
+        @Override
+        @AnyThread
+        public void onRemoved(ConversationModel conversationModel) {
+            logger.info("Conversation removed, sending update to Threema Web (conversation={})", conversationModel.getUid());
+            // Notify webclient in background thread
+            handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED));
+        }
 
-		@Override
-		@AnyThread
-		public void onModifiedAll() {
-			// TODO: Do we need to implement this?
-			logger.info("onModifiedAll");
-		}
-	}
+        @Override
+        @AnyThread
+        public void onModifiedAll() {
+            // TODO: Do we need to implement this?
+            logger.info("onModifiedAll");
+        }
+    }
 }

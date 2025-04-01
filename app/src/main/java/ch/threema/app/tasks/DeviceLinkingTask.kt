@@ -115,7 +115,10 @@ class DeviceLinkingTask(
         }
     }
 
-    private suspend fun pauseStateChangingProcesses(context: Context, processes: List<StateChangingProcess>) {
+    private suspend fun pauseStateChangingProcesses(
+        context: Context,
+        processes: List<StateChangingProcess>
+    ) {
         logger.info("Pause state changing processes")
         processes.forEach {
             logger.info("Pause '{}'", it.name)
@@ -123,7 +126,10 @@ class DeviceLinkingTask(
         }
     }
 
-    private suspend fun resumeStateChangingProcesses(context: Context, processes: List<StateChangingProcess>) {
+    private suspend fun resumeStateChangingProcesses(
+        context: Context,
+        processes: List<StateChangingProcess>
+    ) {
         logger.info("Resume state changing processes")
         processes.forEach {
             if (it.resume != null) {
@@ -156,6 +162,7 @@ class DeviceLinkingTask(
             when (e) {
                 is DeviceLinkingException,
                 is IOException -> Result.failure(e)
+
                 else -> throw e
             }
         } finally {
@@ -226,10 +233,21 @@ class DeviceLinkingTask(
 
     private fun getStateChangingProcesses(): List<StateChangingProcess> {
         return listOf(
-            StateChangingProcess("ContactSyncAdapter", { disableContactSyncAdapter() }, { enableContactSyncAdapter() }),
-            StateChangingProcess("AutoDeleteWorker", ::pauseAutoDeleteWorker, ::resumeAutoDeleteWorker),
+            StateChangingProcess(
+                "ContactSyncAdapter",
+                { disableContactSyncAdapter() },
+                { enableContactSyncAdapter() }),
+            StateChangingProcess(
+                "AutoDeleteWorker",
+                ::pauseAutoDeleteWorker,
+                ::resumeAutoDeleteWorker
+            ),
             StateChangingProcess("WorkSync", ::pauseWorkSync, ::resumeWorkSync),
-            StateChangingProcess("IdentityStatesSync", ::pauseIdentityStatesSync, ::resumeIdentityStatesSync),
+            StateChangingProcess(
+                "IdentityStatesSync",
+                ::pauseIdentityStatesSync,
+                ::resumeIdentityStatesSync
+            ),
             // Webclient sessions are not resumed after linking
             StateChangingProcess("WebClient", { pauseWebClientSessions() }, null),
         )
@@ -268,7 +286,11 @@ class DeviceLinkingTask(
     }
 
     private fun pauseWebClientSessions() {
-        serviceManager.webClientServiceManager.sessionService.stopAll(DisconnectContext.byUs(DisconnectContext.REASON_SESSION_STOPPED))
+        serviceManager.webClientServiceManager.sessionService.stopAll(
+            DisconnectContext.byUs(
+                DisconnectContext.REASON_SESSION_STOPPED
+            )
+        )
     }
 }
 
@@ -294,4 +316,8 @@ class DeviceLinkingController {
     }
 }
 
-private data class StateChangingProcess(val name: String, val pause: suspend (Context) -> Unit, val resume: (suspend (Context) -> Unit)?)
+private data class StateChangingProcess(
+    val name: String,
+    val pause: suspend (Context) -> Unit,
+    val resume: (suspend (Context) -> Unit)?
+)

@@ -1,155 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:scrollbarStyle="outsideOverlay"
-	android:padding="@dimen/wizard_contents_padding">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbarStyle="outsideOverlay"
+    android:padding="@dimen/wizard_contents_padding">
 
-<LinearLayout
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-	<TextView
-		android:id="@+id/safe_enable_subtitle"
-		style="@style/WizardDialogTitleText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:layout_gravity="center_horizontal"
-		android:text="@string/safe_configure_choose_server"/>
+        <TextView
+            android:id="@+id/safe_enable_subtitle"
+            style="@style/WizardDialogTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/safe_configure_choose_server" />
 
-	<TextView
-		android:id="@+id/safe_enable_explain"
-		style="@style/WizardSmallText"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="16dp"
-		android:gravity="center_horizontal"
-		android:layout_gravity="center_horizontal"
-		android:text="@string/safe_configure_server_explain"/>
+        <TextView
+            android:id="@+id/safe_enable_explain"
+            style="@style/WizardSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/safe_configure_server_explain" />
 
-	<com.google.android.material.materialswitch.MaterialSwitch
-		android:id="@+id/safe_switch_server"
-		style="@style/WizardSwitch"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="24dp"
-		android:checked="true"
-		android:enabled="true"
-		android:text="@string/safe_use_default_server"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/safe_switch_server"
+            style="@style/WizardSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:checked="true"
+            android:enabled="true"
+            android:text="@string/safe_use_default_server" />
 
-	<LinearLayout
-		android:id="@+id/safe_server_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="16dp"
-		android:orientation="vertical"
-		android:visibility="gone">
+        <LinearLayout
+            android:id="@+id/safe_server_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/safe_server"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:hintAnimationEnabled="false"
-			app:hintEnabled="false">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/safe_server"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false">
 
-			<ch.threema.app.ui.PrefixEditText
-				style="@style/WizardEditText"
-				android:id="@+id/safe_edit_server"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:hint="@string/safe_enter_server_address_explain"
-				android:inputType="textWebEditText"
-				android:singleLine="true"
-				android:tag="https://">
+                <ch.threema.app.ui.PrefixEditText
+                    style="@style/WizardEditText"
+                    android:id="@+id/safe_edit_server"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/safe_enter_server_address_explain"
+                    android:inputType="textWebEditText"
+                    android:singleLine="true"
+                    android:tag="https://">
 
-				<requestFocus/>
-			</ch.threema.app.ui.PrefixEditText>
+                    <requestFocus />
+                </ch.threema.app.ui.PrefixEditText>
 
-		</com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-		<TextView
-			android:id="@+id/safe_credentials_title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:textColor="?attr/colorOnBackground"
-			android:layout_marginTop="8dp"
-			android:text="@string/safe_configure_server_credentials_title"
-			android:textSize="16sp"/>
+            <TextView
+                android:id="@+id/safe_credentials_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnBackground"
+                android:layout_marginTop="8dp"
+                android:text="@string/safe_configure_server_credentials_title"
+                android:textSize="16sp" />
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/safe_username"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="8dp"
-			app:hintAnimationEnabled="false"
-			app:hintEnabled="false">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/safe_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false">
 
-			<ch.threema.app.ui.ThreemaTextInputEditText
-				style="@style/WizardEditText"
-				android:id="@+id/safe_edit_username"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:hint="@string/username_hint"
-				android:inputType="textWebEditText"
-				android:singleLine="true">
+                <ch.threema.app.ui.ThreemaTextInputEditText
+                    style="@style/WizardEditText"
+                    android:id="@+id/safe_edit_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/username_hint"
+                    android:inputType="textWebEditText"
+                    android:singleLine="true">
 
-			</ch.threema.app.ui.ThreemaTextInputEditText>
+                </ch.threema.app.ui.ThreemaTextInputEditText>
 
-		</com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/safe_server_password"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="4dp"
-			app:hintAnimationEnabled="false"
-			app:passwordToggleEnabled="true"
-			app:hintEnabled="false">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/safe_server_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:hintAnimationEnabled="false"
+                app:passwordToggleEnabled="true"
+                app:hintEnabled="false">
 
-			<ch.threema.app.ui.ThreemaTextInputEditText
-				style="@style/WizardEditText"
-				android:id="@+id/safe_edit_server_password"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:hint="@string/password_hint"
-				android:inputType="textWebPassword"
-				android:singleLine="true"
-				android:tag="https://">
+                <ch.threema.app.ui.ThreemaTextInputEditText
+                    style="@style/WizardEditText"
+                    android:id="@+id/safe_edit_server_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/password_hint"
+                    android:inputType="textWebPassword"
+                    android:singleLine="true"
+                    android:tag="https://">
 
-			</ch.threema.app.ui.ThreemaTextInputEditText>
+                </ch.threema.app.ui.ThreemaTextInputEditText>
 
-		</com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-	</LinearLayout>
+        </LinearLayout>
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="32dp"
-		android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="horizontal">
 
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/cancel"
-			style="@style/WizardButtonInverse"
-			android:layout_width="wrap_content"
-			android:layout_marginRight="4dp"
-			android:layout_weight="1"
-			android:text="@string/cancel"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel"
+                style="@style/WizardButtonInverse"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="4dp"
+                android:layout_weight="1"
+                android:text="@string/cancel" />
 
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/ok"
-			style="@style/WizardButtonRegular"
-			android:layout_width="wrap_content"
-			android:layout_marginLeft="4dp"
-			android:layout_weight="1"
-			android:text="@string/ok"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/ok"
+                style="@style/WizardButtonRegular"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                android:text="@string/ok" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
 
 </ScrollView>

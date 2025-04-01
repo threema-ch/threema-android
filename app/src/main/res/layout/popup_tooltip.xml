@@ -65,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="?colorOnTertiaryContainer"
                     android:textSize="@dimen/tooltip_text_size"
-                    tools:text="Tooltip Text"/>
+                    tools:text="Tooltip Text" />
 
             </LinearLayout>
 

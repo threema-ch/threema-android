@@ -100,7 +100,8 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
 
     fun encryptEnvelope(envelope: Envelope): EncryptedEnvelopeResult {
         val nonceBytes = createNonce()
-        val encryptedEnvelope = nonceBytes + NaCl.symmetricEncryptData(envelope.toByteArray(), dgrk, nonceBytes)
+        val encryptedEnvelope =
+            nonceBytes + NaCl.symmetricEncryptData(envelope.toByteArray(), dgrk, nonceBytes)
         return EncryptedEnvelopeResult(
             encryptedEnvelope = encryptedEnvelope,
             nonce = Nonce(nonceBytes),

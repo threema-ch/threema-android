@@ -136,7 +136,10 @@ class GroupEditMessageTest {
         )
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charset.defaultCharset()), editMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charset.defaultCharset()),
+            editMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
         assertEquals(updatedMessageText, editMessage.data.text)
@@ -157,7 +160,10 @@ class GroupEditMessageTest {
         )
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charset.defaultCharset()), editMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charset.defaultCharset()),
+            editMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
         assertEquals(updatedMessageText, editMessage.data.text)
@@ -168,7 +174,8 @@ class GroupEditMessageTest {
 
         // arrange
         val offset = 5
-        val bytesMessageDataContainingOffsetAndJunk = nextBytes(offset) + bytesMessageData + nextBytes(10)
+        val bytesMessageDataContainingOffsetAndJunk =
+            nextBytes(offset) + bytesMessageData + nextBytes(10)
 
         // act
         val editMessage = GroupEditMessage.fromByteArray(
@@ -178,7 +185,10 @@ class GroupEditMessageTest {
         )
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charset.defaultCharset()), editMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charset.defaultCharset()),
+            editMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(messageIdToUpdate.messageIdLong, editMessage.data.messageId)
         assertEquals(updatedMessageText, editMessage.data.text)
@@ -202,7 +212,10 @@ class GroupEditMessageTest {
         val editMessage = GroupEditMessage.fromReflected(incomingD2DMessage)
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charset.defaultCharset()), editMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charset.defaultCharset()),
+            editMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(incomingMessageId, editMessage.messageId.messageIdLong)
         assertEquals(incomingMessageCreatedAt, editMessage.date.time)
@@ -227,7 +240,10 @@ class GroupEditMessageTest {
         val editMessage = GroupEditMessage.fromReflected(outgoingD2DMessage)
 
         // assert
-        assertEquals(bytesCreatorIdentity.toString(Charset.defaultCharset()), editMessage.groupCreator)
+        assertEquals(
+            bytesCreatorIdentity.toString(Charset.defaultCharset()),
+            editMessage.groupCreator
+        )
         assertContentEquals(bytesApiGroupId, editMessage.apiGroupId.groupId)
         assertEquals(outgoingMessageId, editMessage.messageId.messageIdLong)
         assertEquals(outgoingMessageCreatedAt, editMessage.date.time)

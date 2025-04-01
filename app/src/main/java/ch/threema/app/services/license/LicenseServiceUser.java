@@ -29,38 +29,38 @@ import ch.threema.domain.protocol.api.APIConnector;
 
 public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 
-	public LicenseServiceUser(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
-		super(apiConnector, preferenceService, deviceId);
-	}
+    public LicenseServiceUser(APIConnector apiConnector, PreferenceService preferenceService, String deviceId) {
+        super(apiConnector, preferenceService, deviceId);
+    }
 
-	@Override
-	public boolean hasCredentials() {
-		return !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(),
-				this.preferenceService.getLicensePassword());
-	}
+    @Override
+    public boolean hasCredentials() {
+        return !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(),
+            this.preferenceService.getLicensePassword());
+    }
 
-	@Override
-	@WorkerThread
-	protected APIConnector.CheckLicenseResult checkLicense(UserCredentials credentials, String deviceId) throws Exception {
-		return this.apiConnector.checkLicense(credentials.username, credentials.password, deviceId);
-	}
+    @Override
+    @WorkerThread
+    protected APIConnector.CheckLicenseResult checkLicense(UserCredentials credentials, String deviceId) throws Exception {
+        return this.apiConnector.checkLicense(credentials.username, credentials.password, deviceId);
+    }
 
-	@Override
-	public void saveCredentials(UserCredentials credentials) {
-		this.preferenceService.setLicenseUsername(credentials.username);
-		this.preferenceService.setLicensePassword(credentials.password);
-	}
+    @Override
+    public void saveCredentials(UserCredentials credentials) {
+        this.preferenceService.setLicenseUsername(credentials.username);
+        this.preferenceService.setLicensePassword(credentials.password);
+    }
 
-	@Override
-	@Nullable
-	public UserCredentials loadCredentials() {
-		String username = this.preferenceService.getLicenseUsername();
-		String password = this.preferenceService.getLicensePassword();
+    @Override
+    @Nullable
+    public UserCredentials loadCredentials() {
+        String username = this.preferenceService.getLicenseUsername();
+        String password = this.preferenceService.getLicensePassword();
 
-		if(!TestUtil.isEmptyOrNull(username, password)) {
-			return new UserCredentials(username, password);
-		}
-		return null;
-	}
+        if (!TestUtil.isEmptyOrNull(username, password)) {
+            return new UserCredentials(username, password);
+        }
+        return null;
+    }
 
 }

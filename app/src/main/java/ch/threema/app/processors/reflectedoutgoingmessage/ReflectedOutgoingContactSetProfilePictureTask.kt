@@ -29,7 +29,10 @@ import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 
 private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingContactSetProfilePictureTask")
 
-internal class ReflectedOutgoingContactSetProfilePictureTask(message: OutgoingMessage, serviceManager: ServiceManager) : ReflectedOutgoingContactMessageTask(
+internal class ReflectedOutgoingContactSetProfilePictureTask(
+    message: OutgoingMessage,
+    serviceManager: ServiceManager
+) : ReflectedOutgoingContactMessageTask(
     message,
     Common.CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE,
     serviceManager,

@@ -1,114 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	style="@style/Threema.CardView.MessageList"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/list_item"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:clickable="true"
-	android:focusable="true"
-	android:foreground="@drawable/listitem_background_selector">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Threema.CardView.MessageList"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="@drawable/listitem_background_selector">
 
-	<RelativeLayout
-		android:id="@+id/list_item_fg"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="?android:attr/colorBackground"
+    <RelativeLayout
+        android:id="@+id/list_item_fg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/colorBackground"
         android:paddingVertical="@dimen/listitem_message_margin_top_bottom"
         android:paddingHorizontal="@dimen/listitem_message_margin_left_right">
 
-		<ch.threema.app.ui.AvatarView
-			android:id="@+id/avatar_view"
-			android:layout_width="@dimen/avatar_size_small"
-			android:layout_height="@dimen/avatar_size_small"
-			android:layout_centerVertical="true"
-			android:layout_alignParentLeft="true"
-			android:clickable="true"
-			android:contentDescription="@string/show_contact"
-			android:foreground="@drawable/selector_avatar" />
+        <ch.threema.app.ui.AvatarView
+            android:id="@+id/avatar_view"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:clickable="true"
+            android:contentDescription="@string/show_contact"
+            android:foreground="@drawable/selector_avatar" />
 
-		<RelativeLayout
-			android:id="@+id/content_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/avatar_view"
-			android:layout_toLeftOf="@id/join_group_call_button"
-			android:layout_centerVertical="true"
-			android:layout_marginLeft="@dimen/messagelist_avatar_padding">
+        <RelativeLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/avatar_view"
+            android:layout_toLeftOf="@id/join_group_call_button"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/messagelist_avatar_padding">
 
-			<ImageView
-				android:id="@+id/mute_status"
-				android:layout_width="20dp"
-				android:layout_height="20dp"
-				android:layout_alignBottom="@+id/from"
-				android:layout_alignParentLeft="true"
-				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginRight="3dp"
-				android:layout_marginBottom="2.5dp"
-				android:visibility="gone"
-				app:srcCompat="@drawable/ic_notifications_active_outline"/>
+            <ImageView
+                android:id="@+id/mute_status"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/from"
+                android:layout_alignParentLeft="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_marginRight="3dp"
+                android:layout_marginBottom="2.5dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_notifications_active_outline" />
 
-			<ch.threema.app.emojis.EmojiTextView
-				android:id="@+id/from"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:minHeight="@dimen/listitem_min_height_first_line"
-				android:layout_alignWithParentIfMissing="true"
-				android:layout_toLeftOf="@+id/pin_icon"
-				android:layout_toRightOf="@+id/mute_status"
-				android:ellipsize="end"
-				android:singleLine="true"
-				android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_toLeftOf="@+id/pin_icon"
+                android:layout_toRightOf="@+id/mute_status"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
-			<ImageView
-				android:id="@+id/pin_icon"
-				android:layout_width="24dp"
-				android:layout_height="24dp"
-				android:layout_alignBottom="@id/from"
-				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginLeft="3dp"
-				android:layout_toLeftOf="@+id/unread_count"
-				app:srcCompat="@drawable/ic_pin_circle"
-				/>
+            <ImageView
+                android:id="@+id/pin_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignBottom="@id/from"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_marginLeft="3dp"
+                android:layout_toLeftOf="@+id/unread_count"
+                app:srcCompat="@drawable/ic_pin_circle" />
 
-			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.MaterialButton.CountView"
-				android:id="@+id/unread_count"
-				android:layout_width="wrap_content"
-				android:layout_height="24dp"
-				android:layout_alignBottom="@id/from"
-				android:layout_alignParentRight="true"
-				android:layout_alignWithParentIfMissing="true"
-				android:layout_marginLeft="3dp"
-				android:visibility="visible"/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Threema.MaterialButton.CountView"
+                android:id="@+id/unread_count"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_alignBottom="@id/from"
+                android:layout_alignParentRight="true"
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_marginLeft="3dp"
+                android:visibility="visible" />
 
-			<FrameLayout
-				android:id="@+id/typing_container"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/from"
-				android:visibility="gone">
+            <FrameLayout
+                android:id="@+id/typing_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/from"
+                android:visibility="gone">
 
-				<TextView
-					android:id="@+id/is_typing"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:fontFamily="sans-serif-light"
-					android:singleLine="true"
-					android:text="@string/is_typing"
-					android:textColor="@null"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"/>
-			</FrameLayout>
+                <TextView
+                    android:id="@+id/is_typing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:singleLine="true"
+                    android:text="@string/is_typing"
+                    android:textColor="@null"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+            </FrameLayout>
 
-			<androidx.constraintlayout.widget.ConstraintLayout
-				android:id="@+id/latest_message_container"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/latest_message_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:minHeight="@dimen/listitem_min_height_second_line"
-				android:layout_below="@id/from"
-				android:visibility="visible">
+                android:layout_below="@id/from"
+                android:visibility="visible">
 
                 <ch.threema.app.emojis.EmojiTextView
                     android:id="@+id/group_member_name"
@@ -121,7 +119,7 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/attachment"
                     app:layout_constrainedWidth="true"
-                    tools:text="Member: "/>
+                    tools:text="Member: " />
 
                 <ImageView
                     android:id="@+id/attachment"
@@ -135,7 +133,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/group_member_name"
-                    app:layout_constraintRight_toLeftOf="@id/subject"/>
+                    app:layout_constraintRight_toLeftOf="@id/subject" />
 
                 <!-- app:layout_constraintWidth_min="1dp" is a hack to ensure correct constraint when group_member_name overflows -->
                 <ch.threema.app.emojis.EmojiTextView
@@ -151,121 +149,120 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/attachment"
                     app:layout_constraintRight_toLeftOf="@id/date"
-                    tools:text="Subject"/>
+                    tools:text="Subject" />
 
-				<TextView
-					style="@style/Threema.TextAppearance.List.ThirdLine"
-					android:id="@+id/date"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginLeft="4dp"
-					android:layout_marginRight="2dp"
-					android:singleLine="true"
+                <TextView
+                    style="@style/Threema.TextAppearance.List.ThirdLine"
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="2dp"
+                    android:singleLine="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/delivery"
                     app:layout_constraintLeft_toRightOf="@id/subject"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="3:15 PM"/>
+                    tools:text="3:15 PM" />
 
-				<ImageView
-					android:id="@+id/delivery"
-					android:layout_width="20dp"
-					android:layout_height="20dp"
+                <ImageView
+                    android:id="@+id/delivery"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:translationY="0.5dp"
-					android:visibility="visible"
+                    android:visibility="visible"
                     android:importantForAccessibility="no"
-					app:srcCompat="@drawable/ic_attachment"
-					app:tint="?attr/colorOnSurface"
+                    app:srcCompat="@drawable/ic_attachment"
+                    app:tint="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
-			</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-			<RelativeLayout
-				android:id="@+id/ongoing_group_call_container"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/from"
-				android:visibility="gone">
+            <RelativeLayout
+                android:id="@+id/ongoing_group_call_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/from"
+                android:visibility="gone">
 
-				<Chronometer
-					android:id="@+id/group_call_duration"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignWithParentIfMissing="true"
-					android:layout_alignBaseline="@+id/ongoing_call_text"
-					android:maxLines="1"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+                <Chronometer
+                    android:id="@+id/group_call_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignWithParentIfMissing="true"
+                    android:layout_alignBaseline="@+id/ongoing_call_text"
+                    android:maxLines="1"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
-				<TextView
-					android:id="@+id/ongoing_call_divider"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignBaseline="@+id/ongoing_call_text"
-					android:layout_toRightOf="@id/group_call_duration"
-					android:layout_marginLeft="2dp"
-					android:layout_marginRight="2dp"
-					android:maxLines="1"
-					android:text="|"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-					tools:ignore="HardcodedText" />
+                <TextView
+                    android:id="@+id/ongoing_call_divider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/ongoing_call_text"
+                    android:layout_toRightOf="@id/group_call_duration"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="2dp"
+                    android:maxLines="1"
+                    android:text="|"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                    tools:ignore="HardcodedText" />
 
-				<TextView
-					android:id="@+id/ongoing_call_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="@string/voip_gc_ongoing_call"
-					android:layout_toRightOf="@id/ongoing_call_divider"
-					android:ellipsize="end"
-					android:maxLines="1"
-					android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
+                <TextView
+                    android:id="@+id/ongoing_call_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/voip_gc_ongoing_call"
+                    android:layout_toRightOf="@id/ongoing_call_divider"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/Threema.TextAppearance.List.SecondLine" />
 
-			</RelativeLayout>
+            </RelativeLayout>
 
-		</RelativeLayout>
+        </RelativeLayout>
 
-		<com.google.android.material.button.MaterialButton
-			style="@style/Threema.MaterialButton.Action"
-			android:id="@+id/join_group_call_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="0dp"
-			android:layout_marginRight="0dp"
-			android:minWidth="40dp"
-			android:text="@string/voip_gc_join_call"
-			android:visibility="gone"
-			android:layout_centerVertical="true"
-			android:layout_alignParentRight="true"
-			/>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Threema.MaterialButton.Action"
+            android:id="@+id/join_group_call_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:minWidth="40dp"
+            android:text="@string/voip_gc_join_call"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
-		<View
-			android:id="@+id/unread_bar"
-			android:layout_width="5dp"
-			android:layout_height="match_parent"
-			android:background="@color/messagelist_highlight_color"
-			android:visibility="visible"/>
+        <View
+            android:id="@+id/unread_bar"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="@color/messagelist_highlight_color"
+            android:visibility="visible" />
 
-		<View
-			android:id="@+id/pin_bar"
-			android:layout_width="5dp"
-			android:layout_height="match_parent"
-			android:background="@color/messagelist_pinned_color"
-			android:visibility="visible"/>
-	</LinearLayout>
+        <View
+            android:id="@+id/pin_bar"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="@color/messagelist_pinned_color"
+            android:visibility="visible" />
+    </LinearLayout>
 
-	<ImageView
-		android:id="@+id/hidden_status"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:srcCompat="@drawable/ic_incognito"
-		android:layout_gravity="right|top"
-		android:contentDescription="@string/private_chat_subject"/>
+    <ImageView
+        android:id="@+id/hidden_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_incognito"
+        android:layout_gravity="right|top"
+        android:contentDescription="@string/private_chat_subject" />
 
 </FrameLayout>

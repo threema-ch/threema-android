@@ -65,11 +65,13 @@ interface GroupCallManager {
      */
     @AnyThread
     fun addGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
+
     @AnyThread
     fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
     @AnyThread
     fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
+
     @AnyThread
     fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
@@ -176,7 +178,11 @@ interface GroupCallManager {
      * the group or no new members, nothing is done.
      */
     @AnyThread
-    fun sendGroupCallStartToNewMembers(groupModel: GroupModel, newMembers: Set<String>, handle: ActiveTaskCodec)
+    fun sendGroupCallStartToNewMembers(
+        groupModel: GroupModel,
+        newMembers: Set<String>,
+        handle: ActiveTaskCodec
+    )
 
     /**
      * Schedules the current group call of the given group to the new members. If there is no call

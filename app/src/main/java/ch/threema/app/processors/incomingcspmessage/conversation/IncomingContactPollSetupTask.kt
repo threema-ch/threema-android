@@ -35,9 +35,11 @@ class IncomingContactPollSetupTask(
 ) : IncomingCspMessageSubTask<Nothing?>(null, triggerSource, serviceManager) {
     private val messageService = serviceManager.messageService
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult = processPollSetupMessage()
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult =
+        processPollSetupMessage()
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processPollSetupMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processPollSetupMessage()
 
     private fun processPollSetupMessage(): ReceiveStepsResult {
         val successfullyProcessed = messageService.processIncomingContactMessage(pollSetupMessage)

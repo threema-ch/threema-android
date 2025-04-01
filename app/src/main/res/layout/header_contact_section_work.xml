@@ -2,9 +2,7 @@
   ~ Copyright (c) 2021 Threema GmbH
   ~ All rights reserved.
   -->
-<ViewStub
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/work_contacts_tab_layout"
-	android:layout_width="0dp"
-	android:layout_height="0dp"
-/>
+<ViewStub xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/work_contacts_tab_layout"
+    android:layout_width="0dp"
+    android:layout_height="0dp" />

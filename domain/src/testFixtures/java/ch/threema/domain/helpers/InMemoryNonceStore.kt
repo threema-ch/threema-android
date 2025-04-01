@@ -49,7 +49,12 @@ class InMemoryNonceStore : NonceStore {
         return getScopedHashedNonces(scope).size.toLong()
     }
 
-    override fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {
+    override fun addHashedNoncesChunk(
+        scope: NonceScope,
+        chunkSize: Int,
+        offset: Int,
+        nonces: MutableList<HashedNonce>
+    ) {
         val scopedNonces: List<HashedNonce> = getScopedHashedNonces(scope)
         val from = Math.max(0, offset)
         val to = Math.min(scopedNonces.size, from + chunkSize)

@@ -50,5 +50,10 @@ interface SfuConnection {
      * @throws {@link SfuException} When the sfu cannot be reached, a timeout or another exception occurred
      */
     @AnyThread
-    suspend fun join(token: SfuToken, sfuBaseUrl: String, callDescription: GroupCallDescription, dtlsFingerprint: ByteArray): JoinResponse
+    suspend fun join(
+        token: SfuToken,
+        sfuBaseUrl: String,
+        callDescription: GroupCallDescription,
+        dtlsFingerprint: ByteArray
+    ): JoinResponse
 }

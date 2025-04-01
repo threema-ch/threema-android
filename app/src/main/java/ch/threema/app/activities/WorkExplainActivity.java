@@ -29,28 +29,28 @@ import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
 public class WorkExplainActivity extends SimpleWebViewActivity {
-	private static final String WORK_PACKAGE_NAME = "ch.threema.app.work";
+    private static final String WORK_PACKAGE_NAME = "ch.threema.app.work";
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		if (ConfigUtils.isAppInstalled(WORK_PACKAGE_NAME)) {
-			Intent launchIntent = getPackageManager().getLaunchIntentForPackage(WORK_PACKAGE_NAME);
-			if (launchIntent != null) {
-				startActivity(launchIntent);
-				overridePendingTransition(0, 0);
-			}
-			finish();
-		}
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        if (ConfigUtils.isAppInstalled(WORK_PACKAGE_NAME)) {
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage(WORK_PACKAGE_NAME);
+            if (launchIntent != null) {
+                startActivity(launchIntent);
+                overridePendingTransition(0, 0);
+            }
+            finish();
+        }
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	protected int getWebViewTitle() {
-		return R.string.threema_work;
-	}
+    @Override
+    protected int getWebViewTitle() {
+        return R.string.threema_work;
+    }
 
-	@Override
-	protected String getWebViewUrl() {
-		return ConfigUtils.getWorkExplainURL(this);
-	}
+    @Override
+    protected String getWebViewUrl() {
+        return ConfigUtils.getWorkExplainURL(this);
+    }
 }

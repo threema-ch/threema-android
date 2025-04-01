@@ -92,9 +92,12 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
 
     private fun initWorkRestrictions() {
         if (ConfigUtils.isWorkRestricted()) {
-            val disableCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_calls))
-            var disableVideoCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_video_calls))
-            var disableGroupCalls = AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_group_calls))
+            val disableCalls =
+                AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_calls))
+            var disableVideoCalls =
+                AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_video_calls))
+            var disableGroupCalls =
+                AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_group_calls))
 
             if (disableCalls != null) {
                 // admin does not want user to tamper with call setting
@@ -107,15 +110,18 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                     disableGroupCalls = true
                 } else {
                     // remove dependency to allow user to manipulate advanced call settings if admin enabled calls
-                    val forceTurn: CheckBoxPreference = getPref(R.string.preferences__voip_force_turn)
-                    val rejectCalls: CheckBoxPreference = getPref(R.string.preferences__voip_reject_mobile_calls)
+                    val forceTurn: CheckBoxPreference =
+                        getPref(R.string.preferences__voip_force_turn)
+                    val rejectCalls: CheckBoxPreference =
+                        getPref(R.string.preferences__voip_reject_mobile_calls)
 
                     forceTurn.dependency = null
                     rejectCalls.dependency = null
                 }
             }
 
-            val videoCallEnable: CheckBoxPreference = getPref(R.string.preferences__voip_video_enable)
+            val videoCallEnable: CheckBoxPreference =
+                getPref(R.string.preferences__voip_video_enable)
             if (disableVideoCalls != null) {
                 // admin does not want user to tamper with video call setting
                 videoCallEnable.isEnabled = false
@@ -123,7 +129,8 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 videoCallEnable.isChecked = !disableVideoCalls
 
                 if (!disableVideoCalls) {
-                    val videoCallProfile: DropDownPreference = getPref(R.string.preferences__voip_video_profile)
+                    val videoCallProfile: DropDownPreference =
+                        getPref(R.string.preferences__voip_video_profile)
                     videoCallProfile.dependency = null
                     videoCallProfile.isEnabled = true
                     videoCallProfile.isSelectable = true
@@ -147,7 +154,11 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
         enableCallReject?.setOnPreferenceChangeListener { _, newValue ->
             val newCheckedValue = newValue == true
             if (newCheckedValue) {
-                ConfigUtils.requestPhonePermissions(requireActivity(), this@SettingsCallsFragment, PERMISSION_REQUEST_READ_PHONE_STATE)
+                ConfigUtils.requestPhonePermissions(
+                    requireActivity(),
+                    this@SettingsCallsFragment,
+                    PERMISSION_REQUEST_READ_PHONE_STATE
+                )
             } else true
         }
     }
@@ -158,12 +169,20 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             PERMISSION_REQUEST_READ_PHONE_STATE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 this.enableCallReject?.isChecked = true
             } else if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                ConfigUtils.showPermissionRationale(context, fragmentView, R.string.permission_phone_required)
+                ConfigUtils.showPermissionRationale(
+                    context,
+                    fragmentView,
+                    R.string.permission_phone_required
+                )
             }
         }
     }

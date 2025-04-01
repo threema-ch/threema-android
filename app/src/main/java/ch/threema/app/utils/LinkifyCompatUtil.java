@@ -75,7 +75,7 @@ import ch.threema.app.services.LocaleService;
  */
 public final class LinkifyCompatUtil {
 
-    private static final Comparator<LinkSpec>  COMPARATOR = (a, b) -> {
+    private static final Comparator<LinkSpec> COMPARATOR = (a, b) -> {
         if (a.start < b.start) {
             return -1;
         }
@@ -84,26 +84,26 @@ public final class LinkifyCompatUtil {
             return 1;
         }
 
-	    return Integer.compare(b.end, a.end);
+        return Integer.compare(b.end, a.end);
 
     };
 
-    @IntDef(flag = true, value = { Linkify.WEB_URLS, Linkify.EMAIL_ADDRESSES, Linkify.PHONE_NUMBERS,
-            Linkify.MAP_ADDRESSES, Linkify.ALL })
+    @IntDef(flag = true, value = {Linkify.WEB_URLS, Linkify.EMAIL_ADDRESSES, Linkify.PHONE_NUMBERS,
+        Linkify.MAP_ADDRESSES, Linkify.ALL})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface LinkifyMask {}
+    public @interface LinkifyMask {
+    }
 
     /**
-     *  Scans the text of the provided Spannable and turns all occurrences
-     *  of the link types indicated in the mask into clickable links.
-     *  If the mask is nonzero, it also removes any existing URLSpans
-     *  attached to the Spannable, to avoid problems if you call it
-     *  repeatedly on the same text.
+     * Scans the text of the provided Spannable and turns all occurrences
+     * of the link types indicated in the mask into clickable links.
+     * If the mask is nonzero, it also removes any existing URLSpans
+     * attached to the Spannable, to avoid problems if you call it
+     * repeatedly on the same text.
      *
-     *  @param text Spannable whose text is to be marked-up with links
-     *  @param mask Mask to define which kinds of links will be searched.
-     *
-     *  @return True if at least one link is found and applied.
+     * @param text Spannable whose text is to be marked-up with links
+     * @param mask Mask to define which kinds of links will be searched.
+     * @return True if at least one link is found and applied.
      */
     @SuppressLint("RestrictedApi")
     public static boolean addLinks(@NonNull Spannable text, @LinkifyMask int mask) {
@@ -120,32 +120,32 @@ public final class LinkifyCompatUtil {
             text.removeSpan(old[i]);
         }
 
-	    final ArrayList<LinkSpec> links = new ArrayList<>();
+        final ArrayList<LinkSpec> links = new ArrayList<>();
 
         if ((mask & Linkify.WEB_URLS) != 0) {
             gatherLinks(links, text, PatternsCompat.AUTOLINK_WEB_URL,
-                    new String[] { "http://", "https://", "rtsp://" },
-                    Linkify.sUrlMatchFilter, null);
+                new String[]{"http://", "https://", "rtsp://"},
+                Linkify.sUrlMatchFilter, null);
         }
 
         if ((mask & Linkify.EMAIL_ADDRESSES) != 0) {
             gatherLinks(links, text, PatternsCompat.AUTOLINK_EMAIL_ADDRESS,
-                    new String[] { "mailto:" },
-                    null, null);
+                new String[]{"mailto:"},
+                null, null);
         }
 
         // Threema-added
-	    if ((mask & Linkify.PHONE_NUMBERS) != 0) {
-		    gatherTelLinks(links, text);
-	    }
+        if ((mask & Linkify.PHONE_NUMBERS) != 0) {
+            gatherTelLinks(links, text);
+        }
 
-	    pruneOverlaps(links, text);
+        pruneOverlaps(links, text);
 
         if (links.size() == 0) {
             return false;
         }
 
-        for (LinkSpec link: links) {
+        for (LinkSpec link : links) {
             if (link.frameworkAddedSpan == null) {
                 applyLink(link.url, link.start, link.end, text);
             }
@@ -155,15 +155,14 @@ public final class LinkifyCompatUtil {
     }
 
     /**
-     *  Scans the text of the provided TextView and turns all occurrences of
-     *  the link types indicated in the mask into clickable links.  If matches
-     *  are found the movement method for the TextView is set to
-     *  LinkMovementMethod.
+     * Scans the text of the provided TextView and turns all occurrences of
+     * the link types indicated in the mask into clickable links.  If matches
+     * are found the movement method for the TextView is set to
+     * LinkMovementMethod.
      *
-     *  @param text TextView whose text is to be marked-up with links
-     *  @param mask Mask to define which kinds of links will be searched.
-     *
-     *  @return True if at least one link is found and applied.
+     * @param text TextView whose text is to be marked-up with links
+     * @param mask Mask to define which kinds of links will be searched.
+     * @return True if at least one link is found and applied.
      */
     public static boolean addLinks(@NonNull TextView text, @LinkifyMask int mask) {
         if (shouldAddLinksFallbackToFramework()) {
@@ -197,9 +196,9 @@ public final class LinkifyCompatUtil {
     }
 
     private static boolean shouldAddLinksFallbackToFramework() {
-    	// Threema-added: Never use the system's linkify
+        // Threema-added: Never use the system's linkify
         return false;
-		// return Build.VERSION.SDK_INT >= 28;
+        // return Build.VERSION.SDK_INT >= 28;
     }
 
     private static void addLinkMovementMethod(@NonNull TextView t) {
@@ -213,7 +212,7 @@ public final class LinkifyCompatUtil {
     }
 
     private static String makeUrl(@NonNull String url, @NonNull String[] prefixes,
-            Matcher matcher, @Nullable TransformFilter filter) {
+                                  Matcher matcher, @Nullable TransformFilter filter) {
         if (filter != null) {
             url = filter.transformUrl(matcher, url);
         }
@@ -241,8 +240,8 @@ public final class LinkifyCompatUtil {
     }
 
     private static void gatherLinks(ArrayList<LinkSpec> links,
-            Spannable s, Pattern pattern, String[] schemes,
-            MatchFilter matchFilter, TransformFilter transformFilter) {
+                                    Spannable s, Pattern pattern, String[] schemes,
+                                    MatchFilter matchFilter, TransformFilter transformFilter) {
         Matcher m = pattern.matcher(s);
 
         while (m.find()) {
@@ -262,29 +261,29 @@ public final class LinkifyCompatUtil {
         }
     }
 
-	private static boolean gatherTelLinks(@NonNull ArrayList<LinkSpec> links, @NonNull Spannable s) {
-    	// Threema-added: try to get the current locale from LocaleService
-    	String countryCode;
-    	try {
-		    LocaleService localeService = ThreemaApplication.getServiceManager().getLocaleService();
-		    countryCode = localeService.getCountryIsoCode();
-	    } catch (Exception e) {
-    		countryCode = Locale.getDefault().getCountry();
-	    }
-		PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-    	// Threema-changed: only allow for valid phone numbers
-		Iterable<PhoneNumberMatch> matches = phoneUtil.findNumbers(s.toString(), countryCode, PhoneNumberUtil.Leniency.VALID, Long.MAX_VALUE);
-		for (PhoneNumberMatch match : matches) {
-			LinkSpec spec = new LinkSpec();
-			spec.url = "tel:" + PhoneNumberUtils.normalizeNumber(match.rawString());
-			spec.start = match.start();
-			spec.end = match.end();
-			links.add(spec);
-		}
-		return links.size() > 0;
-	}
+    private static boolean gatherTelLinks(@NonNull ArrayList<LinkSpec> links, @NonNull Spannable s) {
+        // Threema-added: try to get the current locale from LocaleService
+        String countryCode;
+        try {
+            LocaleService localeService = ThreemaApplication.getServiceManager().getLocaleService();
+            countryCode = localeService.getCountryIsoCode();
+        } catch (Exception e) {
+            countryCode = Locale.getDefault().getCountry();
+        }
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        // Threema-changed: only allow for valid phone numbers
+        Iterable<PhoneNumberMatch> matches = phoneUtil.findNumbers(s.toString(), countryCode, PhoneNumberUtil.Leniency.VALID, Long.MAX_VALUE);
+        for (PhoneNumberMatch match : matches) {
+            LinkSpec spec = new LinkSpec();
+            spec.url = "tel:" + PhoneNumberUtils.normalizeNumber(match.rawString());
+            spec.start = match.start();
+            spec.end = match.end();
+            links.add(spec);
+        }
+        return links.size() > 0;
+    }
 
-	private static void applyLink(String url, int start, int end, Spannable text) {
+    private static void applyLink(String url, int start, int end, Spannable text) {
         URLSpan span = new URLSpan(url);
 
         text.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -339,7 +338,8 @@ public final class LinkifyCompatUtil {
     /**
      * Do not create this static utility class.
      */
-    private LinkifyCompatUtil() {}
+    private LinkifyCompatUtil() {
+    }
 
     private static class LinkSpec {
         URLSpan frameworkAddedSpan;

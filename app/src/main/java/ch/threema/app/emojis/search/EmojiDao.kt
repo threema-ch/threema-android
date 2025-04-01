@@ -25,41 +25,42 @@ import androidx.room.*
 
 @Dao
 interface EmojiDao {
-	@Transaction
-	@Insert(
-		entity = Emoji::class,
-		onConflict = OnConflictStrategy.IGNORE
-	)
-	fun insertEmojis(emojis: List<EmojiOrder>)
+    @Transaction
+    @Insert(
+        entity = Emoji::class,
+        onConflict = OnConflictStrategy.IGNORE
+    )
+    fun insertEmojis(emojis: List<EmojiOrder>)
 
-	@Transaction
-	@Update(entity = Emoji::class)
-	fun updateEmojiDiversities(diversities: List<EmojiDiversities>)
+    @Transaction
+    @Update(entity = Emoji::class)
+    fun updateEmojiDiversities(diversities: List<EmojiDiversities>)
 
-	@Transaction
-	@Insert(onConflict = OnConflictStrategy.IGNORE)
-	fun insertSearchTerms(terms: List<SearchTerm>)
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertSearchTerms(terms: List<SearchTerm>)
 
-	@Query("SELECT version FROM SearchTermsLanguageVersion WHERE language LIKE :language")
-	fun getLanguageVersion(language: String): Int?
+    @Query("SELECT version FROM SearchTermsLanguageVersion WHERE language LIKE :language")
+    fun getLanguageVersion(language: String): Int?
 
-	@Insert(onConflict = OnConflictStrategy.REPLACE)
-	fun insertLanguageVersion(languageVersion: SearchTermsLanguageVersion)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertLanguageVersion(languageVersion: SearchTermsLanguageVersion)
 
-	@Query(
-		"SELECT DISTINCT e.* FROM Emoji e " +
-			"INNER JOIN SearchTerm s ON e.sequence = s.emoji_sequence " +
-			"WHERE s.language LIKE :language " +
-				"AND s.term LIKE :searchTerm || '%' " +
-			"ORDER by `order` ASC")
-	fun search(language: String, searchTerm: String): List<Emoji>
+    @Query(
+        "SELECT DISTINCT e.* FROM Emoji e " +
+            "INNER JOIN SearchTerm s ON e.sequence = s.emoji_sequence " +
+            "WHERE s.language LIKE :language " +
+            "AND s.term LIKE :searchTerm || '%' " +
+            "ORDER by `order` ASC"
+    )
+    fun search(language: String, searchTerm: String): List<Emoji>
 
-	@Query("DELETE FROM Emoji")
-	fun deleteEmojis()
+    @Query("DELETE FROM Emoji")
+    fun deleteEmojis()
 
-	@Query("DELETE FROM SearchTermsLanguageVersion")
-	fun deleteSearchTermLanguageVersions()
+    @Query("DELETE FROM SearchTermsLanguageVersion")
+    fun deleteSearchTermLanguageVersions()
 
-	@Query("DELETE FROM SearchTerm WHERE language LIKE :language")
-	fun deleteSearchTermsForLanguage(language: String)
+    @Query("DELETE FROM SearchTerm WHERE language LIKE :language")
+    fun deleteSearchTermsForLanguage(language: String)
 }

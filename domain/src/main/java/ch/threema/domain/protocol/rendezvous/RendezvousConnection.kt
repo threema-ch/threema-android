@@ -113,7 +113,7 @@ class RendezvousConnection private constructor(
     private fun ByteArray.decodeUlpData(): DeviceJoinMessage {
         try {
             val message = NdToEd.parseFrom(this)
-            return when(message.contentCase!!) {
+            return when (message.contentCase!!) {
                 NdToEd.ContentCase.REGISTERED -> DeviceJoinMessage.Registered()
                 NdToEd.ContentCase.CONTENT_NOT_SET -> throw RendezvousException("NdToEd message has no content")
             }
@@ -123,12 +123,16 @@ class RendezvousConnection private constructor(
     }
 
     companion object {
-        private class DefaultRendezvousPathProvider(private val okHttpClient: OkHttpClient) : RendezvousPathProvider {
+        private class DefaultRendezvousPathProvider(private val okHttpClient: OkHttpClient) :
+            RendezvousPathProvider {
             override fun getPaths(rendezvousInit: RendezvousInit): Map<UInt, RendezvousPath> {
                 return getPaths(okHttpClient, rendezvousInit)
             }
 
-            private fun getPaths(okHttpClient: OkHttpClient, rendezvousInit: RendezvousInit): Map<UInt, RendezvousPath> {
+            private fun getPaths(
+                okHttpClient: OkHttpClient,
+                rendezvousInit: RendezvousInit
+            ): Map<UInt, RendezvousPath> {
                 if (rendezvousInit.hasDirectTcpServer()) {
                     logger.info("Ignore unsupported direct tcp server")
                     logger.debug("Ignored direct tcp server: {}", rendezvousInit.directTcpServer)
@@ -137,16 +141,28 @@ class RendezvousConnection private constructor(
                     throw RendezvousException("No relayed web socket provided")
                 }
                 return mapOf(
-                    rendezvousInit.relayedWebSocket.let { it.pathId.toUInt() to WebSocketRendezvousPath(it.pathId.toUInt(), okHttpClient, it.url) }
+                    rendezvousInit.relayedWebSocket.let {
+                        it.pathId.toUInt() to WebSocketRendezvousPath(
+                            it.pathId.toUInt(),
+                            okHttpClient,
+                            it.url
+                        )
+                    }
                 )
             }
         }
 
-        suspend fun connect(okHttpClient: OkHttpClient, rendezvousInit: RendezvousInit): RendezvousConnection {
+        suspend fun connect(
+            okHttpClient: OkHttpClient,
+            rendezvousInit: RendezvousInit
+        ): RendezvousConnection {
             return connect(DefaultRendezvousPathProvider(okHttpClient), rendezvousInit)
         }
 
-        private suspend fun connect(rendezvousPathProvider: RendezvousPathProvider, rendezvousInit: RendezvousInit): RendezvousConnection {
+        private suspend fun connect(
+            rendezvousPathProvider: RendezvousPathProvider,
+            rendezvousInit: RendezvousInit
+        ): RendezvousConnection {
             val paths = rendezvousPathProvider.getPaths(rendezvousInit)
 
             val protocol = RendezvousProtocol.newAsRrd(
@@ -185,7 +201,7 @@ class RendezvousConnection private constructor(
             multiplexedPath: MultiplexedRendezvousPath
         ): RendezvousConnection {
             logger.info("Entering nomination loop")
-            while(true) {
+            while (true) {
                 val (pid, incomingFrame) = multiplexedPath.read()
                 protocol.addChunks(pid, listOf(incomingFrame))
                 var result: PathProcessResult? = protocol.processFrame(pid)
@@ -203,7 +219,10 @@ class RendezvousConnection private constructor(
                         is PathStateUpdate.AwaitingNominate -> {
                             // Check if we should nominate the path
                             // TODO(ANDR-2691): Choose the _best_ path based on the measured RTT
-                            logger.debug("Path ready to nominate (measuredRttMs={})", update.measuredRttMs)
+                            logger.debug(
+                                "Path ready to nominate (measuredRttMs={})",
+                                update.measuredRttMs
+                            )
                             result = if (protocol.isNominator()) {
                                 try {
                                     protocol.nominatePath(pid)
@@ -215,6 +234,7 @@ class RendezvousConnection private constructor(
                                 null
                             }
                         }
+
                         is PathStateUpdate.Nominated -> {
                             val nominated = multiplexedPath.nominate(pid)
                             logger.info("Nomination complete, rendezvous connection established")
@@ -224,6 +244,7 @@ class RendezvousConnection private constructor(
                                 nominated
                             )
                         }
+
                         null -> result = null
                     }
                 }

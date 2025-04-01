@@ -81,26 +81,26 @@ class MessageListViewHolder(
     }
 
     class MessageListItemParams(
-            @ColorInt
-            val regularColor: Int,
-            @ColorInt
-            val backgroundColor: Int,
-            val isTablet: Boolean,
-            val emojiMarkupUtil: EmojiMarkupUtil,
-            val contactService: ContactService,
-            val groupService: GroupService,
-            val distributionListService: DistributionListService,
-            var highlightUid: String?,
-            val stateBitmapUtil: StateBitmapUtil?,
-            val showLastUpdate: Boolean,
+        @ColorInt
+        val regularColor: Int,
+        @ColorInt
+        val backgroundColor: Int,
+        val isTablet: Boolean,
+        val emojiMarkupUtil: EmojiMarkupUtil,
+        val contactService: ContactService,
+        val groupService: GroupService,
+        val distributionListService: DistributionListService,
+        var highlightUid: String?,
+        val stateBitmapUtil: StateBitmapUtil?,
+        val showLastUpdate: Boolean,
     )
 
     class MessageListItemStrings(
-            val notes: String,
-            val groups: String,
-            val distributionLists: String,
-            val stateSent: String,
-            val draftText: String
+        val notes: String,
+        val groups: String,
+        val distributionLists: String,
+        val stateSent: String,
+        val draftText: String
     )
 
     lateinit var listItem: View
@@ -268,7 +268,8 @@ class MessageListViewHolder(
             100
         )
 
-        groupMemberName.text = if (isHidden) "" else messageListAdapterItem.latestMessageGroupMemberName
+        groupMemberName.text =
+            if (isHidden) "" else messageListAdapterItem.latestMessageGroupMemberName
 
         if (draft != null) {
             initializeDraft()
@@ -290,7 +291,11 @@ class MessageListViewHolder(
 
         initializeHiddenAppearance(isHidden)
 
-        AdapterUtil.styleConversation(fromView, params.groupService, messageListAdapterItem.conversationModel)
+        AdapterUtil.styleConversation(
+            fromView,
+            params.groupService,
+            messageListAdapterItem.conversationModel
+        )
 
         AvatarListItemUtil.loadAvatar(
             messageListAdapterItem.conversationModel,
@@ -316,16 +321,34 @@ class MessageListViewHolder(
     private fun initializeUnreadAppearance(messageListAdapterItem: MessageListAdapterItem) {
         val unreadCountText = messageListAdapterItem.unreadCountText
         if (unreadCountText != null) {
-            TextViewCompat.setTextAppearance(fromView, R.style.Threema_TextAppearance_List_FirstLine_Bold)
-            TextViewCompat.setTextAppearance(subjectView, R.style.Threema_TextAppearance_List_SecondLine_Bold)
-            TextViewCompat.setTextAppearance(groupMemberName, R.style.Threema_TextAppearance_List_SecondLine_Bold)
+            TextViewCompat.setTextAppearance(
+                fromView,
+                R.style.Threema_TextAppearance_List_FirstLine_Bold
+            )
+            TextViewCompat.setTextAppearance(
+                subjectView,
+                R.style.Threema_TextAppearance_List_SecondLine_Bold
+            )
+            TextViewCompat.setTextAppearance(
+                groupMemberName,
+                R.style.Threema_TextAppearance_List_SecondLine_Bold
+            )
             unreadCountView.text = unreadCountText
             unreadCountView.visibility = VISIBLE
             unreadBar.visibility = VISIBLE
         } else {
-            TextViewCompat.setTextAppearance(fromView, R.style.Threema_TextAppearance_List_FirstLine)
-            TextViewCompat.setTextAppearance(subjectView, R.style.Threema_TextAppearance_List_SecondLine)
-            TextViewCompat.setTextAppearance(groupMemberName, R.style.Threema_TextAppearance_List_SecondLine)
+            TextViewCompat.setTextAppearance(
+                fromView,
+                R.style.Threema_TextAppearance_List_FirstLine
+            )
+            TextViewCompat.setTextAppearance(
+                subjectView,
+                R.style.Threema_TextAppearance_List_SecondLine
+            )
+            TextViewCompat.setTextAppearance(
+                groupMemberName,
+                R.style.Threema_TextAppearance_List_SecondLine
+            )
             unreadCountView.visibility = GONE
             unreadBar.visibility = GONE
         }
@@ -336,7 +359,10 @@ class MessageListViewHolder(
         deliveryView.visibility = GONE
         dateView.text = strings.draftText
         dateView.contentDescription = null
-        TextViewCompat.setTextAppearance(dateView, R.style.Threema_TextAppearance_List_ThirdLine_Red)
+        TextViewCompat.setTextAppearance(
+            dateView,
+            R.style.Threema_TextAppearance_List_ThirdLine_Red
+        )
         dateView.visibility = VISIBLE
     }
 
@@ -349,11 +375,14 @@ class MessageListViewHolder(
         if (viewElement?.icon != null) {
             attachmentView.visibility = VISIBLE
             attachmentView.setImageResource(viewElement.icon)
-            attachmentView.setColorFilter(when {
-                viewElement.color != null -> ContextCompat.getColor(context, viewElement.color)
-                else -> params.regularColor
-            })
-            attachmentView.contentDescription = Objects.requireNonNullElse(viewElement.placeholder, "")
+            attachmentView.setColorFilter(
+                when {
+                    viewElement.color != null -> ContextCompat.getColor(context, viewElement.color)
+                    else -> params.regularColor
+                }
+            )
+            attachmentView.contentDescription =
+                Objects.requireNonNullElse(viewElement.placeholder, "")
         } else {
             attachmentView.visibility = GONE
         }
@@ -443,8 +472,8 @@ class MessageListViewHolder(
     private fun initializeGroupCallIndicator(messageListAdapterItem: MessageListAdapterItem) {
         val group = messageListAdapterItem.group
         if (group != null
-                && !messageListAdapterItem.isNotesGroup
-                && messageListAdapterItem.isGroupMember
+            && !messageListAdapterItem.isNotesGroup
+            && messageListAdapterItem.isGroupMember
         ) {
             val call: GroupCallDescription? = groupCallManager.getCurrentChosenCall(group)
             if (call != null) {

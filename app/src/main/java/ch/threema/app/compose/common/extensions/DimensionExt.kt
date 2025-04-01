@@ -32,6 +32,10 @@ fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
 @Composable
 fun Float.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 
-fun Dp.dpToPx(density: Density): Float { return density.run { this@dpToPx.toPx() } }
+fun Dp.dpToPx(density: Density): Float {
+    return density.run { this@dpToPx.toPx() }
+}
 
-fun Float.pxToDp(density: Density): Dp { return density.run { this@pxToDp.toDp() } }
+fun Float.pxToDp(density: Density): Dp {
+    return density.run { this@pxToDp.toDp() }
+}

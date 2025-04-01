@@ -27,7 +27,8 @@ import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessa
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingContactRequestProfilePictureTask")
+private val logger =
+    LoggingUtil.getThreemaLogger("ReflectedOutgoingContactRequestProfilePictureTask")
 
 /**
  * Note that currently outgoing contact request profile picture messages are not reflected.

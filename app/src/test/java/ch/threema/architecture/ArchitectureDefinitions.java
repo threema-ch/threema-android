@@ -28,43 +28,44 @@ import com.tngtech.archunit.library.Architectures;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 public class ArchitectureDefinitions {
-	private ArchitectureDefinitions() {}
+    private ArchitectureDefinitions() {
+    }
 
-	public static final String THREEMA_ROOT_PACKAGE = "ch.threema";
-	private static final String THREEMA_ROOT_PACKAGE_DOT = THREEMA_ROOT_PACKAGE + ".";
+    public static final String THREEMA_ROOT_PACKAGE = "ch.threema";
+    private static final String THREEMA_ROOT_PACKAGE_DOT = THREEMA_ROOT_PACKAGE + ".";
 
-	// Layer names
-	public static final String
-		ANNOTATION = "annotation",
-		APP = "app",
-		BASE ="base",
-		DATA ="data",
-		DOMAIN = "domain",
-		LOCALCRYPTO = "localcrypto",
-		LOGGING = "logging",
-		STORAGE = "storage";
+    // Layer names
+    public static final String
+        ANNOTATION = "annotation",
+        APP = "app",
+        BASE = "base",
+        DATA = "data",
+        DOMAIN = "domain",
+        LOCALCRYPTO = "localcrypto",
+        LOGGING = "logging",
+        STORAGE = "storage";
 
-	// Layer packages
-	public static final String
-		PACKAGE_ANNOTATION = THREEMA_ROOT_PACKAGE_DOT + ANNOTATION,
-		PACKAGE_APP = THREEMA_ROOT_PACKAGE_DOT + APP,
-		PACKAGE_BASE = THREEMA_ROOT_PACKAGE_DOT + BASE,
-		PACKAGE_DATA = THREEMA_ROOT_PACKAGE_DOT + DATA,
-		PACKAGE_DOMAIN = THREEMA_ROOT_PACKAGE_DOT + DOMAIN,
-		PACKAGE_LOCALCRYPTO = THREEMA_ROOT_PACKAGE_DOT + LOCALCRYPTO,
-		PACKAGE_LOGGING = THREEMA_ROOT_PACKAGE_DOT + LOGGING,
-		PACKAGE_STORAGE = THREEMA_ROOT_PACKAGE_DOT + STORAGE;
+    // Layer packages
+    public static final String
+        PACKAGE_ANNOTATION = THREEMA_ROOT_PACKAGE_DOT + ANNOTATION,
+        PACKAGE_APP = THREEMA_ROOT_PACKAGE_DOT + APP,
+        PACKAGE_BASE = THREEMA_ROOT_PACKAGE_DOT + BASE,
+        PACKAGE_DATA = THREEMA_ROOT_PACKAGE_DOT + DATA,
+        PACKAGE_DOMAIN = THREEMA_ROOT_PACKAGE_DOT + DOMAIN,
+        PACKAGE_LOCALCRYPTO = THREEMA_ROOT_PACKAGE_DOT + LOCALCRYPTO,
+        PACKAGE_LOGGING = THREEMA_ROOT_PACKAGE_DOT + LOGGING,
+        PACKAGE_STORAGE = THREEMA_ROOT_PACKAGE_DOT + STORAGE;
 
 
-	public static @NonNull Architectures.LayeredArchitecture getLayeredArchitecture() {
-		return layeredArchitecture()
-			.layer(APP).definedBy(PACKAGE_APP + "..")
-			.layer(STORAGE).definedBy(PACKAGE_STORAGE + "..")
-			.layer(LOCALCRYPTO).definedBy(PACKAGE_LOCALCRYPTO + "..")
-			.layer(DATA).definedBy(PACKAGE_DATA + "..")
-			.layer(DOMAIN).definedBy(PACKAGE_DOMAIN + "..")
-			.layer(BASE).definedBy(PACKAGE_BASE + "..")
-			.layer(LOGGING).definedBy(PACKAGE_LOGGING + "..")
-			.layer(ANNOTATION).definedBy(PACKAGE_ANNOTATION + "..");
-	}
+    public static @NonNull Architectures.LayeredArchitecture getLayeredArchitecture() {
+        return layeredArchitecture()
+            .layer(APP).definedBy(PACKAGE_APP + "..")
+            .layer(STORAGE).definedBy(PACKAGE_STORAGE + "..")
+            .layer(LOCALCRYPTO).definedBy(PACKAGE_LOCALCRYPTO + "..")
+            .layer(DATA).definedBy(PACKAGE_DATA + "..")
+            .layer(DOMAIN).definedBy(PACKAGE_DOMAIN + "..")
+            .layer(BASE).definedBy(PACKAGE_BASE + "..")
+            .layer(LOGGING).definedBy(PACKAGE_LOGGING + "..")
+            .layer(ANNOTATION).definedBy(PACKAGE_ANNOTATION + "..");
+    }
 }

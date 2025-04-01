@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 app:tabMaxWidth="0dp" />
 
-            <include layout="@layout/notice_with_close_button"/>
+            <include layout="@layout/notice_with_close_button" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

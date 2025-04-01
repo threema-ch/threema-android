@@ -37,17 +37,17 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest({ThreemaSafeMDMConfig.class, AppRestrictionUtil.class})
 public class ThreemaSafeMDMConfigTest {
 
-	@Test
-	public void isBackupDisabled() {
+    @Test
+    public void isBackupDisabled() {
 /*		ThreemaSafeMDMConfig instance = PowerMockito.mock(ThreemaSafeMDMConfig.class);
 		Whitebox.setInternalState(ThreemaSafeMDMConfig.class, "sInstance", instance);
 */
-		PowerMockito.mockStatic(AppRestrictionUtil.class);
-		when(AppRestrictionUtil.getBooleanRestriction("th_safe_enable")).thenReturn(true);
+        PowerMockito.mockStatic(AppRestrictionUtil.class);
+        when(AppRestrictionUtil.getBooleanRestriction("th_safe_enable")).thenReturn(true);
 
-		ThreemaSafeMDMConfig mdmConfig = PowerMockito.mock(ThreemaSafeMDMConfig.class);
-		doCallRealMethod().when(mdmConfig).isBackupDisabled();
-		assertTrue(mdmConfig.isBackupDisabled());
+        ThreemaSafeMDMConfig mdmConfig = PowerMockito.mock(ThreemaSafeMDMConfig.class);
+        doCallRealMethod().when(mdmConfig).isBackupDisabled();
+        assertTrue(mdmConfig.isBackupDisabled());
 //		verify(instance, times(1)).getBooleanRestriction("th_safe_enable");
-	}
+    }
 }

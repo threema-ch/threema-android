@@ -41,100 +41,100 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
 
 public class WizardStartActivity extends WizardBackgroundActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
-	boolean nextActivityLaunched = false;
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardStartActivity");
+    boolean nextActivityLaunched = false;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_wizard_start);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_wizard_start);
 
-		NotificationManagerCompat.from(this).cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
+        NotificationManagerCompat.from(this).cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
 
-		final ImageView imageView = findViewById(R.id.wizard_animation);
-		final AnimationDrawable frameAnimation = getAnimationDrawable(imageView);
+        final ImageView imageView = findViewById(R.id.wizard_animation);
+        final AnimationDrawable frameAnimation = getAnimationDrawable(imageView);
 
-		if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
-			imageView.setOnClickListener(v -> {
-				((AnimationDrawable) v.getBackground()).stop();
-				launchNextActivity(null);
-			});
-			imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(frameAnimation::start);
-			imageView.postDelayed(() -> {
-				if (frameAnimation.isRunning()) {
-					// stop animation if it's still running after 5 seconds
-					frameAnimation.stop();
-					launchNextActivity(null);
-				}
-			}, 5000);
-		} else {
-			launchNextActivity(null);
-		}
-	}
+        if (!RuntimeUtil.isInTest() && !ConfigUtils.isWorkRestricted()) {
+            imageView.setOnClickListener(v -> {
+                ((AnimationDrawable) v.getBackground()).stop();
+                launchNextActivity(null);
+            });
+            imageView.getRootView().getViewTreeObserver().addOnGlobalLayoutListener(frameAnimation::start);
+            imageView.postDelayed(() -> {
+                if (frameAnimation.isRunning()) {
+                    // stop animation if it's still running after 5 seconds
+                    frameAnimation.stop();
+                    launchNextActivity(null);
+                }
+            }, 5000);
+        } else {
+            launchNextActivity(null);
+        }
+    }
 
-	@NonNull
-	private AnimationDrawable getAnimationDrawable(ImageView imageView) {
-		final AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
-		frameAnimation.setOneShot(true);
-		frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
-			@Override
-			public void onAnimationAdvanced(int currentFrame, int totalFrames) {
-			}
+    @NonNull
+    private AnimationDrawable getAnimationDrawable(ImageView imageView) {
+        final AnimationDrawable frameAnimation = (AnimationDrawable) imageView.getBackground();
+        frameAnimation.setOneShot(true);
+        frameAnimation.setCallback(new AnimationDrawableCallback(frameAnimation, imageView) {
+            @Override
+            public void onAnimationAdvanced(int currentFrame, int totalFrames) {
+            }
 
-			@Override
-			public void onAnimationCompleted() {
-				ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-					// the context of the activity
-					WizardStartActivity.this,
+            @Override
+            public void onAnimationCompleted() {
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    // the context of the activity
+                    WizardStartActivity.this,
 
-					new Pair<>(findViewById(R.id.wizard_animation),
-						getString(R.string.transition_name_dots)),
-					new Pair<>(findViewById(R.id.wizard_footer),
-						getString(R.string.transition_name_logo))
-				);
-				launchNextActivity(options);
-			}
-		});
-		return frameAnimation;
-	}
+                    new Pair<>(findViewById(R.id.wizard_animation),
+                        getString(R.string.transition_name_dots)),
+                    new Pair<>(findViewById(R.id.wizard_footer),
+                        getString(R.string.transition_name_logo))
+                );
+                launchNextActivity(options);
+            }
+        });
+        return frameAnimation;
+    }
 
-	private synchronized void launchNextActivity(ActivityOptionsCompat options) {
+    private synchronized void launchNextActivity(ActivityOptionsCompat options) {
         if (nextActivityLaunched) {
             // If the next activity already has been launched, we can just return here.
             return;
         }
 
-		Intent intent;
+        Intent intent;
 
-		if (userService != null && userService.hasIdentity()) {
-			intent = new Intent(this, WizardBaseActivity.class);
-			options = null;
-		} else {
-			intent = new Intent(this, WizardIntroActivity.class);
-		}
+        if (userService != null && userService.hasIdentity()) {
+            intent = new Intent(this, WizardBaseActivity.class);
+            options = null;
+        } else {
+            intent = new Intent(this, WizardIntroActivity.class);
+        }
 
-		if (options != null) {
-			try {
-				// can potentially cause a memory leak. still not fixed in the Android framework to this date
-				// https://issuetracker.google.com/issues/37042900
-				startActivity(intent, options.toBundle());
-			} catch (Exception e) {
-				// http://stackoverflow.com/questions/31026745/rjava-lang-illegalargumentexception-on-startactivityintent-bundle-animantion
-				logger.error("Exception", e);
-				startActivity(intent);
-			}
-		} else {
-			startActivity(intent);
-			overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-		}
-		nextActivityLaunched = true;
-	}
+        if (options != null) {
+            try {
+                // can potentially cause a memory leak. still not fixed in the Android framework to this date
+                // https://issuetracker.google.com/issues/37042900
+                startActivity(intent, options.toBundle());
+            } catch (Exception e) {
+                // http://stackoverflow.com/questions/31026745/rjava-lang-illegalargumentexception-on-startactivityintent-bundle-animantion
+                logger.error("Exception", e);
+                startActivity(intent);
+            }
+        } else {
+            startActivity(intent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        }
+        nextActivityLaunched = true;
+    }
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		if (nextActivityLaunched) {
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (nextActivityLaunched) {
             finish();
         }
-	}
+    }
 }

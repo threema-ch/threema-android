@@ -54,9 +54,10 @@ class IncomingContactFileMessageTask(
     private val contactService = serviceManager.contactService
     private val contactRepository = serviceManager.modelRepositories.contacts
 
-    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec) = processIncomingMessage(
-        triggerSource = TriggerSource.REMOTE
-    )
+    override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec) =
+        processIncomingMessage(
+            triggerSource = TriggerSource.REMOTE
+        )
 
     override suspend fun executeMessageStepsFromSync() = processIncomingMessage(
         triggerSource = TriggerSource.SYNC
@@ -95,7 +96,10 @@ class IncomingContactFileMessageTask(
         // 4. Un-archive the contact and set the the acquaintance level to "direct" because it is a 1:1 chat now
         if (triggerSource == TriggerSource.REMOTE) {
             contactService.setIsArchived(message.fromIdentity, false)
-            contactService.setAcquaintanceLevel(message.fromIdentity, ContactModel.AcquaintanceLevel.DIRECT)
+            contactService.setAcquaintanceLevel(
+                message.fromIdentity,
+                ContactModel.AcquaintanceLevel.DIRECT
+            )
         }
 
         // 5. Bump last updated timestamp if necessary to move conversation up in list
@@ -105,7 +109,11 @@ class IncomingContactFileMessageTask(
 
         // 6. Save message model and inform listeners about new message
         messageService.save(messageModel)
-        ListenerManager.messageListeners.handle { messageListener -> messageListener.onNew(messageModel) }
+        ListenerManager.messageListeners.handle { messageListener ->
+            messageListener.onNew(
+                messageModel
+            )
+        }
 
         // 7. Download thumbnail and content blob (if auto download enabled)
         //    We still return SUCCESS even if the blobs could net be downloaded
@@ -159,7 +167,11 @@ class IncomingContactFileMessageTask(
             messageService.downloadThumbnailIfPresent(fileData, messageModel)
         }.onSuccess { thumbnailWasDownloaded: Boolean ->
             if (thumbnailWasDownloaded) {
-                ListenerManager.messageListeners.handle { messageListener -> messageListener.onModified(listOf(messageModel)) }
+                ListenerManager.messageListeners.handle { messageListener ->
+                    messageListener.onModified(
+                        listOf(messageModel)
+                    )
+                }
             }
         }.onFailure { throwable ->
             logger.error("Unable to download thumbnail blob", throwable)

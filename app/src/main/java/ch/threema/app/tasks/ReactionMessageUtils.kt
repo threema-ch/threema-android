@@ -40,16 +40,26 @@ fun runCommonReactionMessageReceiveSteps(
     reactionMessage: ReactionMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonReactionMessageReceiveSteps(reactionMessage.data.emojiSequenceBytes, reactionMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonReactionMessageReceiveSteps(
+        reactionMessage.data.emojiSequenceBytes,
+        reactionMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 fun runCommonReactionMessageReceiveSteps(
     reactionMessage: GroupReactionMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonReactionMessageReceiveSteps(reactionMessage.data.emojiSequenceBytes, reactionMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonReactionMessageReceiveSteps(
+        reactionMessage.data.emojiSequenceBytes,
+        reactionMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 private fun runCommonReactionMessageReceiveSteps(
@@ -57,7 +67,7 @@ private fun runCommonReactionMessageReceiveSteps(
     messageId: Long,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
+): AbstractMessageModel? {
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
 
@@ -67,7 +77,10 @@ private fun runCommonReactionMessageReceiveSteps(
     }
 
     if (!MessageUtil.canEmojiReact(message)) {
-        logger.warn("Incoming Reaction Message: Message of type {} cannot be reacted to", message.type)
+        logger.warn(
+            "Incoming Reaction Message: Message of type {} cannot be reacted to",
+            message.type
+        )
         return null
     }
 
@@ -84,7 +97,7 @@ private fun runCommonReactionMessageReceiveSteps(
  */
 fun runCommonReactionMessageReceiveEmojiSequenceConversion(
     emojiSequenceBytes: ByteString?
-) : String? {
+): String? {
     return emojiSequenceBytes?.toStringUtf8()
         ?.takeIf { it.isNotEmpty() }
         ?: run {

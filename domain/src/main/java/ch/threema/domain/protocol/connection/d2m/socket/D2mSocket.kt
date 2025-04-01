@@ -62,7 +62,12 @@ internal class D2mSocket(
             logger.debug("WebSocket closing: code={}, reason={}", code, reason)
             val closeCode = D2mCloseCode(code, reason)
             close(D2mSocketCloseReason(reason, closeCode))
-            ioProcessingStoppedSignal.completeExceptionally(D2mSocketCloseException("WebSocket closing", closeCode))
+            ioProcessingStoppedSignal.completeExceptionally(
+                D2mSocketCloseException(
+                    "WebSocket closing",
+                    closeCode
+                )
+            )
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

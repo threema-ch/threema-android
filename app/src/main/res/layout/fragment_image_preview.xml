@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:theme="@style/Theme.Threema.MediaViewer"
-	android:id="@+id/top_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/gallery_background">
+    android:theme="@style/Theme.Threema.MediaViewer"
+    android:id="@+id/top_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gallery_background">
 
-	<ImageView
-		android:id="@+id/image_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:adjustViewBounds="true"
-		android:scaleType="fitCenter"
-		android:contentDescription="@string/image_placeholder" />
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/image_placeholder" />
 
-	<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-		android:id="@+id/scale_image_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:adjustViewBounds="true"
-		android:scaleType="fitCenter" />
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:id="@+id/scale_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

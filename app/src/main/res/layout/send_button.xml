@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/container"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:layout_alignParentLeft="true"
-	android:layout_centerVertical="true"
-	android:clickable="false">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentLeft="true"
+    android:layout_centerVertical="true"
+    android:clickable="false">
 
-	<ImageView
-		android:id="@+id/icon"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="center"
-		app:tint="?attr/colorOnPrimaryContainer"
-		android:clickable="false"
-		android:visibility="visible"/>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        app:tint="?attr/colorOnPrimaryContainer"
+        android:clickable="false"
+        android:visibility="visible" />
 
 </FrameLayout>

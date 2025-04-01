@@ -36,8 +36,8 @@ internal class SystemUpdateToVersion86(
     override fun runDirectly(): Boolean {
         sqLiteDatabase.execSQL(
             "CREATE TABLE `tasks` (" +
-                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "`task` STRING NOT NULL)"
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`task` STRING NOT NULL)"
         )
 
         return true

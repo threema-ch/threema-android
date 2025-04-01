@@ -64,19 +64,20 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     private lateinit var onOffButton: SilentSwitchCompat
     private lateinit var linkDeviceButton: ExtendedFloatingActionButton
 
-    private var wizardLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            logger.debug("Device linking success")
-            viewModel.refreshLinkedDevices()
-        } else {
-            // TODO(ANDR-2758): proper error handling
-            if (result.data?.getStringExtra(LinkNewDeviceWizardActivity.ACTIVITY_RESULT_EXTRA_FAILURE_REASON) != null) {
-                logger.debug("Device linking failed")
+    private var wizardLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                logger.debug("Device linking success")
+                viewModel.refreshLinkedDevices()
             } else {
-                logger.debug("Device linking cancelled (not started)")
+                // TODO(ANDR-2758): proper error handling
+                if (result.data?.getStringExtra(LinkNewDeviceWizardActivity.ACTIVITY_RESULT_EXTRA_FAILURE_REASON) != null) {
+                    logger.debug("Device linking failed")
+                } else {
+                    logger.debug("Device linking cancelled (not started)")
+                }
             }
         }
-    }
 
     override fun getLayoutResource(): Int = R.layout.activity_linked_devices
 
@@ -114,13 +115,21 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startLinkingWizard()
             } else if (!this.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                ConfigUtils.showPermissionRationale(this, findViewById(R.id.parent_layout), R.string.permission_camera_qr_required)
+                ConfigUtils.showPermissionRationale(
+                    this,
+                    findViewById(R.id.parent_layout),
+                    R.string.permission_camera_qr_required
+                )
             }
         }
     }
@@ -177,6 +186,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
         onOffButton.setCheckedSilent(enabled)
         linkDeviceButton.isEnabled = enabled
     }
+
     private fun updateLinkedDevices(linkedDevices: List<String>) {
         devicesAdapter.setDevices(linkedDevices)
     }

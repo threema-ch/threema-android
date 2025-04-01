@@ -39,64 +39,64 @@ import ch.threema.storage.models.data.media.VideoDataModel;
 
 public class VideoMessagePlayer extends MessagePlayer {
 
-	protected VideoMessagePlayer(Context context, MessageService messageService, FileService fileService, MessageReceiver messageReceiver, AbstractMessageModel messageModel) {
-		super(context, messageService, fileService, messageReceiver, messageModel);
-	}
+    protected VideoMessagePlayer(Context context, MessageService messageService, FileService fileService, MessageReceiver messageReceiver, AbstractMessageModel messageModel) {
+        super(context, messageService, fileService, messageReceiver, messageModel);
+    }
 
-	@Override
-	public MediaMessageDataInterface getData() {
-		return this.getMessageModel().getVideoData();
-	}
+    @Override
+    public MediaMessageDataInterface getData() {
+        return this.getMessageModel().getVideoData();
+    }
 
-	@Override
-	protected AbstractMessageModel setData(MediaMessageDataInterface data) {
-		AbstractMessageModel messageModel =  this.getMessageModel();
-		messageModel.setVideoData((VideoDataModel)data);
-		return messageModel;
-	}
+    @Override
+    protected AbstractMessageModel setData(MediaMessageDataInterface data) {
+        AbstractMessageModel messageModel = this.getMessageModel();
+        messageModel.setVideoData((VideoDataModel) data);
+        return messageModel;
+    }
 
-	@Override
-	protected void play(boolean autoPlay) {
-		if (this.isReceiverMatch(this.currentMessageReceiver)) {
-			RuntimeUtil.runOnUiThread(() -> {
-				if (currentActivityRef != null && currentActivityRef.get() != null) {
-					Intent intent = new Intent(getContext(), MediaViewerActivity.class);
-					IntentDataUtil.append(getMessageModel(), intent);
-					intent.putExtra(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
-					intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
-					currentActivityRef.get().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
-				}
-			});
-		}
-	}
+    @Override
+    protected void play(boolean autoPlay) {
+        if (this.isReceiverMatch(this.currentMessageReceiver)) {
+            RuntimeUtil.runOnUiThread(() -> {
+                if (currentActivityRef != null && currentActivityRef.get() != null) {
+                    Intent intent = new Intent(getContext(), MediaViewerActivity.class);
+                    IntentDataUtil.append(getMessageModel(), intent);
+                    intent.putExtra(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, true);
+                    intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
+                    currentActivityRef.get().startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
+                }
+            });
+        }
+    }
 
-	@Override
-	protected void open(final File decryptedFile) {
-		// not implemented - the gallery will handle the decryption
-	}
+    @Override
+    protected void open(final File decryptedFile) {
+        // not implemented - the gallery will handle the decryption
+    }
 
-	@Override
-	protected void makePause(int source) {
-		//not implemented
-	}
+    @Override
+    protected void makePause(int source) {
+        //not implemented
+    }
 
-	@Override
-	protected void makeResume(int source) {
-		//not implemented
-	}
+    @Override
+    protected void makeResume(int source) {
+        //not implemented
+    }
 
-	@Override
-	public void seekTo(int pos) {
+    @Override
+    public void seekTo(int pos) {
 
-	}
+    }
 
-	@Override
-	public int getDuration() {
-		return 0;
-	}
+    @Override
+    public int getDuration() {
+        return 0;
+    }
 
-	@Override
-	public int getPosition() {
-		return 0;
-	}
+    @Override
+    public int getPosition() {
+        return 0;
+    }
 }

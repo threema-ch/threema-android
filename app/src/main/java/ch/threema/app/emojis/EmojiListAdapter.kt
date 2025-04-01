@@ -33,82 +33,84 @@ import android.widget.AbsListView
 import ch.threema.app.R
 
 class EmojiListAdapter(
-	context: Context,
-	private val keyClickListener: KeyClickListener,
-	private val emojiService: EmojiService
+    context: Context,
+    private val keyClickListener: KeyClickListener,
+    private val emojiService: EmojiService
 ) : RecyclerView.Adapter<EmojiItemViewHolder>() {
-	private var emojiItemSize = 0
-	private var emojiItemPaddingSize = 0
+    private var emojiItemSize = 0
+    private var emojiItemPaddingSize = 0
 
-	@ColorInt
-	private val diverseHintColor: Int = context.resources.getColor(R.color.emoji_picker_hint)
-	private var emojis: List<EmojiInfo> = emptyList()
+    @ColorInt
+    private val diverseHintColor: Int = context.resources.getColor(R.color.emoji_picker_hint)
+    private var emojis: List<EmojiInfo> = emptyList()
 
-	init {
-		if (EmojiManager.getInstance(context).spritemapInSampleSize == 1) {
-			emojiItemSize = context.resources.getDimensionPixelSize(R.dimen.emoji_picker_item_size)
-			emojiItemPaddingSize = (emojiItemSize - context.resources.getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2
-		} else {
-			emojiItemSize = 44
-			emojiItemPaddingSize = (emojiItemSize - 32) / 2
-		}
-	}
+    init {
+        if (EmojiManager.getInstance(context).spritemapInSampleSize == 1) {
+            emojiItemSize = context.resources.getDimensionPixelSize(R.dimen.emoji_picker_item_size)
+            emojiItemPaddingSize =
+                (emojiItemSize - context.resources.getDimensionPixelSize(R.dimen.emoji_picker_emoji_size)) / 2
+        } else {
+            emojiItemSize = 44
+            emojiItemPaddingSize = (emojiItemSize - 32) / 2
+        }
+    }
 
-	fun getItemHeight(): Int {
-		return emojiItemSize
-	}
+    fun getItemHeight(): Int {
+        return emojiItemSize
+    }
 
-	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiItemViewHolder {
-		val context = parent.context
-		val view = EmojiItemView(context)
-		val background = ResourcesCompat.getDrawable(
-			context.resources,
-			R.drawable.listitem_background_selector_noripple,
-			context.theme
-		)
-		view.background = background
-		view.setPadding(
-			emojiItemPaddingSize,
-			emojiItemPaddingSize,
-			emojiItemPaddingSize,
-			emojiItemPaddingSize
-		)
-		view.layoutParams = AbsListView.LayoutParams(emojiItemSize, emojiItemSize)
-		return EmojiItemViewHolder(view)
-	}
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiItemViewHolder {
+        val context = parent.context
+        val view = EmojiItemView(context)
+        val background = ResourcesCompat.getDrawable(
+            context.resources,
+            R.drawable.listitem_background_selector_noripple,
+            context.theme
+        )
+        view.background = background
+        view.setPadding(
+            emojiItemPaddingSize,
+            emojiItemPaddingSize,
+            emojiItemPaddingSize,
+            emojiItemPaddingSize
+        )
+        view.layoutParams = AbsListView.LayoutParams(emojiItemSize, emojiItemSize)
+        return EmojiItemViewHolder(view)
+    }
 
-	override fun onBindViewHolder(holder: EmojiItemViewHolder, position: Int) {
-		val emojiInfo = emojis[position]
-		val emojiSequence = emojiService.getPreferredDiversity(emojiInfo.emojiSequence)
-		holder.emojiView.setEmoji(
-			emojiSequence,
-			emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT,
-			diverseHintColor
-		)
-		holder.emojiView.contentDescription = emojiSequence
-		holder.emojiView.setOnClickListener {
-			keyClickListener.onEmojiKeyClicked(emojiService.getPreferredDiversity(emojiInfo.emojiSequence))
-		}
-		holder.emojiView.setOnLongClickListener { v: View? ->
-			keyClickListener.onEmojiKeyLongClicked(v, emojiInfo.emojiSequence)
-			true
-		}
-	}
+    override fun onBindViewHolder(holder: EmojiItemViewHolder, position: Int) {
+        val emojiInfo = emojis[position]
+        val emojiSequence = emojiService.getPreferredDiversity(emojiInfo.emojiSequence)
+        holder.emojiView.setEmoji(
+            emojiSequence,
+            emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT,
+            diverseHintColor
+        )
+        holder.emojiView.contentDescription = emojiSequence
+        holder.emojiView.setOnClickListener {
+            keyClickListener.onEmojiKeyClicked(emojiService.getPreferredDiversity(emojiInfo.emojiSequence))
+        }
+        holder.emojiView.setOnLongClickListener { v: View? ->
+            keyClickListener.onEmojiKeyLongClicked(v, emojiInfo.emojiSequence)
+            true
+        }
+    }
 
-	override fun getItemCount(): Int {
-		return emojis.size
-	}
+    override fun getItemCount(): Int {
+        return emojis.size
+    }
 
-	@SuppressLint("NotifyDataSetChanged")
-	fun setEmojis(emojis: List<EmojiInfo>) {
-		this.emojis = emojis.toList()
-		notifyDataSetChanged()
-	}
+    @SuppressLint("NotifyDataSetChanged")
+    fun setEmojis(emojis: List<EmojiInfo>) {
+        this.emojis = emojis.toList()
+        notifyDataSetChanged()
+    }
 
-	interface KeyClickListener {
-		fun onEmojiKeyClicked(emojiCodeString: String?)
-		fun onEmojiKeyLongClicked(view: View?, emojiCodeString: String?)
-	}
+    interface KeyClickListener {
+        fun onEmojiKeyClicked(emojiCodeString: String?)
+        fun onEmojiKeyLongClicked(view: View?, emojiCodeString: String?)
+    }
 
-	class EmojiItemViewHolder(internal val emojiView: EmojiItemView) : RecyclerView.ViewHolder(emojiView)
+    class EmojiItemViewHolder(internal val emojiView: EmojiItemView) :
+        RecyclerView.ViewHolder(emojiView)
 }

@@ -36,7 +36,8 @@ import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 
-class AutostartWorker(val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class AutostartWorker(val context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
 
     @SuppressLint("MissingPermission")
@@ -66,7 +67,8 @@ class AutostartWorker(val context: Context, workerParameters: WorkerParameters) 
                     HomeActivity::class.java
                 )
             )
-            notificationIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            notificationIntent.flags =
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,

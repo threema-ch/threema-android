@@ -192,7 +192,7 @@ public class BackupChatServiceImpl implements BackupChatService {
     public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia) {
         StringBuilder messageBody = new StringBuilder();
 
-        try(final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputFile, password)) {
+        try (final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputFile, password)) {
             if (buildThread(conversationModel, zipOutputStream, messageBody, includeMedia)) {
                 zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt", true);
             }

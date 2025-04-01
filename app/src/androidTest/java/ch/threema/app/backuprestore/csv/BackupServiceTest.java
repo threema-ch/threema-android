@@ -85,178 +85,179 @@ import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePe
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 @DangerousTest // Deletes data and possibly identity
-@Ignore("because this test broke with API version switch introduced in 7ed52bcfedd0bdcd2924ae14afe7ccb7bdc52c7a") // TODO(ANDR-1483)
+@Ignore("because this test broke with API version switch introduced in 7ed52bcfedd0bdcd2924ae14afe7ccb7bdc52c7a")
+// TODO(ANDR-1483)
 public class BackupServiceTest {
-	private final static String PASSWORD = "ubnpwrgujioasdfi0932";
-	private static final String TAG = "BackupServiceTest";
+    private final static String PASSWORD = "ubnpwrgujioasdfi0932";
+    private static final String TAG = "BackupServiceTest";
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
-	private static @NonNull String TEST_IDENTITY;
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    private static @NonNull String TEST_IDENTITY;
 
-	// Services
-	private @NonNull ServiceManager serviceManager;
-	private @NonNull FileService fileService;
+    // Services
+    private @NonNull ServiceManager serviceManager;
+    private @NonNull FileService fileService;
     private @NonNull MessageService messageService;
     private @NonNull ConversationService conversationService;
     private @NonNull GroupService groupService;
     private @NonNull ContactService contactService;
     private @NonNull DistributionListService distributionListService;
     private @NonNull BallotService ballotService;
-	private @NonNull APIConnector apiConnector;
-	private @NonNull ContactModelRepository contactModelRepository;
+    private @NonNull APIConnector apiConnector;
+    private @NonNull ContactModelRepository contactModelRepository;
 
-	private final @NonNull BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
+    private final @NonNull BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
-	@Rule
-	public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
+    @Rule
+    public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
 
-	/**
-	 * Ensure that an identity is set up, initialize static {@link #TEST_IDENTITY} variable.
-	 */
-	@BeforeClass
-	public static void ensureIdentityExists() throws Exception {
-		// Set up identity
-		final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		TEST_IDENTITY = TestHelpers.ensureIdentity(Objects.requireNonNull(serviceManager));
-	}
+    /**
+     * Ensure that an identity is set up, initialize static {@link #TEST_IDENTITY} variable.
+     */
+    @BeforeClass
+    public static void ensureIdentityExists() throws Exception {
+        // Set up identity
+        final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        TEST_IDENTITY = TestHelpers.ensureIdentity(Objects.requireNonNull(serviceManager));
+    }
 
-	/**
-	 * Load Threema services.
-	 */
-	@Before
-	public void loadServices() throws Exception {
-		this.serviceManager = Objects.requireNonNull(ThreemaApplication.getServiceManager());
-		this.fileService = serviceManager.getFileService();
-		this.messageService = serviceManager.getMessageService();
-		this.conversationService = serviceManager.getConversationService();
-		this.groupService = serviceManager.getGroupService();
-		this.contactService = serviceManager.getContactService();
-		this.distributionListService = serviceManager.getDistributionListService();
-		this.ballotService = serviceManager.getBallotService();
-		this.apiConnector = serviceManager.getAPIConnector();
-		this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-	}
+    /**
+     * Load Threema services.
+     */
+    @Before
+    public void loadServices() throws Exception {
+        this.serviceManager = Objects.requireNonNull(ThreemaApplication.getServiceManager());
+        this.fileService = serviceManager.getFileService();
+        this.messageService = serviceManager.getMessageService();
+        this.conversationService = serviceManager.getConversationService();
+        this.groupService = serviceManager.getGroupService();
+        this.contactService = serviceManager.getContactService();
+        this.distributionListService = serviceManager.getDistributionListService();
+        this.ballotService = serviceManager.getBallotService();
+        this.apiConnector = serviceManager.getAPIConnector();
+        this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+    }
 
-	/**
-	 * Return the list of backups for the TEST_IDENTITY identity.
-	 */
-	private @NonNull List<File> getUserBackups(@NonNull File backupPath) {
-		if (backupPath.exists() && backupPath.isDirectory()) {
-			final File[] files = backupPath.listFiles(
-				(dir, name) -> name.startsWith("threema-backup_" + TEST_IDENTITY)
-			);
-			return files == null ? new ArrayList<>() : Arrays.asList(files);
-		} else {
-			return new ArrayList<>();
-		}
-	}
+    /**
+     * Return the list of backups for the TEST_IDENTITY identity.
+     */
+    private @NonNull List<File> getUserBackups(@NonNull File backupPath) {
+        if (backupPath.exists() && backupPath.isDirectory()) {
+            final File[] files = backupPath.listFiles(
+                (dir, name) -> name.startsWith("threema-backup_" + TEST_IDENTITY)
+            );
+            return files == null ? new ArrayList<>() : Arrays.asList(files);
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
-	/**
-	 * Helper method: Create a backup with the specified config, return backup file.
-	 */
-	private @NonNull File doBackup(BackupRestoreDataConfig config) {
-		// List old backups
-		final File backupPath = this.fileService.getBackupPath();
-		final List<File> initialBackupFiles = this.getUserBackups(backupPath);
+    /**
+     * Helper method: Create a backup with the specified config, return backup file.
+     */
+    private @NonNull File doBackup(BackupRestoreDataConfig config) {
+        // List old backups
+        final File backupPath = this.fileService.getBackupPath();
+        final List<File> initialBackupFiles = this.getUserBackups(backupPath);
 
 
-		// Prepare service intent
-		final Context appContext = ApplicationProvider.getApplicationContext();
-		final Intent intent = new Intent(appContext, BackupService.class);
-		intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, config);
+        // Prepare service intent
+        final Context appContext = ApplicationProvider.getApplicationContext();
+        final Intent intent = new Intent(appContext, BackupService.class);
+        intent.putExtra(BackupService.EXTRA_BACKUP_RESTORE_DATA_CONFIG, config);
 
-		// Start service
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			appContext.startForegroundService(intent);
-		}
+        // Start service
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            appContext.startForegroundService(intent);
+        }
 
-		appContext.startService(intent);
-		Assert.assertTrue(TestHelpers.iServiceRunning(appContext, BackupService.class));
+        appContext.startService(intent);
+        Assert.assertTrue(TestHelpers.iServiceRunning(appContext, BackupService.class));
 
-		// Wait for service to stop
-		while (TestHelpers.iServiceRunning(appContext, BackupService.class)) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// ignore
-			}
-		}
+        // Wait for service to stop
+        while (TestHelpers.iServiceRunning(appContext, BackupService.class)) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+        }
 
-		// Check that a backup file has been created
-		Assert.assertTrue(backupPath.exists());
-		Assert.assertTrue(backupPath.isDirectory());
-		File backupFile = null;
-		for (File file : getUserBackups(backupPath)) {
-			if (!initialBackupFiles.contains(file)) {
-				if (backupFile != null) {
-					Assert.fail("Found more than one new backup: " + backupFile + " and " + file);
-				}
-				backupFile = file;
-			}
-		}
-		Assert.assertNotNull("New backup file not found", backupFile);
-		Assert.assertTrue(backupFile.exists());
-		Assert.assertTrue(backupFile.isFile());
+        // Check that a backup file has been created
+        Assert.assertTrue(backupPath.exists());
+        Assert.assertTrue(backupPath.isDirectory());
+        File backupFile = null;
+        for (File file : getUserBackups(backupPath)) {
+            if (!initialBackupFiles.contains(file)) {
+                if (backupFile != null) {
+                    Assert.fail("Found more than one new backup: " + backupFile + " and " + file);
+                }
+                backupFile = file;
+            }
+        }
+        Assert.assertNotNull("New backup file not found", backupFile);
+        Assert.assertTrue(backupFile.exists());
+        Assert.assertTrue(backupFile.isFile());
 
-		return backupFile;
-	}
+        return backupFile;
+    }
 
-	/**
-	 * Unpack the backup from the specified backup file and ensure
-	 * that the specified files are contained.
-	 */
-	private ZipFile openBackupFile(
-		@NonNull File backupFile,
-		@NonNull String[] expectedFiles
-	) throws Exception {
-		// Open ZIP
-		final ZipFile zipFile = new ZipFile(backupFile, PASSWORD.toCharArray());
-		Assert.assertTrue("Generated backup ZIP is invalid", zipFile.isValidZipFile());
+    /**
+     * Unpack the backup from the specified backup file and ensure
+     * that the specified files are contained.
+     */
+    private ZipFile openBackupFile(
+        @NonNull File backupFile,
+        @NonNull String[] expectedFiles
+    ) throws Exception {
+        // Open ZIP
+        final ZipFile zipFile = new ZipFile(backupFile, PASSWORD.toCharArray());
+        Assert.assertTrue("Generated backup ZIP is invalid", zipFile.isValidZipFile());
 
-		// Ensure list of files is correct
-		final List<FileHeader> headers = zipFile.getFileHeaders();
-		Log.d(TAG, "File headers: " + Arrays.toString(headers.toArray()));
-		final Object[] actualFiles = StreamSupport.stream(headers)
-			.map(AbstractFileHeader::getFileName)
-			.toArray();
-		Assert.assertArrayEquals(
-			"Array is " + Arrays.toString(actualFiles),
-			expectedFiles,
-			actualFiles
-		);
+        // Ensure list of files is correct
+        final List<FileHeader> headers = zipFile.getFileHeaders();
+        Log.d(TAG, "File headers: " + Arrays.toString(headers.toArray()));
+        final Object[] actualFiles = StreamSupport.stream(headers)
+            .map(AbstractFileHeader::getFileName)
+            .toArray();
+        Assert.assertArrayEquals(
+            "Array is " + Arrays.toString(actualFiles),
+            expectedFiles,
+            actualFiles
+        );
 
-		return zipFile;
-	}
+        return zipFile;
+    }
 
-	@Test
-	public void testBackupIdentity() throws Exception {
-		// Do backup
-		final File backupFile = doBackup(new BackupRestoreDataConfig(PASSWORD)
-			.setBackupContactAndMessages(false)
-			.setBackupIdentity(true)
-			.setBackupAvatars(false)
-			.setBackupMedia(false)
-			.setBackupThumbnails(false)
-			.setBackupNonces(false));
+    @Test
+    public void testBackupIdentity() throws Exception {
+        // Do backup
+        final File backupFile = doBackup(new BackupRestoreDataConfig(PASSWORD)
+            .setBackupContactAndMessages(false)
+            .setBackupIdentity(true)
+            .setBackupAvatars(false)
+            .setBackupMedia(false)
+            .setBackupThumbnails(false)
+            .setBackupNonces(false));
 
-		try {
-			final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{ "settings", "identity" });
+        try {
+            final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{"settings", "identity"});
 
-			// Read identity backup
-			final String identityBackup;
-			try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("identity"))) {
-				identityBackup = IOUtils.toString(stream);
-			}
+            // Read identity backup
+            final String identityBackup;
+            try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("identity"))) {
+                identityBackup = IOUtils.toString(stream);
+            }
 
-			// Verify identity backup
-			final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(identityBackup);
-			Assert.assertTrue("Could not decode identity backup", identityBackupDecoder.decode(PASSWORD));
-			Assert.assertEquals(TEST_IDENTITY, identityBackupDecoder.getIdentity());
-		} finally {
-			//noinspection ResultOfMethodCallIgnored
-			backupFile.delete();
-		}
-	}
+            // Verify identity backup
+            final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(identityBackup);
+            Assert.assertTrue("Could not decode identity backup", identityBackupDecoder.decode(PASSWORD));
+            Assert.assertEquals(TEST_IDENTITY, identityBackupDecoder.getIdentity());
+        } finally {
+            //noinspection ResultOfMethodCallIgnored
+            backupFile.delete();
+        }
+    }
 
     @Test
     public void testBackupContactsAndMessages() throws Exception {
@@ -269,19 +270,19 @@ public class BackupServiceTest {
         this.ballotService.removeAll();
 
         // Insert test data:
-	    // Contacts
-	    final ContactModel contact1 = createContact("CDXVZ5E4");
-	    contact1.setFirstName("Fritzli");
-	    contact1.setLastName("Bühler");
-	    this.contactService.save(contact1);
-	    final ContactModel contact2 = createContact("DRMWZP3H");
-	    createContact("ECHOECHO");
-	    // Messages contact 1
-	    this.messageService.sendText("Bonjour!", this.contactService.createReceiver(contact1));
-	    this.messageService.sendText("Phở?", this.contactService.createReceiver(contact1));
-	    this.messageService.createVoipStatus(VoipStatusDataModel.createAborted(0), this.contactService.createReceiver(contact1), true, false);
-	    // Messages contact 2
-	    this.messageService.sendText("\uD83D\uDC4B", this.contactService.createReceiver(contact2));
+        // Contacts
+        final ContactModel contact1 = createContact("CDXVZ5E4");
+        contact1.setFirstName("Fritzli");
+        contact1.setLastName("Bühler");
+        this.contactService.save(contact1);
+        final ContactModel contact2 = createContact("DRMWZP3H");
+        createContact("ECHOECHO");
+        // Messages contact 1
+        this.messageService.sendText("Bonjour!", this.contactService.createReceiver(contact1));
+        this.messageService.sendText("Phở?", this.contactService.createReceiver(contact1));
+        this.messageService.createVoipStatus(VoipStatusDataModel.createAborted(0), this.contactService.createReceiver(contact1), true, false);
+        // Messages contact 2
+        this.messageService.sendText("\uD83D\uDC4B", this.contactService.createReceiver(contact2));
 
         // Do backup
         final File backupFile = doBackup(new BackupRestoreDataConfig(PASSWORD)
@@ -290,7 +291,7 @@ public class BackupServiceTest {
             .setBackupAvatars(false)
             .setBackupMedia(false)
             .setBackupThumbnails(false)
-	        .setBackupNonces(false));
+            .setBackupNonces(false));
 
         try {
             final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{
@@ -308,82 +309,82 @@ public class BackupServiceTest {
 
             // Read contacts
             try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("contacts.csv"))) {
-	            final CSVReader csvReader = new CSVReader(new InputStreamReader(stream), true);
-	            final CSVRow row1 = csvReader.readNextRow();
-	            Assert.assertEquals("CDXVZ5E4", row1.getString("identity"));
-	            Assert.assertEquals("Fritzli", row1.getString("firstname"));
-	            Assert.assertEquals("Bühler", row1.getString("lastname"));
-	            final CSVRow row2 = csvReader.readNextRow();
-	            Assert.assertEquals("DRMWZP3H", row2.getString("identity"));
-	            final CSVRow row3 = csvReader.readNextRow();
-	            Assert.assertEquals("ECHOECHO", row3.getString("identity"));
+                final CSVReader csvReader = new CSVReader(new InputStreamReader(stream), true);
+                final CSVRow row1 = csvReader.readNextRow();
+                Assert.assertEquals("CDXVZ5E4", row1.getString("identity"));
+                Assert.assertEquals("Fritzli", row1.getString("firstname"));
+                Assert.assertEquals("Bühler", row1.getString("lastname"));
+                final CSVRow row2 = csvReader.readNextRow();
+                Assert.assertEquals("DRMWZP3H", row2.getString("identity"));
+                final CSVRow row3 = csvReader.readNextRow();
+                Assert.assertEquals("ECHOECHO", row3.getString("identity"));
             }
 
-	        // Read messages
-	        try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("message_CDXVZ5E4.csv"))) {
-		        final CSVReader csvReader = new CSVReader(new InputStreamReader(stream), true);
-		        // First, the two text messages
-		        final CSVRow row1 = csvReader.readNextRow();
-		        final CSVRow row2 = csvReader.readNextRow();
-		        Assert.assertTrue(row1.getBoolean("isoutbox"));
-		        Assert.assertTrue(row2.getBoolean("isoutbox"));
-		        Assert.assertEquals("TEXT", row1.getString("type"));
-		        Assert.assertEquals("TEXT", row2.getString("type"));
-		        Assert.assertEquals("Bonjour!", row1.getString("body"));
-		        Assert.assertEquals("Phở?", row2.getString("body"));
-		        // …followed by the VoIPstatus message
-		        final CSVRow row3 = csvReader.readNextRow();
-		        Assert.assertEquals("VOIP_STATUS", row3.getString("type"));
-		        Assert.assertEquals("[1,{\"status\":" + VoipStatusDataModel.ABORTED + "}]", row3.getString("body"));
-		        Assert.assertNull(csvReader.readNextRow());
-	        }
+            // Read messages
+            try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("message_CDXVZ5E4.csv"))) {
+                final CSVReader csvReader = new CSVReader(new InputStreamReader(stream), true);
+                // First, the two text messages
+                final CSVRow row1 = csvReader.readNextRow();
+                final CSVRow row2 = csvReader.readNextRow();
+                Assert.assertTrue(row1.getBoolean("isoutbox"));
+                Assert.assertTrue(row2.getBoolean("isoutbox"));
+                Assert.assertEquals("TEXT", row1.getString("type"));
+                Assert.assertEquals("TEXT", row2.getString("type"));
+                Assert.assertEquals("Bonjour!", row1.getString("body"));
+                Assert.assertEquals("Phở?", row2.getString("body"));
+                // …followed by the VoIPstatus message
+                final CSVRow row3 = csvReader.readNextRow();
+                Assert.assertEquals("VOIP_STATUS", row3.getString("type"));
+                Assert.assertEquals("[1,{\"status\":" + VoipStatusDataModel.ABORTED + "}]", row3.getString("body"));
+                Assert.assertNull(csvReader.readNextRow());
+            }
         } finally {
             //noinspection ResultOfMethodCallIgnored
             backupFile.delete();
         }
     }
 
-	@NonNull
-	@WorkerThread
-	private ContactModel createContact(@NonNull String identity) {
-		new BasicAddOrUpdateContactBackgroundTask(
-			identity,
-			ContactModel.AcquaintanceLevel.DIRECT,
-			TEST_IDENTITY,
-			apiConnector,
-			contactModelRepository,
-			AddContactRestrictionPolicy.CHECK,
-			ApplicationProvider.getApplicationContext(),
-			null
-		).runSynchronously();
+    @NonNull
+    @WorkerThread
+    private ContactModel createContact(@NonNull String identity) {
+        new BasicAddOrUpdateContactBackgroundTask(
+            identity,
+            ContactModel.AcquaintanceLevel.DIRECT,
+            TEST_IDENTITY,
+            apiConnector,
+            contactModelRepository,
+            AddContactRestrictionPolicy.CHECK,
+            ApplicationProvider.getApplicationContext(),
+            null
+        ).runSynchronously();
 
-		ContactModel contactModel = contactService.getByIdentity(identity);
-		if (contactModel == null) {
-			throw new IllegalStateException("Contact is null after creating it");
-		}
-		return contactModel;
-	}
+        ContactModel contactModel = contactService.getByIdentity(identity);
+        if (contactModel == null) {
+            throw new IllegalStateException("Contact is null after creating it");
+        }
+        return contactModel;
+    }
 
-	@NonNull
-	private DeleteAllContactsBackgroundTask getContactDeleteTask() throws ThreemaException {
-		return new DeleteAllContactsBackgroundTask(
-			serviceManager.getModelRepositories().getContacts(),
-			new DeleteContactServices(
-				serviceManager.getUserService(),
-				serviceManager.getContactService(),
-				serviceManager.getConversationService(),
-				serviceManager.getRingtoneService(),
-				serviceManager.getMutedChatsListService(),
-				serviceManager.getHiddenChatsListService(),
-				serviceManager.getProfilePicRecipientsService(),
-				serviceManager.getWallpaperService(),
-				serviceManager.getFileService(),
-				serviceManager.getExcludedSyncIdentitiesService(),
-				serviceManager.getDHSessionStore(),
-				serviceManager.getNotificationService(),
-				serviceManager.getDatabaseServiceNew()
-			)
-		);
-	}
+    @NonNull
+    private DeleteAllContactsBackgroundTask getContactDeleteTask() throws ThreemaException {
+        return new DeleteAllContactsBackgroundTask(
+            serviceManager.getModelRepositories().getContacts(),
+            new DeleteContactServices(
+                serviceManager.getUserService(),
+                serviceManager.getContactService(),
+                serviceManager.getConversationService(),
+                serviceManager.getRingtoneService(),
+                serviceManager.getMutedChatsListService(),
+                serviceManager.getHiddenChatsListService(),
+                serviceManager.getProfilePicRecipientsService(),
+                serviceManager.getWallpaperService(),
+                serviceManager.getFileService(),
+                serviceManager.getExcludedSyncIdentitiesService(),
+                serviceManager.getDHSessionStore(),
+                serviceManager.getNotificationService(),
+                serviceManager.getDatabaseServiceNew()
+            )
+        );
+    }
 
 }

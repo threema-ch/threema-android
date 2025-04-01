@@ -35,7 +35,11 @@ class IncomingContactRequestProfilePictureTask(
     message: ContactRequestProfilePictureMessage,
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
-) : IncomingCspMessageSubTask<ContactRequestProfilePictureMessage>(message, triggerSource, serviceManager) {
+) : IncomingCspMessageSubTask<ContactRequestProfilePictureMessage>(
+    message,
+    triggerSource,
+    serviceManager
+) {
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {

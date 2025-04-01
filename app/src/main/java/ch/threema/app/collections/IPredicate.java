@@ -24,5 +24,5 @@ package ch.threema.app.collections;
 import androidx.annotation.Nullable;
 
 public interface IPredicate<T> {
-	boolean apply(@Nullable T value);
+    boolean apply(@Nullable T value);
 }

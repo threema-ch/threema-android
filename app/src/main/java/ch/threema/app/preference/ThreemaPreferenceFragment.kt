@@ -80,7 +80,8 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
     override fun onResume() {
         serverConnection?.let {
             it.addConnectionStateListener(this)
-            ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, it.connectionState)
+            ConnectionIndicatorUtil.getInstance()
+                .updateConnectionIndicator(connectionIndicator, it.connectionState)
         }
 
         super.onResume()
@@ -92,10 +93,10 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         }
     }
 
-   override fun onPause() {
-       serverConnection?.removeConnectionStateListener(this)
+    override fun onPause() {
+        serverConnection?.removeConnectionStateListener(this)
 
-       super.onPause()
+        super.onPause()
     }
 
     /**
@@ -276,8 +277,16 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
         }
 
         listView?.let {
-            it.setPadding(listView.paddingLeft, listView.paddingTop, listView.paddingRight, listView.paddingBottom +
-                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48F, context?.resources?.displayMetrics).toInt()
+            it.setPadding(
+                listView.paddingLeft,
+                listView.paddingTop,
+                listView.paddingRight,
+                listView.paddingBottom +
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        48F,
+                        context?.resources?.displayMetrics
+                    ).toInt()
             )
             it.clipToPadding = false;
         }
@@ -292,14 +301,18 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
                 materialToolbar.getLocationInWindow(toolbarLocation)
                 val currentTitleTop = titleLocation[1] + it.paddingTop;
 
-                val titleFadeOutStart = toolbarLocation[1] + materialToolbar.height + (it.paddingTop / 2);
-                val titleFadeOutEnd = toolbarLocation[1] + materialToolbar.height - it.height + it.paddingTop + it.paddingBottom + (it.paddingTop / 4)
+                val titleFadeOutStart =
+                    toolbarLocation[1] + materialToolbar.height + (it.paddingTop / 2);
+                val titleFadeOutEnd =
+                    toolbarLocation[1] + materialToolbar.height - it.height + it.paddingTop + it.paddingBottom + (it.paddingTop / 4)
 
                 val toolbarFadeInStart = titleFadeOutEnd
                 val toolbarFadeInEnd = toolbarFadeInStart - (materialToolbar.height / 2)
 
-                val titleAlpha = 1F - ((titleFadeOutStart - currentTitleTop).toFloat() / (titleFadeOutStart - titleFadeOutEnd).toFloat())
-                val toolbarAlpha = (toolbarFadeInStart - currentTitleTop).toFloat() /  (toolbarFadeInStart - toolbarFadeInEnd).toFloat()
+                val titleAlpha =
+                    1F - ((titleFadeOutStart - currentTitleTop).toFloat() / (titleFadeOutStart - titleFadeOutEnd).toFloat())
+                val toolbarAlpha =
+                    (toolbarFadeInStart - currentTitleTop).toFloat() / (toolbarFadeInStart - toolbarFadeInEnd).toFloat()
                 it.alpha = titleAlpha
                 toolbarTitle?.alpha = toolbarAlpha
 
@@ -328,14 +341,20 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
             bundle.putString("key", preference.getKey())
             dialogFragment.arguments = bundle
             dialogFragment.setTargetFragment(this, 0)
-            dialogFragment.show(parentFragmentManager, "androidx.preference.PreferenceFragment.DIALOG")
+            dialogFragment.show(
+                parentFragmentManager,
+                "androidx.preference.PreferenceFragment.DIALOG"
+            )
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
     }
 
     override fun updateConnectionState(connectionState: ConnectionState?) {
-        RuntimeUtil.runOnUiThread { ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState) }
+        RuntimeUtil.runOnUiThread {
+            ConnectionIndicatorUtil.getInstance()
+                .updateConnectionIndicator(connectionIndicator, connectionState)
+        }
     }
 
     override fun onDestroyView() {

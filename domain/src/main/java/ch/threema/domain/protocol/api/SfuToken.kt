@@ -59,7 +59,7 @@ data class SfuToken(
     private fun parseUrl(url: String): URL? {
         return try {
             URL(url)
-        } catch(exception: MalformedURLException) {
+        } catch (exception: MalformedURLException) {
             logger.warn("Could not extract hostname from url \"{}\"", url)
             null
         }

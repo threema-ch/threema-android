@@ -85,9 +85,19 @@ class SendPushTokenTask(
         val tokenData = type + tokenBytes
 
         // Send regular push token
-        handle.write(CspMessage(ProtocolDefines.PLTYPE_PUSH_NOTIFICATION_TOKEN.toUByte(), tokenData))
+        handle.write(
+            CspMessage(
+                ProtocolDefines.PLTYPE_PUSH_NOTIFICATION_TOKEN.toUByte(),
+                tokenData
+            )
+        )
         // Send voip push token. This is identical to the regular push token.
-        handle.write(CspMessage(ProtocolDefines.PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN.toUByte(), tokenData))
+        handle.write(
+            CspMessage(
+                ProtocolDefines.PLTYPE_VOIP_PUSH_NOTIFICATION_TOKEN.toUByte(),
+                tokenData
+            )
+        )
 
         logger.info("Push token successfully sent to server")
     }

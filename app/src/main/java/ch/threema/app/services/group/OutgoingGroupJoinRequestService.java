@@ -27,11 +27,11 @@ import ch.threema.domain.protocol.csp.messages.group.GroupInviteData;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 public interface OutgoingGroupJoinRequestService {
-	void send(
-		@NonNull GroupInviteData groupInvite,
-		@NonNull String requestMessage) throws ThreemaException;
+    void send(
+        @NonNull GroupInviteData groupInvite,
+        @NonNull String requestMessage) throws ThreemaException;
 
-	void resendRequest(
-		@NonNull OutgoingGroupJoinRequestModel groupInvite,
-		@NonNull String requestMessage) throws ThreemaException;
+    void resendRequest(
+        @NonNull OutgoingGroupJoinRequestModel groupInvite,
+        @NonNull String requestMessage) throws ThreemaException;
 }

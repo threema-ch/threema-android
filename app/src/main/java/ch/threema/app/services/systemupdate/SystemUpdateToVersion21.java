@@ -30,32 +30,32 @@ import ch.threema.storage.DatabaseServiceNew;
 
 public class SystemUpdateToVersion21 implements UpdateSystemService.SystemUpdate {
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion21(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
-		this.databaseService = databaseService;
+    public SystemUpdateToVersion21(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+        this.databaseService = databaseService;
 
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		for(String s: this.databaseService.getOutgoingGroupSyncRequestLogModelFactory().getStatements()) {
-			this.sqLiteDatabase.execSQL(s);
-		}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        for (String s : this.databaseService.getOutgoingGroupSyncRequestLogModelFactory().getStatements()) {
+            this.sqLiteDatabase.execSQL(s);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 21";
-	}
+    @Override
+    public String getText() {
+        return "version 21";
+    }
 }

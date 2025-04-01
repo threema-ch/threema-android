@@ -25,13 +25,13 @@ import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 
 public class PrivacyPolicyActivity extends SimpleWebViewActivity {
-	@Override
-	protected int getWebViewTitle() {
-		return R.string.privacy_policy;
-	}
+    @Override
+    protected int getWebViewTitle() {
+        return R.string.privacy_policy;
+    }
 
-	@Override
-	protected String getWebViewUrl() {
-		return ConfigUtils.getPrivacyPolicyURL(this);
-	}
+    @Override
+    protected String getWebViewUrl() {
+        return ConfigUtils.getPrivacyPolicyURL(this);
+    }
 }

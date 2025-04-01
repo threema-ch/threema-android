@@ -63,18 +63,27 @@ class CallAudioSelectorButton : AppCompatImageView, View.OnClickListener {
         init()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context!!, attrs, defStyleAttr) {
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context!!,
+        attrs,
+        defStyleAttr
+    ) {
         init()
     }
 
     private fun updateButtonAppearance() {
         logger.trace("Update button appearance")
         val layers = background as LayerDrawable
-        layers.findDrawableByLayerId(R.id.moreIndicatorItem).alpha = if (audioDevices.size > 2) VISIBLE else HIDDEN
-        layers.findDrawableByLayerId(R.id.bluetoothItem).alpha = if (selectedAudioDevice == AudioDevice.BLUETOOTH) VISIBLE else HIDDEN
-        layers.findDrawableByLayerId(R.id.handsetItem).alpha = if (selectedAudioDevice == AudioDevice.EARPIECE) VISIBLE else HIDDEN
-        layers.findDrawableByLayerId(R.id.headsetItem).alpha = if (selectedAudioDevice == AudioDevice.WIRED_HEADSET) VISIBLE else HIDDEN
-        layers.findDrawableByLayerId(R.id.speakerphoneItem).alpha = if (selectedAudioDevice == AudioDevice.SPEAKER_PHONE) VISIBLE else HIDDEN
+        layers.findDrawableByLayerId(R.id.moreIndicatorItem).alpha =
+            if (audioDevices.size > 2) VISIBLE else HIDDEN
+        layers.findDrawableByLayerId(R.id.bluetoothItem).alpha =
+            if (selectedAudioDevice == AudioDevice.BLUETOOTH) VISIBLE else HIDDEN
+        layers.findDrawableByLayerId(R.id.handsetItem).alpha =
+            if (selectedAudioDevice == AudioDevice.EARPIECE) VISIBLE else HIDDEN
+        layers.findDrawableByLayerId(R.id.headsetItem).alpha =
+            if (selectedAudioDevice == AudioDevice.WIRED_HEADSET) VISIBLE else HIDDEN
+        layers.findDrawableByLayerId(R.id.speakerphoneItem).alpha =
+            if (selectedAudioDevice == AudioDevice.SPEAKER_PHONE) VISIBLE else HIDDEN
         if (!RuntimeUtil.isInTest()) {
             isClickable = audioDevices.size > 1
             isEnabled = audioDevices.size > 1

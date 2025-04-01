@@ -1,53 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	android:paddingTop="@dimen/dialog_margin_below_title">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/dialog_margin_below_title">
 
-	<ScrollView
-		android:id="@+id/scroll_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@android:color/transparent">
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-			<TextView
-				style="@style/MaterialAlertDialog.Material3.Body.Text"
-				android:id="@+id/message"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="24dp"
-				android:layout_marginRight="24dp"
-				android:text="@string/group_join_request_message_info" />
+            <TextView
+                style="@style/MaterialAlertDialog.Material3.Body.Text"
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:text="@string/group_join_request_message_info" />
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:id="@+id/text_input_layout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="16dp"
-				android:paddingLeft="@dimen/edittext_padding"
-				android:paddingRight="@dimen/edittext_padding"
-				app:endIconMode="clear_text">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="@dimen/edittext_padding"
+                android:paddingRight="@dimen/edittext_padding"
+                app:endIconMode="clear_text">
 
-				<ch.threema.app.emojis.EmojiEditText
-					android:id="@+id/edit_text"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:maxLength="140"
-					android:maxLines="5">
-					<requestFocus />
-				</ch.threema.app.emojis.EmojiEditText>
+                <ch.threema.app.emojis.EmojiEditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLength="140"
+                    android:maxLines="5">
 
-			</com.google.android.material.textfield.TextInputLayout>
+                    <requestFocus />
+                </ch.threema.app.emojis.EmojiEditText>
 
-		</LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-	</ScrollView>
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

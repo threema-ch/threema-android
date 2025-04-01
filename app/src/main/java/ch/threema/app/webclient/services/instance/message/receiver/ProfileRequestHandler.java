@@ -47,79 +47,84 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class ProfileRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileRequestHandler");
 
-	// Dispatchers
-	@NonNull private final MessageDispatcher responseDispatcher;
+    // Dispatchers
+    @NonNull
+    private final MessageDispatcher responseDispatcher;
 
-	// Services
-	@NonNull private final UserService userService;
-	@NonNull private final ContactService contactService;
+    // Services
+    @NonNull
+    private final UserService userService;
+    @NonNull
+    private final ContactService contactService;
 
-	// Listener
-	@WorkerThread
-	public interface Listener {
-		void onReceived();
-		void onAnswered();
-	}
-	private final Listener listener;
+    // Listener
+    @WorkerThread
+    public interface Listener {
+        void onReceived();
 
-	@AnyThread
-	public ProfileRequestHandler(@NonNull MessageDispatcher responseDispatcher,
-	                             @NonNull UserService userService,
-	                             @NonNull ContactService contactService,
-	                             @NonNull Listener listener) {
-		super(Protocol.SUB_TYPE_PROFILE);
-		this.responseDispatcher = responseDispatcher;
-		this.userService = userService;
-		this.contactService = contactService;
-		this.listener = listener;
-	}
+        void onAnswered();
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received profile request");
+    private final Listener listener;
 
-		// Notify listener, so we can register for changes
-		if (this.listener != null) {
-			this.listener.onReceived();
-		}
+    @AnyThread
+    public ProfileRequestHandler(@NonNull MessageDispatcher responseDispatcher,
+                                 @NonNull UserService userService,
+                                 @NonNull ContactService contactService,
+                                 @NonNull Listener listener) {
+        super(Protocol.SUB_TYPE_PROFILE);
+        this.responseDispatcher = responseDispatcher;
+        this.userService = userService;
+        this.contactService = contactService;
+        this.listener = listener;
+    }
 
-		// Send initial response
-		this.respond();
-	}
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received profile request");
 
-	/**
-	 * Respond with profile.
-	 */
-	private void respond() {
-		logger.debug("Respond with profile");
+        // Notify listener, so we can register for changes
+        if (this.listener != null) {
+            this.listener.onReceived();
+        }
 
-		// Collect required information
-		final String identity = this.userService.getIdentity();
-		final byte[] publicKey = this.userService.getPublicKey();
-		final String nickname = this.userService.getPublicNickname();
-		final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
-		byte[] avatar = null;
-		if (avatarBitmap != null) {
-			avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);
-		}
+        // Send initial response
+        this.respond();
+    }
 
-		// Create msgpack object
-		final MsgpackObjectBuilder data = Profile.convert(identity, publicKey, nickname, avatar);
+    /**
+     * Respond with profile.
+     */
+    private void respond() {
+        logger.debug("Respond with profile");
 
-		// Send message
-		this.send(this.responseDispatcher, data, null);
+        // Collect required information
+        final String identity = this.userService.getIdentity();
+        final byte[] publicKey = this.userService.getPublicKey();
+        final String nickname = this.userService.getPublicNickname();
+        final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
+        byte[] avatar = null;
+        if (avatarBitmap != null) {
+            avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);
+        }
 
-		// Notify listeners
-		if (this.listener != null) {
-			this.listener.onAnswered();
-		}
-	}
+        // Create msgpack object
+        final MsgpackObjectBuilder data = Profile.convert(identity, publicKey, nickname, avatar);
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		// A profile request should not result in any new messages
-		return false;
-	}
+        // Send message
+        this.send(this.responseDispatcher, data, null);
+
+        // Notify listeners
+        if (this.listener != null) {
+            this.listener.onAnswered();
+        }
+    }
+
+    @Override
+    protected boolean maybeNeedsConnection() {
+        // A profile request should not result in any new messages
+        return false;
+    }
 }

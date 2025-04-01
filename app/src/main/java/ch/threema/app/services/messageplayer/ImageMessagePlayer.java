@@ -34,54 +34,54 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 public class ImageMessagePlayer extends MessagePlayer {
 
-	protected ImageMessagePlayer(Context context, MessageService messageService, FileService fileService, MessageReceiver messageReceiver, AbstractMessageModel messageModel) {
-		super(context, messageService, fileService, messageReceiver, messageModel);
-	}
+    protected ImageMessagePlayer(Context context, MessageService messageService, FileService fileService, MessageReceiver messageReceiver, AbstractMessageModel messageModel) {
+        super(context, messageService, fileService, messageReceiver, messageModel);
+    }
 
-	@Override
-	public MediaMessageDataInterface getData() {
-		return this.getMessageModel().getImageData();
-	}
+    @Override
+    public MediaMessageDataInterface getData() {
+        return this.getMessageModel().getImageData();
+    }
 
-	@Override
-	protected AbstractMessageModel setData(MediaMessageDataInterface data) {
-		AbstractMessageModel messageModel =  this.getMessageModel();
-		messageModel.setImageData((ImageDataModel)data);
-		return messageModel;
-	}
+    @Override
+    protected AbstractMessageModel setData(MediaMessageDataInterface data) {
+        AbstractMessageModel messageModel = this.getMessageModel();
+        messageModel.setImageData((ImageDataModel) data);
+        return messageModel;
+    }
 
-	@Override
-	protected void play(boolean autoPlay) {
-		// do not play after downloading
-	}
+    @Override
+    protected void play(boolean autoPlay) {
+        // do not play after downloading
+    }
 
-	@Override
-	protected void open(final File decryptedFile) {
-		// not implemented - the gallery will handle the decryption
-	}
+    @Override
+    protected void open(final File decryptedFile) {
+        // not implemented - the gallery will handle the decryption
+    }
 
-	@Override
-	protected void makePause(int source) {
-		//not implemented
-	}
+    @Override
+    protected void makePause(int source) {
+        //not implemented
+    }
 
-	@Override
-	protected void makeResume(int source) {
-		//not implemented
-	}
+    @Override
+    protected void makeResume(int source) {
+        //not implemented
+    }
 
-	@Override
-	public void seekTo(int pos) {
+    @Override
+    public void seekTo(int pos) {
 
-	}
+    }
 
-	@Override
-	public int getDuration() {
-		return 0;
-	}
+    @Override
+    public int getDuration() {
+        return 0;
+    }
 
-	@Override
-	public int getPosition() {
-		return 0;
-	}
+    @Override
+    public int getPosition() {
+        return 0;
+    }
 }

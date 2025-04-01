@@ -26,7 +26,6 @@ import java.util.List;
 
 public class RestoreSettings {
     /**
-     *
      * 7: Added local contact avatar
      * 8: Add file message support
      * 9: add queued field to every message
@@ -65,10 +64,11 @@ public class RestoreSettings {
     public int getVersion() {
         return this.version;
     }
+
     public void parse(List<String[]> strings) {
-        for(String[] row: strings) {
-            if(row.length == 2) {
-                if(row[0].equals(Tags.TAG_INFO_VERSION)) {
+        for (String[] row : strings) {
+            if (row.length == 2) {
+                if (row[0].equals(Tags.TAG_INFO_VERSION)) {
                     this.version = Integer.parseInt(row[1]);
                 }
             }

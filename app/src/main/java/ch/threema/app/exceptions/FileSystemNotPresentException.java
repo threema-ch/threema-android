@@ -24,7 +24,7 @@ package ch.threema.app.exceptions;
 import ch.threema.base.ThreemaException;
 
 public class FileSystemNotPresentException extends ThreemaException {
-	public FileSystemNotPresentException() {
-		super("filesystem not present");
-	}
+    public FileSystemNotPresentException() {
+        super("filesystem not present");
+    }
 }

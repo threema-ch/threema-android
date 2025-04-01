@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/item_container"
-				android:orientation="vertical"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:paddingLeft="16dp"
-				android:paddingRight="16dp"
-				android:minHeight="@dimen/ballotchoice_list_item_height"
-				android:descendantFocusability="blocksDescendants"
-				android:background="?android:attr/colorBackground">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_container"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:minHeight="@dimen/ballotchoice_list_item_height"
+    android:descendantFocusability="blocksDescendants"
+    android:background="?android:attr/colorBackground">
 
-	<ImageView
-		android:id="@+id/reorder_button"
-		android:layout_marginRight="18dp"
-		android:layout_alignParentLeft="true"
-		android:layout_centerVertical="true"
-		android:clickable="false"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:importantForAccessibility="no"
-		app:srcCompat="@drawable/ic_outline_reorder_24"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/reorder_button"
+        android:layout_marginRight="18dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_outline_reorder_24"
+        app:tint="?attr/colorOnSurface" />
 
-	<ch.threema.app.emojis.EmojiConversationTextView
-		android:id="@+id/choice_name_readonly"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textSize="16sp"
-		android:layout_marginRight="4dp"
-		android:layout_toRightOf="@+id/reorder_button"
-		android:layout_toLeftOf="@+id/edit_button"
-		android:layout_centerVertical="true"
-		android:text="X"
-		android:singleLine="true"/>
+    <ch.threema.app.emojis.EmojiConversationTextView
+        android:id="@+id/choice_name_readonly"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:layout_marginRight="4dp"
+        android:layout_toRightOf="@+id/reorder_button"
+        android:layout_toLeftOf="@+id/edit_button"
+        android:layout_centerVertical="true"
+        android:text="X"
+        android:singleLine="true" />
 
-	<ImageView
-		android:id="@+id/edit_button"
-		android:layout_marginRight="10dp"
-		android:layout_toLeftOf="@+id/remove_button"
-		android:layout_centerVertical="true"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		app:tint="?attr/colorOnSurface"
-		android:contentDescription="@string/remove"
-		app:srcCompat="@drawable/ic_pencil_outline" />
+    <ImageView
+        android:id="@+id/edit_button"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/remove_button"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tint="?attr/colorOnSurface"
+        android:contentDescription="@string/remove"
+        app:srcCompat="@drawable/ic_pencil_outline" />
 
-	<ImageView
-		android:id="@+id/remove_button"
-		android:layout_alignParentRight="true"
-		android:layout_centerVertical="true"
-		android:layout_width="@dimen/ballotchoice_list_item_height"
-		android:layout_height="@dimen/ballotchoice_list_item_height"
-		android:contentDescription="@string/remove"
-		android:scaleType="center"
-		android:background="@drawable/selector_compose_button"
-		app:srcCompat="@drawable/ic_delete_outline"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/remove_button"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_width="@dimen/ballotchoice_list_item_height"
+        android:layout_height="@dimen/ballotchoice_list_item_height"
+        android:contentDescription="@string/remove"
+        android:scaleType="center"
+        android:background="@drawable/selector_compose_button"
+        app:srcCompat="@drawable/ic_delete_outline"
+        app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>

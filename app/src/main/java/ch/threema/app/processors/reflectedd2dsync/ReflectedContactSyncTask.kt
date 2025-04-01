@@ -314,7 +314,9 @@ class ReflectedContactSyncTask(
         when (contact.contactDefinedProfilePictureOrNull?.imageCase) {
             Common.DeltaImage.ImageCase.UPDATED -> {
                 contact.contactDefinedProfilePicture.updated.blob.downloadBlob { blob ->
-                    if (!fileService.getContactDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
+                    if (!fileService.getContactDefinedProfilePictureStream(contact.identity)
+                            .contentEquals(blob)
+                    ) {
                         logger.info("Setting contact defined profile picture from sync")
                         fileService.writeContactDefinedProfilePicture(contact.identity, blob)
                         onAvatarChanged(contact.identity)
@@ -339,7 +341,9 @@ class ReflectedContactSyncTask(
         when (contact.userDefinedProfilePictureOrNull?.imageCase) {
             Common.DeltaImage.ImageCase.UPDATED -> {
                 contact.userDefinedProfilePicture.updated.blob.downloadBlob { blob ->
-                    if (!fileService.getUserDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
+                    if (!fileService.getUserDefinedProfilePictureStream(contact.identity)
+                            .contentEquals(blob)
+                    ) {
                         logger.info("Setting user defined profile picture from sync")
                         fileService.writeUserDefinedProfilePicture(contact.identity, blob)
                         onAvatarChanged(contact.identity)

@@ -51,111 +51,112 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleObserver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodePopup");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodePopup");
 
-	private ImageView imageView;
-	private View topLayout;
-	private View parentView;
-	private MaterialCardView containerView;
+    private ImageView imageView;
+    private View topLayout;
+    private View parentView;
+    private MaterialCardView containerView;
 
-	private final int[] location = new int[2];
+    private final int[] location = new int[2];
 
-	public QRCodePopup(Context context, View parentView, LifecycleOwner lifecycleOwner) {
-		super(context);
+    public QRCodePopup(Context context, View parentView, LifecycleOwner lifecycleOwner) {
+        super(context);
 
-		if (lifecycleOwner != null) {
-			lifecycleOwner.getLifecycle().addObserver(this);
-		}
+        if (lifecycleOwner != null) {
+            lifecycleOwner.getLifecycle().addObserver(this);
+        }
 
-		init(context, parentView);
-	}
+        init(context, parentView);
+    }
 
-	private void init(Context context, View parentView) {
-		this.parentView = parentView;
+    private void init(Context context, View parentView) {
+        this.parentView = parentView;
 
-		LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		topLayout = layoutInflater.inflate(R.layout.popup_qrcode, null, true);
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        topLayout = layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
-		this.containerView = topLayout.findViewById(R.id.qr_popup_container);
-		this.imageView = topLayout.findViewById(R.id.thumbnail_view);
+        this.containerView = topLayout.findViewById(R.id.qr_popup_container);
+        this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
-		setContentView(topLayout);
+        setContentView(topLayout);
 
-		setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-		setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
 
-		setBackgroundDrawable(new BitmapDrawable());
-		setAnimationStyle(0);
-		setElevation(0);
-		setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
-	}
+        setBackgroundDrawable(new BitmapDrawable());
+        setAnimationStyle(0);
+        setElevation(0);
+        setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
+    }
 
-	/**
-	 * Show a popup with a QR code
-	 * @param sourceView starting point for animation
-	 * @param text text to display as QR code
-	 * @param borderColor color to draw around the QR code (depending on type)
-	 */
-	public void show(@NonNull final View sourceView, String text, @QRCodeServiceImpl.QRCodeColor int borderColor) {
-		Bitmap bitmap;
+    /**
+     * Show a popup with a QR code
+     *
+     * @param sourceView  starting point for animation
+     * @param text        text to display as QR code
+     * @param borderColor color to draw around the QR code (depending on type)
+     */
+    public void show(@NonNull final View sourceView, String text, @QRCodeServiceImpl.QRCodeColor int borderColor) {
+        Bitmap bitmap;
 
-		if (text != null) {
-			bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true, borderColor);
-		} else {
-			bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getUserQRCode();
-		}
+        if (text != null) {
+            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true, borderColor);
+        } else {
+            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getUserQRCode();
+        }
 
-		if (bitmap == null) {
-			logger.debug("Unable to get qr code bitmap");
-			return;
-		}
+        if (bitmap == null) {
+            logger.debug("Unable to get qr code bitmap");
+            return;
+        }
 
-		final BitmapDrawable bitmapDrawable = new BitmapDrawable(getContext().getResources(), bitmap);
-		bitmapDrawable.setFilterBitmap(false);
+        final BitmapDrawable bitmapDrawable = new BitmapDrawable(getContext().getResources(), bitmap);
+        bitmapDrawable.setFilterBitmap(false);
 
-		this.imageView.setImageDrawable(bitmapDrawable);
-		this.containerView.setStrokeColor(borderColor);
-		showAtLocation(parentView, Gravity.CENTER, 0, 0);
-		dimBackground();
+        this.imageView.setImageDrawable(bitmapDrawable);
+        this.containerView.setStrokeColor(borderColor);
+        showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        dimBackground();
 
-		getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        getContentView().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                getContentView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-				AnimationUtil.getViewCenter(sourceView, getContentView(), location);
+                AnimationUtil.getViewCenter(sourceView, getContentView(), location);
 
-				AnimationSet animation = new AnimationSet(true);
-				Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.ABSOLUTE, location[0], Animation.ABSOLUTE, location[1]);
-				Animation fade = new AlphaAnimation(0.0f, 1.0f);
+                AnimationSet animation = new AnimationSet(true);
+                Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.ABSOLUTE, location[0], Animation.ABSOLUTE, location[1]);
+                Animation fade = new AlphaAnimation(0.0f, 1.0f);
 
-				animation.addAnimation(scale);
-				animation.addAnimation(fade);
-				animation.setInterpolator(new DecelerateInterpolator());
-				animation.setDuration(150);
+                animation.addAnimation(scale);
+                animation.addAnimation(fade);
+                animation.setInterpolator(new DecelerateInterpolator());
+                animation.setDuration(150);
 
-				getContentView().startAnimation(animation);
-			}
-		});
+                getContentView().startAnimation(animation);
+            }
+        });
 
-		topLayout.setOnClickListener(v -> dismiss());
-	}
+        topLayout.setOnClickListener(v -> dismiss());
+    }
 
-	@Override
-	public void dismiss() {
-		AnimationUtil.popupAnimateOut(getContentView(), QRCodePopup.super::dismiss);
-	}
+    @Override
+    public void dismiss() {
+        AnimationUtil.popupAnimateOut(getContentView(), QRCodePopup.super::dismiss);
+    }
 
-	/**
-	 * Notifies that {@code ON_PAUSE} event occurred.
-	 * <p>
-	 * This method will be called before the {@link LifecycleOwner}'s {@code onPause} method
-	 * is called.
-	 *
-	 * @param owner the component, whose state was changed
-	 */
-	@Override
-	public void onPause(@NonNull LifecycleOwner owner) {
-		QRCodePopup.super.dismiss();
-	}
+    /**
+     * Notifies that {@code ON_PAUSE} event occurred.
+     * <p>
+     * This method will be called before the {@link LifecycleOwner}'s {@code onPause} method
+     * is called.
+     *
+     * @param owner the component, whose state was changed
+     */
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
+        QRCodePopup.super.dismiss();
+    }
 }

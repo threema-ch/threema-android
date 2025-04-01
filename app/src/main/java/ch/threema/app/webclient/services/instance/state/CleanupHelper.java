@@ -33,61 +33,61 @@ import androidx.annotation.WorkerThread;
  */
 @WorkerThread
 class CleanupHelper {
-	/**
-	 * Dispose the session context.
-	 */
-	static void cleanupSessionContext(@NonNull final Logger logger, @NonNull final SessionContext ctx) {
-		logger.debug("CleanupHelper: Release session resources...");
-		ctx.releaseResources();
-	}
+    /**
+     * Dispose the session context.
+     */
+    static void cleanupSessionContext(@NonNull final Logger logger, @NonNull final SessionContext ctx) {
+        logger.debug("CleanupHelper: Release session resources...");
+        ctx.releaseResources();
+    }
 
-	/**
-	 * Dispose the session connection context and discard any further events.
-	 */
-	static void cleanupSessionConnectionContext(
-		@NonNull final Logger logger,
-		@Nullable final SessionConnectionContext cctx
-	) {
-		if (cctx == null) {
-			return;
-		}
+    /**
+     * Dispose the session connection context and discard any further events.
+     */
+    static void cleanupSessionConnectionContext(
+        @NonNull final Logger logger,
+        @Nullable final SessionConnectionContext cctx
+    ) {
+        if (cctx == null) {
+            return;
+        }
 
-		// Mark the session connection closed to ignore all further events
-		cctx.closed.set(true);
+        // Mark the session connection closed to ignore all further events
+        cctx.closed.set(true);
 
-		// Tear down both the peer-to-peer connection and the SaltyRTC connection
-		// Warning: Keep it in this order, otherwise, you'll see deadlocks!
-		CleanupHelper.cleanupSaltyRTC(logger, cctx);
-		CleanupHelper.cleanupPeerConnection(logger, cctx);
-	}
+        // Tear down both the peer-to-peer connection and the SaltyRTC connection
+        // Warning: Keep it in this order, otherwise, you'll see deadlocks!
+        CleanupHelper.cleanupSaltyRTC(logger, cctx);
+        CleanupHelper.cleanupPeerConnection(logger, cctx);
+    }
 
-	private static void cleanupPeerConnection(
-		@NonNull final Logger logger,
-		@NonNull final SessionConnectionContext cctx
-	) {
-		if (cctx.pc == null) {
-			return;
-		}
+    private static void cleanupPeerConnection(
+        @NonNull final Logger logger,
+        @NonNull final SessionConnectionContext cctx
+    ) {
+        if (cctx.pc == null) {
+            return;
+        }
 
-		// Dispose peer connection
-		// Note: This will eventually dispose the data channel once the close event fires on the channel.
-		logger.debug("CleanupHelper: Disposing peer connection wrapper");
-		cctx.pc.dispose();
-		cctx.pc = null;
-	}
+        // Dispose peer connection
+        // Note: This will eventually dispose the data channel once the close event fires on the channel.
+        logger.debug("CleanupHelper: Disposing peer connection wrapper");
+        cctx.pc.dispose();
+        cctx.pc = null;
+    }
 
-	/**
-	 * Clear all SaltyRTC event listeners.
-	 */
-	private static void cleanupSaltyRTC(@NonNull final Logger logger, @NonNull final SessionConnectionContext cctx) {
-		// Clear all SaltyRTC event listeners
-		cctx.salty.events.clearAll();
+    /**
+     * Clear all SaltyRTC event listeners.
+     */
+    private static void cleanupSaltyRTC(@NonNull final Logger logger, @NonNull final SessionConnectionContext cctx) {
+        // Clear all SaltyRTC event listeners
+        cctx.salty.events.clearAll();
 
-		// Make sure that SaltyRTC is disconnected
-		if (cctx.salty.getSignalingState() != SignalingState.CLOSED &&
-			cctx.salty.getSignalingState() != SignalingState.CLOSING) {
-			logger.debug("CleanupHelper: Disconnecting SaltyRTC (signaling state was {})", cctx.salty.getSignalingState());
-			cctx.salty.disconnect();
-		}
-	}
+        // Make sure that SaltyRTC is disconnected
+        if (cctx.salty.getSignalingState() != SignalingState.CLOSED &&
+            cctx.salty.getSignalingState() != SignalingState.CLOSING) {
+            logger.debug("CleanupHelper: Disconnecting SaltyRTC (signaling state was {})", cctx.salty.getSignalingState());
+            cctx.salty.disconnect();
+        }
+    }
 }

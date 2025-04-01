@@ -46,100 +46,105 @@ import ch.threema.app.utils.ConfigUtils;
  */
 public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
 
-	public static final String FORCE_DARK_THEME = "darkTheme";
-	private static final String DIALOG_TAG_NO_CONNECTION = "nc";
-	private LinearProgressIndicator progressBar;
-	private WebView webView;
+    public static final String FORCE_DARK_THEME = "darkTheme";
+    private static final String DIALOG_TAG_NO_CONNECTION = "nc";
+    private LinearProgressIndicator progressBar;
+    private WebView webView;
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-		MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
-		toolbar.setNavigationOnClickListener(view -> finish());
-		toolbar.setTitle(getWebViewTitle());
+        MaterialToolbar toolbar = findViewById(R.id.material_toolbar);
+        toolbar.setNavigationOnClickListener(view -> finish());
+        toolbar.setTitle(getWebViewTitle());
 
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		final boolean darkThemeForced;
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        final boolean darkThemeForced;
 
-		if (extras != null && extras.getBoolean(FORCE_DARK_THEME, false)) {
-			darkThemeForced = true;
-			if (getConnectionIndicator() != null) {
-				// hide connection indicator when launched from wizard
-				getConnectionIndicator().setVisibility(View.INVISIBLE);
-			}
-		} else {
-			darkThemeForced = false;
-		}
+        if (extras != null && extras.getBoolean(FORCE_DARK_THEME, false)) {
+            darkThemeForced = true;
+            if (getConnectionIndicator() != null) {
+                // hide connection indicator when launched from wizard
+                getConnectionIndicator().setVisibility(View.INVISIBLE);
+            }
+        } else {
+            darkThemeForced = false;
+        }
 
-		if (!ConfigUtils.isTheDarkSide(this)) {
-			if (darkThemeForced) {
-				getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-			}
-		}
+        if (!ConfigUtils.isTheDarkSide(this)) {
+            if (darkThemeForced) {
+                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            }
+        }
 
-		progressBar = findViewById(R.id.progress);
-		webView = findViewById(R.id.simple_webview);
-		webView.getSettings().setJavaScriptEnabled(requiresJavaScript());
+        progressBar = findViewById(R.id.progress);
+        webView = findViewById(R.id.simple_webview);
+        webView.getSettings().setJavaScriptEnabled(requiresJavaScript());
 
-		ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.webview_scroller), (v, insets) -> {
-			v.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
-			return WindowInsetsCompat.CONSUMED;
-		});
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.webview_scroller), (v, insets) -> {
+            v.setPadding(0, 0, 0, insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
-		if (requiresConnection()) {
-			webView.setWebChromeClient(new WebChromeClient() {
-				@Override
-				public void onProgressChanged(WebView view, int newProgress) {
-					if (newProgress >= 99) {
-						progressBar.setVisibility(View.INVISIBLE);
-					} else {
-						progressBar.setProgress(newProgress);
-					}
-				}
-			});
-			checkConnection();
-		} else {
-			progressBar.setVisibility(View.GONE);
+        if (requiresConnection()) {
+            webView.setWebChromeClient(new WebChromeClient() {
+                @Override
+                public void onProgressChanged(WebView view, int newProgress) {
+                    if (newProgress >= 99) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    } else {
+                        progressBar.setProgress(newProgress);
+                    }
+                }
+            });
+            checkConnection();
+        } else {
+            progressBar.setVisibility(View.GONE);
 
-			loadWebView();
-		}
-	}
+            loadWebView();
+        }
+    }
 
-	private void loadWebView() {
-		webView.loadUrl(getWebViewUrl());
-	}
+    private void loadWebView() {
+        webView.loadUrl(getWebViewUrl());
+    }
 
-	private void checkConnection() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		if (connectivityManager != null && connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
-			loadWebView();
-		} else {
-			GenericAlertDialog.newInstance(getWebViewTitle(), R.string.internet_connection_required, R.string.retry, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
-		}
-	}
+    private void checkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager != null && connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected()) {
+            loadWebView();
+        } else {
+            GenericAlertDialog.newInstance(getWebViewTitle(), R.string.internet_connection_required, R.string.retry, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_NO_CONNECTION);
+        }
+    }
 
-	public int getLayoutResource() {
-		return R.layout.activity_simple_webview;
-	}
+    public int getLayoutResource() {
+        return R.layout.activity_simple_webview;
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		checkConnection();
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+        checkConnection();
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		finish();
-	}
+    @Override
+    public void onNo(String tag, Object data) {
+        finish();
+    }
 
-	protected abstract @StringRes int getWebViewTitle();
-	protected abstract String getWebViewUrl();
-	protected boolean requiresConnection() {
-		return true;
-	}
-	protected boolean requiresJavaScript() { return false; }
+    protected abstract @StringRes int getWebViewTitle();
+
+    protected abstract String getWebViewUrl();
+
+    protected boolean requiresConnection() {
+        return true;
+    }
+
+    protected boolean requiresJavaScript() {
+        return false;
+    }
 }
 

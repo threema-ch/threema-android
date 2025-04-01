@@ -22,6 +22,7 @@
 package ch.threema.app.services.systemupdate;
 
 import android.database.Cursor;
+
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import java.sql.SQLException;
@@ -39,60 +40,60 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  */
 public class SystemUpdateToVersion61 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion61(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion61(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
+    @Override
+    public boolean runDirectly() throws SQLException {
 
-		//add new messageContentsType field to message model table
-		for (String table : new String[]{
-			"message",
-			"m_group_message",
-			"distribution_list_message"
-		}) {
-			if (!fieldExists(this.sqLiteDatabase, table, "messageContentsType")) {
-				sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
-					+ " ADD COLUMN messageContentsType TINYINT DEFAULT " + MessageContentsType.UNDEFINED);
-			}
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.TEXT + " WHERE type = " + MessageType.TEXT.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.IMAGE + " WHERE type = " + MessageType.IMAGE.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VIDEO + " WHERE type = " + MessageType.VIDEO.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VOICE_MESSAGE + " WHERE type = " + MessageType.VOICEMESSAGE.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.BALLOT + " WHERE type = " + MessageType.BALLOT.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.LOCATION + " WHERE type = " + MessageType.LOCATION.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.STATUS + " WHERE type = " + MessageType.STATUS.ordinal());
-				sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VOIP_STATUS + " WHERE type = " + MessageType.VOIP_STATUS.ordinal());
+        //add new messageContentsType field to message model table
+        for (String table : new String[]{
+            "message",
+            "m_group_message",
+            "distribution_list_message"
+        }) {
+            if (!fieldExists(this.sqLiteDatabase, table, "messageContentsType")) {
+                sqLiteDatabase.rawExecSQL("ALTER TABLE " + table
+                    + " ADD COLUMN messageContentsType TINYINT DEFAULT " + MessageContentsType.UNDEFINED);
+            }
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.TEXT + " WHERE type = " + MessageType.TEXT.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.IMAGE + " WHERE type = " + MessageType.IMAGE.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VIDEO + " WHERE type = " + MessageType.VIDEO.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VOICE_MESSAGE + " WHERE type = " + MessageType.VOICEMESSAGE.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.BALLOT + " WHERE type = " + MessageType.BALLOT.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.LOCATION + " WHERE type = " + MessageType.LOCATION.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.STATUS + " WHERE type = " + MessageType.STATUS.ordinal());
+            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MessageContentsType.VOIP_STATUS + " WHERE type = " + MessageType.VOIP_STATUS.ordinal());
 
-				// check all file messages, extract mime type from json, add correct messagecontentstype
-				try (Cursor fileMessages = sqLiteDatabase.rawQuery("SELECT id, body FROM " + table + " WHERE type = " + MessageType.FILE.ordinal(), null)) {
-					if (fileMessages != null) {
-						while (fileMessages.moveToNext()) {
-							final int id = fileMessages.getInt(0);
-							final String body = fileMessages.getString(1);
-							if (body != null && body.length() > 0) {
-								FileDataModel fileDataModel = FileDataModel.create(body);
-								sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MimeUtil.getContentTypeFromFileData(fileDataModel) + " WHERE id = " + id);
-							}
-						}
-					}
-				}
+            // check all file messages, extract mime type from json, add correct messagecontentstype
+            try (Cursor fileMessages = sqLiteDatabase.rawQuery("SELECT id, body FROM " + table + " WHERE type = " + MessageType.FILE.ordinal(), null)) {
+                if (fileMessages != null) {
+                    while (fileMessages.moveToNext()) {
+                        final int id = fileMessages.getInt(0);
+                        final String body = fileMessages.getString(1);
+                        if (body != null && body.length() > 0) {
+                            FileDataModel fileDataModel = FileDataModel.create(body);
+                            sqLiteDatabase.rawExecSQL("UPDATE " + table + " SET messageContentsType = " + MimeUtil.getContentTypeFromFileData(fileDataModel) + " WHERE id = " + id);
+                        }
+                    }
+                }
+            }
 //			}
-		}
-		return true;
-	}
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 61 (add mime type column)";
-	}
+    @Override
+    public String getText() {
+        return "version 61 (add mime type column)";
+    }
 }

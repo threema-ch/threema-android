@@ -24,68 +24,68 @@ package ch.threema.app.locationpicker;
 import org.maplibre.android.geometry.LatLng;
 
 public class Poi {
-	private long id;
-	private String name;
-	private String category;
-	private String type;
-	private int distance;
-	private String description;
-	private LatLng latLng;
+    private long id;
+    private String name;
+    private String category;
+    private String type;
+    private int distance;
+    private String description;
+    private LatLng latLng;
 
-	public long getId() {
-		return this.id;
-	}
+    public long getId() {
+        return this.id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public int getDistance() {
-		return distance;
-	}
+    public int getDistance() {
+        return distance;
+    }
 
-	public void setDistance(int distance) {
-		this.distance = distance;
-	}
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 
-	public LatLng getLatLng() {
-		return latLng;
-	}
+    public LatLng getLatLng() {
+        return latLng;
+    }
 
-	public void setLatLng(LatLng latLng) {
-		this.latLng = latLng;
-	}
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }
 

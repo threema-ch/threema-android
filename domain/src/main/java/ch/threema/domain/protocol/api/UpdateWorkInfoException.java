@@ -29,11 +29,11 @@ import ch.threema.base.ThreemaException;
  */
 public class UpdateWorkInfoException extends ThreemaException {
 
-	public UpdateWorkInfoException(String msg) {
-		super(msg);
-	}
+    public UpdateWorkInfoException(String msg) {
+        super(msg);
+    }
 
-	public UpdateWorkInfoException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    public UpdateWorkInfoException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

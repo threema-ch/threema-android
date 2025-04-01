@@ -47,64 +47,64 @@ import static org.junit.Assert.assertEquals;
 @SmallTest
 @RunWith(AndroidJUnit4.class)
 public class MessageTest {
-	@Test
-	public void testFixFileName() {
-		// Fix file extension if missing
-		assertEquals("file.jpg", Message.fixFileName("file", "image/jpeg"));
-		assertEquals("file.png", Message.fixFileName("file", "image/png"));
-		assertEquals("file.txt", Message.fixFileName("file", "text/plain"));
+    @Test
+    public void testFixFileName() {
+        // Fix file extension if missing
+        assertEquals("file.jpg", Message.fixFileName("file", "image/jpeg"));
+        assertEquals("file.png", Message.fixFileName("file", "image/png"));
+        assertEquals("file.txt", Message.fixFileName("file", "text/plain"));
 
-		// Ignore files containing a dot
-		assertEquals("file.something", Message.fixFileName("file.something", "text/plain"));
+        // Ignore files containing a dot
+        assertEquals("file.something", Message.fixFileName("file.something", "text/plain"));
 
-		// Don't change existing extensions
-		assertEquals("file.txt", Message.fixFileName("file.txt", "image/jpeg"));
-	}
+        // Don't change existing extensions
+        assertEquals("file.txt", Message.fixFileName("file.txt", "image/jpeg"));
+    }
 
-	private static String testMaybePutFileImpl(
-		@NonNull String inputMimeType,
-		@Nullable Date createdAt,
-		@Nullable String messageId
-	) throws IOException {
-		// The Threema protocol does not require a file name in a file message,
-		// but ARP does!
-		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-		final FileDataModel fileDataModel = new FileDataModel(
-			inputMimeType,
-			"image/jpeg",
-			100,
-			null,
-			FileData.RENDERING_MEDIA,
-			"A photo without name",
-			true,
-			new HashMap<>()
-		);
-		final AbstractMessageModel messageModel = new MessageModel();
-		messageModel.setFileDataModel(fileDataModel);
-		messageModel.setCreatedAt(createdAt);
-		messageModel.setApiMessageId(messageId);
-		Message.maybePutFile(builder, "file", messageModel, fileDataModel);
+    private static String testMaybePutFileImpl(
+        @NonNull String inputMimeType,
+        @Nullable Date createdAt,
+        @Nullable String messageId
+    ) throws IOException {
+        // The Threema protocol does not require a file name in a file message,
+        // but ARP does!
+        final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+        final FileDataModel fileDataModel = new FileDataModel(
+            inputMimeType,
+            "image/jpeg",
+            100,
+            null,
+            FileData.RENDERING_MEDIA,
+            "A photo without name",
+            true,
+            new HashMap<>()
+        );
+        final AbstractMessageModel messageModel = new MessageModel();
+        messageModel.setFileDataModel(fileDataModel);
+        messageModel.setCreatedAt(createdAt);
+        messageModel.setApiMessageId(messageId);
+        Message.maybePutFile(builder, "file", messageModel, fileDataModel);
 
-		// Create Msgpack message
-		final ByteBuffer buf = builder.consume();
+        // Create Msgpack message
+        final ByteBuffer buf = builder.consume();
 
-		// Decode message again
-		try (MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buf)) {
-			final Map<String, Value> map = new HashMap<>();
-			for (Map.Entry<Value, Value> entry : unpacker.unpackValue().asMapValue().map().entrySet()) {
-				map.put(entry.getKey().asStringValue().toString(), entry.getValue());
-			}
-			final Map<String, Value> fileData = new HashMap<>();
-			for (Map.Entry<Value, Value> entry : map.get("file").asMapValue().map().entrySet()) {
-				fileData.put(entry.getKey().asStringValue().toString(), entry.getValue());
-			}
-			return fileData.get("name").asStringValue().asString();
-		}
-	}
+        // Decode message again
+        try (MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(buf)) {
+            final Map<String, Value> map = new HashMap<>();
+            for (Map.Entry<Value, Value> entry : unpacker.unpackValue().asMapValue().map().entrySet()) {
+                map.put(entry.getKey().asStringValue().toString(), entry.getValue());
+            }
+            final Map<String, Value> fileData = new HashMap<>();
+            for (Map.Entry<Value, Value> entry : map.get("file").asMapValue().map().entrySet()) {
+                fileData.put(entry.getKey().asStringValue().toString(), entry.getValue());
+            }
+            return fileData.get("name").asStringValue().asString();
+        }
+    }
 
-	@Test
-	public void testMaybePutFile() throws IOException {
-		assertEquals("threema-20201212-000000-null.png", testMaybePutFileImpl("image/png", new Date(2020 - 1900, 12 - 1, 12), null));
-		assertEquals("threema-20100130-131400-msgidasdf.txt", testMaybePutFileImpl("text/plain", new Date(2010 - 1900, 1 - 1, 30, 13, 14), "msgidasdf"));
-	}
+    @Test
+    public void testMaybePutFile() throws IOException {
+        assertEquals("threema-20201212-000000-null.png", testMaybePutFileImpl("image/png", new Date(2020 - 1900, 12 - 1, 12), null));
+        assertEquals("threema-20100130-131400-msgidasdf.txt", testMaybePutFileImpl("text/plain", new Date(2010 - 1900, 1 - 1, 30, 13, 14), "msgidasdf"));
+    }
 }

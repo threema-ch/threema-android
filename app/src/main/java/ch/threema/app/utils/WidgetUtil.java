@@ -32,16 +32,16 @@ import ch.threema.app.receivers.WidgetProvider;
 import ch.threema.base.utils.LoggingUtil;
 
 public class WidgetUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetUtil");
 
-	public static void updateWidgets(Context context) {
-		logger.debug("Update Widgets");
+    public static void updateWidgets(Context context) {
+        logger.debug("Update Widgets");
 
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		final int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        final int[] widgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
 
-		for (int widgetId : widgetIds) {
-			appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_list);
-		}
-	}
+        for (int widgetId : widgetIds) {
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widget_list);
+        }
+    }
 }

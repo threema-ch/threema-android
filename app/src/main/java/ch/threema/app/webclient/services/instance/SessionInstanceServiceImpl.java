@@ -103,755 +103,767 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @WorkerThread
 public class SessionInstanceServiceImpl implements SessionInstanceService {
-	@NonNull final Logger logger = LoggingUtil.getThreemaLogger("SessionInstanceServiceImpl");
+    @NonNull
+    final Logger logger = LoggingUtil.getThreemaLogger("SessionInstanceServiceImpl");
 
-	// Session id registry
-	@NonNull private static AtomicInteger staticSessionId = new AtomicInteger(0);
+    // Session id registry
+    @NonNull
+    private static AtomicInteger staticSessionId = new AtomicInteger(0);
 
-	// Services
-	@NonNull private final ServicesContainer services;
+    // Services
+    @NonNull
+    private final ServicesContainer services;
 
-	// NaCl crypto provider
-	@NonNull private final CryptoProvider cryptoProvider;
+    // NaCl crypto provider
+    @NonNull
+    private final CryptoProvider cryptoProvider;
 
-	// Model
-	@NonNull private final WebClientSessionModel model;
+    // Model
+    @NonNull
+    private final WebClientSessionModel model;
 
-	// Session id
-	private final int sessionId;
+    // Session id
+    private final int sessionId;
 
-	// Session state manager
-	@NonNull private final SessionStateManager stateManager;
+    // Session state manager
+    @NonNull
+    private final SessionStateManager stateManager;
 
-	// Message updaters
-	@NonNull private final MessageUpdater[] updaters;
+    // Message updaters
+    @NonNull
+    private final MessageUpdater[] updaters;
 
-	// Message dispatchers
-	@NonNull private final MessageDispatcher[] dispatchers;
+    // Message dispatchers
+    @NonNull
+    private final MessageDispatcher[] dispatchers;
 
-	// Listeners
-	@NonNull private final WebClientMessageListener messageListener;
+    // Listeners
+    @NonNull
+    private final WebClientMessageListener messageListener;
 
-	// Current affiliation id
-	@Nullable private String affiliationId;
+    // Current affiliation id
+    @Nullable
+    private String affiliationId;
 
-	// Performance testing
-	private long startTimeNs = -1;
+    // Performance testing
+    private long startTimeNs = -1;
 
-	@AnyThread
-	public SessionInstanceServiceImpl(
-		@NonNull final ServicesContainer services,
-		@NonNull final CryptoProvider cryptoProvider,
-		@NonNull final WebClientSessionModel model,
-		@NonNull final HandlerExecutor handler
-	) {
-		this.services = services;
-		this.cryptoProvider = cryptoProvider;
-		this.model = model;
+    @AnyThread
+    public SessionInstanceServiceImpl(
+        @NonNull final ServicesContainer services,
+        @NonNull final CryptoProvider cryptoProvider,
+        @NonNull final WebClientSessionModel model,
+        @NonNull final HandlerExecutor handler
+    ) {
+        this.services = services;
+        this.cryptoProvider = cryptoProvider;
+        this.model = model;
 
-		// Determine session id
-		this.sessionId = SessionInstanceServiceImpl.staticSessionId.getAndIncrement();
+        // Determine session id
+        this.sessionId = SessionInstanceServiceImpl.staticSessionId.getAndIncrement();
 
-		// Set logger prefix
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(String.valueOf(this.sessionId));
-		}
-		logger.info("Initialize SessionInstanceServiceImpl");
+        // Set logger prefix
+        if (logger instanceof ThreemaLogger) {
+            ((ThreemaLogger) logger).setPrefix(String.valueOf(this.sessionId));
+        }
+        logger.info("Initialize SessionInstanceServiceImpl");
 
-		// Initialize state manager
-		this.stateManager = new SessionStateManager(sessionId, model, handler, services, new SessionStateManager.StopHandler() {
-			@Override
-			@WorkerThread
-			public void onStopped(@NonNull DisconnectContext reason) {
-				SessionInstanceServiceImpl.this.unregister();
-			}
-		});
+        // Initialize state manager
+        this.stateManager = new SessionStateManager(sessionId, model, handler, services, new SessionStateManager.StopHandler() {
+            @Override
+            @WorkerThread
+            public void onStopped(@NonNull DisconnectContext reason) {
+                SessionInstanceServiceImpl.this.unregister();
+            }
+        });
 
-		// Create dispatchers
-		final MessageDispatcher responseDispatcher = new MessageDispatcher(Protocol.TYPE_RESPONSE,
-			this, services.lifetime);
-		final MessageDispatcher updateDispatcher = new MessageDispatcher(Protocol.TYPE_UPDATE,
-			this, services.lifetime);
-		final MessageDispatcher deleteDispatcher = new MessageDispatcher(Protocol.TYPE_DELETE,
-			this, services.lifetime);
+        // Create dispatchers
+        final MessageDispatcher responseDispatcher = new MessageDispatcher(Protocol.TYPE_RESPONSE,
+            this, services.lifetime);
+        final MessageDispatcher updateDispatcher = new MessageDispatcher(Protocol.TYPE_UPDATE,
+            this, services.lifetime);
+        final MessageDispatcher deleteDispatcher = new MessageDispatcher(Protocol.TYPE_DELETE,
+            this, services.lifetime);
 
-		// Create update handlers
-		final ReceiverUpdateHandler receiverUpdateHandler = new ReceiverUpdateHandler(
-			handler,
-			updateDispatcher,
-			services.database,
-			services.synchronizeContacts
-		);
-		final ReceiversUpdateHandler receiversUpdateHandler = new ReceiversUpdateHandler(
-			handler,
-			updateDispatcher,
-			services.contact
-		);
-		final AvatarUpdateHandler avatarUpdateHandler = new AvatarUpdateHandler(
-			handler,
-			updateDispatcher,
+        // Create update handlers
+        final ReceiverUpdateHandler receiverUpdateHandler = new ReceiverUpdateHandler(
+            handler,
+            updateDispatcher,
+            services.database,
+            services.synchronizeContacts
+        );
+        final ReceiversUpdateHandler receiversUpdateHandler = new ReceiversUpdateHandler(
+            handler,
+            updateDispatcher,
             services.contact
-		);
-		final ConversationUpdateHandler conversationUpdateHandler = new ConversationUpdateHandler(
-			handler,
-			updateDispatcher,
-			services.contact,
-			services.group,
-			services.distributionList,
-			services.hiddenChat,
-			this.sessionId
-		);
-		final MessageUpdateHandler messageUpdateHandler = new MessageUpdateHandler(
-			handler,
-			updateDispatcher,
-			services.hiddenChat,
-			services.file
-		);
-		final TypingUpdateHandler typingUpdateHandler = new TypingUpdateHandler(
-			handler,
-			updateDispatcher
-		);
+        );
+        final AvatarUpdateHandler avatarUpdateHandler = new AvatarUpdateHandler(
+            handler,
+            updateDispatcher,
+            services.contact
+        );
+        final ConversationUpdateHandler conversationUpdateHandler = new ConversationUpdateHandler(
+            handler,
+            updateDispatcher,
+            services.contact,
+            services.group,
+            services.distributionList,
+            services.hiddenChat,
+            this.sessionId
+        );
+        final MessageUpdateHandler messageUpdateHandler = new MessageUpdateHandler(
+            handler,
+            updateDispatcher,
+            services.hiddenChat,
+            services.file
+        );
+        final TypingUpdateHandler typingUpdateHandler = new TypingUpdateHandler(
+            handler,
+            updateDispatcher
+        );
 
-		final BatteryStatusUpdateHandler batteryStatusUpdateHandler = new BatteryStatusUpdateHandler(
-			services.appContext,
-			handler,
-			this.sessionId,
-			updateDispatcher
-		);
-		final VoipStatusUpdateHandler voipStatusUpdateHandler = new VoipStatusUpdateHandler(
-			handler,
-			this.sessionId,
-			updateDispatcher
-		);
-		final ProfileUpdateHandler profileUpdateHandler = new ProfileUpdateHandler(
-			handler,
-			updateDispatcher,
-			services.user,
-			services.contact
-		);
+        final BatteryStatusUpdateHandler batteryStatusUpdateHandler = new BatteryStatusUpdateHandler(
+            services.appContext,
+            handler,
+            this.sessionId,
+            updateDispatcher
+        );
+        final VoipStatusUpdateHandler voipStatusUpdateHandler = new VoipStatusUpdateHandler(
+            handler,
+            this.sessionId,
+            updateDispatcher
+        );
+        final ProfileUpdateHandler profileUpdateHandler = new ProfileUpdateHandler(
+            handler,
+            updateDispatcher,
+            services.user,
+            services.contact
+        );
 
-		// Register alert handler
-		final AlertHandler alertHandler = new AlertHandler(handler, updateDispatcher);
-		alertHandler.register();
+        // Register alert handler
+        final AlertHandler alertHandler = new AlertHandler(handler, updateDispatcher);
+        alertHandler.register();
 
-		// Create request dispatcher and the handlers
-		// Dispatchers
-		final MessageDispatcher requestDispatcher = new MessageDispatcher(Protocol.TYPE_REQUEST,
-			this, services.lifetime);
+        // Create request dispatcher and the handlers
+        // Dispatchers
+        final MessageDispatcher requestDispatcher = new MessageDispatcher(Protocol.TYPE_REQUEST,
+            this, services.lifetime);
 
-		// Client info requester
-		requestDispatcher.addReceiver(new ClientInfoRequestHandler(
-			responseDispatcher,
-			services.preference,
-			services.appContext,
-			new ClientInfoRequestHandler.Listener() {
-				@Override
-				@WorkerThread
-				public void onReceived(@NonNull final String userAgent) {
-					WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
-						@Override
-						@WorkerThread
-						public void handle(WebClientServiceListener listener) {
-							listener.onStarted(model, Objects.requireNonNull(model.getKey()), userAgent);
-						}
-					});
-				}
+        // Client info requester
+        requestDispatcher.addReceiver(new ClientInfoRequestHandler(
+            responseDispatcher,
+            services.preference,
+            services.appContext,
+            new ClientInfoRequestHandler.Listener() {
+                @Override
+                @WorkerThread
+                public void onReceived(@NonNull final String userAgent) {
+                    WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
+                        @Override
+                        @WorkerThread
+                        public void handle(WebClientServiceListener listener) {
+                            listener.onStarted(model, Objects.requireNonNull(model.getKey()), userAgent);
+                        }
+                    });
+                }
 
-				@Override
-				@WorkerThread
-				public void onAnswered(@Nullable final String pushToken) {
-					// Save the fcm token in the model
-					if (!TestUtil.compare(model.getPushToken(), pushToken)) {
-						WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
-							@Override
-							@WorkerThread
-							public void handle(WebClientServiceListener listener) {
-								listener.onPushTokenChanged(model, pushToken);
-							}
-						});
-					}
+                @Override
+                @WorkerThread
+                public void onAnswered(@Nullable final String pushToken) {
+                    // Save the fcm token in the model
+                    if (!TestUtil.compare(model.getPushToken(), pushToken)) {
+                        WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
+                            @Override
+                            @WorkerThread
+                            public void handle(WebClientServiceListener listener) {
+                                listener.onPushTokenChanged(model, pushToken);
+                            }
+                        });
+                    }
 
-					// TODO: Below block should happen after the connectionInfo handshake
-					// Register battery status listener
-					batteryStatusUpdateHandler.register();
-					// VoIP status listener
-					voipStatusUpdateHandler.register();
-					// Send initial battery status
-					batteryStatusUpdateHandler.trigger();
+                    // TODO: Below block should happen after the connectionInfo handshake
+                    // Register battery status listener
+                    batteryStatusUpdateHandler.register();
+                    // VoIP status listener
+                    voipStatusUpdateHandler.register();
+                    // Send initial battery status
+                    batteryStatusUpdateHandler.trigger();
 
-					SessionInstanceServiceImpl.this.logActionSinceStart("Client info sent");
-				}
-			}
-		));
-		// Key persisted info requester
-		requestDispatcher.addReceiver(new KeyPersistedRequestHandler(
-			new KeyPersistedRequestHandler.Listener() {
-				@Override
-				@WorkerThread
-				public void onReceived() {
-					WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
-						@Override
-						@WorkerThread
-						public void handle(WebClientServiceListener listener) {
-							listener.onKeyPersisted(model, true);
-						}
-					});
-				}
-			}
-		));
-		requestDispatcher.addReceiver(new ReceiversRequestHandler(
-			responseDispatcher,
-			services.contact,
-			services.group,
-			services.distributionList,
-			new ReceiversRequestHandler.Listener() {
-				private boolean registered = false;
-
-				@Override
-				@WorkerThread
-				public void onReceived() {
-					if (!registered) {
-						registered = true;
-						receiverUpdateHandler.register();
-						receiversUpdateHandler.register();
-						avatarUpdateHandler.register();
-					}
-				}
-
-				@Override
-				@WorkerThread
-				public void onAnswered() {
-					SessionInstanceServiceImpl.this.logActionSinceStart("Receivers sent");
-				}
-			}
-		));
-		requestDispatcher.addReceiver(new ConversationRequestHandler(
-			responseDispatcher,
-			services.conversation,
-			new ConversationRequestHandler.Listener() {
-				private boolean registered = false;
-
-				@Override
-				@WorkerThread
-				public void onRespond() {
-					if (!registered) {
-						registered = true;
-						conversationUpdateHandler.register();
-						typingUpdateHandler.register();
-					}
-				}
-
-				@Override
-				@WorkerThread
-				public void onAnswered() {
-					SessionInstanceServiceImpl.this.logActionSinceStart("Conversations sent");
-				}
-			}
-		));
-		requestDispatcher.addReceiver(new MessageRequestHandler(
-			responseDispatcher,
-			services.message,
-			services.hiddenChat,
-			new MessageRequestHandler.Listener() {
-				@Override
-				@WorkerThread
-				public void onReceive(ch.threema.app.messagereceiver.MessageReceiver receiver) {
-					// Register for updates
-					if (messageUpdateHandler.register(receiver)) {
-						logger.info("Registered message updates");
-					} else {
-						logger.warn("Message updates not registered");
-					}
-				}
-			}
-		));
-		requestDispatcher.addReceiver(new BlobRequestHandler (
-			handler,
-			responseDispatcher,
-			services.message,
-			services.file
-		));
-		requestDispatcher.addReceiver(new AvatarRequestHandler(responseDispatcher));
-		requestDispatcher.addReceiver(new ThumbnailRequestHandler(
-			responseDispatcher,
-			services.message,
-			services.file));
-
-		requestDispatcher.addReceiver(new AcknowledgeRequestHandler(
-			services.message,
-			services.notification
-		));
-		requestDispatcher.addReceiver(new MessageReadRequestHandler(
-			services.contact,
-			services.group,
-			services.message,
-			services.notification
-		));
-		requestDispatcher.addReceiver(new ContactDetailRequestHandler(
-			responseDispatcher,
-			services.contact
-		));
-
-		requestDispatcher.addReceiver(new SyncGroupHandler(
-			responseDispatcher,
-			services.group
-		));
-		requestDispatcher.addReceiver(new ProfileRequestHandler(
-			responseDispatcher,
-			services.user,
-			services.contact,
-			new ProfileRequestHandler.Listener() {
-				@Override
-				@WorkerThread
-				public void onReceived() {
-					// Register for updates
-					profileUpdateHandler.register();
-					logger.info("Registered for profile updates");
-				}
-
-				@Override
-				@WorkerThread
-				public void onAnswered() {
-					SessionInstanceServiceImpl.this.logActionSinceStart("Profile sent");
-				}
-			}
-		));
-		// Ignore battery status requests
-		requestDispatcher.addReceiver(new IgnoreRequestHandler(
-			Protocol.TYPE_REQUEST,
-			Protocol.SUB_TYPE_BATTERY_STATUS
-		));
-
-		// Create 'create' dispatcher and the handlers
-		final MessageDispatcher createDispatcher = new MessageDispatcher(Protocol.TYPE_CREATE,
-			this, services.lifetime);
-		createDispatcher.addReceiver(new TextMessageCreateHandler(
-			createDispatcher,
-			services.message,
-			services.lifetime,
-			services.blockedIdentitiesService
+                    SessionInstanceServiceImpl.this.logActionSinceStart("Client info sent");
+                }
+            }
         ));
-		createDispatcher.addReceiver(new FileMessageCreateHandler(
-			createDispatcher,
-			services.message,
-			services.file,
-			services.lifetime,
-			services.blockedIdentitiesService
+        // Key persisted info requester
+        requestDispatcher.addReceiver(new KeyPersistedRequestHandler(
+            new KeyPersistedRequestHandler.Listener() {
+                @Override
+                @WorkerThread
+                public void onReceived() {
+                    WebClientListenerManager.serviceListener.handle(new HandleListener<WebClientServiceListener>() {
+                        @Override
+                        @WorkerThread
+                        public void handle(WebClientServiceListener listener) {
+                            listener.onKeyPersisted(model, true);
+                        }
+                    });
+                }
+            }
+        ));
+        requestDispatcher.addReceiver(new ReceiversRequestHandler(
+            responseDispatcher,
+            services.contact,
+            services.group,
+            services.distributionList,
+            new ReceiversRequestHandler.Listener() {
+                private boolean registered = false;
+
+                @Override
+                @WorkerThread
+                public void onReceived() {
+                    if (!registered) {
+                        registered = true;
+                        receiverUpdateHandler.register();
+                        receiversUpdateHandler.register();
+                        avatarUpdateHandler.register();
+                    }
+                }
+
+                @Override
+                @WorkerThread
+                public void onAnswered() {
+                    SessionInstanceServiceImpl.this.logActionSinceStart("Receivers sent");
+                }
+            }
+        ));
+        requestDispatcher.addReceiver(new ConversationRequestHandler(
+            responseDispatcher,
+            services.conversation,
+            new ConversationRequestHandler.Listener() {
+                private boolean registered = false;
+
+                @Override
+                @WorkerThread
+                public void onRespond() {
+                    if (!registered) {
+                        registered = true;
+                        conversationUpdateHandler.register();
+                        typingUpdateHandler.register();
+                    }
+                }
+
+                @Override
+                @WorkerThread
+                public void onAnswered() {
+                    SessionInstanceServiceImpl.this.logActionSinceStart("Conversations sent");
+                }
+            }
+        ));
+        requestDispatcher.addReceiver(new MessageRequestHandler(
+            responseDispatcher,
+            services.message,
+            services.hiddenChat,
+            new MessageRequestHandler.Listener() {
+                @Override
+                @WorkerThread
+                public void onReceive(ch.threema.app.messagereceiver.MessageReceiver receiver) {
+                    // Register for updates
+                    if (messageUpdateHandler.register(receiver)) {
+                        logger.info("Registered message updates");
+                    } else {
+                        logger.warn("Message updates not registered");
+                    }
+                }
+            }
+        ));
+        requestDispatcher.addReceiver(new BlobRequestHandler(
+            handler,
+            responseDispatcher,
+            services.message,
+            services.file
+        ));
+        requestDispatcher.addReceiver(new AvatarRequestHandler(responseDispatcher));
+        requestDispatcher.addReceiver(new ThumbnailRequestHandler(
+            responseDispatcher,
+            services.message,
+            services.file));
+
+        requestDispatcher.addReceiver(new AcknowledgeRequestHandler(
+            services.message,
+            services.notification
+        ));
+        requestDispatcher.addReceiver(new MessageReadRequestHandler(
+            services.contact,
+            services.group,
+            services.message,
+            services.notification
+        ));
+        requestDispatcher.addReceiver(new ContactDetailRequestHandler(
+            responseDispatcher,
+            services.contact
         ));
 
-		createDispatcher.addReceiver(new CreateContactHandler(
-			createDispatcher,
-			services.contact,
-			services.user,
-			services.apiConnector,
-			services.contactModelRepository
-		));
+        requestDispatcher.addReceiver(new SyncGroupHandler(
+            responseDispatcher,
+            services.group
+        ));
+        requestDispatcher.addReceiver(new ProfileRequestHandler(
+            responseDispatcher,
+            services.user,
+            services.contact,
+            new ProfileRequestHandler.Listener() {
+                @Override
+                @WorkerThread
+                public void onReceived() {
+                    // Register for updates
+                    profileUpdateHandler.register();
+                    logger.info("Registered for profile updates");
+                }
 
-		createDispatcher.addReceiver(new CreateGroupHandler(
-			createDispatcher,
-			services.group
-		));
+                @Override
+                @WorkerThread
+                public void onAnswered() {
+                    SessionInstanceServiceImpl.this.logActionSinceStart("Profile sent");
+                }
+            }
+        ));
+        // Ignore battery status requests
+        requestDispatcher.addReceiver(new IgnoreRequestHandler(
+            Protocol.TYPE_REQUEST,
+            Protocol.SUB_TYPE_BATTERY_STATUS
+        ));
 
-		createDispatcher.addReceiver(new CreateDistributionListHandler(
-			createDispatcher,
-			services.distributionList
-		));
+        // Create 'create' dispatcher and the handlers
+        final MessageDispatcher createDispatcher = new MessageDispatcher(Protocol.TYPE_CREATE,
+            this, services.lifetime);
+        createDispatcher.addReceiver(new TextMessageCreateHandler(
+            createDispatcher,
+            services.message,
+            services.lifetime,
+            services.blockedIdentitiesService
+        ));
+        createDispatcher.addReceiver(new FileMessageCreateHandler(
+            createDispatcher,
+            services.message,
+            services.file,
+            services.lifetime,
+            services.blockedIdentitiesService
+        ));
 
-		updateDispatcher.addReceiver(new ModifyContactHandler(
-			updateDispatcher,
-			services.contact
-		));
-		updateDispatcher.addReceiver(new ModifyGroupHandler(
-			updateDispatcher,
-			services.group
-		));
-		updateDispatcher.addReceiver(new ModifyDistributionListHandler(
-			updateDispatcher,
-			services.distributionList
-		));
-		updateDispatcher.addReceiver(new ModifyProfileHandler(
-			responseDispatcher,
-			services.user
-		));
-		updateDispatcher.addReceiver(new ModifyConversationHandler(
-			responseDispatcher,
-			services.conversation,
-			services.conversationTag
-		));
-		updateDispatcher.addReceiver(new IsTypingHandler(
-			services.contact
-		));
-		updateDispatcher.addReceiver(new ConnectionInfoUpdateHandler());
-		updateDispatcher.addReceiver(new ActiveConversationHandler(
-			services.contact,
-			services.group,
-			services.conversation,
-			services.conversationTag
-		));
+        createDispatcher.addReceiver(new CreateContactHandler(
+            createDispatcher,
+            services.contact,
+            services.user,
+            services.apiConnector,
+            services.contactModelRepository
+        ));
 
-		deleteDispatcher.addReceiver(new DeleteMessageHandler(
-			responseDispatcher,
-			services.message
-		));
-		deleteDispatcher.addReceiver(new DeleteGroupHandler(
-			responseDispatcher,
-			services.group
-		));
-		deleteDispatcher.addReceiver(new DeleteDistributionListHandler(
-			responseDispatcher,
-			services.distributionList));
-		deleteDispatcher.addReceiver(new CleanReceiverConversationRequestHandler(
-			responseDispatcher,
-			services.conversation));
+        createDispatcher.addReceiver(new CreateGroupHandler(
+            createDispatcher,
+            services.group
+        ));
 
-		// Create update handlers array
-		this.updaters = new MessageUpdater[]{
-			receiverUpdateHandler,
-			receiversUpdateHandler,
-			avatarUpdateHandler,
-			conversationUpdateHandler,
-			messageUpdateHandler,
-			typingUpdateHandler,
-			batteryStatusUpdateHandler,
-			voipStatusUpdateHandler,
-			profileUpdateHandler,
-			alertHandler,
-		};
+        createDispatcher.addReceiver(new CreateDistributionListHandler(
+            createDispatcher,
+            services.distributionList
+        ));
 
-		// Create message dispatchers array
-		this.dispatchers = new MessageDispatcher[]{
-			requestDispatcher,
-			responseDispatcher,
-			updateDispatcher,
-			createDispatcher,
-			deleteDispatcher,
-		};
+        updateDispatcher.addReceiver(new ModifyContactHandler(
+            updateDispatcher,
+            services.contact
+        ));
+        updateDispatcher.addReceiver(new ModifyGroupHandler(
+            updateDispatcher,
+            services.group
+        ));
+        updateDispatcher.addReceiver(new ModifyDistributionListHandler(
+            updateDispatcher,
+            services.distributionList
+        ));
+        updateDispatcher.addReceiver(new ModifyProfileHandler(
+            responseDispatcher,
+            services.user
+        ));
+        updateDispatcher.addReceiver(new ModifyConversationHandler(
+            responseDispatcher,
+            services.conversation,
+            services.conversationTag
+        ));
+        updateDispatcher.addReceiver(new IsTypingHandler(
+            services.contact
+        ));
+        updateDispatcher.addReceiver(new ConnectionInfoUpdateHandler());
+        updateDispatcher.addReceiver(new ActiveConversationHandler(
+            services.contact,
+            services.group,
+            services.conversation,
+            services.conversationTag
+        ));
 
-		// Register listener for new web client messages
-		this.messageListener = new WebClientMessageListener() {
-			@Override
-			@WorkerThread
-			public void onMessage(MapValue message) {
-				receive(message);
-			}
+        deleteDispatcher.addReceiver(new DeleteMessageHandler(
+            responseDispatcher,
+            services.message
+        ));
+        deleteDispatcher.addReceiver(new DeleteGroupHandler(
+            responseDispatcher,
+            services.group
+        ));
+        deleteDispatcher.addReceiver(new DeleteDistributionListHandler(
+            responseDispatcher,
+            services.distributionList));
+        deleteDispatcher.addReceiver(new CleanReceiverConversationRequestHandler(
+            responseDispatcher,
+            services.conversation));
 
-			@Override
-			@WorkerThread
-			public boolean handle(WebClientSessionModel sessionModel) {
-				return sessionModel.getId() == SessionInstanceServiceImpl.this.model.getId();
-			}
-		};
-	}
+        // Create update handlers array
+        this.updaters = new MessageUpdater[]{
+            receiverUpdateHandler,
+            receiversUpdateHandler,
+            avatarUpdateHandler,
+            conversationUpdateHandler,
+            messageUpdateHandler,
+            typingUpdateHandler,
+            batteryStatusUpdateHandler,
+            voipStatusUpdateHandler,
+            profileUpdateHandler,
+            alertHandler,
+        };
 
-	/**
-	 * Return whether this session is in a non-terminal state.
-	 */
-	@Override
-	@AnyThread // Should be safe, we're just checking a variable
-	public boolean isRunning() {
-		final WebClientSessionState state = this.stateManager.getState();
-		switch (state) {
-			case DISCONNECTED:
-			case ERROR:
-				return false;
-			case CONNECTING:
-			case CONNECTED:
-				return true;
-			default:
-				throw new IllegalStateException("Unhandled state: " + state);
-		}
-	}
+        // Create message dispatchers array
+        this.dispatchers = new MessageDispatcher[]{
+            requestDispatcher,
+            responseDispatcher,
+            updateDispatcher,
+            createDispatcher,
+            deleteDispatcher,
+        };
 
-	/**
-	 * Return the current state of the session.
-	 */
-	@Override
-	@NonNull public WebClientSessionState getState() {
-		return this.stateManager.getState();
-	}
+        // Register listener for new web client messages
+        this.messageListener = new WebClientMessageListener() {
+            @Override
+            @WorkerThread
+            public void onMessage(MapValue message) {
+                receive(message);
+            }
 
-	/**
-	 * Return whether the session needs to be restarted
-	 * (if not currently running or due to a different affiliation id).
-	 */
-	@Override
-	public boolean needsRestart(@Nullable final String affiliationId) {
-		if (!this.isRunning()) {
-			return true;
-		}
-		return affiliationId != null && (this.affiliationId == null || !this.affiliationId.equals(affiliationId));
-	}
+            @Override
+            @WorkerThread
+            public boolean handle(WebClientSessionModel sessionModel) {
+                return sessionModel.getId() == SessionInstanceServiceImpl.this.model.getId();
+            }
+        };
+    }
 
-	/**
-	 * Return the session model.
-	 */
-	@Override
-	@NonNull public WebClientSessionModel getModel() {
-		return this.model;
-	}
+    /**
+     * Return whether this session is in a non-terminal state.
+     */
+    @Override
+    @AnyThread // Should be safe, we're just checking a variable
+    public boolean isRunning() {
+        final WebClientSessionState state = this.stateManager.getState();
+        switch (state) {
+            case DISCONNECTED:
+            case ERROR:
+                return false;
+            case CONNECTING:
+            case CONNECTED:
+                return true;
+            default:
+                throw new IllegalStateException("Unhandled state: " + state);
+        }
+    }
 
-	/**
-	 * Start the session.
-	 */
-	@Override
-	public void start(
-		@NonNull final byte[] permanentKey,
-		@NonNull byte[] authToken,
-		@Nullable final String affiliationId
-	) {
-		// Update logger prefix
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(this.sessionId + "." + affiliationId);
-		}
-		logger.info("Starting Threema Web session");
+    /**
+     * Return the current state of the session.
+     */
+    @Override
+    @NonNull
+    public WebClientSessionState getState() {
+        return this.stateManager.getState();
+    }
 
-		final KeyStore ks = new KeyStore(this.cryptoProvider);
+    /**
+     * Return whether the session needs to be restarted
+     * (if not currently running or due to a different affiliation id).
+     */
+    @Override
+    public boolean needsRestart(@Nullable final String affiliationId) {
+        if (!this.isRunning()) {
+            return true;
+        }
+        return affiliationId != null && (this.affiliationId == null || !this.affiliationId.equals(affiliationId));
+    }
 
-		// Temporarily set the key on session model, but do not save
-		this.model
-			.setKey(permanentKey)
-			.setPrivateKey(ks.getPrivateKey());
+    /**
+     * Return the session model.
+     */
+    @Override
+    @NonNull
+    public WebClientSessionModel getModel() {
+        return this.model;
+    }
 
-		// Create a builder with a new keystore, including a new permanent key pair.
-		final SaltyRTCBuilder builder = this.getBuilder()
-			.initiatorInfo(permanentKey, authToken)
-			.withKeyStore(ks);
-		this.init(builder, affiliationId);
-	}
+    /**
+     * Start the session.
+     */
+    @Override
+    public void start(
+        @NonNull final byte[] permanentKey,
+        @NonNull byte[] authToken,
+        @Nullable final String affiliationId
+    ) {
+        // Update logger prefix
+        if (logger instanceof ThreemaLogger) {
+            ((ThreemaLogger) logger).setPrefix(this.sessionId + "." + affiliationId);
+        }
+        logger.info("Starting Threema Web session");
 
-	/**
-	 * Resume this session based on the data stored in the session model.
-	 */
-	@Override
-	public void resume(@Nullable final String affiliationId) throws CryptoException {
-		// Update logger prefix
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(this.sessionId + "." + affiliationId);
-		}
-		logger.info("Resuming Threema Web session");
+        final KeyStore ks = new KeyStore(this.cryptoProvider);
 
-		if (this.model.getKey() == null) {
-			logger.error("No session key in model instance, aborting resume");
-			return;
-		}
+        // Temporarily set the key on session model, but do not save
+        this.model
+            .setKey(permanentKey)
+            .setPrivateKey(ks.getPrivateKey());
 
-		if (this.model.getPrivateKey() == null) {
-			logger.error("No private key in model instance, aborting resume");
-			return;
-		}
+        // Create a builder with a new keystore, including a new permanent key pair.
+        final SaltyRTCBuilder builder = this.getBuilder()
+            .initiatorInfo(permanentKey, authToken)
+            .withKeyStore(ks);
+        this.init(builder, affiliationId);
+    }
 
-		// Create a builder with a new keystore based on an existing session.
-		final SaltyRTCBuilder builder = this.getBuilder()
-			.withTrustedPeerKey(this.model.getKey())
-			.withKeyStore(new KeyStore(this.cryptoProvider, this.model.getPrivateKey()));
-		this.init(builder, affiliationId);
-	}
+    /**
+     * Resume this session based on the data stored in the session model.
+     */
+    @Override
+    public void resume(@Nullable final String affiliationId) throws CryptoException {
+        // Update logger prefix
+        if (logger instanceof ThreemaLogger) {
+            ((ThreemaLogger) logger).setPrefix(this.sessionId + "." + affiliationId);
+        }
+        logger.info("Resuming Threema Web session");
 
-	/**
-	 * Get a SaltyRTC builder instance, pre-initialised with default values based
-	 * on the app preferences.
-	 */
-	private @NonNull SaltyRTCBuilder getBuilder() {
-		// Determine dual stack mode.
-		// When IPv6 enabled for VoIP and web, try both.
-		// When IPv6 disabled, only use IPv4.
-		SaltyRTCBuilder.DualStackMode dualStackMode = SaltyRTCBuilder.DualStackMode.BOTH;
-		if (!this.services.preference.allowWebrtcIpv6()) {
-			dualStackMode = SaltyRTCBuilder.DualStackMode.IPV4_ONLY;
-		}
+        if (this.model.getKey() == null) {
+            logger.error("No session key in model instance, aborting resume");
+            return;
+        }
 
-		// Create builder instance
-		return new SaltyRTCBuilder(this.cryptoProvider)
-			.withWebSocketDualStackMode(dualStackMode);
-	}
+        if (this.model.getPrivateKey() == null) {
+            logger.error("No private key in model instance, aborting resume");
+            return;
+        }
 
-	/**
-	 * Initialize the connection.
-	 *
-	 * Warning: The caller MUST ensure that the current state is either DISCONNECTED or ERROR!
-	 */
-	private void init(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId) {
-		// Register listener (if not already registered)
-		// Note: The message listener may already be registered in case a session is being
-		//       restarted immediately by a pending wakeup.
-		if (!WebClientListenerManager.messageListener.contains(this.messageListener)) {
-			logger.debug("Registering message listener");
-			WebClientListenerManager.messageListener.add(this.messageListener);
-		} else {
-			logger.debug("Message listener already registered");
-		}
+        // Create a builder with a new keystore based on an existing session.
+        final SaltyRTCBuilder builder = this.getBuilder()
+            .withTrustedPeerKey(this.model.getKey())
+            .withKeyStore(new KeyStore(this.cryptoProvider, this.model.getPrivateKey()));
+        this.init(builder, affiliationId);
+    }
 
-		// Store affiliation id and connect
-		this.affiliationId = affiliationId;
-		this.stateManager.setConnecting(builder, affiliationId);
+    /**
+     * Get a SaltyRTC builder instance, pre-initialised with default values based
+     * on the app preferences.
+     */
+    private @NonNull SaltyRTCBuilder getBuilder() {
+        // Determine dual stack mode.
+        // When IPv6 enabled for VoIP and web, try both.
+        // When IPv6 disabled, only use IPv4.
+        SaltyRTCBuilder.DualStackMode dualStackMode = SaltyRTCBuilder.DualStackMode.BOTH;
+        if (!this.services.preference.allowWebrtcIpv6()) {
+            dualStackMode = SaltyRTCBuilder.DualStackMode.IPV4_ONLY;
+        }
 
-		// Log start timestamp
-		this.startTimeNs = System.nanoTime();
-	}
+        // Create builder instance
+        return new SaltyRTCBuilder(this.cryptoProvider)
+            .withWebSocketDualStackMode(dualStackMode);
+    }
 
-	@Override
-	public void stop(@NonNull final DisconnectContext reason) {
-		logger.info("Stopping Threema Web session: {}", reason);
+    /**
+     * Initialize the connection.
+     * <p>
+     * Warning: The caller MUST ensure that the current state is either DISCONNECTED or ERROR!
+     */
+    private void init(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId) {
+        // Register listener (if not already registered)
+        // Note: The message listener may already be registered in case a session is being
+        //       restarted immediately by a pending wakeup.
+        if (!WebClientListenerManager.messageListener.contains(this.messageListener)) {
+            logger.debug("Registering message listener");
+            WebClientListenerManager.messageListener.add(this.messageListener);
+        } else {
+            logger.debug("Message listener already registered");
+        }
 
-		// Run unregister procedure
-		this.unregister();
+        // Store affiliation id and connect
+        this.affiliationId = affiliationId;
+        this.stateManager.setConnecting(builder, affiliationId);
 
-		// IMPORTANT: Unregistering MUST be done before changing the state since this will
-		//            trigger waking up pending sessions which may restart the session again!
-		this.stateManager.setDisconnected(reason);
-	}
+        // Log start timestamp
+        this.startTimeNs = System.nanoTime();
+    }
 
-	/**
-	 * Should always be called when a stop request is being made or when being stopped.
-	 */
-	private void unregister() {
-		// Deregister update handlers
-		for (final MessageUpdater handler: this.updaters) {
-			handler.unregister();
-		}
+    @Override
+    public void stop(@NonNull final DisconnectContext reason) {
+        logger.info("Stopping Threema Web session: {}", reason);
 
-		// Remove listener
-		if (WebClientListenerManager.messageListener.contains(this.messageListener)) {
-			logger.debug("Unregistering message listener");
-			WebClientListenerManager.messageListener.remove(this.messageListener);
-		} else {
-			logger.error("Message listener was not registered!");
-		}
+        // Run unregister procedure
+        this.unregister();
 
-		// Reset connection duration timer
-		this.startTimeNs = -1;
-	}
+        // IMPORTANT: Unregistering MUST be done before changing the state since this will
+        //            trigger waking up pending sessions which may restart the session again!
+        this.stateManager.setDisconnected(reason);
+    }
 
-	/**
-	 * Send a msgpack encoded message to the peer through the secure data channel.
-	 */
-	@Override
-	public void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
-		this.stateManager.send(message, mode);
-	}
+    /**
+     * Should always be called when a stop request is being made or when being stopped.
+     */
+    private void unregister() {
+        // Deregister update handlers
+        for (final MessageUpdater handler : this.updaters) {
+            handler.unregister();
+        }
 
-	/**
-	 * Receive an incoming message.
-	 */
-	private void receive(MapValue message) {
-		try {
-			final Map<String, Value> map = new HashMap<>();
-			for (Map.Entry<Value, Value> entry : message.entrySet()) {
-				map.put(entry.getKey().asStringValue().asString(), entry.getValue());
-			}
+        // Remove listener
+        if (WebClientListenerManager.messageListener.contains(this.messageListener)) {
+            logger.debug("Unregistering message listener");
+            WebClientListenerManager.messageListener.remove(this.messageListener);
+        } else {
+            logger.error("Message listener was not registered!");
+        }
 
-			// Get type and subtype
-			final Value typeValue = map.get(Protocol.FIELD_TYPE);
-			final String type = typeValue.asStringValue().asString();
-			final Value subTypeValue = map.get(Protocol.FIELD_SUB_TYPE);
-			final String subType = subTypeValue.asStringValue().asString();
-			logger.debug("Received {}/{}", type, subType);
+        // Reset connection duration timer
+        this.startTimeNs = -1;
+    }
 
-			boolean received = false;
+    /**
+     * Send a msgpack encoded message to the peer through the secure data channel.
+     */
+    @Override
+    public void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
+        this.stateManager.send(message, mode);
+    }
 
-			// We need to handle some control messages directly, without going through
-			// the dispatcher. This is the case for messages like `update/connectionDisconnect`,
-			// where we want to be able to access the session instance service directly,
-			// without jumping through some hoops using listeners.
-			final boolean isUpdate = Protocol.TYPE_UPDATE.equals(type);
-			if (isUpdate && Protocol.SUB_TYPE_CONNECTION_DISCONNECT.equals(subType)) {
-				this.receiveConnectionDisconnect(map);
-				received = true;
-			}
+    /**
+     * Receive an incoming message.
+     */
+    private void receive(MapValue message) {
+        try {
+            final Map<String, Value> map = new HashMap<>();
+            for (Map.Entry<Value, Value> entry : message.entrySet()) {
+                map.put(entry.getKey().asStringValue().asString(), entry.getValue());
+            }
 
-			// Dispatch message
-			if (!received) {
-				for (MessageDispatcher dispatcher : this.dispatchers) {
-					if (dispatcher.dispatch(type, subType, map)) {
-						received = true;
-						break;
-					}
-				}
-			}
+            // Get type and subtype
+            final Value typeValue = map.get(Protocol.FIELD_TYPE);
+            final String type = typeValue.asStringValue().asString();
+            final Value subTypeValue = map.get(Protocol.FIELD_SUB_TYPE);
+            final String subType = subTypeValue.asStringValue().asString();
+            logger.debug("Received {}/{}", type, subType);
 
-			// Check that one dispatcher received the message
-			if (!received) {
-				logger.warn("Ignored message with type {}", type);
-			}
-		} catch (MessagePackException e) {
-			logger.error("Protocol error due to invalid message", e);
-			this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
-		} catch (NullPointerException e) {
-			// TODO: If you don't want this, recursively follow this code and all handlers and fix
-			//       the potential NPEs. There are dozens...
-			logger.error("Protocol error due to NPE", e);
-			this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
-		} catch (DispatchException e) {
-			logger.warn("Could not dispatch message", e);
-		}
-	}
+            boolean received = false;
 
-	/**
-	 * Receive and handle an update/connectionDisconnect message.
-	 */
-	private void receiveConnectionDisconnect(final Map<String, Value> map) {
-		// Extract data map
-		if (!map.containsKey(Protocol.FIELD_DATA)) {
-			logger.warn("Ignored connectionDisconnect message without data field");
-			return;
-		}
-		final Value data = map.get(Protocol.FIELD_DATA);
-		if (!data.isMapValue()) {
-			logger.warn("Ignored connectionDisconnect message with non-map data field");
-			return;
-		}
-		final Map<String, Value> dataMap = new HashMap<>();
-		for (Map.Entry<Value, Value> entry : data.asMapValue().entrySet()) {
-			dataMap.put(entry.getKey().asStringValue().asString(), entry.getValue());
-		}
+            // We need to handle some control messages directly, without going through
+            // the dispatcher. This is the case for messages like `update/connectionDisconnect`,
+            // where we want to be able to access the session instance service directly,
+            // without jumping through some hoops using listeners.
+            final boolean isUpdate = Protocol.TYPE_UPDATE.equals(type);
+            if (isUpdate && Protocol.SUB_TYPE_CONNECTION_DISCONNECT.equals(subType)) {
+                this.receiveConnectionDisconnect(map);
+                received = true;
+            }
 
-		// Extract reason
-		if (!dataMap.containsKey(ConnectionDisconnect.REASON)) {
-			logger.warn("Ignored connectionDisconnect message without reason field");
-			return;
-		}
-		final Value reasonValue = dataMap.get(ConnectionDisconnect.REASON);
-		if (!reasonValue.isStringValue()) {
-			logger.warn("Ignored connectionDisconnect message with non-string reason field");
-			return;
-		}
-		final String reasonText = reasonValue.asStringValue().toString();
+            // Dispatch message
+            if (!received) {
+                for (MessageDispatcher dispatcher : this.dispatchers) {
+                    if (dispatcher.dispatch(type, subType, map)) {
+                        received = true;
+                        break;
+                    }
+                }
+            }
 
-		// Create DisconnectContext
-		final DisconnectContext reason;
-		switch (reasonText) {
-			case ConnectionDisconnect.REASON_SESSION_STOPPED:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_STOPPED);
-				break;
-			case ConnectionDisconnect.REASON_SESSION_DELETED:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_DELETED);
-				break;
-			case ConnectionDisconnect.REASON_WEBCLIENT_DISABLED:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_WEBCLIENT_DISABLED);
-				break;
-			case ConnectionDisconnect.REASON_SESSION_REPLACED:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_REPLACED);
-				break;
-			case ConnectionDisconnect.REASON_OUT_OF_MEMORY:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_OUT_OF_MEMORY);
-				break;
-			case ConnectionDisconnect.REASON_ERROR:
-				reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_ERROR);
-				break;
-			default:
-				logger.warn("Ignored connectionDisconnect message with invalid reason field: " + reasonText);
-				return;
-		}
+            // Check that one dispatcher received the message
+            if (!received) {
+                logger.warn("Ignored message with type {}", type);
+            }
+        } catch (MessagePackException e) {
+            logger.error("Protocol error due to invalid message", e);
+            this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
+        } catch (NullPointerException e) {
+            // TODO: If you don't want this, recursively follow this code and all handlers and fix
+            //       the potential NPEs. There are dozens...
+            logger.error("Protocol error due to NPE", e);
+            this.stop(DisconnectContext.byUs(DisconnectContext.REASON_ERROR));
+        } catch (DispatchException e) {
+            logger.warn("Could not dispatch message", e);
+        }
+    }
 
-		logger.debug("Peer requested disconnecting via connectionDisconnect msg");
-		this.stop(reason);
-	}
+    /**
+     * Receive and handle an update/connectionDisconnect message.
+     */
+    private void receiveConnectionDisconnect(final Map<String, Value> map) {
+        // Extract data map
+        if (!map.containsKey(Protocol.FIELD_DATA)) {
+            logger.warn("Ignored connectionDisconnect message without data field");
+            return;
+        }
+        final Value data = map.get(Protocol.FIELD_DATA);
+        if (!data.isMapValue()) {
+            logger.warn("Ignored connectionDisconnect message with non-map data field");
+            return;
+        }
+        final Map<String, Value> dataMap = new HashMap<>();
+        for (Map.Entry<Value, Value> entry : data.asMapValue().entrySet()) {
+            dataMap.put(entry.getKey().asStringValue().asString(), entry.getValue());
+        }
 
-	private void logActionSinceStart(@NonNull String message) {
-		if (SessionInstanceServiceImpl.this.startTimeNs > 0) {
-			long ms = (System.nanoTime() - SessionInstanceServiceImpl.this.startTimeNs) / 1000 / 1000;
-			logger.info("{} after {} ms", message, ms);
-		}
-	}
+        // Extract reason
+        if (!dataMap.containsKey(ConnectionDisconnect.REASON)) {
+            logger.warn("Ignored connectionDisconnect message without reason field");
+            return;
+        }
+        final Value reasonValue = dataMap.get(ConnectionDisconnect.REASON);
+        if (!reasonValue.isStringValue()) {
+            logger.warn("Ignored connectionDisconnect message with non-string reason field");
+            return;
+        }
+        final String reasonText = reasonValue.asStringValue().toString();
+
+        // Create DisconnectContext
+        final DisconnectContext reason;
+        switch (reasonText) {
+            case ConnectionDisconnect.REASON_SESSION_STOPPED:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_STOPPED);
+                break;
+            case ConnectionDisconnect.REASON_SESSION_DELETED:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_DELETED);
+                break;
+            case ConnectionDisconnect.REASON_WEBCLIENT_DISABLED:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_WEBCLIENT_DISABLED);
+                break;
+            case ConnectionDisconnect.REASON_SESSION_REPLACED:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_SESSION_REPLACED);
+                break;
+            case ConnectionDisconnect.REASON_OUT_OF_MEMORY:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_OUT_OF_MEMORY);
+                break;
+            case ConnectionDisconnect.REASON_ERROR:
+                reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_ERROR);
+                break;
+            default:
+                logger.warn("Ignored connectionDisconnect message with invalid reason field: " + reasonText);
+                return;
+        }
+
+        logger.debug("Peer requested disconnecting via connectionDisconnect msg");
+        this.stop(reason);
+    }
+
+    private void logActionSinceStart(@NonNull String message) {
+        if (SessionInstanceServiceImpl.this.startTimeNs > 0) {
+            long ms = (System.nanoTime() - SessionInstanceServiceImpl.this.startTimeNs) / 1000 / 1000;
+            logger.info("{} after {} ms", message, ms);
+        }
+    }
 
 }

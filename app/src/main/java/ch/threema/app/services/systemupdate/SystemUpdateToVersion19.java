@@ -32,38 +32,39 @@ import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.services.UpdateSystemService;
 
 public class SystemUpdateToVersion19 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion19(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion19(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		//update db first
-		String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM m_group LIMIT 0", null).getColumnNames();
+    @Override
+    public boolean runDirectly() {
+        //update db first
+        String[] messageTableColumnNames = sqLiteDatabase.rawQuery("SELECT * FROM m_group LIMIT 0", null).getColumnNames();
 
-		boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
-			@Override
-			public boolean apply(@NonNull String type) {
-				return type.equals("deleted");
-			}
-		}) != null;
+        boolean hasField = Functional.select(Arrays.asList(messageTableColumnNames), new IPredicateNonNull<String>() {
+            @Override
+            public boolean apply(@NonNull String type) {
+                return type.equals("deleted");
+            }
+        }) != null;
 
 
-		if(!hasField) {
-			sqLiteDatabase.execSQL("ALTER TABLE m_group ADD COLUMN deleted TINYINT DEFAULT 0");
-		}
+        if (!hasField) {
+            sqLiteDatabase.execSQL("ALTER TABLE m_group ADD COLUMN deleted TINYINT DEFAULT 0");
+        }
 
-		return true;
-	}
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 19";
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
+
+    @Override
+    public String getText() {
+        return "version 19";
+    }
 }

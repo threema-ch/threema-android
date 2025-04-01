@@ -47,51 +47,51 @@ import static ch.threema.app.PermissionRuleUtilsKt.getReadWriteExternalStoragePe
 @DangerousTest // Deletes logfile
 public class DebugLogFileBackendTest {
 
-	@Rule
-	public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
+    @Rule
+    public GrantPermissionRule permissionRule = getReadWriteExternalStoragePermissionRule();
 
-	@Before
-	public void disableLogfile() {
-		DebugLogFileBackend.setEnabled(false);
-	}
+    @Before
+    public void disableLogfile() {
+        DebugLogFileBackend.setEnabled(false);
+    }
 
-	/**
-	 * Make sure that logging into the debug log file actually creates the debug log file.
-	 * Also test that the file is only created when enabled.
-	 */
-	@Test
-	public void testEnable() throws Exception {
-		final File logFilePath = DebugLogFileBackend.getLogFilePath();
+    /**
+     * Make sure that logging into the debug log file actually creates the debug log file.
+     * Also test that the file is only created when enabled.
+     */
+    @Test
+    public void testEnable() throws Exception {
+        final File logFilePath = DebugLogFileBackend.getLogFilePath();
 
-		// Log with the debug log file disabled
-		final DebugLogFileBackend backend = new DebugLogFileBackend(Log.INFO);
-		backend.print(Log.WARN, BuildConfig.LOG_TAG, null, "hi");
+        // Log with the debug log file disabled
+        final DebugLogFileBackend backend = new DebugLogFileBackend(Log.INFO);
+        backend.print(Log.WARN, BuildConfig.LOG_TAG, null, "hi");
 
-		// Enabling the debug log file won't create the log file just yet
-		Assert.assertFalse(logFilePath.exists());
-		DebugLogFileBackend.setEnabled(true);
-		Assert.assertFalse(logFilePath.exists());
+        // Enabling the debug log file won't create the log file just yet
+        Assert.assertFalse(logFilePath.exists());
+        DebugLogFileBackend.setEnabled(true);
+        Assert.assertFalse(logFilePath.exists());
 
-		// Logs below the min log level are filtered
-		backend.printAsync(Log.DEBUG, BuildConfig.LOG_TAG, null, "hey").get(500, TimeUnit.MILLISECONDS);
-		Assert.assertFalse(logFilePath.exists());
+        // Logs below the min log level are filtered
+        backend.printAsync(Log.DEBUG, BuildConfig.LOG_TAG, null, "hey").get(500, TimeUnit.MILLISECONDS);
+        Assert.assertFalse(logFilePath.exists());
 
-		// Log with the debug log file enabled
-		backend.printAsync(Log.WARN, BuildConfig.LOG_TAG, null, "hi").get(500, TimeUnit.MILLISECONDS);
-		Assert.assertTrue(logFilePath.exists());
-	}
+        // Log with the debug log file enabled
+        backend.printAsync(Log.WARN, BuildConfig.LOG_TAG, null, "hi").get(500, TimeUnit.MILLISECONDS);
+        Assert.assertTrue(logFilePath.exists());
+    }
 
-	/**
-	 * Make sure that enabling the debug log file actually creates the debug log file.
-	 */
-	@Test
-	public void testDisableRemovesFile() throws IOException {
-		final File logFilePath = DebugLogFileBackend.getLogFilePath();
-		Assert.assertFalse(logFilePath.exists());
-		Assert.assertTrue("Could not create logfile", logFilePath.createNewFile());
-		Assert.assertTrue(logFilePath.exists());
-		DebugLogFileBackend.setEnabled(false);
-		Assert.assertFalse(logFilePath.exists());
-	}
+    /**
+     * Make sure that enabling the debug log file actually creates the debug log file.
+     */
+    @Test
+    public void testDisableRemovesFile() throws IOException {
+        final File logFilePath = DebugLogFileBackend.getLogFilePath();
+        Assert.assertFalse(logFilePath.exists());
+        Assert.assertTrue("Could not create logfile", logFilePath.createNewFile());
+        Assert.assertTrue(logFilePath.exists());
+        DebugLogFileBackend.setEnabled(false);
+        Assert.assertFalse(logFilePath.exists());
+    }
 
 }

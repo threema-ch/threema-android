@@ -50,7 +50,8 @@ internal interface ServerConnectionDispatcher {
     fun close()
 }
 
-internal class SingleThreadedServerConnectionDispatcher(private val assertContext: Boolean) : ServerConnectionDispatcher {
+internal class SingleThreadedServerConnectionDispatcher(private val assertContext: Boolean) :
+    ServerConnectionDispatcher {
 
     private companion object {
         var THREADS_CREATED = 0
@@ -58,7 +59,8 @@ internal class SingleThreadedServerConnectionDispatcher(private val assertContex
 
     private lateinit var thread: Thread
 
-    private var exceptionHandlerReference: WeakReference<ServerConnectionDispatcher.ExceptionHandler>? = null
+    private var exceptionHandlerReference: WeakReference<ServerConnectionDispatcher.ExceptionHandler>? =
+        null
     override var exceptionHandler: ServerConnectionDispatcher.ExceptionHandler?
         get() = exceptionHandlerReference?.get()
         set(value) {
@@ -69,12 +71,14 @@ internal class SingleThreadedServerConnectionDispatcher(private val assertContex
     override val coroutineContext: CoroutineContext
 
     init {
-        val factory = TrulySingleThreadExecutorThreadFactory("ServerConnectionWorker-${THREADS_CREATED++}") {
-            thread = it
-        }
+        val factory =
+            TrulySingleThreadExecutorThreadFactory("ServerConnectionWorker-${THREADS_CREATED++}") {
+                thread = it
+            }
         dispatcher = Executors.newSingleThreadExecutor(factory).asCoroutineDispatcher()
 
-        val handler = CoroutineExceptionHandler { _, throwable -> exceptionHandler?.handleException(throwable) }
+        val handler =
+            CoroutineExceptionHandler { _, throwable -> exceptionHandler?.handleException(throwable) }
         coroutineContext = dispatcher.plus(handler)
     }
 

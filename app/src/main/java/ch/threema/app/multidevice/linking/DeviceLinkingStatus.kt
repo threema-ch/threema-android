@@ -33,11 +33,13 @@ class Connected(
     private val _rphConfirmedSignal = CompletableDeferred<Unit>()
     val rendezvousPathConfirmedSignal: Deferred<Unit> = _rphConfirmedSignal
 
-    val emojiIndices: Triple<Int, Int, Int> by lazy { Triple(
-        (rph[0].toUByte() % 128U).toInt(),
-        (rph[1].toUByte() % 128U).toInt(),
-        (rph[2].toUByte() % 128U).toInt()
-    ) }
+    val emojiIndices: Triple<Int, Int, Int> by lazy {
+        Triple(
+            (rph[0].toUByte() % 128U).toInt(),
+            (rph[1].toUByte() % 128U).toInt(),
+            (rph[2].toUByte() % 128U).toInt()
+        )
+    }
 
     fun confirmRendezvousPath() {
         _rphConfirmedSignal.complete(Unit)

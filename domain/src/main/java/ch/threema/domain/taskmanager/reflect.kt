@@ -227,7 +227,7 @@ fun getEncryptedUserProfileSyncUpdate(
 fun getEncryptedSettingsSyncUpdate(
     settings: Settings,
     multiDeviceProperties: MultiDeviceProperties,
-) : MultiDeviceKeys.EncryptedEnvelopeResult {
+): MultiDeviceKeys.EncryptedEnvelopeResult {
     val envelope = buildEnvelopeFor(multiDeviceProperties.mediatorDeviceId) {
         settingsSync = settingsSync {
             this.update = SettingsSyncKt.update {

@@ -49,69 +49,69 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({LogUtil.class, Build.class})
 public class WakeLockServiceImplTest {
-	private Context mockContext;
-	private PowerManager mockPowerManager;
-	private LifetimeService mockLifetimeService;
+    private Context mockContext;
+    private PowerManager mockPowerManager;
+    private LifetimeService mockLifetimeService;
 
-	private WakeLockServiceImpl service;
+    private WakeLockServiceImpl service;
 
-	@Before
-	public void setUp() {
-		Whitebox.setInternalState(Build.class, "MANUFACTURER", "Google");
+    @Before
+    public void setUp() {
+        Whitebox.setInternalState(Build.class, "MANUFACTURER", "Google");
 
-		// mock context
-		this.mockContext = PowerMockito.mock(Context.class);
-		this.mockPowerManager = PowerMockito.mock(PowerManager.class);
-		this.mockLifetimeService = PowerMockito.mock(LifetimeService.class);
+        // mock context
+        this.mockContext = PowerMockito.mock(Context.class);
+        this.mockPowerManager = PowerMockito.mock(PowerManager.class);
+        this.mockLifetimeService = PowerMockito.mock(LifetimeService.class);
 
-		when(this.mockContext.getSystemService(Context.POWER_SERVICE))
-				.thenReturn(mockPowerManager);
+        when(this.mockContext.getSystemService(Context.POWER_SERVICE))
+            .thenReturn(mockPowerManager);
 
-		// mock LogUtil
-		PowerMockito.mockStatic(LogUtil.class);
+        // mock LogUtil
+        PowerMockito.mockStatic(LogUtil.class);
 
-		// instantiate with context mock
-		this.service = new WakeLockServiceImpl(this.mockContext, this.mockLifetimeService);
-	}
+        // instantiate with context mock
+        this.service = new WakeLockServiceImpl(this.mockContext, this.mockLifetimeService);
+    }
 
-	@SuppressLint("WakelockTimeout")
-	@Test
-	public void acquire() {
-		PowerManager.WakeLock wakeLockMock = PowerMockito.mock(PowerManager.WakeLock.class);
+    @SuppressLint("WakelockTimeout")
+    @Test
+    public void acquire() {
+        PowerManager.WakeLock wakeLockMock = PowerMockito.mock(PowerManager.WakeLock.class);
 
-		when(this.mockPowerManager.newWakeLock(anyInt(), anyString()))
-				.thenReturn(wakeLockMock);
+        when(this.mockPowerManager.newWakeLock(anyInt(), anyString()))
+            .thenReturn(wakeLockMock);
 
-		when(wakeLockMock.isHeld()).thenReturn(true);
+        when(wakeLockMock.isHeld()).thenReturn(true);
 
-		WebClientSessionModel sessionModel1 = PowerMockito.mock(WebClientSessionModel.class);
-		when(sessionModel1.getId()).thenReturn(1);
+        WebClientSessionModel sessionModel1 = PowerMockito.mock(WebClientSessionModel.class);
+        when(sessionModel1.getId()).thenReturn(1);
 
-		WebClientSessionModel sessionModel2 = PowerMockito.mock(WebClientSessionModel.class);
-		when(sessionModel2.getId()).thenReturn(2);
+        WebClientSessionModel sessionModel2 = PowerMockito.mock(WebClientSessionModel.class);
+        when(sessionModel2.getId()).thenReturn(2);
 
-		when(wakeLockMock.isHeld()).thenReturn(false);
-		Assert.assertTrue(this.service.acquire(sessionModel1));
+        when(wakeLockMock.isHeld()).thenReturn(false);
+        Assert.assertTrue(this.service.acquire(sessionModel1));
 
-		when(wakeLockMock.isHeld()).thenReturn(true);
-		Assert.assertTrue(this.service.acquire(sessionModel1));
-		Assert.assertTrue(this.service.acquire(sessionModel2));
+        when(wakeLockMock.isHeld()).thenReturn(true);
+        Assert.assertTrue(this.service.acquire(sessionModel1));
+        Assert.assertTrue(this.service.acquire(sessionModel2));
 
-		// verify method calls
-		verify(this.mockPowerManager, times(1))
-				.newWakeLock(anyInt(), anyString());
+        // verify method calls
+        verify(this.mockPowerManager, times(1))
+            .newWakeLock(anyInt(), anyString());
 
-		verify(wakeLockMock, times(1)).acquire();
-	}
+        verify(wakeLockMock, times(1)).acquire();
+    }
 
-	@Test
-	public void release() throws Exception {
-		Assert.assertTrue(true);
-	}
+    @Test
+    public void release() throws Exception {
+        Assert.assertTrue(true);
+    }
 
-	@Test
-	public void releaseAll() throws Exception {
-		Assert.assertTrue(true);
-	}
+    @Test
+    public void releaseAll() throws Exception {
+        Assert.assertTrue(true);
+    }
 
 }

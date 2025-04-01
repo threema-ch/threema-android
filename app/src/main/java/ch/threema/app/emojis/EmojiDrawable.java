@@ -28,62 +28,63 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class EmojiDrawable extends Drawable {
-	private final SpriteCoordinates coords;
-	private final int spritemapInSampleSize;
-	private Bitmap bitmap;
+    private final SpriteCoordinates coords;
+    private final int spritemapInSampleSize;
+    private Bitmap bitmap;
 
-	private static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
+    private static final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
 
-	EmojiDrawable(SpriteCoordinates coords, int spritemapInSampleSize) {
-		this.coords = coords;
-		this.spritemapInSampleSize = spritemapInSampleSize;
-	}
+    EmojiDrawable(SpriteCoordinates coords, int spritemapInSampleSize) {
+        this.coords = coords;
+        this.spritemapInSampleSize = spritemapInSampleSize;
+    }
 
-	@Override
-	public int getIntrinsicWidth() {
-		return spritemapInSampleSize * EmojiManager.EMOJI_WIDTH;
-	}
+    @Override
+    public int getIntrinsicWidth() {
+        return spritemapInSampleSize * EmojiManager.EMOJI_WIDTH;
+    }
 
-	@Override
-	public int getIntrinsicHeight() {
-		return spritemapInSampleSize * EmojiManager.EMOJI_HEIGHT;
-	}
+    @Override
+    public int getIntrinsicHeight() {
+        return spritemapInSampleSize * EmojiManager.EMOJI_HEIGHT;
+    }
 
-	@Override
-	public void draw(@NonNull Canvas canvas) {
-		if (bitmap != null) {
-			canvas.drawBitmap(bitmap,
-				new Rect((int) ((float) (coords.x) / spritemapInSampleSize),
-					(int) ((float) coords.y / spritemapInSampleSize),
-					(int) ((float) (coords.x + EmojiManager.EMOJI_WIDTH) / spritemapInSampleSize),
-					(int) ((float) (coords.y + EmojiManager.EMOJI_HEIGHT) / spritemapInSampleSize)),
-				getBounds(),
-				paint);
-		}
-	}
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        if (bitmap != null) {
+            canvas.drawBitmap(bitmap,
+                new Rect((int) ((float) (coords.x) / spritemapInSampleSize),
+                    (int) ((float) coords.y / spritemapInSampleSize),
+                    (int) ((float) (coords.x + EmojiManager.EMOJI_WIDTH) / spritemapInSampleSize),
+                    (int) ((float) (coords.y + EmojiManager.EMOJI_HEIGHT) / spritemapInSampleSize)),
+                getBounds(),
+                paint);
+        }
+    }
 
-	public void setBitmap(Bitmap bitmap) {
-		if (this.bitmap == null || !this.bitmap.sameAs(bitmap)) {
-			this.bitmap = bitmap;
-			invalidateSelf();
-		}
-	}
+    public void setBitmap(Bitmap bitmap) {
+        if (this.bitmap == null || !this.bitmap.sameAs(bitmap)) {
+            this.bitmap = bitmap;
+            invalidateSelf();
+        }
+    }
 
-	@Override
-	public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-	}
+    @Override
+    public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
+    }
 
-	@Override
-	public void setColorFilter(@Nullable ColorFilter colorFilter) {
-	}
+    @Override
+    public void setColorFilter(@Nullable ColorFilter colorFilter) {
+    }
 
-	@Override
-	public int getOpacity() {
-		return PixelFormat.TRANSPARENT;
-	}
+    @Override
+    public int getOpacity() {
+        return PixelFormat.TRANSPARENT;
+    }
 }

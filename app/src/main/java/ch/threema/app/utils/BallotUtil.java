@@ -61,114 +61,114 @@ import ch.threema.storage.models.ballot.BallotModel;
 
 @SuppressWarnings("rawtypes")
 public class BallotUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotUtil");
 
-	public static boolean canVote(BallotModel model, String identity) {
-		return model != null
-				&& identity != null
-				&& model.getState() == BallotModel.State.OPEN;
-	}
+    public static boolean canVote(BallotModel model, String identity) {
+        return model != null
+            && identity != null
+            && model.getState() == BallotModel.State.OPEN;
+    }
 
-	public static boolean canViewMatrix(BallotModel model, String identity) {
-		return model != null
-				&& identity != null
-				&& (
-				model.getType() == BallotModel.Type.INTERMEDIATE
-						|| model.getState() == BallotModel.State.CLOSED);
-	}
+    public static boolean canViewMatrix(BallotModel model, String identity) {
+        return model != null
+            && identity != null
+            && (
+            model.getType() == BallotModel.Type.INTERMEDIATE
+                || model.getState() == BallotModel.State.CLOSED);
+    }
 
-	public static boolean canCopy(BallotModel model, String identity) {
-		return model != null
-				&& identity != null
-				&& model.getState() == BallotModel.State.CLOSED;
-	}
+    public static boolean canCopy(BallotModel model, String identity) {
+        return model != null
+            && identity != null
+            && model.getState() == BallotModel.State.CLOSED;
+    }
 
-	public static boolean canClose(BallotModel model, String identity) {
-		return model != null
-				&& identity != null
-				&& model.getState() == BallotModel.State.OPEN
-				&& TestUtil.compare(model.getCreatorIdentity(), identity);
-	}
+    public static boolean canClose(BallotModel model, String identity) {
+        return model != null
+            && identity != null
+            && model.getState() == BallotModel.State.OPEN
+            && TestUtil.compare(model.getCreatorIdentity(), identity);
+    }
 
-	public static boolean isMine(BallotModel model, UserService userService) {
-		return model != null
-				&& userService != null
-				&& !TestUtil.isEmptyOrNull(userService.getIdentity())
-				&& TestUtil.compare(userService.getIdentity(), model.getCreatorIdentity());
-	}
+    public static boolean isMine(BallotModel model, UserService userService) {
+        return model != null
+            && userService != null
+            && !TestUtil.isEmptyOrNull(userService.getIdentity())
+            && TestUtil.compare(userService.getIdentity(), model.getCreatorIdentity());
+    }
 
-	public static boolean openDefaultActivity(Context context, FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
-		if (context != null && fragmentManager != null) {
-			if (canVote(ballotModel, identity)) {
-				return openVoteDialog(fragmentManager, ballotModel, identity);
-			} else if (canViewMatrix(ballotModel, identity)) {
-				return openMatrixActivity(context, ballotModel, identity);
-			}
-		}
-		return false;
-	}
+    public static boolean openDefaultActivity(Context context, FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
+        if (context != null && fragmentManager != null) {
+            if (canVote(ballotModel, identity)) {
+                return openVoteDialog(fragmentManager, ballotModel, identity);
+            } else if (canViewMatrix(ballotModel, identity)) {
+                return openMatrixActivity(context, ballotModel, identity);
+            }
+        }
+        return false;
+    }
 
-	public static boolean openVoteDialog(FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
-		if (fragmentManager != null && canVote(ballotModel, identity)) {
-			BallotVoteDialog.newInstance(ballotModel.getId()).show(fragmentManager, "vote");
-			return true;
-		}
-		return false;
-	}
+    public static boolean openVoteDialog(FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
+        if (fragmentManager != null && canVote(ballotModel, identity)) {
+            BallotVoteDialog.newInstance(ballotModel.getId()).show(fragmentManager, "vote");
+            return true;
+        }
+        return false;
+    }
 
-	public static boolean openMatrixActivity(Context context, BallotModel ballotModel, String identity) {
-		if (context != null && canViewMatrix(ballotModel, identity)) {
-			Intent intent = new Intent(context, BallotMatrixActivity.class);
-			IntentDataUtil.append(ballotModel, intent);
-			context.startActivity(intent);
+    public static boolean openMatrixActivity(Context context, BallotModel ballotModel, String identity) {
+        if (context != null && canViewMatrix(ballotModel, identity)) {
+            Intent intent = new Intent(context, BallotMatrixActivity.class);
+            IntentDataUtil.append(ballotModel, intent);
+            context.startActivity(intent);
 
-			return intent != null;
-		}
-		return false;
-	}
+            return intent != null;
+        }
+        return false;
+    }
 
-	public static String getNotificationString(Context context, AbstractMessageModel messageModel) {
-		String message = "";
-		BallotService ballotService = null;
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+    public static String getNotificationString(Context context, AbstractMessageModel messageModel) {
+        String message = "";
+        BallotService ballotService = null;
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-		if (serviceManager != null) {
-			try {
-				ballotService = serviceManager.getBallotService();
-			} catch (Exception e) {
-				//
-			}
-		}
+        if (serviceManager != null) {
+            try {
+                ballotService = serviceManager.getBallotService();
+            } catch (Exception e) {
+                //
+            }
+        }
 
-		if (ballotService != null && messageModel.getBallotData() != null) {
-			BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
-			if (ballotModel != null) {
-				if (ballotModel.getState() == BallotModel.State.OPEN) {
-					message += " " + ballotModel.getName();
-				} else if (ballotModel.getState() == BallotModel.State.CLOSED) {
-					message += " " + context.getResources().getString(R.string.ballot_message_closed);
-				}
-			}
-		}
-		return message;
-	}
+        if (ballotService != null && messageModel.getBallotData() != null) {
+            BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
+            if (ballotModel != null) {
+                if (ballotModel.getState() == BallotModel.State.OPEN) {
+                    message += " " + ballotModel.getName();
+                } else if (ballotModel.getState() == BallotModel.State.CLOSED) {
+                    message += " " + context.getResources().getString(R.string.ballot_message_closed);
+                }
+            }
+        }
+        return message;
+    }
 
-	public static void requestCloseBallot(BallotModel ballotModel, String identity, Fragment targetFragment, AppCompatActivity targetActivity) {
-		if (BallotUtil.canClose(ballotModel, identity)) {
-			FragmentManager fragmentManager = targetActivity != null ? targetActivity.getSupportFragmentManager() : targetFragment.getFragmentManager();
-			if (ThreemaApplication.getServiceManager().getConnection().getConnectionState() == ConnectionState.LOGGEDIN) {
-				GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_really_close, R.string.ok, R.string.cancel);
-				dialog.setData(ballotModel);
-				if (targetFragment != null) {
-					dialog.setTargetFragment(targetFragment, 0);
-				}
-				dialog.show(fragmentManager, ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT);
-			} else {
-				SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_not_connected);
-				dialog.show(fragmentManager, "na");
-			}
-		}
-	}
+    public static void requestCloseBallot(BallotModel ballotModel, String identity, Fragment targetFragment, AppCompatActivity targetActivity) {
+        if (BallotUtil.canClose(ballotModel, identity)) {
+            FragmentManager fragmentManager = targetActivity != null ? targetActivity.getSupportFragmentManager() : targetFragment.getFragmentManager();
+            if (ThreemaApplication.getServiceManager().getConnection().getConnectionState() == ConnectionState.LOGGEDIN) {
+                GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_really_close, R.string.ok, R.string.cancel);
+                dialog.setData(ballotModel);
+                if (targetFragment != null) {
+                    dialog.setTargetFragment(targetFragment, 0);
+                }
+                dialog.show(fragmentManager, ThreemaApplication.CONFIRM_TAG_CLOSE_BALLOT);
+            } else {
+                SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_not_connected);
+                dialog.show(fragmentManager, "na");
+            }
+        }
+    }
 
     /**
      * Close the ballot.
@@ -183,14 +183,14 @@ public class BallotUtil {
      * @param triggerSource the trigger source of this action. If it is sync, then there won't be
      *                      any csp messages sent out
      */
-	public static void closeBallot(
+    public static void closeBallot(
         @Nullable AppCompatActivity activity,
         @Nullable final BallotModel ballotModel,
         @NonNull final BallotService ballotService,
         @NonNull MessageId messageId,
         @NonNull TriggerSource triggerSource
     ) {
-		if (ballotModel != null && ballotModel.getState() != BallotModel.State.CLOSED) {
+        if (ballotModel != null && ballotModel.getState() != BallotModel.State.CLOSED) {
             Runnable ballotCloseRunnable = () -> {
                 try {
                     ballotService.close(ballotModel.getId(), messageId, triggerSource);
@@ -208,8 +208,8 @@ public class BallotUtil {
             } else {
                 ballotCloseRunnable.run();
             }
-		}
-	}
+        }
+    }
 
     /**
      * Create a ballot.
@@ -231,7 +231,7 @@ public class BallotUtil {
      *                              won't be any csp messages sent out
      */
     @Nullable
-	public static BallotModel createBallot(
+    public static BallotModel createBallot(
         MessageReceiver receiver,
         String description,
         BallotModel.Type ballotType,
@@ -242,90 +242,90 @@ public class BallotUtil {
         @NonNull TriggerSource triggerSource
     ) {
         @NonNull
-		BallotModel ballotModel;
+        BallotModel ballotModel;
 
-		try {
-			BallotService ballotService = ThreemaApplication.getServiceManager().getBallotService();
-			BallotModel.ChoiceType choiceType = BallotModel.ChoiceType.TEXT;
+        try {
+            BallotService ballotService = ThreemaApplication.getServiceManager().getBallotService();
+            BallotModel.ChoiceType choiceType = BallotModel.ChoiceType.TEXT;
 
-			switch (receiver.getType()) {
-				case MessageReceiver.Type_GROUP:
-					ballotModel = ballotService.create(
-						((GroupMessageReceiver) receiver).getGroup(),
-						description,
-						BallotModel.State.TEMPORARY,
-						ballotAssessment,
-						ballotType,
-						choiceType,
+            switch (receiver.getType()) {
+                case MessageReceiver.Type_GROUP:
+                    ballotModel = ballotService.create(
+                        ((GroupMessageReceiver) receiver).getGroup(),
+                        description,
+                        BallotModel.State.TEMPORARY,
+                        ballotAssessment,
+                        ballotType,
+                        choiceType,
                         ballotId
                     );
-					break;
+                    break;
 
-				case MessageReceiver.Type_CONTACT:
-					ballotModel = ballotService.create(
-						((ContactMessageReceiver) receiver).getContact(),
-						description,
-						BallotModel.State.TEMPORARY,
-						ballotAssessment,
-						ballotType,
-						choiceType,
+                case MessageReceiver.Type_CONTACT:
+                    ballotModel = ballotService.create(
+                        ((ContactMessageReceiver) receiver).getContact(),
+                        description,
+                        BallotModel.State.TEMPORARY,
+                        ballotAssessment,
+                        ballotType,
+                        choiceType,
                         ballotId
                     );
-					break;
-				default:
-					throw new NotAllowedException("not allowed");
-			}
+                    break;
+                default:
+                    throw new NotAllowedException("not allowed");
+            }
 
-			//generate ids
-			Random r = new SecureRandom();
+            //generate ids
+            Random r = new SecureRandom();
 
-			int[] ids = new int[ballotChoiceModelList.size()];
-			for (int n = 0; n < ids.length; n++) {
-				int rId;
-				boolean exists;
-				do {
-					exists = false;
-					rId = Math.abs(r.nextInt());
-					for (int id : ids) {
-						if (id == rId) {
-							exists = true;
-							break;
-						}
-					}
-				}
-				while (exists);
-				ids[n] = rId;
+            int[] ids = new int[ballotChoiceModelList.size()];
+            for (int n = 0; n < ids.length; n++) {
+                int rId;
+                boolean exists;
+                do {
+                    exists = false;
+                    rId = Math.abs(r.nextInt());
+                    for (int id : ids) {
+                        if (id == rId) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                }
+                while (exists);
+                ids[n] = rId;
 
-				BallotChoiceModel b = ballotChoiceModelList.get(n);
-				if (b != null) {
-					b.setOrder(n + 1);
-					if (b.getApiBallotChoiceId() <= 0) {
-						b.setApiBallotChoiceId(rId);
-					}
-				}
-			}
+                BallotChoiceModel b = ballotChoiceModelList.get(n);
+                if (b != null) {
+                    b.setOrder(n + 1);
+                    if (b.getApiBallotChoiceId() <= 0) {
+                        b.setApiBallotChoiceId(rId);
+                    }
+                }
+            }
 
-			//add choices
-			for (BallotChoiceModel c : ballotChoiceModelList) {
-				ballotService.update(ballotModel, c);
-			}
+            //add choices
+            for (BallotChoiceModel c : ballotChoiceModelList) {
+                ballotService.update(ballotModel, c);
+            }
 
-			try {
-				ballotService.modifyFinished(ballotModel, messageId, triggerSource);
+            try {
+                ballotService.modifyFinished(ballotModel, messageId, triggerSource);
                 if (triggerSource == TriggerSource.LOCAL) {
                     RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, Toast.LENGTH_LONG).show());
                 }
-			} catch (MessageTooLongException e) {
-				ballotService.remove(ballotModel);
-				RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_too_long, Toast.LENGTH_LONG).show());
-				logger.error("Exception", e);
-			}
+            } catch (MessageTooLongException e) {
+                ballotService.remove(ballotModel);
+                RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_too_long, Toast.LENGTH_LONG).show());
+                logger.error("Exception", e);
+            }
             return ballotModel;
-		} catch (Exception e) {
-			RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.error, Toast.LENGTH_LONG).show());
-			logger.error("Exception", e);
-		}
+        } catch (Exception e) {
+            RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.error, Toast.LENGTH_LONG).show());
+            logger.error("Exception", e);
+        }
 
         return null;
-	}
+    }
 }

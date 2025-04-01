@@ -50,269 +50,269 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
 
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
 
-	private static final int ID_HIDDEN_CHECK_ON_NEW_INTENT = 9291;
-	private static final int ID_HIDDEN_CHECK_ON_CREATE = 9292;
-	private static final String DIALOG_TAG_HIDDEN_NOTICE = "hidden";
+    private static final int ID_HIDDEN_CHECK_ON_NEW_INTENT = 9291;
+    private static final int ID_HIDDEN_CHECK_ON_CREATE = 9292;
+    private static final String DIALOG_TAG_HIDDEN_NOTICE = "hidden";
 
-	private ComposeMessageFragment composeMessageFragment;
-	private MessageSectionFragment messageSectionFragment;
+    private ComposeMessageFragment composeMessageFragment;
+    private MessageSectionFragment messageSectionFragment;
 
-	private Intent currentIntent;
-	private int savedSoftInputMode;
+    private Intent currentIntent;
+    private int savedSoftInputMode;
 
-	private final String COMPOSE_FRAGMENT_TAG = "compose_message_fragment";
-	private final String MESSAGES_FRAGMENT_TAG = "message_section_fragment";
+    private final String COMPOSE_FRAGMENT_TAG = "compose_message_fragment";
+    private final String MESSAGES_FRAGMENT_TAG = "message_section_fragment";
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		logger.info("onCreate");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        logger.info("onCreate");
 
-		getWindow().setAllowEnterTransitionOverlap(true);
-		getWindow().setAllowReturnTransitionOverlap(true);
-		super.onCreate(savedInstanceState);
+        getWindow().setAllowEnterTransitionOverlap(true);
+        getWindow().setAllowReturnTransitionOverlap(true);
+        super.onCreate(savedInstanceState);
 
-		// Tell the Window that our app is going to responsible for fitting for any system windows.
-		// This is similar to the now deprecated:
-		// view.setSystemUiVisibility(LAYOUT_STABLE | LAYOUT_FULLSCREEN | LAYOUT_FULLSCREEN)
-		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			getWindow().setStatusBarColor(Color.TRANSPARENT);
-			getWindow().setNavigationBarColor(Color.TRANSPARENT);
-		}
+        // Tell the Window that our app is going to responsible for fitting for any system windows.
+        // This is similar to the now deprecated:
+        // view.setSystemUiVisibility(LAYOUT_STABLE | LAYOUT_FULLSCREEN | LAYOUT_FULLSCREEN)
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            getWindow().setNavigationBarColor(Color.TRANSPARENT);
+        }
 
-		this.currentIntent = getIntent();
+        this.currentIntent = getIntent();
 
-		//check master key
-		MasterKey masterKey = ThreemaApplication.getMasterKey();
+        //check master key
+        MasterKey masterKey = ThreemaApplication.getMasterKey();
 
-		if (!(masterKey != null && masterKey.isLocked())) {
-			this.initActivity(savedInstanceState);
-		}
-	}
+        if (!(masterKey != null && masterKey.isLocked())) {
+            this.initActivity(savedInstanceState);
+        }
+    }
 
-	@Override
-	protected boolean initActivity(Bundle savedInstanceState) {
-		if (!super.initActivity(savedInstanceState)) {
-			return false;
-		}
+    @Override
+    protected boolean initActivity(Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
 
-		logger.info("initActivity");
+        logger.info("initActivity");
 
-		this.getFragments();
+        this.getFragments();
 
-		if (findViewById(R.id.messages) != null) {
-			// add messages fragment in tablet layout
-			if (messageSectionFragment == null) {
-				messageSectionFragment = new MessageSectionFragment();
-				getSupportFragmentManager().beginTransaction().add(R.id.messages, messageSectionFragment, MESSAGES_FRAGMENT_TAG).commit();
-			}
-		}
+        if (findViewById(R.id.messages) != null) {
+            // add messages fragment in tablet layout
+            if (messageSectionFragment == null) {
+                messageSectionFragment = new MessageSectionFragment();
+                getSupportFragmentManager().beginTransaction().add(R.id.messages, messageSectionFragment, MESSAGES_FRAGMENT_TAG).commit();
+            }
+        }
 
-		boolean isHidden = checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE);
-		if (composeMessageFragment == null) {
-			// fragment no longer around
-			composeMessageFragment = new ComposeMessageFragment();
-			if (isHidden) {
-				getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).hide(composeMessageFragment).commit();
-			} else {
-				getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).commit();
-			}
-		} else {
-			if (!isHidden) {
-				getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
-			}
-		}
-		return true;
-	}
+        boolean isHidden = checkHiddenChatLock(getIntent(), ID_HIDDEN_CHECK_ON_CREATE);
+        if (composeMessageFragment == null) {
+            // fragment no longer around
+            composeMessageFragment = new ComposeMessageFragment();
+            if (isHidden) {
+                getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).hide(composeMessageFragment).commit();
+            } else {
+                getSupportFragmentManager().beginTransaction().add(R.id.compose, composeMessageFragment, COMPOSE_FRAGMENT_TAG).commit();
+            }
+        } else {
+            if (!isHidden) {
+                getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return ConfigUtils.isTabletLayout(this) ? R.layout.activity_compose_message_tablet : R.layout.activity_compose_message;
-	}
+    @Override
+    public int getLayoutResource() {
+        return ConfigUtils.isTabletLayout(this) ? R.layout.activity_compose_message_tablet : R.layout.activity_compose_message;
+    }
 
-	private void getFragments() {
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		composeMessageFragment = (ComposeMessageFragment) fragmentManager.findFragmentByTag(COMPOSE_FRAGMENT_TAG);
-		messageSectionFragment = (MessageSectionFragment) fragmentManager.findFragmentByTag(MESSAGES_FRAGMENT_TAG);
-	}
+    private void getFragments() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        composeMessageFragment = (ComposeMessageFragment) fragmentManager.findFragmentByTag(COMPOSE_FRAGMENT_TAG);
+        messageSectionFragment = (MessageSectionFragment) fragmentManager.findFragmentByTag(MESSAGES_FRAGMENT_TAG);
+    }
 
-	@Override
-	public void onNewIntent(Intent intent) {
-		logger.info("onNewIntent");
+    @Override
+    public void onNewIntent(Intent intent) {
+        logger.info("onNewIntent");
 
-		super.onNewIntent(intent);
+        super.onNewIntent(intent);
 
-		this.currentIntent = intent;
+        this.currentIntent = intent;
 
-		this.getFragments();
+        this.getFragments();
 
-		if (composeMessageFragment != null) {
-			if (!checkHiddenChatLock(intent, ID_HIDDEN_CHECK_ON_NEW_INTENT)) {
-				getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
-				composeMessageFragment.onNewIntent(intent);
-			}
-		}
-	}
+        if (composeMessageFragment != null) {
+            if (!checkHiddenChatLock(intent, ID_HIDDEN_CHECK_ON_NEW_INTENT)) {
+                getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+                composeMessageFragment.onNewIntent(intent);
+            }
+        }
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		logger.info("handleOnBackPressed");
-		if (ConfigUtils.isTabletLayout()) {
-			if (messageSectionFragment != null) {
-				if (messageSectionFragment.onBackPressed()) {
-					return;
-				}
-			}
-		}
-		if (composeMessageFragment != null) {
-			if (!composeMessageFragment.onBackPressed()) {
-				finish();
-				if (ConfigUtils.isTabletLayout()) {
-					overridePendingTransition(0, 0);
-				}
-			}
-			return;
-		}
-		finish();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        logger.info("handleOnBackPressed");
+        if (ConfigUtils.isTabletLayout()) {
+            if (messageSectionFragment != null) {
+                if (messageSectionFragment.onBackPressed()) {
+                    return;
+                }
+            }
+        }
+        if (composeMessageFragment != null) {
+            if (!composeMessageFragment.onBackPressed()) {
+                finish();
+                if (ConfigUtils.isTabletLayout()) {
+                    overridePendingTransition(0, 0);
+                }
+            }
+            return;
+        }
+        finish();
+    }
 
-	@Override
-	public void onDestroy() {
-		logger.debug("onDestroy");
-		super.onDestroy();
-	}
+    @Override
+    public void onDestroy() {
+        logger.debug("onDestroy");
+        super.onDestroy();
+    }
 
-	@Override
-	public void onStop() {
-		logger.info("onStop");
-		super.onStop();
-	}
+    @Override
+    public void onStop() {
+        logger.info("onStop");
+        super.onStop();
+    }
 
-	@Override
-	public void onResume() {
-		logger.info("onResume");
-		super.onResume();
+    @Override
+    public void onResume() {
+        logger.info("onResume");
+        super.onResume();
 
-		// Set the soft input mode to resize when activity resumes because it is set to adjust nothing while it is paused
-		savedSoftInputMode = getWindow().getAttributes().softInputMode;
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-	}
+        // Set the soft input mode to resize when activity resumes because it is set to adjust nothing while it is paused
+        savedSoftInputMode = getWindow().getAttributes().softInputMode;
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    }
 
-	@Override
-	public void onPause() {
-		logger.info("onPause");
-		super.onPause();
+    @Override
+    public void onPause() {
+        logger.info("onPause");
+        super.onPause();
 
-		// Set the soft input mode to adjust nothing while paused. This is needed when the keyboard is opened to edit the contact before sending.
-		if (savedSoftInputMode > 0) {
-			getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-		}
-	}
+        // Set the soft input mode to adjust nothing while paused. This is needed when the keyboard is opened to edit the contact before sending.
+        if (savedSoftInputMode > 0) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        }
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode,
-	                             final Intent intent) {
-		switch (requestCode) {
-			case ID_HIDDEN_CHECK_ON_CREATE:
-				super.onActivityResult(requestCode, resultCode, intent);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 final Intent intent) {
+        switch (requestCode) {
+            case ID_HIDDEN_CHECK_ON_CREATE:
+                super.onActivityResult(requestCode, resultCode, intent);
 
-				if (resultCode == RESULT_OK) {
-					serviceManager.getScreenLockService().setAuthenticated(true);
-					if (composeMessageFragment != null) {
-						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
-						// mark conversation as read as soon as it's unhidden
-						composeMessageFragment.markAsRead();
-					}
-				} else {
-					finish();
-				}
-				break;
-			case ID_HIDDEN_CHECK_ON_NEW_INTENT:
-				super.onActivityResult(requestCode, resultCode, intent);
+                if (resultCode == RESULT_OK) {
+                    serviceManager.getScreenLockService().setAuthenticated(true);
+                    if (composeMessageFragment != null) {
+                        getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+                        // mark conversation as read as soon as it's unhidden
+                        composeMessageFragment.markAsRead();
+                    }
+                } else {
+                    finish();
+                }
+                break;
+            case ID_HIDDEN_CHECK_ON_NEW_INTENT:
+                super.onActivityResult(requestCode, resultCode, intent);
 
-				if (resultCode == RESULT_OK) {
-					serviceManager.getScreenLockService().setAuthenticated(true);
-					if (composeMessageFragment != null) {
-						getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
-						composeMessageFragment.onNewIntent(this.currentIntent);
-					}
-				} else {
-					if (!ConfigUtils.isTabletLayout()) {
-						finish();
-					}
-				}
-				break;
-			case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
-				if (ThreemaApplication.getMasterKey().isLocked()) {
-					finish();
-				} else {
-					ConfigUtils.recreateActivity(this, ComposeMessageActivity.class, getIntent().getExtras());
-				}
-				break;
-			default:
-				super.onActivityResult(requestCode, resultCode, intent);
+                if (resultCode == RESULT_OK) {
+                    serviceManager.getScreenLockService().setAuthenticated(true);
+                    if (composeMessageFragment != null) {
+                        getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
+                        composeMessageFragment.onNewIntent(this.currentIntent);
+                    }
+                } else {
+                    if (!ConfigUtils.isTabletLayout()) {
+                        finish();
+                    }
+                }
+                break;
+            case ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY:
+                if (ThreemaApplication.getMasterKey().isLocked()) {
+                    finish();
+                } else {
+                    ConfigUtils.recreateActivity(this, ComposeMessageActivity.class, getIntent().getExtras());
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, intent);
 
-				// required for result of qr code scanner
-				if (composeMessageFragment != null) {
-					composeMessageFragment.onActivityResult(requestCode, resultCode, intent);
-				}
-		}
-	}
+                // required for result of qr code scanner
+                if (composeMessageFragment != null) {
+                    composeMessageFragment.onActivityResult(requestCode, resultCode, intent);
+                }
+        }
+    }
 
-	private boolean checkHiddenChatLock(Intent intent, int requestCode) {
-		MessageReceiver<?> messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
+    private boolean checkHiddenChatLock(Intent intent, int requestCode) {
+        MessageReceiver<?> messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(getApplicationContext(), intent);
 
-		if (messageReceiver != null) {
-			if (serviceManager != null) {
-				DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
-				if (hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
-					if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
-						HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
-					} else {
-						GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
-					}
-					return true;
-				}
-			}
-		} else {
-			logger.info("Intent does not have any extras. Check \"Don't keep activities\" option in developer settings.");
-		}
-		return false;
-	}
+        if (messageReceiver != null) {
+            if (serviceManager != null) {
+                DeadlineListService hiddenChatsListService = serviceManager.getHiddenChatsListService();
+                if (hiddenChatsListService.has(messageReceiver.getUniqueIdString())) {
+                    if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
+                        HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
+                    } else {
+                        GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
+                    }
+                    return true;
+                }
+            }
+        } else {
+            logger.info("Intent does not have any extras. Check \"Don't keep activities\" option in developer settings.");
+        }
+        return false;
+    }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-		ConfigUtils.adjustToolbar(this, getToolbar());
+        ConfigUtils.adjustToolbar(this, getToolbar());
 
-		FrameLayout messagesLayout = findViewById(R.id.messages);
+        FrameLayout messagesLayout = findViewById(R.id.messages);
 
-		if (messagesLayout != null) {
-			// adjust width of messages fragment in tablet layout
-			FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) messagesLayout.getLayoutParams();
-			layoutParams.width = getResources().getDimensionPixelSize(R.dimen.message_fragment_width);
-			messagesLayout.setLayoutParams(layoutParams);
-		}
-	}
+        if (messagesLayout != null) {
+            // adjust width of messages fragment in tablet layout
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) messagesLayout.getLayoutParams();
+            layoutParams.width = getResources().getDimensionPixelSize(R.dimen.message_fragment_width);
+            messagesLayout.setLayoutParams(layoutParams);
+        }
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		Intent intent = new Intent(this, SettingsActivity.class);
-		intent.putExtra(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT, true);
-		startActivity(intent);
-		finish();
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT, true);
+        startActivity(intent);
+        finish();
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		finish();
-	}
+    @Override
+    public void onNo(String tag, Object data) {
+        finish();
+    }
 }

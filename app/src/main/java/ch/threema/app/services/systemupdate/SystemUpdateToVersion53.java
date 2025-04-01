@@ -38,31 +38,32 @@ import ch.threema.base.utils.LoggingUtil;
  * remove old pre-API26 notification channels
  */
 public class SystemUpdateToVersion53 implements UpdateSystemService.SystemUpdate {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion53");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion53");
 
-	public SystemUpdateToVersion53() { }
+    public SystemUpdateToVersion53() {
+    }
 
-	@Override
-	public boolean runDirectly() {
-		NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(ThreemaApplication.getAppContext());
-		try {
-			notificationManagerCompat.deleteNotificationChannel("passphrase_service");
-			notificationManagerCompat.deleteNotificationChannel("webclient");
-			notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "passphrase_service");
-			notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "webclient");
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() {
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(ThreemaApplication.getAppContext());
+        try {
+            notificationManagerCompat.deleteNotificationChannel("passphrase_service");
+            notificationManagerCompat.deleteNotificationChannel("webclient");
+            notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "passphrase_service");
+            notificationManagerCompat.deleteNotificationChannel(BuildConfig.APPLICATION_ID + "webclient");
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 53";
-	}
+    @Override
+    public String getText() {
+        return "version 53";
+    }
 }

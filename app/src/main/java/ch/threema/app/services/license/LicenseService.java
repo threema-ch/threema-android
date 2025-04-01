@@ -25,44 +25,47 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 public interface LicenseService<T extends LicenseService.Credentials> {
-	/**
-	 * Holder of the credential values
-	 */
-	interface Credentials{}
+    /**
+     * Holder of the credential values
+     */
+    interface Credentials {
+    }
 
-	/**
-	 * Validate by credentials
-	 * On success, the credentials will be saved.
-	 * @param credentials holder of the credential values
-	 * @return `null` for success or an error message if validation failed
-	 */
-	@Nullable
-	@WorkerThread
-	String validate(T credentials);
+    /**
+     * Validate by credentials
+     * On success, the credentials will be saved.
+     *
+     * @param credentials holder of the credential values
+     * @return `null` for success or an error message if validation failed
+     */
+    @Nullable
+    @WorkerThread
+    String validate(T credentials);
 
-	/**
-	 * Validate by saved credentials
-	 * @param allowException If true, general exceptions will be ignored
-	 * @return `null` for success or an error message if validation failed
-	 */
-	@Nullable
-	@WorkerThread
-	String validate(boolean allowException);
+    /**
+     * Validate by saved credentials
+     *
+     * @param allowException If true, general exceptions will be ignored
+     * @return `null` for success or an error message if validation failed
+     */
+    @Nullable
+    @WorkerThread
+    String validate(boolean allowException);
 
-	/**
-	 * check if any credentials are saved
-	 */
-	boolean hasCredentials();
+    /**
+     * check if any credentials are saved
+     */
+    boolean hasCredentials();
 
-	/**
-	 * check if a validate check was successfully
-	 */
-	boolean isLicensed();
+    /**
+     * check if a validate check was successfully
+     */
+    boolean isLicensed();
 
-	/**
-	 * load the credentials
-	 *
-	 * @return null or the saved credentials
-	 */
-	T loadCredentials();
+    /**
+     * load the credentials
+     *
+     * @return null or the saved credentials
+     */
+    T loadCredentials();
 }

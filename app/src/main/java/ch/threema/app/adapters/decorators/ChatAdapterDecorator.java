@@ -299,7 +299,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     }
 
     /**
-     *
      * Is necessary because depending on the message model, we have to use a different color state list
      *
      * @param contentColor The color-state-list that will be applied to all {@code TextView} instances in {@code ComposeMessageHolder}

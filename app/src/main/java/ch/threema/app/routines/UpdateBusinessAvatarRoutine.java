@@ -53,260 +53,260 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
  * Update avatars of the business account
  */
 public class UpdateBusinessAvatarRoutine implements Runnable {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateBusinessAvatarRoutine");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateBusinessAvatarRoutine");
 
-	private final @NonNull ContactService contactService;
-	private final @NonNull FileService fileService;
-	private final @NonNull ContactModel contactModel;
-	private final @NonNull ApiService apiService;
-	private boolean running = false;
-	private boolean forceUpdate = false;
+    private final @NonNull ContactService contactService;
+    private final @NonNull FileService fileService;
+    private final @NonNull ContactModel contactModel;
+    private final @NonNull ApiService apiService;
+    private boolean running = false;
+    private boolean forceUpdate = false;
 
-	protected UpdateBusinessAvatarRoutine(
-		@NonNull ContactService contactService,
-		@NonNull FileService fileService,
-		@NonNull ContactModel contactModel,
-		@NonNull ApiService apiService
-	) {
-		this.contactService = contactService;
-		this.fileService = fileService;
-		this.contactModel = contactModel;
-		this.apiService = apiService;
-	}
+    protected UpdateBusinessAvatarRoutine(
+        @NonNull ContactService contactService,
+        @NonNull FileService fileService,
+        @NonNull ContactModel contactModel,
+        @NonNull ApiService apiService
+    ) {
+        this.contactService = contactService;
+        this.fileService = fileService;
+        this.contactModel = contactModel;
+        this.apiService = apiService;
+    }
 
-	private void forceUpdate() {
-		this.forceUpdate = true;
-	}
+    private void forceUpdate() {
+        this.forceUpdate = true;
+    }
 
-	@Override
-	public void run() {
-		this.running = true;
+    @Override
+    public void run() {
+        this.running = true;
 
-		if (!ContactUtil.isGatewayContact(this.contactModel.getIdentity())) {
-			logger.error("Contact is not a business account");
-			this.running = false;
-			return;
+        if (!ContactUtil.isGatewayContact(this.contactModel.getIdentity())) {
+            logger.error("Contact is not a business account");
+            this.running = false;
+            return;
 
-		}
-		//validate expiry date
-		if (!this.forceUpdate) {
-			ContactModelData data = contactModel.getData().getValue();
-			if (data == null) {
-				logger.warn("Contact has been deleted");
-				this.running = false;
-				return;
-			}
-			if (!data.isAvatarExpired()) {
-				logger.error("Avatar is not expired");
-				this.running = false;
-				return;
-			}
-		}
+        }
+        //validate expiry date
+        if (!this.forceUpdate) {
+            ContactModelData data = contactModel.getData().getValue();
+            if (data == null) {
+                logger.warn("Contact has been deleted");
+                this.running = false;
+                return;
+            }
+            if (!data.isAvatarExpired()) {
+                logger.error("Avatar is not expired");
+                this.running = false;
+                return;
+            }
+        }
 
-		//define default expiry date (now + 1day)
-		Calendar tomorrowCalendar = Calendar.getInstance();
-		tomorrowCalendar.setTime(new Date());
-		tomorrowCalendar.add(Calendar.DATE, 1);
-		Date tomorrow = tomorrowCalendar.getTime();
+        //define default expiry date (now + 1day)
+        Calendar tomorrowCalendar = Calendar.getInstance();
+        tomorrowCalendar.setTime(new Date());
+        tomorrowCalendar.add(Calendar.DATE, 1);
+        Date tomorrow = tomorrowCalendar.getTime();
 
-		try {
-			logger.debug("Download Avatar");
+        try {
+            logger.debug("Download Avatar");
 
-			HttpsURLConnection connection = apiService.createAvatarURLConnection(contactModel.getIdentity());
+            HttpsURLConnection connection = apiService.createAvatarURLConnection(contactModel.getIdentity());
 
-			try {
-				// Warning: This may implicitly open an error stream in the 4xx/5xx case!
-				connection.connect();
-				int responseCode = connection.getResponseCode();
-				if (responseCode != HttpsURLConnection.HTTP_OK) {
-					if (responseCode == HttpsURLConnection.HTTP_NOT_FOUND) {
-						logger.debug("Avatar not found");
-						// Remove existing avatar
+            try {
+                // Warning: This may implicitly open an error stream in the 4xx/5xx case!
+                connection.connect();
+                int responseCode = connection.getResponseCode();
+                if (responseCode != HttpsURLConnection.HTTP_OK) {
+                    if (responseCode == HttpsURLConnection.HTTP_NOT_FOUND) {
+                        logger.debug("Avatar not found");
+                        // Remove existing avatar
                         // Note that the profile picture of a gateway id is stored as user defined
                         // profile picture on purpose. This prevents that it is overwritten if the
                         // gateway would suddenly start distributing its own profile picture via csp
                         // messages.
-						this.fileService.removeUserDefinedProfilePicture(contactModel.getIdentity());
+                        this.fileService.removeUserDefinedProfilePicture(contactModel.getIdentity());
 
-						//ok, no avatar set
-						//add expires date = now + 1day
-						this.contactModel.setLocalAvatarExpires(tomorrow);
-					} else if (responseCode == HttpsURLConnection.HTTP_UNAUTHORIZED) {
-						 logger.warn("Unauthorized access to avatar server");
-						 if (ConfigUtils.isOnPremBuild()) {
-							 logger.info("Invalidating auth token");
-							 apiService.invalidateAuthToken();
-						 }
-					}
-				} else {
-					//cool, save avatar
-					logger.debug("Avatar found start download");
+                        //ok, no avatar set
+                        //add expires date = now + 1day
+                        this.contactModel.setLocalAvatarExpires(tomorrow);
+                    } else if (responseCode == HttpsURLConnection.HTTP_UNAUTHORIZED) {
+                        logger.warn("Unauthorized access to avatar server");
+                        if (ConfigUtils.isOnPremBuild()) {
+                            logger.info("Invalidating auth token");
+                            apiService.invalidateAuthToken();
+                        }
+                    }
+                } else {
+                    //cool, save avatar
+                    logger.debug("Avatar found start download");
 
-					File temporaryFile = this.fileService.createTempFile(MEDIA_IGNORE_FILENAME, "avatardownload-" + this.contactModel.getIdentity().hashCode());
-					// this will be useful to display download percentage
-					// might be -1: server did not report the length
-					int fileLength = connection.getContentLength();
-					logger.debug("size: {}", fileLength);
+                    File temporaryFile = this.fileService.createTempFile(MEDIA_IGNORE_FILENAME, "avatardownload-" + this.contactModel.getIdentity().hashCode());
+                    // this will be useful to display download percentage
+                    // might be -1: server did not report the length
+                    int fileLength = connection.getContentLength();
+                    logger.debug("size: {}", fileLength);
 
-					// download the file
-					Date expires = new Date(connection.getHeaderFieldDate("Expires", tomorrow.getTime()));
-					logger.debug("expires {}", expires);
+                    // download the file
+                    Date expires = new Date(connection.getHeaderFieldDate("Expires", tomorrow.getTime()));
+                    logger.debug("expires {}", expires);
 
-					byte[] data = new byte[4096];
-					int count;
-					try (
-						InputStream input = connection.getInputStream();
-						FileOutputStream output = new FileOutputStream(temporaryFile.getPath())
-					) {
+                    byte[] data = new byte[4096];
+                    int count;
+                    try (
+                        InputStream input = connection.getInputStream();
+                        FileOutputStream output = new FileOutputStream(temporaryFile.getPath())
+                    ) {
 
-						while ((count = input.read(data)) != -1) {
-							//write to file
-							output.write(data, 0, count);
-						}
+                        while ((count = input.read(data)) != -1) {
+                            //write to file
+                            output.write(data, 0, count);
+                        }
 
-						logger.debug("Avatar downloaded");
+                        logger.debug("Avatar downloaded");
 
-						// Store profile picture
+                        // Store profile picture
                         // Note that the profile picture of a gateway id is stored as user defined
                         // profile picture on purpose. This prevents that it is overwritten if the
                         // gateway would suddenly start distributing its own profile picture via csp
                         // messages.
-						this.contactService.setUserDefinedProfilePicture(contactModel.getIdentity(), temporaryFile, TriggerSource.LOCAL);
+                        this.contactService.setUserDefinedProfilePicture(contactModel.getIdentity(), temporaryFile, TriggerSource.LOCAL);
 
-						//set expires header
-						this.contactModel.setLocalAvatarExpires(expires);
+                        //set expires header
+                        this.contactModel.setLocalAvatarExpires(expires);
 
-						//remove temporary file
-						FileUtil.deleteFileOrWarn(temporaryFile, "temporaryFile", logger);
-					} catch (IOException x) {
-						//failed to download
-						//do nothing an try again later
-						logger.error("Failed to download", x);
-					}
-				}
-			} finally {
-				try {
-					final InputStream errorStream = connection.getErrorStream();
-					if (errorStream != null) {
-						errorStream.close();
-					}
-				} catch (IOException e) {
-					// empty
-				}
-			}
-		} catch (Exception x) {
-			logger.error("Exception", x);
-		}
-		this.running = false;
-	}
+                        //remove temporary file
+                        FileUtil.deleteFileOrWarn(temporaryFile, "temporaryFile", logger);
+                    } catch (IOException x) {
+                        //failed to download
+                        //do nothing an try again later
+                        logger.error("Failed to download", x);
+                    }
+                }
+            } finally {
+                try {
+                    final InputStream errorStream = connection.getErrorStream();
+                    if (errorStream != null) {
+                        errorStream.close();
+                    }
+                } catch (IOException e) {
+                    // empty
+                }
+            }
+        } catch (Exception x) {
+            logger.error("Exception", x);
+        }
+        this.running = false;
+    }
 
-	protected boolean isRunning() {
-		return this.running;
-	}
+    protected boolean isRunning() {
+        return this.running;
+    }
 
-	/**
-	 * routine states
-	 */
-	private static final Map<String, UpdateBusinessAvatarRoutine> runningUpdates = new HashMap<>();
+    /**
+     * routine states
+     */
+    private static final Map<String, UpdateBusinessAvatarRoutine> runningUpdates = new HashMap<>();
 
-	/**
-	 * Update (if necessary) a business avatar
-	 */
-	public static void startUpdate(
-		@NonNull ContactModel contactModel,
-		@NonNull FileService fileService,
-		@NonNull ContactService contactService,
-		@NonNull ApiService apiService
-	) {
-		UpdateBusinessAvatarRoutine instance = createInstance(
-			contactModel,
-			fileService,
-			contactService,
-			apiService,
-			false
-		);
-		if (instance != null) {
-			//simple start thread!
-			Thread thread = new Thread(instance);
-			thread.setUncaughtExceptionHandler((thread1, throwable) -> {
-				logger.error("Uncaught exception", throwable);
-				synchronized (runningUpdates) {
-					runningUpdates.remove(contactModel.getIdentity());
-				}
-			});
-			thread.start();
-		}
-	}
+    /**
+     * Update (if necessary) a business avatar
+     */
+    public static void startUpdate(
+        @NonNull ContactModel contactModel,
+        @NonNull FileService fileService,
+        @NonNull ContactService contactService,
+        @NonNull ApiService apiService
+    ) {
+        UpdateBusinessAvatarRoutine instance = createInstance(
+            contactModel,
+            fileService,
+            contactService,
+            apiService,
+            false
+        );
+        if (instance != null) {
+            //simple start thread!
+            Thread thread = new Thread(instance);
+            thread.setUncaughtExceptionHandler((thread1, throwable) -> {
+                logger.error("Uncaught exception", throwable);
+                synchronized (runningUpdates) {
+                    runningUpdates.remove(contactModel.getIdentity());
+                }
+            });
+            thread.start();
+        }
+    }
 
-	/**
-	 * Update (if necessary) a business avatar
-	 * IMPORTANT: this method runs the update routine in the same thread
-	 *
-	 * @param forceUpdate if true, the expiry date will be ignored
-	 */
-	@WorkerThread
-	public static boolean start(
-		@NonNull ContactModel contactModel,
-		@NonNull FileService fileService,
-		@NonNull ContactService contactService,
-		@NonNull ApiService apiService,
-		boolean forceUpdate
-	) {
-		UpdateBusinessAvatarRoutine instance = createInstance(
-			contactModel,
-			fileService,
-			contactService,
-			apiService,
-			forceUpdate
-		);
-		if(instance != null) {
-			instance.run();
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Update (if necessary) a business avatar
+     * IMPORTANT: this method runs the update routine in the same thread
+     *
+     * @param forceUpdate if true, the expiry date will be ignored
+     */
+    @WorkerThread
+    public static boolean start(
+        @NonNull ContactModel contactModel,
+        @NonNull FileService fileService,
+        @NonNull ContactService contactService,
+        @NonNull ApiService apiService,
+        boolean forceUpdate
+    ) {
+        UpdateBusinessAvatarRoutine instance = createInstance(
+            contactModel,
+            fileService,
+            contactService,
+            apiService,
+            forceUpdate
+        );
+        if (instance != null) {
+            instance.run();
+            return true;
+        }
+        return false;
+    }
 
-	private static UpdateBusinessAvatarRoutine createInstance(
-		@NonNull ContactModel contactModel,
-		@NonNull FileService fileService,
-		@NonNull ContactService contactService,
-		@NonNull ApiService apiService,
-		boolean forceUpdate
-	) {
-		synchronized (runningUpdates) {
-			final String key = contactModel.getIdentity();
-			//check if a update is running now
-			if (!runningUpdates.containsKey(key)
-					|| runningUpdates.get(key) == null
-					|| !runningUpdates.get(key).isRunning()) {
+    private static UpdateBusinessAvatarRoutine createInstance(
+        @NonNull ContactModel contactModel,
+        @NonNull FileService fileService,
+        @NonNull ContactService contactService,
+        @NonNull ApiService apiService,
+        boolean forceUpdate
+    ) {
+        synchronized (runningUpdates) {
+            final String key = contactModel.getIdentity();
+            //check if a update is running now
+            if (!runningUpdates.containsKey(key)
+                || runningUpdates.get(key) == null
+                || !runningUpdates.get(key).isRunning()) {
 
-				//check if necessary
-				if (!forceUpdate) {
-					ContactModelData data = contactModel.getData().getValue();
-					if (data == null || !data.isAvatarExpired()) {
-						logger.warn("Contact has been deleted or avatar is not expired");
-						return null;
-					}
-				}
+                //check if necessary
+                if (!forceUpdate) {
+                    ContactModelData data = contactModel.getData().getValue();
+                    if (data == null || !data.isAvatarExpired()) {
+                        logger.warn("Contact has been deleted or avatar is not expired");
+                        return null;
+                    }
+                }
 
-				logger.debug("Start update business avatar routine");
-				UpdateBusinessAvatarRoutine newRoutine = new UpdateBusinessAvatarRoutine(
-						contactService,
-						fileService,
-						contactModel,
-						apiService);
+                logger.debug("Start update business avatar routine");
+                UpdateBusinessAvatarRoutine newRoutine = new UpdateBusinessAvatarRoutine(
+                    contactService,
+                    fileService,
+                    contactModel,
+                    apiService);
 
-				if (forceUpdate) {
-					//set force update
-					newRoutine.forceUpdate();
-				}
-				runningUpdates.put(key, newRoutine);
+                if (forceUpdate) {
+                    //set force update
+                    newRoutine.forceUpdate();
+                }
+                runningUpdates.put(key, newRoutine);
 
-				return newRoutine;
-			}
-		}
+                return newRoutine;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

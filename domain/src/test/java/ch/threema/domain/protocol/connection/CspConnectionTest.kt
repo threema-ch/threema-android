@@ -61,7 +61,10 @@ internal class CspConnectionTest : ServerConnectionTest() {
                 // Nothing to do
             }
 
-            override suspend fun startRunningTasks(layer5Codec: Layer5Codec, incomingMessageProcessor: IncomingMessageProcessor) {
+            override suspend fun startRunningTasks(
+                layer5Codec: Layer5Codec,
+                incomingMessageProcessor: IncomingMessageProcessor
+            ) {
                 // Nothing to do
             }
 
@@ -95,7 +98,12 @@ internal class CspConnectionTest : ServerConnectionTest() {
             ServerConnectionDependencies(
                 controllers.mainController,
                 socket,
-                createConnectionLayers(it, controllers, configuration.incomingMessageProcessor, taskManager)
+                createConnectionLayers(
+                    it,
+                    controllers,
+                    configuration.incomingMessageProcessor,
+                    taskManager
+                )
             )
         }
 
@@ -104,22 +112,34 @@ internal class CspConnectionTest : ServerConnectionTest() {
 
     private fun createConfiguration(): CspConnectionConfiguration {
         val incomingMessageProcessor = object : IncomingMessageProcessor {
-            override suspend fun processIncomingCspMessage(messageBox: MessageBox, handle: ActiveTaskCodec) { }
-            override suspend fun processIncomingD2mMessage(message: InboundD2mMessage.Reflected, handle: ActiveTaskCodec) {}
-            override fun processIncomingServerAlert(alertData: CspMessage.ServerAlertData) { }
-            override fun processIncomingServerError(errorData: CspMessage.ServerErrorData) { }
+            override suspend fun processIncomingCspMessage(
+                messageBox: MessageBox,
+                handle: ActiveTaskCodec
+            ) {
+            }
+
+            override suspend fun processIncomingD2mMessage(
+                message: InboundD2mMessage.Reflected,
+                handle: ActiveTaskCodec
+            ) {
+            }
+
+            override fun processIncomingServerAlert(alertData: CspMessage.ServerAlertData) {}
+            override fun processIncomingServerError(errorData: CspMessage.ServerErrorData) {}
         }
-        val taskManager = TaskManagerProvider.getTaskManager(TaskManagerConfiguration(
-            {
-                object : TaskArchiver {
-                    override fun addTask(task: Task<*, TaskCodec>) {}
-                    override fun removeTask(task: Task<*, TaskCodec>) {}
-                    override fun loadAllTasks(): List<Task<*, TaskCodec>> = emptyList()
-                }
-            },
-            TestNoopDeviceCookieManager(),
-            true
-        ))
+        val taskManager = TaskManagerProvider.getTaskManager(
+            TaskManagerConfiguration(
+                {
+                    object : TaskArchiver {
+                        override fun addTask(task: Task<*, TaskCodec>) {}
+                        override fun removeTask(task: Task<*, TaskCodec>) {}
+                        override fun loadAllTasks(): List<Task<*, TaskCodec>> = emptyList()
+                    }
+                },
+                TestNoopDeviceCookieManager(),
+                true
+            )
+        )
         return CspConnectionConfiguration(
             TestIdentityStore(),
             serverAddressProvider,
@@ -145,7 +165,13 @@ internal class CspConnectionTest : ServerConnectionTest() {
             MultiplexLayer(controllers.serverConnectionController),
             AuthLayer(controllers.layer3Controller),
             MonitoringLayer(connection, controllers.layer4Controller),
-            EndToEndLayer(controllers.serverConnectionController.dispatcher.coroutineContext, controllers.serverConnectionController, connection, incomingMessageProcessor, taskManager)
+            EndToEndLayer(
+                controllers.serverConnectionController.dispatcher.coroutineContext,
+                controllers.serverConnectionController,
+                connection,
+                incomingMessageProcessor,
+                taskManager
+            )
         )
     }
 

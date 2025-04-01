@@ -67,229 +67,230 @@ import ch.threema.base.utils.LoggingUtil;
 
 @SuppressLint("UnsafeOptInUsageError")
 public class VideoViewFragment extends MediaViewFragment implements Player.Listener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
 
-	private WeakReference<ImageView> previewImageViewRef;
-	private WeakReference<CircularProgressIndicator> progressBarRef;
-	private WeakReference<PlayerView> videoViewRef;
-	private WeakReference<GestureFrameLayout> gestureFrameLayoutRef;
-	private ExoPlayer videoPlayer;
-	private boolean isImmediatePlay, isPreparing;
+    private WeakReference<ImageView> previewImageViewRef;
+    private WeakReference<CircularProgressIndicator> progressBarRef;
+    private WeakReference<PlayerView> videoViewRef;
+    private WeakReference<GestureFrameLayout> gestureFrameLayoutRef;
+    private ExoPlayer videoPlayer;
+    private boolean isImmediatePlay, isPreparing;
 
-	private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
-		@Override
-		public void onStateChanged(State state) {
-			if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
-				PlayerView playerView = videoViewRef.get();
-				if (playerView != null && playerView.isControllerFullyVisible()) {
-					playerView.hideController();
-				}
-			}
-		}
+    private final GestureController.OnStateChangeListener onGestureStateChangeListener = new GestureController.OnStateChangeListener() {
+        @Override
+        public void onStateChanged(State state) {
+            if (state.getZoom() > 1.05f || state.getZoom() < 0.95f) {
+                PlayerView playerView = videoViewRef.get();
+                if (playerView != null && playerView.isControllerFullyVisible()) {
+                    playerView.hideController();
+                }
+            }
+        }
 
-		@Override
-		public void onStateReset(State oldState, State newState) {}
-	};
+        @Override
+        public void onStateReset(State oldState, State newState) {
+        }
+    };
 
-	public VideoViewFragment() {
-		super();
-		logger.debug("new instance");
-	}
+    public VideoViewFragment() {
+        super();
+        logger.debug("new instance");
+    }
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		logger.debug("onCreateView");
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        logger.debug("onCreateView");
 
-		this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
+        this.isImmediatePlay = getArguments().getBoolean(MediaViewerActivity.EXTRA_ID_IMMEDIATE_PLAY, false);
 
-		AudioAttributes audioAttributes = new AudioAttributes.Builder()
-			.setUsage(C.USAGE_MEDIA)
-			.setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
-			.setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
-			.build();
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+            .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
+            .build();
 
-		try {
-			this.videoPlayer = VideoUtil.getExoPlayer(requireContext());
-			this.videoPlayer.setAudioAttributes(audioAttributes, true);
-			this.videoPlayer.addListener(this);
-		} catch (OutOfMemoryError e) {
-			logger.error("Exception", e);
-		}
-		return super.onCreateView(inflater, container, savedInstanceState);
-	}
+        try {
+            this.videoPlayer = VideoUtil.getExoPlayer(requireContext());
+            this.videoPlayer.setAudioAttributes(audioAttributes, true);
+            this.videoPlayer.addListener(this);
+        } catch (OutOfMemoryError e) {
+            logger.error("Exception", e);
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
-	@Override
-	protected int getFragmentResourceId() {
-		return R.layout.fragment_media_viewer_video;
-	}
+    @Override
+    protected int getFragmentResourceId() {
+        return R.layout.fragment_media_viewer_video;
+    }
 
-	@Override
-	protected void showThumbnail(@NonNull Drawable thumbnail) {
-		logger.debug("showThumbnail");
+    @Override
+    protected void showThumbnail(@NonNull Drawable thumbnail) {
+        logger.debug("showThumbnail");
 
-		if(TestUtil.required(this.previewImageViewRef, this.previewImageViewRef.get(), thumbnail)) {
-			this.previewImageViewRef.get().setImageDrawable(thumbnail);
-		}
-	}
+        if (TestUtil.required(this.previewImageViewRef, this.previewImageViewRef.get(), thumbnail)) {
+            this.previewImageViewRef.get().setImageDrawable(thumbnail);
+        }
+    }
 
-	@Override
-	protected void handleDecryptingFile() {
-		logger.debug("handleDecryptingFile");
+    @Override
+    protected void handleDecryptingFile() {
+        logger.debug("handleDecryptingFile");
 
-		if (progressBarRef.get() != null) {
-			this.progressBarRef.get().setVisibility(View.VISIBLE);
-		}
-	}
+        if (progressBarRef.get() != null) {
+            this.progressBarRef.get().setVisibility(View.VISIBLE);
+        }
+    }
 
-	@Override
-	protected void handleDecryptFailure() {
-		if (progressBarRef.get() != null) {
-			this.progressBarRef.get().setVisibility(View.GONE);
-		}
-	}
+    @Override
+    protected void handleDecryptFailure() {
+        if (progressBarRef.get() != null) {
+            this.progressBarRef.get().setVisibility(View.GONE);
+        }
+    }
 
-	@Override
-	protected void created(Bundle savedInstanceState) {
-		logger.debug("created");
+    @Override
+    protected void created(Bundle savedInstanceState) {
+        logger.debug("created");
 
-		if (rootViewReference.get() != null && this.videoPlayer != null) {
-			gestureFrameLayoutRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_gesture_frame));
-			gestureFrameLayoutRef.get().getController().getSettings().setMaxZoom(2.5f);
-			gestureFrameLayoutRef.get().getController().addOnStateChangeListener(onGestureStateChangeListener);
+        if (rootViewReference.get() != null && this.videoPlayer != null) {
+            gestureFrameLayoutRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_gesture_frame));
+            gestureFrameLayoutRef.get().getController().getSettings().setMaxZoom(2.5f);
+            gestureFrameLayoutRef.get().getController().addOnStateChangeListener(onGestureStateChangeListener);
 
-			this.previewImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.image));
+            this.previewImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.image));
 
-			this.videoViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_view));
-			this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility -> VideoViewFragment.this.showUi(visibility == View.VISIBLE));
-			this.videoViewRef.get().setVisibility(View.GONE);
-			this.videoViewRef.get().setPlayer(this.videoPlayer);
-			this.videoViewRef.get().setControllerHideOnTouch(true);
-			this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
-			this.videoViewRef.get().setControllerAutoShow(true);
+            this.videoViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_view));
+            this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility -> VideoViewFragment.this.showUi(visibility == View.VISIBLE));
+            this.videoViewRef.get().setVisibility(View.GONE);
+            this.videoViewRef.get().setPlayer(this.videoPlayer);
+            this.videoViewRef.get().setControllerHideOnTouch(true);
+            this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
+            this.videoViewRef.get().setControllerAutoShow(true);
 
-			logger.debug("View Type: " + (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
+            logger.debug("View Type: " + (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
 
-			ConfigUtils.adjustExoPlayerControllerMargins(getContext(), this.videoViewRef.get());
+            ConfigUtils.adjustExoPlayerControllerMargins(getContext(), this.videoViewRef.get());
 
-			this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
-		}
-	}
+            this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
+        }
+    }
 
-	@Override
-	protected void handleDecryptedFile(final File file) {
-		logger.debug("handleDecryptedFile");
+    @Override
+    protected void handleDecryptedFile(final File file) {
+        logger.debug("handleDecryptedFile");
 
-		if (this.isAdded()) {
-			if (this.videoPlayer != null && this.videoPlayer.getPlaybackState() == Player.STATE_READY) {
-				// navigated back to fragment
-				playVideo(this.isImmediatePlay);
-			} else {
-				// new fragment
-				loadVideo(Uri.fromFile(file));
-			}
-		} else {
-			logger.debug("Fragment no longer added. Get out of here");
-		}
-	}
+        if (this.isAdded()) {
+            if (this.videoPlayer != null && this.videoPlayer.getPlaybackState() == Player.STATE_READY) {
+                // navigated back to fragment
+                playVideo(this.isImmediatePlay);
+            } else {
+                // new fragment
+                loadVideo(Uri.fromFile(file));
+            }
+        } else {
+            logger.debug("Fragment no longer added. Get out of here");
+        }
+    }
 
-	@UiThread
-	private void playVideo(boolean play) {
-		logger.debug("playVideo");
+    @UiThread
+    private void playVideo(boolean play) {
+        logger.debug("playVideo");
 
-		videoViewRef.get().setVisibility(View.VISIBLE);
-		previewImageViewRef.get().setVisibility(View.GONE);
-		progressBarRef.get().setVisibility(View.GONE);
+        videoViewRef.get().setVisibility(View.VISIBLE);
+        previewImageViewRef.get().setVisibility(View.GONE);
+        progressBarRef.get().setVisibility(View.GONE);
 
-		videoPlayer.setPlayWhenReady(play);
-	}
+        videoPlayer.setPlayWhenReady(play);
+    }
 
-	private void loadVideo(Uri videoUri) {
-		logger.debug("loadVideo");
+    private void loadVideo(Uri videoUri) {
+        logger.debug("loadVideo");
 
-		if (this.videoPlayer != null) {
-			DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
-			MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(videoUri));
+        if (this.videoPlayer != null) {
+            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), getContext().getString(R.string.app_name)));
+            MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(videoUri));
 
-			this.videoPlayer.setPlayWhenReady(this.isImmediatePlay);
+            this.videoPlayer.setPlayWhenReady(this.isImmediatePlay);
 
-			this.isPreparing = true;
-			this.videoPlayer.prepare(videoSource);
+            this.isPreparing = true;
+            this.videoPlayer.prepare(videoSource);
 
-			this.progressBarRef.get().setVisibility(View.VISIBLE);
+            this.progressBarRef.get().setVisibility(View.VISIBLE);
 
-			this.videoViewRef.get().setVisibility(View.GONE);
-			this.previewImageViewRef.get().setVisibility(View.VISIBLE);
-		}
-	}
+            this.videoViewRef.get().setVisibility(View.GONE);
+            this.previewImageViewRef.get().setVisibility(View.VISIBLE);
+        }
+    }
 
-	protected void showBrokenImage() {
-		logger.debug("showBrokenImage");
+    protected void showBrokenImage() {
+        logger.debug("showBrokenImage");
 
-		if (this.progressBarRef.get() != null) {
-			this.progressBarRef.get().setVisibility(View.GONE);
-		}
-		super.showBrokenImage();
-	}
+        if (this.progressBarRef.get() != null) {
+            this.progressBarRef.get().setVisibility(View.GONE);
+        }
+        super.showBrokenImage();
+    }
 
-	@Override
-	public void onDestroyView() {
-		logger.debug("onDestroyView");
+    @Override
+    public void onDestroyView() {
+        logger.debug("onDestroyView");
 
-		if (this.videoPlayer != null) {
-			this.videoPlayer.release();
-			this.videoPlayer = null;
-		}
+        if (this.videoPlayer != null) {
+            this.videoPlayer.release();
+            this.videoPlayer = null;
+        }
 
-		if (this.gestureFrameLayoutRef != null && this.gestureFrameLayoutRef.get() != null) {
-			this.gestureFrameLayoutRef.get().getController().removeOnStateChangeListener(onGestureStateChangeListener);
-		}
+        if (this.gestureFrameLayoutRef != null && this.gestureFrameLayoutRef.get() != null) {
+            this.gestureFrameLayoutRef.get().getController().removeOnStateChangeListener(onGestureStateChangeListener);
+        }
 
-		super.onDestroyView();
-	}
+        super.onDestroyView();
+    }
 
-	@Override
-	public void onIsPlayingChanged(boolean isPlaying) {
-		keepScreenOn(isPlaying);
-	}
+    @Override
+    public void onIsPlayingChanged(boolean isPlaying) {
+        keepScreenOn(isPlaying);
+    }
 
-	@Override
-	public void onPlaybackStateChanged(int playbackState) {
-		logger.debug("onPlaybackStateChanged = " + playbackState);
+    @Override
+    public void onPlaybackStateChanged(int playbackState) {
+        logger.debug("onPlaybackStateChanged = " + playbackState);
 
-		if (isPreparing && playbackState == Player.STATE_READY) {
-			isPreparing = false;
+        if (isPreparing && playbackState == Player.STATE_READY) {
+            isPreparing = false;
 
-			this.progressBarRef.get().setVisibility(View.GONE);
-			this.videoViewRef.get().setVisibility(View.VISIBLE);
-			this.previewImageViewRef.get().setVisibility(View.GONE);
-		}
-		if (playbackState == Player.STATE_ENDED) {
-			this.videoPlayer.setPlayWhenReady(false);
-			this.videoPlayer.seekTo(0);
-			this.videoViewRef.get().showController();
-		}
-	}
+            this.progressBarRef.get().setVisibility(View.GONE);
+            this.videoViewRef.get().setVisibility(View.VISIBLE);
+            this.previewImageViewRef.get().setVisibility(View.GONE);
+        }
+        if (playbackState == Player.STATE_ENDED) {
+            this.videoPlayer.setPlayWhenReady(false);
+            this.videoPlayer.seekTo(0);
+            this.videoViewRef.get().showController();
+        }
+    }
 
-	@Override
-	public void onPlayerError(PlaybackException error) {
-		logger.info("ExoPlaybackException = " + error.getMessage());
+    @Override
+    public void onPlayerError(PlaybackException error) {
+        logger.info("ExoPlaybackException = " + error.getMessage());
 
-		this.progressBarRef.get().setVisibility(View.GONE);
+        this.progressBarRef.get().setVisibility(View.GONE);
 
-		Toast.makeText(getContext(), R.string.unable_to_play_video, Toast.LENGTH_SHORT).show();
-	}
+        Toast.makeText(getContext(), R.string.unable_to_play_video, Toast.LENGTH_SHORT).show();
+    }
 
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		logger.debug("setUserVisibleHint = " + isVisibleToUser);
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        logger.debug("setUserVisibleHint = " + isVisibleToUser);
 
-		// stop player if fragment comes out of view
-		if (!isVisibleToUser && this.videoPlayer != null &&
-				(this.videoPlayer.isLoading() || this.videoPlayer.isPlaying())) {
-			this.videoPlayer.setPlayWhenReady(false);
-			this.videoPlayer.pause();
-		}
-	}
+        // stop player if fragment comes out of view
+        if (!isVisibleToUser && this.videoPlayer != null &&
+            (this.videoPlayer.isLoading() || this.videoPlayer.isPlaying())) {
+            this.videoPlayer.setPlayWhenReady(false);
+            this.videoPlayer.pause();
+        }
+    }
 
 
 }

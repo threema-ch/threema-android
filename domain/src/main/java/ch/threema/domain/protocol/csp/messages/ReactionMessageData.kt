@@ -29,9 +29,9 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.util.Objects
 
 class ReactionMessageData(
-        val messageId: Long,
-        val actionCase: ActionCase,
-        val emojiSequenceBytes: ByteString?
+    val messageId: Long,
+    val actionCase: ActionCase,
+    val emojiSequenceBytes: ByteString?
 ) : ProtobufDataInterface<Reaction> {
 
     companion object {
@@ -40,14 +40,14 @@ class ReactionMessageData(
             try {
                 val protobufMessage = Reaction.parseFrom(rawProtobufMessage)
                 return ReactionMessageData(
-                        protobufMessage.messageId,
-                        protobufMessage.actionCase,
-                        when (protobufMessage.actionCase) {
-                            ActionCase.APPLY -> protobufMessage.apply
-                            ActionCase.WITHDRAW -> protobufMessage.withdraw
-                            ActionCase.ACTION_NOT_SET -> null
-                            else -> throw BadMessageException("Unrecognized action case")
-                        }
+                    protobufMessage.messageId,
+                    protobufMessage.actionCase,
+                    when (protobufMessage.actionCase) {
+                        ActionCase.APPLY -> protobufMessage.apply
+                        ActionCase.WITHDRAW -> protobufMessage.withdraw
+                        ActionCase.ACTION_NOT_SET -> null
+                        else -> throw BadMessageException("Unrecognized action case")
+                    }
                 )
             } catch (e: InvalidProtocolBufferException) {
                 throw BadMessageException("Invalid Reaction protobuf data")
@@ -57,17 +57,17 @@ class ReactionMessageData(
         }
     }
 
-   override fun toProtobufMessage(): Reaction {
-       val builder = Reaction.newBuilder()
-           .setMessageId(messageId)
+    override fun toProtobufMessage(): Reaction {
+        val builder = Reaction.newBuilder()
+            .setMessageId(messageId)
 
-       when (actionCase) {
-           ActionCase.APPLY -> builder.apply = emojiSequenceBytes
-           ActionCase.WITHDRAW -> builder.withdraw = emojiSequenceBytes
-           ActionCase.ACTION_NOT_SET -> throw BadMessageException("Missing action case in reaction message")
-       }
+        when (actionCase) {
+            ActionCase.APPLY -> builder.apply = emojiSequenceBytes
+            ActionCase.WITHDRAW -> builder.withdraw = emojiSequenceBytes
+            ActionCase.ACTION_NOT_SET -> throw BadMessageException("Missing action case in reaction message")
+        }
 
-       return builder.build()
+        return builder.build()
     }
 
     override fun equals(other: Any?): Boolean {

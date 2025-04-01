@@ -47,107 +47,107 @@ import ch.threema.storage.models.MessageType;
  */
 @WorkerThread
 public class MessageReadRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageReadRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageReadRequestHandler");
 
-	private final ContactService contactService;
-	private final GroupService groupService;
-	private final MessageService messageService;
-	private final NotificationService notificationService;
+    private final ContactService contactService;
+    private final GroupService groupService;
+    private final MessageService messageService;
+    private final NotificationService notificationService;
 
-	@AnyThread
-	public MessageReadRequestHandler(ContactService contactService,
-	                                 GroupService groupService,
-	                                 MessageService messageService,
-	                                 NotificationService notificationService) {
-		super(Protocol.SUB_TYPE_READ);
-		this.contactService = contactService;
-		this.groupService = groupService;
-		this.messageService = messageService;
-		this.notificationService = notificationService;
-	}
+    @AnyThread
+    public MessageReadRequestHandler(ContactService contactService,
+                                     GroupService groupService,
+                                     MessageService messageService,
+                                     NotificationService notificationService) {
+        super(Protocol.SUB_TYPE_READ);
+        this.contactService = contactService;
+        this.groupService = groupService;
+        this.messageService = messageService;
+        this.notificationService = notificationService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received message read");
-		final Map<String, Value> args = this.getArguments(message, false);
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received message read");
+        final Map<String, Value> args = this.getArguments(message, false);
 
-		// Is typing or stopped typing
-		final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
-		final int messageId = Integer.parseInt(messageIdStr);
-		final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        // Is typing or stopped typing
+        final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
+        final int messageId = Integer.parseInt(messageIdStr);
+        final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
 
-		ch.threema.app.messagereceiver.MessageReceiver receiver = null;
-		switch (type) {
-			case Receiver.Type.CONTACT:
-				ContactModel contactModel = contactService.getByIdentity(receiverId);
-				if (contactModel != null) {
-					receiver = contactService.createReceiver(contactModel);
-				}
-				break;
-			case Receiver.Type.GROUP:
-				GroupModel groupModel = groupService.getById(Integer.valueOf(receiverId));
-				if (groupModel != null) {
-					receiver = groupService.createReceiver(groupModel);
-				}
-				break;
-		}
+        ch.threema.app.messagereceiver.MessageReceiver receiver = null;
+        switch (type) {
+            case Receiver.Type.CONTACT:
+                ContactModel contactModel = contactService.getByIdentity(receiverId);
+                if (contactModel != null) {
+                    receiver = contactService.createReceiver(contactModel);
+                }
+                break;
+            case Receiver.Type.GROUP:
+                GroupModel groupModel = groupService.getById(Integer.valueOf(receiverId));
+                if (groupModel != null) {
+                    receiver = groupService.createReceiver(groupModel);
+                }
+                break;
+        }
 
-		if (receiver != null) {
-			final MessageService.MessageFilter filter = new MessageService.MessageFilter() {
-				@Override
-				public long getPageSize() {
-					return 0;
-				}
+        if (receiver != null) {
+            final MessageService.MessageFilter filter = new MessageService.MessageFilter() {
+                @Override
+                public long getPageSize() {
+                    return 0;
+                }
 
-				@Override
-				public Integer getPageReferenceId() {
-					return null;
-				}
+                @Override
+                public Integer getPageReferenceId() {
+                    return null;
+                }
 
-				@Override
-				public boolean withStatusMessages() {
-					return false;
-				}
+                @Override
+                public boolean withStatusMessages() {
+                    return false;
+                }
 
-				@Override
-				public boolean withUnsaved() {
-					return false;
-				}
+                @Override
+                public boolean withUnsaved() {
+                    return false;
+                }
 
-				@Override
-				public boolean onlyUnread() {
-					return true;
-				}
+                @Override
+                public boolean onlyUnread() {
+                    return true;
+                }
 
-				@Override
-				public boolean onlyDownloaded() {
-					return false;
-				}
+                @Override
+                public boolean onlyDownloaded() {
+                    return false;
+                }
 
-				@Override
-				public MessageType[] types() {
-					return new MessageType[0];
-				}
+                @Override
+                public MessageType[] types() {
+                    return new MessageType[0];
+                }
 
-				@Override
-				public int[] contentTypes() {
-					return null;
-				}
+                @Override
+                public int[] contentTypes() {
+                    return null;
+                }
 
-				@Override
-				public int[] displayTags() {
-					return null;
-				}
-			};
-			new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService).run();
-			notificationService.cancel(receiver);
-		}
-	}
+                @Override
+                public int[] displayTags() {
+                    return null;
+                }
+            };
+            new ReadMessagesRoutine(receiver.loadMessages(filter), messageService, notificationService).run();
+            notificationService.cancel(receiver);
+        }
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return true;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return true;
+    }
 }
 

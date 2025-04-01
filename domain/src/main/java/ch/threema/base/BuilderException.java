@@ -23,15 +23,15 @@ package ch.threema.base;
 
 /**
  * Return if a builder cannot build the target value.
- *
+ * <p>
  * This is an unchecked exception.
  */
 public class BuilderException extends RuntimeException {
-	public BuilderException(String message) {
-		super(message);
-	}
+    public BuilderException(String message) {
+        super(message);
+    }
 
-	public BuilderException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public BuilderException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

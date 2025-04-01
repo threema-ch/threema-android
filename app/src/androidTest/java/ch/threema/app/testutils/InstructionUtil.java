@@ -29,26 +29,27 @@ import androidx.test.InstrumentationRegistry;
 import ch.threema.app.TestApplication;
 
 public class InstructionUtil {
-	private InstructionUtil(){}
+    private InstructionUtil() {
+    }
 
-	public static Instruction waitForView(final int resourceId) {
-		return new Instruction() {
-			@Override
-			public String getDescription() {
-				return "wait for " + resourceId;
-			}
+    public static Instruction waitForView(final int resourceId) {
+        return new Instruction() {
+            @Override
+            public String getDescription() {
+                return "wait for " + resourceId;
+            }
 
-			@Override
-			public boolean checkCondition() {
-				Activity activity = ((TestApplication)
-						InstrumentationRegistry.getTargetContext().getApplicationContext()).getCurrentActivity();
-				if (activity == null) {
-					return false;
-				}
+            @Override
+            public boolean checkCondition() {
+                Activity activity = ((TestApplication)
+                    InstrumentationRegistry.getTargetContext().getApplicationContext()).getCurrentActivity();
+                if (activity == null) {
+                    return false;
+                }
 
-				return activity.findViewById(resourceId) != null;
-			}
-		};
-	}
+                return activity.findViewById(resourceId) != null;
+            }
+        };
+    }
 
 }

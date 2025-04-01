@@ -31,10 +31,21 @@ import ch.threema.storage.models.AbstractMessageModel;
  * Listen for new, changed or removed messages.
  */
 public interface MessageListener {
-	@AnyThread void onNew(AbstractMessageModel newMessage);
-	@AnyThread void onModified(List<AbstractMessageModel> modifiedMessageModel);
-	@AnyThread void onRemoved(AbstractMessageModel removedMessageModel);
-	@AnyThread void onRemoved(List<AbstractMessageModel> removedMessageModels);
-	@AnyThread void onProgressChanged(AbstractMessageModel messageModel, int newProgress);
-	@AnyThread void onResendDismissed(@NonNull AbstractMessageModel messageModel);
+    @AnyThread
+    void onNew(AbstractMessageModel newMessage);
+
+    @AnyThread
+    void onModified(List<AbstractMessageModel> modifiedMessageModel);
+
+    @AnyThread
+    void onRemoved(AbstractMessageModel removedMessageModel);
+
+    @AnyThread
+    void onRemoved(List<AbstractMessageModel> removedMessageModels);
+
+    @AnyThread
+    void onProgressChanged(AbstractMessageModel messageModel, int newProgress);
+
+    @AnyThread
+    void onResendDismissed(@NonNull AbstractMessageModel messageModel);
 }

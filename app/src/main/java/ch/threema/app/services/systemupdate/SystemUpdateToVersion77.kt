@@ -36,10 +36,11 @@ internal class SystemUpdateToVersion77(
     override fun runDirectly(): Boolean {
         sqLiteDatabase.execSQL(
             "CREATE TABLE `group_call` (" +
-            "`callId` TEXT PRIMARY KEY NOT NULL, " +
-            "`groupId` INTEGER NOT NULL, " +
-            "`sfuBaseUrl` TEXT NOT NULL, " +
-            "`gck` TEXT NOT NULL)")
+                "`callId` TEXT PRIMARY KEY NOT NULL, " +
+                "`groupId` INTEGER NOT NULL, " +
+                "`sfuBaseUrl` TEXT NOT NULL, " +
+                "`gck` TEXT NOT NULL)"
+        )
         return true
     }
 

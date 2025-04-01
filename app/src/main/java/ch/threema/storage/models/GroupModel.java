@@ -42,255 +42,255 @@ import ch.threema.domain.models.GroupId;
 
 public class GroupModel implements ReceiverModel {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModel");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModel");
 
-	public static final int GROUP_NAME_MAX_LENGTH_BYTES = 256;
+    public static final int GROUP_NAME_MAX_LENGTH_BYTES = 256;
 
-	public static final String TABLE = "m_group";
-	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_API_GROUP_ID = "apiGroupId";
-	public static final String COLUMN_NAME = "name";
-	public static final String COLUMN_CREATOR_IDENTITY = "creatorIdentity";
-	public static final String COLUMN_CREATED_AT = "createdAt";
-	public static final String COLUMN_SYNCHRONIZED_AT = "synchronizedAt";
-	public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
-	public static final String COLUMN_DELETED = "deleted";
-	public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
-	public static final String COLUMN_GROUP_DESC = "groupDesc";
-	public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
-	public static final String COLUMN_COLOR_INDEX = "colorIndex";
-	public static final String COLUMN_USER_STATE = "userState";
+    public static final String TABLE = "m_group";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_API_GROUP_ID = "apiGroupId";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_CREATOR_IDENTITY = "creatorIdentity";
+    public static final String COLUMN_CREATED_AT = "createdAt";
+    public static final String COLUMN_SYNCHRONIZED_AT = "synchronizedAt";
+    public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
+    public static final String COLUMN_DELETED = "deleted";
+    public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this group has been archived by user */
+    public static final String COLUMN_GROUP_DESC = "groupDesc";
+    public static final String COLUMN_GROUP_DESC_CHANGED_TIMESTAMP = "changedGroupDescTimestamp";
+    public static final String COLUMN_COLOR_INDEX = "colorIndex";
+    public static final String COLUMN_USER_STATE = "userState";
 
-	private String groupDesc;
-	private Date changedGroupDescTimestamp;
+    private String groupDesc;
+    private Date changedGroupDescTimestamp;
 
-	private int id;
-	private GroupId apiGroupId;
-	private String name;
-	private String creatorIdentity;
-	private Date createdAt;
-	private Date synchronizedAt;
-	private @Nullable Date lastUpdate;
-	private boolean deleted;
-	private boolean isArchived;
-	private int colorIndex = -1;
-	private @Nullable UserState userState;
+    private int id;
+    private GroupId apiGroupId;
+    private String name;
+    private String creatorIdentity;
+    private Date createdAt;
+    private Date synchronizedAt;
+    private @Nullable Date lastUpdate;
+    private boolean deleted;
+    private boolean isArchived;
+    private int colorIndex = -1;
+    private @Nullable UserState userState;
 
-	/**
-	 * The user's state within the group.
-	 */
-	public enum UserState {
+    /**
+     * The user's state within the group.
+     */
+    public enum UserState {
 
-		MEMBER(0),
+        MEMBER(0),
 
-		KICKED(1),
+        KICKED(1),
 
-		LEFT(2);
+        LEFT(2);
 
-		public final int value;
+        public final int value;
 
-		UserState(int value) {
-			this.value = value;
-		}
+        UserState(int value) {
+            this.value = value;
+        }
 
-		@Nullable
-		public static UserState valueOf(int value) {
-			for (UserState userState : values()) {
-				if (userState.value == value) {
-					return userState;
-				}
-			}
+        @Nullable
+        public static UserState valueOf(int value) {
+            for (UserState userState : values()) {
+                if (userState.value == value) {
+                    return userState;
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-	}
+    }
 
-	// dummy class
-	@Nullable
-	public String getName() {
-		return this.name;
-	}
+    // dummy class
+    @Nullable
+    public String getName() {
+        return this.name;
+    }
 
-	public GroupModel setName(@Nullable String name) {
-		this.name = Utils.truncateUTF8String(name, GROUP_NAME_MAX_LENGTH_BYTES);
-		return this;
-	}
+    public GroupModel setName(@Nullable String name) {
+        this.name = Utils.truncateUTF8String(name, GROUP_NAME_MAX_LENGTH_BYTES);
+        return this;
+    }
 
-	public int getId() {
-		return this.id;
-	}
+    public int getId() {
+        return this.id;
+    }
 
-	public GroupModel setId(int id) {
-		this.id = id;
-		return this;
-	}
+    public GroupModel setId(int id) {
+        this.id = id;
+        return this;
+    }
 
-	public GroupModel setApiGroupId(GroupId apiGroupId) {
-		this.apiGroupId = apiGroupId;
-		return this;
-	}
+    public GroupModel setApiGroupId(GroupId apiGroupId) {
+        this.apiGroupId = apiGroupId;
+        return this;
+    }
 
-	public @NonNull GroupId getApiGroupId() {
-		return this.apiGroupId;
-	}
+    public @NonNull GroupId getApiGroupId() {
+        return this.apiGroupId;
+    }
 
-	public String getCreatorIdentity() {
-		return this.creatorIdentity;
-	}
+    public String getCreatorIdentity() {
+        return this.creatorIdentity;
+    }
 
-	public GroupModel setCreatorIdentity(String creatorIdentity) {
-		this.creatorIdentity = creatorIdentity;
-		return this;
-	}
+    public GroupModel setCreatorIdentity(String creatorIdentity) {
+        this.creatorIdentity = creatorIdentity;
+        return this;
+    }
 
-	public Date getCreatedAt() {
-		return this.createdAt;
-	}
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
 
-	public GroupModel setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-		return this;
-	}
+    public GroupModel setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
 
-	@Override
-	public GroupModel setLastUpdate(@Nullable Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-		return this;
-	}
+    @Override
+    public GroupModel setLastUpdate(@Nullable Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+        return this;
+    }
 
-	@Override
-	public @Nullable Date getLastUpdate() {
-		// Note: Never return null for groups, they should always be visible
-		return this.lastUpdate == null ? new Date(0) : this.lastUpdate;
-	}
+    @Override
+    public @Nullable Date getLastUpdate() {
+        // Note: Never return null for groups, they should always be visible
+        return this.lastUpdate == null ? new Date(0) : this.lastUpdate;
+    }
 
-	public boolean isDeleted() {
-		return this.deleted;
-	}
+    public boolean isDeleted() {
+        return this.deleted;
+    }
 
-	public GroupModel setDeleted(boolean deleted) {
-		this.deleted = deleted;
-		return this;
-	}
+    public GroupModel setDeleted(boolean deleted) {
+        this.deleted = deleted;
+        return this;
+    }
 
-	public Date getSynchronizedAt() {
-		return this.synchronizedAt;
-	}
+    public Date getSynchronizedAt() {
+        return this.synchronizedAt;
+    }
 
-	public GroupModel setSynchronizedAt(Date synchronizedAt) {
-		this.synchronizedAt = synchronizedAt;
-		return this;
-	}
+    public GroupModel setSynchronizedAt(Date synchronizedAt) {
+        this.synchronizedAt = synchronizedAt;
+        return this;
+    }
 
-	@Override
-	public boolean isArchived() {
-		return isArchived;
-	}
+    @Override
+    public boolean isArchived() {
+        return isArchived;
+    }
 
-	public GroupModel setArchived(boolean archived) {
-		isArchived = archived;
-		return this;
-	}
+    public GroupModel setArchived(boolean archived) {
+        isArchived = archived;
+        return this;
+    }
 
-	@Override
-	public boolean isHidden() {
-		// Groups can't currently be hidden from the conversation list
-		return false;
-	}
+    @Override
+    public boolean isHidden() {
+        // Groups can't currently be hidden from the conversation list
+        return false;
+    }
 
-	public int getColorIndex() {
-		if (colorIndex < 0) {
-			computeColorIndex();
-		}
-		return colorIndex;
-	}
+    public int getColorIndex() {
+        if (colorIndex < 0) {
+            computeColorIndex();
+        }
+        return colorIndex;
+    }
 
-	public GroupModel setColorIndex(int colorIndex) {
-		this.colorIndex = colorIndex;
-		return this;
-	}
+    public GroupModel setColorIndex(int colorIndex) {
+        this.colorIndex = colorIndex;
+        return this;
+    }
 
-	public GroupModel setGroupDesc(String description) {
-		groupDesc = description;
-		return this;
-	}
+    public GroupModel setGroupDesc(String description) {
+        groupDesc = description;
+        return this;
+    }
 
-	public GroupModel setGroupDescTimestamp(Date groupDescDate) {
-		changedGroupDescTimestamp = groupDescDate;
-		return this;
-	}
-
-
-	public String getGroupDesc() {
-		return this.groupDesc;
-	}
+    public GroupModel setGroupDescTimestamp(Date groupDescDate) {
+        changedGroupDescTimestamp = groupDescDate;
+        return this;
+    }
 
 
-	public Date getGroupDescTimestamp() {
-		return this.changedGroupDescTimestamp;
-	}
+    public String getGroupDesc() {
+        return this.groupDesc;
+    }
 
 
-	public int getThemedColor(@NonNull Context context) {
-		if (ConfigUtils.isTheDarkSide(context)) {
-			return getColorDark();
-		} else {
-			return getColorLight();
-		}
-	}
+    public Date getGroupDescTimestamp() {
+        return this.changedGroupDescTimestamp;
+    }
 
-	public int getColorLight() {
-		if (colorIndex < 0) {
-			computeColorIndex();
-		}
-		return ColorUtil.getInstance().getIDColorLight(colorIndex);
-	}
 
-	public int getColorDark() {
-		if (colorIndex < 0) {
-			computeColorIndex();
-		}
-		return ColorUtil.getInstance().getIDColorDark(colorIndex);
-	}
+    public int getThemedColor(@NonNull Context context) {
+        if (ConfigUtils.isTheDarkSide(context)) {
+            return getColorDark();
+        } else {
+            return getColorLight();
+        }
+    }
 
-	@NonNull
-	public GroupModel setUserState(@Nullable UserState userState) {
-		this.userState = userState;
-		return this;
-	}
+    public int getColorLight() {
+        if (colorIndex < 0) {
+            computeColorIndex();
+        }
+        return ColorUtil.getInstance().getIDColorLight(colorIndex);
+    }
 
-	@Nullable
-	public UserState getUserState() {
-		return userState;
-	}
+    public int getColorDark() {
+        if (colorIndex < 0) {
+            computeColorIndex();
+        }
+        return ColorUtil.getInstance().getIDColorDark(colorIndex);
+    }
 
-	private void computeColorIndex() {
-		byte[] groupCreatorIdentity = creatorIdentity.getBytes(StandardCharsets.UTF_8);
-		byte[] apiGroupIdBin = apiGroupId.getGroupId();
+    @NonNull
+    public GroupModel setUserState(@Nullable UserState userState) {
+        this.userState = userState;
+        return this;
+    }
 
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(groupCreatorIdentity);
-			md.update(apiGroupIdBin);
-			byte firstByte = md.digest()[0];
-			colorIndex = ColorUtil.getInstance().getIDColorIndex(firstByte);
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("Could not hash the identity to determine color", e);
-		}
-	}
+    @Nullable
+    public UserState getUserState() {
+        return userState;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof GroupModel)) return false;
-		GroupModel that = (GroupModel) o;
-		return id == that.id;
-	}
+    private void computeColorIndex() {
+        byte[] groupCreatorIdentity = creatorIdentity.getBytes(StandardCharsets.UTF_8);
+        byte[] apiGroupIdBin = apiGroupId.getGroupId();
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(groupCreatorIdentity);
+            md.update(apiGroupIdBin);
+            byte firstByte = md.digest()[0];
+            colorIndex = ColorUtil.getInstance().getIDColorIndex(firstByte);
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Could not hash the identity to determine color", e);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GroupModel)) return false;
+        GroupModel that = (GroupModel) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
 

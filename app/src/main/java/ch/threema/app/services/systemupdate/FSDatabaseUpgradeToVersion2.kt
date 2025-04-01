@@ -26,7 +26,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class FSDatabaseUpgradeToVersion2(
     private val sqLiteDatabase: SQLiteDatabase
-): UpdateSystemService.SystemUpdate {
+) : UpdateSystemService.SystemUpdate {
 
     companion object {
         const val VERSION = 2

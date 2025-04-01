@@ -1,57 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="vertical"
-	android:padding="@dimen/wizard_contents_padding">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/wizard_contents_padding">
 
-	<TextView
-		style="@style/WizardTitleText"
-		android:id="@+id/backup_restore_title"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center_horizontal"
-		android:layout_gravity="center_horizontal"
-		android:text="@string/menu_restore"
-		android:layout_marginTop="8dp"/>
+    <TextView
+        style="@style/WizardTitleText"
+        android:id="@+id/backup_restore_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/menu_restore"
+        android:layout_marginTop="8dp" />
 
-	<TextView
-		android:id="@+id/backup_restore_subtitle"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_horizontal"
-		android:layout_margin="@dimen/wizard_contents_padding"
-		android:gravity="center_horizontal"
-		style="@style/WizardSubTitleText"
-		android:text="@string/backup_restore_type"/>
+    <TextView
+        android:id="@+id/backup_restore_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/wizard_contents_padding"
+        android:gravity="center_horizontal"
+        style="@style/WizardSubTitleText"
+        android:text="@string/backup_restore_type" />
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/safe_backup"
-		style="@style/WizardButtonRegular"
-		android:layout_width="match_parent"
-		android:layout_marginTop="@dimen/wizard_contents_padding"
-		android:text="@string/threema_safe_backup"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/safe_backup"
+        style="@style/WizardButtonRegular"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/wizard_contents_padding"
+        android:text="@string/threema_safe_backup" />
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/data_backup"
-		style="@style/WizardButtonRegular"
-		android:layout_width="match_parent"
-		android:layout_marginTop="@dimen/wizard_contents_padding"
-		android:text="@string/backup_data_title"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/data_backup"
+        style="@style/WizardButtonRegular"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/wizard_contents_padding"
+        android:text="@string/backup_data_title" />
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/id_backup"
-		style="@style/WizardButtonRegular"
-		android:layout_width="match_parent"
-		android:layout_marginTop="@dimen/wizard_contents_padding"
-		android:text="@string/backup_id"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/id_backup"
+        style="@style/WizardButtonRegular"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/wizard_contents_padding"
+        android:text="@string/backup_id" />
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/cancel"
-		style="@style/WizardButtonInverse"
-		android:layout_width="match_parent"
-		android:layout_marginTop="32dp"
-		android:text="@string/cancel"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cancel"
+        style="@style/WizardButtonInverse"
+        android:layout_width="match_parent"
+        android:layout_marginTop="32dp"
+        android:text="@string/cancel" />
 
 </LinearLayout>

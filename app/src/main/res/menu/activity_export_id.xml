@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/menu_backup_share"
-            app:showAsAction="always"
-			android:visible="true"
-            android:title="@string/backup_share"
-			android:icon="@drawable/ic_share_outline"
-            app:iconTint="?attr/colorOnSurface"
-            android:orderInCategory="20"/>
+        android:id="@+id/menu_backup_share"
+        app:showAsAction="always"
+        android:visible="true"
+        android:title="@string/backup_share"
+        android:icon="@drawable/ic_share_outline"
+        app:iconTint="?attr/colorOnSurface"
+        android:orderInCategory="20" />
 
-	<item
-			android:id="@+id/menu_print"
-			app:showAsAction="ifRoom"
-			android:visible="false"
-			android:icon="@drawable/ic_print_outline"
-			app:iconTint="?attr/colorOnSurface"
-			android:title="@string/print"
-			android:orderInCategory="10"/>
+    <item
+        android:id="@+id/menu_print"
+        app:showAsAction="ifRoom"
+        android:visible="false"
+        android:icon="@drawable/ic_print_outline"
+        app:iconTint="?attr/colorOnSurface"
+        android:title="@string/print"
+        android:orderInCategory="10" />
 </menu>

@@ -42,99 +42,97 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
 
-	private boolean isSyncEnabled = true;
+    private boolean isSyncEnabled = true;
 
-	public ContactsSyncAdapter(Context context, boolean autoInitialize) {
-		super(context, autoInitialize);
-	}
+    public ContactsSyncAdapter(Context context, boolean autoInitialize) {
+        super(context, autoInitialize);
+    }
 
-	public void setSyncEnabled(boolean enabled) {
-		isSyncEnabled = enabled;
-	}
+    public void setSyncEnabled(boolean enabled) {
+        isSyncEnabled = enabled;
+    }
 
-	@Override
-	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-		logger.info("onPerformSync");
+    @Override
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        logger.info("onPerformSync");
 
-		if (!isSyncEnabled) {
-			logger.info("Contact sync is disabled; retry later.");
-			// Workaround to trigger a soft error to retry the sync at a later moment
-			// See
-			//  - https://developer.android.com/reference/android/content/SyncResult#hasSoftError()
-			//  - https://developer.android.com/reference/android/content/SyncResult#SyncResult()
-			syncResult.stats.numIoExceptions++;
-			return;
-		}
+        if (!isSyncEnabled) {
+            logger.info("Contact sync is disabled; retry later.");
+            // Workaround to trigger a soft error to retry the sync at a later moment
+            // See
+            //  - https://developer.android.com/reference/android/content/SyncResult#hasSoftError()
+            //  - https://developer.android.com/reference/android/content/SyncResult#SyncResult()
+            syncResult.stats.numIoExceptions++;
+            return;
+        }
 
-		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        try {
+            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
-			if (serviceManager == null) {
-				return;
-			}
+            if (serviceManager == null) {
+                return;
+            }
 
-			if (serviceManager.getPreferenceService().isSyncContacts()) {
-				logger.info("Start sync adapter run");
-				SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
+            if (serviceManager.getPreferenceService().isSyncContacts()) {
+                logger.info("Start sync adapter run");
+                SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
 
-				if (synchronizeContactsService.isFullSyncInProgress()) {
-					logger.info("A full sync is already running");
-					syncResult.stats.numUpdates = 0;
-					syncResult.stats.numInserts = 0;
-					syncResult.stats.numDeletes = 0;
-					syncResult.stats.numEntries = 0;
-					return;
-				}
+                if (synchronizeContactsService.isFullSyncInProgress()) {
+                    logger.info("A full sync is already running");
+                    syncResult.stats.numUpdates = 0;
+                    syncResult.stats.numInserts = 0;
+                    syncResult.stats.numDeletes = 0;
+                    syncResult.stats.numEntries = 0;
+                    return;
+                }
 
-				SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization(account);
-				//update stats on finished to resolve the "every minute sync" bug
+                SynchronizeContactsRoutine routine = synchronizeContactsService.instantiateSynchronization(account);
+                //update stats on finished to resolve the "every minute sync" bug
 
-				routine.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) -> {
-					// let user know that contact was added
-					ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts));
+                routine.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) -> {
+                    // let user know that contact was added
+                    ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts));
 
-					//hack to not schedule the next sync!
-					syncResult.stats.numUpdates = 0;//modifiedAccounts;
-					syncResult.stats.numInserts = 0;//createdAccounts;
-					syncResult.stats.numDeletes = 0;//deletedAccounts;
-					syncResult.stats.numEntries = 0;//createdAccounts;
+                    //hack to not schedule the next sync!
+                    syncResult.stats.numUpdates = 0;//modifiedAccounts;
+                    syncResult.stats.numInserts = 0;//createdAccounts;
+                    syncResult.stats.numDeletes = 0;//deletedAccounts;
+                    syncResult.stats.numEntries = 0;//createdAccounts;
 
-					//send a broadcast to let others know that the list has changed
-					LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).sendBroadcast(IntentDataUtil.createActionIntentContactsChanged());
-				});
+                    //send a broadcast to let others know that the list has changed
+                    LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).sendBroadcast(IntentDataUtil.createActionIntentContactsChanged());
+                });
 
-				// not in a thread: `onPerformSync` is already called in a background thread
-				routine.run();
-			}
-		}
-		catch(FileSystemNotPresentException e){
-			logger.error("Exception", e);
-		}
-		catch(MasterKeyLockedException e){
-			logger.debug("MasterKeyLockedException [" + e.getMessage() + "]");
+                // not in a thread: `onPerformSync` is already called in a background thread
+                routine.run();
+            }
+        } catch (FileSystemNotPresentException e) {
+            logger.error("Exception", e);
+        } catch (MasterKeyLockedException e) {
+            logger.debug("MasterKeyLockedException [" + e.getMessage() + "]");
 
-		}finally{
-			logger.debug(
-				"sync finished Sync [numEntries={}, updates={}, inserts={}, deletes={}",
-				syncResult.stats.numEntries,
-				syncResult.stats.numUpdates,
-				syncResult.stats.numInserts,
-				syncResult.stats.numDeletes
-			);
-		}
-	}
+        } finally {
+            logger.debug(
+                "sync finished Sync [numEntries={}, updates={}, inserts={}, deletes={}",
+                syncResult.stats.numEntries,
+                syncResult.stats.numUpdates,
+                syncResult.stats.numInserts,
+                syncResult.stats.numDeletes
+            );
+        }
+    }
 
-	@Override
-	public void onSyncCanceled() {
-		logger.info("onSyncCanceled");
-		super.onSyncCanceled();
-	}
+    @Override
+    public void onSyncCanceled() {
+        logger.info("onSyncCanceled");
+        super.onSyncCanceled();
+    }
 
-	@Override
-	public void onSyncCanceled(Thread thread) {
-		logger.info("onSyncCanceled");
-		super.onSyncCanceled(thread);
-	}
+    @Override
+    public void onSyncCanceled(Thread thread) {
+        logger.info("onSyncCanceled");
+        super.onSyncCanceled(thread);
+    }
 }

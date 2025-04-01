@@ -48,106 +48,106 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 @WorkerThread
 public class MessageRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MessageRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageRequestHandler");
 
-	private final MessageDispatcher dispatcher;
-	private final MessageService messageService;
-	private final DeadlineListService hiddenChatService;
-	private final Listener listener;
+    private final MessageDispatcher dispatcher;
+    private final MessageService messageService;
+    private final DeadlineListService hiddenChatService;
+    private final Listener listener;
 
-	@WorkerThread
-	public interface Listener {
-		void onReceive(ch.threema.app.messagereceiver.MessageReceiver receiver);
-	}
+    @WorkerThread
+    public interface Listener {
+        void onReceive(ch.threema.app.messagereceiver.MessageReceiver receiver);
+    }
 
-	@AnyThread
-	public MessageRequestHandler(MessageDispatcher dispatcher,
-	                             MessageService messageService,
-	                             DeadlineListService hiddenChatService,
-	                             Listener listener
-	                             ) {
-		super(Protocol.SUB_TYPE_MESSAGES);
+    @AnyThread
+    public MessageRequestHandler(MessageDispatcher dispatcher,
+                                 MessageService messageService,
+                                 DeadlineListService hiddenChatService,
+                                 Listener listener
+    ) {
+        super(Protocol.SUB_TYPE_MESSAGES);
 
-		this.dispatcher = dispatcher;
-		this.messageService = messageService;
-		this.hiddenChatService = hiddenChatService;
-		this.listener = listener;
-	}
+        this.dispatcher = dispatcher;
+        this.messageService = messageService;
+        this.hiddenChatService = hiddenChatService;
+        this.listener = listener;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received message request");
-		Map<String, Value> args = this.getArguments(message, false);
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received message request");
+        Map<String, Value> args = this.getArguments(message, false);
 
-		// Get required arguments
-		final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        // Get required arguments
+        final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
 
-		// Get reference id
-		Integer refMsgId = null;
-		if (args.containsKey(Protocol.ARGUMENT_REFERENCE_MSG_ID)) {
-			final String refMsgIdStr = args.get(Protocol.ARGUMENT_REFERENCE_MSG_ID).asStringValue().asString();
-			refMsgId = Integer.valueOf(refMsgIdStr);
-		}
+        // Get reference id
+        Integer refMsgId = null;
+        if (args.containsKey(Protocol.ARGUMENT_REFERENCE_MSG_ID)) {
+            final String refMsgIdStr = args.get(Protocol.ARGUMENT_REFERENCE_MSG_ID).asStringValue().asString();
+            refMsgId = Integer.valueOf(refMsgIdStr);
+        }
 
-		try {
-			ch.threema.app.messagereceiver.MessageReceiver receiver = this.getReceiver(args);
+        try {
+            ch.threema.app.messagereceiver.MessageReceiver receiver = this.getReceiver(args);
 
-			if(this.hiddenChatService.has(receiver.getUniqueIdString())) {
-				//ignore it
-				logger.debug("do not reply with messages on hidden chat");
-				return;
-			}
-			if (this.listener != null) {
-				this.listener.onReceive(receiver);
-			}
-			final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
-					.put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
-					.put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
-					.maybePut(Protocol.ARGUMENT_REFERENCE_MSG_ID, String.valueOf(refMsgId), refMsgId != null);
-			this.respond(receiver, refMsgId, responseArgs);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+            if (this.hiddenChatService.has(receiver.getUniqueIdString())) {
+                //ignore it
+                logger.debug("do not reply with messages on hidden chat");
+                return;
+            }
+            if (this.listener != null) {
+                this.listener.onReceive(receiver);
+            }
+            final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
+                .put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
+                .put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
+                .maybePut(Protocol.ARGUMENT_REFERENCE_MSG_ID, String.valueOf(refMsgId), refMsgId != null);
+            this.respond(receiver, refMsgId, responseArgs);
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	private void respond(ch.threema.app.messagereceiver.MessageReceiver receiver, Integer refMsgId, MsgpackObjectBuilder args) {
-		// Set refMsgId in filter
-		MessageFilter messageFilter = new MessageFilter();
-		messageFilter.setPageReferenceId(refMsgId);
+    private void respond(ch.threema.app.messagereceiver.MessageReceiver receiver, Integer refMsgId, MsgpackObjectBuilder args) {
+        // Set refMsgId in filter
+        MessageFilter messageFilter = new MessageFilter();
+        messageFilter.setPageReferenceId(refMsgId);
 
-		try {
-			// Get messages
-			final List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(
-					receiver, messageFilter, false);
+        try {
+            // Get messages
+            final List<AbstractMessageModel> messages = messageService.getMessagesForReceiver(
+                receiver, messageFilter, false);
 
-			// Set additional args
-			boolean hasMore = messages != null
-					//if the filter defined with a page size
-					&& messageFilter.getPageSize() > 0
-					&& messages.size() > messageFilter.getRealPageSize();
-			args.put("more", hasMore);
+            // Set additional args
+            boolean hasMore = messages != null
+                //if the filter defined with a page size
+                && messageFilter.getPageSize() > 0
+                && messages.size() > messageFilter.getRealPageSize();
+            args.put("more", hasMore);
 
 
-			if(messages != null && hasMore) {
-				messages.remove(messages.size()-1);
-			}
+            if (messages != null && hasMore) {
+                messages.remove(messages.size() - 1);
+            }
 
-			if(messages != null) {
-				messages.removeIf(AbstractMessageModel::isDeleted);
-			}
+            if (messages != null) {
+                messages.removeIf(AbstractMessageModel::isDeleted);
+            }
 
-			// Convert and send messages
-			List<MsgpackBuilder> data = Message.convert(messages, receiver, true);
-			logger.debug("Sending message response");
-			this.send(this.dispatcher, data, args);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Convert and send messages
+            List<MsgpackBuilder> data = Message.convert(messages, receiver, true);
+            logger.debug("Sending message response");
+            this.send(this.dispatcher, data, args);
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

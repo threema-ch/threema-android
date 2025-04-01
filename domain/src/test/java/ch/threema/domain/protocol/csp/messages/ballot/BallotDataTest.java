@@ -27,109 +27,109 @@ import org.junit.Test;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 
 public class BallotDataTest {
-	private static final String testBallot = "{"
-			+"\"d\":\"Ballotelli\","
-			+"\"s\":0,"
-			+"\"a\":0,"
-			+"\"t\":1,"
-			+"\"o\":0,"
-			+"\"c\":["
-				+"{"
-					+"\"i\":1,"
-					+"\"n\":\"desc1\","
-					+"\"o\":1,"
-					+"\"r\":[1,0],"
-					+"\"t\":2"
-				+"},"
-				+"{"
-					+"\"i\":2,"
-					+"\"n\":\"desc2\","
-					+"\"o\":2,"
-					+"\"r\":[1,1],"
-					+"\"t\":2"
-				+"}"
-			+"]," +
-			"\"p\":[\"ECHOECH1\",\"ECHOECH2\"],"
-			+"\"u\":0"
-			+"}";
+    private static final String testBallot = "{"
+        + "\"d\":\"Ballotelli\","
+        + "\"s\":0,"
+        + "\"a\":0,"
+        + "\"t\":1,"
+        + "\"o\":0,"
+        + "\"c\":["
+        + "{"
+        + "\"i\":1,"
+        + "\"n\":\"desc1\","
+        + "\"o\":1,"
+        + "\"r\":[1,0],"
+        + "\"t\":2"
+        + "},"
+        + "{"
+        + "\"i\":2,"
+        + "\"n\":\"desc2\","
+        + "\"o\":2,"
+        + "\"r\":[1,1],"
+        + "\"t\":2"
+        + "}"
+        + "]," +
+        "\"p\":[\"ECHOECH1\",\"ECHOECH2\"],"
+        + "\"u\":0"
+        + "}";
 
-	@Test
-	public void parseValidString() {
-		BallotData result = null;
-		try {
-			result = BallotData.parse(testBallot);
-		} catch (BadMessageException e) {
-			Assert.fail(e.getMessage());
-		}
-		Assert.assertNotNull(result);
+    @Test
+    public void parseValidString() {
+        BallotData result = null;
+        try {
+            result = BallotData.parse(testBallot);
+        } catch (BadMessageException e) {
+            Assert.fail(e.getMessage());
+        }
+        Assert.assertNotNull(result);
 
-		Assert.assertEquals
-				(
-						"Ballotelli",
-						result.getDescription()
-				);
+        Assert.assertEquals
+            (
+                "Ballotelli",
+                result.getDescription()
+            );
 
-		Assert.assertEquals
-				(
-						2,
-						result.getChoiceList().size()
-				);
+        Assert.assertEquals
+            (
+                2,
+                result.getChoiceList().size()
+            );
 
-		Assert.assertEquals(BallotData.State.OPEN, result.getState());
-		Assert.assertEquals(BallotData.AssessmentType.SINGLE, result.getAssessmentType());
-		Assert.assertEquals(BallotData.Type.INTERMEDIATE, result.getType());
-		Assert.assertEquals(BallotData.ChoiceType.TEXT, result.getChoiceType());
-		Assert.assertEquals(2, result.getParticipants().size());
-		Assert.assertEquals("ECHOECH2", result.getParticipants().get(1));
-	}
-
-
-	@Test
-	public void parseInvalidString() {
-		try {
-			BallotData.parse("i want to be a hippie");
-			Assert.fail("invalid string parsed");
-		} catch (BadMessageException e) {
-			//ok! exception received
-		}
-	}
-
-	@Test
-	public void generateStringTest() {
-		BallotData d = new BallotData();
-		d.setDescription("Ballotelli");
-		d.setState(BallotData.State.OPEN);
-		d.setAssessmentType(BallotData.AssessmentType.SINGLE);
-		d.setType(BallotData.Type.INTERMEDIATE);
-		d.setChoiceType(BallotData.ChoiceType.TEXT);
-		int posEcho1 = d.addParticipant("ECHOECH1");
-		Assert.assertEquals(posEcho1, 0);
-		int posEcho2 = d.addParticipant("ECHOECH2");
-		Assert.assertEquals(posEcho2, 1);
+        Assert.assertEquals(BallotData.State.OPEN, result.getState());
+        Assert.assertEquals(BallotData.AssessmentType.SINGLE, result.getAssessmentType());
+        Assert.assertEquals(BallotData.Type.INTERMEDIATE, result.getType());
+        Assert.assertEquals(BallotData.ChoiceType.TEXT, result.getChoiceType());
+        Assert.assertEquals(2, result.getParticipants().size());
+        Assert.assertEquals("ECHOECH2", result.getParticipants().get(1));
+    }
 
 
-		BallotDataChoice c1 = new BallotDataChoice(2);
-		c1.setId(1);
-		c1.setName("desc1");
-		c1.setOrder(1);
-		c1.addResult(0, 1).addResult(1,0);
-		c1.setTotalVotes(2);
-		d.getChoiceList().add(c1);
+    @Test
+    public void parseInvalidString() {
+        try {
+            BallotData.parse("i want to be a hippie");
+            Assert.fail("invalid string parsed");
+        } catch (BadMessageException e) {
+            //ok! exception received
+        }
+    }
 
-		BallotDataChoice c2 = new BallotDataChoice(2);
-		c2.setId(2);
-		c2.setOrder(2);
-		c2.setName("desc2");
-		c2.addResult(0, 1).addResult(1,1);
-		c2.setTotalVotes(2);
-		d.getChoiceList().add(c2);
-		d.setDisplayType(BallotData.DisplayType.LIST_MODE);
+    @Test
+    public void generateStringTest() {
+        BallotData d = new BallotData();
+        d.setDescription("Ballotelli");
+        d.setState(BallotData.State.OPEN);
+        d.setAssessmentType(BallotData.AssessmentType.SINGLE);
+        d.setType(BallotData.Type.INTERMEDIATE);
+        d.setChoiceType(BallotData.ChoiceType.TEXT);
+        int posEcho1 = d.addParticipant("ECHOECH1");
+        Assert.assertEquals(posEcho1, 0);
+        int posEcho2 = d.addParticipant("ECHOECH2");
+        Assert.assertEquals(posEcho2, 1);
 
-		try {
-			BallotData b = BallotData.parse(testBallot);
-			Assert.assertEquals(b.generateString(), d.generateString());
-		} catch (BadMessageException e) {
-			Assert.fail(e.getMessage());
-		}
-	}
+
+        BallotDataChoice c1 = new BallotDataChoice(2);
+        c1.setId(1);
+        c1.setName("desc1");
+        c1.setOrder(1);
+        c1.addResult(0, 1).addResult(1, 0);
+        c1.setTotalVotes(2);
+        d.getChoiceList().add(c1);
+
+        BallotDataChoice c2 = new BallotDataChoice(2);
+        c2.setId(2);
+        c2.setOrder(2);
+        c2.setName("desc2");
+        c2.addResult(0, 1).addResult(1, 1);
+        c2.setTotalVotes(2);
+        d.getChoiceList().add(c2);
+        d.setDisplayType(BallotData.DisplayType.LIST_MODE);
+
+        try {
+            BallotData b = BallotData.parse(testBallot);
+            Assert.assertEquals(b.generateString(), d.generateString());
+        } catch (BadMessageException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 }

@@ -1,175 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<group
-		android:id="@+id/group_commands">
+    <group android:id="@+id/group_commands">
 
-		<item
-			android:id="@+id/item_undo"
-			android:enabled="true"
-			android:icon="@drawable/ic_undo_outline"
-			android:orderInCategory="50"
-			android:title="@string/undo"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always"
-			/>
+        <item
+            android:id="@+id/item_undo"
+            android:enabled="true"
+            android:icon="@drawable/ic_undo_outline"
+            android:orderInCategory="50"
+            android:title="@string/undo"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always" />
 
-	</group>
+    </group>
 
-	<group
-		android:id="@+id/group_tools">
+    <group android:id="@+id/group_tools">
 
-		<item
-			android:id="@+id/item_face"
-			android:enabled="true"
-			android:icon="@drawable/ic_outline_face_retouching_off"
-			android:orderInCategory="52"
-			android:title="@string/blur_faces"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always">
+        <item
+            android:id="@+id/item_face"
+            android:enabled="true"
+            android:icon="@drawable/ic_outline_face_retouching_off"
+            android:orderInCategory="52"
+            android:title="@string/blur_faces"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always">
 
-			<menu>
-				<item
-					android:id="@+id/item_face_blur"
-					android:enabled="true"
-					android:icon="@drawable/ic_outline_blur_on_24"
-					android:orderInCategory="40"
-					android:title="@string/blur"
-					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="always" />
+            <menu>
+                <item
+                    android:id="@+id/item_face_blur"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_outline_blur_on_24"
+                    android:orderInCategory="40"
+                    android:title="@string/blur"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:showAsAction="always" />
 
-				<item
-					android:id="@+id/item_face_emoji"
-					android:enabled="true"
-					android:icon="@drawable/ic_mood_outline"
-					android:orderInCategory="60"
-					android:title="@string/smiley"
-					app:iconTint="@android:color/white"
-					app:showAsAction="always" />
+                <item
+                    android:id="@+id/item_face_emoji"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_mood_outline"
+                    android:orderInCategory="60"
+                    android:title="@string/smiley"
+                    app:iconTint="@android:color/white"
+                    app:showAsAction="always" />
 
-			</menu>
+            </menu>
 
 
-		</item>
+        </item>
 
-		<item
-			android:id="@+id/item_draw_parent"
-			android:enabled="true"
-			android:icon="@drawable/ic_brush"
-			android:orderInCategory="55"
-			android:title="@string/draw"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always">
+        <item
+            android:id="@+id/item_draw_parent"
+            android:enabled="true"
+            android:icon="@drawable/ic_brush"
+            android:orderInCategory="55"
+            android:title="@string/draw"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always">
 
-			<menu>
-				<item
-					android:id="@+id/item_draw"
-					android:enabled="true"
-					android:icon="@drawable/ic_brush"
-					android:orderInCategory="40"
-					android:title="@string/brush"
-					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="never" />
+            <menu>
+                <item
+                    android:id="@+id/item_draw"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_brush"
+                    android:orderInCategory="40"
+                    android:title="@string/brush"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:showAsAction="never" />
 
-				<item
-					android:id="@+id/item_pencil"
-					android:enabled="true"
-					android:icon="@drawable/ic_pencil_outline"
-					android:orderInCategory="60"
-					android:title="@string/pencil"
-					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="never" />
+                <item
+                    android:id="@+id/item_pencil"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_pencil_outline"
+                    android:orderInCategory="60"
+                    android:title="@string/pencil"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:showAsAction="never" />
 
-				<item
-					android:id="@+id/item_highlighter"
-					android:enabled="true"
-					android:icon="@drawable/ic_ink_highlighter_outline"
-					android:orderInCategory="80"
-					android:title="@string/highlighter"
-					app:iconTint="?attr/colorOnSurface"
-					app:showAsAction="never" />
+                <item
+                    android:id="@+id/item_highlighter"
+                    android:enabled="true"
+                    android:icon="@drawable/ic_ink_highlighter_outline"
+                    android:orderInCategory="80"
+                    android:title="@string/highlighter"
+                    app:iconTint="?attr/colorOnSurface"
+                    app:showAsAction="never" />
 
-			</menu>
+            </menu>
 
-		</item>
+        </item>
 
-		<item
-			android:id="@+id/item_stickers"
-			android:enabled="true"
-			android:icon="@drawable/ic_mood_outline"
-			android:orderInCategory="60"
-			android:title="@string/stickers"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always"
-			/>
+        <item
+            android:id="@+id/item_stickers"
+            android:enabled="true"
+            android:icon="@drawable/ic_mood_outline"
+            android:orderInCategory="60"
+            android:title="@string/stickers"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always" />
 
-		<item
-			android:id="@+id/item_text"
-			android:enabled="true"
-			android:icon="@drawable/ic_font_download_outline"
-			android:orderInCategory="65"
-			android:title="@string/text"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always"
-			/>
+        <item
+            android:id="@+id/item_text"
+            android:enabled="true"
+            android:icon="@drawable/ic_font_download_outline"
+            android:orderInCategory="65"
+            android:title="@string/text"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always" />
 
-		<item
-			android:id="@+id/item_palette"
-			android:enabled="true"
-			android:icon="@drawable/ic_color_lens_24px"
-			android:orderInCategory="70"
-			android:title="@string/palette"
-			android:visible="true"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always"
-			/>
+        <item
+            android:id="@+id/item_palette"
+            android:enabled="true"
+            android:icon="@drawable/ic_color_lens_24px"
+            android:orderInCategory="70"
+            android:title="@string/palette"
+            android:visible="true"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always" />
 
-		<item
-			android:id="@+id/item_background"
-			android:enabled="true"
-			android:icon="@drawable/ic_drawing_background"
-			android:orderInCategory="75"
-			android:title="@string/background_color"
-			android:visible="false"
-			app:iconTint="?attr/colorOnSurface"
-			app:showAsAction="always"
-			/>
+        <item
+            android:id="@+id/item_background"
+            android:enabled="true"
+            android:icon="@drawable/ic_drawing_background"
+            android:orderInCategory="75"
+            android:title="@string/background_color"
+            android:visible="false"
+            app:iconTint="?attr/colorOnSurface"
+            app:showAsAction="always" />
 
-	</group>
+    </group>
 
-	<item
-		android:id="@+id/item_flip"
-		android:enabled="true"
-		android:icon="@drawable/ic_flip_outline"
-		android:orderInCategory="80"
-		android:title="@string/flip"
-		android:visible="false"
-		app:iconTint="?attr/colorOnSurface"
-		app:showAsAction="ifRoom"
-		/>
+    <item
+        android:id="@+id/item_flip"
+        android:enabled="true"
+        android:icon="@drawable/ic_flip_outline"
+        android:orderInCategory="80"
+        android:title="@string/flip"
+        android:visible="false"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
 
-	<item
-		android:id="@+id/item_rotate"
-		android:enabled="true"
-		android:icon="@drawable/ic_outline_rotate_90_degrees_ccw_24"
-		android:orderInCategory="85"
-		android:title="@string/rotate"
-		android:visible="false"
-		app:iconTint="?attr/colorOnSurface"
-		app:showAsAction="ifRoom"
-		/>
+    <item
+        android:id="@+id/item_rotate"
+        android:enabled="true"
+        android:icon="@drawable/ic_outline_rotate_90_degrees_ccw_24"
+        android:orderInCategory="85"
+        android:title="@string/rotate"
+        android:visible="false"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
 
-	<item
-		android:id="@+id/item_crop"
-		android:enabled="true"
-		android:icon="@drawable/ic_crop_outline"
-		android:orderInCategory="90"
-		android:title="@string/crop"
-		android:visible="false"
-		app:iconTint="?attr/colorOnSurface"
-		app:showAsAction="ifRoom"
-		/>
+    <item
+        android:id="@+id/item_crop"
+        android:enabled="true"
+        android:icon="@drawable/ic_crop_outline"
+        android:orderInCategory="90"
+        android:title="@string/crop"
+        android:visible="false"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="ifRoom" />
 
 </menu>

@@ -33,89 +33,92 @@ import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 
 public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
-	private SelectorDialogClickListener callback;
-	private Activity activity;
-	private AlertDialog alertDialog;
+    private SelectorDialogClickListener callback;
+    private Activity activity;
+    private AlertDialog alertDialog;
 
-	public static MultiChoiceSelectorDialog newInstance(String title, String[] items, boolean[] checkedItems) {
-		MultiChoiceSelectorDialog dialog = new MultiChoiceSelectorDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putStringArray("items", items);
-		args.putBooleanArray("checked", checkedItems);
+    public static MultiChoiceSelectorDialog newInstance(String title, String[] items, boolean[] checkedItems) {
+        MultiChoiceSelectorDialog dialog = new MultiChoiceSelectorDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putStringArray("items", items);
+        args.putBooleanArray("checked", checkedItems);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface SelectorDialogClickListener {
-		void onYes(String tag, boolean[] checkedItems);
-		default void onCancel(String tag) {
-			// optional interface
-		};
-	}
+    public interface SelectorDialogClickListener {
+        void onYes(String tag, boolean[] checkedItems);
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        default void onCancel(String tag) {
+            // optional interface
+        }
 
-		this.activity = activity;
-	}
+        ;
+    }
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		super.onCancel(dialogInterface);
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		callback.onCancel(this.getTag());
-	}
+        this.activity = activity;
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = getArguments().getString("title");
-		final String[] items = getArguments().getStringArray("items");
-		final boolean[] checkedItems = getArguments().getBooleanArray("checked");
+    @Override
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
+        super.onCancel(dialogInterface);
 
-		final String tag = this.getTag();
+        callback.onCancel(this.getTag());
+    }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-		if (title != null) {
-			builder.setTitle(title);
-		}
-		builder.setMultiChoiceItems(items, checkedItems, (dialog, which, isChecked) -> {
-			//
-		});
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        String title = getArguments().getString("title");
+        final String[] items = getArguments().getStringArray("items");
+        final boolean[] checkedItems = getArguments().getBooleanArray("checked");
 
-		builder.setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-			dialog.dismiss();
-			callback.onYes(tag, checkedItems);
-		});
+        final String tag = this.getTag();
 
-		builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
-			dialog.dismiss();
-			callback.onCancel(tag);
-		});
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        if (title != null) {
+            builder.setTitle(title);
+        }
+        builder.setMultiChoiceItems(items, checkedItems, (dialog, which, isChecked) -> {
+            //
+        });
 
-		alertDialog = builder.create();
+        builder.setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+            dialog.dismiss();
+            callback.onYes(tag, checkedItems);
+        });
 
-		return alertDialog;
-	}
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> {
+            dialog.dismiss();
+            callback.onCancel(tag);
+        });
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        alertDialog = builder.create();
 
-		try {
-			callback = (SelectorDialogClickListener) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
+        return alertDialog;
+    }
 
-		// maybe called from an activity rather than a fragment
-		if (callback == null) {
-			if ((activity instanceof SelectorDialogClickListener)) {
-				callback = (SelectorDialogClickListener) activity;
-			}
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        try {
+            callback = (SelectorDialogClickListener) getTargetFragment();
+        } catch (ClassCastException e) {
+            //
+        }
+
+        // maybe called from an activity rather than a fragment
+        if (callback == null) {
+            if ((activity instanceof SelectorDialogClickListener)) {
+                callback = (SelectorDialogClickListener) activity;
+            }
+        }
+    }
 }

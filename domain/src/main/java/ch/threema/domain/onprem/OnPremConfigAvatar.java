@@ -22,13 +22,13 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigAvatar {
-	private final String url;
+    private final String url;
 
-	public OnPremConfigAvatar(String url) {
-		this.url = url;
-	}
+    public OnPremConfigAvatar(String url) {
+        this.url = url;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 }

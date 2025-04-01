@@ -35,119 +35,119 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * A message that has plain text as its contents.
  */
 public class TextMessage extends AbstractMessage {
-	private String text;
+    private String text;
 
-	public TextMessage() {
-		super();
-	}
+    public TextMessage() {
+        super();
+    }
 
-	@Override
-	public int getType() {
-		return ProtocolDefines.MSGTYPE_TEXT;
-	}
+    @Override
+    public int getType() {
+        return ProtocolDefines.MSGTYPE_TEXT;
+    }
 
-	@Override
-	public boolean flagSendPush() {
-		return true;
-	}
+    @Override
+    public boolean flagSendPush() {
+        return true;
+    }
 
-	@Nullable
-	@Override
-	public Version getMinimumRequiredForwardSecurityVersion() {
-		return Version.V1_0;
-	}
+    @Nullable
+    @Override
+    public Version getMinimumRequiredForwardSecurityVersion() {
+        return Version.V1_0;
+    }
 
-	@Override
-	public boolean allowUserProfileDistribution() {
-		return true;
-	}
+    @Override
+    public boolean allowUserProfileDistribution() {
+        return true;
+    }
 
-	@Override
-	public boolean exemptFromBlocking() {
-		return false;
-	}
+    @Override
+    public boolean exemptFromBlocking() {
+        return false;
+    }
 
-	@Override
-	public boolean createImplicitlyDirectContact() {
-		return true;
-	}
+    @Override
+    public boolean createImplicitlyDirectContact() {
+        return true;
+    }
 
-	@Override
-	public boolean protectAgainstReplay() {
-		return true;
-	}
+    @Override
+    public boolean protectAgainstReplay() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectIncoming() {
-		return true;
-	}
+    @Override
+    public boolean reflectIncoming() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectOutgoing() {
-		return true;
-	}
+    @Override
+    public boolean reflectOutgoing() {
+        return true;
+    }
 
-	@Override
-	public boolean reflectSentUpdate() {
-		return true;
-	}
+    @Override
+    public boolean reflectSentUpdate() {
+        return true;
+    }
 
-	@Override
-	public boolean sendAutomaticDeliveryReceipt() {
-		return true;
-	}
+    @Override
+    public boolean sendAutomaticDeliveryReceipt() {
+        return true;
+    }
 
-	@Override
-	public boolean bumpLastUpdate() {
-		return true;
-	}
+    @Override
+    public boolean bumpLastUpdate() {
+        return true;
+    }
 
-	@Override
-	public byte[] getBody() {
+    @Override
+    public byte[] getBody() {
         return text.getBytes(StandardCharsets.UTF_8);
     }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	@NonNull
-	public static TextMessage fromReflected(MdD2D.IncomingMessage message) throws BadMessageException {
-		TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
-		textMessage.initializeCommonProperties(message);
-		return textMessage;
-	}
+    @NonNull
+    public static TextMessage fromReflected(MdD2D.IncomingMessage message) throws BadMessageException {
+        TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
+        textMessage.initializeCommonProperties(message);
+        return textMessage;
+    }
 
-	@NonNull
-	public static TextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {
-		return fromByteArray(data, 0, data.length);
-	}
+    @NonNull
+    public static TextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {
+        return fromByteArray(data, 0, data.length);
+    }
 
-	/**
-	 * Get the text message from the given array.
-	 *
-	 * @param data   the data that represents the message
-	 * @param offset the offset where the data starts
-	 * @param length the length of the data (needed to ignore the padding)
-	 * @return the text message
-	 * @throws BadMessageException if the length is invalid
-	 */
-	@NonNull
-	public static TextMessage fromByteArray(@NonNull byte[] data, int offset, int length) throws BadMessageException {
-		if (data.length < offset + length) {
-			throw new BadMessageException("Invalid byte array length (" + data.length + ") for " +
-				"offset " + offset + " and length " + length);
-		}
-		if (length < 1) {
-			throw new BadMessageException("Bad length (" + length + ") for text message");
-		}
+    /**
+     * Get the text message from the given array.
+     *
+     * @param data   the data that represents the message
+     * @param offset the offset where the data starts
+     * @param length the length of the data (needed to ignore the padding)
+     * @return the text message
+     * @throws BadMessageException if the length is invalid
+     */
+    @NonNull
+    public static TextMessage fromByteArray(@NonNull byte[] data, int offset, int length) throws BadMessageException {
+        if (data.length < offset + length) {
+            throw new BadMessageException("Invalid byte array length (" + data.length + ") for " +
+                "offset " + offset + " and length " + length);
+        }
+        if (length < 1) {
+            throw new BadMessageException("Bad length (" + length + ") for text message");
+        }
 
-		TextMessage textMessage = new TextMessage();
-		textMessage.setText(new String(data, offset, length, UTF_8));
-		return textMessage;
-	}
+        TextMessage textMessage = new TextMessage();
+        textMessage.setText(new String(data, offset, length, UTF_8));
+        return textMessage;
+    }
 }

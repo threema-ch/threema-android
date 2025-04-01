@@ -41,114 +41,116 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 
 public class SMSVerificationDialog extends ThreemaDialogFragment {
-	private static final String ARG_PHONE_NUMBER = "title";
+    private static final String ARG_PHONE_NUMBER = "title";
 
-	private SMSVerificationDialogCallback callback;
-	private AlertDialog alertDialog;
-	private Activity activity;
-	private String tag;
+    private SMSVerificationDialogCallback callback;
+    private AlertDialog alertDialog;
+    private Activity activity;
+    private String tag;
 
-	public static SMSVerificationDialog newInstance(String phoneNumber) {
-		SMSVerificationDialog dialog = new SMSVerificationDialog();
-		Bundle args = new Bundle();
-		args.putString(ARG_PHONE_NUMBER, phoneNumber);
-		dialog.setArguments(args);
-		return dialog;
-	}
+    public static SMSVerificationDialog newInstance(String phoneNumber) {
+        SMSVerificationDialog dialog = new SMSVerificationDialog();
+        Bundle args = new Bundle();
+        args.putString(ARG_PHONE_NUMBER, phoneNumber);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface SMSVerificationDialogCallback {
-		void onYes(String tag, String code);
-		void onNo(String tag);
-		void onCallRequested(String tag);
-	}
+    public interface SMSVerificationDialogCallback {
+        void onYes(String tag, String code);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
 
-		try {
-			callback = (SMSVerificationDialogCallback) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
+        void onCallRequested(String tag);
+    }
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if (!(activity instanceof SMSVerificationDialogCallback)) {
-				throw new ClassCastException("Calling fragment must implement SMSVerificationDialogCallback interface");
-			}
-			callback = (SMSVerificationDialogCallback) activity;
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        try {
+            callback = (SMSVerificationDialogCallback) getTargetFragment();
+        } catch (ClassCastException e) {
+            //
+        }
 
-		this.activity = activity;
-	}
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if (!(activity instanceof SMSVerificationDialogCallback)) {
+                throw new ClassCastException("Calling fragment must implement SMSVerificationDialogCallback interface");
+            }
+            callback = (SMSVerificationDialogCallback) activity;
+        }
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String phone = getArguments().getString(ARG_PHONE_NUMBER);
-		String title = String.format(getString(R.string.verification_of), phone);
-		tag = this.getTag();
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_sms_verification, null);
-		final Button requestCallButton = dialogView.findViewById(R.id.request_call);
-		requestCallButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				callback.onCallRequested(tag);
-			}
-		});
-		if (ConfigUtils.isTheDarkSide(getContext())) {
-			if (requestCallButton.getCompoundDrawables()[0] != null) {
-				requestCallButton.getCompoundDrawables()[0].setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
-			}
-		}
+        this.activity = activity;
+    }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-		builder.setTitle(title);
-		builder.setView(dialogView);
-		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-					}
-				}
-		);
-		builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						callback.onNo(tag);
-					}
-				}
-		);
-		alertDialog = builder.create();
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        String phone = getArguments().getString(ARG_PHONE_NUMBER);
+        String title = String.format(getString(R.string.verification_of), phone);
+        tag = this.getTag();
 
-		return alertDialog;
-	}
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_sms_verification, null);
+        final Button requestCallButton = dialogView.findViewById(R.id.request_call);
+        requestCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.onCallRequested(tag);
+            }
+        });
+        if (ConfigUtils.isTheDarkSide(getContext())) {
+            if (requestCallButton.getCompoundDrawables()[0] != null) {
+                requestCallButton.getCompoundDrawables()[0].setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_IN);
+            }
+        }
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		callback.onNo(tag);
-	}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        builder.setTitle(title);
+        builder.setView(dialogView);
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            }
+        );
+        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onNo(tag);
+                }
+            }
+        );
+        alertDialog = builder.create();
 
-	@Override
-	public void onStart() {
-		super.onStart();
+        return alertDialog;
+    }
 
-		ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+    @Override
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
+        callback.onNo(tag);
+    }
 
-		alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorStateList);
-		alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorStateList);
-		alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditText editText = alertDialog.findViewById(R.id.code_edittext);
-				String code =  editText.getText().toString();
+    @Override
+    public void onStart() {
+        super.onStart();
 
-				callback.onYes(tag, code);
-			}
-		});
-	}
+        ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorStateList);
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorStateList);
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText editText = alertDialog.findViewById(R.id.code_edittext);
+                String code = editText.getText().toString();
+
+                callback.onYes(tag, code);
+            }
+        });
+    }
 }

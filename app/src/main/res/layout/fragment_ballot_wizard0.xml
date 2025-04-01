@@ -1,77 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ch.threema.app.ui.ResizingScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-                                      xmlns:app="http://schemas.android.com/apk/res-auto"
-                                      android:id="@+id/layout_wizard0"
-                                      android:layout_width="match_parent"
-                                      android:layout_height="match_parent"
-                                      android:background="?android:attr/colorBackground"
-                                      android:paddingBottom="@dimen/wizard_footer_height"
-                                      android:paddingLeft="@dimen/tablet_additional_padding_left_right"
-                                      android:paddingRight="@dimen/tablet_additional_padding_left_right">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_wizard0"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:paddingBottom="@dimen/wizard_footer_height"
+    android:paddingLeft="@dimen/tablet_additional_padding_left_right"
+    android:paddingRight="@dimen/tablet_additional_padding_left_right">
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
-		android:paddingTop="16dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp">
 
-		<TextView
-			style="@style/Threema.TextAppearance.Headline"
-			android:id="@+id/wizard_title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/ballot_create"
-			android:textColor="?attr/colorPrimary" />
+        <TextView
+            style="@style/Threema.TextAppearance.Headline"
+            android:id="@+id/wizard_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ballot_create"
+            android:textColor="?attr/colorPrimary" />
 
-		<TextView
-			style="@style/Threema.TextAppearance.BodyLarge"
-			android:id="@+id/wizard_body"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp"
-			android:text="@string/ballot_wizard0_explain" />
+        <TextView
+            style="@style/Threema.TextAppearance.BodyLarge"
+            android:id="@+id/wizard_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/ballot_wizard0_explain" />
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/wizard_edittext_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="16dp"
-			android:hint="@string/ballot_subject_hint"
-			app:errorEnabled="true"
-			app:hintAnimationEnabled="true"
-			app:hintEnabled="true">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/wizard_edittext_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/ballot_subject_hint"
+            app:errorEnabled="true"
+            app:hintAnimationEnabled="true"
+            app:hintEnabled="true">
 
-			<ch.threema.app.ui.ComposeEditText
-				android:id="@+id/wizard_edittext"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:imeActionId="@integer/ime_wizard_next"
-				android:textSize="16sp"
-				android:imeActionLabel="@string/next"
-				android:maxLength="100"
-				android:singleLine="false">
-				<requestFocus />
-			</ch.threema.app.ui.ComposeEditText>
+            <ch.threema.app.ui.ComposeEditText
+                android:id="@+id/wizard_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeActionId="@integer/ime_wizard_next"
+                android:textSize="16sp"
+                android:imeActionLabel="@string/next"
+                android:maxLength="100"
+                android:singleLine="false">
 
-		</com.google.android.material.textfield.TextInputLayout>
+                <requestFocus />
+            </ch.threema.app.ui.ComposeEditText>
 
-		<com.google.android.material.checkbox.MaterialCheckBox
-			android:id="@+id/type"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:checked="false"
-			android:text="@string/ballot_multiple_choice" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-		<com.google.android.material.checkbox.MaterialCheckBox
-			android:id="@+id/visibility"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:checked="true"
-			android:text="@string/ballot_intermediate_results_show" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/ballot_multiple_choice" />
 
-	</LinearLayout>
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/visibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/ballot_intermediate_results_show" />
+
+    </LinearLayout>
 
 </ch.threema.app.ui.ResizingScrollView>
 

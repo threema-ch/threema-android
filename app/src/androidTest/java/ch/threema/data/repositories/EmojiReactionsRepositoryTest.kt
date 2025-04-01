@@ -167,8 +167,10 @@ class EmojiReactionsRepositoryTest {
         contactMessage.assertEmojiReactionSize(1)
         groupMessage.assertEmojiReactionSize(1)
 
-        val contactReaction = emojiReactionsRepository.getReactionsByMessage(contactMessage)!!.data.value!![0]
-        val groupReaction = emojiReactionsRepository.getReactionsByMessage(groupMessage)!!.data.value!![0]
+        val contactReaction =
+            emojiReactionsRepository.getReactionsByMessage(contactMessage)!!.data.value!![0]
+        val groupReaction =
+            emojiReactionsRepository.getReactionsByMessage(groupMessage)!!.data.value!![0]
 
         Assert.assertEquals("⚾", contactReaction.emojiSequence)
         Assert.assertEquals("⛵", groupReaction.emojiSequence)
@@ -286,9 +288,13 @@ class EmojiReactionsRepositoryTest {
             coreServiceManager = testCoreServiceManager
         )
 
-        val cachedEntryContact = testEmojiCache.getOrCreate(reactionMessageIdentifierContact) { emojiReactionsModelContact }
+        val cachedEntryContact =
+            testEmojiCache.getOrCreate(reactionMessageIdentifierContact) { emojiReactionsModelContact }
 
-        assertContentEquals(listOf(emojiReactionDataForContactMessage), cachedEntryContact!!.data.value)
+        assertContentEquals(
+            listOf(emojiReactionDataForContactMessage),
+            cachedEntryContact!!.data.value
+        )
         assertNull(testEmojiCache.get(reactionMessageIdentifierGroup))
 
         testEmojiCache.remove(reactionMessageIdentifierGroup)

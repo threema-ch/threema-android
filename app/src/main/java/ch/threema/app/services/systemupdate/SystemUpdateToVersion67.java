@@ -33,32 +33,32 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * Add a messageFlags field
  */
 public class SystemUpdateToVersion67 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 67;
-	private final SQLiteDatabase sqLiteDatabase;
+    public static final int VERSION = 67;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion67(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion67(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		if(!fieldExists(this.sqLiteDatabase, "contacts", "readReceipts")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN readReceipts TINYINT DEFAULT 0");
-		}
-		if(!fieldExists(this.sqLiteDatabase, "contacts", "typingIndicators")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN typingIndicators TINYINT DEFAULT 0");
-		}
-		return true;
-	}
+    @Override
+    public boolean runDirectly() throws SQLException {
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "readReceipts")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN readReceipts TINYINT DEFAULT 0");
+        }
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "typingIndicators")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN typingIndicators TINYINT DEFAULT 0");
+        }
+        return true;
+    }
 
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 67 (add readReceipts and typingIndicators)";
-	}
+    @Override
+    public String getText() {
+        return "version 67 (add readReceipts and typingIndicators)";
+    }
 }

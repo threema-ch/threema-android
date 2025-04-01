@@ -44,7 +44,11 @@ internal class ReflectedOutgoingGroupLocationTask(
 
     private val messageService by lazy { serviceManager.messageService }
 
-    private val groupLocationMessage: GroupLocationMessage by lazy { GroupLocationMessage.fromReflected(message) }
+    private val groupLocationMessage: GroupLocationMessage by lazy {
+        GroupLocationMessage.fromReflected(
+            message
+        )
+    }
 
     override val storeNonces: Boolean
         get() = groupLocationMessage.protectAgainstReplay()

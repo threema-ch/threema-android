@@ -35,35 +35,35 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 public class FileUtilTest {
-	@Test
-	public void testDeleteFileOrWarn() throws IOException {
-		// Create temporary file
-		final File tempFile = Files.createTempFile("FileUtilTest", "tmp").toFile();
-		Assert.assertTrue("Temporary file was not created", tempFile.exists());
+    @Test
+    public void testDeleteFileOrWarn() throws IOException {
+        // Create temporary file
+        final File tempFile = Files.createTempFile("FileUtilTest", "tmp").toFile();
+        Assert.assertTrue("Temporary file was not created", tempFile.exists());
 
-		// Mock logger
-		final Logger logger = Mockito.mock(Logger.class);
+        // Mock logger
+        final Logger logger = Mockito.mock(Logger.class);
 
-		// Remove it
-		FileUtil.deleteFileOrWarn(tempFile, "testfile", logger);
-		Assert.assertFalse("Temporary file was not deleted", tempFile.exists());
-		Mockito.verify(logger, never()).warn(anyString(), anyString());
+        // Remove it
+        FileUtil.deleteFileOrWarn(tempFile, "testfile", logger);
+        Assert.assertFalse("Temporary file was not deleted", tempFile.exists());
+        Mockito.verify(logger, never()).warn(anyString(), anyString());
 
-		// Deleting fails the second time
-		FileUtil.deleteFileOrWarn(tempFile, "testfile", logger);
-		Mockito.verify(logger, times(1)).warn("Could not delete {}", "testfile");
-	}
+        // Deleting fails the second time
+        FileUtil.deleteFileOrWarn(tempFile, "testfile", logger);
+        Mockito.verify(logger, times(1)).warn("Could not delete {}", "testfile");
+    }
 
-	@Test
-	public void testSanitizeFileName() {
-		String emptyFileName = "";
-		String badFileName = "test:file@/*123-\"asd?|<>.png";
-		String badZipName = "/zip..file.zip";
-		String validName = "testfile.zip";
+    @Test
+    public void testSanitizeFileName() {
+        String emptyFileName = "";
+        String badFileName = "test:file@/*123-\"asd?|<>.png";
+        String badZipName = "/zip..file.zip";
+        String validName = "testfile.zip";
 
-		Assert.assertNull(FileUtil.sanitizeFileName(emptyFileName));
-		Assert.assertEquals("test_file@__123-_asd____.png", FileUtil.sanitizeFileName(badFileName));
-		Assert.assertEquals("_zip_file.zip", FileUtil.sanitizeFileName(badZipName));
-		Assert.assertEquals("testfile.zip", FileUtil.sanitizeFileName(validName));
-	}
+        Assert.assertNull(FileUtil.sanitizeFileName(emptyFileName));
+        Assert.assertEquals("test_file@__123-_asd____.png", FileUtil.sanitizeFileName(badFileName));
+        Assert.assertEquals("_zip_file.zip", FileUtil.sanitizeFileName(badZipName));
+        Assert.assertEquals("testfile.zip", FileUtil.sanitizeFileName(validName));
+    }
 }

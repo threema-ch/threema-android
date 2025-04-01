@@ -86,7 +86,10 @@ suspend fun handleIncomingGroupSyncRequest(
     val now = System.currentTimeMillis()
     val oneHourAgo = now - DateUtils.HOUR_IN_MILLIS
     if (groupSyncLog.lastHandledRequest > oneHourAgo) {
-        logger.info("Group sync request already handled {}ms ago", now - groupSyncLog.lastHandledRequest)
+        logger.info(
+            "Group sync request already handled {}ms ago",
+            now - groupSyncLog.lastHandledRequest
+        )
         return ReceiveStepsResult.DISCARD
     }
     incomingGroupSyncRequestLogModelFactory.createOrUpdate(

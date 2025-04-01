@@ -34,33 +34,34 @@ import org.junit.Test;
 
 public class GroupJoinRequestMessageTest {
 
-	static GroupJoinRequestData getDataTestInstance() throws BadMessageException {
-		return new GroupJoinRequestData(
-			GroupJoinRequestDataTest.TEST_TOKEN_VALID,
-			GroupJoinRequestDataTest.TEST_GROUP_NAME,
-			GroupJoinRequestDataTest.TEST_MESSAGE
-		);
-	}
-	static GroupJoinRequestMessage getMessageTestInstance() throws BadMessageException {
-		final GroupJoinRequestMessage msg = new GroupJoinRequestMessage(getDataTestInstance());
-		setMessageDefaultSenderAndReceiver(msg);
-		return msg;
-	}
+    static GroupJoinRequestData getDataTestInstance() throws BadMessageException {
+        return new GroupJoinRequestData(
+            GroupJoinRequestDataTest.TEST_TOKEN_VALID,
+            GroupJoinRequestDataTest.TEST_GROUP_NAME,
+            GroupJoinRequestDataTest.TEST_MESSAGE
+        );
+    }
 
-	@Test
-	public void makeBoxTest() throws ThreemaException, BadMessageException {
-		final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
-		Assert.assertNotNull(boxedMessage);
-	}
+    static GroupJoinRequestMessage getMessageTestInstance() throws BadMessageException {
+        final GroupJoinRequestMessage msg = new GroupJoinRequestMessage(getDataTestInstance());
+        setMessageDefaultSenderAndReceiver(msg);
+        return msg;
+    }
 
-	@Test
-	public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
-		final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
+    @Test
+    public void makeBoxTest() throws ThreemaException, BadMessageException {
+        final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
+        Assert.assertNotNull(boxedMessage);
+    }
 
-		final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
-		Assert.assertTrue(decodedMessage instanceof GroupJoinRequestMessage);
+    @Test
+    public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
+        final MessageBox boxedMessage = boxMessage(getMessageTestInstance());
 
-		final GroupJoinRequestMessage msg = (GroupJoinRequestMessage) decodedMessage;
-		Assert.assertEquals(msg.getData(), getDataTestInstance());
-	}
+        final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
+        Assert.assertTrue(decodedMessage instanceof GroupJoinRequestMessage);
+
+        final GroupJoinRequestMessage msg = (GroupJoinRequestMessage) decodedMessage;
+        Assert.assertEquals(msg.getData(), getDataTestInstance());
+    }
 }

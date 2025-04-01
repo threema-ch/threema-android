@@ -34,46 +34,46 @@ import ch.threema.app.utils.UrlUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class SupportActivity extends SimpleWebViewActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SupportActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SupportActivity");
 
-	@Override
-	protected boolean requiresConnection() {
-		return true;
-	}
+    @Override
+    protected boolean requiresConnection() {
+        return true;
+    }
 
-	@Override
-	protected boolean requiresJavaScript() {
-		return true;
-	}
+    @Override
+    protected boolean requiresJavaScript() {
+        return true;
+    }
 
-	@Override
-	protected int getWebViewTitle() {
-		return R.string.support;
-	}
+    @Override
+    protected int getWebViewTitle() {
+        return R.string.support;
+    }
 
-	@Override
-	protected String getWebViewUrl() {
-		String baseURL = null;
+    @Override
+    protected String getWebViewUrl() {
+        String baseURL = null;
 
-		if(ConfigUtils.isWorkBuild()) {
-			baseURL = preferenceService.getCustomSupportUrl();
-		}
+        if (ConfigUtils.isWorkBuild()) {
+            baseURL = preferenceService.getCustomSupportUrl();
+        }
 
-		if(TestUtil.isEmptyOrNull(baseURL)) {
-			baseURL = getString(R.string.support_url);
-		}
+        if (TestUtil.isEmptyOrNull(baseURL)) {
+            baseURL = getString(R.string.support_url);
+        }
 
-		return baseURL + "?lang=" + LocaleUtil.getAppLanguage()
-			+ "&version=" + UrlUtil.urlencode(ConfigUtils.getDeviceInfo(true))
-			+ "&identity=" + getIdentity();
-	}
+        return baseURL + "?lang=" + LocaleUtil.getAppLanguage()
+            + "&version=" + UrlUtil.urlencode(ConfigUtils.getDeviceInfo(true))
+            + "&identity=" + getIdentity();
+    }
 
-	private String getIdentity() {
-		try {
-			return URLEncoder.encode(serviceManager.getUserService().getIdentity(), LocaleUtil.UTF8_ENCODING);
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Encoding exception", e);
-		}
-		return "";
-	}
+    private String getIdentity() {
+        try {
+            return URLEncoder.encode(serviceManager.getUserService().getIdentity(), LocaleUtil.UTF8_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Encoding exception", e);
+        }
+        return "";
+    }
 }

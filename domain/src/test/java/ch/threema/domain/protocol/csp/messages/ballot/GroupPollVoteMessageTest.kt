@@ -187,7 +187,8 @@ open class GroupPollVoteMessageTest {
         }
 
         // act
-        val resultGroupPollVoteMessage: GroupPollVoteMessage = GroupPollVoteMessage.fromReflected(outgoingD2DMessage)
+        val resultGroupPollVoteMessage: GroupPollVoteMessage =
+            GroupPollVoteMessage.fromReflected(outgoingD2DMessage)
 
         // assert
         assertEquals(outgoingMessageId, resultGroupPollVoteMessage.messageId)
@@ -210,7 +211,8 @@ open class GroupPollVoteMessageTest {
         }
 
         // act
-        val resultGroupPollVoteMessage: GroupPollVoteMessage = GroupPollVoteMessage.fromReflected(incomingD2DMessage)
+        val resultGroupPollVoteMessage: GroupPollVoteMessage =
+            GroupPollVoteMessage.fromReflected(incomingD2DMessage)
 
         // assert
         assertEquals(resultGroupPollVoteMessage.messageId, MessageId(incomingMessageId))

@@ -26,17 +26,21 @@ import android.accounts.Account;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 
 public interface SynchronizeContactsService {
-	SynchronizeContactsRoutine instantiateSynchronization();
-	boolean instantiateSynchronizationAndRun();
+    SynchronizeContactsRoutine instantiateSynchronization();
 
-	/**
-	 * @param account
-	 * @return new instance of a routine
-	 */
-	SynchronizeContactsRoutine instantiateSynchronization(Account account);
-	boolean isSynchronizationInProgress();
-	boolean isFullSyncInProgress();
+    boolean instantiateSynchronizationAndRun();
 
-	boolean enableSync();
-	boolean disableSync(Runnable runAfterRemovedAccount);
+    /**
+     * @param account
+     * @return new instance of a routine
+     */
+    SynchronizeContactsRoutine instantiateSynchronization(Account account);
+
+    boolean isSynchronizationInProgress();
+
+    boolean isFullSyncInProgress();
+
+    boolean enableSync();
+
+    boolean disableSync(Runnable runAfterRemovedAccount);
 }

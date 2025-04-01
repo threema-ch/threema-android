@@ -35,11 +35,11 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 
 /**
  * A group message that has an audio recording (stored on the blob server) as its content.
- *
+ * <p>
  * The contents are referenced by the {@code audioBlobId}, the {@code audioSize} in bytes, and the
  * {@code encryptionKey} to be used when decrypting the audio blob.
  *
- *  @Deprecated Use GroupFileMessage instead
+ * @Deprecated Use GroupFileMessage instead
  */
 @Deprecated
 public class GroupAudioMessage extends AbstractGroupMessage {
@@ -47,123 +47,123 @@ public class GroupAudioMessage extends AbstractGroupMessage {
     private final static Logger logger = LoggingUtil.getThreemaLogger("GroupAudioMessage");
 
     private int duration;
-	private byte[] audioBlobId;
-	private int audioSize;
-	private byte[] encryptionKey;
+    private byte[] audioBlobId;
+    private int audioSize;
+    private byte[] encryptionKey;
 
-	public GroupAudioMessage() {
-		super();
-	}
+    public GroupAudioMessage() {
+        super();
+    }
 
-	@Override
-	public int getType() {
-		return ProtocolDefines.MSGTYPE_GROUP_AUDIO;
-	}
+    @Override
+    public int getType() {
+        return ProtocolDefines.MSGTYPE_GROUP_AUDIO;
+    }
 
-	@Override
-	public boolean flagSendPush() {
-		return true;
-	}
+    @Override
+    public boolean flagSendPush() {
+        return true;
+    }
 
-	@Override
-	@Nullable
-	public Version getMinimumRequiredForwardSecurityVersion() {
-		return Version.V1_2;
-	}
-
-	@Override
-	public boolean allowUserProfileDistribution() {
-		return true;
-	}
-
-	@Override
-	public boolean exemptFromBlocking() {
-		return false;
-	}
-
-	@Override
-	public boolean createImplicitlyDirectContact() {
-		return false;
-	}
-
-	@Override
-	public boolean protectAgainstReplay() {
-		return true;
-	}
-
-	@Override
-	public boolean reflectIncoming() {
-		return true;
-	}
-
-	@Override
-	public boolean reflectOutgoing() {
-		return true;
-	}
-
-	@Override
-	public boolean reflectSentUpdate() {
-		return true;
-	}
-
-	@Override
-	public boolean sendAutomaticDeliveryReceipt() {
-		return false;
-	}
-
-	@Override
-	public boolean bumpLastUpdate() {
-		return true;
-	}
-
-	@Override
+    @Override
     @Nullable
-	public byte[] getBody() {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    public Version getMinimumRequiredForwardSecurityVersion() {
+        return Version.V1_2;
+    }
 
-		try {
-			bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
-			bos.write(getApiGroupId().getGroupId());
-			EndianUtils.writeSwappedShort(bos, (short)duration);
-			bos.write(audioBlobId);
-			EndianUtils.writeSwappedInteger(bos, audioSize);
-			bos.write(encryptionKey);
+    @Override
+    public boolean allowUserProfileDistribution() {
+        return true;
+    }
+
+    @Override
+    public boolean exemptFromBlocking() {
+        return false;
+    }
+
+    @Override
+    public boolean createImplicitlyDirectContact() {
+        return false;
+    }
+
+    @Override
+    public boolean protectAgainstReplay() {
+        return true;
+    }
+
+    @Override
+    public boolean reflectIncoming() {
+        return true;
+    }
+
+    @Override
+    public boolean reflectOutgoing() {
+        return true;
+    }
+
+    @Override
+    public boolean reflectSentUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean sendAutomaticDeliveryReceipt() {
+        return false;
+    }
+
+    @Override
+    public boolean bumpLastUpdate() {
+        return true;
+    }
+
+    @Override
+    @Nullable
+    public byte[] getBody() {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
+            bos.write(getApiGroupId().getGroupId());
+            EndianUtils.writeSwappedShort(bos, (short) duration);
+            bos.write(audioBlobId);
+            EndianUtils.writeSwappedInteger(bos, audioSize);
+            bos.write(encryptionKey);
             return bos.toByteArray();
-		} catch (IOException e) {
+        } catch (IOException e) {
             logger.error("Cannot create body of message", e);
             return null;
-		}
-	}
+        }
+    }
 
-	public int getDuration() {
-		return duration;
-	}
+    public int getDuration() {
+        return duration;
+    }
 
-	public void setDuration(int duration) {
-		this.duration = duration;
-	}
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
-	public byte[] getAudioBlobId() {
-		return audioBlobId;
-	}
+    public byte[] getAudioBlobId() {
+        return audioBlobId;
+    }
 
-	public void setAudioBlobId(byte[] audioBlobId) {
-		this.audioBlobId = audioBlobId;
-	}
+    public void setAudioBlobId(byte[] audioBlobId) {
+        this.audioBlobId = audioBlobId;
+    }
 
-	public int getAudioSize() {
-		return audioSize;
-	}
+    public int getAudioSize() {
+        return audioSize;
+    }
 
-	public void setAudioSize(int audioSize) {
-		this.audioSize = audioSize;
-	}
+    public void setAudioSize(int audioSize) {
+        this.audioSize = audioSize;
+    }
 
-	public byte[] getEncryptionKey() {
-		return encryptionKey;
-	}
+    public byte[] getEncryptionKey() {
+        return encryptionKey;
+    }
 
-	public void setEncryptionKey(byte[] encryptionKey) {
-		this.encryptionKey = encryptionKey;
-	}
+    public void setEncryptionKey(byte[] encryptionKey) {
+        this.encryptionKey = encryptionKey;
+    }
 }

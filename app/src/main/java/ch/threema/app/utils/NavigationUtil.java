@@ -33,34 +33,35 @@ import org.slf4j.Logger;
 import ch.threema.base.utils.LoggingUtil;
 
 public class NavigationUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("NavigationUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("NavigationUtil");
 
-	public static void navigateUpToHome(@NonNull Activity activity) {
-		// navigate to home and get rid of the backstack (since we may have pulled the rug from under our feet)
-		// use this, if there are intent filters to get to this activity
-		Intent upIntent = NavUtils.getParentActivityIntent(activity);
-		if (upIntent != null && (NavUtils.shouldUpRecreateTask(activity, upIntent) || activity.isTaskRoot())) {
-			TaskStackBuilder.create(activity)
-					.addNextIntentWithParentStack(upIntent)
-					.startActivities();
-		} else {
-			try {
-				NavUtils.navigateUpFromSameTask(activity);
-			} catch (IllegalArgumentException e) {
-				logger.info("Missing parent activity entry in manifest for " + activity.getComponentName());
-				logger.error("Exception", e);
-			}
-		}
-	}
+    public static void navigateUpToHome(@NonNull Activity activity) {
+        // navigate to home and get rid of the backstack (since we may have pulled the rug from under our feet)
+        // use this, if there are intent filters to get to this activity
+        Intent upIntent = NavUtils.getParentActivityIntent(activity);
+        if (upIntent != null && (NavUtils.shouldUpRecreateTask(activity, upIntent) || activity.isTaskRoot())) {
+            TaskStackBuilder.create(activity)
+                .addNextIntentWithParentStack(upIntent)
+                .startActivities();
+        } else {
+            try {
+                NavUtils.navigateUpFromSameTask(activity);
+            } catch (IllegalArgumentException e) {
+                logger.info("Missing parent activity entry in manifest for " + activity.getComponentName());
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	public static void navigateToLauncher(Activity activity) {
-		if (activity != null) {
-			// go to launcher home!
-			Intent intent = new Intent(Intent.ACTION_MAIN);
-			intent.addCategory(Intent.CATEGORY_HOME);
-			try {
-				activity.startActivity(intent);
-			} catch (RuntimeException ignored) {}
-		}
-	}
+    public static void navigateToLauncher(Activity activity) {
+        if (activity != null) {
+            // go to launcher home!
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            try {
+                activity.startActivity(intent);
+            } catch (RuntimeException ignored) {
+            }
+        }
+    }
 }

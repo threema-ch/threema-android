@@ -44,7 +44,12 @@ class GlobalSearchViewModel : ViewModel() {
         }
     }
 
-    fun onQueryChanged(query: String?, filterFlags: Int, allowEmpty: Boolean, sortAscending: Boolean) {
+    fun onQueryChanged(
+        query: String?,
+        filterFlags: Int,
+        allowEmpty: Boolean,
+        sortAscending: Boolean
+    ) {
         repository.onQueryChanged(query, filterFlags, allowEmpty, sortAscending)
     }
 

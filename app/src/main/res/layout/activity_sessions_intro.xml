@@ -1,72 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:id="@+id/parent_layout"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<include layout="@layout/toolbar_view"/>
+    <include layout="@layout/toolbar_view" />
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"
-		android:scrollbarAlwaysDrawVerticalTrack="true"
-		android:fillViewport="true"
-		android:background="?android:attr/colorBackground">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:fillViewport="true"
+        android:background="?android:attr/colorBackground">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:paddingLeft="@dimen/tablet_standard_padding_left_right"
-			android:paddingRight="@dimen/tablet_standard_padding_left_right"
-			android:paddingBottom="@dimen/wizard_contents_padding"
-			android:paddingTop="@dimen/wizard_contents_padding"
-			android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/tablet_standard_padding_left_right"
+            android:paddingRight="@dimen/tablet_standard_padding_left_right"
+            android:paddingBottom="@dimen/wizard_contents_padding"
+            android:paddingTop="@dimen/wizard_contents_padding"
+            android:orientation="vertical">
 
-			<TextView
-				style="@style/Threema.TextAppearance.Title"
-				android:id="@+id/webclient_welcome"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginTop="8dp"
-				android:gravity="center_horizontal"
-				android:text="@string/webclient_welcome_title"/>
+            <TextView
+                style="@style/Threema.TextAppearance.Title"
+                android:id="@+id/webclient_welcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:text="@string/webclient_welcome_title" />
 
-			<TextView
-				android:id="@+id/webclient_explain"
-				style="@style/Threema.TextAppearance.BodyLarge"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
-				android:gravity="center_horizontal"
-				android:text="@string/webclient_welcome_explain"/>
+            <TextView
+                android:id="@+id/webclient_explain"
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+                android:gravity="center_horizontal"
+                android:text="@string/webclient_welcome_explain" />
 
-			<TextView
-				android:id="@+id/webclient_link"
-				style="@style/Threema.TextAppearance.BodyLarge"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_horizontal"
-				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
-				android:linksClickable="true"
-				android:clickable="true"
-				android:gravity="center_horizontal"
-				android:text=""/>
+            <TextView
+                android:id="@+id/webclient_link"
+                style="@style/Threema.TextAppearance.BodyLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+                android:linksClickable="true"
+                android:clickable="true"
+                android:gravity="center_horizontal"
+                android:text="" />
 
-			<com.google.android.material.button.MaterialButton
-				style="@style/Threema.MaterialButton.Action"
-				android:id="@+id/launch_button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/wizard_small_paragraph_height"
-				android:layout_gravity="center_horizontal"
-				android:text="@string/webclient_launch"/>
+            <com.google.android.material.button.MaterialButton
+                style="@style/Threema.MaterialButton.Action"
+                android:id="@+id/launch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/wizard_small_paragraph_height"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/webclient_launch" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</ScrollView>
+    </ScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

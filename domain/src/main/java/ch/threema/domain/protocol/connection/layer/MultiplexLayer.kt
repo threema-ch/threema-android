@@ -50,7 +50,8 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("MultiplexLayer")
 internal class MultiplexLayer(private val controller: ServerConnectionController) : Layer2Codec {
 
     private val inbound = ProcessingPipe<InboundL1Message, InboundL2Message> { handleInbound(it) }
-    private val outbound = ProcessingPipe<OutboundL3Message, OutboundL2Message> { handleOutbound(it) }
+    private val outbound =
+        ProcessingPipe<OutboundL3Message, OutboundL2Message> { handleOutbound(it) }
 
     override val encoder: PipeProcessor<OutboundL3Message, OutboundL2Message> = outbound
     override val decoder: PipeProcessor<InboundL1Message, InboundL2Message> = inbound
@@ -84,7 +85,10 @@ internal class MultiplexLayer(private val controller: ServerConnectionController
         if (controller !is MdServerConnectionController) {
             throw ServerConnectionException("Received D2mContainer in non-md configuration")
         }
-        logger.info("Handle inbound D2mContainer with payloadType={}", container.payloadType.toHex())
+        logger.info(
+            "Handle inbound D2mContainer with payloadType={}",
+            container.payloadType.toHex()
+        )
         if (container.payloadType == D2mPayloadType.PROXY) {
             handleInboundCspMessage(getCspDataFromD2mProxyMessage(container))
         } else {

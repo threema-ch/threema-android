@@ -145,7 +145,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
 
     private fun onProblemClick(problem: Problem) {
         val action = problem.intentAction
-        val intent : Intent
+        val intent: Intent
 
         if (problem.title == R.string.problemsolver_title_app_battery_usgae_optimized &&
             Build.VERSION.SDK_INT < Build.VERSION_CODES.S

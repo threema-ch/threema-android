@@ -26,13 +26,17 @@ import android.graphics.Bitmap;
 import java.util.Date;
 
 public interface QRCodeService {
-	interface QRCodeContentResult {
-		String getIdentity();
-		byte[] getPublicKey();
-		Date getExpirationDate();
-	}
+    interface QRCodeContentResult {
+        String getIdentity();
 
-	QRCodeContentResult getResult(String content);
-	Bitmap getRawQR(String raw, boolean unicode, @QRCodeServiceImpl.QRCodeColor int borderColor);
-	Bitmap getUserQRCode();
+        byte[] getPublicKey();
+
+        Date getExpirationDate();
+    }
+
+    QRCodeContentResult getResult(String content);
+
+    Bitmap getRawQR(String raw, boolean unicode, @QRCodeServiceImpl.QRCodeColor int borderColor);
+
+    Bitmap getUserQRCode();
 }

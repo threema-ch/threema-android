@@ -50,6 +50,7 @@ class ExifInterfaceUtils {
     private ExifInterfaceUtils() {
         // Prevent instantiation
     }
+
     /**
      * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
      * Returns the total number of bytes transferred.
@@ -77,7 +78,7 @@ class ExifInterfaceUtils {
             int bytesRead = in.read(buffer, 0, bytesToRead);
             if (bytesRead != bytesToRead) {
                 throw new IOException("Failed to copy the given amount of bytes from the input"
-                        + "stream to the output stream.");
+                    + "stream to the output stream.");
             }
             remainder -= bytesRead;
             out.write(buffer, 0, bytesRead);
@@ -174,7 +175,8 @@ class ExifInterfaceUtils {
 
     @RequiresApi(21)
     static class Api21Impl {
-        private Api21Impl() {}
+        private Api21Impl() {
+        }
 
         @DoNotInline
         static FileDescriptor dup(FileDescriptor fileDescriptor) throws ErrnoException {
@@ -194,7 +196,8 @@ class ExifInterfaceUtils {
 
     @RequiresApi(23)
     static class Api23Impl {
-        private Api23Impl() {}
+        private Api23Impl() {
+        }
 
         @DoNotInline
         static void setDataSource(MediaMetadataRetriever retriever, MediaDataSource dataSource) {

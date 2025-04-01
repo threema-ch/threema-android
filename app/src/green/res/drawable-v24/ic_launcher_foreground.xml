@@ -1,41 +1,53 @@
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="1500"
     android:viewportHeight="1500">
-      <group android:translateX="238"
-          android:translateY="238">
-<!--    <group>-->
+    <group
+        android:translateX="238"
+        android:translateY="238">
+        <!--    <group>-->
         <!-- background color of icon -->
-        <path android:fillColor="#FFF"
+        <path
+            android:fillColor="#FFF"
             android:fillType="evenOdd"
-            android:pathData="M0,0h1024v1024h-1024z" android:strokeColor="#00000000"/>
+            android:pathData="M0,0h1024v1024h-1024z"
+            android:strokeColor="#00000000" />
         <!-- sky color -->
-        <path android:fillColor="@color/ic_launcher_sky"
+        <path
+            android:fillColor="@color/ic_launcher_sky"
             android:fillType="evenOdd"
-            android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8ZZ" android:strokeColor="#00000000"/>
+            android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8ZZ"
+            android:strokeColor="#00000000" />
         <!-- shadow of the dune -->
         <group>
-            <clip-path android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8Z"/>
-            <path android:fillColor="@color/ic_launcher_shadow"
+            <clip-path android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8Z" />
+            <path
+                android:fillColor="@color/ic_launcher_shadow"
                 android:fillType="evenOdd"
-                android:pathData="M134.7,434.5C286.6,434.5 403.7,243 512,243C618.4,245.6 774.8,438.4 882,434.5L882,730L134.7,730L134.7,434.5ZZ" android:strokeColor="#00000000"/>
+                android:pathData="M134.7,434.5C286.6,434.5 403.7,243 512,243C618.4,245.6 774.8,438.4 882,434.5L882,730L134.7,730L134.7,434.5ZZ"
+                android:strokeColor="#00000000" />
         </group>
         <!-- right side of the dune -->
         <group>
-            <clip-path android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8Z"/>
-            <path android:fillColor="@color/ic_launcher_dune"
+            <clip-path android:pathData="M367.8,688.8L203,730L238.2,589.1C203.3,543.1 183,487.9 183,428.5C183,268.6 330.3,139 512,139C693.7,139 841,268.6 841,428.5C841,588.4 693.7,718 512,718C460.3,718 411.4,707.5 367.8,688.8Z" />
+            <path
+                android:fillColor="@color/ic_launcher_dune"
                 android:fillType="evenOdd"
-                android:pathData="M479.9,248.7C544.4,229 572.5,307.3 459.2,389.2C346,471 182.8,668 479.9,730L882,730L882,434.5C769.9,434.5 594.9,204.7 479.9,248.7ZZ" android:strokeColor="#00000000"/>
+                android:pathData="M479.9,248.7C544.4,229 572.5,307.3 459.2,389.2C346,471 182.8,668 479.9,730L882,730L882,434.5C769.9,434.5 594.9,204.7 479.9,248.7ZZ"
+                android:strokeColor="#00000000" />
         </group>
         <!-- pad lock symbol -->
-        <path android:fillColor="#FFFFFF"
+        <path
+            android:fillColor="#FFFFFF"
             android:fillType="evenOdd"
-            android:pathData="M512,274C563.6,274 605.3,315.8 605.3,367.2L605.3,404.5L609,404.5C617.3,404.5 624,411.2 624,419.5L624,551C624,559.3 617.3,566 609,566L415,566C406.7,566 400,559.3 400,551L400,419.5C400,411.2 406.7,404.5 415,404.5L418.7,404.5L418.7,367.2C418.7,315.8 460.4,274 512,274ZZM512,311.3C481.1,311.3 456,336.3 456,367.2L456,404.5L568,404.5L568,367.2C568,336.3 542.9,311.3 512,311.3ZZ" android:strokeColor="#00000000"/>
+            android:pathData="M512,274C563.6,274 605.3,315.8 605.3,367.2L605.3,404.5L609,404.5C617.3,404.5 624,411.2 624,419.5L624,551C624,559.3 617.3,566 609,566L415,566C406.7,566 400,559.3 400,551L400,419.5C400,411.2 406.7,404.5 415,404.5L418.7,404.5L418.7,367.2C418.7,315.8 460.4,274 512,274ZZM512,311.3C481.1,311.3 456,336.3 456,367.2L456,404.5L568,404.5L568,367.2C568,336.3 542.9,311.3 512,311.3ZZ"
+            android:strokeColor="#00000000" />
         <!-- threema dots -->
-        <path android:fillColor="@color/ic_launcher_dots"
+        <path
+            android:fillColor="@color/ic_launcher_dots"
             android:fillType="evenOdd"
-            android:pathData="M568,848C568,878.9 542.9,904 511.9,904C481,904 456,878.9 456,848C456,817.1 481,792 511.9,792C542.9,792 568,817.1 568,848ZZM366,848C366,878.9 341,904 310,904C279.1,904 254,878.9 254,848C254,817.1 279.1,792 310,792C341,792 366,817.1 366,848ZZM769.9,848C769.9,878.9 744.9,904 713.9,904C683,904 658,878.9 658,848C658,817.1 683,792 713.9,792C744.9,792 769.9,817.1 769.9,848ZZ" android:strokeColor="#00000000"/>
+            android:pathData="M568,848C568,878.9 542.9,904 511.9,904C481,904 456,878.9 456,848C456,817.1 481,792 511.9,792C542.9,792 568,817.1 568,848ZZM366,848C366,878.9 341,904 310,904C279.1,904 254,878.9 254,848C254,817.1 279.1,792 310,792C341,792 366,817.1 366,848ZZM769.9,848C769.9,878.9 744.9,904 713.9,904C683,904 658,878.9 658,848C658,817.1 683,792 713.9,792C744.9,792 769.9,817.1 769.9,848ZZ"
+            android:strokeColor="#00000000" />
     </group>
 </vector>

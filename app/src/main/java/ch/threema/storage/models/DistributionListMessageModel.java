@@ -22,30 +22,30 @@
 package ch.threema.storage.models;
 
 public class DistributionListMessageModel extends AbstractMessageModel {
-	public static final String TABLE = "distribution_list_message";
-	public static final String COLUMN_DISTRIBUTION_LIST_ID = "distributionListId";
+    public static final String TABLE = "distribution_list_message";
+    public static final String COLUMN_DISTRIBUTION_LIST_ID = "distributionListId";
 
-	private long distributionListId;
+    private long distributionListId;
 
-	public DistributionListMessageModel() {
-		super();
-	}
+    public DistributionListMessageModel() {
+        super();
+    }
 
-	public DistributionListMessageModel(boolean isStatusMessage) {
-		super(isStatusMessage);
-	}
+    public DistributionListMessageModel(boolean isStatusMessage) {
+        super(isStatusMessage);
+    }
 
-	public long getDistributionListId() {
-		return this.distributionListId;
-	}
+    public long getDistributionListId() {
+        return this.distributionListId;
+    }
 
-	public DistributionListMessageModel setDistributionListId(long distributionListId) {
-		this.distributionListId = distributionListId;
-		return this;
-	}
+    public DistributionListMessageModel setDistributionListId(long distributionListId) {
+        this.distributionListId = distributionListId;
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "distribution_list_message.id = " + this.getId();
-	}
+    @Override
+    public String toString() {
+        return "distribution_list_message.id = " + this.getId();
+    }
 }

@@ -41,110 +41,114 @@ import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotWizardFragment0 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback {
-	private EditText editText;
-	private TextInputLayout textInputLayout;
-	private CheckBox secretCheckbox;
-	private CheckBox typeCheckbox;
+    private EditText editText;
+    private TextInputLayout textInputLayout;
+    private CheckBox secretCheckbox;
+    private CheckBox typeCheckbox;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		ViewGroup rootView = (ViewGroup) inflater.inflate(
-			R.layout.fragment_ballot_wizard0, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(
+            R.layout.fragment_ballot_wizard0, container, false);
 
-		this.editText = rootView.findViewById(R.id.wizard_edittext);
-		this.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == getResources().getInteger(R.integer.ime_wizard_next) || actionId == EditorInfo.IME_ACTION_DONE) {
-					if(getBallotActivity() != null) {
-						getBallotActivity().nextPage();
-					}
-				}
-				return false;
-			}
-		});
-		this.editText.addTextChangedListener(new TextWatcher(){
-			public void afterTextChanged(Editable s) {
-				if( getBallotActivity() != null) {
-					getBallotActivity().setBallotDescription(editText.getText().toString());
-				}
-				if (s != null && s.length() > 0) {
-					textInputLayout.setError(null);
-				}
-			}
-			public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-			public void onTextChanged(CharSequence s, int start, int before, int count){}
-		});
+        this.editText = rootView.findViewById(R.id.wizard_edittext);
+        this.editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == getResources().getInteger(R.integer.ime_wizard_next) || actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (getBallotActivity() != null) {
+                        getBallotActivity().nextPage();
+                    }
+                }
+                return false;
+            }
+        });
+        this.editText.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if (getBallotActivity() != null) {
+                    getBallotActivity().setBallotDescription(editText.getText().toString());
+                }
+                if (s != null && s.length() > 0) {
+                    textInputLayout.setError(null);
+                }
+            }
 
-		this.textInputLayout = rootView.findViewById(R.id.wizard_edittext_layout);
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-		this.typeCheckbox = rootView.findViewById(R.id.type);
-		this.typeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(getBallotActivity() != null) {
-					getBallotActivity().setBallotAssessment(
-						isChecked ? BallotModel.Assessment.MULTIPLE_CHOICE : BallotModel.Assessment.SINGLE_CHOICE
-					);
-				}
-			}
-		});
-		this.secretCheckbox = rootView.findViewById(R.id.visibility);
-		this.secretCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(getBallotActivity() != null) {
-					getBallotActivity().setBallotType(
-						isChecked ? BallotModel.Type.INTERMEDIATE : BallotModel.Type.RESULT_ON_CLOSE
-					);
-				}
-			}
-		});
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
 
-		this.updateView();
-		return rootView;
-	}
+        this.textInputLayout = rootView.findViewById(R.id.wizard_edittext_layout);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
+        this.typeCheckbox = rootView.findViewById(R.id.type);
+        this.typeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (getBallotActivity() != null) {
+                    getBallotActivity().setBallotAssessment(
+                        isChecked ? BallotModel.Assessment.MULTIPLE_CHOICE : BallotModel.Assessment.SINGLE_CHOICE
+                    );
+                }
+            }
+        });
+        this.secretCheckbox = rootView.findViewById(R.id.visibility);
+        this.secretCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (getBallotActivity() != null) {
+                    getBallotActivity().setBallotType(
+                        isChecked ? BallotModel.Type.INTERMEDIATE : BallotModel.Type.RESULT_ON_CLOSE
+                    );
+                }
+            }
+        });
 
-	@Override
-	public void updateView() {
-		if (getBallotActivity() != null) {
-			ViewUtil.showAndSet(this.editText,
-					this.getBallotActivity().getBallotDescription());
-		}
-		if(this.getBallotActivity() != null) {
-			ViewUtil.showAndSet(this.typeCheckbox,
-				this.getBallotActivity().getBallotAssessment() == BallotModel.Assessment.MULTIPLE_CHOICE);
+        this.updateView();
+        return rootView;
+    }
 
-			ViewUtil.showAndSet(this.secretCheckbox,
-				this.getBallotActivity().getBallotType() == BallotModel.Type.INTERMEDIATE);
-		}
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	public void onMissingTitle() {
-		this.textInputLayout.setError(getString(R.string.title_cannot_be_empty));
-		this.editText.setFocusableInTouchMode(true);
-		this.editText.setFocusable(true);
-		this.editText.requestFocus();
-	}
+    @Override
+    public void updateView() {
+        if (getBallotActivity() != null) {
+            ViewUtil.showAndSet(this.editText,
+                this.getBallotActivity().getBallotDescription());
+        }
+        if (this.getBallotActivity() != null) {
+            ViewUtil.showAndSet(this.typeCheckbox,
+                this.getBallotActivity().getBallotAssessment() == BallotModel.Assessment.MULTIPLE_CHOICE);
 
-	@Override
-	public void onPageSelected(int page) {
-		if (page == 1) {
-			this.editText.clearFocus();
-			this.editText.setFocusableInTouchMode(false);
-			this.editText.setFocusable(false);
-		} else {
-			this.editText.setFocusableInTouchMode(true);
-			this.editText.setFocusable(true);
-		}
-	}
+            ViewUtil.showAndSet(this.secretCheckbox,
+                this.getBallotActivity().getBallotType() == BallotModel.Type.INTERMEDIATE);
+        }
+    }
+
+    @Override
+    public void onMissingTitle() {
+        this.textInputLayout.setError(getString(R.string.title_cannot_be_empty));
+        this.editText.setFocusableInTouchMode(true);
+        this.editText.setFocusable(true);
+        this.editText.requestFocus();
+    }
+
+    @Override
+    public void onPageSelected(int page) {
+        if (page == 1) {
+            this.editText.clearFocus();
+            this.editText.setFocusableInTouchMode(false);
+            this.editText.setFocusable(false);
+        } else {
+            this.editText.setFocusableInTouchMode(true);
+            this.editText.setFocusable(true);
+        }
+    }
 
 }

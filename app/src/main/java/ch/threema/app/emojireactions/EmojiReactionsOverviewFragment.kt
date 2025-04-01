@@ -43,7 +43,10 @@ import kotlinx.coroutines.launch
 
 private const val RECYCLER_VIEW_STATE = "recyclerViewState"
 
-class EmojiReactionsOverviewFragment(val emojiSequence: String? = null, val messageModel: AbstractMessageModel) : Fragment(), EmojiReactionsOverviewListAdapter.OnItemClickListener {
+class EmojiReactionsOverviewFragment(
+    val emojiSequence: String? = null,
+    val messageModel: AbstractMessageModel
+) : Fragment(), EmojiReactionsOverviewListAdapter.OnItemClickListener {
     private val emojiReactionsViewModel: EmojiReactionsViewModel by activityViewModels()
     private lateinit var emojiReactionsOverviewListAdapter: EmojiReactionsOverviewListAdapter
     private lateinit var recyclerView: RecyclerView
@@ -81,7 +84,8 @@ class EmojiReactionsOverviewFragment(val emojiSequence: String? = null, val mess
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 emojiReactionsViewModel.emojiReactionsUiState.collect { uiState ->
-                    val emojiReactionsForSequence = uiState.emojiReactions.filter { it.emojiSequence == targetEmojiSequence }
+                    val emojiReactionsForSequence =
+                        uiState.emojiReactions.filter { it.emojiSequence == targetEmojiSequence }
                     emojiReactionsOverviewListAdapter.submitList(emojiReactionsForSequence)
                 }
             }
@@ -102,7 +106,10 @@ class EmojiReactionsOverviewFragment(val emojiSequence: String? = null, val mess
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(RECYCLER_VIEW_STATE, recyclerView.layoutManager?.onSaveInstanceState())
+        outState.putParcelable(
+            RECYCLER_VIEW_STATE,
+            recyclerView.layoutManager?.onSaveInstanceState()
+        )
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

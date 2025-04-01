@@ -36,276 +36,277 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 
 public class PreferenceStoreInterfaceDevNullImpl implements PreferenceStoreInterface {
-	@Override
-	public void remove(String key) {
+    @Override
+    public void remove(String key) {
 
-	}
+    }
 
-	@Override
-	public void remove(List<String> keys) {
+    @Override
+    public void remove(List<String> keys) {
 
-	}
+    }
 
-	@Override
-	public void remove(String key, boolean crypt) {}
+    @Override
+    public void remove(String key, boolean crypt) {
+    }
 
-	@Override
-	public void save(String key, String thing) {
+    @Override
+    public void save(String key, String thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, String thing, boolean crypt) {
+    @Override
+    public void save(String key, String thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, String[] things) {
+    @Override
+    public void save(String key, String[] things) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, HashMap<Integer, String> things) {
+    @Override
+    public void save(String key, HashMap<Integer, String> things) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, HashMap<Integer, String> things, boolean crypt) {
+    @Override
+    public void save(String key, HashMap<Integer, String> things, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void saveStringHashMap(String key, HashMap<String, String> things, boolean crypt) {
+    @Override
+    public void saveStringHashMap(String key, HashMap<String, String> things, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void saveIntegerHashMap(String key, HashMap<Integer, Integer> things) {
+    @Override
+    public void saveIntegerHashMap(String key, HashMap<Integer, Integer> things) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, @NonNull String[] things, boolean crypt) {
+    @Override
+    public void save(String key, @NonNull String[] things, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void saveQuietly(String key, @NonNull String[] things, boolean crypt) {
+    @Override
+    public void saveQuietly(String key, @NonNull String[] things, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, long thing) {
+    @Override
+    public void save(String key, long thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, long thing, boolean crypt) {
+    @Override
+    public void save(String key, long thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, int thing) {
+    @Override
+    public void save(String key, int thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, int thing, boolean crypt) {
+    @Override
+    public void save(String key, int thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, boolean thing) {
+    @Override
+    public void save(String key, boolean thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, byte[] thing) {
+    @Override
+    public void save(String key, byte[] thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, byte[] thing, boolean crypt) {
+    @Override
+    public void save(String key, byte[] thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, Date date) {
+    @Override
+    public void save(String key, Date date) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, Date date, boolean crypt) {
+    @Override
+    public void save(String key, Date date, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, Long thing) {
+    @Override
+    public void save(String key, Long thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, Long thing, boolean crypt) {
+    @Override
+    public void save(String key, Long thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, JSONArray thing, boolean crypt) {
+    @Override
+    public void save(String key, JSONArray thing, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, float thing) {
+    @Override
+    public void save(String key, float thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, JSONArray thing) {
+    @Override
+    public void save(String key, JSONArray thing) {
 
-	}
+    }
 
-	@Override
-	public void save(String key, JSONObject object, boolean crypt) {
+    @Override
+    public void save(String key, JSONObject object, boolean crypt) {
 
-	}
+    }
 
-	@Override
-	public String getString(String key) {
-		return null;
-	}
+    @Override
+    public String getString(String key) {
+        return null;
+    }
 
-	@Override
-	public String getString(String key, boolean crypt) {
-		return null;
-	}
+    @Override
+    public String getString(String key, boolean crypt) {
+        return null;
+    }
 
-	@Override
-	public String getHexString(String key, boolean crypt) {
-		return null;
-	}
+    @Override
+    public String getHexString(String key, boolean crypt) {
+        return null;
+    }
 
-	@Override
-	public long getLong(String key) {
-		return 0;
-	}
+    @Override
+    public long getLong(String key) {
+        return 0;
+    }
 
-	@Override
-	public Long getLong(String key, boolean crypt) {
-		return null;
-	}
+    @Override
+    public Long getLong(String key, boolean crypt) {
+        return null;
+    }
 
-	@Override
-	public Date getDate(String key) {
-		return null;
-	}
+    @Override
+    public Date getDate(String key) {
+        return null;
+    }
 
-	@Override
-	public Date getDate(String key, boolean crypt) {
-		return null;
-	}
+    @Override
+    public Date getDate(String key, boolean crypt) {
+        return null;
+    }
 
-	@Override
-	public long getDateAsLong(String key) {
-		return 0;
-	}
-
-	@Override
-	public Integer getInt(String key) {
-		return null;
-	}
-
-	@Override
-	public Integer getInt(String key, boolean crypt) {
-		return null;
-	}
-
-	@Override
-	public float getFloat(String key, float defValue) {
-		return defValue;
-	}
-
-	@Override
-	public boolean getBoolean(String key) {
-		return false;
-	}
-
-	@Override
-	public boolean getBoolean(String key, boolean defValue) {
-		return defValue;
-	}
-
-	@Override
-	public void save(String key, Serializable object, boolean crypt) throws IOException {
-
-	}
-
-	@Override
-	public byte[] getBytes(String key) {
-		return new byte[0];
-	}
-
-	@Override
-	public byte[] getBytes(String key, boolean crypted) {
-		return new byte[0];
-	}
-
-	@Override
-	public String[] getStringArray(String key) {
-		return new String[0];
-	}
-
-	@Override
-	public String[] getStringArray(String key, boolean crypted) {
-		return new String[0];
-	}
-
-	@Override
-	public HashMap<Integer, String> getHashMap(String key, boolean encrypted) {
-		return null;
-	}
-
-	@Override
-	public HashMap<String, String> getStringHashMap(String key, boolean encrypted) {
-		return null;
-	}
-
-	@Override
-	public HashMap<Integer, Integer> getHashMap(String key) {
-		return null;
-	}
-
-	@Override
-	public JSONArray getJSONArray(String key, boolean crypt) {
-		return null;
-	}
-
-	@Override
-	public JSONObject getJSONObject(String key, boolean crypt) {
-		return null;
-	}
-
-	@Override
-	public void clear() {
-
-	}
-
-	@Override
-	public Map<String, ?> getAllNonCrypted() {
-		return null;
-	}
-
-	@Override
-	public Set<String> getStringSet(String key, int defaultRes) {
-		return new HashSet<>();
-	}
-
-	@Override
-	public boolean containsKey(String key) {
-		return false;
-	}
-
-	@Override
-	public boolean containsKey(String key, boolean crypt) {
-		return false;
-	}
+    @Override
+    public long getDateAsLong(String key) {
+        return 0;
+    }
+
+    @Override
+    public Integer getInt(String key) {
+        return null;
+    }
+
+    @Override
+    public Integer getInt(String key, boolean crypt) {
+        return null;
+    }
+
+    @Override
+    public float getFloat(String key, float defValue) {
+        return defValue;
+    }
+
+    @Override
+    public boolean getBoolean(String key) {
+        return false;
+    }
+
+    @Override
+    public boolean getBoolean(String key, boolean defValue) {
+        return defValue;
+    }
+
+    @Override
+    public void save(String key, Serializable object, boolean crypt) throws IOException {
+
+    }
+
+    @Override
+    public byte[] getBytes(String key) {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] getBytes(String key, boolean crypted) {
+        return new byte[0];
+    }
+
+    @Override
+    public String[] getStringArray(String key) {
+        return new String[0];
+    }
+
+    @Override
+    public String[] getStringArray(String key, boolean crypted) {
+        return new String[0];
+    }
+
+    @Override
+    public HashMap<Integer, String> getHashMap(String key, boolean encrypted) {
+        return null;
+    }
+
+    @Override
+    public HashMap<String, String> getStringHashMap(String key, boolean encrypted) {
+        return null;
+    }
+
+    @Override
+    public HashMap<Integer, Integer> getHashMap(String key) {
+        return null;
+    }
+
+    @Override
+    public JSONArray getJSONArray(String key, boolean crypt) {
+        return null;
+    }
+
+    @Override
+    public JSONObject getJSONObject(String key, boolean crypt) {
+        return null;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public Map<String, ?> getAllNonCrypted() {
+        return null;
+    }
+
+    @Override
+    public Set<String> getStringSet(String key, int defaultRes) {
+        return new HashSet<>();
+    }
+
+    @Override
+    public boolean containsKey(String key) {
+        return false;
+    }
+
+    @Override
+    public boolean containsKey(String key, boolean crypt) {
+        return false;
+    }
 }

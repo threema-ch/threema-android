@@ -1,90 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-												 xmlns:app="http://schemas.android.com/apk/res-auto"
-												 android:id="@+id/main_content"
-												 android:layout_width="match_parent"
-												 android:layout_height="match_parent"
-												 android:fitsSystemWindows="true"
-												android:background="?attr/colorSurface" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="?attr/colorSurface">
 
-	<com.google.android.material.appbar.AppBarLayout
-			android:id="@+id/appbar"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
-			android:importantForAccessibility="no"
-			android:fitsSystemWindows="true">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        android:importantForAccessibility="no"
+        android:fitsSystemWindows="true">
 
-		<com.google.android.material.appbar.CollapsingToolbarLayout
-				android:id="@+id/collapsing_toolbar"
-				android:layout_width="match_parent"
-				android:layout_height="@dimen/contact_detail_avatar_height"
-				app:layout_scrollFlags="scroll|exitUntilCollapsed"
-				android:importantForAccessibility="no"
-				android:fitsSystemWindows="true"
-				app:contentScrim="?attr/colorPrimary">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/contact_detail_avatar_height"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:importantForAccessibility="no"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary">
 
-			<ch.threema.app.ui.AvatarEditView
-				android:id="@+id/avatar_edit_view"
-				android:layout_width="match_parent"
-				android:layout_height="match_parent"
-				android:fitsSystemWindows="true"
-				android:importantForAccessibility="no"
-				android:contentDescription="@string/profile_picture"
-				app:layout_collapseMode="parallax"/>
+            <ch.threema.app.ui.AvatarEditView
+                android:id="@+id/avatar_edit_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:importantForAccessibility="no"
+                android:contentDescription="@string/profile_picture"
+                app:layout_collapseMode="parallax" />
 
-			<ch.threema.app.emojis.EmojiEditText
-				android:id="@+id/group_title"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="bottom|left"
-				android:layout_marginLeft="16dp"
-				android:layout_marginRight="16dp"
-				android:layout_marginBottom="32dp"
-				android:textAppearance="@style/Threema.TextAppearance.DetailTitle"
-				android:background="@drawable/bubble_compose_dark_outline"
-				app:layout_anchor="@id/appbar"
-				app:layout_anchorGravity="bottom|left"
-				android:maxLines="1"
-				android:singleLine="true"
-				android:scrollHorizontally="true"
-				/>
+            <ch.threema.app.emojis.EmojiEditText
+                android:id="@+id/group_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|left"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="32dp"
+                android:textAppearance="@style/Threema.TextAppearance.DetailTitle"
+                android:background="@drawable/bubble_compose_dark_outline"
+                app:layout_anchor="@id/appbar"
+                app:layout_anchorGravity="bottom|left"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:scrollHorizontally="true" />
 
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="16dp"
-				android:layout_gravity="bottom"
-				android:background="@drawable/shape_detail"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/shape_detail" />
 
-			<com.google.android.material.appbar.MaterialToolbar
-					android:id="@+id/toolbar"
-					android:layout_width="match_parent"
-					android:layout_height="?attr/actionBarSize"
-					app:layout_collapseMode="pin">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin">
 
-			</com.google.android.material.appbar.MaterialToolbar>
-		</com.google.android.material.appbar.CollapsingToolbarLayout>
+            </com.google.android.material.appbar.MaterialToolbar>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-	</com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/group_members_list"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_marginLeft="16dp"
-		android:layout_marginRight="16dp"
-		android:importantForAccessibility="no"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_members_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:importantForAccessibility="no"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-		android:id="@+id/floating"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:layout_gravity="bottom|right|end"
-		app:icon="@drawable/ic_check"
-		android:text="@string/apply_changes"
-		android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
-		android:layout_marginBottom="16dp"
-		android:clickable="true" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floating"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="bottom|right|end"
+        app:icon="@drawable/ic_check"
+        android:text="@string/apply_changes"
+        android:layout_marginRight="@dimen/tablet_standard_padding_left_right"
+        android:layout_marginBottom="16dp"
+        android:clickable="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

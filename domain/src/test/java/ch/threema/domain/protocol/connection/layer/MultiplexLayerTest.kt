@@ -215,7 +215,8 @@ class MultiplexLayerTest {
 
         source.pipeThrough(layer.decoder).setHandler(handler)
 
-        val sizes = intArrayOf(ProtocolDefines.SERVER_HELLO_LEN, ProtocolDefines.SERVER_LOGIN_ACK_LEN)
+        val sizes =
+            intArrayOf(ProtocolDefines.SERVER_HELLO_LEN, ProtocolDefines.SERVER_LOGIN_ACK_LEN)
 
         sizes.forEach { size ->
             val expectedBytes = ByteArray(size) { size.toByte() }

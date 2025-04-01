@@ -30,14 +30,14 @@ import androidx.annotation.WorkerThread;
  */
 @WorkerThread
 abstract public class MessageUpdater extends MessageHandler {
-	@AnyThread
-	public MessageUpdater(String subType) {
-		super(subType);
-	}
+    @AnyThread
+    public MessageUpdater(String subType) {
+        super(subType);
+    }
 
-	@AnyThread
-	public abstract void register();
+    @AnyThread
+    public abstract void register();
 
-	@AnyThread
-	public abstract void unregister();
+    @AnyThread
+    public abstract void unregister();
 }

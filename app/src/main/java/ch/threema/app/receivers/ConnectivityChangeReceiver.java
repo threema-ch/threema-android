@@ -41,26 +41,26 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.ThreemaApplication.WORKER_CONNECTIVITY_CHANGE;
 
 public class ConnectivityChangeReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectivityChangeReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectivityChangeReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		logger.debug("Connectivity change broadcast received");
-		try {
-			String networkState = "UNKNOWN";
-			Bundle extras = intent.getExtras();
-			if (extras != null) {
-				NetworkInfo networkInfo = (NetworkInfo) extras.get(ConnectivityManager.EXTRA_NETWORK_INFO);
-				if (networkInfo != null) {
-					networkState = networkInfo.toString();
-					logger.info(networkState);
-				}
-			}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        logger.debug("Connectivity change broadcast received");
+        try {
+            String networkState = "UNKNOWN";
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                NetworkInfo networkInfo = (NetworkInfo) extras.get(ConnectivityManager.EXTRA_NETWORK_INFO);
+                if (networkInfo != null) {
+                    networkState = networkInfo.toString();
+                    logger.info(networkState);
+                }
+            }
 
-			OneTimeWorkRequest workRequest = ConnectivityChangeWorker.Companion.buildOneTimeWorkRequest(networkState);
-			WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_CONNECTIVITY_CHANGE, ExistingWorkPolicy.REPLACE, workRequest);
-		} catch (IllegalStateException e) {
-			logger.error("Unable to schedule connectivity change work", e);
-		}
-	}
+            OneTimeWorkRequest workRequest = ConnectivityChangeWorker.Companion.buildOneTimeWorkRequest(networkState);
+            WorkManager.getInstance(ThreemaApplication.getAppContext()).enqueueUniqueWork(WORKER_CONNECTIVITY_CHANGE, ExistingWorkPolicy.REPLACE, workRequest);
+        } catch (IllegalStateException e) {
+            logger.error("Unable to schedule connectivity change work", e);
+        }
+    }
 }

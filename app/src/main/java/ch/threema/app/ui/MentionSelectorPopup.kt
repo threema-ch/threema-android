@@ -131,7 +131,8 @@ class MentionSelectorPopup(
     }
 
     init {
-        popupLayout = LayoutInflater.from(context).inflate(R.layout.popup_mention_selector, null, false) as MaterialCardView
+        popupLayout = LayoutInflater.from(context)
+            .inflate(R.layout.popup_mention_selector, null, false) as MaterialCardView
         contentView = popupLayout
         inputMethodMode = INPUT_METHOD_NOT_NEEDED
         animationStyle = 0
@@ -171,7 +172,9 @@ class MentionSelectorPopup(
         if (anchorView != null) {
             popupLayout.setCardBackgroundColor(anchorView.boxBackgroundColor)
             overlayMode =
-                if (anchorView.boxCornerRadiusTopStart == anchorView.resources.getDimensionPixelSize(R.dimen.compose_textinputlayout_radius_expanded)
+                if (anchorView.boxCornerRadiusTopStart == anchorView.resources.getDimensionPixelSize(
+                        R.dimen.compose_textinputlayout_radius_expanded
+                    )
                         .toFloat()
                 ) {
                     true
@@ -186,7 +189,8 @@ class MentionSelectorPopup(
                 }
         }
 
-        val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(activity, anchorView ?: editText)
+        val coordinates =
+            ConfigUtils.getPopupWindowPositionAboveAnchor(activity, anchorView ?: editText)
         val popupX = if (anchorView == null) 0 else coordinates[0]
         var popupY = coordinates[1]
 
@@ -198,9 +202,11 @@ class MentionSelectorPopup(
         editText.setLocked(true)
         editText.addTextChangedListener(textWatcher)
         filterStart = editText.selectionStart
-        viewableSpaceHeight = coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
+        viewableSpaceHeight =
+            coordinates[2] - context.resources.getDimensionPixelSize(R.dimen.compose_bottom_panel_padding_bottom)
         this.width =
-            if (anchorView == null) WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).bounds.width()
+            if (anchorView == null) WindowMetricsCalculator.getOrCreate()
+                .computeCurrentWindowMetrics(activity).bounds.width()
             else editText.width
         this.height = viewableSpaceHeight
 
@@ -225,7 +231,9 @@ class MentionSelectorPopup(
     }
 
     private fun updateRecyclerViewDimensions() {
-        val maxHeight = context.resources.getDimensionPixelSize(R.dimen.group_detail_list_item_size) * (mentionAdapter?.itemCount ?: 1)
+        val maxHeight =
+            context.resources.getDimensionPixelSize(R.dimen.group_detail_list_item_size) * (mentionAdapter?.itemCount
+                ?: 1)
         recyclerView.layoutParams.height = maxHeight.coerceAtMost(viewableSpaceHeight)
         recyclerView.requestLayout()
     }
@@ -244,7 +252,8 @@ class MentionSelectorPopup(
         groupContacts.add(allContactModel)
 
         if (!init && filterText.length - filterStart > 0) {
-            groupContacts = Functional.filter(groupContacts,
+            groupContacts = Functional.filter(
+                groupContacts,
                 IPredicateNonNull { contactModel: ContactModel ->
                     val lowercaseName =
                         filterText.substring(filterStart).lowercase(Locale.getDefault())
@@ -265,7 +274,13 @@ class MentionSelectorPopup(
         }
 
         if (mentionAdapter == null) {
-            mentionAdapter = MentionSelectorAdapter(context, userService, contactService, groupService, groupModel)
+            mentionAdapter = MentionSelectorAdapter(
+                context,
+                userService,
+                contactService,
+                groupService,
+                groupModel
+            )
             mentionAdapter?.setOnClickListener(this)
         }
 

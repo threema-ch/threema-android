@@ -54,7 +54,8 @@ class OutgoingGroupCallStartTask(
         }
     }
 
-    override fun createGroupMessage() = GroupCallStartMessage(GroupCallStartData(protocolVersion, gck, sfuBaseUrl))
+    override fun createGroupMessage() =
+        GroupCallStartMessage(GroupCallStartData(protocolVersion, gck, sfuBaseUrl))
 
     override fun serialize(): SerializableTaskData? = null
 }

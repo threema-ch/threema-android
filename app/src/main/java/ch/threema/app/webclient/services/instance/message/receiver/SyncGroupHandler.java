@@ -42,79 +42,80 @@ import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
 public class SyncGroupHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SyncGroupHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SyncGroupHandler");
 
-	private final MessageDispatcher responseDispatcher;
-	private final GroupService groupService;
+    private final MessageDispatcher responseDispatcher;
+    private final GroupService groupService;
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_INVALID_GROUP,
-		Protocol.ERROR_NOT_ALLOWED,
-		Protocol.ERROR_GROUP_SYNC_FAILED,
-		Protocol.ERROR_INTERNAL,
-	})
-	private @interface ErrorCode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_INVALID_GROUP,
+        Protocol.ERROR_NOT_ALLOWED,
+        Protocol.ERROR_GROUP_SYNC_FAILED,
+        Protocol.ERROR_INTERNAL,
+    })
+    private @interface ErrorCode {
+    }
 
-	@AnyThread
-	public SyncGroupHandler(MessageDispatcher responseDispatcher,
-	                        GroupService groupService) {
-		super(Protocol.SUB_TYPE_GROUP_SYNC);
-		this.responseDispatcher = responseDispatcher;
-		this.groupService = groupService;
-	}
+    @AnyThread
+    public SyncGroupHandler(MessageDispatcher responseDispatcher,
+                            GroupService groupService) {
+        super(Protocol.SUB_TYPE_GROUP_SYNC);
+        this.responseDispatcher = responseDispatcher;
+        this.groupService = groupService;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received group sync request");
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received group sync request");
 
-		final Map<String, Value> args = this.getArguments(message, false, new String[]{
-				Protocol.ARGUMENT_RECEIVER_ID,
-				Protocol.ARGUMENT_TEMPORARY_ID
-		});
+        final Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_ID,
+            Protocol.ARGUMENT_TEMPORARY_ID
+        });
 
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().asString();
-		final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().asString();
+        final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
 
-		final GroupModel group;
-		try {
-			group = this.groupService.getById(Integer.valueOf(receiverId));
-		} catch (NumberFormatException x) {
-			this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
-			return;
-		}
+        final GroupModel group;
+        try {
+            group = this.groupService.getById(Integer.valueOf(receiverId));
+        } catch (NumberFormatException x) {
+            this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
+            return;
+        }
 
-		if (group == null
-				// Deleted group
-				|| group.isDeleted()
-				// I am not the creator
-				|| !this.groupService.isGroupCreator(group)
-				// I am not in this group (e.g. left)
-				|| !this.groupService.isGroupMember(group)) {
-			logger.error("not allowed");
-			this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);
-			return;
-		}
+        if (group == null
+            // Deleted group
+            || group.isDeleted()
+            // I am not the creator
+            || !this.groupService.isGroupCreator(group)
+            // I am not in this group (e.g. left)
+            || !this.groupService.isGroupMember(group)) {
+            logger.error("not allowed");
+            this.failed(temporaryId, Protocol.ERROR_NOT_ALLOWED);
+            return;
+        }
 
-		if (this.groupService.scheduleSync(group)) {
-			this.success(temporaryId);
-		} else {
-			this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
-		}
-	}
+        if (this.groupService.scheduleSync(group)) {
+            this.success(temporaryId);
+        } else {
+            this.failed(temporaryId, Protocol.ERROR_GROUP_SYNC_FAILED);
+        }
+    }
 
-	private void success(String temporaryId) {
-		logger.debug("Respond sync group success");
-		this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
-	}
+    private void success(String temporaryId) {
+        logger.debug("Respond sync group success");
+        this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
+    }
 
-	private void failed(String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond sync group failed ({})", errorCode);
-		this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
-	}
+    private void failed(String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond sync group failed ({})", errorCode);
+        this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return true;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return true;
+    }
 }

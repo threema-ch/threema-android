@@ -29,5 +29,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public interface MessagePlayerListener {
-	@AnyThread default void onAudioPlayEnded(AbstractMessageModel messageModel, ListenableFuture<MediaController> mediaControllerFuture) {};
+    @AnyThread
+    default void onAudioPlayEnded(AbstractMessageModel messageModel, ListenableFuture<MediaController> mediaControllerFuture) {
+    }
+
+    ;
 }

@@ -39,7 +39,8 @@ import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 
-class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+class SettingsActivity : ThreemaToolbarActivity(),
+    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private val settingsSummaryFragment = SettingsSummaryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,14 +61,25 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
 
         if (savedInstanceState == null) {
             when {
-                intent.extras?.get(EXTRA_SHOW_NOTIFICATION_FRAGMENT) == true -> showSpecificSettings(SettingsNotificationsFragment())
-                intent.extras?.get(EXTRA_SHOW_MEDIA_FRAGMENT) == true -> showSpecificSettings(SettingsMediaFragment())
-                intent.extras?.get(EXTRA_SHOW_SECURITY_FRAGMENT) == true -> showSpecificSettings(SettingsSecurityFragment())
+                intent.extras?.get(EXTRA_SHOW_NOTIFICATION_FRAGMENT) == true -> showSpecificSettings(
+                    SettingsNotificationsFragment()
+                )
+
+                intent.extras?.get(EXTRA_SHOW_MEDIA_FRAGMENT) == true -> showSpecificSettings(
+                    SettingsMediaFragment()
+                )
+
+                intent.extras?.get(EXTRA_SHOW_SECURITY_FRAGMENT) == true -> showSpecificSettings(
+                    SettingsSecurityFragment()
+                )
+
                 else -> showDefaultSettings()
             }
         } else if (isTabletLayout()) {
             // Remove and recreate fragments on tablets because they are not attached to the activity anymore
-            supportFragmentManager.fragments.forEach { supportFragmentManager.beginTransaction().remove(it).commit() }
+            supportFragmentManager.fragments.forEach {
+                supportFragmentManager.beginTransaction().remove(it).commit()
+            }
             showDefaultSettings()
         }
     }
@@ -78,16 +90,16 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
      */
     private fun showDefaultSettings() {
         supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.settings, settingsSummaryFragment)
-                .commit()
+            .beginTransaction()
+            .replace(R.id.settings, settingsSummaryFragment)
+            .commit()
 
         // Show first preference screen (privacy) on the right side on tablets per default.
         if (isTabletLayout()) {
             supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.settings_detailed, SettingsPrivacyFragment())
-                    .commit()
+                .beginTransaction()
+                .replace(R.id.settings_detailed, SettingsPrivacyFragment())
+                .commit()
         }
     }
 
@@ -101,31 +113,35 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         // Show first preference screen (privacy) on the right side on tablets per default.
         if (isTabletLayout()) {
             supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.settings, settingsSummaryFragment)
-                    .commit()
+                .beginTransaction()
+                .replace(R.id.settings, settingsSummaryFragment)
+                .commit()
 
             supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.settings_detailed, fragment)
-                    .commit()
+                .beginTransaction()
+                .replace(R.id.settings_detailed, fragment)
+                .commit()
         } else {
             supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.settings, fragment)
-                    .commit()
+                .beginTransaction()
+                .replace(R.id.settings, fragment)
+                .commit()
         }
     }
 
-    override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
+    override fun onPreferenceStartFragment(
+        caller: PreferenceFragmentCompat,
+        pref: Preference
+    ): Boolean {
         val fragmentClassName = pref.fragment
         if (fragmentClassName == null) {
             logger.error("Fragment should not be null")
             return false
         }
         val fragment = supportFragmentManager.fragmentFactory.instantiate(
-                classLoader,
-                fragmentClassName)
+            classLoader,
+            fragmentClassName
+        )
 
         val layoutID = if (isTabletLayout()) R.id.settings_detailed else R.id.settings
         val transaction =
@@ -141,7 +157,7 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
                         R.anim.slide_out_left_short,
                         R.anim.slide_in_left_short,
                         R.anim.slide_out_right_short,
-                        )
+                    )
                     .replace(layoutID, fragment)
             }
         // On tablets there is no need to add the fragment to the back stack except for nested fragments (i.e. troubleshooting)
@@ -155,7 +171,8 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         return true
     }
 
-    override fun getLayoutResource() = if (isTabletLayout()) R.layout.activity_settings_tablet else R.layout.activity_settings
+    override fun getLayoutResource() =
+        if (isTabletLayout()) R.layout.activity_settings_tablet else R.layout.activity_settings
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

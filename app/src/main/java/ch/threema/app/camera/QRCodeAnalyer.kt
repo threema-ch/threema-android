@@ -30,7 +30,8 @@ import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import java.nio.ByteBuffer
 
-class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCodeState) -> Unit) : ImageAnalysis.Analyzer {
+class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCodeState) -> Unit) :
+    ImageAnalysis.Analyzer {
 
     private val logger = LoggingUtil.getThreemaLogger("QRCodeAnalyzer")
 
@@ -40,22 +41,24 @@ class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCod
         listOf(ImageFormat.YUV_420_888)
     }
     private val reader = MultiFormatReader().apply {
-        setHints(mapOf(
+        setHints(
+            mapOf(
                 DecodeHintType.POSSIBLE_FORMATS to arrayListOf(BarcodeFormat.QR_CODE),
                 DecodeHintType.TRY_HARDER to true,
-        ))
+            )
+        )
     }
 
     private fun decode(imageProxy: ImageProxy, data: ByteArray) {
         val source = PlanarYUVLuminanceSource(
-                data,
-                imageProxy.planes[0].rowStride,
-                imageProxy.height,
-                0,
-                0,
-                imageProxy.width,
-                imageProxy.height,
-                false
+            data,
+            imageProxy.planes[0].rowStride,
+            imageProxy.height,
+            0,
+            0,
+            imageProxy.width,
+            imageProxy.height,
+            false
         )
         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
         val result: Result = reader.decodeWithState(binaryBitmap)

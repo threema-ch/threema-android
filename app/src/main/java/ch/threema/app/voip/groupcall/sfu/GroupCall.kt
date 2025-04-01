@@ -54,6 +54,7 @@ internal interface GroupCall : GroupCallController {
 
     @WorkerThread
     fun setRemoteCtx(participantId: ParticipantId, remote: RemoteCtx)
+
     @WorkerThread
     fun setParticipant(participant: LocalParticipant)
 
@@ -68,8 +69,10 @@ internal interface GroupCall : GroupCallController {
 
     @WorkerThread
     fun updateCaptureStates()
+
     @WorkerThread
     fun updateState(state: GroupCallConnectionState)
+
     @WorkerThread
     fun setEglBase(eglBase: EglBase)
 
@@ -80,13 +83,17 @@ internal interface GroupCall : GroupCallController {
     suspend fun teardown()
 
     // TODO(ANDR-1951): Should be Collections of type RemoteParticipant (resolve inheritance problems...)
-    data class ParticipantsUpdate(val add: Set<NormalRemoteParticipant>, val remove: Set<NormalRemoteParticipant>) {
+    data class ParticipantsUpdate(
+        val add: Set<NormalRemoteParticipant>,
+        val remove: Set<NormalRemoteParticipant>
+    ) {
         companion object {
             fun empty() = ParticipantsUpdate(setOf(), setOf())
 
-            fun addParticipant(participant: NormalRemoteParticipant): ParticipantsUpdate = ParticipantsUpdate(
-                add = setOf(participant), remove = setOf()
-            )
+            fun addParticipant(participant: NormalRemoteParticipant): ParticipantsUpdate =
+                ParticipantsUpdate(
+                    add = setOf(participant), remove = setOf()
+                )
 
             fun removeParticipant(participant: NormalRemoteParticipant) = ParticipantsUpdate(
                 add = setOf(), remove = setOf(participant)

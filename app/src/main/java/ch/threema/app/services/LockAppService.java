@@ -23,48 +23,53 @@ package ch.threema.app.services;
 
 public interface LockAppService {
 
-	public interface OnLockAppStateChanged {
-		/**
-		 * return true if the event will be removed from the queue
-		 * @param locked
-		 * @return
-		 */
-		boolean changed(boolean locked);
-	}
+    public interface OnLockAppStateChanged {
+        /**
+         * return true if the event will be removed from the queue
+         *
+         * @param locked
+         * @return
+         */
+        boolean changed(boolean locked);
+    }
 
-	/**
-	 * return if app locking is enabled
-	 * @return
-	 */
-	boolean isLockingEnabled();
+    /**
+     * return if app locking is enabled
+     *
+     * @return
+     */
+    boolean isLockingEnabled();
 
-	/**
-	* return if the application is locked
-	* @return
-	*/
-	boolean isLocked();
+    /**
+     * return if the application is locked
+     *
+     * @return
+     */
+    boolean isLocked();
 
-	/**
-	 * try to unlock the application
-	 * @param pin
-	 * @return
-	 */
-	boolean unlock(String pin);
+    /**
+     * try to unlock the application
+     *
+     * @param pin
+     * @return
+     */
+    boolean unlock(String pin);
 
-	/**
-	 * lock the application
-	 * @return
-	 */
-	void lock();
+    /**
+     * lock the application
+     *
+     * @return
+     */
+    void lock();
 
-	boolean checkLock();
+    boolean checkLock();
 
-	/**
-	 * reset the timer
-	 */
-	LockAppService resetLockTimer(boolean restartAfterReset);
+    /**
+     * reset the timer
+     */
+    LockAppService resetLockTimer(boolean restartAfterReset);
 
-	void addOnLockAppStateChanged(OnLockAppStateChanged c);
+    void addOnLockAppStateChanged(OnLockAppStateChanged c);
 
-	void removeOnLockAppStateChanged(OnLockAppStateChanged c);
+    void removeOnLockAppStateChanged(OnLockAppStateChanged c);
 }

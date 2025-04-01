@@ -93,7 +93,7 @@ private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingDataCollector")
 
 data class DeviceLinkingData(val blobs: Sequence<BlobData>, val essentialData: EssentialData)
 
-class BlobDataProvider (private val blobId: ByteArray?, private val dataProvider: () -> ByteArray?) {
+class BlobDataProvider(private val blobId: ByteArray?, private val dataProvider: () -> ByteArray?) {
     /**
      * Get this providers [BlobData].
      *
@@ -193,7 +193,7 @@ class DeviceLinkingDataCollector(
                     ?: throw IllegalStateException("No work credentials available in work build")
 
                 // mdm parameters TODO(ANDR-2670)
-            //            this.mdmParameters = collectMdmParameters()
+                //            this.mdmParameters = collectMdmParameters()
             }
         }
 
@@ -241,10 +241,12 @@ class DeviceLinkingDataCollector(
                 uploadedAt = profilePictureData.uploadedAt
             }
 
-            val profilePicture = deltaImage { updated = image {
-                type = Image.Type.JPEG
-                blob = blobMeta
-            } }
+            val profilePicture = deltaImage {
+                updated = image {
+                    type = Image.Type.JPEG
+                    blob = blobMeta
+                }
+            }
 
             val blobDataProvider = BlobDataProvider(profilePictureData.blobId) {
                 profilePictureData.bitmapArray
@@ -362,7 +364,8 @@ class DeviceLinkingDataCollector(
         val archived = conversationService.getArchived(null).associate {
             it.uid to ConversationStats(
                 isArchived = true,
-                isPinned = false)
+                isPinned = false
+            )
         }
         return notArchived + archived
     }
@@ -370,10 +373,13 @@ class DeviceLinkingDataCollector(
     private fun collectContacts(conversationsStats: Map<String, ConversationStats>): List<Pair<List<BlobDataProvider>, AugmentedContact>> {
         return contactService.all
             .map { mapToAugmentedContact(it, conversationsStats) }
-            .also { logger.trace("{} contacts", it.size)}
+            .also { logger.trace("{} contacts", it.size) }
     }
 
-    private fun mapToAugmentedContact(contactModel: ContactModel, conversationsStats: Map<String, ConversationStats>): Pair<List<BlobDataProvider>, AugmentedContact> {
+    private fun mapToAugmentedContact(
+        contactModel: ContactModel,
+        conversationsStats: Map<String, ConversationStats>
+    ): Pair<List<BlobDataProvider>, AugmentedContact> {
         val blobDataProviders = mutableListOf<BlobDataProvider>()
 
         val conversationStats = conversationsStats[contactModel.getConversationUid()]
@@ -430,7 +436,8 @@ class DeviceLinkingDataCollector(
                     }
                 }
             }
-            notificationTriggerPolicyOverride = collectContactNotificationTriggerPolicyOverride(contactModel)
+            notificationTriggerPolicyOverride =
+                collectContactNotificationTriggerPolicyOverride(contactModel)
             notificationSoundPolicyOverride = collectNotificationSoundPolicyOverride(contactModel)
 
             collectContactDefinedProfilePicture(contactModel)?.let { (blobDataProvider, image) ->
@@ -469,7 +476,7 @@ class DeviceLinkingDataCollector(
         // TODO(ANDR-2327): Consolidate this mechanism
         return if (contactModel.isLinkedToAndroidContact) {
             SyncState.IMPORTED
-        } else  if (contactModel.lastName.isNullOrBlank() && contactModel.firstName.isNullOrBlank()) {
+        } else if (contactModel.lastName.isNullOrBlank() && contactModel.firstName.isNullOrBlank()) {
             SyncState.INITIAL
         } else {
             SyncState.CUSTOM
@@ -533,10 +540,12 @@ class DeviceLinkingDataCollector(
 
         val blobMeta = blob { id = blobId.toByteString() }
 
-        val picture = deltaImage { updated = image {
-            type = Image.Type.JPEG
-            blob = blobMeta
-        } }
+        val picture = deltaImage {
+            updated = image {
+                type = Image.Type.JPEG
+                blob = blobMeta
+            }
+        }
         return blobDataProvider to picture
     }
 
@@ -555,7 +564,10 @@ class DeviceLinkingDataCollector(
             .also { logger.trace("{} groups", it.size) }
     }
 
-    private fun mapToAugmentedGroup(groupModel: GroupModel, conversationsStats: Map<String, ConversationStats>): Pair<List<BlobDataProvider>, AugmentedGroup> {
+    private fun mapToAugmentedGroup(
+        groupModel: GroupModel,
+        conversationsStats: Map<String, ConversationStats>
+    ): Pair<List<BlobDataProvider>, AugmentedGroup> {
         val blobDataProviders = mutableListOf<BlobDataProvider>()
 
         val conversationStats = conversationsStats[groupModel.getConversationUid()]
@@ -568,8 +580,10 @@ class DeviceLinkingDataCollector(
             name = groupModel.name ?: ""
             createdAt = groupModel.createdAt.time
             userState = collectUserState(groupModel)
-            notificationTriggerPolicyOverride = collectGroupNotificationTriggerPolicyOverride(groupModel)
-            notificationSoundPolicyOverride = collectGroupNotificationSoundPolicyOverride(groupModel)
+            notificationTriggerPolicyOverride =
+                collectGroupNotificationTriggerPolicyOverride(groupModel)
+            notificationSoundPolicyOverride =
+                collectGroupNotificationSoundPolicyOverride(groupModel)
             collectGroupAvatar(groupModel)?.let { (groupAvatarBlobDataProvider, image) ->
                 blobDataProviders.add(groupAvatarBlobDataProvider)
                 profilePicture = image
@@ -633,7 +647,8 @@ class DeviceLinkingDataCollector(
         return if (mentionOnlyChatsService.has(uid)) {
             GroupKt.notificationTriggerPolicyOverride {
                 policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.MENTIONED
+                    policy =
+                        MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.MENTIONED
                 }
             }
         } else {
@@ -641,7 +656,8 @@ class DeviceLinkingDataCollector(
             if (mutedUntil == DeadlineListService.DEADLINE_INDEFINITE || mutedUntil > 0) {
                 GroupKt.notificationTriggerPolicyOverride {
                     policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
-                        policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
+                        policy =
+                            MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                         if (mutedUntil > 0) {
                             expiresAt = mutedUntil
                         }
@@ -693,11 +709,12 @@ class DeviceLinkingDataCollector(
                 name = distributionListModel.name ?: ""
                 createdAt = distributionListModel.createdAt.time
                 memberIdentities = identities
-                conversationCategory = if (hiddenChatsService.has(distributionListModel.getUniqueId())) {
-                    MdD2DSync.ConversationCategory.PROTECTED
-                } else {
-                    MdD2DSync.ConversationCategory.DEFAULT
-                }
+                conversationCategory =
+                    if (hiddenChatsService.has(distributionListModel.getUniqueId())) {
+                        MdD2DSync.ConversationCategory.PROTECTED
+                    } else {
+                        MdD2DSync.ConversationCategory.DEFAULT
+                    }
                 conversationVisibility = if (conversationStats?.isPinned == true) {
                     MdD2DSync.ConversationVisibility.PINNED
                 } else if (conversationStats?.isArchived == true) {
@@ -775,9 +792,11 @@ class DeviceLinkingDataCollector(
             return ByteBuffer.wrap(ByteArray(ProtocolDefines.BLOB_ID_LEN))
                 .putLong(nextBlobId++)
                 .array()
-                .also { if (it.size != ProtocolDefines.BLOB_ID_LEN) {
-                    throw IllegalStateException("Invalid blob id generated")
-                } }
+                .also {
+                    if (it.size != ProtocolDefines.BLOB_ID_LEN) {
+                        throw IllegalStateException("Invalid blob id generated")
+                    }
+                }
         }
     }
 }

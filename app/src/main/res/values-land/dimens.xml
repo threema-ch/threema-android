@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="ballot_matrix_label_maxwidth">220dp</dimen>
-	<dimen name="web_sessions_switch_frame_height">48dp</dimen>
-	<dimen name="compose_title_avatar_size">36dp</dimen>
+    <dimen name="ballot_matrix_label_maxwidth">220dp</dimen>
+    <dimen name="web_sessions_switch_frame_height">48dp</dimen>
+    <dimen name="compose_title_avatar_size">36dp</dimen>
 </resources>

@@ -63,7 +63,8 @@ class ReflectUserProfileShareWithAllowListSyncTask(
         profilePicRecipientsService.replaceAll(allowedIdentities.toTypedArray<String>())
     }
 
-    override fun serialize(): SerializableTaskData = ReflectUserProfileShareWithAllowListSyncTaskData(allowedIdentities)
+    override fun serialize(): SerializableTaskData =
+        ReflectUserProfileShareWithAllowListSyncTaskData(allowedIdentities)
 
     @Serializable
     data class ReflectUserProfileShareWithAllowListSyncTaskData(

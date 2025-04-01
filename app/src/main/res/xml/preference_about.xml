@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-	android:key="pref_key_about"
-	android:persistent="true"
-	android:title="@string/menu_about">
+    android:key="pref_key_about"
+    android:persistent="true"
+    android:title="@string/menu_about">
 
-	<PreferenceCategory
-		android:key="pref_key_legal"
-		android:title="@string/menu_legal">
+    <PreferenceCategory
+        android:key="pref_key_legal"
+        android:title="@string/menu_legal">
 
-		<Preference
-			android:key="@string/preferences__licenses"
-			android:title="@string/os_licenses" />
-		<Preference
-			android:key="@string/preferences__privacy_policy"
-			android:title="@string/privacy_policy" />
-		<Preference
-			android:key="@string/preferences__terms_of_service"
-			android:title="@string/terms_of_service" />
-		<Preference
-			android:key="@string/preferences__eula"
-			android:title="@string/eula" />
+        <Preference
+            android:key="@string/preferences__licenses"
+            android:title="@string/os_licenses" />
+        <Preference
+            android:key="@string/preferences__privacy_policy"
+            android:title="@string/privacy_policy" />
+        <Preference
+            android:key="@string/preferences__terms_of_service"
+            android:title="@string/terms_of_service" />
+        <Preference
+            android:key="@string/preferences__eula"
+            android:title="@string/eula" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_about_header"
-		android:title="@string/threema_version">
+    <PreferenceCategory
+        android:key="pref_key_about_header"
+        android:title="@string/threema_version">
 
-		<Preference android:key="@string/preferences__about" />
-		<Preference android:key="@string/preferences__device_info" />
+        <Preference android:key="@string/preferences__about" />
+        <Preference android:key="@string/preferences__device_info" />
 
-		<Preference android:key="@string/preferences__work_license_name"
-			android:title="@string/username_hint"/>
+        <Preference
+            android:key="@string/preferences__work_license_name"
+            android:title="@string/username_hint" />
 
-		<Preference
-			android:key="@string/preferences__check_updates"
-			android:title="@string/check_updates" />
+        <Preference
+            android:key="@string/preferences__check_updates"
+            android:title="@string/check_updates" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_feedback_credits"
-		android:title="@string/credits">
+    <PreferenceCategory
+        android:key="pref_key_feedback_credits"
+        android:title="@string/credits">
 
-		<Preference
-			android:key="@string/preferences__translators"
-			android:title="@string/translators" />
+        <Preference
+            android:key="@string/preferences__translators"
+            android:title="@string/translators" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
-	<PreferenceCategory
-		android:key="pref_key_advanced_options"
-		android:title="@string/prefs_advanced_options">
+    <PreferenceCategory
+        android:key="pref_key_advanced_options"
+        android:title="@string/prefs_advanced_options">
 
-		<Preference
-			android:fragment="ch.threema.app.preference.SettingsAdvancedOptionsFragment"
-			android:key="@string/preferences__advanced_options"
-			android:title="@string/prefs_advanced_options"
-			android:icon="@drawable/ic_outline_science"/>
+        <Preference
+            android:fragment="ch.threema.app.preference.SettingsAdvancedOptionsFragment"
+            android:key="@string/preferences__advanced_options"
+            android:title="@string/prefs_advanced_options"
+            android:icon="@drawable/ic_outline_science" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 
 </PreferenceScreen>

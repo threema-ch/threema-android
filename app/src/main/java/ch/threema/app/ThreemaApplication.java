@@ -379,11 +379,11 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
 
         context = getApplicationContext();
 
-		LibthreemaKt.init(LogLevel.TRACE, new LibthreemaLogger());
+        LibthreemaKt.init(LogLevel.TRACE, new LibthreemaLogger());
 
-		if (!checkAppReplacingState(context)) {
-			return;
-		}
+        if (!checkAppReplacingState(context)) {
+            return;
+        }
 
         // Initialize TrustKit for CA pinning
         if (!ConfigUtils.isOnPremBuild()) {
@@ -564,21 +564,21 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                         public void onReceive(Context context, Intent intent) {
                             logger.info("Restrictions have changed. Updating workers");
 
-							AppRestrictionService.getInstance().reload();
-							try {
-								WorkSyncWorker.Companion.performOneTimeWorkSync(
-									ThreemaApplication.getAppContext(),
-									true,
-									true,
-									null
-								);
-							} catch (IllegalStateException e) {
-								logger.error("Unable to schedule work sync one time work", e);
-							}
-							AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext());
-						}
-					}, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
-				}
+                            AppRestrictionService.getInstance().reload();
+                            try {
+                                WorkSyncWorker.Companion.performOneTimeWorkSync(
+                                    ThreemaApplication.getAppContext(),
+                                    true,
+                                    true,
+                                    null
+                                );
+                            } catch (IllegalStateException e) {
+                                logger.error("Unable to schedule work sync one time work", e);
+                            }
+                            AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext());
+                        }
+                    }, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+                }
 
                 // register a receiver for shortcuts that have been added to the launcher
                 ContextCompat.registerReceiver(this, new ShortcutAddedReceiver(), new IntentFilter(INTENT_ACTION_SHORTCUT_ADDED), ContextCompat.RECEIVER_NOT_EXPORTED);
@@ -591,14 +591,14 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
         logger.info("Startup time {}s", (System.currentTimeMillis() - startupTime) / DateUtils.SECOND_IN_MILLIS);
     }
 
-	private void applyDynamicColorsIfEnabled() {
-		if (DynamicColors.isDynamicColorAvailable()) {
-			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-			if (sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false)) {
-				DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder().setPrecondition((activity, theme) -> {
-					SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-					return sharedPreferences1 != null && sharedPreferences1.getBoolean("pref_dynamic_color", false);
-				}).build();
+    private void applyDynamicColorsIfEnabled() {
+        if (DynamicColors.isDynamicColorAvailable()) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            if (sharedPreferences != null && sharedPreferences.getBoolean("pref_dynamic_color", false)) {
+                DynamicColorsOptions dynamicColorsOptions = new DynamicColorsOptions.Builder().setPrecondition((activity, theme) -> {
+                    SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+                    return sharedPreferences1 != null && sharedPreferences1.getBoolean("pref_dynamic_color", false);
+                }).build();
 
                 DynamicColors.applyToActivitiesIfAvailable(this, dynamicColorsOptions);
             }
@@ -858,26 +858,26 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 dhSessionStore = new SQLDHSessionStore(context, masterKey.getKey(), updateSystemService);
             }
 
-			IdentityStore identityStore = new IdentityStore(preferenceStore);
+            IdentityStore identityStore = new IdentityStore(preferenceStore);
 
-			// Instantiate core service manager. Note that the task manager should only be used to
-			// schedule tasks once the service manager is set.
-			final CoreServiceManagerImpl coreServiceManager = new CoreServiceManagerImpl(
-				appVersion,
-				databaseServiceNew,
-				preferenceStore,
-				identityStore,
-					() -> {
-						DatabaseNonceStore databaseNonceStore = new DatabaseNonceStore(getAppContext(), identityStore);
-						databaseNonceStore.executeNull();
-						logger.info("Nonce count (csp): {}", databaseNonceStore.getCount(NonceScope.CSP));
-						logger.info("Nonce count (d2d): {}", databaseNonceStore.getCount(NonceScope.D2D));
-						return databaseNonceStore;
-					}
-			);
+            // Instantiate core service manager. Note that the task manager should only be used to
+            // schedule tasks once the service manager is set.
+            final CoreServiceManagerImpl coreServiceManager = new CoreServiceManagerImpl(
+                appVersion,
+                databaseServiceNew,
+                preferenceStore,
+                identityStore,
+                () -> {
+                    DatabaseNonceStore databaseNonceStore = new DatabaseNonceStore(getAppContext(), identityStore);
+                    databaseNonceStore.executeNull();
+                    logger.info("Nonce count (csp): {}", databaseNonceStore.getCount(NonceScope.CSP));
+                    logger.info("Nonce count (d2d): {}", databaseNonceStore.getCount(NonceScope.D2D));
+                    return databaseNonceStore;
+                }
+            );
 
-			// Instantiate model repositories
-			final ModelRepositories modelRepositories = new ModelRepositories(coreServiceManager);
+            // Instantiate model repositories
+            final ModelRepositories modelRepositories = new ModelRepositories(coreServiceManager);
 
             logger.info("*** App launched");
             logVersion();
@@ -933,19 +933,19 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             // Set up logging
             setupLogging(preferenceStore);
 
-			try {
-				// Instantiate service manager
-				serviceManager = new ServiceManager(
-					modelRepositories,
-					dhSessionStore,
-					masterKey,
-					coreServiceManager,
-					updateSystemService
-				);
-			} catch (ThreemaException e) {
-				logger.error("Could not instantiate service manager", e);
-				return;
-			}
+            try {
+                // Instantiate service manager
+                serviceManager = new ServiceManager(
+                    modelRepositories,
+                    dhSessionStore,
+                    masterKey,
+                    coreServiceManager,
+                    updateSystemService
+                );
+            } catch (ThreemaException e) {
+                logger.error("Could not instantiate service manager", e);
+                return;
+            }
 
             serviceManager.getTaskManager().schedule(new MessageQueueMigrationTask(
                     context,
@@ -1025,27 +1025,27 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             // start threema safe scheduler
             serviceManager.getThreemaSafeService().schedulePeriodicUpload();
 
-			PreferenceService preferenceService = serviceManager.getPreferenceService();
+            PreferenceService preferenceService = serviceManager.getPreferenceService();
 
-			new Thread(() -> {
-				// schedule work synchronization
-				WorkSyncWorker.Companion.schedulePeriodicWorkSync(getAppContext(), preferenceService);
-				// schedule identity states / feature masks etc.
-				ContactUpdateWorker.schedulePeriodicSync(getAppContext(), preferenceService);
-				// schedule shortcut update
-				if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__direct_share))) {
-					scheduleShareTargetShortcutUpdate();
-				}
-				// schedule auto delete
-				AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext());
-			}, "scheduleSync").start();
-		} catch (MasterKeyLockedException | SQLiteException e) {
-			logger.error("Exception opening database", e);
-		} catch (ThreemaException e) {
-			// no identity
-			logger.info("No valid identity.");
-		}
-	}
+            new Thread(() -> {
+                // schedule work synchronization
+                WorkSyncWorker.Companion.schedulePeriodicWorkSync(getAppContext(), preferenceService);
+                // schedule identity states / feature masks etc.
+                ContactUpdateWorker.schedulePeriodicSync(getAppContext(), preferenceService);
+                // schedule shortcut update
+                if (preferenceStore.getBoolean(getAppContext().getString(R.string.preferences__direct_share))) {
+                    scheduleShareTargetShortcutUpdate();
+                }
+                // schedule auto delete
+                AutoDeleteWorker.Companion.scheduleAutoDelete(getAppContext());
+            }, "scheduleSync").start();
+        } catch (MasterKeyLockedException | SQLiteException e) {
+            logger.error("Exception opening database", e);
+        } catch (ThreemaException e) {
+            // no identity
+            logger.info("No valid identity.");
+        }
+    }
 
     public static void logVersion() {
         String commitHash = BuildConfig.DEBUG
@@ -1060,9 +1060,9 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
         );
     }
 
-	@WorkerThread
-	public static boolean scheduleShareTargetShortcutUpdate() {
-		logger.info("Scheduling share target shortcut update work");
+    @WorkerThread
+    public static boolean scheduleShareTargetShortcutUpdate() {
+        logger.info("Scheduling share target shortcut update work");
 
         long schedulePeriod = DateUtils.MINUTE_IN_MILLIS * 15;
 
@@ -1206,11 +1206,11 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 }).start();
             }
 
-			@Override
-			public void onNewMember(GroupModel group, String newIdentity) {
-				try {
-					final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
-					final String myIdentity = serviceManager.getUserService().getIdentity();
+            @Override
+            public void onNewMember(GroupModel group, String newIdentity) {
+                try {
+                    final GroupMessageReceiver receiver = serviceManager.getGroupService().createReceiver(group);
+                    final String myIdentity = serviceManager.getUserService().getIdentity();
 
                     if (!TestUtil.isEmptyOrNull(myIdentity)) {
                         serviceManager.getMessageService().createGroupStatus(
@@ -1234,11 +1234,11 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 }
             }
 
-			@Override
-			public void onMemberLeave(GroupModel group, String identity) {
-				try {
-					GroupService groupService = serviceManager.getGroupService();
-					final GroupMessageReceiver receiver = groupService.createReceiver(group);
+            @Override
+            public void onMemberLeave(GroupModel group, String identity) {
+                try {
+                    GroupService groupService = serviceManager.getGroupService();
+                    final GroupMessageReceiver receiver = groupService.createReceiver(group);
 
                     serviceManager.getMessageService().createGroupStatus(
                         receiver,
@@ -1255,9 +1255,9 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 }
             }
 
-			@Override
-			public void onMemberKicked(GroupModel group, String identity) {
-				final String myIdentity = serviceManager.getUserService().getIdentity();
+            @Override
+            public void onMemberKicked(GroupModel group, String identity) {
+                final String myIdentity = serviceManager.getUserService().getIdentity();
 
                 if (myIdentity != null && myIdentity.equals(identity)) {
                     // my own member status has changed
@@ -1468,17 +1468,17 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
         }, THREEMA_APPLICATION_LISTENER_TAG);
 
-		ListenerManager.contactListeners.add(new ContactListener() {
-			@Override
-			public void onModified(final @NonNull String identity) {
-				final ContactModel modifiedContactModel = serviceManager.getDatabaseServiceNew().getContactModelFactory().getByIdentity(identity);
-				if (modifiedContactModel == null) {
-					return;
-				}
-				new Thread(() -> {
-					try {
-						final ConversationService conversationService = serviceManager.getConversationService();
-						final ContactService contactService = serviceManager.getContactService();
+        ListenerManager.contactListeners.add(new ContactListener() {
+            @Override
+            public void onModified(final @NonNull String identity) {
+                final ContactModel modifiedContactModel = serviceManager.getDatabaseServiceNew().getContactModelFactory().getByIdentity(identity);
+                if (modifiedContactModel == null) {
+                    return;
+                }
+                new Thread(() -> {
+                    try {
+                        final ConversationService conversationService = serviceManager.getConversationService();
+                        final ContactService contactService = serviceManager.getContactService();
 
                         // Refresh conversation cache
                         conversationService.updateContactConversation(modifiedContactModel);
@@ -1491,21 +1491,21 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 }).start();
             }
 
-			@Override
-			public void onAvatarChanged(final @NonNull String identity) {
-				new Thread(() -> {
-					try {
+            @Override
+            public void onAvatarChanged(final @NonNull String identity) {
+                new Thread(() -> {
+                    try {
                         ContactService contactService = serviceManager.getContactService();
                         ContactModel contactModel = contactService.getByIdentity(identity);
                         if (contactModel != null) {
                             ShortcutUtil.updatePinnedShortcut(contactService.createReceiver(contactModel));
                         }
-					} catch (ThreemaException e) {
-						logger.error("Exception", e);
-					}
-				}).start();
-			}
-		}, THREEMA_APPLICATION_LISTENER_TAG);
+                    } catch (ThreemaException e) {
+                        logger.error("Exception", e);
+                    }
+                }).start();
+            }
+        }, THREEMA_APPLICATION_LISTENER_TAG);
 
         ListenerManager.contactSettingsListeners.add(new ContactSettingsListener() {
             @Override
@@ -1518,18 +1518,18 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                 //do nothing
             }
 
-			@Override
-			public void onAvatarSettingChanged() {
-				//reset the avatar cache!
-				if (serviceManager != null) {
-					try {
-						AvatarCacheService s = serviceManager.getAvatarCacheService();
-						s.clear();
-					} catch (FileSystemNotPresentException e) {
-						logger.error("Exception", e);
-					}
-				}
-			}
+            @Override
+            public void onAvatarSettingChanged() {
+                //reset the avatar cache!
+                if (serviceManager != null) {
+                    try {
+                        AvatarCacheService s = serviceManager.getAvatarCacheService();
+                        s.clear();
+                    } catch (FileSystemNotPresentException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            }
 
             @Override
             public void onInactiveContactsSettingChanged() {
@@ -1551,12 +1551,12 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
             }
 
-			@Override
-			public void onRemoved(ConversationModel conversationModel) {
-				//remove notification!
-				NotificationService notificationService = serviceManager.getNotificationService();
-				notificationService.cancel(conversationModel);
-			}
+            @Override
+            public void onRemoved(ConversationModel conversationModel) {
+                //remove notification!
+                NotificationService notificationService = serviceManager.getNotificationService();
+                notificationService.cancel(conversationModel);
+            }
 
             @Override
             public void onModifiedAll() {
@@ -1698,23 +1698,23 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
                         cont = false;
                     }
 
-					if (cont) {
-						PreferenceService preferencesService = serviceManager.getPreferenceService();
-						if (preferencesService.isSyncContacts()) {
-							try {
-								ContactService c = serviceManager.getContactService();
-								//update contact names if changed!
-								c.updateAllContactNamesFromAndroidContacts();
-							} catch (MasterKeyLockedException | FileSystemNotPresentException e) {
-								logger.error("Exception", e);
-							}
-						}
-					}
-					this.isRunning = false;
-					onAndroidContactChangeLock.unlock();
-				}
-			}
-		};
+                    if (cont) {
+                        PreferenceService preferencesService = serviceManager.getPreferenceService();
+                        if (preferencesService.isSyncContacts()) {
+                            try {
+                                ContactService c = serviceManager.getContactService();
+                                //update contact names if changed!
+                                c.updateAllContactNamesFromAndroidContacts();
+                            } catch (MasterKeyLockedException | FileSystemNotPresentException e) {
+                                logger.error("Exception", e);
+                            }
+                        }
+                    }
+                    this.isRunning = false;
+                    onAndroidContactChangeLock.unlock();
+                }
+            }
+        };
 
         ListenerManager.synchronizeContactsListeners.add(new SynchronizeContactsListener() {
             @Override
@@ -1742,20 +1742,20 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
         }, THREEMA_APPLICATION_LISTENER_TAG);
 
-		ListenerManager.contactTypingListeners.add((fromContact, isTyping) -> {
-			//update the conversations
-			try {
-				serviceManager.getConversationService()
-						.setIsTyping(fromContact, isTyping);
-			} catch (ThreemaException e) {
-				logger.error("Exception", e);
-			}
-		});
+        ListenerManager.contactTypingListeners.add((fromContact, isTyping) -> {
+            //update the conversations
+            try {
+                serviceManager.getConversationService()
+                    .setIsTyping(fromContact, isTyping);
+            } catch (ThreemaException e) {
+                logger.error("Exception", e);
+            }
+        });
 
-		ListenerManager.newSyncedContactListener.add(contactModels -> {
-			NotificationService notificationService = serviceManager.getNotificationService();
-			notificationService.showNewSyncedContactsNotification(contactModels);
-		});
+        ListenerManager.newSyncedContactListener.add(contactModels -> {
+            NotificationService notificationService = serviceManager.getNotificationService();
+            notificationService.showNewSyncedContactsNotification(contactModels);
+        });
 
         WebClientListenerManager.serviceListener.add(new WebClientServiceListener() {
             @Override
@@ -1845,10 +1845,10 @@ public class ThreemaApplication extends Application implements DefaultLifecycleO
             }
         });
 
-		//called if a fcm message with a newer session received
-		WebClientListenerManager.wakeUpListener.add(() -> RuntimeUtil.runOnUiThread(
-			() -> Toast.makeText(getAppContext(), R.string.webclient_protocol_version_to_old, Toast.LENGTH_LONG).show()
-		));
+        //called if a fcm message with a newer session received
+        WebClientListenerManager.wakeUpListener.add(() -> RuntimeUtil.runOnUiThread(
+            () -> Toast.makeText(getAppContext(), R.string.webclient_protocol_version_to_old, Toast.LENGTH_LONG).show()
+        ));
 
         VoipListenerManager.callEventListener.add(new VoipCallEventListener() {
             private final Logger logger = LoggingUtil.getThreemaLogger("VoipCallEventListener");

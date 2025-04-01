@@ -56,162 +56,168 @@ import ch.threema.base.utils.LoggingUtil;
  * This fragment is used to show images.
  */
 public class ImageViewFragment extends MediaViewFragment {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
 
-	private WeakReference<SubsamplingScaleImageView> imageViewReference;
-	private WeakReference<ImageView> previewViewReference;
+    private WeakReference<SubsamplingScaleImageView> imageViewReference;
+    private WeakReference<ImageView> previewViewReference;
 
-	private boolean uiVisibilityStatus = false;
+    private boolean uiVisibilityStatus = false;
 
-	public ImageViewFragment() { super(); }
+    public ImageViewFragment() {
+        super();
+    }
 
-	@Override
-	protected int getFragmentResourceId() {
-		return R.layout.fragment_media_viewer_image;
-	}
+    @Override
+    protected int getFragmentResourceId() {
+        return R.layout.fragment_media_viewer_image;
+    }
 
-	@Override
-	protected void showThumbnail(@NonNull Drawable thumbnail) {
-		if (TestUtil.required(imageViewReference.get(), thumbnail)) {
-			previewViewReference.get().setVisibility(View.VISIBLE);
-			previewViewReference.get().setImageDrawable(thumbnail);
-			imageViewReference.get().setVisibility(View.INVISIBLE);
-		}
-	}
+    @Override
+    protected void showThumbnail(@NonNull Drawable thumbnail) {
+        if (TestUtil.required(imageViewReference.get(), thumbnail)) {
+            previewViewReference.get().setVisibility(View.VISIBLE);
+            previewViewReference.get().setImageDrawable(thumbnail);
+            imageViewReference.get().setVisibility(View.INVISIBLE);
+        }
+    }
 
-	private void hideThumbnail() {
-		previewViewReference.get().setVisibility(View.INVISIBLE);
-	}
+    private void hideThumbnail() {
+        previewViewReference.get().setVisibility(View.INVISIBLE);
+    }
 
-	@Override
-	protected void created(Bundle savedInstanceState) {
-		SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
+    @Override
+    protected void created(Bundle savedInstanceState) {
+        SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
 
-		if (rootViewReference != null && rootViewReference.get() != null) {
-			imageViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.subsampling_image));
-			previewViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
+        if (rootViewReference != null && rootViewReference.get() != null) {
+            imageViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.subsampling_image));
+            previewViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
 
-			imageViewReference.get().setMaxScale(8);
-			imageViewReference.get().setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER);
-			imageViewReference.get().setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					showUi(uiVisibilityStatus);
-					uiVisibilityStatus = !uiVisibilityStatus;
-				}
-			});
-			imageViewReference.get().setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
-				@Override
-				public void onReady() { }
+            imageViewReference.get().setMaxScale(8);
+            imageViewReference.get().setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER);
+            imageViewReference.get().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showUi(uiVisibilityStatus);
+                    uiVisibilityStatus = !uiVisibilityStatus;
+                }
+            });
+            imageViewReference.get().setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+                @Override
+                public void onReady() {
+                }
 
-				@Override
-				public void onImageLoaded() {
-					hideThumbnail();
-				}
+                @Override
+                public void onImageLoaded() {
+                    hideThumbnail();
+                }
 
-				@Override
-				public void onPreviewLoadError(Exception e) { }
+                @Override
+                public void onPreviewLoadError(Exception e) {
+                }
 
-				@Override
-				public void onImageLoadError(Exception e) { }
+                @Override
+                public void onImageLoadError(Exception e) {
+                }
 
-				@Override
-				public void onTileLoadError(Exception e) { }
+                @Override
+                public void onTileLoadError(Exception e) {
+                }
 
-				@Override
-				public void onPreviewReleased() { }
-			});
-		}
-	}
+                @Override
+                public void onPreviewReleased() {
+                }
+            });
+        }
+    }
 
-	@Override
-	protected void handleDecryptingFile() {
-		//on decoding, do nothing!
-	}
+    @Override
+    protected void handleDecryptingFile() {
+        //on decoding, do nothing!
+    }
 
-	@Override
-	protected void handleDecryptFailure() {
-		//
-	}
+    @Override
+    protected void handleDecryptFailure() {
+        //
+    }
 
-	@Override
-	protected void handleDecryptedFile(File file) {
-		if (this.isAdded()) {
-			try {
-				showImage(file);
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    @Override
+    protected void handleDecryptedFile(File file) {
+        if (this.isAdded()) {
+            try {
+                showImage(file);
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 
-	@Override
-	public void onConfigurationChanged(@NonNull Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-		if (this.rootViewReference != null && this.rootViewReference.get() != null) {
-			this.rootViewReference.get().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-				@Override
-				public void onGlobalLayout() {
-					if (rootViewReference != null && rootViewReference.get() != null) {
-						rootViewReference.get().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-						if (imageViewReference != null && imageViewReference.get() != null) {
-							imageViewReference.get().resetScaleAndCenter();
-						}
-					}
-				}
-			});
-		}
-	}
+        if (this.rootViewReference != null && this.rootViewReference.get() != null) {
+            this.rootViewReference.get().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (rootViewReference != null && rootViewReference.get() != null) {
+                        rootViewReference.get().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        if (imageViewReference != null && imageViewReference.get() != null) {
+                            imageViewReference.get().resetScaleAndCenter();
+                        }
+                    }
+                }
+            });
+        }
+    }
 
-	/**
-	 * Show image and hide the gif view
-	 *
-	 * @param file the image file
-	 */
-	private void showImage(@NonNull File file) {
-		if (ConfigUtils.isDisplayableAnimatedImageFormat(getMessageModel().getFileData().getMimeType())) {
-			Glide.with(this)
-				.load(file)
-				.optionalFitCenter()
-				.error(R.drawable.ic_baseline_broken_image_200)
-				.addListener(new RequestListener<>() {
-					@Override
-					public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
-						imageViewReference.get().setVisibility(View.GONE);
-						return true;
-					}
+    /**
+     * Show image and hide the gif view
+     *
+     * @param file the image file
+     */
+    private void showImage(@NonNull File file) {
+        if (ConfigUtils.isDisplayableAnimatedImageFormat(getMessageModel().getFileData().getMimeType())) {
+            Glide.with(this)
+                .load(file)
+                .optionalFitCenter()
+                .error(R.drawable.ic_baseline_broken_image_200)
+                .addListener(new RequestListener<>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                        imageViewReference.get().setVisibility(View.GONE);
+                        return true;
+                    }
 
-					@Override
-					public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
-						imageViewReference.get().setVisibility(View.GONE);
-						return false;
-					}
-				})
-				.skipMemoryCache(true)
-				.into(previewViewReference.get());
-		}
-		else  {
-			imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
-			imageViewReference.get().setVisibility(View.VISIBLE);
+                    @Override
+                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                        imageViewReference.get().setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .skipMemoryCache(true)
+                .into(previewViewReference.get());
+        } else {
+            imageViewReference.get().setImage(ImageSource.uri(file.getPath()));
+            imageViewReference.get().setVisibility(View.VISIBLE);
 
-			BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(requireContext(), Uri.fromFile(file));
-			logger.debug("Orientation = " + exifOrientation);
-			int rotation = (int) exifOrientation.getRotation();
+            BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(requireContext(), Uri.fromFile(file));
+            logger.debug("Orientation = " + exifOrientation);
+            int rotation = (int) exifOrientation.getRotation();
 
-			if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {
-				if ((exifOrientation.getFlip() & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
-					imageViewReference.get().setScaleY(-1f);
-				}
-				if ((exifOrientation.getFlip() & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
-					imageViewReference.get().setScaleX(-1f);
-					// invert rotation to compensate for flip
-					rotation = 360 - rotation;
-				}
-			}
-			if (exifOrientation.getRotation() != 0F) {
-				imageViewReference.get().setOrientation(rotation);
-			}
-		}
-	}
+            if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {
+                if ((exifOrientation.getFlip() & BitmapUtil.FLIP_VERTICAL) == BitmapUtil.FLIP_VERTICAL) {
+                    imageViewReference.get().setScaleY(-1f);
+                }
+                if ((exifOrientation.getFlip() & BitmapUtil.FLIP_HORIZONTAL) == BitmapUtil.FLIP_HORIZONTAL) {
+                    imageViewReference.get().setScaleX(-1f);
+                    // invert rotation to compensate for flip
+                    rotation = 360 - rotation;
+                }
+            }
+            if (exifOrientation.getRotation() != 0F) {
+                imageViewReference.get().setOrientation(rotation);
+            }
+        }
+    }
 }

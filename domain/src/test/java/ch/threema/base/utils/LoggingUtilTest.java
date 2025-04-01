@@ -27,16 +27,16 @@ import static org.junit.Assert.*;
 
 public class LoggingUtilTest {
 
-	@Test
-	public void cleanTag() {
-		String[] prefixes = new String[] {
-			"ch.threema."
-		};
+    @Test
+    public void cleanTag() {
+        String[] prefixes = new String[]{
+            "ch.threema."
+        };
 
-		assertEquals("", LoggingUtil.cleanTag("", prefixes));
-		assertEquals("Tag", LoggingUtil.cleanTag("Tag", prefixes));
-		assertEquals("tagging.Tag", LoggingUtil.cleanTag("tagging.Tag", prefixes));
-		assertEquals("tagging.Tag", LoggingUtil.cleanTag("ch.threema.tagging.Tag", prefixes));
-		assertEquals("ch.threema.Tag", LoggingUtil.cleanTag("ch.threema.ch.threema.Tag", prefixes));
-	}
+        assertEquals("", LoggingUtil.cleanTag("", prefixes));
+        assertEquals("Tag", LoggingUtil.cleanTag("Tag", prefixes));
+        assertEquals("tagging.Tag", LoggingUtil.cleanTag("tagging.Tag", prefixes));
+        assertEquals("tagging.Tag", LoggingUtil.cleanTag("ch.threema.tagging.Tag", prefixes));
+        assertEquals("ch.threema.Tag", LoggingUtil.cleanTag("ch.threema.ch.threema.Tag", prefixes));
+    }
 }

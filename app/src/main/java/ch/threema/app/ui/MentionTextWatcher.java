@@ -33,85 +33,85 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MentionTextWatcher implements TextWatcher {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MentionTextWatcher");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionTextWatcher");
 
-	private final EditText editText;
-	private final CharSequence hint;
-	private int maxLines;
-	private final CopyOnWriteArrayList<ReplacementSpan> spansToRemove = new CopyOnWriteArrayList<>();
+    private final EditText editText;
+    private final CharSequence hint;
+    private int maxLines;
+    private final CopyOnWriteArrayList<ReplacementSpan> spansToRemove = new CopyOnWriteArrayList<>();
 
-	public MentionTextWatcher(EditText editor) {
-		editText = editor;
+    public MentionTextWatcher(EditText editor) {
+        editText = editor;
 
-		hint = editText.getHint();
-		maxLines = editText.getMaxLines();
+        hint = editText.getHint();
+        maxLines = editText.getMaxLines();
 
-		editText.addTextChangedListener(this);
-	}
+        editText.addTextChangedListener(this);
+    }
 
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 //		logger.debug("beforeTextChanged " + s + " start: " + start + " count: " + count + " after: " + after);
 
-		if (count == 1) {
-			int end = start + count;
-			Editable editableText = editText.getEditableText();
-			if (editableText == null) {
-				logger.error("Before text changed: Editable of edit text is null (text is not editable)");
-				return;
-			}
-			ReplacementSpan[] list = editableText.getSpans(start, end, ReplacementSpan.class);
+        if (count == 1) {
+            int end = start + count;
+            Editable editableText = editText.getEditableText();
+            if (editableText == null) {
+                logger.error("Before text changed: Editable of edit text is null (text is not editable)");
+                return;
+            }
+            ReplacementSpan[] list = editableText.getSpans(start, end, ReplacementSpan.class);
 
-			for (ReplacementSpan span : list) {
-				int spanStart = editableText.getSpanStart(span);
-				int spanEnd = editableText.getSpanEnd(span);
-				if ((spanStart < end) && (spanEnd > start)) {
-					spansToRemove.add(span);
-				}
-			}
-		}
-	}
+            for (ReplacementSpan span : list) {
+                int spanStart = editableText.getSpanStart(span);
+                int spanEnd = editableText.getSpanEnd(span);
+                if ((spanStart < end) && (spanEnd > start)) {
+                    spansToRemove.add(span);
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
 //		logger.debug("onTextChanged " + s + " start: " + start + " count: " + count );
 
-	}
+    }
 
-	@Override
-	public void afterTextChanged(Editable s) {
+    @Override
+    public void afterTextChanged(Editable s) {
 //		logger.debug("afterTextChanged " + s);
 
-		Editable editableText = editText.getEditableText();
+        Editable editableText = editText.getEditableText();
 
-		if (editableText == null) {
-			logger.error("After text changed: Editable of edit text is null (text is not editable)");
-			return;
-		}
+        if (editableText == null) {
+            logger.error("After text changed: Editable of edit text is null (text is not editable)");
+            return;
+        }
 
-		for (ReplacementSpan span : spansToRemove) {
-			int start = editableText.getSpanStart(span);
-			int end = editableText.getSpanEnd(span);
+        for (ReplacementSpan span : spansToRemove) {
+            int start = editableText.getSpanStart(span);
+            int end = editableText.getSpanEnd(span);
 
-			editableText.removeSpan(span);
+            editableText.removeSpan(span);
 
-			if (start != end) {
-				editableText.delete(start, end);
-			}
-		}
-		spansToRemove.clear();
+            if (start != end) {
+                editableText.delete(start, end);
+            }
+        }
+        spansToRemove.clear();
 
-		// workaround to keep hint ellipsized on the first line
-		if (s.length() > 0) {
-			editText.setHint(null);
-			editText.setMaxLines(maxLines);
-		} else {
-			editText.setMaxLines(1);
-			editText.setHint(this.hint);
-		}
-	}
+        // workaround to keep hint ellipsized on the first line
+        if (s.length() > 0) {
+            editText.setHint(null);
+            editText.setMaxLines(maxLines);
+        } else {
+            editText.setMaxLines(1);
+            editText.setHint(this.hint);
+        }
+    }
 
-	public void setMaxLines(int maxLines) {
-		this.maxLines = maxLines;
-	}
+    public void setMaxLines(int maxLines) {
+        this.maxLines = maxLines;
+    }
 }

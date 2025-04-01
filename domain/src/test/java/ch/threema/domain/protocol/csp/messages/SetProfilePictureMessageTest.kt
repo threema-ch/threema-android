@@ -41,7 +41,10 @@ class SetProfilePictureMessageTest {
     fun testValidBody() {
         val message = SetProfilePictureMessage.fromByteArray(validBody)
         assertContentEquals(validBlobId, message.blobId)
-        assertEquals(ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(), message.size)
+        assertEquals(
+            ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
+            message.size
+        )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
 
@@ -53,7 +56,10 @@ class SetProfilePictureMessageTest {
             length = validBody.size,
         )
         assertContentEquals(validBlobId, message.blobId)
-        assertEquals(ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(), message.size)
+        assertEquals(
+            ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
+            message.size
+        )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
 
@@ -67,7 +73,10 @@ class SetProfilePictureMessageTest {
             length = validBody.size,
         )
         assertContentEquals(validBlobId, message.blobId)
-        assertEquals(ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(), message.size)
+        assertEquals(
+            ByteBuffer.wrap(validSize).order(ByteOrder.LITTLE_ENDIAN).getInt(),
+            message.size
+        )
         assertContentEquals(validEncryptionKey, message.encryptionKey)
     }
 

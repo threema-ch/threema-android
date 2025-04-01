@@ -49,106 +49,108 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class VoipStatusUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VoipStatusUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipStatusUpdateHandler");
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		TYPE_RINGING, TYPE_STARTED, TYPE_FINISHED,
-		TYPE_REJECTED, TYPE_MISSED, TYPE_ABORTED,
-	})
-	private @interface StatusType {}
-	private final static String TYPE_RINGING = "ringing";
-	private final static String TYPE_STARTED = "started";
-	private final static String TYPE_FINISHED = "finished";
-	private final static String TYPE_REJECTED = "rejected";
-	private final static String TYPE_MISSED = "missed";
-	private final static String TYPE_ABORTED = "aborted";
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        TYPE_RINGING, TYPE_STARTED, TYPE_FINISHED,
+        TYPE_REJECTED, TYPE_MISSED, TYPE_ABORTED,
+    })
+    private @interface StatusType {
+    }
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    private final static String TYPE_RINGING = "ringing";
+    private final static String TYPE_STARTED = "started";
+    private final static String TYPE_FINISHED = "finished";
+    private final static String TYPE_REJECTED = "rejected";
+    private final static String TYPE_MISSED = "missed";
+    private final static String TYPE_ABORTED = "aborted";
 
-	// Listeners
-	private final Listener listener = new Listener();
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Dispatchers
-	private MessageDispatcher dispatcher;
+    // Listeners
+    private final Listener listener = new Listener();
 
-	// Local variables
-	private final int sessionId;
+    // Dispatchers
+    private MessageDispatcher dispatcher;
 
-	@AnyThread
-	public VoipStatusUpdateHandler(@NonNull HandlerExecutor handler, int sessionId, MessageDispatcher dispatcher) {
-		super(Protocol.SUB_TYPE_VOIP_STATUS);
-		this.handler = handler;
-		this.sessionId = sessionId;
-		this.dispatcher = dispatcher;
-	}
+    // Local variables
+    private final int sessionId;
 
-	@Override
-	public void register() {
-		logger.debug("register(" + this.sessionId + ")");
-		VoipListenerManager.callEventListener.add(this.listener);
-	}
+    @AnyThread
+    public VoipStatusUpdateHandler(@NonNull HandlerExecutor handler, int sessionId, MessageDispatcher dispatcher) {
+        super(Protocol.SUB_TYPE_VOIP_STATUS);
+        this.handler = handler;
+        this.sessionId = sessionId;
+        this.dispatcher = dispatcher;
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister(" + this.sessionId + ")");
-		VoipListenerManager.callEventListener.remove(this.listener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register(" + this.sessionId + ")");
+        VoipListenerManager.callEventListener.add(this.listener);
+    }
 
-	private void update(final MsgpackObjectBuilder data, @StatusType String type) {
-		try {
-			logger.info("Sending voip status update (" + type + ")");
-			final MsgpackObjectBuilder args = new MsgpackObjectBuilder().put("type", type);
-			send(dispatcher, data, args);
-		} catch (MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister(" + this.sessionId + ")");
+        VoipListenerManager.callEventListener.remove(this.listener);
+    }
 
-	@AnyThread
-	private class Listener implements VoipCallEventListener {
-		@Override
-		public void onRinging(String peerIdentity) {
-			this.update(VoipStatus.convertOnRinging(peerIdentity), TYPE_RINGING);
-		}
+    private void update(final MsgpackObjectBuilder data, @StatusType String type) {
+        try {
+            logger.info("Sending voip status update (" + type + ")");
+            final MsgpackObjectBuilder args = new MsgpackObjectBuilder().put("type", type);
+            send(dispatcher, data, args);
+        } catch (MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-		@Override
-		public void onStarted(String peerIdentity, boolean outgoing) {
-			this.update(VoipStatus.convertOnStarted(peerIdentity, outgoing), TYPE_STARTED);
-		}
+    @AnyThread
+    private class Listener implements VoipCallEventListener {
+        @Override
+        public void onRinging(String peerIdentity) {
+            this.update(VoipStatus.convertOnRinging(peerIdentity), TYPE_RINGING);
+        }
 
-		@Override
-		public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
-			this.update(VoipStatus.convertOnFinished(peerIdentity, outgoing, duration), TYPE_FINISHED);
-		}
+        @Override
+        public void onStarted(String peerIdentity, boolean outgoing) {
+            this.update(VoipStatus.convertOnStarted(peerIdentity, outgoing), TYPE_STARTED);
+        }
 
-		@Override
-		public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
-			this.update(VoipStatus.convertOnRejected(peerIdentity, outgoing, reason), TYPE_REJECTED);
-		}
+        @Override
+        public void onFinished(long callId, @NonNull String peerIdentity, boolean outgoing, int duration) {
+            this.update(VoipStatus.convertOnFinished(peerIdentity, outgoing, duration), TYPE_FINISHED);
+        }
 
-		@Override
-		public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
-			this.update(VoipStatus.convertOnMissed(peerIdentity), TYPE_MISSED);
-		}
+        @Override
+        public void onRejected(long callId, String peerIdentity, boolean outgoing, byte reason) {
+            this.update(VoipStatus.convertOnRejected(peerIdentity, outgoing, reason), TYPE_REJECTED);
+        }
 
-		@Override
-		public void onAborted(long callId, String peerIdentity) {
-			this.update(VoipStatus.convertOnAborted(peerIdentity), TYPE_ABORTED);
-		}
+        @Override
+        public void onMissed(long callId, String peerIdentity, boolean accepted, @Nullable Date date) {
+            this.update(VoipStatus.convertOnMissed(peerIdentity), TYPE_MISSED);
+        }
 
-		private void update(final MsgpackObjectBuilder data, @StatusType String type) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					VoipStatusUpdateHandler.this.update(data, type);
-				}
-			});
-		}
-	}
+        @Override
+        public void onAborted(long callId, String peerIdentity) {
+            this.update(VoipStatus.convertOnAborted(peerIdentity), TYPE_ABORTED);
+        }
+
+        private void update(final MsgpackObjectBuilder data, @StatusType String type) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    VoipStatusUpdateHandler.this.update(data, type);
+                }
+            });
+        }
+    }
 }

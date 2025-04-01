@@ -74,7 +74,8 @@ class ThreemaPushService : Service() {
         // Create notification
         val builder: NotificationCompat.Builder = NotificationCompat.Builder(
             this,
-            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH)
+            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH
+        )
             .setContentTitle(getString(R.string.threema_push))
             .setContentText(getString(R.string.threema_push_notification_text))
             .setSmallIcon(R.drawable.ic_notification_push)
@@ -84,7 +85,8 @@ class ThreemaPushService : Service() {
             this,
             THREEMA_PUSH_ACTIVE_NOTIFICATION_ID,
             builder.build(),
-            FG_SERVICE_TYPE)
+            FG_SERVICE_TYPE
+        )
         logger.info("startForeground called")
 
         // Get lifetime service
@@ -128,6 +130,7 @@ class ThreemaPushService : Service() {
                 isStopping = true
                 stopSelf()
             }
+
             else -> {
             }
         }
@@ -182,9 +185,9 @@ class ThreemaPushService : Service() {
 
         val notificationManager = NotificationManagerCompat.from(this)
         val notificationChannel = NotificationChannel(
-                NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH,
-                getString(R.string.threema_push),
-                NotificationManager.IMPORTANCE_LOW
+            NotificationChannels.NOTIFICATION_CHANNEL_THREEMA_PUSH,
+            getString(R.string.threema_push),
+            NotificationManager.IMPORTANCE_LOW
         )
         notificationChannel.description = getString(R.string.threema_push_service_description)
         notificationChannel.enableLights(false)
@@ -199,7 +202,8 @@ class ThreemaPushService : Service() {
     companion object {
         private const val THREEMA_PUSH_ACTIVE_NOTIFICATION_ID = 27392
         private const val LIFETIME_SERVICE_TAG = "threemaPushService"
-        private val FG_SERVICE_TYPE = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
+        private val FG_SERVICE_TYPE =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
 
         // Intent actions
         const val ACTION_START = "start"

@@ -93,10 +93,11 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         if (ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService)) {
             privacyPolicyPreference.isVisible = false
         } else {
-            privacyPolicyPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                startActivity(Intent(context, PrivacyPolicyActivity::class.java))
-                true
-            }
+            privacyPolicyPreference.onPreferenceClickListener =
+                Preference.OnPreferenceClickListener {
+                    startActivity(Intent(context, PrivacyPolicyActivity::class.java))
+                    true
+                }
         }
     }
 
@@ -170,7 +171,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         if (ConfigUtils.isWorkBuild()) {
             workLicensePreference.summary = preferenceService.licenseUsername
             if (ConfigUtils.isWorkRestricted()) {
-                val readonly = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile))
+                val readonly =
+                    AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile))
                 if (readonly != null && readonly) {
                     aboutCategory.removePreference(workLicensePreference)
                 }
@@ -192,7 +194,10 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initTranslatorPref() {
         val translatorsPreference = getPref<Preference>(R.string.preferences__translators)
         translatorsPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-            SimpleStringAlertDialog.newInstance(R.string.translators, getString(R.string.translators_thanks, getString(R.string.translators_list))).show(parentFragmentManager, "tt")
+            SimpleStringAlertDialog.newInstance(
+                R.string.translators,
+                getString(R.string.translators_thanks, getString(R.string.translators_list))
+            ).show(parentFragmentManager, "tt")
             true
         }
     }
@@ -214,7 +219,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     }
 
     private fun StringBuilder.appendVersionName(): StringBuilder {
-        return append(getString(R.string.threema_version)).append(" ").append(BuildConfig.VERSION_NAME)
+        return append(getString(R.string.threema_version)).append(" ")
+            .append(BuildConfig.VERSION_NAME)
     }
 
     private fun StringBuilder.appendVersionCode(): StringBuilder {
@@ -245,7 +251,8 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         object : AsyncTask<Void?, Void?, String?>() {
             @Deprecated("Deprecated in Java")
             override fun onPreExecute() {
-                GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait).show(activity!!.supportFragmentManager, DIALOG_TAG_CHECK_UPDATE)
+                GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait)
+                    .show(activity!!.supportFragmentManager, DIALOG_TAG_CHECK_UPDATE)
             }
 
             @Deprecated("Deprecated in Java")
@@ -273,9 +280,11 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             override fun onPostExecute(error: String?) {
                 DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_CHECK_UPDATE, true)
                 if (error != null) {
-                    SimpleStringAlertDialog.newInstance(R.string.check_updates, error).show(parentFragmentManager, "nu")
+                    SimpleStringAlertDialog.newInstance(R.string.check_updates, error)
+                        .show(parentFragmentManager, "nu")
                 } else {
-                    val dialogIntent = IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, updateUrl)
+                    val dialogIntent =
+                        IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, updateUrl)
                     dialogIntent.putExtra(DownloadApkActivity.EXTRA_FORCE_UPDATE_DIALOG, true)
                     dialogIntent.setClass(requireContext(), DownloadApkActivity::class.java)
                     startActivity(dialogIntent)

@@ -35,7 +35,8 @@ import ch.threema.base.utils.LoggingUtil
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     private val logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadWorker")
 
     private val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
@@ -130,7 +131,8 @@ class ThreemaSafeUploadWorker(context: Context, workerParameters: WorkerParamete
         if (errorDate != null && errorDate.before(aWeekAgo)) {
             val lastBackupDate = preferenceService.threemaSafeBackupDate
             val notificationService = serviceManager!!.notificationService
-            val fullDaysSinceLastBackup = ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt();
+            val fullDaysSinceLastBackup =
+                ((System.currentTimeMillis() - lastBackupDate.time) / DateUtils.DAY_IN_MILLIS).toInt();
             if (fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
                 notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
             } else {

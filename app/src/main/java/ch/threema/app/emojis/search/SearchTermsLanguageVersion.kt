@@ -26,6 +26,6 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class SearchTermsLanguageVersion(
-	@PrimaryKey val language: String,
-	val version: Int
+    @PrimaryKey val language: String,
+    val version: Int
 )

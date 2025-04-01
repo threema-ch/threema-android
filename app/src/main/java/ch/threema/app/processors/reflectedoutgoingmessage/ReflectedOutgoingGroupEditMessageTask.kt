@@ -53,7 +53,11 @@ internal class ReflectedOutgoingGroupEditMessageTask(
             receiver = messageReceiver,
             messageService = messageService
         )?.let { validEditMessageModel: AbstractMessageModel ->
-            messageService.saveEditedMessageText(validEditMessageModel, groupEditMessage.data.text, groupEditMessage.date)
+            messageService.saveEditedMessageText(
+                validEditMessageModel,
+                groupEditMessage.data.text,
+                groupEditMessage.date
+            )
         }
     }
 }

@@ -31,17 +31,17 @@ import org.slf4j.Logger;
 import ch.threema.base.utils.LoggingUtil;
 
 public class PowerSaveModeReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("PowerSaveModeReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("PowerSaveModeReceiver");
 
-	@Override
-	public void onReceive(final Context context, final Intent intent) {
-		if (intent != null && intent.getAction() != null && intent.getAction().equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
-			final PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-			if (pm != null && pm.isPowerSaveMode()) {
-				logger.info("Power Save Mode enabled");
-			} else {
-				logger.info("Power Save Mode disabled");
-			}
-		}
-	}
+    @Override
+    public void onReceive(final Context context, final Intent intent) {
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
+            final PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            if (pm != null && pm.isPowerSaveMode()) {
+                logger.info("Power Save Mode enabled");
+            } else {
+                logger.info("Power Save Mode disabled");
+            }
+        }
+    }
 }

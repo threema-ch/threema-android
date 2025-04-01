@@ -217,6 +217,7 @@ public class ConfigUtils {
     public static boolean isSamsungDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("Samsung"));
     }
+
     public static boolean isMotorolaDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("motorola"));
     }
@@ -734,14 +735,15 @@ public class ConfigUtils {
         return false;
     }
 
-	/**
-	 * Whether this version of the app is allowed to send emoji reactions to other clients that support them
-	 * aka V2
-	 * @return true if this version of the app is allowed to send emoji reactions
-	 */
-	public static boolean canSendEmojiReactions() {
-		return BuildConfig.EMOJI_REACTIONS_ENABLED;
-	}
+    /**
+     * Whether this version of the app is allowed to send emoji reactions to other clients that support them
+     * aka V2
+     *
+     * @return true if this version of the app is allowed to send emoji reactions
+     */
+    public static boolean canSendEmojiReactions() {
+        return BuildConfig.EMOJI_REACTIONS_ENABLED;
+    }
 
     /**
      * Returns true if this is a work build and app is under control of a device policy controller (DPC) or Threema MDM

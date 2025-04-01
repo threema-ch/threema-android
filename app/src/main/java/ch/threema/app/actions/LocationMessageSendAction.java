@@ -37,123 +37,124 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class LocationMessageSendAction extends SendAction {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationMessageSendAction");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationMessageSendAction");
 
-	protected static volatile LocationMessageSendAction instance;
-	private static final Object instanceLock = new Object();
+    protected static volatile LocationMessageSendAction instance;
+    private static final Object instanceLock = new Object();
 
-	private MessageService messageService;
+    private MessageService messageService;
 
-	private LocationMessageSendAction() {
-		// Singleton
-	}
+    private LocationMessageSendAction() {
+        // Singleton
+    }
 
-	public static LocationMessageSendAction getInstance() {
-		if (instance == null) {
-			synchronized (instanceLock) {
-				if (instance == null) {
-					instance = new LocationMessageSendAction();
-				}
-			}
-		}
-		return instance;
-	}
+    public static LocationMessageSendAction getInstance() {
+        if (instance == null) {
+            synchronized (instanceLock) {
+                if (instance == null) {
+                    instance = new LocationMessageSendAction();
+                }
+            }
+        }
+        return instance;
+    }
 
-	public boolean sendLocationMessage(
-		final MessageReceiver[] allReceivers,
-		final Location location,
-		final @Nullable String poiName,
-		final ActionHandler actionHandler
-	) {
-		if (actionHandler == null) {
-			return false;
-		}
+    public boolean sendLocationMessage(
+        final MessageReceiver[] allReceivers,
+        final Location location,
+        final @Nullable String poiName,
+        final ActionHandler actionHandler
+    ) {
+        if (actionHandler == null) {
+            return false;
+        }
 
-		try {
-			messageService = this.getServiceManager().getMessageService();
-		} catch (ThreemaException e) {
-			actionHandler.onError(e.getMessage());
-			return false;
-		}
+        try {
+            messageService = this.getServiceManager().getMessageService();
+        } catch (ThreemaException e) {
+            actionHandler.onError(e.getMessage());
+            return false;
+        }
 
-		if (messageService == null || location == null) {
-			actionHandler.onError("Nothing to send");
-			return false;
-		}
+        if (messageService == null || location == null) {
+            actionHandler.onError("Nothing to send");
+            return false;
+        }
 
-		if (allReceivers.length < 1) {
-			actionHandler.onError("no message receiver");
-			return false;
-		}
+        if (allReceivers.length < 1) {
+            actionHandler.onError("no message receiver");
+            return false;
+        }
 
-		// loop all receivers (required for distribution lists)
-		// add distribution list members to list of receivers
-		final MessageReceiver[] resolvedReceivers = MessageUtil.addDistributionListReceivers(allReceivers);
-		final int numReceivers = resolvedReceivers.length;
+        // loop all receivers (required for distribution lists)
+        // add distribution list members to list of receivers
+        final MessageReceiver[] resolvedReceivers = MessageUtil.addDistributionListReceivers(allReceivers);
+        final int numReceivers = resolvedReceivers.length;
 
-		sendSingleMessage(resolvedReceivers[0], location, poiName, new ActionHandler() {
-			int receiverIndex = 0;
+        sendSingleMessage(resolvedReceivers[0], location, poiName, new ActionHandler() {
+            int receiverIndex = 0;
 
-			@Override
-			public void onError(String errorMessage) {
-				actionHandler.onError(errorMessage);
-			}
+            @Override
+            public void onError(String errorMessage) {
+                actionHandler.onError(errorMessage);
+            }
 
-			@Override
-			public void onWarning(String warning, boolean continueAction) {
-			}
+            @Override
+            public void onWarning(String warning, boolean continueAction) {
+            }
 
-			@Override
-			public void onProgress(int progress, int total) {
-				actionHandler.onProgress(progress + receiverIndex, numReceivers);
-			}
+            @Override
+            public void onProgress(int progress, int total) {
+                actionHandler.onProgress(progress + receiverIndex, numReceivers);
+            }
 
-			@Override
-			public void onCompleted() {
-				if (receiverIndex < numReceivers - 1) {
-					receiverIndex++;
-					sendSingleMessage(resolvedReceivers[receiverIndex], location, poiName, this);
-				} else {
-					actionHandler.onCompleted();
-				}
-			}
-		});
-		return true;
-	}
+            @Override
+            public void onCompleted() {
+                if (receiverIndex < numReceivers - 1) {
+                    receiverIndex++;
+                    sendSingleMessage(resolvedReceivers[receiverIndex], location, poiName, this);
+                } else {
+                    actionHandler.onCompleted();
+                }
+            }
+        });
+        return true;
+    }
 
-	private void sendSingleMessage(
-		final MessageReceiver messageReceiver,
-		final @NonNull Location location,
-		final @Nullable String poiName,
-		final @NonNull ActionHandler actionHandler
-	) {
-		if (messageReceiver == null) {
-			actionHandler.onError("No receiver");
-			return;
-		}
+    private void sendSingleMessage(
+        final MessageReceiver messageReceiver,
+        final @NonNull Location location,
+        final @Nullable String poiName,
+        final @NonNull ActionHandler actionHandler
+    ) {
+        if (messageReceiver == null) {
+            actionHandler.onError("No receiver");
+            return;
+        }
 
-		try {
-			messageService.sendLocation(
-					location,
-					poiName,
-					messageReceiver,
-					new MessageService.CompletionHandler() {
-						@Override
-						public void sendComplete(AbstractMessageModel messageModel) {}
+        try {
+            messageService.sendLocation(
+                location,
+                poiName,
+                messageReceiver,
+                new MessageService.CompletionHandler() {
+                    @Override
+                    public void sendComplete(AbstractMessageModel messageModel) {
+                    }
 
-						@Override
-						public void sendQueued(AbstractMessageModel messageModel) {
-							actionHandler.onCompleted();
-						}
+                    @Override
+                    public void sendQueued(AbstractMessageModel messageModel) {
+                        actionHandler.onCompleted();
+                    }
 
-						@Override
-						public void sendError(int reason) {
-							actionHandler.onError(String.format(ThreemaApplication.getAppContext().getString(R.string.an_error_occurred_more), Integer.toString(reason)));
-						}
-					});
-		} catch (final Exception e) {
-			logger.error("Could not send location message", e);
-			actionHandler.onError(e.getMessage());
-		}
-	}
+                    @Override
+                    public void sendError(int reason) {
+                        actionHandler.onError(String.format(ThreemaApplication.getAppContext().getString(R.string.an_error_occurred_more), Integer.toString(reason)));
+                    }
+                });
+        } catch (final Exception e) {
+            logger.error("Could not send location message", e);
+            actionHandler.onError(e.getMessage());
+        }
+    }
 }

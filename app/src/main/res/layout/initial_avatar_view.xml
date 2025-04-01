@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/avatar_container"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_alignParentLeft="true"
-             android:layout_centerVertical="true"
-             android:clickable="false">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/avatar_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_centerVertical="true"
+    android:clickable="false">
 
-	<ImageView
-		android:id="@+id/avatar"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:clickable="false"
-		android:src="@drawable/ic_initials_avatar"
-		android:visibility="visible"
-		tools:ignore="ContentDescription"/>
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:clickable="false"
+        android:src="@drawable/ic_initials_avatar"
+        android:visibility="visible"
+        tools:ignore="ContentDescription" />
 
-	<TextView
-		android:id="@+id/avatar_initials"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="1dp"
-		android:layout_gravity="center"
-		android:maxLines="1"
-		android:textSize="23dp"
-		android:fontFamily="sans-serif-condensed"
-		android:text="AB"
-		android:clickable="false"
-		android:visibility="visible"/>
+    <TextView
+        android:id="@+id/avatar_initials"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:layout_gravity="center"
+        android:maxLines="1"
+        android:textSize="23dp"
+        android:fontFamily="sans-serif-condensed"
+        android:text="AB"
+        android:clickable="false"
+        android:visibility="visible" />
 
 </FrameLayout>

@@ -31,47 +31,47 @@ import java.util.Map;
 import static junit.framework.Assert.assertTrue;
 
 public class RandomUtilTest {
-	@Test
-	@SuppressWarnings("ConstantConditions")
-	public void generateRandomPadding() {
-		// Generate paddings
-		int iterations = 40000;
-		int min = 2;
-		int max = 5;
-		final List<byte[]> paddings = new ArrayList<>(iterations);
-		for (int i = 0; i < iterations; i++) {
-			paddings.add(RandomUtil.generateRandomPadding(min, max));
-		}
+    @Test
+    @SuppressWarnings("ConstantConditions")
+    public void generateRandomPadding() {
+        // Generate paddings
+        int iterations = 40000;
+        int min = 2;
+        int max = 5;
+        final List<byte[]> paddings = new ArrayList<>(iterations);
+        for (int i = 0; i < iterations; i++) {
+            paddings.add(RandomUtil.generateRandomPadding(min, max));
+        }
 
-		// Create count histogram
-		final Map<Integer, Integer> counts = new HashMap<>(max -  min + 1);
-		for (byte[] padding : paddings) {
-			final Integer k = padding.length;
-			counts.put(k, counts.getOrDefault(k, 0) + 1);
-		}
+        // Create count histogram
+        final Map<Integer, Integer> counts = new HashMap<>(max - min + 1);
+        for (byte[] padding : paddings) {
+            final Integer k = padding.length;
+            counts.put(k, counts.getOrDefault(k, 0) + 1);
+        }
 
-		// Ensure that the groups deviate less than 5% from a uniform distribution
-		int targetSize = iterations / (max - min + 1);
-		int lowerBound = (int)(targetSize * 0.95);
-		int upperBound = (int)(targetSize * 1.05);
-		for (int i = min; i <= max; i++) {
-			int size = counts.getOrDefault(i, 0);
-			assertTrue(
-				"There are " + size + " paddings with size " + i + ", more than 5% below the uniform distribution (" + targetSize + ")",
-				size > lowerBound
-			);
-			assertTrue(
-				"There are " + size + " paddings with size " + i + ", more than 5% above the uniform distribution (" + targetSize + ")",
-				size < upperBound
-			);
-		}
-	}
+        // Ensure that the groups deviate less than 5% from a uniform distribution
+        int targetSize = iterations / (max - min + 1);
+        int lowerBound = (int) (targetSize * 0.95);
+        int upperBound = (int) (targetSize * 1.05);
+        for (int i = min; i <= max; i++) {
+            int size = counts.getOrDefault(i, 0);
+            assertTrue(
+                "There are " + size + " paddings with size " + i + ", more than 5% below the uniform distribution (" + targetSize + ")",
+                size > lowerBound
+            );
+            assertTrue(
+                "There are " + size + " paddings with size " + i + ", more than 5% above the uniform distribution (" + targetSize + ")",
+                size < upperBound
+            );
+        }
+    }
 
-	@Test
-	public void generateRandomU32() {
-		for (int i = 0; i < 10000; i++) {
-			assertTrue(RandomUtil.generateRandomU32() >= 0);
-			assertTrue(RandomUtil.generateRandomU32() < (1L<<32));
-		}
-	}
+    @Test
+    public void generateRandomU32() {
+        for (int i = 0; i < 10000; i++) {
+            assertTrue(RandomUtil.generateRandomU32() >= 0);
+            assertTrue(RandomUtil.generateRandomU32() < (1L << 32));
+        }
+    }
 }

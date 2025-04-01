@@ -22,25 +22,25 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigChat {
-	private final String hostname;
-	private final int[] ports;
-	private final byte[] publicKey;
+    private final String hostname;
+    private final int[] ports;
+    private final byte[] publicKey;
 
-	public OnPremConfigChat(String hostname, int[] ports, byte[] publicKey) {
-		this.hostname = hostname;
-		this.ports = ports;
-		this.publicKey = publicKey;
-	}
+    public OnPremConfigChat(String hostname, int[] ports, byte[] publicKey) {
+        this.hostname = hostname;
+        this.ports = ports;
+        this.publicKey = publicKey;
+    }
 
-	public String getHostname() {
-		return hostname;
-	}
+    public String getHostname() {
+        return hostname;
+    }
 
-	public int[] getPorts() {
-		return ports;
-	}
+    public int[] getPorts() {
+        return ports;
+    }
 
-	public byte[] getPublicKey() {
-		return publicKey;
-	}
+    public byte[] getPublicKey() {
+        return publicKey;
+    }
 }

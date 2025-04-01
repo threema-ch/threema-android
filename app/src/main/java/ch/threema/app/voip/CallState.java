@@ -36,222 +36,223 @@ import ch.threema.base.utils.LoggingUtil;
 
 /**
  * The call state is a combination of the plain state and a call ID.
- *
+ * <p>
  * The call state is global, there should not be multiple instances of this.
- *
+ * <p>
  * This is a pure data holder, no validation is being done.
- *
+ * <p>
  * This class is thread safe.
  */
 @AnyThread
 public class CallState {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("CallState");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("CallState");
 
-	/**
-	 * No call is currently active.
-	 */
-	static final int IDLE = 0;
+    /**
+     * No call is currently active.
+     */
+    static final int IDLE = 0;
 
-	/**
-	 * This state only happens on the callee side,
-	 * before the call was accepted.
-	 */
-	static final int RINGING = 1;
+    /**
+     * This state only happens on the callee side,
+     * before the call was accepted.
+     */
+    static final int RINGING = 1;
 
-	/**
-	 * A call was accepted and is being setup.
-	 */
-	static final int INITIALIZING = 2;
+    /**
+     * A call was accepted and is being setup.
+     */
+    static final int INITIALIZING = 2;
 
-	/**
-	 * A call is currently ongoing.
-	 */
-	static final int CALLING = 3;
+    /**
+     * A call is currently ongoing.
+     */
+    static final int CALLING = 3;
 
-	/**
-	 * A call is being disconnected.
-	 */
-	static final int DISCONNECTING = 4;
+    /**
+     * A call is being disconnected.
+     */
+    static final int DISCONNECTING = 4;
 
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({IDLE, RINGING, INITIALIZING, CALLING, DISCONNECTING})
-	@interface State {}
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({IDLE, RINGING, INITIALIZING, CALLING, DISCONNECTING})
+    @interface State {
+    }
 
-	private final AtomicInteger state = new AtomicInteger(IDLE);
-	private final AtomicLong callId = new AtomicLong(0);
+    private final AtomicInteger state = new AtomicInteger(IDLE);
+    private final AtomicLong callId = new AtomicLong(0);
 
-	/**
-	 * Whether or not an answer for this call ID has been received yet.
-	 *
-	 * This flag is reset when the state transitions to DISCONNECTING or IDLE.
-	 */
-	private volatile boolean answerReceived = false;
+    /**
+     * Whether or not an answer for this call ID has been received yet.
+     * <p>
+     * This flag is reset when the state transitions to DISCONNECTING or IDLE.
+     */
+    private volatile boolean answerReceived = false;
 
-	/**
-	 * The incoming call counter is a transitional variable that is used as long as the call ID has
-	 * not yet been fully rolled out. It is being used to avoid problems if two calls are using the
-	 * default call ID "0". The counter is only incremented for incoming calls (in setStateRinging).
-	 */
-	@Deprecated
-	private final AtomicLong incomingCallCounter = new AtomicLong(0);
+    /**
+     * The incoming call counter is a transitional variable that is used as long as the call ID has
+     * not yet been fully rolled out. It is being used to avoid problems if two calls are using the
+     * default call ID "0". The counter is only incremented for incoming calls (in setStateRinging).
+     */
+    @Deprecated
+    private final AtomicLong incomingCallCounter = new AtomicLong(0);
 
-	@Override
-	public synchronized String toString() {
-		return "CallState{" +
-			"state=" + getStateName(this.state.get()) +
-			", callId=" + this.callId.get() +
-			'}';
-	}
+    @Override
+    public synchronized String toString() {
+        return "CallState{" +
+            "state=" + getStateName(this.state.get()) +
+            ", callId=" + this.callId.get() +
+            '}';
+    }
 
-	//region Check / get state
+    //region Check / get state
 
-	public boolean isIdle() {
-		return this.state.get() == IDLE;
-	}
+    public boolean isIdle() {
+        return this.state.get() == IDLE;
+    }
 
-	public synchronized boolean isRinging() {
-		return this.state.get() == RINGING;
-	}
+    public synchronized boolean isRinging() {
+        return this.state.get() == RINGING;
+    }
 
-	public synchronized boolean isInitializing() {
-		return this.state.get() == INITIALIZING;
-	}
+    public synchronized boolean isInitializing() {
+        return this.state.get() == INITIALIZING;
+    }
 
-	public synchronized boolean isCalling() {
-		return this.state.get() == CALLING;
-	}
+    public synchronized boolean isCalling() {
+        return this.state.get() == CALLING;
+    }
 
-	public synchronized boolean isDisconnecting() {
-		return this.state.get() == DISCONNECTING;
-	}
+    public synchronized boolean isDisconnecting() {
+        return this.state.get() == DISCONNECTING;
+    }
 
-	/**
-	 * Return the current Call ID.
-	 *
-	 * Note: Depending on the use case you might want to use {@link #getStateSnapshot()} instead.
-	 */
-	public long getCallId() {
-		return this.callId.get();
-	}
+    /**
+     * Return the current Call ID.
+     * <p>
+     * Note: Depending on the use case you might want to use {@link #getStateSnapshot()} instead.
+     */
+    public long getCallId() {
+        return this.callId.get();
+    }
 
-	/**
-	 * Return the incoming call counter.
-	 */
-	@Deprecated
-	public long getIncomingCallCounter() {
-		return this.incomingCallCounter.get();
-	}
+    /**
+     * Return the incoming call counter.
+     */
+    @Deprecated
+    public long getIncomingCallCounter() {
+        return this.incomingCallCounter.get();
+    }
 
-	/**
-	 * Return whether an answer was already received for this call.
-	 */
-	public synchronized boolean answerReceived() {
-		return this.answerReceived;
-	}
+    /**
+     * Return whether an answer was already received for this call.
+     */
+    public synchronized boolean answerReceived() {
+        return this.answerReceived;
+    }
 
-	/**
-	 * Return an immutable snapshot of the current state.
-	 * This allows reading the state and the Call ID independently without locking.
-	 */
-	public synchronized @NonNull CallStateSnapshot getStateSnapshot() {
-		return new CallStateSnapshot(
-			this.state.get(),
-			this.callId.get(),
-			this.incomingCallCounter.get()
-		);
-	}
+    /**
+     * Return an immutable snapshot of the current state.
+     * This allows reading the state and the Call ID independently without locking.
+     */
+    public synchronized @NonNull CallStateSnapshot getStateSnapshot() {
+        return new CallStateSnapshot(
+            this.state.get(),
+            this.callId.get(),
+            this.incomingCallCounter.get()
+        );
+    }
 
-	/**
-	 * Return the state name for the specified state.
-	 */
-	static @NonNull String getStateName(@State int state) {
-		switch (state) {
-			case CallState.IDLE:
-				return "IDLE";
-			case CallState.RINGING:
-				return "RINGING";
-			case CallState.INITIALIZING:
-				return "INITIALIZING";
-			case CallState.CALLING:
-				return "CALLING";
-			case CallState.DISCONNECTING:
-				return "DISCONNECTING";
-			default:
-				return "UNKNOWN";
-		}
-	}
+    /**
+     * Return the state name for the specified state.
+     */
+    static @NonNull String getStateName(@State int state) {
+        switch (state) {
+            case CallState.IDLE:
+                return "IDLE";
+            case CallState.RINGING:
+                return "RINGING";
+            case CallState.INITIALIZING:
+                return "INITIALIZING";
+            case CallState.CALLING:
+                return "CALLING";
+            case CallState.DISCONNECTING:
+                return "DISCONNECTING";
+            default:
+                return "UNKNOWN";
+        }
+    }
 
-	//endregion
+    //endregion
 
-	//region Set state
+    //region Set state
 
-	public synchronized void setIdle() {
-		this.state.set(IDLE);
-		this.callId.set(0);
-		this.answerReceived = false;
-	}
+    public synchronized void setIdle() {
+        this.state.set(IDLE);
+        this.callId.set(0);
+        this.answerReceived = false;
+    }
 
-	public synchronized void setRinging(long callId) {
-		final @State int state = this.state.get();
-		if (this.state.get() != IDLE) {
-			logger.warn("Call state change from {} to RINGING", getStateName(state));
-		}
-		this.state.set(RINGING);
+    public synchronized void setRinging(long callId) {
+        final @State int state = this.state.get();
+        if (this.state.get() != IDLE) {
+            logger.warn("Call state change from {} to RINGING", getStateName(state));
+        }
+        this.state.set(RINGING);
 
-		if (this.callId.get() != 0) {
-			logger.warn("Call ID changed from {} to {}", this.callId, callId);
-		}
-		this.callId.set(callId);
+        if (this.callId.get() != 0) {
+            logger.warn("Call ID changed from {} to {}", this.callId, callId);
+        }
+        this.callId.set(callId);
 
-		this.incomingCallCounter.incrementAndGet();
-	}
+        this.incomingCallCounter.incrementAndGet();
+    }
 
-	public synchronized void setInitializing(long callId) {
-		final @State int state = this.state.get();
-		if (state != RINGING && state != IDLE) {
-			logger.warn("Call state change from {} to INITIALIZING", getStateName(state));
-		}
-		this.state.set(INITIALIZING);
+    public synchronized void setInitializing(long callId) {
+        final @State int state = this.state.get();
+        if (state != RINGING && state != IDLE) {
+            logger.warn("Call state change from {} to INITIALIZING", getStateName(state));
+        }
+        this.state.set(INITIALIZING);
 
-		final long oldCallId = this.callId.get();
-		if (oldCallId != 0 && oldCallId != callId) {
-			logger.warn("Call ID changed from {} to {}", oldCallId, callId);
-		}
-		this.callId.set(callId);
-	}
+        final long oldCallId = this.callId.get();
+        if (oldCallId != 0 && oldCallId != callId) {
+            logger.warn("Call ID changed from {} to {}", oldCallId, callId);
+        }
+        this.callId.set(callId);
+    }
 
-	public synchronized void setAnswerReceived() {
-		this.answerReceived = true;
-	}
+    public synchronized void setAnswerReceived() {
+        this.answerReceived = true;
+    }
 
-	public synchronized void setCalling(long callId) {
-		final @State int state = this.state.get();
-		if (state != INITIALIZING) {
-			logger.warn("Call state change from {} to CALLING", getStateName(state));
-		}
-		this.state.set(CALLING);
+    public synchronized void setCalling(long callId) {
+        final @State int state = this.state.get();
+        if (state != INITIALIZING) {
+            logger.warn("Call state change from {} to CALLING", getStateName(state));
+        }
+        this.state.set(CALLING);
 
-		final long oldCallId = this.callId.get();
-		if (oldCallId != callId) {
-			logger.warn("Call ID changed from {} to {}", oldCallId, callId);
-		}
-		this.callId.set(callId);
-	}
+        final long oldCallId = this.callId.get();
+        if (oldCallId != callId) {
+            logger.warn("Call ID changed from {} to {}", oldCallId, callId);
+        }
+        this.callId.set(callId);
+    }
 
-	public synchronized void setDisconnecting(long callId) {
-		final @State int state = this.state.get();
-		if (state != INITIALIZING && state != CALLING) {
-			logger.warn("Call state change from {} to DISCONNECTING", getStateName(state));
-		}
-		this.state.set(DISCONNECTING);
+    public synchronized void setDisconnecting(long callId) {
+        final @State int state = this.state.get();
+        if (state != INITIALIZING && state != CALLING) {
+            logger.warn("Call state change from {} to DISCONNECTING", getStateName(state));
+        }
+        this.state.set(DISCONNECTING);
 
-		final long oldCallId = this.callId.get();
-		if (oldCallId != callId) {
-			logger.warn("Call ID changed from {} to {}", oldCallId, callId);
-		}
-		this.callId.set(callId);
-		this.answerReceived = false;
-	}
+        final long oldCallId = this.callId.get();
+        if (oldCallId != callId) {
+            logger.warn("Call ID changed from {} to {}", oldCallId, callId);
+        }
+        this.callId.set(callId);
+        this.answerReceived = false;
+    }
 
-	//endregion
+    //endregion
 }

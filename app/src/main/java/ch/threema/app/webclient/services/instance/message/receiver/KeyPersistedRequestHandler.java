@@ -39,32 +39,32 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class KeyPersistedRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("KeyPersistedRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("KeyPersistedRequestHandler");
 
-	private Listener listener;
+    private Listener listener;
 
-	@WorkerThread
-	public interface Listener {
-		void onReceived();
-	}
+    @WorkerThread
+    public interface Listener {
+        void onReceived();
+    }
 
-	@AnyThread
-	public KeyPersistedRequestHandler(Listener listener) {
-		super(Protocol.SUB_TYPE_KEY_PERSISTED);
-		this.listener = listener;
-	}
+    @AnyThread
+    public KeyPersistedRequestHandler(Listener listener) {
+        super(Protocol.SUB_TYPE_KEY_PERSISTED);
+        this.listener = listener;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received key persisted request");
-		if (this.listener != null) {
-			this.listener.onReceived();
-		}
-		//do not respond
-	}
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received key persisted request");
+        if (this.listener != null) {
+            this.listener.onReceived();
+        }
+        //do not respond
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

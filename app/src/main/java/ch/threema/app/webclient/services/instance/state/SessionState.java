@@ -42,65 +42,75 @@ import ch.threema.logging.ThreemaLogger;
  */
 @WorkerThread
 public abstract class SessionState {
-	/**
-	 * Fired when an invalid state transition has been attempted.
-	 */
-	static class InvalidStateTransition extends Exception {
-		public InvalidStateTransition(@NonNull final String message) {
-			super(message);
-		}
-	}
+    /**
+     * Fired when an invalid state transition has been attempted.
+     */
+    static class InvalidStateTransition extends Exception {
+        public InvalidStateTransition(@NonNull final String message) {
+            super(message);
+        }
+    }
 
-	/**
-	 * Fired when a state transition request has been ignored.
-	 */
-	static class IgnoredStateTransition extends Exception {
-		public IgnoredStateTransition(@NonNull final String message) {
-			super(message);
-		}
-	}
+    /**
+     * Fired when a state transition request has been ignored.
+     */
+    static class IgnoredStateTransition extends Exception {
+        public IgnoredStateTransition(@NonNull final String message) {
+            super(message);
+        }
+    }
 
-	// Logging
-	@NonNull protected final Logger logger = LoggingUtil.getThreemaLogger("SessionState");
+    // Logging
+    @NonNull
+    protected final Logger logger = LoggingUtil.getThreemaLogger("SessionState");
 
-	// Session context
-	@NonNull protected final SessionContext ctx;
+    // Session context
+    @NonNull
+    protected final SessionContext ctx;
 
-	// State name
-	@NonNull public final WebClientSessionState state;
+    // State name
+    @NonNull
+    public final WebClientSessionState state;
 
-	@AnyThread
-	protected SessionState(@NonNull final WebClientSessionState state, @NonNull final SessionContext ctx) {
-		this.state = state;
-		this.ctx = ctx;
+    @AnyThread
+    protected SessionState(@NonNull final WebClientSessionState state, @NonNull final SessionContext ctx) {
+        this.state = state;
+        this.ctx = ctx;
 
-		// Set logger prefix
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(ctx.sessionId + "." + ctx.affiliationId + "/" + this.state.name());
-		}
-	}
+        // Set logger prefix
+        if (logger instanceof ThreemaLogger) {
+            ((ThreemaLogger) logger).setPrefix(ctx.sessionId + "." + ctx.affiliationId + "/" + this.state.name());
+        }
+    }
 
-	/**
-	 * Send a msgpack encoded message to the peer through the secure data channel.
-	 */
-	void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
-		// Default implementation. Override if sending is possible.
-		logger.error("Cannot send a message in this state");
-	}
+    /**
+     * Send a msgpack encoded message to the peer through the secure data channel.
+     */
+    void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
+        // Default implementation. Override if sending is possible.
+        logger.error("Cannot send a message in this state");
+    }
 
-	// State change methods
-	// Note: All transitions but 'error' are invalid by default and must be explicitly enabled.
-	@NonNull SessionStateConnecting setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId)
-		throws InvalidStateTransition, IgnoredStateTransition {
-		throw new InvalidStateTransition("Transition to 'connecting' state not allowed");
-	}
-	@NonNull SessionStateConnected setConnected()
-		throws InvalidStateTransition, IgnoredStateTransition {
-		throw new InvalidStateTransition("Transition to 'connected' state not allowed");
-	}
-	@NonNull SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason)
-		throws InvalidStateTransition, IgnoredStateTransition {
-		throw new InvalidStateTransition("Transition to 'disconnected' state not allowed");
-	}
-	@NonNull abstract SessionStateError setError(@NonNull final String reason);
+    // State change methods
+    // Note: All transitions but 'error' are invalid by default and must be explicitly enabled.
+    @NonNull
+    SessionStateConnecting setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId)
+        throws InvalidStateTransition, IgnoredStateTransition {
+        throw new InvalidStateTransition("Transition to 'connecting' state not allowed");
+    }
+
+    @NonNull
+    SessionStateConnected setConnected()
+        throws InvalidStateTransition, IgnoredStateTransition {
+        throw new InvalidStateTransition("Transition to 'connected' state not allowed");
+    }
+
+    @NonNull
+    SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason)
+        throws InvalidStateTransition, IgnoredStateTransition {
+        throw new InvalidStateTransition("Transition to 'disconnected' state not allowed");
+    }
+
+    @NonNull
+    abstract SessionStateError setError(@NonNull final String reason);
 }

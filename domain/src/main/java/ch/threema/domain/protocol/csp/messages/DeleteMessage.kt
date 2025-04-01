@@ -83,7 +83,8 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
         }
 
         @JvmStatic
-        private fun fromByteArray(data: ByteArray): DeleteMessage = fromByteArray(data, 0, data.size)
+        private fun fromByteArray(data: ByteArray): DeleteMessage =
+            fromByteArray(data, 0, data.size)
 
         /**
          * Build an instance of [DeleteMessage] from the given [data] bytes. Note that

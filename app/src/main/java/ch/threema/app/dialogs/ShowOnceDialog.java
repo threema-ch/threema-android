@@ -45,163 +45,167 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 
 /**
- *  A simple string dialog with a "don't show again" checkbox
- *  If the checkbox has not previously been checked, the dialog will be shown, otherwise nothing will happen
- *  Make sure to use a unique tag for this dialog in the show() method
+ * A simple string dialog with a "don't show again" checkbox
+ * If the checkbox has not previously been checked, the dialog will be shown, otherwise nothing will happen
+ * Make sure to use a unique tag for this dialog in the show() method
  */
 public class ShowOnceDialog extends ThreemaDialogFragment {
-	private Activity activity;
+    private Activity activity;
 
-	private static final String PREF_PREFIX = "dialog_";
+    private static final String PREF_PREFIX = "dialog_";
 
-	public static final String ARG_TITLE = "title";
-	public static final String ARG_MESSAGE_STRING = "messageString";
-	public static final String ARG_MESSAGE_INT = "messageInt";
-	public static final String ARG_ICON = "icon";
+    public static final String ARG_TITLE = "title";
+    public static final String ARG_MESSAGE_STRING = "messageString";
+    public static final String ARG_MESSAGE_INT = "messageInt";
+    public static final String ARG_ICON = "icon";
 
-	private ShowOnceDialog.ShowOnceDialogClickListener callback;
+    private ShowOnceDialog.ShowOnceDialogClickListener callback;
 
-	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE_INT, message);
-		return newInstance(args);
-	}
+    public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message) {
+        final Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE_INT, message);
+        return newInstance(args);
+    }
 
-	public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message, @DrawableRes int icon) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE_INT, message);
-		args.putInt(ARG_ICON, icon);
-		return newInstance(args);
-	}
+    public static ShowOnceDialog newInstance(@StringRes int title, @StringRes int message, @DrawableRes int icon) {
+        final Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE_INT, message);
+        args.putInt(ARG_ICON, icon);
+        return newInstance(args);
+    }
 
-	public static ShowOnceDialog newInstance(@StringRes int title, @NonNull String message) {
-		final Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putString(ARG_MESSAGE_STRING, message);
-		return newInstance(args);
-	}
+    public static ShowOnceDialog newInstance(@StringRes int title, @NonNull String message) {
+        final Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putString(ARG_MESSAGE_STRING, message);
+        return newInstance(args);
+    }
 
-	private static ShowOnceDialog newInstance(@NonNull Bundle args) {
-		final ShowOnceDialog dialog = new ShowOnceDialog();
-		dialog.setArguments(args);
-		return dialog;
-	}
+    private static ShowOnceDialog newInstance(@NonNull Bundle args) {
+        final ShowOnceDialog dialog = new ShowOnceDialog();
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (callback == null) {
-			try {
-				callback = (ShowOnceDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
+        if (callback == null) {
+            try {
+                callback = (ShowOnceDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
 
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if ((activity instanceof ShowOnceDialogClickListener)) {
-					callback = (ShowOnceDialogClickListener) activity;
-				} else {
-					// no callback no problem
-				}
-			}
-		}
-	}
+            // called from an activity rather than a fragment
+            if (callback == null) {
+                if ((activity instanceof ShowOnceDialogClickListener)) {
+                    callback = (ShowOnceDialogClickListener) activity;
+                } else {
+                    // no callback no problem
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-		this.activity = activity;
-	}
+        this.activity = activity;
+    }
 
-	@Override
-	// generally allow state loss for simple string alerts
-	public void show(FragmentManager manager, String tag) {
-		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+    @Override
+    // generally allow state loss for simple string alerts
+    public void show(FragmentManager manager, String tag) {
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
 
-		if (!sharedPreferences.getBoolean(PREF_PREFIX + tag, false)) {
-			FragmentTransaction ft = manager.beginTransaction();
-			ft.add(this, tag);
-			ft.commitAllowingStateLoss();
-		}
-	}
+        if (!sharedPreferences.getBoolean(PREF_PREFIX + tag, false)) {
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, tag);
+            ft.commitAllowingStateLoss();
+        }
+    }
 
-	// generally allow state loss for simple string alerts
-	public static boolean shouldNotShowAnymore(String tag) {
-		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-		return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
-	}
+    // generally allow state loss for simple string alerts
+    public static boolean shouldNotShowAnymore(String tag) {
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+        return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
+    }
 
-	private void saveDontShowAgain(boolean dontShow) {
-		final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-		sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), dontShow).apply();
-	}
+    private void saveDontShowAgain(boolean dontShow) {
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+        sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), dontShow).apply();
+    }
 
-	public interface ShowOnceDialogClickListener {
-		void onYes(String tag);
-		default void onCancel(String tag) {};
-	}
+    public interface ShowOnceDialogClickListener {
+        void onYes(String tag);
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        default void onCancel(String tag) {
+        }
 
-		final Bundle arguments = getArguments();
-		@StringRes int title = arguments.getInt(ARG_TITLE);
-		@StringRes int messageInt = arguments.getInt(ARG_MESSAGE_INT);
-		String messageString = null;
-		if (messageInt == 0) {
-			messageString = arguments.getString(ARG_MESSAGE_STRING);
-		}
-		@DrawableRes int icon = arguments.getInt(ARG_ICON, 0);
-		AtomicBoolean dontShowAgain = new AtomicBoolean(false);
+        ;
+    }
 
-		final String tag = this.getTag();
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_show_once, null);
-		final TextView textView = dialogView.findViewById(R.id.message);
-		final MaterialCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
-		if (callback != null) {
-			checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> dontShowAgain.set(isChecked));
-		} else {
-			checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> saveDontShowAgain(isChecked));
-		}
+        final Bundle arguments = getArguments();
+        @StringRes int title = arguments.getInt(ARG_TITLE);
+        @StringRes int messageInt = arguments.getInt(ARG_MESSAGE_INT);
+        String messageString = null;
+        if (messageInt == 0) {
+            messageString = arguments.getString(ARG_MESSAGE_STRING);
+        }
+        @DrawableRes int icon = arguments.getInt(ARG_ICON, 0);
+        AtomicBoolean dontShowAgain = new AtomicBoolean(false);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
-		builder.setView(dialogView);
-		builder.setCancelable(false);
+        final String tag = this.getTag();
 
-		if (title != -1) {
-			builder.setTitle(title);
-		}
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_show_once, null);
+        final TextView textView = dialogView.findViewById(R.id.message);
+        final MaterialCheckBox checkbox = dialogView.findViewById(R.id.checkbox);
+        if (callback != null) {
+            checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> dontShowAgain.set(isChecked));
+        } else {
+            checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> saveDontShowAgain(isChecked));
+        }
 
-		if (icon != 0) {
-			builder.setIcon(icon);
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        builder.setView(dialogView);
+        builder.setCancelable(false);
 
-		if (callback != null) {
-			builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
-				saveDontShowAgain(dontShowAgain.get());
-				callback.onYes(tag);
-			});
-			builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> callback.onCancel(tag));
-		} else {
-			builder.setPositiveButton(getString(R.string.ok), null);
-		}
+        if (title != -1) {
+            builder.setTitle(title);
+        }
 
-		if (messageString != null) {
-			textView.setText(messageString);
-		} else {
-			textView.setText(messageInt);
-		}
+        if (icon != 0) {
+            builder.setIcon(icon);
+        }
 
-		setCancelable(false);
+        if (callback != null) {
+            builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
+                saveDontShowAgain(dontShowAgain.get());
+                callback.onYes(tag);
+            });
+            builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> callback.onCancel(tag));
+        } else {
+            builder.setPositiveButton(getString(R.string.ok), null);
+        }
 
-		AlertDialog alertDialog = builder.create();
-		return alertDialog;
-	}
+        if (messageString != null) {
+            textView.setText(messageString);
+        } else {
+            textView.setText(messageInt);
+        }
+
+        setCancelable(false);
+
+        AlertDialog alertDialog = builder.create();
+        return alertDialog;
+    }
 }

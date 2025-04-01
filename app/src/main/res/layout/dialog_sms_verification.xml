@@ -1,71 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/scroll_container"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/dialog_margin_below_title"
+        android:paddingLeft="@dimen/edittext_padding"
+        android:paddingRight="@dimen/edittext_padding">
+
+        <TextView
+            style="@style/MaterialAlertDialog.Material3.Body.Text"
+            android:id="@+id/message_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:text="@string/enter_code_sum" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lastname_layout"
+            android:hint="@string/enter_code_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent">
+            android:layout_marginTop="@dimen/dialog_margin_top"
+            app:endIconMode="clear_text">
 
-	<LinearLayout
-			android:orientation="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:paddingTop="@dimen/dialog_margin_below_title"
-			android:paddingLeft="@dimen/edittext_padding"
-			android:paddingRight="@dimen/edittext_padding">
+            <ch.threema.app.emojis.EmojiEditText
+                android:id="@+id/code_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:inputType="numberDecimal"
+                android:maxLength="8"
+                android:textIsSelectable="false">
 
-		<TextView
-				style="@style/MaterialAlertDialog.Material3.Body.Text"
-				android:id="@+id/message_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingLeft="3dp"
-				android:paddingRight="3dp"
-				android:text="@string/enter_code_sum"
-				/>
+                <requestFocus />
+            </ch.threema.app.emojis.EmojiEditText>
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/lastname_layout"
-			android:hint="@string/enter_code_hint"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="@dimen/dialog_margin_top"
-			app:endIconMode="clear_text">
+        </com.google.android.material.textfield.TextInputLayout>
 
-		<ch.threema.app.emojis.EmojiEditText
-				android:id="@+id/code_edittext"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:singleLine="true"
-				android:inputType="numberDecimal"
-				android:maxLength="8"
-				android:textIsSelectable="false">
-			<requestFocus />
-		</ch.threema.app.emojis.EmojiEditText>
+        <TextView
+            style="@style/MaterialAlertDialog.Material3.Body.Text"
+            android:id="@+id/no_code_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/no_sms_received" />
 
-		</com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Threema.MaterialButton.Action"
+            android:id="@+id/request_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_margin_top"
+            app:icon="@drawable/ic_call_outline"
+            android:text="@string/verify_phonecall_text" />
 
-		<TextView
-				style="@style/MaterialAlertDialog.Material3.Body.Text"
-				android:id="@+id/no_code_text"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingLeft="3dp"
-				android:paddingRight="3dp"
-				android:layout_marginTop="32dp"
-				android:text="@string/no_sms_received"
-				/>
-
-		<com.google.android.material.button.MaterialButton
-					style="@style/Threema.MaterialButton.Action"
-					android:id="@+id/request_call"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/dialog_margin_top"
-					app:icon="@drawable/ic_call_outline"
-					android:text="@string/verify_phonecall_text"
-					/>
-
-	</LinearLayout>
+    </LinearLayout>
 
 </ScrollView>

@@ -49,178 +49,178 @@ import ch.threema.app.utils.TextUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupListAdapter extends FilterableListAdapter {
-	private final Context context;
-	private List<GroupModel> values;
-	private List<GroupModel> ovalues;
-	private GroupListFilter groupListFilter;
-	private final GroupService groupService;
-	private final FilterResultsListener filterResultsListener;
+    private final Context context;
+    private List<GroupModel> values;
+    private List<GroupModel> ovalues;
+    private GroupListFilter groupListFilter;
+    private final GroupService groupService;
+    private final FilterResultsListener filterResultsListener;
 
 
-	public GroupListAdapter(
-		Context context,
-		List<GroupModel> values,
-		List<Integer> checkedItems,
-		GroupService groupService,
-		FilterResultsListener filterResultsListener
-	) {
-		super(context, R.layout.item_group_list, (List<Object>) (Object) values);
+    public GroupListAdapter(
+        Context context,
+        List<GroupModel> values,
+        List<Integer> checkedItems,
+        GroupService groupService,
+        FilterResultsListener filterResultsListener
+    ) {
+        super(context, R.layout.item_group_list, (List<Object>) (Object) values);
 
-		this.context = context;
-		this.values = values;
-		this.ovalues = values;
-		this.groupService = groupService;
-		this.filterResultsListener = filterResultsListener;
+        this.context = context;
+        this.values = values;
+        this.ovalues = values;
+        this.groupService = groupService;
+        this.filterResultsListener = filterResultsListener;
 
-		if (checkedItems != null && checkedItems.size() > 0) {
-			// restore checked items
-			this.checkedItems.addAll(checkedItems);
-		}
-	}
+        if (checkedItems != null && checkedItems.size() > 0) {
+            // restore checked items
+            this.checkedItems.addAll(checkedItems);
+        }
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
 
-		GroupListHolder holder = new GroupListHolder();
+        GroupListHolder holder = new GroupListHolder();
 
-		if (convertView == null) {
-			// This a new view we inflate the new layout
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_group_list, parent, false);
+        if (convertView == null) {
+            // This a new view we inflate the new layout
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_group_list, parent, false);
 
-			TextView nameView = itemView.findViewById(R.id.name);
-			TextView subjectView = itemView.findViewById(R.id.subject);
-			ImageView roleView = itemView.findViewById(R.id.role);
-			AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
+            TextView nameView = itemView.findViewById(R.id.name);
+            TextView subjectView = itemView.findViewById(R.id.subject);
+            ImageView roleView = itemView.findViewById(R.id.role);
+            AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
 
-			holder.nameView = nameView;
-			holder.subjectView = subjectView;
-			holder.roleView = roleView;
-			holder.avatarView = avatarView;
+            holder.nameView = nameView;
+            holder.subjectView = subjectView;
+            holder.roleView = roleView;
+            holder.avatarView = avatarView;
 
-			itemView.setTag(holder);
-			itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
-					if (isChecked) {
-						checkedItems.add(((GroupListHolder) checkableView.getTag()).originalPosition);
-					} else {
-						checkedItems.remove(((GroupListHolder) checkableView.getTag()).originalPosition);
-					}
-				}
-			});
-		} else {
-			holder = (GroupListHolder) itemView.getTag();
-		}
+            itemView.setTag(holder);
+            itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
+                    if (isChecked) {
+                        checkedItems.add(((GroupListHolder) checkableView.getTag()).originalPosition);
+                    } else {
+                        checkedItems.remove(((GroupListHolder) checkableView.getTag()).originalPosition);
+                    }
+                }
+            });
+        } else {
+            holder = (GroupListHolder) itemView.getTag();
+        }
 
-		final GroupModel groupModel = values.get(position);
-		holder.originalPosition = ovalues.indexOf(groupModel);
+        final GroupModel groupModel = values.get(position);
+        holder.originalPosition = ovalues.indexOf(groupModel);
 
-		String filterString = null;
-		if (groupListFilter != null) {
-			filterString = groupListFilter.getFilterString();
-		}
+        String filterString = null;
+        if (groupListFilter != null) {
+            filterString = groupListFilter.getFilterString();
+        }
 
-		holder.nameView.setText(TextUtil.highlightMatches(context, NameUtil.getDisplayName(groupModel, this.groupService), filterString, false, false));
-		AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
+        holder.nameView.setText(TextUtil.highlightMatches(context, NameUtil.getDisplayName(groupModel, this.groupService), filterString, false, false));
+        AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
 
-		holder.subjectView.setText(this.groupService.getMembersString(groupModel));
- 		holder.roleView.setImageResource(groupService.isGroupCreator(groupModel)
-		    ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline)
-		    : R.drawable.ic_group_filled);
+        holder.subjectView.setText(this.groupService.getMembersString(groupModel));
+        holder.roleView.setImageResource(groupService.isGroupCreator(groupModel)
+            ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline)
+            : R.drawable.ic_group_filled);
 
-		// load avatars asynchronously
-		AvatarListItemUtil.loadAvatar(
-			groupModel,
-			this.groupService,
-			holder,
-			Glide.with(context)
-		);
+        // load avatars asynchronously
+        AvatarListItemUtil.loadAvatar(
+            groupModel,
+            this.groupService,
+            holder,
+            Glide.with(context)
+        );
 
-		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
+        ((ListView) parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
 
-		return itemView;
-	}
+        return itemView;
+    }
 
-	private static class GroupListHolder extends AvatarListItemHolder {
-		public TextView nameView;
-		private TextView subjectView;
-		private ImageView roleView;
-		private int originalPosition;
-	}
+    private static class GroupListHolder extends AvatarListItemHolder {
+        public TextView nameView;
+        private TextView subjectView;
+        private ImageView roleView;
+        private int originalPosition;
+    }
 
-	public class GroupListFilter extends Filter {
-		String filterString = null;
+    public class GroupListFilter extends Filter {
+        String filterString = null;
 
-		@Override
-		protected FilterResults performFiltering(CharSequence constraint) {
-			FilterResults results = new FilterResults();
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
 
-			if (constraint == null || constraint.length() == 0) {
-				// no filtering
-				filterString = null;
-				results.values = ovalues;
-				results.count = ovalues.size();
-			} else {
-				// perform filtering
-				List<GroupModel> nGroupList = new ArrayList<GroupModel>();
-				filterString = constraint.toString();
+            if (constraint == null || constraint.length() == 0) {
+                // no filtering
+                filterString = null;
+                results.values = ovalues;
+                results.count = ovalues.size();
+            } else {
+                // perform filtering
+                List<GroupModel> nGroupList = new ArrayList<GroupModel>();
+                filterString = constraint.toString();
 
-				for (GroupModel groupModel : ovalues) {
-					if (NameUtil.getDisplayName(groupModel, groupService).toUpperCase().contains(filterString.toUpperCase())) {
-						nGroupList.add(groupModel);
-					}
-				}
-				results.values = nGroupList;
-				results.count = nGroupList.size();
-			}
-			return results;
-		}
+                for (GroupModel groupModel : ovalues) {
+                    if (NameUtil.getDisplayName(groupModel, groupService).toUpperCase().contains(filterString.toUpperCase())) {
+                        nGroupList.add(groupModel);
+                    }
+                }
+                results.values = nGroupList;
+                results.count = nGroupList.size();
+            }
+            return results;
+        }
 
-		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results) {
-			values = (List<GroupModel>) results.values;
-			if (filterResultsListener != null) {
-				filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
-			}
-			notifyDataSetChanged();
-		}
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            values = (List<GroupModel>) results.values;
+            if (filterResultsListener != null) {
+                filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
+            }
+            notifyDataSetChanged();
+        }
 
-		public String getFilterString() {
-			return filterString;
-		}
-	}
+        public String getFilterString() {
+            return filterString;
+        }
+    }
 
-	@Override
-	public Filter getFilter() {
-		if (groupListFilter == null)
-			groupListFilter = new GroupListFilter();
+    @Override
+    public Filter getFilter() {
+        if (groupListFilter == null)
+            groupListFilter = new GroupListFilter();
 
-		return groupListFilter;
-	}
+        return groupListFilter;
+    }
 
-	@Override
-	public int getCount() {
-		return values != null ? values.size() : 0;
-	}
+    @Override
+    public int getCount() {
+        return values != null ? values.size() : 0;
+    }
 
-	@Override
-	public HashSet<GroupModel> getCheckedItems() {
-		HashSet<GroupModel> groups = new HashSet<>();
-		GroupModel groupModel;
+    @Override
+    public HashSet<GroupModel> getCheckedItems() {
+        HashSet<GroupModel> groups = new HashSet<>();
+        GroupModel groupModel;
 
-		for (int position: checkedItems) {
-			groupModel = ovalues.get(position);
-			if (groupModel != null) {
-				groups.add(groupModel);
-			}
-		}
-		return groups;
-	}
+        for (int position : checkedItems) {
+            groupModel = ovalues.get(position);
+            if (groupModel != null) {
+                groups.add(groupModel);
+            }
+        }
+        return groups;
+    }
 
-	@Override
-	public GroupModel getClickedItem(View v) {
-		return ovalues.get(((GroupListHolder) v.getTag()).originalPosition);
-	}
+    @Override
+    public GroupModel getClickedItem(View v) {
+        return ovalues.get(((GroupListHolder) v.getTag()).originalPosition);
+    }
 }

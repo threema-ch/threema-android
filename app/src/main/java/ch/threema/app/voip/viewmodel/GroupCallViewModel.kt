@@ -47,408 +47,429 @@ import org.webrtc.EglBase
 private val logger = LoggingUtil.getThreemaLogger("GroupCallViewModel")
 
 @UiThread
-class GroupCallViewModel(application: Application) : AndroidViewModel(application), GroupCallObserver {
-	enum class ConnectingState {
-		IDLE, INITIATED, COMPLETED
-	}
-	data class FinishEvent(val reason: Reason, val call: GroupCallDescription? = null) {
-		enum class Reason {
-			LEFT,
-			FULL,
-			ERROR,
-			INVALID_DATA,
-			TOKEN_INVALID,
-			NO_SUCH_CALL,
-			SFU_NOT_AVAILABLE,
-			UNSUPPORTED_PROTOCOL_VERSION,
-		}
-	}
+class GroupCallViewModel(application: Application) : AndroidViewModel(application),
+    GroupCallObserver {
+    enum class ConnectingState {
+        IDLE, INITIATED, COMPLETED
+    }
 
-	private val groupService: GroupService by lazy { requireServiceManager().groupService }
-	private val groupCallManager: GroupCallManager by lazy { requireServiceManager().groupCallManager }
-	private val notificationService: NotificationService by lazy { requireServiceManager().notificationService }
+    data class FinishEvent(val reason: Reason, val call: GroupCallDescription? = null) {
+        enum class Reason {
+            LEFT,
+            FULL,
+            ERROR,
+            INVALID_DATA,
+            TOKEN_INVALID,
+            NO_SUCH_CALL,
+            SFU_NOT_AVAILABLE,
+            UNSUPPORTED_PROTOCOL_VERSION,
+        }
+    }
 
-	private val groupId = MutableLiveData<LocalGroupId?>()
-	private val startTime = MutableLiveData<Long?>()
+    private val groupService: GroupService by lazy { requireServiceManager().groupService }
+    private val groupCallManager: GroupCallManager by lazy { requireServiceManager().groupCallManager }
+    private val notificationService: NotificationService by lazy { requireServiceManager().notificationService }
 
-	private var joinJob: Job? = null
-	private lateinit var callController: GroupCallController
+    private val groupId = MutableLiveData<LocalGroupId?>()
+    private val startTime = MutableLiveData<Long?>()
 
-	private lateinit var audioManager: CallAudioManager
+    private var joinJob: Job? = null
+    private lateinit var callController: GroupCallController
 
-	var microphoneActiveDefault: Boolean? = null
+    private lateinit var audioManager: CallAudioManager
 
-	private val audioDevices = MutableLiveData<Set<AudioDevice>>(setOf())
-	fun getAudioDevices(): LiveData<Set<AudioDevice>> = audioDevices
-	private val selectedAudioDevice = MutableLiveData(AudioDevice.NONE)
-	fun getSelectedAudioDevice(): LiveData<AudioDevice> = selectedAudioDevice
-		.distinctUntilChanged()
+    var microphoneActiveDefault: Boolean? = null
 
-	private var connectingState = MutableLiveData(ConnectingState.IDLE)
-	fun isConnecting(): LiveData<ConnectingState> = connectingState
+    private val audioDevices = MutableLiveData<Set<AudioDevice>>(setOf())
+    fun getAudioDevices(): LiveData<Set<AudioDevice>> = audioDevices
+    private val selectedAudioDevice = MutableLiveData(AudioDevice.NONE)
+    fun getSelectedAudioDevice(): LiveData<AudioDevice> = selectedAudioDevice
+        .distinctUntilChanged()
 
-	private val callRunning = MutableLiveData(false)
-	fun isCallRunning(): LiveData<Boolean> = callRunning.distinctUntilChanged()
+    private var connectingState = MutableLiveData(ConnectingState.IDLE)
+    fun isConnecting(): LiveData<ConnectingState> = connectingState
 
-	private val completableFinishEvent = CompletableDeferred<FinishEvent>()
-	val finishEvent: Deferred<FinishEvent> = completableFinishEvent
+    private val callRunning = MutableLiveData(false)
+    fun isCallRunning(): LiveData<Boolean> = callRunning.distinctUntilChanged()
 
-	private val eglBaseAndParticipants = MutableLiveData<Pair<EglBase, Set<Participant>>>()
-	fun getEglBaseAndParticipants(): LiveData<Pair<EglBase, Set<Participant>>> = eglBaseAndParticipants
+    private val completableFinishEvent = CompletableDeferred<FinishEvent>()
+    val finishEvent: Deferred<FinishEvent> = completableFinishEvent
 
-	private val participantsCount = eglBaseAndParticipants.map { it.second.size }
+    private val eglBaseAndParticipants = MutableLiveData<Pair<EglBase, Set<Participant>>>()
+    fun getEglBaseAndParticipants(): LiveData<Pair<EglBase, Set<Participant>>> =
+        eglBaseAndParticipants
 
-	private val captureStateUpdates = MutableLiveData<Unit>()
-	fun getCaptureStateUpdates(): LiveData<Unit> = captureStateUpdates
+    private val participantsCount = eglBaseAndParticipants.map { it.second.size }
 
-	private val microphoneActive = MutableLiveData(false)
-	fun isMicrophoneActive(): LiveData<Boolean> = microphoneActive.distinctUntilChanged()
+    private val captureStateUpdates = MutableLiveData<Unit>()
+    fun getCaptureStateUpdates(): LiveData<Unit> = captureStateUpdates
 
-	private val cameraActive = MutableLiveData(false)
-	fun isCameraActive(): LiveData<Boolean> = cameraActive.distinctUntilChanged()
+    private val microphoneActive = MutableLiveData(false)
+    fun isMicrophoneActive(): LiveData<Boolean> = microphoneActive.distinctUntilChanged()
 
-	private val cameraFlipEvents = MutableLiveData<Unit>()
-	fun getCameraFlipEvents(): LiveData<Unit> = cameraFlipEvents
+    private val cameraActive = MutableLiveData(false)
+    fun isCameraActive(): LiveData<Boolean> = cameraActive.distinctUntilChanged()
 
-	val group = mapGroupModelLiveData()
-	val groupAvatar = mapAvatar()
-	val statusMessage = mapStatusMessage()
-	val title = mapTitle()
-	val subTitle = mapSubTitle()
-	val startTimeUpdate = mapStartTime()
+    private val cameraFlipEvents = MutableLiveData<Unit>()
+    fun getCameraFlipEvents(): LiveData<Unit> = cameraFlipEvents
 
-	var toggleCameraTooltipShown = false
+    val group = mapGroupModelLiveData()
+    val groupAvatar = mapAvatar()
+    val statusMessage = mapStatusMessage()
+    val title = mapTitle()
+    val subTitle = mapSubTitle()
+    val startTimeUpdate = mapStartTime()
 
-	@UiThread
-	override fun onCleared() {
-		super.onCleared()
-		updateGroupCallObserver(groupId.value, null)
-	}
+    var toggleCameraTooltipShown = false
 
-	@UiThread
-	private fun updateGroupCallObserver(previousGroupId: LocalGroupId?, newGroupId: LocalGroupId?) {
-		if (previousGroupId != null && newGroupId != previousGroupId) {
-			groupCallManager.removeGroupCallObserver(previousGroupId, this)
-		}
+    @UiThread
+    override fun onCleared() {
+        super.onCleared()
+        updateGroupCallObserver(groupId.value, null)
+    }
 
-		if (newGroupId != null && previousGroupId != newGroupId) {
-			groupCallManager.addGroupCallObserver(newGroupId, this)
-		}
-	}
+    @UiThread
+    private fun updateGroupCallObserver(previousGroupId: LocalGroupId?, newGroupId: LocalGroupId?) {
+        if (previousGroupId != null && newGroupId != previousGroupId) {
+            groupCallManager.removeGroupCallObserver(previousGroupId, this)
+        }
 
-	@AnyThread
-	override fun onGroupCallUpdate(call: GroupCallDescription?) {
-		logger.trace("Group call update")
-		startTime.postValue(call?.let { getRunningSince(it, ThreemaApplication.getAppContext()) })
-	}
+        if (newGroupId != null && previousGroupId != newGroupId) {
+            groupCallManager.addGroupCallObserver(newGroupId, this)
+        }
+    }
 
-	@UiThread
-	fun setGroupId(groupId: LocalGroupId) {
-		val previousGroupId = this.groupId.value
-		this.groupId.value = if (groupId.id > 0) {
-			groupId
-		} else {
-			null
-		}
-		updateGroupCallObserver(previousGroupId, groupId)
-	}
+    @AnyThread
+    override fun onGroupCallUpdate(call: GroupCallDescription?) {
+        logger.trace("Group call update")
+        startTime.postValue(call?.let { getRunningSince(it, ThreemaApplication.getAppContext()) })
+    }
 
-	@UiThread
-	fun getGroupId() = groupId.value
+    @UiThread
+    fun setGroupId(groupId: LocalGroupId) {
+        val previousGroupId = this.groupId.value
+        this.groupId.value = if (groupId.id > 0) {
+            groupId
+        } else {
+            null
+        }
+        updateGroupCallObserver(previousGroupId, groupId)
+    }
 
-	/**
-	 * Cancel the notification for this call.
-	 * This will only have an effect _after_ the [groupId] has been set.
-	 */
-	@UiThread
-	fun cancelNotification() {
-		groupId.value?.let {
-			notificationService.cancelGroupCallNotification(it.id)
-		}
-	}
+    @UiThread
+    fun getGroupId() = groupId.value
 
-	@UiThread
-	fun leaveCall() {
-		if (joinJob?.isCompleted == true) {
-			viewModelScope.launch { callController.leave() }
-		} else {
-			joinJob?.cancel()
-			logger.info("Join call aborted")
-		}
-		completableFinishEvent.complete(getFinishEvent(FinishEvent.Reason.LEFT))
-		callRunning.postValue(false)
-	}
+    /**
+     * Cancel the notification for this call.
+     * This will only have an effect _after_ the [groupId] has been set.
+     */
+    @UiThread
+    fun cancelNotification() {
+        groupId.value?.let {
+            notificationService.cancelGroupCallNotification(it.id)
+        }
+    }
 
-	@UiThread
-	fun joinCall(intention: GroupCallIntention) {
-		groupId.value?.let {
-			groupService.getById(it.id)?.let {
-				joinJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
-					try {
-						ensureNoCallsInOtherGroup(it)
+    @UiThread
+    fun leaveCall() {
+        if (joinJob?.isCompleted == true) {
+            viewModelScope.launch { callController.leave() }
+        } else {
+            joinJob?.cancel()
+            logger.info("Join call aborted")
+        }
+        completableFinishEvent.complete(getFinishEvent(FinishEvent.Reason.LEFT))
+        callRunning.postValue(false)
+    }
 
-						val controller = joinOrCreateCall(it, intention)
+    @UiThread
+    fun joinCall(intention: GroupCallIntention) {
+        groupId.value?.let {
+            groupService.getById(it.id)?.let {
+                joinJob = CoroutineScope(GroupCallThreadUtil.DISPATCHER).launch {
+                    try {
+                        ensureNoCallsInOtherGroup(it)
 
-						if (controller == null) {
-							completableFinishEvent.complete(FinishEvent(FinishEvent.Reason.NO_SUCH_CALL))
-						} else {
-							completeJoining(controller)
-						}
-					} catch (e: CancellationException) {
-						logger.warn("Join call has been cancelled")
-						// Join aborted, stop group call service
-						groupCallManager.abortCurrentCall()
-					} catch (e: Exception) {
-						logger.error("Error while joining call", e)
-						completableFinishEvent.complete(mapExceptionToFinishEvent(e))
-						callRunning.postValue(false)
-					}
-				}
-			}
-		}
-	}
+                        val controller = joinOrCreateCall(it, intention)
 
-	@WorkerThread
-	private suspend fun ensureNoCallsInOtherGroup(groupModel: GroupModel) {
-		if (!groupCallManager.hasJoinedCall(groupModel.localGroupId)) {
-			if (groupCallManager.hasJoinedCall()) {
-				val groupCallController = groupCallManager.getCurrentGroupCallController()
-				groupCallManager.abortCurrentCall()
-				groupCallController?.callDisposedSignal?.await()
-			}
-			connectingState.postValue(ConnectingState.INITIATED)
-		}
-	}
+                        if (controller == null) {
+                            completableFinishEvent.complete(FinishEvent(FinishEvent.Reason.NO_SUCH_CALL))
+                        } else {
+                            completeJoining(controller)
+                        }
+                    } catch (e: CancellationException) {
+                        logger.warn("Join call has been cancelled")
+                        // Join aborted, stop group call service
+                        groupCallManager.abortCurrentCall()
+                    } catch (e: Exception) {
+                        logger.error("Error while joining call", e)
+                        completableFinishEvent.complete(mapExceptionToFinishEvent(e))
+                        callRunning.postValue(false)
+                    }
+                }
+            }
+        }
+    }
 
-	@WorkerThread
-	private suspend fun joinOrCreateCall(groupModel: GroupModel, intention: GroupCallIntention) = when (intention) {
-		GroupCallIntention.JOIN -> groupCallManager.joinCall(groupModel)
-		GroupCallIntention.JOIN_OR_CREATE -> groupCallManager.createCall(groupModel)
-	}
+    @WorkerThread
+    private suspend fun ensureNoCallsInOtherGroup(groupModel: GroupModel) {
+        if (!groupCallManager.hasJoinedCall(groupModel.localGroupId)) {
+            if (groupCallManager.hasJoinedCall()) {
+                val groupCallController = groupCallManager.getCurrentGroupCallController()
+                groupCallManager.abortCurrentCall()
+                groupCallController?.callDisposedSignal?.await()
+            }
+            connectingState.postValue(ConnectingState.INITIATED)
+        }
+    }
 
-	@WorkerThread
-	private suspend fun completeJoining(controller: GroupCallController) {
-		callController = controller
-		connectingState.postValue(ConnectingState.COMPLETED)
-		audioManager = groupCallManager.getAudioManager()
-		callRunning.postValue(true)
-		withContext(Dispatchers.Main) {
-			initialiseValues()
-		}
-	}
+    @WorkerThread
+    private suspend fun joinOrCreateCall(groupModel: GroupModel, intention: GroupCallIntention) =
+        when (intention) {
+            GroupCallIntention.JOIN -> groupCallManager.joinCall(groupModel)
+            GroupCallIntention.JOIN_OR_CREATE -> groupCallManager.createCall(groupModel)
+        }
 
-	@UiThread
-	fun selectAudioDevice(device: AudioDevice) {
-		audioManager.selectAudioDevice(device)
-	}
+    @WorkerThread
+    private suspend fun completeJoining(controller: GroupCallController) {
+        callController = controller
+        connectingState.postValue(ConnectingState.COMPLETED)
+        audioManager = groupCallManager.getAudioManager()
+        callRunning.postValue(true)
+        withContext(Dispatchers.Main) {
+            initialiseValues()
+        }
+    }
 
-	@UiThread
-	fun muteMicrophone(muted: Boolean) {
-		logger.trace("Mute {}", muted)
-		callController.microphoneActive = !muted
-		microphoneActive.postValue(callController.microphoneActive)
-		triggerCaptureStateUpdate()
-	}
+    @UiThread
+    fun selectAudioDevice(device: AudioDevice) {
+        audioManager.selectAudioDevice(device)
+    }
 
-	@UiThread
-	fun muteCamera(muted: Boolean) {
-		callController.cameraActive = !muted
-		cameraActive.postValue(callController.cameraActive)
-		triggerCaptureStateUpdate()
-		// If camera is turned on, then don't use earpiece as output anymore as it is not convenient
-		if (!muted && selectedAudioDevice.value == AudioDevice.EARPIECE) {
-			// Switch to phone speaker (even if headset would be available) as in 1:1 calls
-			audioManager.selectAudioDevice(AudioDevice.SPEAKER_PHONE)
-		}
-	}
+    @UiThread
+    fun muteMicrophone(muted: Boolean) {
+        logger.trace("Mute {}", muted)
+        callController.microphoneActive = !muted
+        microphoneActive.postValue(callController.microphoneActive)
+        triggerCaptureStateUpdate()
+    }
 
-	@UiThread
-	fun flipCamera() {
-		viewModelScope.launch {
-			callController.flipCamera()
-			cameraFlipEvents.postValue(Unit)
-		}
-	}
+    @UiThread
+    fun muteCamera(muted: Boolean) {
+        callController.cameraActive = !muted
+        cameraActive.postValue(callController.cameraActive)
+        triggerCaptureStateUpdate()
+        // If camera is turned on, then don't use earpiece as output anymore as it is not convenient
+        if (!muted && selectedAudioDevice.value == AudioDevice.EARPIECE) {
+            // Switch to phone speaker (even if headset would be available) as in 1:1 calls
+            audioManager.selectAudioDevice(AudioDevice.SPEAKER_PHONE)
+        }
+    }
 
-	fun hasOtherJoinedCall(call: GroupCallDescription): Boolean {
-		return groupCallManager.hasJoinedCall() && !groupCallManager.isJoinedCall(call)
-	}
+    @UiThread
+    fun flipCamera() {
+        viewModelScope.launch {
+            callController.flipCamera()
+            cameraFlipEvents.postValue(Unit)
+        }
+    }
 
-	@UiThread
-	private fun mapGroupModelLiveData(): LiveData<GroupModel?> {
-		val distinctGroupId = groupId.distinctUntilChanged()
-		return distinctGroupId.map(this::getGroupModel)
-	}
+    fun hasOtherJoinedCall(call: GroupCallDescription): Boolean {
+        return groupCallManager.hasJoinedCall() && !groupCallManager.isJoinedCall(call)
+    }
 
-	@UiThread
-	private fun mapAvatar(): LiveData<Bitmap?> {
-		return group.switchMap {
-			liveData(Dispatchers.Default) {
-				val avatar = groupService.getAvatar(it, true, false)
-				emit(BitmapUtil.blurBitmap(avatar, ThreemaApplication.getAppContext()))
-			}
-		}
-	}
+    @UiThread
+    private fun mapGroupModelLiveData(): LiveData<GroupModel?> {
+        val distinctGroupId = groupId.distinctUntilChanged()
+        return distinctGroupId.map(this::getGroupModel)
+    }
 
-	@UiThread
-	private fun initialiseValues() {
-		observeCallLeftSignal()
-		initMicrophoneState()
-		initCameraState()
-		observeParticipants()
-		observeCaptureStateUpdates()
-		observeAudioDevices()
-	}
+    @UiThread
+    private fun mapAvatar(): LiveData<Bitmap?> {
+        return group.switchMap {
+            liveData(Dispatchers.Default) {
+                val avatar = groupService.getAvatar(it, true, false)
+                emit(BitmapUtil.blurBitmap(avatar, ThreemaApplication.getAppContext()))
+            }
+        }
+    }
 
-	@UiThread
-	private fun observeCallLeftSignal() {
-		viewModelScope.launch {
-			completableFinishEvent.complete(try {
-				callController.callLeftSignal.await()
-				getFinishEvent(FinishEvent.Reason.LEFT)
-			} catch (e: Exception) {
-				logger.error("Call left with exception", e)
-				mapExceptionToFinishEvent(e)
-			})
-			callRunning.value = false
-		}
-	}
+    @UiThread
+    private fun initialiseValues() {
+        observeCallLeftSignal()
+        initMicrophoneState()
+        initCameraState()
+        observeParticipants()
+        observeCaptureStateUpdates()
+        observeAudioDevices()
+    }
 
-	private fun mapExceptionToFinishEvent(e: Exception): FinishEvent {
-		val statusCode = if (e is SfuException) {
-			e.statusCode
-		} else {
-			null
-		}
-		return when (statusCode) {
-			HTTP_STATUS_DATA_INVALID -> getFinishEvent(FinishEvent.Reason.INVALID_DATA, e)
-			HTTP_STATUS_TOKEN_INVALID -> getFinishEvent(FinishEvent.Reason.TOKEN_INVALID, e)
-			HTTP_STATUS_NO_SUCH_CALL -> getFinishEvent(FinishEvent.Reason.NO_SUCH_CALL, e)
-			HTTP_STATUS_UNSUPPORTED_PROTOCOL_VERSION -> getFinishEvent(FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION, e)
-			HTTP_STATUS_SFU_NOT_AVAILABLE -> getFinishEvent(FinishEvent.Reason.SFU_NOT_AVAILABLE, e)
-			HTTP_STATUS_CALL_FULL -> getFinishEvent(FinishEvent.Reason.FULL, e)
-			else -> getFinishEvent(FinishEvent.Reason.ERROR, e)
-		}
-	}
+    @UiThread
+    private fun observeCallLeftSignal() {
+        viewModelScope.launch {
+            completableFinishEvent.complete(
+                try {
+                    callController.callLeftSignal.await()
+                    getFinishEvent(FinishEvent.Reason.LEFT)
+                } catch (e: Exception) {
+                    logger.error("Call left with exception", e)
+                    mapExceptionToFinishEvent(e)
+                }
+            )
+            callRunning.value = false
+        }
+    }
 
-	private fun getFinishEvent(reason: FinishEvent.Reason, exception: Exception? = null): FinishEvent {
-		val description = if (exception is GroupCallException && exception.callDescription != null) {
-			exception.callDescription
-		} else if (this::callController.isInitialized) {
-			callController.description
-		} else {
-			null
-		}
-		return FinishEvent(reason, description)
-	}
+    private fun mapExceptionToFinishEvent(e: Exception): FinishEvent {
+        val statusCode = if (e is SfuException) {
+            e.statusCode
+        } else {
+            null
+        }
+        return when (statusCode) {
+            HTTP_STATUS_DATA_INVALID -> getFinishEvent(FinishEvent.Reason.INVALID_DATA, e)
+            HTTP_STATUS_TOKEN_INVALID -> getFinishEvent(FinishEvent.Reason.TOKEN_INVALID, e)
+            HTTP_STATUS_NO_SUCH_CALL -> getFinishEvent(FinishEvent.Reason.NO_SUCH_CALL, e)
+            HTTP_STATUS_UNSUPPORTED_PROTOCOL_VERSION -> getFinishEvent(
+                FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION,
+                e
+            )
 
-	@UiThread
-	private fun initMicrophoneState() {
-		val enableMicrophone = microphoneActiveDefault ?: callController.microphoneActive
-		muteMicrophone(!enableMicrophone)
-		microphoneActiveDefault = null
-	}
+            HTTP_STATUS_SFU_NOT_AVAILABLE -> getFinishEvent(FinishEvent.Reason.SFU_NOT_AVAILABLE, e)
+            HTTP_STATUS_CALL_FULL -> getFinishEvent(FinishEvent.Reason.FULL, e)
+            else -> getFinishEvent(FinishEvent.Reason.ERROR, e)
+        }
+    }
 
-	@UiThread
-	private fun initCameraState() {
-		cameraActive.postValue(callController.cameraActive)
-	}
+    private fun getFinishEvent(
+        reason: FinishEvent.Reason,
+        exception: Exception? = null
+    ): FinishEvent {
+        val description =
+            if (exception is GroupCallException && exception.callDescription != null) {
+                exception.callDescription
+            } else if (this::callController.isInitialized) {
+                callController.description
+            } else {
+                null
+            }
+        return FinishEvent(reason, description)
+    }
 
-	@UiThread
-	private fun observeParticipants() {
-		viewModelScope.launch {
-			callController.participants.collect { participants ->
+    @UiThread
+    private fun initMicrophoneState() {
+        val enableMicrophone = microphoneActiveDefault ?: callController.microphoneActive
+        muteMicrophone(!enableMicrophone)
+        microphoneActiveDefault = null
+    }
+
+    @UiThread
+    private fun initCameraState() {
+        cameraActive.postValue(callController.cameraActive)
+    }
+
+    @UiThread
+    private fun observeParticipants() {
+        viewModelScope.launch {
+            callController.participants.collect { participants ->
                 eglBaseAndParticipants.value = callController.eglBase to participants
             }
-		}
-	}
+        }
+    }
 
-	@UiThread
-	private fun observeCaptureStateUpdates() {
-		viewModelScope.launch {
-			callController.captureStateUpdates
-				.collect {
-					triggerCaptureStateUpdate()
-				}
-		}
-	}
+    @UiThread
+    private fun observeCaptureStateUpdates() {
+        viewModelScope.launch {
+            callController.captureStateUpdates
+                .collect {
+                    triggerCaptureStateUpdate()
+                }
+        }
+    }
 
-	@UiThread
-	private fun observeAudioDevices() {
-		viewModelScope.launch {
-			audioManager.observeAvailableAudioDevices()
-				.collect {
-					audioDevices.value = it
-				}
-		}
-		viewModelScope.launch {
-			audioManager.observeSelectedDevice()
-				.collect {
-					selectedAudioDevice.value = it
-				}
-		}
-	}
+    @UiThread
+    private fun observeAudioDevices() {
+        viewModelScope.launch {
+            audioManager.observeAvailableAudioDevices()
+                .collect {
+                    audioDevices.value = it
+                }
+        }
+        viewModelScope.launch {
+            audioManager.observeSelectedDevice()
+                .collect {
+                    selectedAudioDevice.value = it
+                }
+        }
+    }
 
-	@UiThread
-	private fun triggerCaptureStateUpdate() {
-		captureStateUpdates.postValue(Unit)
-	}
+    @UiThread
+    private fun triggerCaptureStateUpdate() {
+        captureStateUpdates.postValue(Unit)
+    }
 
 
-	@AnyThread
-	private fun getGroupModel(groupId: LocalGroupId?) = groupId?.let {
-		groupService.getById(it.id)
-	}
+    @AnyThread
+    private fun getGroupModel(groupId: LocalGroupId?) = groupId?.let {
+        groupService.getById(it.id)
+    }
 
-	@UiThread
-	private fun mapTitle() = group.map(this::getTitle)
-	@UiThread
-	private fun getTitle(groupModel: GroupModel?) = groupModel?.name ?: ""
+    @UiThread
+    private fun mapTitle() = group.map(this::getTitle)
 
-	@UiThread
-	private fun mapSubTitle() = participantsCount.map { count ->
-		when {
-			count > 0 -> ConfigUtils.getSafeQuantityString(ThreemaApplication.getAppContext(), R.plurals.n_participants_in_call, count, count)
-			else -> null
-		}
-	}
+    @UiThread
+    private fun getTitle(groupModel: GroupModel?) = groupModel?.name ?: ""
 
-	@UiThread
-	private fun mapStatusMessage(): LiveData<String?> {
-		val connectingStateText = MutableLiveData(
-			getApplication<ThreemaApplication>().getString(R.string.voip_status_connecting)
-		)
-		return connectingState.distinctUntilChanged().switchMap {
-			when(it) {
-				ConnectingState.INITIATED -> connectingStateText
-				else -> participantsCount.map { count -> getStatusMessage(count) }
-			}
-		}
-	}
+    @UiThread
+    private fun mapSubTitle() = participantsCount.map { count ->
+        when {
+            count > 0 -> ConfigUtils.getSafeQuantityString(
+                ThreemaApplication.getAppContext(),
+                R.plurals.n_participants_in_call,
+                count,
+                count
+            )
 
-	@UiThread
-	private fun getStatusMessage(numberOfParticipants: Int) = when(numberOfParticipants) {
-		1 -> getApplication<ThreemaApplication>().getString(R.string.voip_gc_waiting_for_participants)
-		else -> null
-	}
+            else -> null
+        }
+    }
 
-	@UiThread
-	private fun mapStartTime(): LiveData<Long?> {
-		val mediator = MediatorLiveData<Long?>()
-		mediator.addSource(startTime) {
-			if (statusMessage.value != null) {
-				mediator.value = null
-			} else {
-				mediator.value = it
-			}
-		}
-		mediator.addSource(statusMessage) {
-			if (it != null) {
-				mediator.value = null
-			} else {
-				mediator.value = startTime.value
-			}
-		}
-		return mediator
-	}
+    @UiThread
+    private fun mapStatusMessage(): LiveData<String?> {
+        val connectingStateText = MutableLiveData(
+            getApplication<ThreemaApplication>().getString(R.string.voip_status_connecting)
+        )
+        return connectingState.distinctUntilChanged().switchMap {
+            when (it) {
+                ConnectingState.INITIATED -> connectingStateText
+                else -> participantsCount.map { count -> getStatusMessage(count) }
+            }
+        }
+    }
+
+    @UiThread
+    private fun getStatusMessage(numberOfParticipants: Int) = when (numberOfParticipants) {
+        1 -> getApplication<ThreemaApplication>().getString(R.string.voip_gc_waiting_for_participants)
+        else -> null
+    }
+
+    @UiThread
+    private fun mapStartTime(): LiveData<Long?> {
+        val mediator = MediatorLiveData<Long?>()
+        mediator.addSource(startTime) {
+            if (statusMessage.value != null) {
+                mediator.value = null
+            } else {
+                mediator.value = it
+            }
+        }
+        mediator.addSource(statusMessage) {
+            if (it != null) {
+                mediator.value = null
+            } else {
+                mediator.value = startTime.value
+            }
+        }
+        return mediator
+    }
 }

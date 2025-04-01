@@ -48,7 +48,7 @@ class OutgoingContactReactionMessageTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val messageModel = getContactMessageModel(messageModelId)
-                ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
+            ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
 
         val reactionMessage = ReactionMessage(
             ReactionMessageData(

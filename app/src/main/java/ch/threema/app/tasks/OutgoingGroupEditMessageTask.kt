@@ -45,7 +45,7 @@ class OutgoingGroupEditMessageTask(
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = getGroupMessageModel(messageModelId)
-                ?: throw ThreemaException("No group message model found for messageModelId=$messageModelId")
+            ?: throw ThreemaException("No group message model found for messageModelId=$messageModelId")
 
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")

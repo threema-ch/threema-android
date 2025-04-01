@@ -40,52 +40,54 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @WorkerThread
 public interface SessionInstanceService {
-	/**
-	 * Return whether this session is in a non-terminal state.
-	 */
-	boolean isRunning();
+    /**
+     * Return whether this session is in a non-terminal state.
+     */
+    boolean isRunning();
 
-	/**
-	 * Return the current state of the session.
-	 */
-	@NonNull WebClientSessionState getState();
+    /**
+     * Return the current state of the session.
+     */
+    @NonNull
+    WebClientSessionState getState();
 
-	/**
-	 * Return whether the session needs to be restarted (due to a different affiliation id).
-	 */
-	boolean needsRestart(@Nullable String affiliationId);
+    /**
+     * Return whether the session needs to be restarted (due to a different affiliation id).
+     */
+    boolean needsRestart(@Nullable String affiliationId);
 
-	/**
-	 * Return the session model.
-	 */
-	@AnyThread
-	@NonNull WebClientSessionModel getModel();
+    /**
+     * Return the session model.
+     */
+    @AnyThread
+    @NonNull
+    WebClientSessionModel getModel();
 
-	/**
-	 * Start a session.
-	 *
-	 * Note: Will be ignored when the session is running!
-	 */
-	void start(@NonNull byte[] permanentKey, @NonNull byte[] authToken, @Nullable String affiliationId);
+    /**
+     * Start a session.
+     * <p>
+     * Note: Will be ignored when the session is running!
+     */
+    void start(@NonNull byte[] permanentKey, @NonNull byte[] authToken, @Nullable String affiliationId);
 
-	/**
-	 * Resume a session by the saved permanent key.
-	 *
-	 * Note: Will be ignored when the session is running!
-	 */
-	void resume(@Nullable String affiliationId) throws CryptoException;
+    /**
+     * Resume a session by the saved permanent key.
+     * <p>
+     * Note: Will be ignored when the session is running!
+     */
+    void resume(@Nullable String affiliationId) throws CryptoException;
 
-	/**
-	 * Stop a session.
-	 *
-	 * Note: Will be ignored when the session is not running!
-	 */
-	void stop(@NonNull DisconnectContext reason);
+    /**
+     * Stop a session.
+     * <p>
+     * Note: Will be ignored when the session is not running!
+     */
+    void stop(@NonNull DisconnectContext reason);
 
-	/**
-	 * Send data to the peer.
-	 *
-	 * @param message Msgpack encoded bytes
-	 */
-	void send(@NonNull ByteBuffer message, @NonNull SendMode mode);
+    /**
+     * Send data to the peer.
+     *
+     * @param message Msgpack encoded bytes
+     */
+    void send(@NonNull ByteBuffer message, @NonNull SendMode mode);
 }

@@ -55,60 +55,60 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 public class ContactModelJavaTest {
-	private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
+    private final DatabaseBackend databaseBackendMock = mock(DatabaseBackend.class);
     private final PreferenceService preferenceServiceMock = mock(PreferenceService.class);
-	private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
-	private final ContactModelRepository contactModelRepository = new ContactModelRepository(
-		new ModelTypeCache<>(), databaseBackendMock, coreServiceManagerMock
-	);
-	private final MultiDeviceManager multiDeviceManagerMock = mock(MultiDeviceManager.class);
-	private final TaskManager taskManagerMock = mock(TaskManager.class);
+    private final CoreServiceManager coreServiceManagerMock = mock(CoreServiceManager.class);
+    private final ContactModelRepository contactModelRepository = new ContactModelRepository(
+        new ModelTypeCache<>(), databaseBackendMock, coreServiceManagerMock
+    );
+    private final MultiDeviceManager multiDeviceManagerMock = mock(MultiDeviceManager.class);
+    private final TaskManager taskManagerMock = mock(TaskManager.class);
 
-	@Before
-	public void init() {
-		when(coreServiceManagerMock.getMultiDeviceManager()).thenReturn(multiDeviceManagerMock);
-		when(coreServiceManagerMock.getTaskManager()).thenReturn(taskManagerMock);
-	}
+    @Before
+    public void init() {
+        when(coreServiceManagerMock.getMultiDeviceManager()).thenReturn(multiDeviceManagerMock);
+        when(coreServiceManagerMock.getTaskManager()).thenReturn(taskManagerMock);
+    }
 
-	/**
-	 * Test the construction using the primary constructor from Java.
-	 */
-	@Test
-	public void testConstruction() {
-		final Date createdAt = new Date();
-		final byte[] publicKey = new byte[32];
-		final BigInteger largeBigInteger = new BigInteger("18446744073709551600");
-		final String identity = "TESTTEST";
-		final ContactModel contact = new ContactModel(
-			identity,
-			ContactModelData.javaCreate(
-				identity,
-				publicKey,
-				createdAt,
-				"Test",
-				"Contact",
-				null,
-				42,
-				VerificationLevel.SERVER_VERIFIED,
-				WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-				IdentityType.NORMAL,
-				AcquaintanceLevel.DIRECT,
-				IdentityState.ACTIVE,
-				largeBigInteger,
-				ContactSyncState.CUSTOM,
-				ReadReceiptPolicy.DONT_SEND,
-				TypingIndicatorPolicy.SEND,
-				"asdf",
-				null,
-				false,
-				new byte[]{1, 2, 3},
+    /**
+     * Test the construction using the primary constructor from Java.
+     */
+    @Test
+    public void testConstruction() {
+        final Date createdAt = new Date();
+        final byte[] publicKey = new byte[32];
+        final BigInteger largeBigInteger = new BigInteger("18446744073709551600");
+        final String identity = "TESTTEST";
+        final ContactModel contact = new ContactModel(
+            identity,
+            ContactModelData.javaCreate(
+                identity,
+                publicKey,
+                createdAt,
+                "Test",
+                "Contact",
+                null,
+                42,
+                VerificationLevel.SERVER_VERIFIED,
+                WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
+                IdentityType.NORMAL,
+                AcquaintanceLevel.DIRECT,
+                IdentityState.ACTIVE,
+                largeBigInteger,
+                ContactSyncState.CUSTOM,
+                ReadReceiptPolicy.DONT_SEND,
+                TypingIndicatorPolicy.SEND,
+                "asdf",
+                null,
+                false,
+                new byte[]{1, 2, 3},
                 null,
                 null
-			),
-			databaseBackendMock,
-			contactModelRepository,
-			coreServiceManagerMock
-		);
+            ),
+            databaseBackendMock,
+            contactModelRepository,
+            coreServiceManagerMock
+        );
 
         final ContactModelData data = contact.getData().getValue();
         assertEquals("TESTTEST", data.identity);
@@ -499,7 +499,7 @@ public class ContactModelJavaTest {
         final String contactListItemTextBottomLeft = javaContactModel.getContactListItemTextBottomLeft();
 
         // assert
-        Assert.assertEquals( "~Nickname", contactListItemTextBottomLeft);
+        Assert.assertEquals("~Nickname", contactListItemTextBottomLeft);
     }
 
     @Test

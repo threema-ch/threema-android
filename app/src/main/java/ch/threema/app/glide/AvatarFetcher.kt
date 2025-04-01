@@ -40,7 +40,7 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
 
     protected val fileService: FileService? by lazy { ThreemaApplication.getServiceManager()?.fileService }
     private val avatarSizeSmall: Int by lazy { context.resources.getDimensionPixelSize(R.dimen.avatar_size_small) }
-    private val avatarSizeHiRes: Int by lazy { context.resources.getDimensionPixelSize(R.dimen.avatar_size_hires)}
+    private val avatarSizeHiRes: Int by lazy { context.resources.getDimensionPixelSize(R.dimen.avatar_size_hires) }
 
     override fun cleanup() {
         // Nothing to cleanup
@@ -65,8 +65,17 @@ abstract class AvatarFetcher(protected val context: Context) : DataFetcher<Bitma
      * Create a bitmap of the given drawable with the given color in high resolution. Used for large views like
      * in GroupDetailActivity.
      */
-    protected fun buildDefaultAvatarHighRes(drawable: VectorDrawableCompat?, color: Int, backgroundColor: Int): Bitmap {
-        return AvatarConverterUtil.buildDefaultAvatarHighRes(drawable, avatarSizeHiRes, color, backgroundColor)
+    protected fun buildDefaultAvatarHighRes(
+        drawable: VectorDrawableCompat?,
+        color: Int,
+        backgroundColor: Int
+    ): Bitmap {
+        return AvatarConverterUtil.buildDefaultAvatarHighRes(
+            drawable,
+            avatarSizeHiRes,
+            color,
+            backgroundColor
+        )
     }
 
     /**

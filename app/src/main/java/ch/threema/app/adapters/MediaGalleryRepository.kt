@@ -74,21 +74,47 @@ class MediaGalleryRepository {
         }.execute()
     }
 
-    private fun getMessageFilter() : MessageFilter {
+    private fun getMessageFilter(): MessageFilter {
         return object : MessageFilter {
-            override fun getPageSize(): Long { return 0 }
-            override fun getPageReferenceId(): Int { return 0 }
-            override fun withStatusMessages(): Boolean { return false }
-            override fun withUnsaved(): Boolean { return true }
-            override fun onlyUnread(): Boolean { return false }
-            override fun onlyDownloaded(): Boolean { return false }
-            override fun types(): Array<MessageType>? { return null }
-            override fun contentTypes(): IntArray { return getContentTypes() }
-            override fun displayTags(): IntArray? { return null }
+            override fun getPageSize(): Long {
+                return 0
+            }
+
+            override fun getPageReferenceId(): Int {
+                return 0
+            }
+
+            override fun withStatusMessages(): Boolean {
+                return false
+            }
+
+            override fun withUnsaved(): Boolean {
+                return true
+            }
+
+            override fun onlyUnread(): Boolean {
+                return false
+            }
+
+            override fun onlyDownloaded(): Boolean {
+                return false
+            }
+
+            override fun types(): Array<MessageType>? {
+                return null
+            }
+
+            override fun contentTypes(): IntArray {
+                return getContentTypes()
+            }
+
+            override fun displayTags(): IntArray? {
+                return null
+            }
         }
     }
 
-    fun getContentTypes() : IntArray {
+    fun getContentTypes(): IntArray {
         if (filter == null) {
             return contentTypes
         }

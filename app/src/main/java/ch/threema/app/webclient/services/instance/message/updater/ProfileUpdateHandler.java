@@ -43,97 +43,97 @@ import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class ProfileUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileUpdateHandler");
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final ProfileListener listener;
+    // Listeners
+    private final ProfileListener listener;
 
-	// Dispatchers
-	private @NonNull MessageDispatcher updateDispatcher;
+    // Dispatchers
+    private @NonNull MessageDispatcher updateDispatcher;
 
-	// Services
-	private final @NonNull UserService userService;
-	private final @NonNull ContactService contactService;
+    // Services
+    private final @NonNull UserService userService;
+    private final @NonNull ContactService contactService;
 
-	@AnyThread
-	public ProfileUpdateHandler(@NonNull HandlerExecutor handler,
-	                            @NonNull MessageDispatcher updateDispatcher,
-	                            @NonNull UserService userService,
-	                            @NonNull ContactService contactService) {
-		super(Protocol.SUB_TYPE_PROFILE);
-		this.handler = handler;
-		this.updateDispatcher = updateDispatcher;
-		this.userService = userService;
-		this.contactService = contactService;
-		this.listener = new Listener();
-	}
+    @AnyThread
+    public ProfileUpdateHandler(@NonNull HandlerExecutor handler,
+                                @NonNull MessageDispatcher updateDispatcher,
+                                @NonNull UserService userService,
+                                @NonNull ContactService contactService) {
+        super(Protocol.SUB_TYPE_PROFILE);
+        this.handler = handler;
+        this.updateDispatcher = updateDispatcher;
+        this.userService = userService;
+        this.contactService = contactService;
+        this.listener = new Listener();
+    }
 
-	@Override
-	public void register() {
-		logger.debug("register()");
-		ListenerManager.profileListeners.add(this.listener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register()");
+        ListenerManager.profileListeners.add(this.listener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister()");
-		ListenerManager.profileListeners.remove(this.listener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister()");
+        ListenerManager.profileListeners.remove(this.listener);
+    }
 
-	/**
-	 * Send the updated profile to the peer.
-	 */
-	private void sendProfile(String nickname, boolean sendAvatar) {
-		MsgpackObjectBuilder data;
-		if (sendAvatar) {
-			byte[] avatar = null;
-			final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
-			if (avatarBitmap != null) {
-				avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);
-			}
-			data = Profile.convert(nickname, avatar);
-		} else {
-			data = Profile.convert(nickname);
-		}
+    /**
+     * Send the updated profile to the peer.
+     */
+    private void sendProfile(String nickname, boolean sendAvatar) {
+        MsgpackObjectBuilder data;
+        if (sendAvatar) {
+            byte[] avatar = null;
+            final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
+            if (avatarBitmap != null) {
+                avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);
+            }
+            data = Profile.convert(nickname, avatar);
+        } else {
+            data = Profile.convert(nickname);
+        }
 
-		// Send message
-		logger.debug("Sending profile update");
-		this.send(this.updateDispatcher, data, null);
-	}
+        // Send message
+        logger.debug("Sending profile update");
+        this.send(this.updateDispatcher, data, null);
+    }
 
-	@AnyThread
-	private class Listener implements ProfileListener {
-		@Override
-		public void onAvatarChanged() {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					ProfileUpdateHandler.this.sendProfile(userService.getPublicNickname(), true);
-				}
-			});
-		}
+    @AnyThread
+    private class Listener implements ProfileListener {
+        @Override
+        public void onAvatarChanged() {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    ProfileUpdateHandler.this.sendProfile(userService.getPublicNickname(), true);
+                }
+            });
+        }
 
-		@Override
-		public void onAvatarRemoved() {
-			this.onAvatarChanged();
-		}
+        @Override
+        public void onAvatarRemoved() {
+            this.onAvatarChanged();
+        }
 
-		@Override
-		public void onNicknameChanged(String newNickname) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					ProfileUpdateHandler.this.sendProfile(newNickname, false);
-				}
-			});
-		}
-	}
+        @Override
+        public void onNicknameChanged(String newNickname) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    ProfileUpdateHandler.this.sendProfile(newNickname, false);
+                }
+            });
+        }
+    }
 }

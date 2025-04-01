@@ -36,58 +36,59 @@ import java.util.Map;
  * Convert Json to X and X to Json
  */
 public class JsonUtil {
-	public static List<Object> convertArray(String jsonArrayInputString) throws JSONException {
-		JSONArray ja = new JSONArray(jsonArrayInputString);
-		if (ja != null) {
-			return convert(ja);
-		}
+    public static List<Object> convertArray(String jsonArrayInputString) throws JSONException {
+        JSONArray ja = new JSONArray(jsonArrayInputString);
+        if (ja != null) {
+            return convert(ja);
+        }
 
-		return null;
-	}
-	public static List<Object> convert(JSONArray jsonArray) {
-		List<Object> l = new ArrayList<>();
+        return null;
+    }
 
-		for(int i = 0; i < jsonArray.length(); i++) {
-			try {
-				l.add(jsonArray.isNull(i) ? null : convert(jsonArray.get(i)));
-			} catch (JSONException e) {
-				// Should not happen
-			}
-		}
+    public static List<Object> convert(JSONArray jsonArray) {
+        List<Object> l = new ArrayList<>();
 
-		return l;
-	}
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                l.add(jsonArray.isNull(i) ? null : convert(jsonArray.get(i)));
+            } catch (JSONException e) {
+                // Should not happen
+            }
+        }
 
-	public static Map<String, Object> convertObject(String jsonObjectInputString) throws JSONException {
-		JSONObject jo = new JSONObject(jsonObjectInputString);
+        return l;
+    }
 
-		return convert(jo);
-	}
+    public static Map<String, Object> convertObject(String jsonObjectInputString) throws JSONException {
+        JSONObject jo = new JSONObject(jsonObjectInputString);
 
-	public static Map<String, Object> convert(JSONObject jsonObjectInput) {
-		Map<String, Object> map = new HashMap<>();
+        return convert(jo);
+    }
 
-		Iterator<String> keys = jsonObjectInput.keys();
-		while(keys.hasNext()) {
-			String key = keys.next();
+    public static Map<String, Object> convert(JSONObject jsonObjectInput) {
+        Map<String, Object> map = new HashMap<>();
 
-			try {
-				map.put(key,jsonObjectInput.isNull(key) ? null : convert(jsonObjectInput.get(key)));
-			} catch (JSONException e) {
-				// Ignore, next!
-			}
-		}
+        Iterator<String> keys = jsonObjectInput.keys();
+        while (keys.hasNext()) {
+            String key = keys.next();
 
-		return map;
-	}
+            try {
+                map.put(key, jsonObjectInput.isNull(key) ? null : convert(jsonObjectInput.get(key)));
+            } catch (JSONException e) {
+                // Ignore, next!
+            }
+        }
 
-	private static Object convert(Object input) {
-		if (input instanceof JSONArray) {
-			return convert((JSONArray)input);
-		} else if (input instanceof JSONObject) {
-			return convert((JSONObject)input);
-		}
-		return input;
-	}
+        return map;
+    }
+
+    private static Object convert(Object input) {
+        if (input instanceof JSONArray) {
+            return convert((JSONArray) input);
+        } else if (input instanceof JSONObject) {
+            return convert((JSONObject) input);
+        }
+        return input;
+    }
 
 }

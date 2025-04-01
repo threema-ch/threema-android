@@ -70,6 +70,7 @@ internal abstract class BaseServerConnection(
     private val connectionStateListeners = mutableSetOf<ConnectionStateListener>()
 
     private val stateLock = ReentrantLock()
+
     @Volatile
     private var state: ConnectionState = ConnectionState.DISCONNECTED
 
@@ -272,7 +273,11 @@ internal abstract class BaseServerConnection(
 
             synchronized(connectionStateListeners) {
                 if (previousState != this.state) {
-                    logger.debug("Notify connection state listeners. state={}, address={}", state, socket.address)
+                    logger.debug(
+                        "Notify connection state listeners. state={}, address={}",
+                        state,
+                        socket.address
+                    )
                     connectionStateListeners.forEach { listener ->
                         try {
                             listener.updateConnectionState(state)
@@ -317,7 +322,7 @@ internal abstract class BaseServerConnection(
     private suspend fun processIo() {
         try {
             socket.processIo()
-        } catch(e: SocketException) {
+        } catch (e: SocketException) {
             // This exception is thrown on a regular basis
             // e.g. when the server closes the connection or when the socket is closed
             // during device sleep.

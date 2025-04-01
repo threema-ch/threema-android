@@ -6,104 +6,104 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
-                android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
-				android:orientation="vertical"
-				android:background="@drawable/listitem_background_selector">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom"
+    android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
+    android:orientation="vertical"
+    android:background="@drawable/listitem_background_selector">
 
-	<ch.threema.app.ui.InitialAvatarView
-		android:id="@+id/avatar_view"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:layout_alignParentLeft="true"
-		android:layout_toEndOf="@id/status"
-		android:layout_centerVertical="true"
-		android:clickable="false"
-		android:contentDescription="@string/mime_contact"/>
+    <ch.threema.app.ui.InitialAvatarView
+        android:id="@+id/avatar_view"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_alignParentLeft="true"
+        android:layout_toEndOf="@id/status"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:contentDescription="@string/mime_contact" />
 
-	<RelativeLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
-		android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-		android:layout_toRightOf="@id/avatar_view"
-		android:layout_toLeftOf="@id/status">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:layout_toRightOf="@id/avatar_view"
+        android:layout_toLeftOf="@id/status">
 
-		<TextView
-			android:id="@+id/name"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_alignWithParentIfMissing="true"
-			android:layout_toLeftOf="@+id/identity"
-			android:ellipsize="end"
-			android:singleLine="true"
-			android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"/>
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_toLeftOf="@+id/identity"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
 
-		<TextView
-			android:id="@+id/identity"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:layout_alignWithParentIfMissing="true"
-			android:layout_alignBaseline="@id/name"
-			android:ellipsize="none"
-			android:singleLine="true"
-			android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine"/>
+        <TextView
+            android:id="@+id/identity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:layout_alignBaseline="@id/name"
+            android:ellipsize="none"
+            android:singleLine="true"
+            android:textAppearance="@style/Threema.TextAppearance.List.ThirdLine" />
 
-		<com.google.android.material.chip.Chip
-			android:id="@+id/organization"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_alignBaseline="@+id/categories"
-			android:layout_marginRight="6dp"
-			android:maxWidth="128dp"
-			app:chipBackgroundColor="?attr/colorPrimary"
-			app:chipMinHeight="0dp"
-			app:chipStartPadding="0dp"
-			app:chipEndPadding="0dp"
-			app:textStartPadding="8dp"
-			app:textEndPadding="8dp"
-			app:chipMinTouchTargetSize="0dp"
-			app:ensureMinTouchTargetSize="false"
-			app:shapeAppearance="@style/Threema.ShapeAppearanceDirectoryOrganization"
-			android:checkable="false"
-			android:clickable="false"
-			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="@android:color/white"
-			android:singleLine="true"
-			android:ellipsize="end" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/organization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignBaseline="@+id/categories"
+            android:layout_marginRight="6dp"
+            android:maxWidth="128dp"
+            app:chipBackgroundColor="?attr/colorPrimary"
+            app:chipMinHeight="0dp"
+            app:chipStartPadding="0dp"
+            app:chipEndPadding="0dp"
+            app:textStartPadding="8dp"
+            app:textEndPadding="8dp"
+            app:chipMinTouchTargetSize="0dp"
+            app:ensureMinTouchTargetSize="false"
+            app:shapeAppearance="@style/Threema.ShapeAppearanceDirectoryOrganization"
+            android:checkable="false"
+            android:clickable="false"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:singleLine="true"
+            android:ellipsize="end" />
 
-		<TextView
-			android:id="@+id/categories"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@+id/organization"
-			android:layout_below="@id/name"
-			android:ellipsize="end"
-			android:singleLine="true"
-			android:fontFamily="sans-serif-light"
-			android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/categories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/organization"
+            android:layout_below="@id/name"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:fontFamily="sans-serif-light"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
-	<ImageView
-		android:id="@+id/status"
-		android:clickable="true"
-		android:background="?selectableItemBackground"
-		android:contentDescription="@string/menu_add_contact"
-		android:layout_width="28dp"
-		android:layout_height="28dp"
-		android:layout_alignParentRight="true"
-		android:layout_marginLeft="8dp"
-		app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
-		android:layout_centerVertical="true"
-		android:visibility="visible"
-		android:focusable="true"
-		app:tint="?attr/colorOnSurface" />
+    <ImageView
+        android:id="@+id/status"
+        android:clickable="true"
+        android:background="?selectableItemBackground"
+        android:contentDescription="@string/menu_add_contact"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="8dp"
+        app:srcCompat="@drawable/ic_add_circle_outline_black_24dp"
+        android:layout_centerVertical="true"
+        android:visibility="visible"
+        android:focusable="true"
+        app:tint="?attr/colorOnSurface" />
 
 </RelativeLayout>

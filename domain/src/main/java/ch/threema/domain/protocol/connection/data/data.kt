@@ -26,6 +26,7 @@ import ch.threema.base.utils.Utils
 sealed interface InboundMessage {
     val payloadType: UByte
 }
+
 sealed interface OutboundMessage {
     val payloadType: UByte
 }

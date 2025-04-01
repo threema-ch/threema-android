@@ -107,7 +107,13 @@ class MessageQueueMigrationTask(
 
     private suspend fun sendMessages(masterKey: MasterKey, file: File, handle: ActiveTaskCodec) {
         withContext(Dispatchers.IO) {
-            return@withContext MessageBoxInputStream(masterKey.getCipherInputStream(FileInputStream(file))).use {
+            return@withContext MessageBoxInputStream(
+                masterKey.getCipherInputStream(
+                    FileInputStream(
+                        file
+                    )
+                )
+            ).use {
                 val messages = mutableListOf<MessageBox>()
                 while (true) {
                     if (!coroutineContext.isActive) {
@@ -137,6 +143,7 @@ class MessageQueueMigrationTask(
                                 logger.info("Finished reading message queue file")
                                 break
                             }
+
                             else -> {
                                 logger.error("Error while reading message from queue file", e)
                                 // Abort as the stream may be corrupt and therefore never succeeds
@@ -169,7 +176,13 @@ class MessageQueueMigrationTask(
         // We update the state for each message model that fits the message id and identity. Note
         // that for group messages, the message state is set to sent too early. Since this is only
         // needed for the migration to the task manager queue, this is acceptable.
-        messageModels.forEach { messageService.updateOutgoingMessageState(it, MessageState.SENT, Date()) }
+        messageModels.forEach {
+            messageService.updateOutgoingMessageState(
+                it,
+                MessageState.SENT,
+                Date()
+            )
+        }
     }
 
     private fun getMatchingMessageModels(

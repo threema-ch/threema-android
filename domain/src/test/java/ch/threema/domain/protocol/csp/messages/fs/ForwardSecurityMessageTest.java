@@ -36,29 +36,29 @@ import static ch.threema.domain.testhelpers.TestHelpers.setMessageDefaultSenderA
 
 public class ForwardSecurityMessageTest {
 
-	private static ForwardSecurityData getDataTestInstance() {
-		return new ForwardSecurityDataMessageTest().makeForwardSecurityDataMessage();
-	}
+    private static ForwardSecurityData getDataTestInstance() {
+        return new ForwardSecurityDataMessageTest().makeForwardSecurityDataMessage();
+    }
 
-	private static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
-		final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance(), true);
-		setMessageDefaultSenderAndReceiver(msg);
-		return msg;
-	}
+    private static ForwardSecurityEnvelopeMessage getEnvelopeMessageTestInstance() {
+        final ForwardSecurityEnvelopeMessage msg = new ForwardSecurityEnvelopeMessage(getDataTestInstance(), true);
+        setMessageDefaultSenderAndReceiver(msg);
+        return msg;
+    }
 
-	@Test
-	public void makeBoxTest() throws ThreemaException {
-		final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
-		Assert.assertNotNull(boxedMessage);
-	}
+    @Test
+    public void makeBoxTest() throws ThreemaException {
+        final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
+        Assert.assertNotNull(boxedMessage);
+    }
 
-	@Test
-	public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
-		final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
+    @Test
+    public void decodeFromBoxTest() throws ThreemaException, BadMessageException, MissingPublicKeyException {
+        final MessageBox boxedMessage = boxMessage(getEnvelopeMessageTestInstance());
 
-		final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
-		Assert.assertTrue(decodedMessage instanceof ForwardSecurityEnvelopeMessage);
-		final ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) decodedMessage;
-		Assert.assertArrayEquals(msg.getData().toProtobufBytes(), getDataTestInstance().toProtobufBytes());
-	}
+        final AbstractMessage decodedMessage = decodeMessageFromBox(boxedMessage);
+        Assert.assertTrue(decodedMessage instanceof ForwardSecurityEnvelopeMessage);
+        final ForwardSecurityEnvelopeMessage msg = (ForwardSecurityEnvelopeMessage) decodedMessage;
+        Assert.assertArrayEquals(msg.getData().toProtobufBytes(), getDataTestInstance().toProtobufBytes());
+    }
 }

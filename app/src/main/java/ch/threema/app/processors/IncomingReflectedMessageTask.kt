@@ -109,7 +109,10 @@ class IncomingReflectedMessageTask(
             if (!nonceFactory.exists(NonceScope.D2D, nonce)) {
                 processEnvelope(envelope, handle)
             } else {
-                logger.warn("Skipped processing of reflected message {} as its nonce has already been used", message.reflectedId)
+                logger.warn(
+                    "Skipped processing of reflected message {} as its nonce has already been used",
+                    message.reflectedId
+                )
             }
         }.catchAllExceptNetworkException {
             logger.error("Could not process reflected envelope", it)
@@ -168,7 +171,10 @@ class IncomingReflectedMessageTask(
                 processMdmParameterSync(envelope.mdmParameterSync)
             }
 
-            else -> logger.error("Reflected message with unknown content type {} received", envelope.contentCase)
+            else -> logger.error(
+                "Reflected message with unknown content type {} received",
+                envelope.contentCase
+            )
         }
     }
 
@@ -178,7 +184,11 @@ class IncomingReflectedMessageTask(
     }
 
     private fun processOutgoingMessageUpdate(outgoingMessageUpdate: OutgoingMessageUpdate) {
-        ReflectedOutgoingMessageUpdateTask(outgoingMessageUpdate, message.timestamp, serviceManager).run()
+        ReflectedOutgoingMessageUpdateTask(
+            outgoingMessageUpdate,
+            message.timestamp,
+            serviceManager
+        ).run()
     }
 
     private suspend fun processIncomingMessage(
@@ -189,29 +199,64 @@ class IncomingReflectedMessageTask(
             CspE2eMessageType.TEXT -> TextMessage.fromReflected(incomingMessage)
             CspE2eMessageType.FILE -> FileMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_FILE -> GroupFileMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.DELIVERY_RECEIPT -> DeliveryReceiptMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> GroupDeliveryReceiptMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DELIVERY_RECEIPT -> DeliveryReceiptMessage.fromReflected(
+                incomingMessage
+            )
+
+            CspE2eMessageType.GROUP_DELIVERY_RECEIPT -> GroupDeliveryReceiptMessage.fromReflected(
+                incomingMessage
+            )
+
             CspE2eMessageType.GROUP_TEXT -> GroupTextMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.POLL_SETUP -> PollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
+            CspE2eMessageType.POLL_SETUP -> PollSetupMessage.fromReflected(
+                incomingMessage,
+                incomingMessage.senderIdentity
+            )
+
             CspE2eMessageType.POLL_VOTE -> PollVoteMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.GROUP_POLL_SETUP -> GroupPollSetupMessage.fromReflected(incomingMessage, incomingMessage.senderIdentity)
+            CspE2eMessageType.GROUP_POLL_SETUP -> GroupPollSetupMessage.fromReflected(
+                incomingMessage,
+                incomingMessage.senderIdentity
+            )
+
             CspE2eMessageType.GROUP_POLL_VOTE -> GroupPollVoteMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_OFFER -> VoipCallOfferMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.CALL_ICE_CANDIDATE -> VoipICECandidatesMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.CALL_ICE_CANDIDATE -> VoipICECandidatesMessage.fromReflected(
+                incomingMessage
+            )
+
             CspE2eMessageType.CALL_RINGING -> VoipCallRingingMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_ANSWER -> VoipCallAnswerMessage.fromReflected(incomingMessage)
             CspE2eMessageType.CALL_HANGUP -> VoipCallHangupMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.GROUP_CALL_START -> GroupCallStartMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ContactRequestProfilePictureMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> SetProfilePictureMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> DeleteProfilePictureMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_CALL_START -> GroupCallStartMessage.fromReflected(
+                incomingMessage
+            )
+
+            CspE2eMessageType.CONTACT_REQUEST_PROFILE_PICTURE -> ContactRequestProfilePictureMessage.fromReflected(
+                incomingMessage
+            )
+
+            CspE2eMessageType.CONTACT_SET_PROFILE_PICTURE -> SetProfilePictureMessage.fromReflected(
+                incomingMessage
+            )
+
+            CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE -> DeleteProfilePictureMessage.fromReflected(
+                incomingMessage
+            )
+
             CspE2eMessageType.LOCATION -> LocationMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_LOCATION -> GroupLocationMessage.fromReflected(incomingMessage)
             CspE2eMessageType.DELETE_MESSAGE -> DeleteMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.GROUP_DELETE_MESSAGE -> GroupDeleteMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.GROUP_DELETE_MESSAGE -> GroupDeleteMessage.fromReflected(
+                incomingMessage
+            )
+
             CspE2eMessageType.EDIT_MESSAGE -> EditMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_EDIT_MESSAGE -> GroupEditMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.GROUP_SYNC_REQUEST -> GroupSyncRequestMessage.fromReflected(incomingMessage, myIdentity)
+            CspE2eMessageType.GROUP_SYNC_REQUEST -> GroupSyncRequestMessage.fromReflected(
+                incomingMessage,
+                myIdentity
+            )
 
             // TODO(ANDR-3443): Process reflected incoming deprecated messages
             CspE2eMessageType.DEPRECATED_IMAGE -> throw NotImplementedError("Deprecated messages implementation is missing")
@@ -237,7 +282,9 @@ class IncomingReflectedMessageTask(
 
             CspE2eMessageType.WEB_SESSION_RESUME -> throw NotImplementedError("Web session resume implementation is missing")
 
-            CspE2eMessageType.TYPING_INDICATOR -> TypingIndicatorMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.TYPING_INDICATOR -> TypingIndicatorMessage.fromReflected(
+                incomingMessage
+            )
 
             CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException("A forward security envelope message should never be received as reflected incoming message")
 
@@ -256,7 +303,10 @@ class IncomingReflectedMessageTask(
                 if (nonceFactory.exists(NonceScope.CSP, nonce)) {
                     logger.info("Skip adding preexisting CSP nonce {}", nonce.bytes.toHexString())
                 } else if (!nonceFactory.store(NonceScope.CSP, nonce)) {
-                    logger.warn("CSP nonce {} of outgoing message could not be stored", nonce.bytes.toHexString())
+                    logger.warn(
+                        "CSP nonce {} of outgoing message could not be stored",
+                        nonce.bytes.toHexString()
+                    )
                 }
             } else {
                 logger.debug("Do not store nonces for message of type {}", incomingMessage.type)

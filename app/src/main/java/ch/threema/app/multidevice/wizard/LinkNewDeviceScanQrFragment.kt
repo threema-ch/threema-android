@@ -56,7 +56,7 @@ import java.util.concurrent.Executors
 
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceScanQrFragment")
 
-class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
+class LinkNewDeviceScanQrFragment : LinkNewDeviceFragment() {
     private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var cameraPreview: PreviewView
@@ -94,7 +94,8 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
         view.findViewById<View>(R.id.border_frame_left).setBackgroundColor(backgroundColor)
         view.findViewById<View>(R.id.border_frame_right).setBackgroundColor(backgroundColor)
 
-        view.findViewById<TextView>(R.id.body)?.text = getString(R.string.scan_qr_code_explain, getString(R.string.app_name))
+        view.findViewById<TextView>(R.id.body)?.text =
+            getString(R.string.scan_qr_code_explain, getString(R.string.app_name))
 
         // Wait for the views to be properly laid out
         cameraPreview.post {
@@ -113,11 +114,13 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun bindCameraUseCases() {
-        val lensFacing = if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
-            (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_UNKNOWN)
+        val lensFacing =
+            if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) == true) CameraSelector.LENS_FACING_BACK else
+                (if (cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) == true) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_UNKNOWN)
 
         if (lensFacing == CameraSelector.LENS_FACING_UNKNOWN) {
-            LongToast.makeText(requireContext(), R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
+            LongToast.makeText(requireContext(), R.string.no_camera_installed, Toast.LENGTH_SHORT)
+                .show()
             logger.info("Back and front camera are unavailable")
             viewModel.switchToFragment(null)
             return
@@ -127,7 +130,12 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
         val rotation = cameraPreview.display?.rotation ?: 0
         val resolution = Size(720, 1280)
         val resolutionSelector = ResolutionSelector.Builder()
-            .setResolutionStrategy(ResolutionStrategy(resolution, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER))
+            .setResolutionStrategy(
+                ResolutionStrategy(
+                    resolution,
+                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                )
+            )
             .build()
         val cameraProvider = cameraProvider
             ?: throw IllegalStateException("Camera initialization failed.")
@@ -149,27 +157,29 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
             .also {
-                it.setAnalyzer(cameraExecutor, QRCodeAnalyzer { decodeQRCodeState: DecodeQRCodeState ->
-                    when (decodeQRCodeState) {
-                        is DecodeQRCodeState.SUCCESS -> {
-                            logger.debug("Decoder Success")
-                            val qrCodeData = decodeQRCodeState.qrCode
-                            it.clearAnalyzer()
-                            RuntimeUtil.runOnUiThread {
-                                returnData(qrCodeData, true)
+                it.setAnalyzer(
+                    cameraExecutor,
+                    QRCodeAnalyzer { decodeQRCodeState: DecodeQRCodeState ->
+                        when (decodeQRCodeState) {
+                            is DecodeQRCodeState.SUCCESS -> {
+                                logger.debug("Decoder Success")
+                                val qrCodeData = decodeQRCodeState.qrCode
+                                it.clearAnalyzer()
+                                RuntimeUtil.runOnUiThread {
+                                    returnData(qrCodeData, true)
+                                }
                             }
-                        }
 
-                        else -> {
-                            logger.debug("Decoder Error")
-                            it.clearAnalyzer()
-                            RuntimeUtil.runOnUiThread {
-                                viewModel.failureReason = "Decoder error"
-                                returnData(null, false)
+                            else -> {
+                                logger.debug("Decoder Error")
+                                it.clearAnalyzer()
+                                RuntimeUtil.runOnUiThread {
+                                    viewModel.failureReason = "Decoder error"
+                                    returnData(null, false)
+                                }
                             }
                         }
-                    }
-                })
+                    })
             }
 
         try {
@@ -177,14 +187,16 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
             cameraProvider.unbindAll()
 
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer)
+                this, cameraSelector, preview, imageCapture, imageAnalyzer
+            )
 
             // Attach the viewfinder's surface provider to preview use case
             preview?.setSurfaceProvider(cameraPreview.surfaceProvider)
 
             val point = cameraPreview.meteringPointFactory.createPoint(
                 cameraPreviewContainer.left + cameraPreviewContainer.width / 2.0f,
-                cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f)
+                cameraPreviewContainer.top + cameraPreviewContainer.height / 2.0f
+            )
             camera?.cameraControl?.startFocusAndMetering(FocusMeteringAction.Builder(point).build())
         } catch (e: Exception) {
             logger.error("Use case binding failed", e)
@@ -204,6 +216,7 @@ class LinkNewDeviceScanQrFragment: LinkNewDeviceFragment() {
                     )
                     true
                 }
+
                 else -> false
             }
         }

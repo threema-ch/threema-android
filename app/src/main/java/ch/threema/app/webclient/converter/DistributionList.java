@@ -33,73 +33,73 @@ import ch.threema.storage.models.DistributionListModel;
 
 @AnyThread
 public class DistributionList extends Converter {
-	private final static String MEMBERS = "members";
-	private final static String CAN_CHANGE_MEMBERS = "canChangeMembers";
+    private final static String MEMBERS = "members";
+    private final static String CAN_CHANGE_MEMBERS = "canChangeMembers";
 
-	/**
-	 * Converts multiple distribution list models to MsgpackObjectBuilder instances.
-	 */
-	public static List<MsgpackBuilder> convert(List<DistributionListModel> distributionLists) throws ConversionException {
-		List<MsgpackBuilder> list = new ArrayList<>();
-		for (DistributionListModel distributionList : distributionLists) {
-			list.add(convert(distributionList));
-		}
-		return list;
-	}
+    /**
+     * Converts multiple distribution list models to MsgpackObjectBuilder instances.
+     */
+    public static List<MsgpackBuilder> convert(List<DistributionListModel> distributionLists) throws ConversionException {
+        List<MsgpackBuilder> list = new ArrayList<>();
+        for (DistributionListModel distributionList : distributionLists) {
+            list.add(convert(distributionList));
+        }
+        return list;
+    }
 
-	/**
-	 * Converts a distribution list model to a MsgpackObjectBuilder instance.
-	 */
-	public static MsgpackObjectBuilder convert(DistributionListModel distributionList) throws ConversionException {
-		final DistributionListService distributionListService = getDistributionListService();
+    /**
+     * Converts a distribution list model to a MsgpackObjectBuilder instance.
+     */
+    public static MsgpackObjectBuilder convert(DistributionListModel distributionList) throws ConversionException {
+        final DistributionListService distributionListService = getDistributionListService();
 
-		final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-		try {
-			builder.put(Receiver.ID, getId(distributionList));
-			builder.put(Receiver.DISPLAY_NAME, getName(distributionList));
-			builder.put(Receiver.COLOR, getColor(distributionList));
-			builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())
-					.put(Receiver.CAN_DELETE, true)
-					.put(CAN_CHANGE_MEMBERS, true));
+        final MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+        try {
+            builder.put(Receiver.ID, getId(distributionList));
+            builder.put(Receiver.DISPLAY_NAME, getName(distributionList));
+            builder.put(Receiver.COLOR, getColor(distributionList));
+            builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())
+                .put(Receiver.CAN_DELETE, true)
+                .put(CAN_CHANGE_MEMBERS, true));
 
-			final boolean isSecretChat = getHiddenChatListService().has(distributionListService.getUniqueIdString(distributionList));
-			final boolean isVisible = !isSecretChat || !getPreferenceService().isPrivateChatsHidden();
-			builder.put(Receiver.LOCKED, isSecretChat);
-			builder.put(Receiver.VISIBLE, isVisible);
+            final boolean isSecretChat = getHiddenChatListService().has(distributionListService.getUniqueIdString(distributionList));
+            final boolean isVisible = !isSecretChat || !getPreferenceService().isPrivateChatsHidden();
+            builder.put(Receiver.LOCKED, isSecretChat);
+            builder.put(Receiver.VISIBLE, isVisible);
 
-			final MsgpackArrayBuilder memberBuilder = new MsgpackArrayBuilder();
-			for (ContactModel contactModel: distributionListService.getMembers(distributionList)) {
-				memberBuilder.put(contactModel.getIdentity());
-			}
-			builder.put(MEMBERS, memberBuilder);
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-		return builder;
-	}
+            final MsgpackArrayBuilder memberBuilder = new MsgpackArrayBuilder();
+            for (ContactModel contactModel : distributionListService.getMembers(distributionList)) {
+                memberBuilder.put(contactModel.getIdentity());
+            }
+            builder.put(MEMBERS, memberBuilder);
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+        return builder;
+    }
 
-	public static String getId(DistributionListModel distributionList) throws ConversionException {
-		try {
-			return String.valueOf(distributionList.getId());
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-	}
+    public static String getId(DistributionListModel distributionList) throws ConversionException {
+        try {
+            return String.valueOf(distributionList.getId());
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	public static String getName(DistributionListModel distributionList) throws ConversionException {
-		try {
-			return NameUtil.getDisplayName(distributionList, getDistributionListService());
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-	}
+    public static String getName(DistributionListModel distributionList) throws ConversionException {
+        try {
+            return NameUtil.getDisplayName(distributionList, getDistributionListService());
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-	public static String getColor(DistributionListModel distributionList) throws ConversionException {
-		try {
-			return String.format("#%06X", (0xFFFFFF & distributionList.getColorLight()));
-		} catch (NullPointerException e) {
-			throw new ConversionException(e);
-		}
-	}
+    public static String getColor(DistributionListModel distributionList) throws ConversionException {
+        try {
+            return String.format("#%06X", (0xFFFFFF & distributionList.getColorLight()));
+        } catch (NullPointerException e) {
+            throw new ConversionException(e);
+        }
+    }
 
 }

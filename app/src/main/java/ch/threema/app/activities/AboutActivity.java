@@ -33,39 +33,39 @@ import ch.threema.app.utils.ConfigUtils;
 
 public class AboutActivity extends ThreemaToolbarActivity {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.menu_about);
-		}
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.menu_about);
+        }
 
-		ImageView threemaLogo = findViewById(R.id.threema_logo);
-		AnimationUtil.bubbleAnimate(threemaLogo, 200);
+        ImageView threemaLogo = findViewById(R.id.threema_logo);
+        AnimationUtil.bubbleAnimate(threemaLogo, 200);
 
-		// Enable developer menu
-		if (ConfigUtils.isDevBuild()) {
-			this.preferenceService.setShowDeveloperMenu(true);
-			Toast
-				.makeText(this, "You are now a craaazy developer!", Toast.LENGTH_LONG)
-				.show();
-		}
-	}
+        // Enable developer menu
+        if (ConfigUtils.isDevBuild()) {
+            this.preferenceService.setShowDeveloperMenu(true);
+            Toast
+                .makeText(this, "You are now a craaazy developer!", Toast.LENGTH_LONG)
+                .show();
+        }
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_about;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_about;
+    }
 
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == android.R.id.home) {
-			finish();
-		}
-		return false;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return false;
+    }
 }

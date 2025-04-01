@@ -70,7 +70,7 @@ class TranslateDeferringInsetsAnimationCallback(
     init {
         require(persistentInsetTypes and deferredInsetTypes == 0) {
             "persistentInsetTypes and deferredInsetTypes can not contain any of " +
-                    " same WindowInsetsCompat.Type values"
+                " same WindowInsetsCompat.Type values"
         }
     }
 

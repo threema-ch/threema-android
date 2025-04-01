@@ -25,6 +25,6 @@ import androidx.annotation.AnyThread;
 import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 public interface GroupJoinResponseListener {
-	@AnyThread
-	void onReceived(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel, OutgoingGroupJoinRequestModel.Status status);
+    @AnyThread
+    void onReceived(OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel, OutgoingGroupJoinRequestModel.Status status);
 }

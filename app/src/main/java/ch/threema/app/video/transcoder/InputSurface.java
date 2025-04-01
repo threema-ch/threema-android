@@ -95,27 +95,27 @@ public class InputSurface {
         // Configure EGL for pbuffer and OpenGL ES 2.0.  We want enough RGB bits
         // to be able to tell if the frame is reasonable.
         int[] attribList = {
-                EGL14.EGL_RED_SIZE, 8,
-                EGL14.EGL_GREEN_SIZE, 8,
-                EGL14.EGL_BLUE_SIZE, 8,
-                EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-                EGL_RECORDABLE_ANDROID, 1,
-                EGL14.EGL_NONE
+            EGL14.EGL_RED_SIZE, 8,
+            EGL14.EGL_GREEN_SIZE, 8,
+            EGL14.EGL_BLUE_SIZE, 8,
+            EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL_RECORDABLE_ANDROID, 1,
+            EGL14.EGL_NONE
         };
         EGLConfig[] configs = new EGLConfig[1];
         int[] numConfigs = new int[1];
         if (!EGL14.eglChooseConfig(mEGLDisplay, attribList, 0, configs, 0, configs.length,
-                numConfigs, 0)) {
+            numConfigs, 0)) {
             throw new RuntimeException("unable to find RGB888+recordable ES2 EGL config");
         }
 
         // Configure context for OpenGL ES 2.0.
         int[] attrib_list = {
-                EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
-                EGL14.EGL_NONE
+            EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+            EGL14.EGL_NONE
         };
         mEGLContext = EGL14.eglCreateContext(mEGLDisplay, configs[0], EGL14.EGL_NO_CONTEXT,
-                attrib_list, 0);
+            attrib_list, 0);
         checkEglError("eglCreateContext");
         if (mEGLContext == null) {
             throw new RuntimeException("null context");
@@ -123,10 +123,10 @@ public class InputSurface {
 
         // Create a window surface, and attach it to the Surface we received.
         int[] surfaceAttribs = {
-                EGL14.EGL_NONE
+            EGL14.EGL_NONE
         };
         mEGLSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, configs[0], mSurface,
-                surfaceAttribs, 0);
+            surfaceAttribs, 0);
         checkEglError("eglCreateWindowSurface");
         if (mEGLSurface == null) {
             throw new RuntimeException("surface was null");
@@ -137,11 +137,11 @@ public class InputSurface {
      * Discard all resources held by this class, notably the EGL context.  Also releases the
      * Surface that was passed to our constructor.
      */
-	public void release() {
+    public void release() {
         if (EGL14.eglGetCurrentContext().equals(mEGLContext)) {
             // Clear the current context and surface to ensure they are discarded immediately.
             EGL14.eglMakeCurrent(mEGLDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE,
-                    EGL14.EGL_NO_CONTEXT);
+                EGL14.EGL_NO_CONTEXT);
         }
         EGL14.eglDestroySurface(mEGLDisplay, mEGLSurface);
         EGL14.eglDestroyContext(mEGLDisplay, mEGLContext);
@@ -160,7 +160,7 @@ public class InputSurface {
     /**
      * Makes our EGL context and surface current.
      */
-	public void makeCurrent() {
+    public void makeCurrent() {
         if (!EGL14.eglMakeCurrent(mEGLDisplay, mEGLSurface, mEGLSurface, mEGLContext)) {
             throw new RuntimeException("eglMakeCurrent failed");
         }

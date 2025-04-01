@@ -1,19 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:drawable="@drawable/anim_84_1400ms" android:duration="1400" />
-	<item android:drawable="@drawable/anim_85_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_86_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_87_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_88_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_89_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_90_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_91_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_92_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_93_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_94_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_95_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_96_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_97_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_98_40ms" android:duration="40" />
-	<item android:drawable="@drawable/anim_99_1400ms" android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_84_1400ms"
+        android:duration="1400" />
+    <item
+        android:drawable="@drawable/anim_85_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_86_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_87_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_88_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_89_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_90_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_91_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_92_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_93_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_94_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_95_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_96_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_97_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_98_40ms"
+        android:duration="40" />
+    <item
+        android:drawable="@drawable/anim_99_1400ms"
+        android:duration="40" />
 </animation-list>

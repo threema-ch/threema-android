@@ -31,73 +31,73 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class AbstractProtobufMessageTest {
 
-	@Test
-	public void testGetBody() {
-		final ProtobufDataInterface<?> protobufDataStub = Mockito.mock(ProtobufDataInterface.class, Mockito.RETURNS_DEEP_STUBS);
-		Mockito.when(protobufDataStub.toProtobufBytes()).thenReturn(new byte[]{0, 1, 2});
+    @Test
+    public void testGetBody() {
+        final ProtobufDataInterface<?> protobufDataStub = Mockito.mock(ProtobufDataInterface.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(protobufDataStub.toProtobufBytes()).thenReturn(new byte[]{0, 1, 2});
 
-		final AbstractProtobufMessage<ProtobufDataInterface<?>> message =
-			new AbstractProtobufMessage<>(3, protobufDataStub) {
-				@Override
-				public int getType() {
-					return 0;
-				}
+        final AbstractProtobufMessage<ProtobufDataInterface<?>> message =
+            new AbstractProtobufMessage<>(3, protobufDataStub) {
+                @Override
+                public int getType() {
+                    return 0;
+                }
 
-				@Nullable
-				@Override
-				public Version getMinimumRequiredForwardSecurityVersion() {
-					return null;
-				}
+                @Nullable
+                @Override
+                public Version getMinimumRequiredForwardSecurityVersion() {
+                    return null;
+                }
 
-				@Override
-				public boolean allowUserProfileDistribution() {
-					return false;
-				}
+                @Override
+                public boolean allowUserProfileDistribution() {
+                    return false;
+                }
 
-				@Override
-				public boolean exemptFromBlocking() {
-					return false;
-				}
+                @Override
+                public boolean exemptFromBlocking() {
+                    return false;
+                }
 
-				@Override
-				public boolean createImplicitlyDirectContact() {
-					return false;
-				}
+                @Override
+                public boolean createImplicitlyDirectContact() {
+                    return false;
+                }
 
-				@Override
-				public boolean protectAgainstReplay() {
-					return false;
-				}
+                @Override
+                public boolean protectAgainstReplay() {
+                    return false;
+                }
 
-				@Override
-				public boolean reflectIncoming() {
-					return false;
-				}
+                @Override
+                public boolean reflectIncoming() {
+                    return false;
+                }
 
-				@Override
-				public boolean reflectOutgoing() {
-					return false;
-				}
+                @Override
+                public boolean reflectOutgoing() {
+                    return false;
+                }
 
-				@Override
-				public boolean reflectSentUpdate() {
-					return false;
-				}
+                @Override
+                public boolean reflectSentUpdate() {
+                    return false;
+                }
 
-				@Override
-				public boolean sendAutomaticDeliveryReceipt() {
-					return false;
-				}
+                @Override
+                public boolean sendAutomaticDeliveryReceipt() {
+                    return false;
+                }
 
-				@Override
-				public boolean bumpLastUpdate() {
-					return false;
-				}
-			};
+                @Override
+                public boolean bumpLastUpdate() {
+                    return false;
+                }
+            };
 
-		assertArrayEquals(
-			protobufDataStub.toProtobufBytes(),
-			message.getBody()
-		);
-	}
+        assertArrayEquals(
+            protobufDataStub.toProtobufBytes(),
+            message.getBody()
+        );
+    }
 }

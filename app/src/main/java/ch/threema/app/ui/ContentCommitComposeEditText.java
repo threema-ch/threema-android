@@ -55,113 +55,113 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 public class ContentCommitComposeEditText extends ComposeEditText {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContentCommitComposeEditText");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContentCommitComposeEditText");
 
-	private MessageReceiver messageReceiver;
-	private MessageService messageService;
+    private MessageReceiver messageReceiver;
+    private MessageService messageService;
 
-	public ContentCommitComposeEditText(Context context) {
-		super(context);
-		init();
-	}
+    public ContentCommitComposeEditText(Context context) {
+        super(context);
+        init();
+    }
 
-	public ContentCommitComposeEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init();
-	}
+    public ContentCommitComposeEditText(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
 
-	public ContentCommitComposeEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
+    public ContentCommitComposeEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
 
-	public void setMessageReceiver(MessageReceiver messageReceiver) {
-		this.messageReceiver = messageReceiver;
-	}
+    public void setMessageReceiver(MessageReceiver messageReceiver) {
+        this.messageReceiver = messageReceiver;
+    }
 
-	private void init() {
-		try {
-			this.messageService = ThreemaApplication.getServiceManager().getMessageService();
-		} catch (ThreemaException | NullPointerException e) {
-			logger.debug("MessageService not available");
-		}
-	}
+    private void init() {
+        try {
+            this.messageService = ThreemaApplication.getServiceManager().getMessageService();
+        } catch (ThreemaException | NullPointerException e) {
+            logger.debug("MessageService not available");
+        }
+    }
 
-	@Override
-	public InputConnection onCreateInputConnection(@NonNull EditorInfo editorInfo) {
-		final String[] mimeTypes = new String[]{"image/gif", "image/jpeg", "image/png"};
+    @Override
+    public InputConnection onCreateInputConnection(@NonNull EditorInfo editorInfo) {
+        final String[] mimeTypes = new String[]{"image/gif", "image/jpeg", "image/png"};
 
-		final InputConnection ic = super.onCreateInputConnection(editorInfo);
-		EditorInfoCompat.setContentMimeTypes(editorInfo, mimeTypes);
+        final InputConnection ic = super.onCreateInputConnection(editorInfo);
+        EditorInfoCompat.setContentMimeTypes(editorInfo, mimeTypes);
 
-		final InputConnectionCompat.OnCommitContentListener callback =
-			(inputContentInfo, flags, opts) -> {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
-						InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
-					try {
-						inputContentInfo.requestPermission();
-					} catch (Exception e) {
-						return false; // return false if failed
-					}
-				}
+        final InputConnectionCompat.OnCommitContentListener callback =
+            (inputContentInfo, flags, opts) -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
+                    InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+                    try {
+                        inputContentInfo.requestPermission();
+                    } catch (Exception e) {
+                        return false; // return false if failed
+                    }
+                }
 
-				if (messageReceiver != null) {
-					final Uri uri = inputContentInfo.getContentUri();
-					final ClipDescription description = inputContentInfo.getDescription();
-					final String mimeType = description.getMimeType(0);
+                if (messageReceiver != null) {
+                    final Uri uri = inputContentInfo.getContentUri();
+                    final ClipDescription description = inputContentInfo.getDescription();
+                    final String mimeType = description.getMimeType(0);
 
-					if (!isSticker(uri, mimeType)) {
-						// go through SendMediaActivity if this item does not qualify as a sticker
-						ArrayList<MediaItem> mediaItems = new ArrayList<>();
-						mediaItems.add(new MediaItem(uri, mimeType, null));
+                    if (!isSticker(uri, mimeType)) {
+                        // go through SendMediaActivity if this item does not qualify as a sticker
+                        ArrayList<MediaItem> mediaItems = new ArrayList<>();
+                        mediaItems.add(new MediaItem(uri, mimeType, null));
 
-						MessageReceiver[] messageReceivers = new MessageReceiver[1];
-						messageReceivers[0] = messageReceiver;
+                        MessageReceiver[] messageReceivers = new MessageReceiver[1];
+                        messageReceivers[0] = messageReceiver;
 
-						Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(getContext(), SendMediaActivity.class), messageReceivers);
-						intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-						intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
-						getContext().startActivity(intent);
+                        Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(getContext(), SendMediaActivity.class), messageReceivers);
+                        intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
+                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+                        getContext().startActivity(intent);
 
-					} else {
-						String caption = null;
+                    } else {
+                        String caption = null;
 
-						if (messageService != null) {
-							MediaItem mediaItem = new MediaItem(
-								uri,
-								MimeUtil.isGifFile(mimeType) ?
-									MediaItem.TYPE_IMAGE_ANIMATED :
-									MediaItem.TYPE_IMAGE);
-							mediaItem.setCaption(caption);
-							mediaItem.setMimeType(mimeType);
-							mediaItem.setRenderingType(
-								MimeUtil.MIME_TYPE_IMAGE_JPEG.equalsIgnoreCase(mimeType) ?
-								FileData.RENDERING_MEDIA :
-								FileData.RENDERING_STICKER);
-							messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
-						}
-					}
-					return true;
-				}
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-					inputContentInfo.releasePermission();
-				}
-				return false;
-			};
+                        if (messageService != null) {
+                            MediaItem mediaItem = new MediaItem(
+                                uri,
+                                MimeUtil.isGifFile(mimeType) ?
+                                    MediaItem.TYPE_IMAGE_ANIMATED :
+                                    MediaItem.TYPE_IMAGE);
+                            mediaItem.setCaption(caption);
+                            mediaItem.setMimeType(mimeType);
+                            mediaItem.setRenderingType(
+                                MimeUtil.MIME_TYPE_IMAGE_JPEG.equalsIgnoreCase(mimeType) ?
+                                    FileData.RENDERING_MEDIA :
+                                    FileData.RENDERING_STICKER);
+                            messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+                        }
+                    }
+                    return true;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    inputContentInfo.releasePermission();
+                }
+                return false;
+            };
 
-		return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
-	}
+        return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
+    }
 
-	private boolean isSticker(Uri uri, String mimeType) {
-		boolean hasTransparency = false;
-		if (MimeUtil.MIME_TYPE_IMAGE_PNG.equalsIgnoreCase(mimeType) || MimeUtil.MIME_TYPE_IMAGE_GIF.equals(mimeType)) {
-			Bitmap thumbnailBitmap = IconUtil.getThumbnailFromUri(ThreemaApplication.getAppContext(), uri, THUMBNAIL_SIZE_PX, mimeType, true);
-			if (thumbnailBitmap != null) {
-				hasTransparency = BitmapUtil.hasTransparency(thumbnailBitmap);
-				thumbnailBitmap.recycle();
-			}
-		}
-		return hasTransparency;
-	}
+    private boolean isSticker(Uri uri, String mimeType) {
+        boolean hasTransparency = false;
+        if (MimeUtil.MIME_TYPE_IMAGE_PNG.equalsIgnoreCase(mimeType) || MimeUtil.MIME_TYPE_IMAGE_GIF.equals(mimeType)) {
+            Bitmap thumbnailBitmap = IconUtil.getThumbnailFromUri(ThreemaApplication.getAppContext(), uri, THUMBNAIL_SIZE_PX, mimeType, true);
+            if (thumbnailBitmap != null) {
+                hasTransparency = BitmapUtil.hasTransparency(thumbnailBitmap);
+                thumbnailBitmap.recycle();
+            }
+        }
+        return hasTransparency;
+    }
 }
 

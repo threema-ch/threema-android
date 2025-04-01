@@ -241,7 +241,11 @@ class AddOrUpdateWorkIdentityBackgroundTask(
         }
 
         if (workContact.threemaId != identity) {
-            logger.error("Received different identity from server: {} instead of {}", workContact.threemaId, identity)
+            logger.error(
+                "Received different identity from server: {} instead of {}",
+                workContact.threemaId,
+                identity
+            )
             return null
         }
 

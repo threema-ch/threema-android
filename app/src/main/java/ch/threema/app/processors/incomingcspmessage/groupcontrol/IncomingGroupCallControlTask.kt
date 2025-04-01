@@ -45,7 +45,8 @@ class IncomingGroupCallControlTask(
         return processGroupCallControl()
     }
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processGroupCallControl()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processGroupCallControl()
 
     private fun processGroupCallControl() =
         if (groupCallManager.handleControlMessage(groupCallControlMessage)) {

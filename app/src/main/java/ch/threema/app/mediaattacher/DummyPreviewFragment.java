@@ -32,14 +32,14 @@ import ch.threema.app.R;
 
 public class DummyPreviewFragment extends PreviewFragment {
 
-	DummyPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel){
-		super(mediaItem, mediaAttachViewModel);
-	}
+    DummyPreviewFragment(MediaAttachItem mediaItem, MediaAttachViewModel mediaAttachViewModel) {
+        super(mediaItem, mediaAttachViewModel);
+    }
 
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		this.rootView = inflater.inflate(R.layout.fragment_dummy_preview, container, false);
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.rootView = inflater.inflate(R.layout.fragment_dummy_preview, container, false);
 
-		return rootView;
-	}
+        return rootView;
+    }
 }

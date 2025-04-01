@@ -36,11 +36,15 @@ class IncomingCspMessageTask(
     override val type: String = "IncomingCspMessageTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        when(message.payloadType.toInt()) {
+        when (message.payloadType.toInt()) {
             ProtocolDefines.PLTYPE_ERROR -> processError(message.toServerErrorData())
             ProtocolDefines.PLTYPE_ALERT -> processAlert(message.toServerAlertData())
             ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK -> processOutgoingMessageAck(message.toOutgoingMessageAck())
-            ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> processIncomingMessage(message.toIncomingMessageData(), handle)
+            ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> processIncomingMessage(
+                message.toIncomingMessageData(),
+                handle
+            )
+
             ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> processQueueSendComplete()
             ProtocolDefines.PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION -> processDeviceCookieChangeIndication()
             else -> throw PayloadProcessingException("Unknown payload type ${message.payloadType}")

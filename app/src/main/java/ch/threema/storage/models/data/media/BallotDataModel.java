@@ -34,86 +34,86 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.data.MessageDataInterface;
 
 public class BallotDataModel implements MessageDataInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BallotDataModel");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotDataModel");
 
-	public enum Type {
-		BALLOT_CREATED(1), BALLOT_MODIFIED(2), BALLOT_CLOSED(3);
-		private final int id;
-		private Type(int id) {
-			this.id = id;
-		}
-		public int getId() {
-			return id;
-		}
-	};
+    public enum Type {
+        BALLOT_CREATED(1), BALLOT_MODIFIED(2), BALLOT_CLOSED(3);
+        private final int id;
 
-	private Type type;
-	private int ballotId;
+        private Type(int id) {
+            this.id = id;
+        }
 
-	private BallotDataModel() {
-	}
+        public int getId() {
+            return id;
+        }
+    }
 
-	public BallotDataModel(Type type, int ballotId) {
-		this.type = type;
-		this.ballotId = ballotId;
-	}
+    ;
 
-	public Type getType() {
-		return this.type;
-	}
+    private Type type;
+    private int ballotId;
 
-	public int getBallotId() {
-		return this.ballotId;
-	}
+    private BallotDataModel() {
+    }
 
-	public void fromString(String s) {
-		JsonReader r = new JsonReader(new StringReader(s));
+    public BallotDataModel(Type type, int ballotId) {
+        this.type = type;
+        this.ballotId = ballotId;
+    }
 
-		try {
-			r.beginArray();
-			int typeId = r.nextInt();
-			if(typeId == Type.BALLOT_CREATED.getId()) {
-				this.type = Type.BALLOT_CREATED;
-			}
-			else if(typeId == Type.BALLOT_MODIFIED.getId()) {
-				this.type = Type.BALLOT_MODIFIED;
-			}
-			else if(typeId == Type.BALLOT_CLOSED.getId()) {
-				this.type = Type.BALLOT_CLOSED;
-			}
-			this.ballotId = r.nextInt();
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			//DO NOTHING!!
-		}
+    public Type getType() {
+        return this.type;
+    }
 
-	}
+    public int getBallotId() {
+        return this.ballotId;
+    }
 
-	@Override
-	public String toString() {
-		StringWriter sw = new StringWriter();
-		JsonWriter j = new JsonWriter(sw);
+    public void fromString(String s) {
+        JsonReader r = new JsonReader(new StringReader(s));
 
-		try {
-			j.beginArray();
-			j
-					.value(this.type.getId())
-					.value(this.ballotId);
-			j.endArray();
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			return null;
-		}
+        try {
+            r.beginArray();
+            int typeId = r.nextInt();
+            if (typeId == Type.BALLOT_CREATED.getId()) {
+                this.type = Type.BALLOT_CREATED;
+            } else if (typeId == Type.BALLOT_MODIFIED.getId()) {
+                this.type = Type.BALLOT_MODIFIED;
+            } else if (typeId == Type.BALLOT_CLOSED.getId()) {
+                this.type = Type.BALLOT_CLOSED;
+            }
+            this.ballotId = r.nextInt();
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            //DO NOTHING!!
+        }
 
-		return sw.toString();
+    }
 
-	}
+    @Override
+    public String toString() {
+        StringWriter sw = new StringWriter();
+        JsonWriter j = new JsonWriter(sw);
 
-	public static BallotDataModel create(String s) {
-		BallotDataModel m = new BallotDataModel();
-		m.fromString(s);
-		return m;
-	}
+        try {
+            j.beginArray();
+            j
+                .value(this.type.getId())
+                .value(this.ballotId);
+            j.endArray();
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            return null;
+        }
+
+        return sw.toString();
+
+    }
+
+    public static BallotDataModel create(String s) {
+        BallotDataModel m = new BallotDataModel();
+        m.fromString(s);
+        return m;
+    }
 }

@@ -32,7 +32,11 @@ import com.google.android.material.button.MaterialButton
 /**
  * This class manages the quick scroll buttons in a conversation and their timeouts; it also makes sure only one type is shown at once
  */
-class ScrollButtonManager(private val upButton: MaterialButton, private val downButton: FrameLayout, private val downBadgeDrawable: BadgeDrawable) {
+class ScrollButtonManager(
+    private val upButton: MaterialButton,
+    private val downButton: FrameLayout,
+    private val downBadgeDrawable: BadgeDrawable
+) {
     private val buttonHandler = Handler()
     private val buttonTask = Runnable {
         RuntimeUtil.runOnUiThread {
@@ -53,6 +57,7 @@ class ScrollButtonManager(private val upButton: MaterialButton, private val down
                     AnimationUtil.setFadingVisibility(upButton, View.VISIBLE)
                 }
             }
+
             TYPE_DOWN -> {
                 upButton.visibility = View.GONE
                 if (downButton.visibility != View.VISIBLE || downBadgeDrawable.number != count) {
@@ -67,6 +72,7 @@ class ScrollButtonManager(private val upButton: MaterialButton, private val down
                     }
                 }
             }
+
             else -> {}
         }
         if (count <= 0) {
@@ -80,9 +86,11 @@ class ScrollButtonManager(private val upButton: MaterialButton, private val down
             TYPE_UP -> if (upButton.visibility != View.GONE) {
                 AnimationUtil.setFadingVisibility(upButton, View.GONE)
             }
+
             TYPE_DOWN -> if (downButton.visibility != View.GONE) {
-                    AnimationUtil.setFadingVisibility(downButton, View.GONE)
+                AnimationUtil.setFadingVisibility(downButton, View.GONE)
             }
+
             else -> {}
         }
     }

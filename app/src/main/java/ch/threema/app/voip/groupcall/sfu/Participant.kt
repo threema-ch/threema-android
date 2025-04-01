@@ -171,7 +171,8 @@ class LocalParticipant internal constructor(
         renderer: SurfaceViewRenderer,
         width: Int,
         height: Int,
-        fps: Int): DetachSinkFn {
+        fps: Int
+    ): DetachSinkFn {
         logger.trace("Subscribe local camera")
         return localCtx.cameraVideoContext.renderTo(renderer)
     }

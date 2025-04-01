@@ -22,9 +22,9 @@
 package ch.threema.app.threemasafe;
 
 public class ThreemaSafeServerTestResponse {
-	static final String CONFIG_MAX_BACKUP_BYTES = "maxBackupBytes";
-	static final String CONFIG_RETENTION_DAYS = "retentionDays";
+    static final String CONFIG_MAX_BACKUP_BYTES = "maxBackupBytes";
+    static final String CONFIG_RETENTION_DAYS = "retentionDays";
 
-	long maxBackupBytes;
-	int retentionDays;
+    long maxBackupBytes;
+    int retentionDays;
 }

@@ -27,25 +27,25 @@ import org.slf4j.LoggerFactory;
 import androidx.annotation.NonNull;
 
 public class LoggingUtil {
-	/**
-	 * Get a logger instance. Should be used by all Threema code like this:
-	 *
-	 * 	 private static final Logger logger = LoggingUtil.getLogger("VoipCallService");
-	 */
-	public static Logger getThreemaLogger(@NonNull String name) {
-		return LoggerFactory.getLogger("ch.threema." + name);
-	}
+    /**
+     * Get a logger instance. Should be used by all Threema code like this:
+     * <p>
+     * private static final Logger logger = LoggingUtil.getLogger("VoipCallService");
+     */
+    public static Logger getThreemaLogger(@NonNull String name) {
+        return LoggerFactory.getLogger("ch.threema." + name);
+    }
 
-	/**
-	 * Clean up a tag, strip unnecessary package prefixes.
-	 */
-	@NonNull
-	public static String cleanTag(@NonNull String tag, String[] prefixes) {
-		for (String prefix : prefixes) {
-			if (tag.startsWith(prefix)) {
-				return tag.substring(prefix.length());
-			}
-		}
-		return tag;
-	}
+    /**
+     * Clean up a tag, strip unnecessary package prefixes.
+     */
+    @NonNull
+    public static String cleanTag(@NonNull String tag, String[] prefixes) {
+        for (String prefix : prefixes) {
+            if (tag.startsWith(prefix)) {
+                return tag.substring(prefix.length());
+            }
+        }
+        return tag;
+    }
 }

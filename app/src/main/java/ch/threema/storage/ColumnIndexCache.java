@@ -26,22 +26,22 @@ import android.database.Cursor;
 import androidx.collection.SimpleArrayMap;
 
 public class ColumnIndexCache {
-	private final SimpleArrayMap<String, Integer> indexMap = new SimpleArrayMap<>();
+    private final SimpleArrayMap<String, Integer> indexMap = new SimpleArrayMap<>();
 
-	public int getColumnIndex(Cursor cursor, String columnName) {
-		synchronized (indexMap) {
-			if (!indexMap.containsKey(columnName)) {
-				int index = cursor.getColumnIndex(columnName);
-				indexMap.put(columnName, index);
-				return index;
-			}
-			return indexMap.get(columnName);
-		}
-	}
+    public int getColumnIndex(Cursor cursor, String columnName) {
+        synchronized (indexMap) {
+            if (!indexMap.containsKey(columnName)) {
+                int index = cursor.getColumnIndex(columnName);
+                indexMap.put(columnName, index);
+                return index;
+            }
+            return indexMap.get(columnName);
+        }
+    }
 
-	public void clear() {
-		synchronized (indexMap) {
-			indexMap.clear();
-		}
-	}
+    public void clear() {
+        synchronized (indexMap) {
+            indexMap.clear();
+        }
+    }
 }

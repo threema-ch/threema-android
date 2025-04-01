@@ -1,60 +1,58 @@
-<LinearLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="2dp"
-		android:orientation="vertical"
-		android:contentDescription="@string/file_placeholder">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:orientation="vertical"
+    android:contentDescription="@string/file_placeholder">
 
-	<LinearLayout
-			android:id="@+id/content_block"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal">
+    <LinearLayout
+        android:id="@+id/content_block"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-		<ch.threema.app.ui.ControllerView
-				android:id="@+id/controller"
-				android:layout_width="@dimen/avatar_size_small"
-				android:layout_height="@dimen/avatar_size_small"
-				android:layout_gravity="center"/>
+        <ch.threema.app.ui.ControllerView
+            android:id="@+id/controller"
+            android:layout_width="@dimen/avatar_size_small"
+            android:layout_height="@dimen/avatar_size_small"
+            android:layout_gravity="center" />
 
-		<LinearLayout
-				android:id="@+id/document_info"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="center_vertical"
-				android:orientation="vertical"
-				android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
+        <LinearLayout
+            android:id="@+id/document_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/chat_bubble_container_padding_left_right">
 
-			<TextView
-					style="@style/Threema.Bubble.Text.Body"
-					android:id="@+id/tertiaryTextView"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:linksClickable="false"
-					android:ellipsize="middle"
-					android:singleLine="true" />
+            <TextView
+                style="@style/Threema.Bubble.Text.Body"
+                android:id="@+id/tertiaryTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:linksClickable="false"
+                android:ellipsize="middle"
+                android:singleLine="true" />
 
-			<TextView
-					style="@style/Threema.Bubble.Text.Body.Small"
-					android:id="@+id/secondary_text_view"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:linksClickable="false"
-					android:ellipsize="middle"
-					android:singleLine="true" />
+            <TextView
+                style="@style/Threema.Bubble.Text.Body.Small"
+                android:id="@+id/secondary_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:linksClickable="false"
+                android:ellipsize="middle"
+                android:singleLine="true" />
 
-		</LinearLayout>
+        </LinearLayout>
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<ch.threema.app.emojis.EmojiConversationTextView
-			style="@style/Threema.Bubble.Text.Body"
-			android:id="@+id/text_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginTop="6dp"
-			android:visibility="gone"
-			/>
+    <ch.threema.app.emojis.EmojiConversationTextView
+        style="@style/Threema.Bubble.Text.Body"
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:visibility="gone" />
 
 </LinearLayout>

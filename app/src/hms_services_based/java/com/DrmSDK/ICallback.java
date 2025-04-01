@@ -27,7 +27,7 @@ public interface ICallback extends android.os.IInterface {
      * Local-side IPC implementation stub class.
      */
     public static abstract class Stub extends android.os.Binder implements
-            ICallback {
+        ICallback {
         private static final String DESCRIPTOR = "com.huawei.appmarket.service.pay.drm.ICallback";
 
         /**
@@ -43,7 +43,7 @@ public interface ICallback extends android.os.IInterface {
          * a proxy if needed.
          */
         public static ICallback asInterface(
-                android.os.IBinder obj) {
+            android.os.IBinder obj) {
             if ((obj == null)) {
                 return null;
             }
@@ -52,7 +52,7 @@ public interface ICallback extends android.os.IInterface {
                 return ((ICallback) iin);
             }
             return new ICallback.Stub.Proxy(
-                    obj);
+                obj);
         }
 
         @Override
@@ -62,7 +62,7 @@ public interface ICallback extends android.os.IInterface {
 
         @Override
         public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags)
-                throws android.os.RemoteException {
+            throws android.os.RemoteException {
             if (code == INTERFACE_TRANSACTION) {
                 reply.writeString(DESCRIPTOR);
                 return true;
@@ -71,7 +71,7 @@ public interface ICallback extends android.os.IInterface {
                 data.enforceInterface(DESCRIPTOR);
                 java.util.Map arg0;
                 ClassLoader cl = (ClassLoader) this
-                        .getClass().getClassLoader();
+                    .getClass().getClassLoader();
                 arg0 = data.readHashMap(cl);
                 this.onResult(arg0);
                 reply.writeNoException();
@@ -82,7 +82,7 @@ public interface ICallback extends android.os.IInterface {
         }
 
         private static class Proxy implements
-                ICallback {
+            ICallback {
             private android.os.IBinder mRemote;
 
             Proxy(android.os.IBinder remote) {
@@ -100,14 +100,14 @@ public interface ICallback extends android.os.IInterface {
 
             @Override
             public void onResult(java.util.Map result)
-                    throws android.os.RemoteException {
+                throws android.os.RemoteException {
                 android.os.Parcel data = android.os.Parcel.obtain();
                 android.os.Parcel reply = android.os.Parcel.obtain();
                 try {
                     data.writeInterfaceToken(DESCRIPTOR);
                     data.writeMap(result);
                     mRemote.transact(Stub.TRANSACTION_ON_RESULT, data, reply,
-                            0);
+                        0);
                     reply.readException();
                 } finally {
                     reply.recycle();
@@ -127,5 +127,5 @@ public interface ICallback extends android.os.IInterface {
      * @throws android.os.RemoteException 远程连接异常(Remote connection exception.)
      */
     public void onResult(java.util.Map result)
-            throws android.os.RemoteException;
+        throws android.os.RemoteException;
 }

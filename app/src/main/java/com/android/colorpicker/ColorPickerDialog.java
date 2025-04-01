@@ -66,7 +66,7 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
     }
 
     public static ColorPickerDialog newInstance(int titleResId, int[] colors, int selectedColor,
-            int columns, int size) {
+                                                int columns, int size) {
         ColorPickerDialog ret = new ColorPickerDialog();
         ret.initialize(titleResId, colors, selectedColor, columns, size);
         return ret;
@@ -103,7 +103,7 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
             mColors = savedInstanceState.getIntArray(KEY_COLORS);
             mSelectedColor = (Integer) savedInstanceState.getSerializable(KEY_SELECTED_COLOR);
             mColorContentDescriptions = savedInstanceState.getStringArray(
-                    KEY_COLOR_CONTENT_DESCRIPTIONS);
+                KEY_COLOR_CONTENT_DESCRIPTIONS);
         }
     }
 
@@ -135,7 +135,7 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
 
         if (getTargetFragment() instanceof OnColorSelectedListener) {
             final OnColorSelectedListener listener =
-                    (OnColorSelectedListener) getTargetFragment();
+                (OnColorSelectedListener) getTargetFragment();
             listener.onColorSelected(color);
         }
 

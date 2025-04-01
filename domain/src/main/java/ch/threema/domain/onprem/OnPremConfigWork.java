@@ -22,13 +22,13 @@
 package ch.threema.domain.onprem;
 
 public class OnPremConfigWork {
-	private final String url;
+    private final String url;
 
-	public OnPremConfigWork(String url) {
-		this.url = url;
-	}
+    public OnPremConfigWork(String url) {
+        this.url = url;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 }

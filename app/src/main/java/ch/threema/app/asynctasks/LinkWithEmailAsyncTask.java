@@ -39,103 +39,103 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LinkWithEmailAsyncTask");
-	private static final String DIALOG_TAG_PROGRESS = "lpr";
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LinkWithEmailAsyncTask");
+    private static final String DIALOG_TAG_PROGRESS = "lpr";
 
-	private UserService userService;
-	private final Runnable runOnCompletion;
-	private final String emailAddress;
-	private final FragmentManager fragmentManager;
-	private final Context context;
+    private UserService userService;
+    private final Runnable runOnCompletion;
+    private final String emailAddress;
+    private final FragmentManager fragmentManager;
+    private final Context context;
 
-	private static final int MODE_NONE = 0;
-	private static final int MODE_LINK = 1;
-	private static final int MODE_UNLINK = 2;
-	private static final int MODE_CHECK = 3;
+    private static final int MODE_NONE = 0;
+    private static final int MODE_LINK = 1;
+    private static final int MODE_UNLINK = 2;
+    private static final int MODE_CHECK = 3;
 
-	private int linkingMode = MODE_NONE;
+    private int linkingMode = MODE_NONE;
 
-	public LinkWithEmailAsyncTask(Context context, FragmentManager fragmentManager, String emailAddress, Runnable runOnCompletion) {
-		this.fragmentManager = fragmentManager;
-		this.emailAddress = emailAddress;
-		this.runOnCompletion = runOnCompletion;
-		this.context = context;
+    public LinkWithEmailAsyncTask(Context context, FragmentManager fragmentManager, String emailAddress, Runnable runOnCompletion) {
+        this.fragmentManager = fragmentManager;
+        this.emailAddress = emailAddress;
+        this.runOnCompletion = runOnCompletion;
+        this.context = context;
 
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		try {
-			this.userService = serviceManager.getUserService();
-		} catch (Exception e) {
-			//
-		}
-	}
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        try {
+            this.userService = serviceManager.getUserService();
+        } catch (Exception e) {
+            //
+        }
+    }
 
-	@Override
-	protected void onPreExecute() {
-		@StringRes int dialogText = 0;
+    @Override
+    protected void onPreExecute() {
+        @StringRes int dialogText = 0;
 
-		if (TestUtil.isEmptyOrNull(emailAddress)) {
-			if (userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
-				linkingMode = MODE_UNLINK;
-				dialogText = R.string.unlinking_email;
-			}
-		} else {
-			if (userService.getEmailLinkingState() != UserService.LinkingState_NONE && userService.getLinkedEmail().equals(emailAddress)) {
-				linkingMode = MODE_CHECK;
-			} else {
-				linkingMode = MODE_LINK;
-				dialogText = R.string.wizard2_email_linking;
-			}
-		}
+        if (TestUtil.isEmptyOrNull(emailAddress)) {
+            if (userService.getEmailLinkingState() != UserService.LinkingState_NONE) {
+                linkingMode = MODE_UNLINK;
+                dialogText = R.string.unlinking_email;
+            }
+        } else {
+            if (userService.getEmailLinkingState() != UserService.LinkingState_NONE && userService.getLinkedEmail().equals(emailAddress)) {
+                linkingMode = MODE_CHECK;
+            } else {
+                linkingMode = MODE_LINK;
+                dialogText = R.string.wizard2_email_linking;
+            }
+        }
 
-		if (dialogText != 0) {
-			GenericProgressDialog.newInstance(dialogText, R.string.please_wait).show(fragmentManager, DIALOG_TAG_PROGRESS);
-		}
-	}
+        if (dialogText != 0) {
+            GenericProgressDialog.newInstance(dialogText, R.string.please_wait).show(fragmentManager, DIALOG_TAG_PROGRESS);
+        }
+    }
 
-	@Override
-	protected String doInBackground(Void... params) {
-		if (this.userService == null) {
-			logger.error("UserService not available");
-			return null;
-		}
+    @Override
+    protected String doInBackground(Void... params) {
+        if (this.userService == null) {
+            logger.error("UserService not available");
+            return null;
+        }
 
-		String resultString = null;
+        String resultString = null;
 
-		switch (linkingMode) {
-			case MODE_UNLINK:
-				try {
-					userService.unlinkEmail();
-				} catch (Exception x) {
-					logger.error("exception", x);
-					resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
-				}
-				break;
-			case MODE_CHECK:
-				resultString = context.getString(R.string.email_already_linked);
-				break;
-			case MODE_LINK:
-				try {
-					userService.linkWithEmail(emailAddress);
-				} catch (Exception x) {
-					resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
-				}
-				break;
-			default:
-				break;
-		}
-		return resultString;
-	}
+        switch (linkingMode) {
+            case MODE_UNLINK:
+                try {
+                    userService.unlinkEmail();
+                } catch (Exception x) {
+                    logger.error("exception", x);
+                    resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
+                }
+                break;
+            case MODE_CHECK:
+                resultString = context.getString(R.string.email_already_linked);
+                break;
+            case MODE_LINK:
+                try {
+                    userService.linkWithEmail(emailAddress);
+                } catch (Exception x) {
+                    resultString = String.format(context.getString(R.string.an_error_occurred_more), x.getMessage());
+                }
+                break;
+            default:
+                break;
+        }
+        return resultString;
+    }
 
-	@Override
-	protected void onPostExecute(String resultString) {
-		DialogUtil.dismissDialog(fragmentManager, DIALOG_TAG_PROGRESS, true);
+    @Override
+    protected void onPostExecute(String resultString) {
+        DialogUtil.dismissDialog(fragmentManager, DIALOG_TAG_PROGRESS, true);
 
-		if (resultString != null) {
-			Toast.makeText(ThreemaApplication.getAppContext(), resultString, Toast.LENGTH_LONG).show();
-		}
+        if (resultString != null) {
+            Toast.makeText(ThreemaApplication.getAppContext(), resultString, Toast.LENGTH_LONG).show();
+        }
 
-		if (runOnCompletion != null) {
-			runOnCompletion.run();
-		}
-	}
+        if (runOnCompletion != null) {
+            runOnCompletion.run();
+        }
+    }
 }

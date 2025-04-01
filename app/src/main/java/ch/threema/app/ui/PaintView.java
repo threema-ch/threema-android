@@ -38,255 +38,257 @@ import java.util.Collections;
 import java.util.List;
 
 public class PaintView extends View {
-	private float mX, mY;
-	private int currentColor, currentStrokeWidth, currentWidth, currentHeight;
-	private boolean isTransparent = false;
-	private static final float TOUCH_TOLERANCE = 4;
-	private boolean isActive = true, hasMoved;
-	private TouchListener onTouchListener;
-	private final List<Rect> drawingRect = Collections.singletonList(new Rect());
+    private float mX, mY;
+    private int currentColor, currentStrokeWidth, currentWidth, currentHeight;
+    private boolean isTransparent = false;
+    private static final float TOUCH_TOLERANCE = 4;
+    private boolean isActive = true, hasMoved;
+    private TouchListener onTouchListener;
+    private final List<Rect> drawingRect = Collections.singletonList(new Rect());
 
-	private final ArrayList<Path> paths = new ArrayList<>();
-	private final ArrayList<Paint> paints = new ArrayList<>();
+    private final ArrayList<Path> paths = new ArrayList<>();
+    private final ArrayList<Paint> paints = new ArrayList<>();
 
-	public PaintView(Context context) {
-		super(context);
-		init();
-	}
+    public PaintView(Context context) {
+        super(context);
+        init();
+    }
 
-	public PaintView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
+    public PaintView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
 
-	public PaintView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		init();
-	}
+    public PaintView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
 
-	private void init() {
-		createPath();
-		createPaint();
+    private void init() {
+        createPath();
+        createPaint();
 
-		// defaults
-		currentColor = 0xFFFF0000;
-		currentStrokeWidth = 15;
-	}
+        // defaults
+        currentColor = 0xFFFF0000;
+        currentStrokeWidth = 15;
+    }
 
-	private Path createPath() {
-		Path path = new Path();
-		paths.add(path);
+    private Path createPath() {
+        Path path = new Path();
+        paths.add(path);
 
-		return path;
-	}
+        return path;
+    }
 
-	private void createPaint() {
-		Paint paint = new Paint();
-		paints.add(paint);
+    private void createPaint() {
+        Paint paint = new Paint();
+        paints.add(paint);
 
-		paint.setAntiAlias(true);
-		paint.setDither(true);
-		paint.setColor(currentColor);
-		if (isTransparent) {
-			paint.setAlpha(128);
-		}
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeJoin(Paint.Join.ROUND);
-		paint.setStrokeCap(Paint.Cap.ROUND);
-		paint.setStrokeWidth(currentStrokeWidth);
-	}
+        paint.setAntiAlias(true);
+        paint.setDither(true);
+        paint.setColor(currentColor);
+        if (isTransparent) {
+            paint.setAlpha(128);
+        }
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeWidth(currentStrokeWidth);
+    }
 
-	private Path getCurrentPath() {
-		return paths.get(paths.size() - 1);
-	}
+    private Path getCurrentPath() {
+        return paths.get(paths.size() - 1);
+    }
 
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
 
-		currentWidth = canvas.getWidth();
-		currentHeight = canvas.getHeight();
+        currentWidth = canvas.getWidth();
+        currentHeight = canvas.getHeight();
 
-		for (int i = 0; i < paths.size(); i++) {
-			canvas.drawPath(paths.get(i), paints.get(i));
-		}
-	}
+        for (int i = 0; i < paths.size(); i++) {
+            canvas.drawPath(paths.get(i), paints.get(i));
+        }
+    }
 
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
 
-		getDrawingRect(drawingRect.get(0));
-		ViewCompat.setSystemGestureExclusionRects(this, drawingRect);
-	}
+        getDrawingRect(drawingRect.get(0));
+        ViewCompat.setSystemGestureExclusionRects(this, drawingRect);
+    }
 
-	private void touch_start(float x, float y) {
-		// new path
-		Path path = createPath();
-		createPaint();
+    private void touch_start(float x, float y) {
+        // new path
+        Path path = createPath();
+        createPaint();
 
-		path.moveTo(x, y);
-		mX = x;
-		mY = y;
-		hasMoved = false;
-	}
+        path.moveTo(x, y);
+        mX = x;
+        mY = y;
+        hasMoved = false;
+    }
 
-	private void touch_move(float x, float y) {
-		if (isRealMovement(x, y)) {
-			getCurrentPath().quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
-			mX = x;
-			mY = y;
-			hasMoved = true;
-		}
-	}
+    private void touch_move(float x, float y) {
+        if (isRealMovement(x, y)) {
+            getCurrentPath().quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2);
+            mX = x;
+            mY = y;
+            hasMoved = true;
+        }
+    }
 
-	private void touch_up(float x, float y) {
-		if (isRealMovement(x, y) || hasMoved) {
-			getCurrentPath().lineTo(mX, mY);
-			onTouchListener.onAdded();
-		}
-		else {
-			int pathIndex = paths.size() - 1;
-			paths.remove(pathIndex);
-			paints.remove(pathIndex);
-			invalidate();
-		}
-	}
+    private void touch_up(float x, float y) {
+        if (isRealMovement(x, y) || hasMoved) {
+            getCurrentPath().lineTo(mX, mY);
+            onTouchListener.onAdded();
+        } else {
+            int pathIndex = paths.size() - 1;
+            paths.remove(pathIndex);
+            paints.remove(pathIndex);
+            invalidate();
+        }
+    }
 
-	private boolean isRealMovement(float x, float y) {
-		float dx = Math.abs(x - mX);
-		float dy = Math.abs(y - mY);
-		return (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE);
-	}
+    private boolean isRealMovement(float x, float y) {
+        float dx = Math.abs(x - mX);
+        float dy = Math.abs(y - mY);
+        return (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE);
+    }
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		if (!isActive) {
-			return false;
-		}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!isActive) {
+            return false;
+        }
 
-		float x = event.getX();
-		float y = event.getY();
+        float x = event.getX();
+        float y = event.getY();
 
-		switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				touch_start(x, y);
-				this.onTouchListener.onTouchDown();
-				break;
-			case MotionEvent.ACTION_MOVE:
-				touch_move(x, y);
-				break;
-			case MotionEvent.ACTION_CANCEL:
-				// Handle a cancel action the same as action up (for system gestures)
-			case MotionEvent.ACTION_UP:
-				touch_up(x, y);
-				this.onTouchListener.onTouchUp();
-				break;
-			default:
-				return false;
-		}
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                touch_start(x, y);
+                this.onTouchListener.onTouchDown();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                touch_move(x, y);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                // Handle a cancel action the same as action up (for system gestures)
+            case MotionEvent.ACTION_UP:
+                touch_up(x, y);
+                this.onTouchListener.onTouchUp();
+                break;
+            default:
+                return false;
+        }
 
-		invalidate();
+        invalidate();
 
-		return true;
-	}
+        return true;
+    }
 
-	public void undo() {
-		int pathIndex = paths.size() - 1;
-		if (pathIndex > 0) {
-			paths.remove(pathIndex);
-			paints.remove(pathIndex);
-			invalidate();
-			onTouchListener.onDeleted();
-		}
-	}
+    public void undo() {
+        int pathIndex = paths.size() - 1;
+        if (pathIndex > 0) {
+            paths.remove(pathIndex);
+            paints.remove(pathIndex);
+            invalidate();
+            onTouchListener.onDeleted();
+        }
+    }
 
-	public void renderOverlay(Canvas combinedCanvas, int srcWidth, int srcHeight) {
-		// render overlay to original canvas
-		float factorX = (float) combinedCanvas.getWidth() / (float) srcWidth;
-		float factorY = (float) combinedCanvas.getHeight() / (float) srcHeight;
+    public void renderOverlay(Canvas combinedCanvas, int srcWidth, int srcHeight) {
+        // render overlay to original canvas
+        float factorX = (float) combinedCanvas.getWidth() / (float) srcWidth;
+        float factorY = (float) combinedCanvas.getHeight() / (float) srcHeight;
 
-		Matrix matrix = new Matrix();
-		matrix.setScale(factorX, factorY);
+        Matrix matrix = new Matrix();
+        matrix.setScale(factorX, factorY);
 
-		for (int i = 0; i < paths.size(); i++) {
-			Path path = paths.get(i);
-			Path scaledPath = new Path();
-			path.transform(matrix, scaledPath);
+        for (int i = 0; i < paths.size(); i++) {
+            Path path = paths.get(i);
+            Path scaledPath = new Path();
+            path.transform(matrix, scaledPath);
 
-			Paint paint = paints.get(i);
-			Paint scaledPaint = new Paint(paint);
-			scaledPaint.setStrokeWidth(scaledPaint.getStrokeWidth() * factorX);
+            Paint paint = paints.get(i);
+            Paint scaledPaint = new Paint(paint);
+            scaledPaint.setStrokeWidth(scaledPaint.getStrokeWidth() * factorX);
 
-			combinedCanvas.drawPath(scaledPath, scaledPaint);
-		}
-	}
+            combinedCanvas.drawPath(scaledPath, scaledPaint);
+        }
+    }
 
-	public void recalculate(int newWidth, int newHeight) {
-		if (currentHeight != 0 && currentWidth != 0) {
-			float factorX = (float) newWidth / (float) currentWidth;
-			float factorY = (float) newHeight / (float) currentHeight;
+    public void recalculate(int newWidth, int newHeight) {
+        if (currentHeight != 0 && currentWidth != 0) {
+            float factorX = (float) newWidth / (float) currentWidth;
+            float factorY = (float) newHeight / (float) currentHeight;
 
-			Matrix matrix = new Matrix();
-			matrix.setScale(factorX, factorY);
+            Matrix matrix = new Matrix();
+            matrix.setScale(factorX, factorY);
 
-			for (int i = 0; i < paths.size(); i++) {
-				Path path = paths.get(i);
-				Path scaledPath = new Path();
-				path.transform(matrix, scaledPath);
-				paths.get(i).set(scaledPath);
+            for (int i = 0; i < paths.size(); i++) {
+                Path path = paths.get(i);
+                Path scaledPath = new Path();
+                path.transform(matrix, scaledPath);
+                paths.get(i).set(scaledPath);
 
-				Paint paint = paints.get(i);
-				Paint scaledPaint = new Paint(paint);
-				scaledPaint.setStrokeWidth(scaledPaint.getStrokeWidth() * factorX);
-				paints.get(i).set(scaledPaint);
-			}
-			invalidate();
-		}
-	}
+                Paint paint = paints.get(i);
+                Paint scaledPaint = new Paint(paint);
+                scaledPaint.setStrokeWidth(scaledPaint.getStrokeWidth() * factorX);
+                paints.get(i).set(scaledPaint);
+            }
+            invalidate();
+        }
+    }
 
-	public void flip() {
-		Matrix flipMatrix = new Matrix();
-		flipMatrix.setScale(-1, 1);
-		flipMatrix.postTranslate(getWidth(), 0);
+    public void flip() {
+        Matrix flipMatrix = new Matrix();
+        flipMatrix.setScale(-1, 1);
+        flipMatrix.postTranslate(getWidth(), 0);
 
-		for (Path path : paths) {
-			path.transform(flipMatrix);
-		}
-	}
+        for (Path path : paths) {
+            path.transform(flipMatrix);
+        }
+    }
 
-	public void setColor(int color) {
-		currentColor = color;
-	}
+    public void setColor(int color) {
+        currentColor = color;
+    }
 
-	public void setTransparent(boolean isTransparent) {
-		this.isTransparent = isTransparent;
-	}
+    public void setTransparent(boolean isTransparent) {
+        this.isTransparent = isTransparent;
+    }
 
-	public void setStrokeWidth(int width) {
-		currentStrokeWidth = width;
-	}
+    public void setStrokeWidth(int width) {
+        currentStrokeWidth = width;
+    }
 
-	public void setActive(boolean active) {
-		isActive = active;
-	}
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 
-	public boolean getActive() {
-		return isActive;
-	}
+    public boolean getActive() {
+        return isActive;
+    }
 
-	public int getNumPaths() {
-		return paths.size() - 1;
-	}
+    public int getNumPaths() {
+        return paths.size() - 1;
+    }
 
-	public void setTouchListener(TouchListener touchListener) {
-		this.onTouchListener = touchListener;
-	}
+    public void setTouchListener(TouchListener touchListener) {
+        this.onTouchListener = touchListener;
+    }
 
-	public interface TouchListener {
-		void onTouchUp();
-		void onTouchDown();
-		void onAdded();
-		void onDeleted();
-	}
+    public interface TouchListener {
+        void onTouchUp();
+
+        void onTouchDown();
+
+        void onAdded();
+
+        void onDeleted();
+    }
 }

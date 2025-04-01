@@ -28,44 +28,44 @@ import org.junit.runners.model.Statement;
 
 /**
  * Capture adb logcat on test failure.
- *
+ * <p>
  * Based on https://www.braze.com/resources/articles/logcat-junit-android-tests
  */
 public class CaptureLogcatOnTestFailureRule implements TestRule {
-	private static final String LOGCAT_HEADER = "\n================ Logcat Output ================\n";
-	private static final String STACKTRACE_HEADER = "\n================ Stacktrace ================\n";
-	private static final String ORIGINAL_CLASS_HEADER = "\nOriginal class: ";
+    private static final String LOGCAT_HEADER = "\n================ Logcat Output ================\n";
+    private static final String STACKTRACE_HEADER = "\n================ Stacktrace ================\n";
+    private static final String ORIGINAL_CLASS_HEADER = "\nOriginal class: ";
 
-	@Override
-	public Statement apply(Statement base, Description description) {
-		return new Statement() {
-			@Override
-			public void evaluate() throws Throwable {
-				// Before test, clear logcat
-				TestHelpers.clearLogcat();
+    @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                // Before test, clear logcat
+                TestHelpers.clearLogcat();
 
-				try {
-					// Run statement
-					base.evaluate();
-				} catch (Throwable originalThrowable) {
-					if (originalThrowable instanceof AssumptionViolatedException) {
-						throw originalThrowable;
-					}
+                try {
+                    // Run statement
+                    base.evaluate();
+                } catch (Throwable originalThrowable) {
+                    if (originalThrowable instanceof AssumptionViolatedException) {
+                        throw originalThrowable;
+                    }
 
-					// Fetch logcat logs
-					final String testName = description.getMethodName() + "(" + description.getClassName() + ")";
-					final String logcatLogs = TestHelpers.getTestLogs(testName);
+                    // Fetch logcat logs
+                    final String testName = description.getMethodName() + "(" + description.getClassName() + ")";
+                    final String logcatLogs = TestHelpers.getTestLogs(testName);
 
-					// Throw updated throwable
-					final String thrownMessage = originalThrowable.getMessage()
-						+ ORIGINAL_CLASS_HEADER + originalThrowable.getClass().getName()
-						+ LOGCAT_HEADER + logcatLogs
-						+ STACKTRACE_HEADER;
-					final Throwable modifiedThrowable = new Throwable(thrownMessage);
-					modifiedThrowable.setStackTrace(originalThrowable.getStackTrace());
-					throw modifiedThrowable;
-				}
-			}
-		};
-	}
+                    // Throw updated throwable
+                    final String thrownMessage = originalThrowable.getMessage()
+                        + ORIGINAL_CLASS_HEADER + originalThrowable.getClass().getName()
+                        + LOGCAT_HEADER + logcatLogs
+                        + STACKTRACE_HEADER;
+                    final Throwable modifiedThrowable = new Throwable(thrownMessage);
+                    modifiedThrowable.setStackTrace(originalThrowable.getStackTrace());
+                    throw modifiedThrowable;
+                }
+            }
+        };
+    }
 }

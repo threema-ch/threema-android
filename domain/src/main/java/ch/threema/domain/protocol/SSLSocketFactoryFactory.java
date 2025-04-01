@@ -30,5 +30,6 @@ import androidx.annotation.NonNull;
  */
 @FunctionalInterface
 public interface SSLSocketFactoryFactory {
-	@NonNull SSLSocketFactory makeFactory(@NonNull String hostname);
+    @NonNull
+    SSLSocketFactory makeFactory(@NonNull String hostname);
 }

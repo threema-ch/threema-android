@@ -1,119 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/top_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:background="@android:color/black">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/top_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@android:color/black">
 
-	<FrameLayout android:layout_width="match_parent"
-				 android:layout_height="wrap_content">
-
-	<ImageView
-			android:id="@+id/wizard_background"
-			android:layout_width="wrap_content"
-			android:layout_height="fill_parent"
-			android:adjustViewBounds="true"
-			android:clickable="false"
-			android:src="@drawable/background_pic"
-			android:importantForAccessibility="no"
-			android:scaleType="centerCrop"/>
-
-	<RelativeLayout
-			android:id="@+id/layout_parent_top"
-			android:orientation="vertical"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
-			android:paddingRight="@dimen/wizard_contents_padding_horizontal"
-			android:paddingTop="@dimen/wizard_contents_padding">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/enter_serial_welcome_title"
-            android:src="@drawable/logo_main_white"
+            android:id="@+id/wizard_background"
             android:layout_width="wrap_content"
-            android:layout_height="64dp"
+            android:layout_height="fill_parent"
+            android:adjustViewBounds="true"
+            android:clickable="false"
+            android:src="@drawable/background_pic"
             android:importantForAccessibility="no"
-            android:scaleX="1.5"
-            android:scaleY="1.5"
-            android:layout_centerHorizontal="true" />
+            android:scaleType="centerCrop" />
 
-		<TextView
-			style="@style/WizardMediumText"
-			android:id="@+id/layout_top"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/enter_serial_welcome_title"
-			android:layout_centerHorizontal="true"
-			android:layout_marginBottom="5dp"
-			android:gravity="center_horizontal" />
+        <RelativeLayout
+            android:id="@+id/layout_parent_top"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/wizard_contents_padding_horizontal"
+            android:paddingRight="@dimen/wizard_contents_padding_horizontal"
+            android:paddingTop="@dimen/wizard_contents_padding">
 
-		<LinearLayout android:id="@+id/unlock_layout"
-					  android:layout_width="match_parent"
-					  android:layout_height="wrap_content"
-					  android:layout_marginTop="32dp"
-					  android:gravity="center_vertical"
-					  android:layout_below="@id/layout_top"
-					  android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/enter_serial_welcome_title"
+                android:src="@drawable/logo_main_white"
+                android:layout_width="wrap_content"
+                android:layout_height="64dp"
+                android:importantForAccessibility="no"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_centerHorizontal="true" />
 
-			<ImageView
-				style="@style/WizardEditTextIcon"
-				android:id="@+id/unlock_logo"
-				android:layout_width="@dimen/wizard_default_view_height"
-				android:layout_height="match_parent"
-				app:srcCompat="@drawable/ic_key_outline"/>
+            <TextView
+                style="@style/WizardMediumText"
+                android:id="@+id/layout_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/enter_serial_welcome_title"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_horizontal" />
 
-			<com.google.android.material.textfield.TextInputLayout
-				android:id="@+id/lastname_layout"
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:layout_gravity="center_vertical"
-				android:gravity="center_vertical"
-				app:endIconMode="clear_text"
-				app:hintAnimationEnabled="false"
-				app:hintEnabled="false">
+            <LinearLayout
+                android:id="@+id/unlock_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center_vertical"
+                android:layout_below="@id/layout_top"
+                android:orientation="horizontal">
 
-			<ch.threema.app.emojis.EmojiEditText
-					style="@style/WizardEditText"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:id="@+id/license_key"
-					android:hint="@string/enter_serial_hint"
-					android:inputType="textCapCharacters|textNoSuggestions"
-					android:imeOptions="actionGo"
-					android:singleLine="true"/>
-				<requestFocus />
-			</com.google.android.material.textfield.TextInputLayout>
+                <ImageView
+                    style="@style/WizardEditTextIcon"
+                    android:id="@+id/unlock_logo"
+                    android:layout_width="@dimen/wizard_default_view_height"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_key_outline" />
 
-			<com.google.android.material.button.MaterialButton
-				android:id="@+id/unlock_button"
-				style="@style/Threema.MaterialButton.Icon.Circle.Filled"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="6dp"
-				android:contentDescription="@string/send"
-				app:icon="@drawable/ic_arrow_left"
-				android:rotation="180"
-				android:enabled="false"
-				android:clickable="false"
-				/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/lastname_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    app:endIconMode="clear_text"
+                    app:hintAnimationEnabled="false"
+                    app:hintEnabled="false">
 
-		</LinearLayout>
+                    <ch.threema.app.emojis.EmojiEditText
+                        style="@style/WizardEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/license_key"
+                        android:hint="@string/enter_serial_hint"
+                        android:inputType="textCapCharacters|textNoSuggestions"
+                        android:imeOptions="actionGo"
+                        android:singleLine="true" />
 
-		<TextView
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@id/unlock_layout"
-				android:layout_marginLeft="@dimen/wizard_default_view_height"
-				android:layout_marginTop="16dp"
-				android:textSize="@dimen/wizard_text_medium"
-				android:textColor="@color/material_red"
-				android:id="@+id/unlock_state"/>
+                    <requestFocus />
+                </com.google.android.material.textfield.TextInputLayout>
 
-	</RelativeLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/unlock_button"
+                    style="@style/Threema.MaterialButton.Icon.Circle.Filled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:contentDescription="@string/send"
+                    app:icon="@drawable/ic_arrow_left"
+                    android:rotation="180"
+                    android:enabled="false"
+                    android:clickable="false" />
 
-	</FrameLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/unlock_layout"
+                android:layout_marginLeft="@dimen/wizard_default_view_height"
+                android:layout_marginTop="16dp"
+                android:textSize="@dimen/wizard_text_medium"
+                android:textColor="@color/material_red"
+                android:id="@+id/unlock_state" />
+
+        </RelativeLayout>
+
+    </FrameLayout>
 
 </ScrollView>

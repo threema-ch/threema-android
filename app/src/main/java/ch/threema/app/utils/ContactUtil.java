@@ -63,315 +63,315 @@ import ch.threema.storage.models.ContactModel;
 
 /**
  * Static utility functions related to contacts.
- *
+ * <p>
  * TODO(ANDR-2985): Most of these could be contact model methods.
  */
 public class ContactUtil {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
 
-	private static final String CONTACT_UID_PREFIX = "c-";
+    private static final String CONTACT_UID_PREFIX = "c-";
 
-	public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
+    public static final int CHANNEL_NAME_MAX_LENGTH_BYTES = 256;
 
-	public static final long PROFILE_PICTURE_BLOB_CACHE_DURATION = DateUtils.WEEK_IN_MILLIS;
+    public static final long PROFILE_PICTURE_BLOB_CACHE_DURATION = DateUtils.WEEK_IN_MILLIS;
 
-	@Deprecated
-	public static int getUniqueId(@Nullable String identity) {
-		if (identity == null) {
-			return 0;
-		}
-		return (CONTACT_UID_PREFIX + identity).hashCode();
-	}
+    @Deprecated
+    public static int getUniqueId(@Nullable String identity) {
+        if (identity == null) {
+            return 0;
+        }
+        return (CONTACT_UID_PREFIX + identity).hashCode();
+    }
 
-	@NonNull
-	public static String getUniqueIdString(@Nullable String identity) {
-		if (identity != null) {
-			try {
-				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				messageDigest.update((CONTACT_UID_PREFIX + identity).getBytes());
-				return Base32.encode(messageDigest.digest());
-			} catch (NoSuchAlgorithmException e) {
-				logger.warn("Could not calculate unique id string");
-			}
-		}
-		return "";
-	}
+    @NonNull
+    public static String getUniqueIdString(@Nullable String identity) {
+        if (identity != null) {
+            try {
+                MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+                messageDigest.update((CONTACT_UID_PREFIX + identity).getBytes());
+                return Base32.encode(messageDigest.digest());
+            } catch (NoSuchAlgorithmException e) {
+                logger.warn("Could not calculate unique id string");
+            }
+        }
+        return "";
+    }
 
-	public static boolean canChangeFirstName(@Nullable ContactModel contact) {
-		return contact != null && !contact.isLinkedToAndroidContact();
-	}
+    public static boolean canChangeFirstName(@Nullable ContactModel contact) {
+        return contact != null && !contact.isLinkedToAndroidContact();
+    }
 
-	public static boolean canChangeLastName(@Nullable ContactModel contact) {
-		return contact != null
-				&& !contact.isLinkedToAndroidContact()
-				&& !isGatewayContact(contact);
-	}
+    public static boolean canChangeLastName(@Nullable ContactModel contact) {
+        return contact != null
+            && !contact.isLinkedToAndroidContact()
+            && !isGatewayContact(contact);
+    }
 
-	public static boolean canChangeAvatar(
-		@NonNull ContactModel contactModel,
-		@NonNull PreferenceService preferenceService,
-		@NonNull FileService fileService
-	) {
-		return canHaveCustomAvatar(contactModel)
-				&& !(preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(contactModel.getIdentity()));
-	}
+    public static boolean canChangeAvatar(
+        @NonNull ContactModel contactModel,
+        @NonNull PreferenceService preferenceService,
+        @NonNull FileService fileService
+    ) {
+        return canHaveCustomAvatar(contactModel)
+            && !(preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(contactModel.getIdentity()));
+    }
 
-	/**
-	 * Return whether this {@param contactModel} is a Threema Gateway contact.
-	 */
-	public static boolean isGatewayContact(ContactModel contactModel) {
-		if(contactModel != null) {
-			return isGatewayContact(contactModel.getIdentity());
-		}
-		return false;
-	}
+    /**
+     * Return whether this {@param contactModel} is a Threema Gateway contact.
+     */
+    public static boolean isGatewayContact(ContactModel contactModel) {
+        if (contactModel != null) {
+            return isGatewayContact(contactModel.getIdentity());
+        }
+        return false;
+    }
 
-	/**
-	 * Return whether this {@param identity} is a Threema Gateway contact (starting with "*").
-	 */
-	public static boolean isGatewayContact(@NonNull String identity) {
-		return identity.startsWith("*");
-	}
+    /**
+     * Return whether this {@param identity} is a Threema Gateway contact (starting with "*").
+     */
+    public static boolean isGatewayContact(@NonNull String identity) {
+        return identity.startsWith("*");
+    }
 
-	/**
-	 * Return whether this {@param contactModel} is a Threema Gateway contact
-	 * or the special contact "ECHOECHO".
-	 */
-	public static boolean isEchoEchoOrGatewayContact(ContactModel contactModel) {
-		return contactModel != null
-			&& (isGatewayContact(contactModel.getIdentity())
-				|| ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
-		);
-	}
+    /**
+     * Return whether this {@param contactModel} is a Threema Gateway contact
+     * or the special contact "ECHOECHO".
+     */
+    public static boolean isEchoEchoOrGatewayContact(ContactModel contactModel) {
+        return contactModel != null
+            && (isGatewayContact(contactModel.getIdentity())
+            || ThreemaApplication.ECHO_USER_IDENTITY.equals(contactModel.getIdentity())
+        );
+    }
 
-	/**
-	 * Return whether this {@param identity} is a Threema Gateway contact (starting with "*")
-	 * or the special contact "ECHOECHO".
-	 */
-	public static boolean isEchoEchoOrGatewayContact(@NonNull String identity) {
-		return isGatewayContact(identity)
-			|| ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
-	}
+    /**
+     * Return whether this {@param identity} is a Threema Gateway contact (starting with "*")
+     * or the special contact "ECHOECHO".
+     */
+    public static boolean isEchoEchoOrGatewayContact(@NonNull String identity) {
+        return isGatewayContact(identity)
+            || ThreemaApplication.ECHO_USER_IDENTITY.equals(identity);
+    }
 
-	public static boolean canReceiveVoipMessages(
+    public static boolean canReceiveVoipMessages(
         @Nullable ContactModel contactModel,
         @Nullable BlockedIdentitiesService blockedIdentitiesService
     ) {
-		return contactModel != null
-				&& blockedIdentitiesService != null
-				&& !blockedIdentitiesService.isBlocked(contactModel.getIdentity())
-				&& !isEchoEchoOrGatewayContact(contactModel);
-	}
+        return contactModel != null
+            && blockedIdentitiesService != null
+            && !blockedIdentitiesService.isBlocked(contactModel.getIdentity())
+            && !isEchoEchoOrGatewayContact(contactModel);
+    }
 
-	public static boolean canReceiveVoipMessages(
+    public static boolean canReceiveVoipMessages(
         @Nullable String identity,
         @Nullable BlockedIdentitiesService blockedIdentitiesService
     ) {
-		return identity != null
-			&& blockedIdentitiesService != null
-			&& !blockedIdentitiesService.isBlocked(identity)
-			&& !isEchoEchoOrGatewayContact(identity);
-	}
+        return identity != null
+            && blockedIdentitiesService != null
+            && !blockedIdentitiesService.isBlocked(identity)
+            && !isEchoEchoOrGatewayContact(identity);
+    }
 
-	public static boolean allowedChangeToState(
-		@Nullable IdentityState oldState,
-		@Nullable IdentityState newState
-	) {
-		if (oldState == newState || newState == null) {
-			return false;
-		}
-		switch (newState) {
-			//change to active is always allowed
-			case ACTIVE:
-				return true;
-			case INACTIVE:
-				return oldState == IdentityState.ACTIVE;
-			case INVALID:
-				return true;
-		}
-		return false;
-	}
+    public static boolean allowedChangeToState(
+        @Nullable IdentityState oldState,
+        @Nullable IdentityState newState
+    ) {
+        if (oldState == newState || newState == null) {
+            return false;
+        }
+        switch (newState) {
+            //change to active is always allowed
+            case ACTIVE:
+                return true;
+            case INACTIVE:
+                return oldState == IdentityState.ACTIVE;
+            case INVALID:
+                return true;
+        }
+        return false;
+    }
 
-	public static boolean canHaveCustomAvatar(@Nullable ContactModel contact) {
-		return contact != null
-				&& !contact.isLinkedToAndroidContact()
-				&& !isGatewayContact(contact);
-	}
+    public static boolean canHaveCustomAvatar(@Nullable ContactModel contact) {
+        return contact != null
+            && !contact.isLinkedToAndroidContact()
+            && !isGatewayContact(contact);
+    }
 
-	/**
-	 * check if the avatar is expired (or no date set)
-	 */
-	public static boolean isAvatarExpired(ContactModel contactModel) {
-		return contactModel != null
-				&& (
-					contactModel.getLocalAvatarExpires() == null
-					|| contactModel.getLocalAvatarExpires().before(new Date())
-			);
-	}
+    /**
+     * check if the avatar is expired (or no date set)
+     */
+    public static boolean isAvatarExpired(ContactModel contactModel) {
+        return contactModel != null
+            && (
+            contactModel.getLocalAvatarExpires() == null
+                || contactModel.getLocalAvatarExpires().before(new Date())
+        );
+    }
 
-	/**
-	 * returns a representation of the contact's name according to sort settings,
-	 * suitable for comparing
-	 */
-	public static String getSafeNameString(ContactModel contactModel, boolean sortOrderFirstName) {
-		String key = contactModel.getIdentity();
-		String firstName = contactModel.getFirstName();
-		String lastName = contactModel.getLastName();
+    /**
+     * returns a representation of the contact's name according to sort settings,
+     * suitable for comparing
+     */
+    public static String getSafeNameString(ContactModel contactModel, boolean sortOrderFirstName) {
+        String key = contactModel.getIdentity();
+        String firstName = contactModel.getFirstName();
+        String lastName = contactModel.getLastName();
 
-		if (TestUtil.isEmptyOrNull(firstName) && TestUtil.isEmptyOrNull(lastName) && !TestUtil.isEmptyOrNull(contactModel.getPublicNickName())) {
-			Pair<String, String> namePair = NameUtil.getFirstLastNameFromDisplayName(contactModel.getPublicNickName().trim());
-			firstName = namePair.first;
-			lastName = namePair.second;
-		}
+        if (TestUtil.isEmptyOrNull(firstName) && TestUtil.isEmptyOrNull(lastName) && !TestUtil.isEmptyOrNull(contactModel.getPublicNickName())) {
+            Pair<String, String> namePair = NameUtil.getFirstLastNameFromDisplayName(contactModel.getPublicNickName().trim());
+            firstName = namePair.first;
+            lastName = namePair.second;
+        }
 
-		if (sortOrderFirstName) {
-			if (!TextUtils.isEmpty(lastName)) {
-				key = lastName + key;
-			}
-			if (!TextUtils.isEmpty(firstName)) {
-				key = firstName + key;
-			}
-		} else {
-			if (!TextUtils.isEmpty(firstName)) {
-				key = firstName + key;
-			}
-			if (!TextUtils.isEmpty(lastName)) {
-				key = lastName + key;
-			}
-		}
-		return key;
-	}
+        if (sortOrderFirstName) {
+            if (!TextUtils.isEmpty(lastName)) {
+                key = lastName + key;
+            }
+            if (!TextUtils.isEmpty(firstName)) {
+                key = firstName + key;
+            }
+        } else {
+            if (!TextUtils.isEmpty(firstName)) {
+                key = firstName + key;
+            }
+            if (!TextUtils.isEmpty(lastName)) {
+                key = lastName + key;
+            }
+        }
+        return key;
+    }
 
-	public static @NonNull Comparator<ContactModel> getContactComparator(boolean sortOrderFirstName) {
-		final Collator collator = Collator.getInstance();
-		collator.setStrength(Collator.PRIMARY);
-		return (contact1, contact2) -> collator.compare(
-			getSortKey(contact1, sortOrderFirstName), getSortKey(contact2, sortOrderFirstName)
-		);
-	}
+    public static @NonNull Comparator<ContactModel> getContactComparator(boolean sortOrderFirstName) {
+        final Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.PRIMARY);
+        return (contact1, contact2) -> collator.compare(
+            getSortKey(contact1, sortOrderFirstName), getSortKey(contact2, sortOrderFirstName)
+        );
+    }
 
-	private static @NonNull String getSortKey(ContactModel contactModel, boolean sortOrderFirstName) {
-		String key = ContactUtil.getSafeNameString(contactModel, sortOrderFirstName);
+    private static @NonNull String getSortKey(ContactModel contactModel, boolean sortOrderFirstName) {
+        String key = ContactUtil.getSafeNameString(contactModel, sortOrderFirstName);
 
-		if (contactModel.getIdentity().startsWith("*")) {
-			key = "\uFFFF" + key;
-		}
-		return key;
-	}
+        if (contactModel.getIdentity().startsWith("*")) {
+            key = "\uFFFF" + key;
+        }
+        return key;
+    }
 
-	public static @DrawableRes int getVerificationResource(
-		@NonNull VerificationLevel verificationLevel,
-		@NonNull WorkVerificationLevel workVerificationLevel
-	) {
-		int iconResource;
-		boolean isWorkVerifiedOnWorkBuild = ConfigUtils.isWorkBuild()
-			&& workVerificationLevel == WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED;
-		switch (verificationLevel) {
-			case SERVER_VERIFIED:
-				if (isWorkVerifiedOnWorkBuild) {
-					iconResource = R.drawable.ic_verification_server_work;
-				} else {
-					iconResource = R.drawable.ic_verification_server;
-				}
-				break;
-			case FULLY_VERIFIED:
-				if (isWorkVerifiedOnWorkBuild) {
-					iconResource = R.drawable.ic_verification_full_work;
-				} else {
-					iconResource = R.drawable.ic_verification_full;
-				}
-				break;
-			case UNVERIFIED:
-			default:
-				iconResource = R.drawable.ic_verification_none;
-				break;
-		}
-		return iconResource;
-	}
+    public static @DrawableRes int getVerificationResource(
+        @NonNull VerificationLevel verificationLevel,
+        @NonNull WorkVerificationLevel workVerificationLevel
+    ) {
+        int iconResource;
+        boolean isWorkVerifiedOnWorkBuild = ConfigUtils.isWorkBuild()
+            && workVerificationLevel == WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED;
+        switch (verificationLevel) {
+            case SERVER_VERIFIED:
+                if (isWorkVerifiedOnWorkBuild) {
+                    iconResource = R.drawable.ic_verification_server_work;
+                } else {
+                    iconResource = R.drawable.ic_verification_server;
+                }
+                break;
+            case FULLY_VERIFIED:
+                if (isWorkVerifiedOnWorkBuild) {
+                    iconResource = R.drawable.ic_verification_full_work;
+                } else {
+                    iconResource = R.drawable.ic_verification_full;
+                }
+                break;
+            case UNVERIFIED:
+            default:
+                iconResource = R.drawable.ic_verification_none;
+                break;
+        }
+        return iconResource;
+    }
 
-	@Nullable
-	public static Drawable getVerificationDrawable(
-		@NonNull Context context,
-		@NonNull VerificationLevel verificationLevel,
-		@NonNull WorkVerificationLevel workVerificationLevel
-	) {
-		return AppCompatResources.getDrawable(context, getVerificationResource(
-			verificationLevel,
-			workVerificationLevel
-		));
-	}
+    @Nullable
+    public static Drawable getVerificationDrawable(
+        @NonNull Context context,
+        @NonNull VerificationLevel verificationLevel,
+        @NonNull WorkVerificationLevel workVerificationLevel
+    ) {
+        return AppCompatResources.getDrawable(context, getVerificationResource(
+            verificationLevel,
+            workVerificationLevel
+        ));
+    }
 
-	public static String getIdentityFromViewIntent(Context context, Intent intent) {
-		if (Intent.ACTION_VIEW.equals(intent.getAction()) && context.getString(R.string.contacts_mime_type).equals(intent.getType())) {
-			Cursor cursor = null;
-			try {
-				cursor = context.getContentResolver().query(intent.getData(), null, null, null, null);
-				if (cursor != null) {
-					if (cursor.moveToNext()) {
-						return cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DATA1));
-					}
-				}
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			} finally {
-				if (cursor != null) {
-					cursor.close();
-				}
-			}
-		}
-		return null;
-	}
+    public static String getIdentityFromViewIntent(Context context, Intent intent) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && context.getString(R.string.contacts_mime_type).equals(intent.getType())) {
+            Cursor cursor = null;
+            try {
+                cursor = context.getContentResolver().query(intent.getData(), null, null, null, null);
+                if (cursor != null) {
+                    if (cursor.moveToNext()) {
+                        return cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DATA1));
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        return null;
+    }
 
-	public static String joinDisplayNames(@Nullable Context context, @Nullable List<ContactModel> contacts) {
-		if (contacts == null) {
-			return "";
-		}
+    public static String joinDisplayNames(@Nullable Context context, @Nullable List<ContactModel> contacts) {
+        if (contacts == null) {
+            return "";
+        }
 
-		List<String> contactNames = contacts.stream()
-			.map(contact -> NameUtil.getDisplayNameOrNickname(contact, true))
-			.collect(Collectors.toList());
+        List<String> contactNames = contacts.stream()
+            .map(contact -> NameUtil.getDisplayNameOrNickname(contact, true))
+            .collect(Collectors.toList());
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context != null) {
-			return ListFormatter.getInstance(LocaleUtil.getCurrentLocale(context)).format(contactNames);
-		} else {
-			return String.join(", ", contactNames);
-		}
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context != null) {
+            return ListFormatter.getInstance(LocaleUtil.getCurrentLocale(context)).format(contactNames);
+        } else {
+            return String.join(", ", contactNames);
+        }
+    }
 
-	/**
-	 * Perform the required steps if a contact does not support forward security anymore due to a
-	 * change of its feature mask. This includes creating a status message in the conversation with
-	 * that contact to warn the user that forward security has been disabled for this contact. This
-	 * method also terminates all existing sessions with the contact.
-	 * <p>
-	 * Note that the status message is only created if a forward security session currently exists.
-	 * <p>
-	 * Note that this method must only be called if the feature mask of a contact is changed from a
-	 * feature mask that indicates forward security support to a feature mask without forward
-	 * security support.
-	 *
-	 * @param contactModel the affected contact
-	 */
-	public static void onForwardSecurityNotSupportedAnymore(@NonNull ch.threema.data.models.ContactModel contactModel) {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager == null) {
-			logger.error("Service manager is null");
-			return;
-		}
+    /**
+     * Perform the required steps if a contact does not support forward security anymore due to a
+     * change of its feature mask. This includes creating a status message in the conversation with
+     * that contact to warn the user that forward security has been disabled for this contact. This
+     * method also terminates all existing sessions with the contact.
+     * <p>
+     * Note that the status message is only created if a forward security session currently exists.
+     * <p>
+     * Note that this method must only be called if the feature mask of a contact is changed from a
+     * feature mask that indicates forward security support to a feature mask without forward
+     * security support.
+     *
+     * @param contactModel the affected contact
+     */
+    public static void onForwardSecurityNotSupportedAnymore(@NonNull ch.threema.data.models.ContactModel contactModel) {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager == null) {
+            logger.error("Service manager is null");
+            return;
+        }
 
-		try {
-			serviceManager.getTaskManager().schedule(
-				new OnFSFeatureMaskDowngradedTask(
-					contactModel,
-					serviceManager.getContactService(),
-					serviceManager.getMessageService(),
-					serviceManager.getDHSessionStore(),
-					serviceManager.getIdentityStore(),
-					serviceManager.getForwardSecurityMessageProcessor()
-				)
-			);
-		} catch (ThreemaException e) {
-			logger.error("Could not schedule fs feature mask downgraded task");
-		}
-	}
+        try {
+            serviceManager.getTaskManager().schedule(
+                new OnFSFeatureMaskDowngradedTask(
+                    contactModel,
+                    serviceManager.getContactService(),
+                    serviceManager.getMessageService(),
+                    serviceManager.getDHSessionStore(),
+                    serviceManager.getIdentityStore(),
+                    serviceManager.getForwardSecurityMessageProcessor()
+                )
+            );
+        } catch (ThreemaException e) {
+            logger.error("Could not schedule fs feature mask downgraded task");
+        }
+    }
 }

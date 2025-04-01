@@ -247,20 +247,20 @@ public class ConversationServiceImpl implements ConversationService {
                     });
                 }
 
-				if (filter.noInvalid()) {
-					logger.debug("filter chats with revoked contacts / left group that cannot receive messages");
-					filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-						@Override
-						public boolean apply(@NonNull ConversationModel conversationModel) {
-							if (conversationModel.isContactConversation()) {
-								return conversationModel.getContact() != null && conversationModel.getContact().getState() != IdentityState.INVALID;
-							} else if (conversationModel.isGroupConversation()) {
-								return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
-							}
-							return true;
-						}
-					});
-				}
+                if (filter.noInvalid()) {
+                    logger.debug("filter chats with revoked contacts / left group that cannot receive messages");
+                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
+                        @Override
+                        public boolean apply(@NonNull ConversationModel conversationModel) {
+                            if (conversationModel.isContactConversation()) {
+                                return conversationModel.getContact() != null && conversationModel.getContact().getState() != IdentityState.INVALID;
+                            } else if (conversationModel.isGroupConversation()) {
+                                return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
+                            }
+                            return true;
+                        }
+                    });
+                }
 
                 if (filter.onlyPersonal()) {
                     logger.debug("filter non-personal chats such as channels/broadcasts or blocked chats");
@@ -886,23 +886,23 @@ public class ConversationServiceImpl implements ConversationService {
             boolean isLatestMessageCandidate = !modifiedMessageModel.isStatusMessage()
                 || modifiedMessageModel.getType() == MessageType.GROUP_CALL_STATUS;
 
-			// Increase message count if necessary
-			if ((model.getLatestMessage() == null
-				|| model.getLatestMessage().getId() < modifiedMessageModel.getId())
-				&& isLatestMessageCandidate
-			) {
-				model.setMessageCount(model.getMessageCount()+1);
-			}
+            // Increase message count if necessary
+            if ((model.getLatestMessage() == null
+                || model.getLatestMessage().getId() < modifiedMessageModel.getId())
+                && isLatestMessageCandidate
+            ) {
+                model.setMessageCount(model.getMessageCount() + 1);
+            }
 
-			// If the modified message model is a new message, update the latest message
-			if ((model.getLatestMessage() == null
-				|| model.getLatestMessage().getId() <= modifiedMessageModel.getId())
-				&& isLatestMessageCandidate
-				&& model.getLatestMessage() != modifiedMessageModel
-			) {
-				// Set this message as latest message
-				model.setLatestMessage(modifiedMessageModel);
-			}
+            // If the modified message model is a new message, update the latest message
+            if ((model.getLatestMessage() == null
+                || model.getLatestMessage().getId() <= modifiedMessageModel.getId())
+                && isLatestMessageCandidate
+                && model.getLatestMessage() != modifiedMessageModel
+            ) {
+                // Set this message as latest message
+                model.setLatestMessage(modifiedMessageModel);
+            }
 
             // Update read/unread state if necessary
             if (model.getReceiver() != null && MessageUtil.isUnread(model.getLatestMessage())) {
@@ -1157,41 +1157,41 @@ public class ConversationServiceImpl implements ConversationService {
             return conversationModel;
         }
 
-		@Override
-		public @NonNull List<ConversationResult> select(@NonNull Integer groupId) {
-			// Note: Don't exclude groups without lastUpdate, groups should always be visible
-			return this.parse(
-				"WITH message_info AS (" +
-						"SELECT groupId, COUNT(*) as messageCount, MAX(id) as latestMessageId " +
-						"FROM m_group_message " +
-						"WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
-						"GROUP BY groupId" +
-					") " +
-					"SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
-					"FROM m_group g " +
-					"LEFT JOIN message_info m ON g.id = m.groupId " +
-					"WHERE g.deleted != 1 AND g.id = ?",
-				new String[] { String.valueOf(MessageType.GROUP_CALL_STATUS.ordinal()), String.valueOf(groupId) }
-			);
-		}
+        @Override
+        public @NonNull List<ConversationResult> select(@NonNull Integer groupId) {
+            // Note: Don't exclude groups without lastUpdate, groups should always be visible
+            return this.parse(
+                "WITH message_info AS (" +
+                    "SELECT groupId, COUNT(*) as messageCount, MAX(id) as latestMessageId " +
+                    "FROM m_group_message " +
+                    "WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
+                    "GROUP BY groupId" +
+                    ") " +
+                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
+                    "FROM m_group g " +
+                    "LEFT JOIN message_info m ON g.id = m.groupId " +
+                    "WHERE g.deleted != 1 AND g.id = ?",
+                new String[]{String.valueOf(MessageType.GROUP_CALL_STATUS.ordinal()), String.valueOf(groupId)}
+            );
+        }
 
-		@Override
-		public @NonNull List<ConversationResult> selectAll(boolean archived) {
-			// Note: Don't exclude groups without lastUpdate, groups should always be visible
-			return this.parse(
-				"WITH message_info AS (" +
-					"SELECT groupId, COUNT(*) as messageCount, MAX(id) as latestMessageId " +
-					"FROM m_group_message " +
-					"WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
-					"GROUP BY groupId" +
-				") " +
-				"SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
-				"FROM m_group g " +
-				"LEFT JOIN message_info m ON g.id = m.groupId " +
-				"WHERE g.deleted != 1 AND g.isArchived = " + (archived ? "1" : "0"),
-                new String[] { String.valueOf(MessageType.GROUP_CALL_STATUS.ordinal()) }
-			);
-		}
+        @Override
+        public @NonNull List<ConversationResult> selectAll(boolean archived) {
+            // Note: Don't exclude groups without lastUpdate, groups should always be visible
+            return this.parse(
+                "WITH message_info AS (" +
+                    "SELECT groupId, COUNT(*) as messageCount, MAX(id) as latestMessageId " +
+                    "FROM m_group_message " +
+                    "WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
+                    "GROUP BY groupId" +
+                    ") " +
+                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
+                    "FROM m_group g " +
+                    "LEFT JOIN message_info m ON g.id = m.groupId " +
+                    "WHERE g.deleted != 1 AND g.isArchived = " + (archived ? "1" : "0"),
+                new String[]{String.valueOf(MessageType.GROUP_CALL_STATUS.ordinal())}
+            );
+        }
 
         @Override
         protected Integer getIdentifier(GroupMessageModel messageModel) {

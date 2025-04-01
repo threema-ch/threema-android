@@ -60,11 +60,14 @@ object NotificationChannels {
     /*
      * static notification channels
      */
-    const val NOTIFICATION_CHANNEL_CHATS_DEFAULT: String = "chats_default" // channel for default chat notifications
-    const val NOTIFICATION_CHANNEL_GROUP_CHATS_DEFAULT: String = "group_chats_default" // channel for default chat notifications
+    const val NOTIFICATION_CHANNEL_CHATS_DEFAULT: String =
+        "chats_default" // channel for default chat notifications
+    const val NOTIFICATION_CHANNEL_GROUP_CHATS_DEFAULT: String =
+        "group_chats_default" // channel for default chat notifications
     const val NOTIFICATION_CHANNEL_INCOMING_CALLS: String = "incoming_call"
     const val NOTIFICATION_CHANNEL_IN_CALL: String = "ongoing_call"
-    const val NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS: String = "incoming_group_call" // channel for group calls
+    const val NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS: String =
+        "incoming_group_call" // channel for group calls
     const val NOTIFICATION_CHANNEL_PASSPHRASE: String = "passphrase"
     const val NOTIFICATION_CHANNEL_WEBCLIENT: String = "webclient"
     const val NOTIFICATION_CHANNEL_ALERT: String = "alert"
@@ -72,12 +75,15 @@ object NotificationChannels {
     const val NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS: String = "data_backup"
     const val NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS: String = "new_contact_found"
     const val NOTIFICATION_CHANNEL_FORWARD_SECURITY: String = "forward_security_alert"
-    const val NOTIFICATION_CHANNEL_CHAT_UPDATE: String = "silent_chat_update" // channel for quiet chat notification updates (e.g. when changing from regular to PIN locked)
+    const val NOTIFICATION_CHANNEL_CHAT_UPDATE: String =
+        "silent_chat_update" // channel for quiet chat notification updates (e.g. when changing from regular to PIN locked)
     const val NOTIFICATION_CHANNEL_WORK_SYNC: String = "work_sync"
 
     // these channels are created on demand only
-    const val NOTIFICATION_CHANNEL_THREEMA_PUSH: String = "threema_push" // channel will be created on-the-fly by ThreemaPushService
-    const val NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER: String = "voicemessage_player" // channel will be created on-the-fly by VoiceMessagePlayerService
+    const val NOTIFICATION_CHANNEL_THREEMA_PUSH: String =
+        "threema_push" // channel will be created on-the-fly by ThreemaPushService
+    const val NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER: String =
+        "voicemessage_player" // channel will be created on-the-fly by VoiceMessagePlayerService
 
     /*
      * notification channel groups
@@ -90,7 +96,8 @@ object NotificationChannels {
      */
     private const val NOTIFICATION_CHANNEL_PASSPHRASE_PRE: String = "ps"
     private const val NOTIFICATION_CHANNEL_WEBCLIENT_PRE: String = "wc"
-    private const val NOTIFICATION_CHANNEL_CHATS_DEFAULT_PRE: String = "cc" // channel for default chat notifications
+    private const val NOTIFICATION_CHANNEL_CHATS_DEFAULT_PRE: String =
+        "cc" // channel for default chat notifications
     private const val NOTIFICATION_CHANNEL_CALL_PRE: String = "ca" // channel used for calls
     private const val NOTIFICATION_CHANNEL_IN_CALL_PRE: String = "ic"
     private const val NOTIFICATION_CHANNEL_ALERT_PRE: String = "al"
@@ -98,12 +105,16 @@ object NotificationChannels {
     private const val NOTIFICATION_CHANNEL_WORK_SYNC_PRE: String = "ws"
     private const val NOTIFICATION_CHANNEL_IDENTITY_SYNC_PRE: String = "is"
     private const val NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS_PRE: String = "bk"
-    private const val NOTIFICATION_CHANNEL_CHAT_UPDATE_PRE: String = "cu" // channel for quiet chat notification updates (e.g. when changing from regular to PIN locked)
+    private const val NOTIFICATION_CHANNEL_CHAT_UPDATE_PRE: String =
+        "cu" // channel for quiet chat notification updates (e.g. when changing from regular to PIN locked)
     private const val NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS_PRE: String = "nc"
-    private const val NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE_PRE: String = "jres" // currently not used
-    private const val NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST_PRE: String = "jreq" // currently not use
+    private const val NOTIFICATION_CHANNEL_GROUP_JOIN_RESPONSE_PRE: String =
+        "jres" // currently not used
+    private const val NOTIFICATION_CHANNEL_GROUP_JOIN_REQUEST_PRE: String =
+        "jreq" // currently not use
     private const val NOTIFICATION_CHANNEL_THREEMA_PUSH_PRE: String = "tpush"
-    private const val NOTIFICATION_CHANNEL_GROUP_CALL_PRE: String = "gcall" // channel for group calls
+    private const val NOTIFICATION_CHANNEL_GROUP_CALL_PRE: String =
+        "gcall" // channel for group calls
     private const val NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER_PRE: String = "vmp"
     private const val NOTIFICATION_CHANNEL_FORWARD_SECURITY_PRE: String = "fs"
 
@@ -118,9 +129,12 @@ object NotificationChannels {
     /**
      * Default vibration patterns
      */
-    @JvmField val VIBRATE_PATTERN_REGULAR: LongArray = longArrayOf(0, 250, 250, 250)
-    @JvmField val VIBRATE_PATTERN_INCOMING_CALL: LongArray = longArrayOf(0, 1000, 1000, 0)
-    @JvmField val VIBRATE_PATTERN_GROUP_CALL: LongArray = longArrayOf(0, 2000)
+    @JvmField
+    val VIBRATE_PATTERN_REGULAR: LongArray = longArrayOf(0, 250, 250, 250)
+    @JvmField
+    val VIBRATE_PATTERN_INCOMING_CALL: LongArray = longArrayOf(0, 1000, 1000, 0)
+    @JvmField
+    val VIBRATE_PATTERN_GROUP_CALL: LongArray = longArrayOf(0, 2000)
 
     /**
      * Ensure notification channels and groups are created. Upgrade if necessary
@@ -130,16 +144,27 @@ object NotificationChannels {
         val notificationManagerCompat = NotificationManagerCompat.from(appContext)
 
         // PreferenceService may not yet be available at that time
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+        val sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
 
-        val previousVersion = sharedPreferences.getInt(appContext.getString(R.string.preferences__notification_channels_version), 0)
+        val previousVersion = sharedPreferences.getInt(
+            appContext.getString(R.string.preferences__notification_channels_version),
+            0
+        )
         if (previousVersion < CHANNEL_SETUP_VERSION) {
             if (previousVersion == 0) {
-                logger.info("Upgrading notification channels and groups from version {} to {}", previousVersion, CHANNEL_SETUP_VERSION)
+                logger.info(
+                    "Upgrading notification channels and groups from version {} to {}",
+                    previousVersion,
+                    CHANNEL_SETUP_VERSION
+                )
                 upgradeGroupsAndChannelsToVersion1(appContext, notificationManagerCompat)
             }
             sharedPreferences.edit {
-                putInt(appContext.getString(R.string.preferences__notification_channels_version), CHANNEL_SETUP_VERSION)
+                putInt(
+                    appContext.getString(R.string.preferences__notification_channels_version),
+                    CHANNEL_SETUP_VERSION
+                )
             }
         }
 
@@ -149,9 +174,22 @@ object NotificationChannels {
     /**
      * create all channels for a new installation
      */
-    private fun createOrRefreshChannelsAndGroups(context: Context, notificationManagerCompat: NotificationManagerCompat) {
-        createGroup(context, notificationManagerCompat, NOTIFICATION_CHANNELGROUP_CHAT, R.string.chats)
-        createGroup(context, notificationManagerCompat, NOTIFICATION_CHANNELGROUP_GROUP_CHAT, R.string.group_chats)
+    private fun createOrRefreshChannelsAndGroups(
+        context: Context,
+        notificationManagerCompat: NotificationManagerCompat
+    ) {
+        createGroup(
+            context,
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_CHAT,
+            R.string.chats
+        )
+        createGroup(
+            context,
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_GROUP_CHAT,
+            R.string.group_chats
+        )
 
         getChannelBuilder(
             notificationManagerCompat,
@@ -191,7 +229,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_INCOMING_CALLS,
             context.getString(R.string.incoming_calls),
             NotificationManagerCompat.IMPORTANCE_HIGH
@@ -204,7 +243,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_IN_CALL,
             context.getString(R.string.call_ongoing),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -216,7 +256,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS,
             context.getString(R.string.group_calls),
             NotificationManagerCompat.IMPORTANCE_HIGH
@@ -232,7 +273,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_PASSPHRASE,
             context.getString(R.string.passphrase_service_name),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -245,7 +287,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_WEBCLIENT,
             context.getString(R.string.webclient),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -258,7 +301,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_ALERT,
             context.getString(R.string.notification_channel_alerts),
             NotificationManagerCompat.IMPORTANCE_HIGH
@@ -273,7 +317,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_NOTICE,
             context.getString(R.string.notification_channel_notices),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -285,7 +330,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS,
             context.getString(R.string.backup_or_restore_progress),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -297,7 +343,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS,
             context.getString(R.string.notification_channel_new_contact),
             NotificationManagerCompat.IMPORTANCE_HIGH
@@ -310,7 +357,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_FORWARD_SECURITY,
             context.getString(R.string.forward_security_notification_channel_name),
             NotificationManagerCompat.IMPORTANCE_HIGH
@@ -323,7 +371,8 @@ object NotificationChannels {
             notificationManagerCompat.createNotificationChannel(it.build())
         }
 
-        getChannelBuilder(notificationManagerCompat,
+        getChannelBuilder(
+            notificationManagerCompat,
             NOTIFICATION_CHANNEL_CHAT_UPDATE,
             context.getString(R.string.chat_updates),
             NotificationManagerCompat.IMPORTANCE_LOW
@@ -337,7 +386,8 @@ object NotificationChannels {
 
         // work sync notification
         if (ConfigUtils.isWorkBuild()) {
-            getChannelBuilder(notificationManagerCompat,
+            getChannelBuilder(
+                notificationManagerCompat,
                 NOTIFICATION_CHANNEL_WORK_SYNC,
                 context.getString(R.string.work_data_sync),
                 NotificationManagerCompat.IMPORTANCE_LOW
@@ -352,10 +402,23 @@ object NotificationChannels {
         }
     }
 
-    private fun upgradeGroupsAndChannelsToVersion1(context: Context, notificationManagerCompat: NotificationManagerCompat) {
+    private fun upgradeGroupsAndChannelsToVersion1(
+        context: Context,
+        notificationManagerCompat: NotificationManagerCompat
+    ) {
         // destination groups must be created *before* we can migrate
-        createGroup(context, notificationManagerCompat, NOTIFICATION_CHANNELGROUP_CHAT, R.string.chats)
-        createGroup(context, notificationManagerCompat, NOTIFICATION_CHANNELGROUP_GROUP_CHAT, R.string.group_chats)
+        createGroup(
+            context,
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_CHAT,
+            R.string.chats
+        )
+        createGroup(
+            context,
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_GROUP_CHAT,
+            R.string.group_chats
+        )
 
         // migrate all channels that are part of a group
         migrateChannel(
@@ -366,11 +429,31 @@ object NotificationChannels {
         )
 
         // migrate all channels that are not part of a group (they will just get a new ID)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_PASSPHRASE_PRE, NOTIFICATION_CHANNEL_PASSPHRASE)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_WEBCLIENT_PRE, NOTIFICATION_CHANNEL_WEBCLIENT)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_ALERT_PRE, NOTIFICATION_CHANNEL_ALERT)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_NOTICE_PRE, NOTIFICATION_CHANNEL_NOTICE)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_WORK_SYNC_PRE, NOTIFICATION_CHANNEL_WORK_SYNC)
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_PASSPHRASE_PRE,
+            NOTIFICATION_CHANNEL_PASSPHRASE
+        )
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_WEBCLIENT_PRE,
+            NOTIFICATION_CHANNEL_WEBCLIENT
+        )
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_ALERT_PRE,
+            NOTIFICATION_CHANNEL_ALERT
+        )
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_NOTICE_PRE,
+            NOTIFICATION_CHANNEL_NOTICE
+        )
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_WORK_SYNC_PRE,
+            NOTIFICATION_CHANNEL_WORK_SYNC
+        )
         migrateChannel(
             notificationManagerCompat,
             NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS_PRE,
@@ -381,7 +464,11 @@ object NotificationChannels {
             NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS_PRE,
             NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS
         )
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_THREEMA_PUSH_PRE, NOTIFICATION_CHANNEL_THREEMA_PUSH)
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_THREEMA_PUSH_PRE,
+            NOTIFICATION_CHANNEL_THREEMA_PUSH
+        )
         migrateChannel(
             notificationManagerCompat,
             NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER_PRE,
@@ -392,8 +479,16 @@ object NotificationChannels {
             NOTIFICATION_CHANNEL_FORWARD_SECURITY_PRE,
             NOTIFICATION_CHANNEL_FORWARD_SECURITY
         )
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_CALL_PRE, NOTIFICATION_CHANNEL_INCOMING_CALLS)
-        migrateChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_IN_CALL_PRE, NOTIFICATION_CHANNEL_IN_CALL)
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_CALL_PRE,
+            NOTIFICATION_CHANNEL_INCOMING_CALLS
+        )
+        migrateChannel(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNEL_IN_CALL_PRE,
+            NOTIFICATION_CHANNEL_IN_CALL
+        )
         migrateChannel(
             notificationManagerCompat,
             NOTIFICATION_CHANNEL_GROUP_CALL_PRE,
@@ -412,8 +507,10 @@ object NotificationChannels {
         deleteChannelGroup(notificationManagerCompat, NOTIFICATION_CHANNELGROUP_GROUP_CALLS_PRE)
 
         // create default chat channels based on current settings
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
-        val channelImportance = if (NotificationUtil.getNotificationPriority(context) >= NotificationCompat.PRIORITY_HIGH)  NotificationManagerCompat.IMPORTANCE_MAX else NotificationManagerCompat.IMPORTANCE_HIGH
+        val sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+        val channelImportance =
+            if (NotificationUtil.getNotificationPriority(context) >= NotificationCompat.PRIORITY_HIGH) NotificationManagerCompat.IMPORTANCE_MAX else NotificationManagerCompat.IMPORTANCE_HIGH
 
         getChannelBuilder(
             notificationManagerCompat,
@@ -423,11 +520,20 @@ object NotificationChannels {
             null,
             NOTIFICATION_CHANNELGROUP_CHAT
         )?.let {
-            it.setVibrationEnabled(sharedPreferences.getBoolean(context.getString(R.string.preferences__vibrate), true))
+            it.setVibrationEnabled(
+                sharedPreferences.getBoolean(
+                    context.getString(R.string.preferences__vibrate),
+                    true
+                )
+            )
             it.setVibrationPattern(VIBRATE_PATTERN_REGULAR)
             it.setShowBadge(true)
             it.setSound(
-                getRingtoneUriFromPrefsKey(context, sharedPreferences, R.string.preferences__notification_sound),
+                getRingtoneUriFromPrefsKey(
+                    context,
+                    sharedPreferences,
+                    R.string.preferences__notification_sound
+                ),
                 SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION)
             )
             notificationManagerCompat.createNotificationChannel(it.build())
@@ -441,20 +547,35 @@ object NotificationChannels {
             null,
             NOTIFICATION_CHANNELGROUP_GROUP_CHAT
         )?.let {
-            it.setVibrationEnabled(sharedPreferences.getBoolean(context.getString(R.string.preferences__group_vibrate), true))
+            it.setVibrationEnabled(
+                sharedPreferences.getBoolean(
+                    context.getString(R.string.preferences__group_vibrate),
+                    true
+                )
+            )
             it.setVibrationPattern(VIBRATE_PATTERN_REGULAR)
             it.setShowBadge(true)
             it.setSound(
-                getRingtoneUriFromPrefsKey(context, sharedPreferences, R.string.preferences__group_notification_sound),
+                getRingtoneUriFromPrefsKey(
+                    context,
+                    sharedPreferences,
+                    R.string.preferences__group_notification_sound
+                ),
                 SoundUtil.getAudioAttributesForUsage(AudioAttributes.USAGE_NOTIFICATION)
             )
             notificationManagerCompat.createNotificationChannel(it.build())
         }
     }
 
-    private fun getRingtoneUriFromPrefsKey(context: Context, sharedPreferences: SharedPreferences, key: Int) : Uri {
+    private fun getRingtoneUriFromPrefsKey(
+        context: Context,
+        sharedPreferences: SharedPreferences,
+        key: Int
+    ): Uri {
         val ringtone = sharedPreferences.getString(context.getString(key), null)
-        return if (!ringtone.isNullOrEmpty() && ringtone != ServicesConstants.PREFERENCES_NULL) Uri.parse(ringtone) else Settings.System.DEFAULT_NOTIFICATION_URI
+        return if (!ringtone.isNullOrEmpty() && ringtone != ServicesConstants.PREFERENCES_NULL) Uri.parse(
+            ringtone
+        ) else Settings.System.DEFAULT_NOTIFICATION_URI
     }
 
     /**
@@ -505,7 +626,10 @@ object NotificationChannels {
     /**
      * Attempt to delete a channel group. Continue if deleting the channel group fails.
      */
-    private fun deleteChannelGroup(notificationManagerCompat: NotificationManagerCompat, groupId: String) {
+    private fun deleteChannelGroup(
+        notificationManagerCompat: NotificationManagerCompat,
+        groupId: String
+    ) {
         try {
             notificationManagerCompat.deleteNotificationChannelGroup(groupId)
         } catch (e: SecurityException) {
@@ -517,7 +641,12 @@ object NotificationChannels {
      * Create a notification channel group with the provided ID and name
      * If a group already exists and the name has changed, rename it to the provided group name
      */
-    private fun createGroup(context: Context, notificationManagerCompat: NotificationManagerCompat, groupId: String, groupNameRes: Int) {
+    private fun createGroup(
+        context: Context,
+        notificationManagerCompat: NotificationManagerCompat,
+        groupId: String,
+        groupNameRes: Int
+    ) {
         val newName = context.getString(groupNameRes)
         val existingGroup = getNotificationChannelGroup(notificationManagerCompat, groupId)
 
@@ -592,7 +721,7 @@ object NotificationChannels {
         return null
     }
 
-    public fun exists(context: Context, channelId: String) : Boolean {
+    public fun exists(context: Context, channelId: String): Boolean {
         val notificationManagerCompat = NotificationManagerCompat.from(context)
         return notificationManagerCompat.getNotificationChannelCompat(channelId) != null;
     }
@@ -653,7 +782,8 @@ object NotificationChannels {
     }
 
     fun deleteAll() {
-        val notificationManagerCompat = NotificationManagerCompat.from(ThreemaApplication.getAppContext())
+        val notificationManagerCompat =
+            NotificationManagerCompat.from(ThreemaApplication.getAppContext())
 
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_INCOMING_CALLS)
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_IN_CALL)
@@ -674,8 +804,14 @@ object NotificationChannels {
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_WEBCLIENT)
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_THREEMA_PUSH)
 
-        deleteChannelGroup(notificationManagerCompat, NOTIFICATION_CHANNELGROUP_CHAT) // this deletes all channels contained in this group
-        deleteChannelGroup(notificationManagerCompat, NOTIFICATION_CHANNELGROUP_GROUP_CHAT) // this deletes all channels contained in this group
+        deleteChannelGroup(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_CHAT
+        ) // this deletes all channels contained in this group
+        deleteChannelGroup(
+            notificationManagerCompat,
+            NOTIFICATION_CHANNELGROUP_GROUP_CHAT
+        ) // this deletes all channels contained in this group
 
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_CHATS_DEFAULT)
         deleteChannel(notificationManagerCompat, NOTIFICATION_CHANNEL_GROUP_CHATS_DEFAULT)

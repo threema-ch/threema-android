@@ -46,7 +46,8 @@ class ModelCache {
     val editHistory = ModelTypeCache<String, EditHistoryListModel>()
 
     // Emoji reactions are uniquely identified by a composition of the message's id (int) and type
-    val emojiReaction = ModelTypeCache<EmojiReactionsRepository.ReactionMessageIdentifier, EmojiReactionsModel>()
+    val emojiReaction =
+        ModelTypeCache<EmojiReactionsRepository.ReactionMessageIdentifier, EmojiReactionsModel>()
 }
 
 /**
@@ -70,7 +71,8 @@ class ModelTypeCache<TIdentifier, TModel : BaseModel<*, *>> {
      * If it cannot be found, create the model using the [miss] function, cache it
      * and return it.
      */
-    fun getOrCreate(identifier: TIdentifier, miss: () -> TModel?): TModel? = this.map.getOrCreate(identifier, miss)
+    fun getOrCreate(identifier: TIdentifier, miss: () -> TModel?): TModel? =
+        this.map.getOrCreate(identifier, miss)
 
     /**
      * Remove the model with the specified [identifier] from the cache and return it.

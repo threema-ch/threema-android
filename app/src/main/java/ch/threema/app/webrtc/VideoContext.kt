@@ -107,8 +107,10 @@ private data class CameraVideoCapturerState(
             }
 
             // Sanity-check
-            assert((capturer == null && front.size + back.size == 0)
-                || (capturer != null && front.size + back.size > 0))
+            assert(
+                (capturer == null && front.size + back.size == 0)
+                    || (capturer != null && front.size + back.size > 0)
+            )
 
             // Done
             return CameraVideoCapturerState(capturer, currentCamera, front, back)
@@ -176,7 +178,8 @@ internal class CameraVideoCapturer private constructor(
     suspend fun switchTo(camera: Camera) {
         val done = CompletableDeferred<Unit>()
         lock.withLock {
-            state.capturer?.switchCamera(object : org.webrtc.CameraVideoCapturer.CameraSwitchHandler {
+            state.capturer?.switchCamera(object :
+                org.webrtc.CameraVideoCapturer.CameraSwitchHandler {
                 override fun onCameraSwitchDone(front: Boolean) {
                     lock.withLock {
                         state.currentCamera = camera
@@ -186,8 +189,11 @@ internal class CameraVideoCapturer private constructor(
 
                 override fun onCameraSwitchError(error: String?) {
                     lock.withLock {
-                        done.completeExceptionally(GroupCallException(
-                            "Unable to switch to camera '${camera.name}', reason: $error"))
+                        done.completeExceptionally(
+                            GroupCallException(
+                                "Unable to switch to camera '${camera.name}', reason: $error"
+                            )
+                        )
                     }
                 }
             }, camera.name)
@@ -211,11 +217,12 @@ abstract class VideoContext(
     private var _track: VideoTrack? = track
 
     protected val lock = ReentrantLock()
-    protected val track: VideoTrack? get() = _track.also {
-        if (it == null) {
-            logger.warn("Video track already disposed")
+    protected val track: VideoTrack?
+        get() = _track.also {
+            if (it == null) {
+                logger.warn("Video track already disposed")
+            }
         }
-    }
     private var sink: VideoSink? = null
 
     @AnyThread
@@ -258,7 +265,8 @@ class RemoteVideoContext private constructor(
                 throw Error("Invalid transceiver kind for remote video context: '${transceiver.mediaType.name}")
             }
             if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.RECV_ONLY &&
-                transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
+                transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+            ) {
                 throw Error("Invalid transceiver direction for remote video context: '${transceiver.direction.name}")
             }
 
@@ -290,7 +298,8 @@ abstract class LocalVideoContext(
             throw Error("Invalid transceiver kind for local video context: '${transceiver.mediaType.name}")
         }
         if (transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_ONLY &&
-            transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
+            transceiver.direction != RtpTransceiver.RtpTransceiverDirection.SEND_RECV
+        ) {
             throw Error("Invalid transceiver direction for local video context: '${transceiver.direction.name}")
         }
 
@@ -325,12 +334,14 @@ class LocalCameraVideoContext private constructor(
                 //
                 // Note: This will do nothing on any peer connection unless the track is applied to it.
                 source = factory.factory.createVideoSource(false, false)
-                track = factory.factory.createVideoTrack("local-video", source).also { it.setEnabled(false) }
+                track = factory.factory.createVideoTrack("local-video", source)
+                    .also { it.setEnabled(false) }
                 val capturer = CameraVideoCapturer.create(
                     context = context,
                     observer = source.capturerObserver,
                     surfaceTextureHelper = factory.surfaceTextureHelper,
-                    cameraEventsHandler = WrappedCameraEventsHandler(object : SaneCameraEventsHandler {
+                    cameraEventsHandler = WrappedCameraEventsHandler(object :
+                        SaneCameraEventsHandler {
                         // TODO(ANDR-1978): Handle camera events
                     })
                 )

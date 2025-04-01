@@ -37,63 +37,65 @@ import ch.threema.app.emojis.EmojiConversationTextView;
 
 public class GenericScanResultDialog extends ThreemaDialogFragment {
 
-	public static final String EXTRA_SCAN_RESULT = "scan_result";
+    public static final String EXTRA_SCAN_RESULT = "scan_result";
 
-	public static GenericScanResultDialog newInstance(String scanResult) {
-		GenericScanResultDialog dialog = new GenericScanResultDialog();
-		Bundle args = new Bundle();
-		args.putString(EXTRA_SCAN_RESULT, scanResult);
-		dialog.setArguments(args);
-		return dialog;
-	}
+    public static GenericScanResultDialog newInstance(String scanResult) {
+        GenericScanResultDialog dialog = new GenericScanResultDialog();
+        Bundle args = new Bundle();
+        args.putString(EXTRA_SCAN_RESULT, scanResult);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-		if (getArguments() == null) {
-			return returnAnErrorOccuredDialog("No dialog arguments found");
-		}
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        if (getArguments() == null) {
+            return returnAnErrorOccuredDialog("No dialog arguments found");
+        }
 
-		final String result = getArguments().getString(EXTRA_SCAN_RESULT);
+        final String result = getArguments().getString(EXTRA_SCAN_RESULT);
 
-		final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_scan_result, null);
-		final EmojiConversationTextView resultView = dialogView.findViewById(R.id.scan_result);
-		final AppCompatImageButton copyButton = dialogView.findViewById(R.id.copy);
-		final AppCompatImageButton shareButton = dialogView.findViewById(R.id.share);
+        final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_scan_result, null);
+        final EmojiConversationTextView resultView = dialogView.findViewById(R.id.scan_result);
+        final AppCompatImageButton copyButton = dialogView.findViewById(R.id.copy);
+        final AppCompatImageButton shareButton = dialogView.findViewById(R.id.share);
 
-		GenericScanResultDialog.ScanResultClickListener callback = (GenericScanResultDialog.ScanResultClickListener) getActivity();
+        GenericScanResultDialog.ScanResultClickListener callback = (GenericScanResultDialog.ScanResultClickListener) getActivity();
 
-		if (callback == null) {
-			return returnAnErrorOccuredDialog("Callback not found, does the calling activity implements GenericScanResultDialog click listener?");
-		}
+        if (callback == null) {
+            return returnAnErrorOccuredDialog("Callback not found, does the calling activity implements GenericScanResultDialog click listener?");
+        }
 
-		resultView.setText(result);
-		copyButton.setOnClickListener(v -> callback.onCopy(result));
-		shareButton.setOnClickListener(v -> callback.onShare(result));
+        resultView.setText(result);
+        copyButton.setOnClickListener(v -> callback.onCopy(result));
+        shareButton.setOnClickListener(v -> callback.onShare(result));
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
-		builder
-			.setView(dialogView)
-			.setTitle(getString(R.string.qr_scan_result_dialog_title))
-			.setPositiveButton(getString(R.string.close), (dialog, whichButton) -> {
-				callback.onClose();
-				dismiss();
-			});
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        builder
+            .setView(dialogView)
+            .setTitle(getString(R.string.qr_scan_result_dialog_title))
+            .setPositiveButton(getString(R.string.close), (dialog, whichButton) -> {
+                callback.onClose();
+                dismiss();
+            });
 
-		return builder.create();
-	}
+        return builder.create();
+    }
 
-	private AppCompatDialog returnAnErrorOccuredDialog(String errorMessage) {
-		return new MaterialAlertDialogBuilder(getActivity())
-			.setTitle(R.string.error)
-			.setMessage(String.format(getString(R.string.an_error_occurred_more), errorMessage))
-			.setPositiveButton(R.string.ok, null)
-			.create();
-	}
+    private AppCompatDialog returnAnErrorOccuredDialog(String errorMessage) {
+        return new MaterialAlertDialogBuilder(getActivity())
+            .setTitle(R.string.error)
+            .setMessage(String.format(getString(R.string.an_error_occurred_more), errorMessage))
+            .setPositiveButton(R.string.ok, null)
+            .create();
+    }
 
-	public interface ScanResultClickListener {
-		void onCopy(String result);
-		void onShare(String result);
-		void onClose();
-	}
+    public interface ScanResultClickListener {
+        void onCopy(String result);
+
+        void onShare(String result);
+
+        void onClose();
+    }
 }

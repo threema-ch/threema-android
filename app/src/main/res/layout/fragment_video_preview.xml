@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:theme="@style/Theme.Threema.MediaViewer"
-	android:id="@+id/top_layout"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@color/gallery_background">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.Threema.MediaViewer"
+    android:id="@+id/top_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gallery_background">
 
-	<com.alexvasilkov.gestures.views.GestureFrameLayout
-		android:id="@+id/video_gesture_frame"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+    <com.alexvasilkov.gestures.views.GestureFrameLayout
+        android:id="@+id/video_gesture_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<androidx.media3.ui.PlayerView
-			android:id="@+id/video_view"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			app:controller_layout_id="@layout/exo_player_control_view_central_button_only"
-			app:use_controller="true" />
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:controller_layout_id="@layout/exo_player_control_view_central_button_only"
+            app:use_controller="true" />
 
-	</com.alexvasilkov.gestures.views.GestureFrameLayout>
+    </com.alexvasilkov.gestures.views.GestureFrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

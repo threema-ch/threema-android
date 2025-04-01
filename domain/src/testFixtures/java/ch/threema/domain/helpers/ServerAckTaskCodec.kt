@@ -88,7 +88,8 @@ open class ServerAckTaskCodec : TaskCodec {
         nonceFactory: NonceFactory
     ): ULong = 0U
 
-    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt = 0U
+    override suspend fun reflect(encryptedEnvelopeResult: MultiDeviceKeys.EncryptedEnvelopeResult): UInt =
+        0U
 
     /**
      * The server ack task codec creates the server ack here. Other tasks may perform additional

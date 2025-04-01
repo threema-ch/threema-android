@@ -35,7 +35,8 @@ private val logger = LoggingUtil.getThreemaLogger("EmojiService")
 class EmojiService(
     private val preferenceService: PreferenceService,
     private val searchIndex: EmojiSearchIndex,
-    private val recentEmojis: EmojiRecent) {
+    private val recentEmojis: EmojiRecent
+) {
     private val preferredDiversities = preferenceService.diverseEmojiPrefs
 
     fun addToRecentEmojis(emojiSequence: String) {
@@ -55,7 +56,14 @@ class EmojiService(
     }
 
     fun getRecentEmojis(): List<EmojiInfo> {
-        return getRecentEmojiSequences().map { EmojiInfo(it, EmojiSpritemap.DIVERSITY_NONE, null, EmojiSpritemap.DISPLAY_NO)  }
+        return getRecentEmojiSequences().map {
+            EmojiInfo(
+                it,
+                EmojiSpritemap.DIVERSITY_NONE,
+                null,
+                EmojiSpritemap.DISPLAY_NO
+            )
+        }
     }
 
     fun syncRecentEmojis(): Boolean {

@@ -39,72 +39,76 @@ import ch.threema.app.webclient.state.WebClientSessionState;
  */
 @WorkerThread
 final class SessionStateConnecting extends SessionState {
-	@NonNull private final SessionConnectionContext cctx;
+    @NonNull
+    private final SessionConnectionContext cctx;
 
-	SessionStateConnecting(
-		@NonNull final SessionContext ctx,
-		@NonNull final SaltyRTCBuilder builder,
-		@Nullable final String affiliationId
-	)
-		throws InvalidStateTransition {
-		super(WebClientSessionState.CONNECTING, ctx);
-		logger.info("Initializing");
+    SessionStateConnecting(
+        @NonNull final SessionContext ctx,
+        @NonNull final SaltyRTCBuilder builder,
+        @Nullable final String affiliationId
+    )
+        throws InvalidStateTransition {
+        super(WebClientSessionState.CONNECTING, ctx);
+        logger.info("Initializing");
 
-		// Update affiliation id
-		ctx.affiliationId = affiliationId;
+        // Update affiliation id
+        ctx.affiliationId = affiliationId;
 
-		// Acquire resources
-		logger.info("Acquire session resources...");
-		this.ctx.acquireResources();
+        // Acquire resources
+        logger.info("Acquire session resources...");
+        this.ctx.acquireResources();
 
-		// Create session connection context
-		try {
-			this.cctx = new SessionConnectionContext(ctx, builder);
-		} catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException error) {
-			logger.error("Cannot create session connection context:", error);
-			throw new InvalidStateTransition(error.getMessage());
-		}
+        // Create session connection context
+        try {
+            this.cctx = new SessionConnectionContext(ctx, builder);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException error) {
+            logger.error("Cannot create session connection context:", error);
+            throw new InvalidStateTransition(error.getMessage());
+        }
 
-		// Increment connection ID
-		final int connectionId = ++this.ctx.connectionId;
-		logger.info("Starting connection {} of session {}", connectionId, this.ctx.sessionId);
+        // Increment connection ID
+        final int connectionId = ++this.ctx.connectionId;
+        logger.info("Starting connection {} of session {}", connectionId, this.ctx.sessionId);
 
-		// Connect to the SaltyRTC server asynchronously
-		try {
-			this.cctx.salty.connect();
-		} catch (ConnectionException | IllegalArgumentException error) {
-			logger.error("SaltyRTC connect failed", error);
-			throw new InvalidStateTransition(error.getMessage());
-		}
+        // Connect to the SaltyRTC server asynchronously
+        try {
+            this.cctx.salty.connect();
+        } catch (ConnectionException | IllegalArgumentException error) {
+            logger.error("SaltyRTC connect failed", error);
+            throw new InvalidStateTransition(error.getMessage());
+        }
 
-		// Create timer for the client-to-client connection
-		this.ctx.handler.postDelayed(new Runnable() {
-			@Override
-			@WorkerThread
-			public void run() {
-				// Only error out when we're still in this state
-				if (SessionStateConnecting.this.ctx.manager.getInternalState() == SessionStateConnecting.this) {
-					SessionStateConnecting.this.ctx.manager.setError("Timeout while connecting to remote client");
-				}
-			}
-		}, SessionConnectionContext.C2C_CONNECT_TIMEOUT_MS);
-	}
+        // Create timer for the client-to-client connection
+        this.ctx.handler.postDelayed(new Runnable() {
+            @Override
+            @WorkerThread
+            public void run() {
+                // Only error out when we're still in this state
+                if (SessionStateConnecting.this.ctx.manager.getInternalState() == SessionStateConnecting.this) {
+                    SessionStateConnecting.this.ctx.manager.setError("Timeout while connecting to remote client");
+                }
+            }
+        }, SessionConnectionContext.C2C_CONNECT_TIMEOUT_MS);
+    }
 
-	@Override
-	@NonNull SessionStateConnected setConnected() {
-		logger.info("Connected");
-		return new SessionStateConnected(this.ctx, this.cctx);
-	}
+    @Override
+    @NonNull
+    SessionStateConnected setConnected() {
+        logger.info("Connected");
+        return new SessionStateConnected(this.ctx, this.cctx);
+    }
 
-	@Override
-	@NonNull SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason) {
-		logger.info("Disconnected (reason: {})", reason);
-		return new SessionStateDisconnected(this.ctx, this.cctx, reason);
-	}
+    @Override
+    @NonNull
+    SessionStateDisconnected setDisconnected(@NonNull final DisconnectContext reason) {
+        logger.info("Disconnected (reason: {})", reason);
+        return new SessionStateDisconnected(this.ctx, this.cctx, reason);
+    }
 
-	@Override
-	@NonNull SessionStateError setError(@NonNull final String reason) {
-		logger.error("Error: {}", reason);
-		return new SessionStateError(this.ctx, this.cctx);
-	}
+    @Override
+    @NonNull
+    SessionStateError setError(@NonNull final String reason) {
+        logger.error("Error: {}", reason);
+        return new SessionStateError(this.ctx, this.cctx);
+    }
 }

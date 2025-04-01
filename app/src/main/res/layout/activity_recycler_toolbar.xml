@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:id="@+id/parent_layout"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent"
-												android:background="?android:attr/colorBackground">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
 
-	<include layout="@layout/toolbar_view"/>
+    <include layout="@layout/toolbar_view" />
 
-	<ch.threema.app.ui.EmptyRecyclerView
-			android:id="@+id/recycler"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    <ch.threema.app.ui.EmptyRecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-			android:id="@+id/floating"
-			app:icon="@android:drawable/ic_input_add"
-			android:text="@string/menu_add_contact"
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:layout_gravity="bottom|right"
-			android:layout_margin="@dimen/floating_button_margin"
-			app:layout_anchor="@+id/recycler"
-			app:layout_anchorGravity="bottom|right|end"
-			android:visibility="visible"
-			android:clickable="true"/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floating"
+        app:icon="@android:drawable/ic_input_add"
+        android:text="@string/menu_add_contact"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="@dimen/floating_button_margin"
+        app:layout_anchor="@+id/recycler"
+        app:layout_anchorGravity="bottom|right|end"
+        android:visibility="visible"
+        android:clickable="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

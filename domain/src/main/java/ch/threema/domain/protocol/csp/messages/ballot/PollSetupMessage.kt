@@ -94,7 +94,10 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
     companion object {
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage, ballotCreatorIdentity: String): PollSetupMessage =
+        fun fromReflected(
+            message: MdD2D.IncomingMessage,
+            ballotCreatorIdentity: String
+        ): PollSetupMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
                 ballotCreatorIdentity = ballotCreatorIdentity
@@ -103,7 +106,10 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
             }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage, ballotCreatorIdentity: String): PollSetupMessage =
+        fun fromReflected(
+            message: MdD2D.OutgoingMessage,
+            ballotCreatorIdentity: String
+        ): PollSetupMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
                 ballotCreatorIdentity = ballotCreatorIdentity,
@@ -132,7 +138,12 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
          */
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, offset: Int, length: Int, ballotCreatorIdentity: String): PollSetupMessage {
+        fun fromByteArray(
+            data: ByteArray,
+            offset: Int,
+            length: Int,
+            ballotCreatorIdentity: String
+        ): PollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")
             } else if (offset < 0) {
@@ -150,7 +161,12 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
 
                 positionIndex += ProtocolDefines.BALLOT_ID_LEN
 
-                val jsonObjectString = String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8)
+                val jsonObjectString = String(
+                    data,
+                    positionIndex,
+                    length + offset - positionIndex,
+                    StandardCharsets.UTF_8
+                )
                 ballotData = BallotData.parse(jsonObjectString)
             }
         }

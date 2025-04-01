@@ -48,7 +48,8 @@ class Connected internal constructor(
     call: GroupCall,
     private val participant: LocalParticipant
 ) : GroupCallConnectionState(StateName.CONNECTED, call) {
-    private val stopCallSignal: CompletableDeferred<GroupCallConnectionState> = CompletableDeferred()
+    private val stopCallSignal: CompletableDeferred<GroupCallConnectionState> =
+        CompletableDeferred()
 
     private val ctx = call.context.connectionCtx
     private val updateCallMutex = Mutex()
@@ -78,10 +79,12 @@ class Connected internal constructor(
         call.updateParticipants(GroupCall.ParticipantsUpdate.empty())
 
         logger.trace("Replace peer connection observer")
-        ctx.pc.observer.replace(PeerConnectionObserver(
-            addTransceiver = ctx.pc::addTransceiverFromEvent,
-            failedSignal = stopCallSignal,
-        ))
+        ctx.pc.observer.replace(
+            PeerConnectionObserver(
+                addTransceiver = ctx.pc::addTransceiverFromEvent,
+                failedSignal = stopCallSignal,
+            )
+        )
 
         logger.trace("Set data channel observer")
         setP2sDataChannelObserver()
@@ -119,6 +122,7 @@ class Connected internal constructor(
                 when (state) {
                     DataChannel.State.CLOSING, DataChannel.State.CLOSED ->
                         stopCallSignal.completeExceptionally(GroupCallException("P2S data channel closed"))
+
                     else -> {
                         // noop
                     }
@@ -126,8 +130,10 @@ class Connected internal constructor(
             }
 
             override fun onMessage(buffer: DataChannel.Buffer) {
-                logger.trace("P2S data channel incoming message (length={}, binary={})",
-                    buffer.data.remaining(), buffer.binary)
+                logger.trace(
+                    "P2S data channel incoming message (length={}, binary={})",
+                    buffer.data.remaining(), buffer.binary
+                )
 
                 if (call.callLeftSignal.isCompleted) {
                     logger.debug("Call already left, ignore incoming P2S message")
@@ -202,7 +208,10 @@ class Connected internal constructor(
      * removed and cancelled prior to creating a new handshake.
      */
     @WorkerThread
-    private fun createHandshake(remoteParticipantId: ParticipantId, supplier: Function<ParticipantId, P2PHandshake>): P2PHandshake {
+    private fun createHandshake(
+        remoteParticipantId: ParticipantId,
+        supplier: Function<ParticipantId, P2PHandshake>
+    ): P2PHandshake {
         GroupCallThreadUtil.assertDispatcherThread()
 
         return supplier.apply(remoteParticipantId).also {
@@ -221,7 +230,11 @@ class Connected internal constructor(
             if (handshake == null) {
                 logger.info("Ignore P2P message from unknown sender {}", message.senderId)
             } else if (handshake.isDone) {
-                logger.info("P2P non handshake message from {} to {}", message.senderId, message.receiverId)
+                logger.info(
+                    "P2P non handshake message from {} to {}",
+                    message.senderId,
+                    message.receiverId
+                )
                 val contexts = handshake.p2pContexts
                 val decryptedMessage = contexts.decryptMessage(message.encryptedData)
                 if (decryptedMessage == null) {
@@ -251,13 +264,17 @@ class Connected internal constructor(
     }
 
     @WorkerThread
-    private fun handleCaptureState(sender: NormalRemoteParticipant, captureState: P2PMessageContent.CaptureState) {
+    private fun handleCaptureState(
+        sender: NormalRemoteParticipant,
+        captureState: P2PMessageContent.CaptureState
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.debug("Received capture state from {}: {}", sender.id, captureState)
         when (captureState) {
             is P2PMessageContent.CaptureState.Camera -> sender.cameraActive = captureState.active
-            is P2PMessageContent.CaptureState.Microphone -> sender.microphoneActive = captureState.active
+            is P2PMessageContent.CaptureState.Microphone -> sender.microphoneActive =
+                captureState.active
         }
         call.updateCaptureStates()
     }
@@ -333,7 +350,10 @@ class Connected internal constructor(
     }
 
     @WorkerThread
-    private fun performPostHandshakeSteps(contexts: P2PContexts, mediaKeys: List<P2PMessageContent.MediaKey>) {
+    private fun performPostHandshakeSteps(
+        contexts: P2PContexts,
+        mediaKeys: List<P2PMessageContent.MediaKey>
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         addDecryptorPcmks(contexts.remote.participant.id, mediaKeys)
@@ -379,7 +399,10 @@ class Connected internal constructor(
     }
 
     @WorkerThread
-    private fun addDecryptorPcmks(participantId: ParticipantId, mediaKeys: List<P2PMessageContent.MediaKey>) {
+    private fun addDecryptorPcmks(
+        participantId: ParticipantId,
+        mediaKeys: List<P2PMessageContent.MediaKey>
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         // Add decryptor PCMK (for inbound media frames)
@@ -391,7 +414,10 @@ class Connected internal constructor(
 
     /** May only be called with `updateCallMutex` held! */
     @WorkerThread
-    private suspend fun addParticipantToCall(participantId: ParticipantId, handshake: P2PHandshake) {
+    private suspend fun addParticipantToCall(
+        participantId: ParticipantId,
+        handshake: P2PHandshake
+    ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.info("Adding participant '{}' to call", participantId)
@@ -453,7 +479,11 @@ class Connected internal constructor(
 
                 // Apply it
                 pending.state.also {
-                    ctx.frameCrypto.encryptor.setPcmk(it.pcmk, it.epoch.toShort(), it.ratchetCounter.toShort())
+                    ctx.frameCrypto.encryptor.setPcmk(
+                        it.pcmk,
+                        it.epoch.toShort(),
+                        it.ratchetCounter.toShort()
+                    )
                 }
                 pending.applied()
                 logger.debug("PCMK was replaced (epoch $currentEpoch -> ${pending.state.epoch})")
@@ -480,7 +510,11 @@ class Connected internal constructor(
         val previousRatchetCounter = ctx.pcmk.current.ratchetCounter
         val state = ctx.pcmk.nextRatchetCounter()
         logger.debug("Applied PCMK ratchet (ratchet counter $previousRatchetCounter -> ${state.ratchetCounter})")
-        ctx.frameCrypto.encryptor.setPcmk(state.pcmk, state.epoch.toShort(), state.ratchetCounter.toShort())
+        ctx.frameCrypto.encryptor.setPcmk(
+            state.pcmk,
+            state.epoch.toShort(),
+            state.ratchetCounter.toShort()
+        )
     }
 
     @WorkerThread

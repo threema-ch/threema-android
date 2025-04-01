@@ -122,7 +122,11 @@ class IncomingGroupFileMessageTask(
 
         // 6. Save message model and inform listeners about new message
         messageService.save(messageModel)
-        ListenerManager.messageListeners.handle { messageListener -> messageListener.onNew(messageModel) }
+        ListenerManager.messageListeners.handle { messageListener ->
+            messageListener.onNew(
+                messageModel
+            )
+        }
 
         // 7. Download thumbnail and content blob (if auto download enabled)
         //    We still return SUCCESS even if the blobs could net be downloaded
@@ -178,7 +182,11 @@ class IncomingGroupFileMessageTask(
             messageService.downloadThumbnailIfPresent(fileData, messageModel)
         }.onSuccess { thumbnailWasDownloaded: Boolean ->
             if (thumbnailWasDownloaded) {
-                ListenerManager.messageListeners.handle { messageListener -> messageListener.onModified(listOf(messageModel)) }
+                ListenerManager.messageListeners.handle { messageListener ->
+                    messageListener.onModified(
+                        listOf(messageModel)
+                    )
+                }
             }
         }.onFailure { throwable ->
             logger.error("Unable to download thumbnail blob", throwable)

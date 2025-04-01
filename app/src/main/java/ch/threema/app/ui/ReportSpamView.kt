@@ -46,7 +46,11 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
         init(context)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(context)
     }
 
@@ -82,9 +86,22 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
         super.onFinishInflate()
         val reportButton: MaterialButton = findViewById(R.id.button_report_spam)
         reportButton.setOnClickListener {
-            val dialog = TextWithCheckboxDialog.newInstance(context.getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
-                    R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel)
-            dialog.setCallback { _: String?, _: Any?, checked: Boolean -> listener!!.onReportSpamClicked(contactModel!!, checked) }
+            val dialog = TextWithCheckboxDialog.newInstance(
+                context.getString(
+                    R.string.spam_report_dialog_title,
+                    NameUtil.getDisplayNameOrNickname(contactModel, true)
+                ),
+                R.string.spam_report_dialog_explain,
+                R.string.spam_report_dialog_block_checkbox,
+                R.string.spam_report_short,
+                R.string.cancel
+            )
+            dialog.setCallback { _: String?, _: Any?, checked: Boolean ->
+                listener!!.onReportSpamClicked(
+                    contactModel!!,
+                    checked
+                )
+            }
             dialog.show(activity.supportFragmentManager, "")
         }
     }

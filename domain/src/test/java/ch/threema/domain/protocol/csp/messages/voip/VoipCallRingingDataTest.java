@@ -22,34 +22,36 @@
 package ch.threema.domain.protocol.csp.messages.voip;
 
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
+
 import junit.framework.Assert;
+
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 
 public class VoipCallRingingDataTest {
 
-	@Test
-	public void testValidRinging() throws Exception {
-		final VoipCallRingingData msg = new VoipCallRingingData()
-			.setCallId(1234);
+    @Test
+    public void testValidRinging() throws Exception {
+        final VoipCallRingingData msg = new VoipCallRingingData()
+            .setCallId(1234);
 
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		msg.write(bos);
-		final String json = bos.toString();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        msg.write(bos);
+        final String json = bos.toString();
 
-		Assert.assertEquals("{\"callId\":1234}", json);
-	}
+        Assert.assertEquals("{\"callId\":1234}", json);
+    }
 
-	@Test
-	public void parseRingingWithCallId() throws BadMessageException {
-		final VoipCallRingingData parsed = VoipCallRingingData.parse("{\"callId\":42}");
-		Assert.assertEquals(Long.valueOf(42), parsed.getCallId());
-	}
+    @Test
+    public void parseRingingWithCallId() throws BadMessageException {
+        final VoipCallRingingData parsed = VoipCallRingingData.parse("{\"callId\":42}");
+        Assert.assertEquals(Long.valueOf(42), parsed.getCallId());
+    }
 
-	@Test
-	public void parseRingingWithoutCallId() throws BadMessageException {
-		final VoipCallRingingData parsed = VoipCallRingingData.parse("{}");
-		Assert.assertNull(parsed.getCallId());
-	}
+    @Test
+    public void parseRingingWithoutCallId() throws BadMessageException {
+        final VoipCallRingingData parsed = VoipCallRingingData.parse("{}");
+        Assert.assertNull(parsed.getCallId());
+    }
 }

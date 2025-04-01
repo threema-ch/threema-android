@@ -29,28 +29,28 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 public class LocationAutocompleteViewModel extends ViewModel {
-	private PoiRepository poiRepository;
-	private MutableLiveData<PoiQuery> currentQuery = new MutableLiveData<>();
-	private LiveData<List<Poi>> places = Transformations.switchMap(currentQuery, poiQuery ->
-		poiRepository.getMutableLiveData(poiQuery));
+    private PoiRepository poiRepository;
+    private MutableLiveData<PoiQuery> currentQuery = new MutableLiveData<>();
+    private LiveData<List<Poi>> places = Transformations.switchMap(currentQuery, poiQuery ->
+        poiRepository.getMutableLiveData(poiQuery));
 
-	public LocationAutocompleteViewModel() {
-		super();
-		poiRepository = new PoiRepository();
-		currentQuery.setValue(new PoiQuery("", null));
-	}
+    public LocationAutocompleteViewModel() {
+        super();
+        poiRepository = new PoiRepository();
+        currentQuery.setValue(new PoiQuery("", null));
+    }
 
-	LiveData<List<Poi>> getPlaces() {
-		return places;
-	}
+    LiveData<List<Poi>> getPlaces() {
+        return places;
+    }
 
-	LiveData<Boolean> getIsLoading() {
-		return poiRepository.getIsLoading();
-	}
+    LiveData<Boolean> getIsLoading() {
+        return poiRepository.getIsLoading();
+    }
 
-	public void search(PoiQuery PoiQuery) {
-		if (PoiQuery != null && !PoiQuery.equals(currentQuery.getValue())) {
-			currentQuery.setValue(PoiQuery);
-		}
-	}
+    public void search(PoiQuery PoiQuery) {
+        if (PoiQuery != null && !PoiQuery.equals(currentQuery.getValue())) {
+            currentQuery.setValue(PoiQuery);
+        }
+    }
 }

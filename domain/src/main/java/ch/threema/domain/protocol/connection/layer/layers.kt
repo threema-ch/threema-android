@@ -40,20 +40,23 @@ import ch.threema.domain.protocol.connection.data.OutboundMessage
  * The container type depends on the implementation and is different for multi device and
  * non-multi device environment.
  */
-internal interface Layer1Codec : InboundPipeProcessor<ByteArray, InboundL1Message>, OutboundPipeProcessor<OutboundL2Message, ByteArray>
+internal interface Layer1Codec : InboundPipeProcessor<ByteArray, InboundL1Message>,
+    OutboundPipeProcessor<OutboundL2Message, ByteArray>
 
 /**
  * The multiplex layer is primarly used in a multi device setup and has the responsibility to demultiplex
  * d2m.container to either D2M messages or CSP frames.
  * In a non-multi device environment it will probably only pass the messages on to the next layer.
  */
-internal interface Layer2Codec : InboundPipeProcessor<InboundL1Message, InboundL2Message>, OutboundPipeProcessor<OutboundL3Message, OutboundL2Message>
+internal interface Layer2Codec : InboundPipeProcessor<InboundL1Message, InboundL2Message>,
+    OutboundPipeProcessor<OutboundL3Message, OutboundL2Message>
 
 /**
  * The authentication and transport encryption layer is responsible for the server handshakes
  * (chatserver, mediator) and the transport decryption of handshakes.
  */
-internal interface Layer3Codec : InboundPipeProcessor<InboundL2Message, InboundL3Message>, OutboundPipeProcessor<OutboundL4Message, OutboundL3Message>
+internal interface Layer3Codec : InboundPipeProcessor<InboundL2Message, InboundL3Message>,
+    OutboundPipeProcessor<OutboundL4Message, OutboundL3Message>
 
 /**
  * The connection monitoring and keep alive layer.
@@ -62,7 +65,8 @@ internal interface Layer3Codec : InboundPipeProcessor<InboundL2Message, InboundL
  * It is also responsible for correctly handle events, when the connection is closed by the server
  * e.g. with a close-error.
  */
-internal interface Layer4Codec : InboundPipeProcessor<InboundL3Message, InboundL4Message>, OutboundPipeProcessor<OutboundL5Message, OutboundL4Message>
+internal interface Layer4Codec : InboundPipeProcessor<InboundL3Message, InboundL4Message>,
+    OutboundPipeProcessor<OutboundL5Message, OutboundL4Message>
 
 /**
  * The so called end-to-end layer which is responsible for linking the connection to the task manager.

@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/contact_edit_item"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:paddingBottom="5dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contact_edit_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="5dp">
 
-	<CheckBox
-		android:id="@+id/include_checkbox"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:checked="true"
-		android:clickable="false"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+    <CheckBox
+        android:id="@+id/include_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-	<ImageView
-		android:id="@+id/contact_property_icon"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:contentDescription="@string/edit_send_contact_detail_icon"
-		app:layout_constraintBottom_toBottomOf="@id/include_checkbox"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="@id/include_checkbox" />
+    <ImageView
+        android:id="@+id/contact_property_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/edit_send_contact_detail_icon"
+        app:layout_constraintBottom_toBottomOf="@id/include_checkbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/include_checkbox" />
 
-	<ImageView
-		android:id="@+id/contact_property_photo"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:contentDescription="@string/edit_send_contact_detail_icon"
-		android:visibility="gone"
-		app:layout_constraintBottom_toBottomOf="@id/include_checkbox"
-		app:layout_constraintDimensionRatio="H,1:1"
-		app:layout_constraintStart_toStartOf="@id/contact_property_container"
-		app:layout_constraintTop_toTopOf="@id/include_checkbox" />
+    <ImageView
+        android:id="@+id/contact_property_photo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/edit_send_contact_detail_icon"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/include_checkbox"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintStart_toStartOf="@id/contact_property_container"
+        app:layout_constraintTop_toTopOf="@id/include_checkbox" />
 
-	<RelativeLayout
-		android:id="@+id/contact_property_container"
-		android:layout_width="0dp"
-		android:layout_height="wrap_content"
-		android:layout_marginStart="24dp"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@id/include_checkbox"
-		app:layout_constraintStart_toEndOf="@id/contact_property_icon"
-		app:layout_constraintTop_toTopOf="parent">
+    <RelativeLayout
+        android:id="@+id/contact_property_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/include_checkbox"
+        app:layout_constraintStart_toEndOf="@id/contact_property_icon"
+        app:layout_constraintTop_toTopOf="parent">
 
-		<TextView
-			android:id="@+id/contact_property_text"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentTop="true"
-			android:ems="10"
-			android:enabled="false"
-			android:gravity="start" />
+        <TextView
+            android:id="@+id/contact_property_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:ems="10"
+            android:enabled="false"
+            android:gravity="start" />
 
-		<TextView
-			android:id="@+id/contact_property_type"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentLeft="true"
-			android:layout_below="@id/contact_property_text"
-			android:ems="10"
-			android:enabled="false"
-			android:gravity="start" />
+        <TextView
+            android:id="@+id/contact_property_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/contact_property_text"
+            android:ems="10"
+            android:enabled="false"
+            android:gravity="start" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

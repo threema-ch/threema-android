@@ -58,7 +58,8 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
     private var listViewWidth = -1
     private var messageBubbleWidth = -1
     private val buttonWidth = resources.getDimensionPixelSize(R.dimen.emojireactions_width)
-    private val buttonWidthWithCount = resources.getDimensionPixelSize(R.dimen.emojireactions_width_with_count)
+    private val buttonWidthWithCount =
+        resources.getDimensionPixelSize(R.dimen.emojireactions_width_with_count)
     private lateinit var contextThemeWrapper: ContextThemeWrapper
 
     constructor(context: Context) : super(
@@ -90,7 +91,11 @@ class EmojiReactionGroup : LinearLayoutCompat, OnEmojiReactionButtonClickListene
         contextThemeWrapper = getContextThemeWrapper(context)
     }
 
-    fun setMessageModel(messageReceiver: MessageReceiver<*>, messageModel: AbstractMessageModel, reactions: List<EmojiReactionData>) {
+    fun setMessageModel(
+        messageReceiver: MessageReceiver<*>,
+        messageModel: AbstractMessageModel,
+        reactions: List<EmojiReactionData>
+    ) {
         this.messageModel = messageModel
         this.reactions = reactions
         this.messageReceiver = messageReceiver

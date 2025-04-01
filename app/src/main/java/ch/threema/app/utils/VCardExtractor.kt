@@ -34,7 +34,10 @@ import java.util.*
 /**
  * This class provides the functionality to get the text of a VCard property.
  */
-class VCardExtractor(private val dateFormat: java.text.DateFormat, private val resources: Resources) {
+class VCardExtractor(
+    private val dateFormat: java.text.DateFormat,
+    private val resources: Resources
+) {
 
     /**
      * Extracts the text of the given VCard property.
@@ -55,9 +58,14 @@ class VCardExtractor(private val dateFormat: java.text.DateFormat, private val r
         is PlaceProperty -> getPlaceProperty(property)
         is Related -> getRelated(property)
         is SimpleProperty<*> -> getSimpleProperty(property)
-        is StructuredName -> if (ignoreName) throw VCardExtractionException("name should be ignored") else getStructuredName(property)
+        is StructuredName -> if (ignoreName) throw VCardExtractionException("name should be ignored") else getStructuredName(
+            property
+        )
+
         is Telephone -> getTelephone(property)
-        is Timezone -> listOfNotNull(property.text, property.offset.toString()).joinToString(", ").toNonEmpty()
+        is Timezone -> listOfNotNull(property.text, property.offset.toString()).joinToString(", ")
+            .toNonEmpty()
+
         is Xml -> "XML"
         else -> unknownProperty()
     }
@@ -92,15 +100,15 @@ class VCardExtractor(private val dateFormat: java.text.DateFormat, private val r
     }
 
     private fun getAddress(property: Address): String =
-            StringBuilder().apply {
-                if (property.streetAddress != null) append(property.streetAddress)
-                if (property.extendedAddress != null) append(property.extendedAddress)
-                if (property.postalCode != null) append("\n${property.postalCode} ")
-                if (property.postalCode == null && property.locality != null) append("\n ")
-                if (property.locality != null) append(property.locality)
-                if (property.region != null) append("\n${property.region}")
-                if (property.country != null) append("\n${property.country}")
-            }.toString().toNonEmpty()
+        StringBuilder().apply {
+            if (property.streetAddress != null) append(property.streetAddress)
+            if (property.extendedAddress != null) append(property.extendedAddress)
+            if (property.postalCode != null) append("\n${property.postalCode} ")
+            if (property.postalCode == null && property.locality != null) append("\n ")
+            if (property.locality != null) append(property.locality)
+            if (property.region != null) append("\n${property.region}")
+            if (property.country != null) append("\n${property.country}")
+        }.toString().toNonEmpty()
 
     private fun getAgent(property: Agent): String {
         val sb = StringBuilder()
@@ -117,87 +125,94 @@ class VCardExtractor(private val dateFormat: java.text.DateFormat, private val r
 
     private fun getBinaryProperty(property: BinaryProperty<*>): String = when (property) {
         is ImageProperty -> property.url
-                ?: "" // Include image urls if available, otherwise show picture instead of url
+            ?: "" // Include image urls if available, otherwise show picture instead of url
         is Key -> {
             when {
                 property.url != null && property.url.trim().isNotEmpty() -> property.url.trim()
                 else -> resources.getString(R.string.contact_property_key)
             }
         }
+
         is Sound -> {
             when {
                 property.url != null && property.url.trim().isNotEmpty() -> property.url
                 else -> "" // Don't include Audios without an URL
             }
         }
+
         else -> unknownProperty()
     }
 
     private fun getDateOrTimeProperty(property: DateOrTimeProperty): String =
-            if (property.text != null && property.text != "") {
-                property.text
-            } else {
-                dateFormat.format((when {
-                    property.calendar != null -> property.calendar
-                    property.partialDate != null -> {
-                        val pd = property.partialDate
-                        Calendar.getInstance().apply {
-                            clear()
-                            pd.date?.let { set(Calendar.DAY_OF_MONTH, it) }
-                            pd.month?.let { set(Calendar.MONTH, it - 1) }
-                            pd.year?.let { set(Calendar.YEAR, it) }
-                        }
+        if (property.text != null && property.text != "") {
+            property.text
+        } else {
+            dateFormat.format(
+                (when {
+                property.calendar != null -> property.calendar
+                property.partialDate != null -> {
+                    val pd = property.partialDate
+                    Calendar.getInstance().apply {
+                        clear()
+                        pd.date?.let { set(Calendar.DAY_OF_MONTH, it) }
+                        pd.month?.let { set(Calendar.MONTH, it - 1) }
+                        pd.year?.let { set(Calendar.YEAR, it) }
                     }
-                    else -> unknownProperty()
-                }).time)
-            }
+                }
+
+                else -> unknownProperty()
+            }).time)
+        }
 
     private fun getListProperty(property: ListProperty<*>): String =
-            when (property) {
-                is TextListProperty -> if (property.values != null) {
-                    property.values.joinToString(", ").toNonEmpty()
-                } else {
-                    unknownProperty()
-                }
-                else -> unknownProperty()
+        when (property) {
+            is TextListProperty -> if (property.values != null) {
+                property.values.joinToString(", ").toNonEmpty()
+            } else {
+                unknownProperty()
             }
 
+            else -> unknownProperty()
+        }
+
     private fun getPlaceProperty(property: PlaceProperty) = property.text?.toNullIfEmpty()
-            ?: property.uri?.toNullIfEmpty()
-            ?: property.geoUri?.toString()?.toNullIfEmpty() ?: unknownProperty()
+        ?: property.uri?.toNullIfEmpty()
+        ?: property.geoUri?.toString()?.toNullIfEmpty() ?: unknownProperty()
 
     private fun getRelated(property: Related) = (property.text ?: property.uri ?: "").let {
         if (it.startsWith("mailto:")) it.drop(7) else it
     }.toNonEmpty()
 
     private fun getSimpleProperty(property: SimpleProperty<*>): String =
-            when (property) {
-                is Revision -> unknownProperty() // don't show revisions
-                is RawProperty -> property.value?.let { v ->
-                    if (v.startsWith("vnd.android.cursor.item/")) {
-                        v.split(";").let { if (it.size >= 2) it[1] else "" }.toNonEmpty()
-                    } else v.toNonEmpty()
-                } ?: unknownProperty()
-                is TextProperty -> property.value.toNonEmpty()
-                else -> unknownProperty()
-            }
+        when (property) {
+            is Revision -> unknownProperty() // don't show revisions
+            is RawProperty -> property.value?.let { v ->
+                if (v.startsWith("vnd.android.cursor.item/")) {
+                    v.split(";").let { if (it.size >= 2) it[1] else "" }.toNonEmpty()
+                } else v.toNonEmpty()
+            } ?: unknownProperty()
+
+            is TextProperty -> property.value.toNonEmpty()
+            else -> unknownProperty()
+        }
 
     private fun getStructuredName(property: StructuredName): String =
-            StringBuilder().apply {
-                append(listOf(
-                        property.prefixes,
-                        listOf(property.given),
-                        property.additionalNames,
-                        listOf(property.family)
-                ).flatten().filterNotNull().filter { it.isNotBlank() }.joinToString(" ") { it.trim() })
-                if (property.suffixes.any { it.isNotBlank() }) {
-                    append(property.suffixes.joinToString(" ", prefix = ", ").trim())
-                }
-            }.toString().toNonEmpty()
+        StringBuilder().apply {
+            append(
+                listOf(
+                property.prefixes,
+                listOf(property.given),
+                property.additionalNames,
+                listOf(property.family)
+            ).flatten().filterNotNull().filter { it.isNotBlank() }.joinToString(" ") { it.trim() })
+            if (property.suffixes.any { it.isNotBlank() }) {
+                append(property.suffixes.joinToString(" ", prefix = ", ").trim())
+            }
+        }.toString().toNonEmpty()
 
     private fun getTelephone(property: Telephone) =
-            property.text?.toNullIfEmpty()
-                    ?: property.uri?.toString()?.toNullIfEmpty() ?: unknownProperty()
+        property.text?.toNullIfEmpty()
+            ?: property.uri?.toString()?.toNullIfEmpty() ?: unknownProperty()
 
     private fun getAddressTypes(property: Address) = property.types.map {
         when (it) {
@@ -205,7 +220,8 @@ class VCardExtractor(private val dateFormat: java.text.DateFormat, private val r
             AddressType.WORK -> resources.getString(R.string.postalTypeWork)
             else -> resources.getString(R.string.postalTypeOther)
         }
-    }.distinct().joinToString(", ").let { if (it != "") it else resources.getString(R.string.postalTypeOther) }
+    }.distinct().joinToString(", ")
+        .let { if (it != "") it else resources.getString(R.string.postalTypeOther) }
 
     private fun getDateOrTimePropertyTypes(property: DateOrTimeProperty) = when (property) {
         is Anniversary -> resources.getString(R.string.eventTypeAnniversary)
@@ -243,17 +259,23 @@ class VCardExtractor(private val dateFormat: java.text.DateFormat, private val r
                         if (it != "") it else resources.getString(R.string.emailTypeOther)
                     }
                 }
+
                 is RawProperty -> property.propertyName.let {
                     when {
-                        property.value.startsWith("vnd.android.cursor.item/nickname") -> resources.getString(R.string.header_nickname_entry)
+                        property.value.startsWith("vnd.android.cursor.item/nickname") -> resources.getString(
+                            R.string.header_nickname_entry
+                        )
+
                         it == "X-ANDROID-CUSTOM" -> ""
                         it.startsWith("X-", true) -> it.drop(2)
                         else -> it
                     }
                 }
+
                 else -> ""
             }
         }
+
         else -> ""
     }
 

@@ -85,819 +85,888 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
 
 @UiThread
 class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListener,
-	SensorListener {
+    SensorListener {
 
-	companion object {
-		private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
-		private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
-		private const val EXTRA_INTENTION = "EXTRA_INTENTION"
+    companion object {
+        private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
+        private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
+        private const val EXTRA_INTENTION = "EXTRA_INTENTION"
 
-		private const val DURATION_ANIMATE_NAVIGATION_MILLIS = 300L
-		private const val DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS = 200L
-		private const val TIMEOUT_HIDE_NAVIGATION_MILLIS = 7000L
+        private const val DURATION_ANIMATE_NAVIGATION_MILLIS = 300L
+        private const val DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS = 200L
+        private const val TIMEOUT_HIDE_NAVIGATION_MILLIS = 7000L
 
-		private const val DIALOG_TAG_MIC_PERMISSION_DENIED = "mic_perm_denied"
-		private const val DIALOG_TAG_CAMERA_PERMISSION_DENIED = "cam_perm_denied"
-		private const val DIALOG_TAG_SELECT_AUDIO_DEVICE = "audio_select_tag"
+        private const val DIALOG_TAG_MIC_PERMISSION_DENIED = "mic_perm_denied"
+        private const val DIALOG_TAG_CAMERA_PERMISSION_DENIED = "cam_perm_denied"
+        private const val DIALOG_TAG_SELECT_AUDIO_DEVICE = "audio_select_tag"
 
-		private const val SENSOR_TAG_GROUP_CALL = "grpcall"
-		private const val KEEP_ALIVE_DELAY = 20000L
+        private const val SENSOR_TAG_GROUP_CALL = "grpcall"
+        private const val KEEP_ALIVE_DELAY = 20000L
 
-		@JvmStatic
-		fun getStartCallIntent(context: Context, groupId: Int): Intent {
-			return getStartOrJoinCallIntent(context, groupId)
-				.putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN_OR_CREATE)
-		}
+        @JvmStatic
+        fun getStartCallIntent(context: Context, groupId: Int): Intent {
+            return getStartOrJoinCallIntent(context, groupId)
+                .putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN_OR_CREATE)
+        }
 
-		@JvmStatic
-		fun getJoinCallIntent(context: Context, groupId: Int, microphoneActive: Boolean = true): Intent {
-			return getJoinCallIntent(context, groupId)
-				.putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
-		}
+        @JvmStatic
+        fun getJoinCallIntent(
+            context: Context,
+            groupId: Int,
+            microphoneActive: Boolean = true
+        ): Intent {
+            return getJoinCallIntent(context, groupId)
+                .putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
+        }
 
-		@JvmStatic
-		fun getJoinCallIntent(context: Context, groupId: Int): Intent {
-			return getStartOrJoinCallIntent(context, groupId)
-				.putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN)
-		}
+        @JvmStatic
+        fun getJoinCallIntent(context: Context, groupId: Int): Intent {
+            return getStartOrJoinCallIntent(context, groupId)
+                .putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN)
+        }
 
-		@JvmStatic
-		private fun getStartOrJoinCallIntent(context: Context, groupId: Int): Intent {
-			return getGroupCallIntent(context, groupId)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-		}
+        @JvmStatic
+        private fun getStartOrJoinCallIntent(context: Context, groupId: Int): Intent {
+            return getGroupCallIntent(context, groupId)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
 
-		private fun getGroupCallIntent(context: Context, groupId: Int): Intent {
-			return Intent(context, GroupCallActivity::class.java)
-				.putExtra(EXTRA_GROUP_ID, groupId)
-		}
-	}
+        private fun getGroupCallIntent(context: Context, groupId: Int): Intent {
+            return Intent(context, GroupCallActivity::class.java)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+        }
+    }
 
-	private val permissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-		when (it.resultCode) {
-			RESULT_OK -> checkPhoneStateAndJoinCall()
-			else -> {
-				setResult(RESULT_CANCELED)
-				finish()
-			}
-		}
-	}
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            when (it.resultCode) {
+                RESULT_OK -> checkPhoneStateAndJoinCall()
+                else -> {
+                    setResult(RESULT_CANCELED)
+                    finish()
+                }
+            }
+        }
 
-	private val cameraSettingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()
-	) {
-		if (ConfigUtils.isPermissionGranted(this, CAMERA)) {
-			checkCameraPermissionAndStartCapturing()
-		}
-	}
+    private val cameraSettingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (ConfigUtils.isPermissionGranted(this, CAMERA)) {
+            checkCameraPermissionAndStartCapturing()
+        }
+    }
 
-	// An actual runnable is used so it can be removed from the message queue if needed
-	private val autoRemoveInfoAndControlsRunnable = Runnable {
-		hideInfoAndControls()
-	}
+    // An actual runnable is used so it can be removed from the message queue if needed
+    private val autoRemoveInfoAndControlsRunnable = Runnable {
+        hideInfoAndControls()
+    }
 
-	private var intention = GroupCallIntention.JOIN
+    private var intention = GroupCallIntention.JOIN
 
-	private val viewModel: GroupCallViewModel by viewModels()
+    private val viewModel: GroupCallViewModel by viewModels()
 
-	private lateinit var lockAppService: LockAppService
-	private lateinit var preferenceService: PreferenceService
-	private lateinit var sensorService: SensorService
-	private lateinit var groupService: GroupService
+    private lateinit var lockAppService: LockAppService
+    private lateinit var preferenceService: PreferenceService
+    private lateinit var sensorService: SensorService
+    private lateinit var groupService: GroupService
 
-	private lateinit var permissionRegistry: PermissionRegistry
+    private lateinit var permissionRegistry: PermissionRegistry
 
-	private lateinit var views: Views
+    private lateinit var views: Views
 
-	private var infoAndControlsShown = true
-	private var infoAndControlsShownManually = false
-	private var sensorEnabled = false
-	private var newIntent: Intent? = null
+    private var infoAndControlsShown = true
+    private var infoAndControlsShownManually = false
+    private var sensorEnabled = false
+    private var newIntent: Intent? = null
 
-	private lateinit var participantsAdapter: GroupCallParticipantsAdapter
-	private lateinit var gestureDetector: GestureDetectorCompat
+    private lateinit var participantsAdapter: GroupCallParticipantsAdapter
+    private lateinit var gestureDetector: GestureDetectorCompat
 
-	private val participantsLayoutManager = GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false)
-	private val keepAliveHandler = Handler(Looper.getMainLooper())
-	private val keepAliveTask: Runnable = object : Runnable {
-		override fun run() {
-			ThreemaApplication.activityUserInteract(this@GroupCallActivity)
-			keepAliveHandler.postDelayed(this, KEEP_ALIVE_DELAY)
-		}
-	}
+    private val participantsLayoutManager =
+        GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false)
+    private val keepAliveHandler = Handler(Looper.getMainLooper())
+    private val keepAliveTask: Runnable = object : Runnable {
+        override fun run() {
+            ThreemaApplication.activityUserInteract(this@GroupCallActivity)
+            keepAliveHandler.postDelayed(this, KEEP_ALIVE_DELAY)
+        }
+    }
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		logger.debug("Create group call activity")
-		super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        logger.debug("Create group call activity")
+        super.onCreate(savedInstanceState)
 
-		lockAppService = ThreemaApplication.requireServiceManager().lockAppService
-		preferenceService = ThreemaApplication.requireServiceManager().preferenceService
-		sensorService = ThreemaApplication.requireServiceManager().sensorService
-		groupService = ThreemaApplication.requireServiceManager().groupService
-		permissionRegistry = PermissionRegistry(this)
+        lockAppService = ThreemaApplication.requireServiceManager().lockAppService
+        preferenceService = ThreemaApplication.requireServiceManager().preferenceService
+        sensorService = ThreemaApplication.requireServiceManager().sensorService
+        groupService = ThreemaApplication.requireServiceManager().groupService
+        permissionRegistry = PermissionRegistry(this)
 
-		if (!isAllowed) {
-			showToast(R.string.master_key_locked)
-			finish()
-			return
-		}
+        if (!isAllowed) {
+            showToast(R.string.master_key_locked)
+            finish()
+            return
+        }
 
-		handleIntent(intent)
+        handleIntent(intent)
 
-		setFullscreen()
-		setContentView(R.layout.activity_group_call)
-		hideSystemUi()
+        setFullscreen()
+        setContentView(R.layout.activity_group_call)
+        hideSystemUi()
 
-		adjustWindowOffsets()
+        adjustWindowOffsets()
 
-		views = Views()
+        views = Views()
 
-		observeFinishEvent()
-		viewModel.title.observe(this, this::setTitle)
-		viewModel.subTitle.observe(this, this::setSubTitle)
-		viewModel.statusMessage.observe(this, this::setStatusMessage)
-		viewModel.startTimeUpdate.observe(this, this::setStartTime)
-		viewModel.group.observe(this, this::setGroupChatAction)
-		viewModel.getCameraFlipEvents().observe(this) { onCameraFlip() }
-		viewModel.groupAvatar.observe(this) { views.background.setImageBitmap(it) }
+        observeFinishEvent()
+        viewModel.title.observe(this, this::setTitle)
+        viewModel.subTitle.observe(this, this::setSubTitle)
+        viewModel.statusMessage.observe(this, this::setStatusMessage)
+        viewModel.startTimeUpdate.observe(this, this::setStartTime)
+        viewModel.group.observe(this, this::setGroupChatAction)
+        viewModel.getCameraFlipEvents().observe(this) { onCameraFlip() }
+        viewModel.groupAvatar.observe(this) { views.background.setImageBitmap(it) }
 
-		initAudioButtons()
-		initCameraButtons()
-		initHangupButton()
-		initGradientClick()
-		initParticipantsList()
+        initAudioButtons()
+        initCameraButtons()
+        initHangupButton()
+        initGradientClick()
+        initParticipantsList()
 
-		viewModel.isConnecting().observe(this) {
-			views.background.visibility = when (it) {
-				GroupCallViewModel.ConnectingState.IDLE, GroupCallViewModel.ConnectingState.INITIATED -> View.VISIBLE
-				else -> View.GONE
-			}
-		}
+        viewModel.isConnecting().observe(this) {
+            views.background.visibility = when (it) {
+                GroupCallViewModel.ConnectingState.IDLE, GroupCallViewModel.ConnectingState.INITIATED -> View.VISIBLE
+                else -> View.GONE
+            }
+        }
 
-		viewModel.isCallRunning().observe(this) { running ->
-			if (running) {
-				views.buttonToggleCamera.visibility = View.VISIBLE
-				views.buttonToggleMic.visibility = View.VISIBLE
-				views.buttonSelectAudioDevice.visibility = View.VISIBLE
-				views.buttonToggleCamera.postDelayed({
-					if (!viewModel.toggleCameraTooltipShown
-						&& infoAndControlsShown
-						&& views.buttonToggleCamera.visibility == View.VISIBLE
-						&& views.buttonFlipCamera.visibility != View.VISIBLE) {
-						val location = IntArray(2)
-						views.buttonToggleCamera.getLocationInWindow(location)
-						location[0] += (views.buttonToggleCamera.width / 2)
-						location[1] += views.buttonToggleCamera.height
-						TooltipPopup(
-							this,
-							R.string.preferences__tooltip_gc_camera,
-							this
-						).show(
-							activity = this,
-							anchor = views.buttonToggleCamera,
-							text = getString(R.string.tooltip_voip_turn_on_camera),
-							alignment = TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT,
-							originLocation = location,
-							timeoutMs = 2500,
-						)
-						viewModel.toggleCameraTooltipShown = true
-					}
-				}, 2000)
-			} else {
-				views.buttonToggleCamera.visibility = View.GONE
-				views.buttonFlipCamera.visibility = View.GONE
-				views.buttonToggleMic.visibility = View.GONE
-				views.buttonSelectAudioDevice.visibility = View.GONE
-			}
-		}
+        viewModel.isCallRunning().observe(this) { running ->
+            if (running) {
+                views.buttonToggleCamera.visibility = View.VISIBLE
+                views.buttonToggleMic.visibility = View.VISIBLE
+                views.buttonSelectAudioDevice.visibility = View.VISIBLE
+                views.buttonToggleCamera.postDelayed({
+                    if (!viewModel.toggleCameraTooltipShown
+                        && infoAndControlsShown
+                        && views.buttonToggleCamera.visibility == View.VISIBLE
+                        && views.buttonFlipCamera.visibility != View.VISIBLE
+                    ) {
+                        val location = IntArray(2)
+                        views.buttonToggleCamera.getLocationInWindow(location)
+                        location[0] += (views.buttonToggleCamera.width / 2)
+                        location[1] += views.buttonToggleCamera.height
+                        TooltipPopup(
+                            this,
+                            R.string.preferences__tooltip_gc_camera,
+                            this
+                        ).show(
+                            activity = this,
+                            anchor = views.buttonToggleCamera,
+                            text = getString(R.string.tooltip_voip_turn_on_camera),
+                            alignment = TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_RIGHT,
+                            originLocation = location,
+                            timeoutMs = 2500,
+                        )
+                        viewModel.toggleCameraTooltipShown = true
+                    }
+                }, 2000)
+            } else {
+                views.buttonToggleCamera.visibility = View.GONE
+                views.buttonFlipCamera.visibility = View.GONE
+                views.buttonToggleMic.visibility = View.GONE
+                views.buttonSelectAudioDevice.visibility = View.GONE
+            }
+        }
 
-		// make sure lock screen is not activated during call
-		keepAliveHandler.removeCallbacksAndMessages(null)
-		keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY)
+        // make sure lock screen is not activated during call
+        keepAliveHandler.removeCallbacksAndMessages(null)
+        keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY)
 
-		gestureDetector = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
-			override fun onSingleTapUp(e: MotionEvent): Boolean {
-				logger.trace("onSingleTapUp")
-				toggleInfoAndControls()
-				return true
-			}
+        gestureDetector = GestureDetectorCompat(this, object : SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                logger.trace("onSingleTapUp")
+                toggleInfoAndControls()
+                return true
+            }
 
-			override fun onLongPress(e: MotionEvent) {
-				logger.trace("onLongPress")
-			}
-		})
+            override fun onLongPress(e: MotionEvent) {
+                logger.trace("onLongPress")
+            }
+        })
 
-		if (intent?.hasExtra(EXTRA_MICROPHONE_ACTIVE) == true) {
-			intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
-				viewModel.microphoneActiveDefault = it
-			}
-			intent?.removeExtra(EXTRA_MICROPHONE_ACTIVE)
-		}
-	}
+        if (intent?.hasExtra(EXTRA_MICROPHONE_ACTIVE) == true) {
+            intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
+                viewModel.microphoneActiveDefault = it
+            }
+            intent?.removeExtra(EXTRA_MICROPHONE_ACTIVE)
+        }
+    }
 
-	override fun onResume() {
-		super.onResume()
-		if (views.duration.visibility == View.VISIBLE) {
-			views.layout.postDelayed(autoRemoveInfoAndControlsRunnable, TIMEOUT_HIDE_NAVIGATION_MILLIS)
-		}
-	}
+    override fun onResume() {
+        super.onResume()
+        if (views.duration.visibility == View.VISIBLE) {
+            views.layout.postDelayed(
+                autoRemoveInfoAndControlsRunnable,
+                TIMEOUT_HIDE_NAVIGATION_MILLIS
+            )
+        }
+    }
 
-	override fun onPause() {
-		views.layout.removeCallbacks(autoRemoveInfoAndControlsRunnable)
-		super.onPause()
-	}
+    override fun onPause() {
+        views.layout.removeCallbacks(autoRemoveInfoAndControlsRunnable)
+        super.onPause()
+    }
 
     override fun onNewIntent(intent: Intent) {
-		super.onNewIntent(intent)
+        super.onNewIntent(intent)
 
-		if (intent == null) {
-			return
-		}
+        if (intent == null) {
+            return
+        }
 
-		val currentCallGroupId = viewModel.getGroupId()
-		val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
-		if (currentCallGroupId != groupId) {
-			// If we have a running group call and receive an intent for another group call, we
-			// temporarily store the intent and leave the current call.
-			this.newIntent = intent
-			viewModel.leaveCall()
-		}
-	}
+        val currentCallGroupId = viewModel.getGroupId()
+        val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
+        if (currentCallGroupId != groupId) {
+            // If we have a running group call and receive an intent for another group call, we
+            // temporarily store the intent and leave the current call.
+            this.newIntent = intent
+            viewModel.leaveCall()
+        }
+    }
 
-	override fun onDestroy() {
-		logger.trace("destroy group call activity")
+    override fun onDestroy() {
+        logger.trace("destroy group call activity")
 
-		// remove lockscreen keepalive
-		keepAliveHandler.removeCallbacksAndMessages(null)
+        // remove lockscreen keepalive
+        keepAliveHandler.removeCallbacksAndMessages(null)
 
-		participantsAdapter.teardown()
+        participantsAdapter.teardown()
 
-		// Unregister sensor listeners
-		sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
-		sensorEnabled = false
+        // Unregister sensor listeners
+        sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
+        sensorEnabled = false
 
-		// If an intent has been set in this field, we start a new instance
-		if (newIntent != null) {
-			startActivity(newIntent)
-		}
-		super.onDestroy()
-	}
+        // If an intent has been set in this field, we start a new instance
+        if (newIntent != null) {
+            startActivity(newIntent)
+        }
+        super.onDestroy()
+    }
 
-	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-		permissionRegistry.handlePermissionResult(requestCode, permissions, grantResults)
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-	}
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        permissionRegistry.handlePermissionResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
 
-	private fun handleIntent(intent: Intent) {
-		logger.debug("handleIntent")
+    private fun handleIntent(intent: Intent) {
+        logger.debug("handleIntent")
 
-		intention = getIntention(intent)
+        intention = getIntention(intent)
 
-		val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
-		viewModel.setGroupId(groupId)
-		viewModel.cancelNotification()
+        val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
+        viewModel.setGroupId(groupId)
+        viewModel.cancelNotification()
 
-		if (!lockAppService.isLocked) {
-			val groupModel = groupService.getById(groupId.id)
+        if (!lockAppService.isLocked) {
+            val groupModel = groupService.getById(groupId.id)
 
-			if (groupModel != null && groupService.isGroupMember(groupModel)) {
-				joinCall()
-			} else {
-				Toast.makeText(this, R.string.you_are_not_a_member_of_this_group, Toast.LENGTH_LONG).show()
-				finish()
-			}
-		}
-	}
+            if (groupModel != null && groupService.isGroupMember(groupModel)) {
+                joinCall()
+            } else {
+                Toast.makeText(this, R.string.you_are_not_a_member_of_this_group, Toast.LENGTH_LONG)
+                    .show()
+                finish()
+            }
+        }
+    }
 
-	private fun getIntention(intent: Intent): GroupCallIntention {
-		return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-			intent.getSerializableExtra(EXTRA_INTENTION, GroupCallIntention::class.java)
-		} else {
-			@Suppress("DEPRECATION")
-			intent.getSerializableExtra(EXTRA_INTENTION) as? GroupCallIntention
-		} ?: GroupCallIntention.JOIN
-	}
+    private fun getIntention(intent: Intent): GroupCallIntention {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(EXTRA_INTENTION, GroupCallIntention::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getSerializableExtra(EXTRA_INTENTION) as? GroupCallIntention
+        } ?: GroupCallIntention.JOIN
+    }
 
-	private fun checkPhoneStateAndJoinCall() {
-		try {
-			if (VoipUtil.isPSTNCallOngoing(this)) {
-				// A PSTN call is ongoing
-				SimpleStringAlertDialog.newInstance(R.string.group_call, R.string.voip_another_pstn_call)
-						.setOnDismissRunnable { finish() }
-						.show(supportFragmentManager, "err")
-			} else {
-				viewModel.joinCall(intention)
-			}
-		} catch (exception: SecurityException) {
-			logger.error("Phone permission not granted. Starting group call anyway.", exception)
-			viewModel.joinCall(intention)
-		}
-	}
+    private fun checkPhoneStateAndJoinCall() {
+        try {
+            if (VoipUtil.isPSTNCallOngoing(this)) {
+                // A PSTN call is ongoing
+                SimpleStringAlertDialog.newInstance(
+                    R.string.group_call,
+                    R.string.voip_another_pstn_call
+                )
+                    .setOnDismissRunnable { finish() }
+                    .show(supportFragmentManager, "err")
+            } else {
+                viewModel.joinCall(intention)
+            }
+        } catch (exception: SecurityException) {
+            logger.error("Phone permission not granted. Starting group call anyway.", exception)
+            viewModel.joinCall(intention)
+        }
+    }
 
-	private fun joinCall() {
-		logger.debug("Joining call")
-		requestGroupCallPermissions(this, permissionLauncher) {
-			checkPhoneStateAndJoinCall()
-		}
-	}
+    private fun joinCall() {
+        logger.debug("Joining call")
+        requestGroupCallPermissions(this, permissionLauncher) {
+            checkPhoneStateAndJoinCall()
+        }
+    }
 
-	private fun setFullscreen() {
-		// Set window styles for fullscreen-window size. Needs to be done before
-		// adding content.
-		requestWindowFeature(Window.FEATURE_NO_TITLE)
-		window.addFlags(getFullscreenWindowFlags())
+    private fun setFullscreen() {
+        // Set window styles for fullscreen-window size. Needs to be done before
+        // adding content.
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.addFlags(getFullscreenWindowFlags())
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-			setShowWhenLocked(true)
-			setTurnScreenOn(true)
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
             keyguard?.let {
                 if (it.isKeyguardLocked) {
                     // this call can lead to a memory leak: https://issuetracker.google.com/issues/111158463
-                    it.requestDismissKeyguard(this, object : KeyguardManager.KeyguardDismissCallback() {
-                        override fun onDismissError() {
-                            logger.warn("Keyguard dismissing is currently not feasible")
-                        }
+                    it.requestDismissKeyguard(
+                        this,
+                        object : KeyguardManager.KeyguardDismissCallback() {
+                            override fun onDismissError() {
+                                logger.warn("Keyguard dismissing is currently not feasible")
+                            }
 
-                        override fun onDismissSucceeded() {
-                            logger.debug("Keyguard dismissed")
-                        }
+                            override fun onDismissSucceeded() {
+                                logger.debug("Keyguard dismissed")
+                            }
 
-                        override fun onDismissCancelled() {
-                            logger.debug("Keyguard dismissing cancelled")
-                        }
-                    })
+                            override fun onDismissCancelled() {
+                                logger.debug("Keyguard dismissing cancelled")
+                            }
+                        })
                 }
             }
 
-		}
-	}
+        }
+    }
 
-	override fun onWindowFocusChanged(hasFocus: Boolean) {
-		super.onWindowFocusChanged(hasFocus)
-		if (hasFocus) {
-			hideSystemUi()
-		}
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            hideSystemUi()
+        }
 
-		if (sensorEnabled) {
-			if (hasFocus) {
-				sensorService.registerSensors(SENSOR_TAG_GROUP_CALL, this, true)
-			} else {
-				sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
-			}
-		}
-	}
+        if (sensorEnabled) {
+            if (hasFocus) {
+                sensorService.registerSensors(SENSOR_TAG_GROUP_CALL, this, true)
+            } else {
+                sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
+            }
+        }
+    }
 
-	private fun hideSystemUi() {
-		WindowCompat.setDecorFitsSystemWindows(window, false)
-		WindowInsetsControllerCompat(window, findViewById(R.id.group_call_layout)).let {
-			controller ->
-			controller.hide(WindowInsetsCompat.Type.systemBars())
-			controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-		}
+    private fun hideSystemUi() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(
+            window,
+            findViewById(R.id.group_call_layout)
+        ).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-			window.attributes.layoutInDisplayCutoutMode =
-				WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-		}
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+    }
 
-	private fun getFullscreenWindowFlags(): Int {
-		var flags = (
-			WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-			or WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES
-		)
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-			@Suppress("DEPRECATION")
-			flags = flags or WindowManager.LayoutParams.FLAG_FULLSCREEN
-		}
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
-			@Suppress("DEPRECATION")
-			flags = flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-			@Suppress("DEPRECATION")
-			flags = flags or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-		}
-		return flags
-	}
+    private fun getFullscreenWindowFlags(): Int {
+        var flags = (
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                or WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES
+            )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            @Suppress("DEPRECATION")
+            flags = flags or WindowManager.LayoutParams.FLAG_FULLSCREEN
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+            @Suppress("DEPRECATION")
+            flags = flags or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+            @Suppress("DEPRECATION")
+            flags = flags or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        }
+        return flags
+    }
 
-	private fun initAudioButtons() {
-		initMuteMicrophoneButton()
-		initAudioSelectionButton()
-	}
+    private fun initAudioButtons() {
+        initMuteMicrophoneButton()
+        initAudioSelectionButton()
+    }
 
-	private fun initMuteMicrophoneButton() {
-		var microphoneMuted = true
-		viewModel.isMicrophoneActive().observe(this) { microphoneActive ->
-			microphoneMuted = !microphoneActive
-			val imageResource = when (microphoneMuted) {
-				true -> R.drawable.ic_mic_off_outline
-				false -> R.drawable.ic_keyboard_voice_outline
-			}
-			views.buttonToggleMic.setImageResource(imageResource)
-		}
-		views.buttonToggleMic.setOnClickListener {
-			viewModel.muteMicrophone(!microphoneMuted)
-		}
-	}
+    private fun initMuteMicrophoneButton() {
+        var microphoneMuted = true
+        viewModel.isMicrophoneActive().observe(this) { microphoneActive ->
+            microphoneMuted = !microphoneActive
+            val imageResource = when (microphoneMuted) {
+                true -> R.drawable.ic_mic_off_outline
+                false -> R.drawable.ic_keyboard_voice_outline
+            }
+            views.buttonToggleMic.setImageResource(imageResource)
+        }
+        views.buttonToggleMic.setOnClickListener {
+            viewModel.muteMicrophone(!microphoneMuted)
+        }
+    }
 
-	private fun initAudioSelectionButton() {
-		viewModel.getSelectedAudioDevice().observe(this) {
-			views.buttonSelectAudioDevice.selectedAudioDevice = it
-			if (it === AudioDevice.EARPIECE) {
-				if (!sensorService.isSensorRegistered(SENSOR_TAG_GROUP_CALL)) {
-					sensorService.registerSensors(
-						SENSOR_TAG_GROUP_CALL,
-						this@GroupCallActivity,
-						true
-					)
-				}
-				sensorEnabled = true
-			} else {
-				sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
-				sensorEnabled = false
-			}
+    private fun initAudioSelectionButton() {
+        viewModel.getSelectedAudioDevice().observe(this) {
+            views.buttonSelectAudioDevice.selectedAudioDevice = it
+            if (it === AudioDevice.EARPIECE) {
+                if (!sensorService.isSensorRegistered(SENSOR_TAG_GROUP_CALL)) {
+                    sensorService.registerSensors(
+                        SENSOR_TAG_GROUP_CALL,
+                        this@GroupCallActivity,
+                        true
+                    )
+                }
+                sensorEnabled = true
+            } else {
+                sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
+                sensorEnabled = false
+            }
 
-			volumeControlStream = when(it) {
-				AudioDevice.SPEAKER_PHONE -> AudioManager.STREAM_MUSIC
-				AudioDevice.EARPIECE,
-				AudioDevice.WIRED_HEADSET,
-				AudioDevice.BLUETOOTH -> AudioManager.STREAM_VOICE_CALL
-				else -> AudioManager.USE_DEFAULT_STREAM_TYPE
-			}
-		}
-		viewModel.getAudioDevices().observe(this) {
-			views.buttonSelectAudioDevice.audioDevices = it.toSet()
-		}
-		views.buttonSelectAudioDevice.let {
-			it.selectionListener = CallAudioSelectorButton.AudioDeviceSelectionListener { selectedDevice ->
-				viewModel.selectAudioDevice(selectedDevice)
-			}
+            volumeControlStream = when (it) {
+                AudioDevice.SPEAKER_PHONE -> AudioManager.STREAM_MUSIC
+                AudioDevice.EARPIECE,
+                AudioDevice.WIRED_HEADSET,
+                AudioDevice.BLUETOOTH -> AudioManager.STREAM_VOICE_CALL
 
-			it.multiSelectionListener = CallAudioSelectorButton.AudioDeviceMultiSelectListener { audioDevices, selectedDevice ->
-				var currentDeviceIndex = -1
-				val items = ArrayList<BottomSheetItem>()
+                else -> AudioManager.USE_DEFAULT_STREAM_TYPE
+            }
+        }
+        viewModel.getAudioDevices().observe(this) {
+            views.buttonSelectAudioDevice.audioDevices = it.toSet()
+        }
+        views.buttonSelectAudioDevice.let {
+            it.selectionListener =
+                CallAudioSelectorButton.AudioDeviceSelectionListener { selectedDevice ->
+                    viewModel.selectAudioDevice(selectedDevice)
+                }
 
-				for ((i, device) in audioDevices.withIndex()) {
-					val index = device.ordinal
-					items.add(BottomSheetItem(
-							device.getIconResource(),
-							getString(device.getStringResource()),
-							index.toString())
-					)
-					if (device == selectedDevice) {
-						currentDeviceIndex = i
-					}
-				}
+            it.multiSelectionListener =
+                CallAudioSelectorButton.AudioDeviceMultiSelectListener { audioDevices, selectedDevice ->
+                    var currentDeviceIndex = -1
+                    val items = ArrayList<BottomSheetItem>()
 
-				val dialog = BottomSheetListDialog.newInstance(0, items, currentDeviceIndex)
-				dialog.setCallback(fun(tag: String, data: String?) {
-					viewModel.selectAudioDevice(AudioDevice.values()[tag.toInt()])
-				})
-				dialog.show(supportFragmentManager, DIALOG_TAG_SELECT_AUDIO_DEVICE)
-			}
-		}
-	}
+                    for ((i, device) in audioDevices.withIndex()) {
+                        val index = device.ordinal
+                        items.add(
+                            BottomSheetItem(
+                                device.getIconResource(),
+                                getString(device.getStringResource()),
+                                index.toString()
+                            )
+                        )
+                        if (device == selectedDevice) {
+                            currentDeviceIndex = i
+                        }
+                    }
 
-	private fun initCameraButtons() {
-		var cameraMuted = false
+                    val dialog = BottomSheetListDialog.newInstance(0, items, currentDeviceIndex)
+                    dialog.setCallback(fun(tag: String, data: String?) {
+                        viewModel.selectAudioDevice(AudioDevice.values()[tag.toInt()])
+                    })
+                    dialog.show(supportFragmentManager, DIALOG_TAG_SELECT_AUDIO_DEVICE)
+                }
+        }
+    }
 
-		// init camera mute button
-		viewModel.isCameraActive().observe(this) { cameraActive ->
-			cameraMuted = !cameraActive
-			val resource = when (cameraActive) {
-				true -> R.drawable.ic_videocam_black_outline
-				false -> R.drawable.ic_videocam_off_black_outline
-			}
-			views.buttonToggleCamera.setImageResource(resource)
-			views.buttonFlipCamera.visibility = when {
-				cameraActive -> View.VISIBLE
-				else -> View.GONE
-			}
-		}
-		views.buttonToggleCamera.setOnClickListener {
-			if (cameraMuted) {
-				checkCameraPermissionAndStartCapturing()
-			} else {
-				viewModel.muteCamera(true)
-			}
-		}
+    private fun initCameraButtons() {
+        var cameraMuted = false
 
-		// init camera flip button
-		views.buttonFlipCamera.setOnClickListener {
-			logger.debug("Flip camera")
-			viewModel.flipCamera()
-		}
-	}
+        // init camera mute button
+        viewModel.isCameraActive().observe(this) { cameraActive ->
+            cameraMuted = !cameraActive
+            val resource = when (cameraActive) {
+                true -> R.drawable.ic_videocam_black_outline
+                false -> R.drawable.ic_videocam_off_black_outline
+            }
+            views.buttonToggleCamera.setImageResource(resource)
+            views.buttonFlipCamera.visibility = when {
+                cameraActive -> View.VISIBLE
+                else -> View.GONE
+            }
+        }
+        views.buttonToggleCamera.setOnClickListener {
+            if (cameraMuted) {
+                checkCameraPermissionAndStartCapturing()
+            } else {
+                viewModel.muteCamera(true)
+            }
+        }
 
-	private fun checkCameraPermissionAndStartCapturing() {
-		CoroutineScope(Dispatchers.Default).launch {
-			val granted = permissionRegistry.requestCameraPermissions().granted
-			if (granted) {
-				logger.debug("Start capturing from camera")
-				withContext(Dispatchers.Main) {
-					viewModel.muteCamera(false)
-				}
-			} else {
-				logger.info("Camera permission denied")
-				if (!ActivityCompat.shouldShowRequestPermissionRationale(this@GroupCallActivity, CAMERA)) {
-					// permission was permanently denied
-					withContext(Dispatchers.Main) {
-						val alert : ThreemaDialogFragment = GenericAlertDialog.newInstance(
-								R.string.group_call,
-								getString(R.string.group_call_camera_permission_rationale,
-										getString(R.string.app_name)),
-								R.string.settings,
-								R.string.cancel)
-						alert.show(this@GroupCallActivity.supportFragmentManager, DIALOG_TAG_CAMERA_PERMISSION_DENIED)
-					}
-				}
-			}
-		}
-	}
+        // init camera flip button
+        views.buttonFlipCamera.setOnClickListener {
+            logger.debug("Flip camera")
+            viewModel.flipCamera()
+        }
+    }
 
-	private fun initHangupButton() {
-		views.buttonHangup.apply {
-			setOnClickListener { viewModel.leaveCall() }
-		}
-	}
+    private fun checkCameraPermissionAndStartCapturing() {
+        CoroutineScope(Dispatchers.Default).launch {
+            val granted = permissionRegistry.requestCameraPermissions().granted
+            if (granted) {
+                logger.debug("Start capturing from camera")
+                withContext(Dispatchers.Main) {
+                    viewModel.muteCamera(false)
+                }
+            } else {
+                logger.info("Camera permission denied")
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                        this@GroupCallActivity,
+                        CAMERA
+                    )
+                ) {
+                    // permission was permanently denied
+                    withContext(Dispatchers.Main) {
+                        val alert: ThreemaDialogFragment = GenericAlertDialog.newInstance(
+                            R.string.group_call,
+                            getString(
+                                R.string.group_call_camera_permission_rationale,
+                                getString(R.string.app_name)
+                            ),
+                            R.string.settings,
+                            R.string.cancel
+                        )
+                        alert.show(
+                            this@GroupCallActivity.supportFragmentManager,
+                            DIALOG_TAG_CAMERA_PERMISSION_DENIED
+                        )
+                    }
+                }
+            }
+        }
+    }
 
-	@SuppressLint("ClickableViewAccessibility")
-	private fun initGradientClick() {
-		views.gradientOverlay.apply {
-			setOnTouchListener { _, event ->
-				if (!gestureDetector.onTouchEvent(event)) {
-					views.participants.onTouchEvent(event)
-				}
-				true
-			}
-		}
-	}
+    private fun initHangupButton() {
+        views.buttonHangup.apply {
+            setOnClickListener { viewModel.leaveCall() }
+        }
+    }
 
-	private fun initParticipantsList() {
-		val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initGradientClick() {
+        views.gradientOverlay.apply {
+            setOnTouchListener { _, event ->
+                if (!gestureDetector.onTouchEvent(event)) {
+                    views.participants.onTouchEvent(event)
+                }
+                true
+            }
+        }
+    }
 
-		val contactService = ThreemaApplication.requireServiceManager().contactService
-		participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
-		views.participants.layoutManager = participantsLayoutManager
-		views.participants.adapter = participantsAdapter
-		views.participants.addItemDecoration(VerticalGridLayoutGutterDecoration(gutterPx))
+    private fun initParticipantsList() {
+        val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
 
-		viewModel.getEglBaseAndParticipants().observe(this) { (eglBase, participants) ->
-			participantsAdapter.isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-			participantsLayoutManager.spanCount = getParticipantsLayoutManagerSpanCount(participants.size)
-			participantsAdapter.eglBase = eglBase
-			participantsAdapter.setParticipants(participants)
-		}
-		viewModel.getCaptureStateUpdates().observe(this) {
-			views.participants.adapter?.let { adapter ->
-				if (adapter is GroupCallParticipantsAdapter) {
-					adapter.updateCaptureStates()
-				}
-			}
-		}
-	}
+        val contactService = ThreemaApplication.requireServiceManager().contactService
+        participantsAdapter =
+            GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
+        views.participants.layoutManager = participantsLayoutManager
+        views.participants.adapter = participantsAdapter
+        views.participants.addItemDecoration(VerticalGridLayoutGutterDecoration(gutterPx))
 
-	private fun getParticipantsLayoutManagerSpanCount(participants: Int): Int {
-		return when {
-			participants in 0..1 -> 1
-			participants == 2 && participantsAdapter.isPortrait -> 1
-			else -> 2
-		}
-	}
+        viewModel.getEglBaseAndParticipants().observe(this) { (eglBase, participants) ->
+            participantsAdapter.isPortrait =
+                resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+            participantsLayoutManager.spanCount =
+                getParticipantsLayoutManagerSpanCount(participants.size)
+            participantsAdapter.eglBase = eglBase
+            participantsAdapter.setParticipants(participants)
+        }
+        viewModel.getCaptureStateUpdates().observe(this) {
+            views.participants.adapter?.let { adapter ->
+                if (adapter is GroupCallParticipantsAdapter) {
+                    adapter.updateCaptureStates()
+                }
+            }
+        }
+    }
 
-	private fun setTitle(title: String?) {
-		views.title.text = title
-	}
+    private fun getParticipantsLayoutManagerSpanCount(participants: Int): Int {
+        return when {
+            participants in 0..1 -> 1
+            participants == 2 && participantsAdapter.isPortrait -> 1
+            else -> 2
+        }
+    }
 
-	private fun setSubTitle(subTitle: String?) {
-		views.subTitle.text = subTitle
-	}
+    private fun setTitle(title: String?) {
+        views.title.text = title
+    }
 
-	private fun setStatusMessage(message: String?) {
-		views.status.text = message
-		views.status.visibility = when(message) {
-			null -> View.GONE
-			else -> View.VISIBLE
-		}
-	}
+    private fun setSubTitle(subTitle: String?) {
+        views.subTitle.text = subTitle
+    }
 
-	private fun setStartTime(startTime: Long?) {
-		if (startTime != null) {
-			views.duration.visibility = View.VISIBLE
-			views.duration.base = startTime
-			views.duration.start()
-			if (!infoAndControlsShownManually) {
-				views.layout.postDelayed(autoRemoveInfoAndControlsRunnable, TIMEOUT_HIDE_NAVIGATION_MILLIS)
-			}
-		} else {
-			views.duration.visibility = View.GONE
-			views.duration.stop()
-		}
-	}
+    private fun setStatusMessage(message: String?) {
+        views.status.text = message
+        views.status.visibility = when (message) {
+            null -> View.GONE
+            else -> View.VISIBLE
+        }
+    }
 
-	@UiThread
-	private fun onCameraFlip() {
-		views.participants.adapter?.let {
-			if (it is GroupCallParticipantsAdapter) {
-				it.updateMirroringForLocalParticipant()
-			}
-		}
-	}
+    private fun setStartTime(startTime: Long?) {
+        if (startTime != null) {
+            views.duration.visibility = View.VISIBLE
+            views.duration.base = startTime
+            views.duration.start()
+            if (!infoAndControlsShownManually) {
+                views.layout.postDelayed(
+                    autoRemoveInfoAndControlsRunnable,
+                    TIMEOUT_HIDE_NAVIGATION_MILLIS
+                )
+            }
+        } else {
+            views.duration.visibility = View.GONE
+            views.duration.stop()
+        }
+    }
 
-	private fun setGroupChatAction(groupModel: GroupModel?) {
-		if (groupModel != null) {
-			views.title.setOnClickListener {
-				val intent = Intent(this, ComposeMessageActivity::class.java)
-				intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.id)
-				startActivity(intent)
-			}
-		} else {
-			views.title.setOnClickListener(null)
-			views.title.isClickable = false
-		}
-	}
+    @UiThread
+    private fun onCameraFlip() {
+        views.participants.adapter?.let {
+            if (it is GroupCallParticipantsAdapter) {
+                it.updateMirroringForLocalParticipant()
+            }
+        }
+    }
 
-	private fun observeFinishEvent() {
-		lifecycleScope.launch {
-			try {
-				handleFinishEvent(viewModel.finishEvent.await())
-			} catch (e: CancellationException) {
-				logger.info("Waiting for finish event cancelled")
-			}
-		}
-	}
+    private fun setGroupChatAction(groupModel: GroupModel?) {
+        if (groupModel != null) {
+            views.title.setOnClickListener {
+                val intent = Intent(this, ComposeMessageActivity::class.java)
+                intent.putExtra(ThreemaApplication.INTENT_DATA_GROUP, groupModel.id)
+                startActivity(intent)
+            }
+        } else {
+            views.title.setOnClickListener(null)
+            views.title.isClickable = false
+        }
+    }
 
-	private fun handleFinishEvent(event: GroupCallViewModel.FinishEvent) {
-		logger.info("Finish group call activity: '{}'", event.reason)
+    private fun observeFinishEvent() {
+        lifecycleScope.launch {
+            try {
+                handleFinishEvent(viewModel.finishEvent.await())
+            } catch (e: CancellationException) {
+                logger.info("Waiting for finish event cancelled")
+            }
+        }
+    }
 
-		// remove participants adapter to avoid creating new view holders after
-		// the call has ended
-		views.participants.adapter = null
+    private fun handleFinishEvent(event: GroupCallViewModel.FinishEvent) {
+        logger.info("Finish group call activity: '{}'", event.reason)
 
-		when (event.reason) {
-			GroupCallViewModel.FinishEvent.Reason.ERROR -> showToast(R.string.voip_gc_call_error)
-			GroupCallViewModel.FinishEvent.Reason.INVALID_DATA,
-			GroupCallViewModel.FinishEvent.Reason.TOKEN_INVALID,
-			GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_start_error)
-			GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL -> showToast(R.string.voip_gc_call_already_ended)
-			GroupCallViewModel.FinishEvent.Reason.SFU_NOT_AVAILABLE -> showToast(R.string.voip_gc_sfu_not_available)
-			GroupCallViewModel.FinishEvent.Reason.FULL -> showCallFullToast(event.call)
-			GroupCallViewModel.FinishEvent.Reason.LEFT -> Unit
-		}
+        // remove participants adapter to avoid creating new view holders after
+        // the call has ended
+        views.participants.adapter = null
 
-		if (event.call != null && viewModel.hasOtherJoinedCall(event.call)) {
-			logger.info("There is another joined call, so recreate the activity")
-			newIntent = getGroupCallIntent(this, event.call.groupId.id)
-		}
-		finish()
-	}
+        when (event.reason) {
+            GroupCallViewModel.FinishEvent.Reason.ERROR -> showToast(R.string.voip_gc_call_error)
+            GroupCallViewModel.FinishEvent.Reason.INVALID_DATA,
+            GroupCallViewModel.FinishEvent.Reason.TOKEN_INVALID,
+            GroupCallViewModel.FinishEvent.Reason.UNSUPPORTED_PROTOCOL_VERSION -> showToast(R.string.voip_gc_call_start_error)
 
-	private fun showCallFullToast(callDescription: GroupCallDescription?) {
-		val maxParticipants = callDescription?.maxParticipants
-		if (maxParticipants != null) {
-			showToast(R.string.voip_gc_call_full_n, maxParticipants.toInt())
-		} else {
-			showToast(R.string.voip_gc_call_full_generic)
-		}
-	}
+            GroupCallViewModel.FinishEvent.Reason.NO_SUCH_CALL -> showToast(R.string.voip_gc_call_already_ended)
+            GroupCallViewModel.FinishEvent.Reason.SFU_NOT_AVAILABLE -> showToast(R.string.voip_gc_sfu_not_available)
+            GroupCallViewModel.FinishEvent.Reason.FULL -> showCallFullToast(event.call)
+            GroupCallViewModel.FinishEvent.Reason.LEFT -> Unit
+        }
 
-	private fun showToast(@StringRes resId: Int, vararg params: Any) {
-		Toast.makeText(this, getString(resId, *params), Toast.LENGTH_LONG).show()
-	}
+        if (event.call != null && viewModel.hasOtherJoinedCall(event.call)) {
+            logger.info("There is another joined call, so recreate the activity")
+            newIntent = getGroupCallIntent(this, event.call.groupId.id)
+        }
+        finish()
+    }
 
-	private fun adjustWindowOffsets() {
-		// Support notch
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-			ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout)) { v: View, insets: WindowInsetsCompat ->
-				if (!isInPictureInPictureMode) {
-					if (insets.displayCutout != null) {
-						v.setPadding(
-								insets.displayCutout?.safeInsetLeft ?: 0,
-								insets.displayCutout?.safeInsetTop ?: 0,
-								insets.displayCutout?.safeInsetRight ?: 0,
-								insets.displayCutout?.safeInsetBottom ?: 0
-						)
-					}
-				} else {
-					// reset notch margins for PIP
-					v.setPadding(0, 0, 0, 0)
-				}
-				insets
-			}
-		}
-	}
+    private fun showCallFullToast(callDescription: GroupCallDescription?) {
+        val maxParticipants = callDescription?.maxParticipants
+        if (maxParticipants != null) {
+            showToast(R.string.voip_gc_call_full_n, maxParticipants.toInt())
+        } else {
+            showToast(R.string.voip_gc_call_full_generic)
+        }
+    }
 
-	private fun toggleInfoAndControls() {
-		when {
-			infoAndControlsShown -> hideInfoAndControls()
-			else -> showInfoAndControls()
-		}
-	}
+    private fun showToast(@StringRes resId: Int, vararg params: Any) {
+        Toast.makeText(this, getString(resId, *params), Toast.LENGTH_LONG).show()
+    }
 
-	private fun showInfoAndControls() {
-		views.contentLayout.removeCallbacks(autoRemoveInfoAndControlsRunnable)
+    private fun adjustWindowOffsets() {
+        // Support notch
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.content_layout)) { v: View, insets: WindowInsetsCompat ->
+                if (!isInPictureInPictureMode) {
+                    if (insets.displayCutout != null) {
+                        v.setPadding(
+                            insets.displayCutout?.safeInsetLeft ?: 0,
+                            insets.displayCutout?.safeInsetTop ?: 0,
+                            insets.displayCutout?.safeInsetRight ?: 0,
+                            insets.displayCutout?.safeInsetBottom ?: 0
+                        )
+                    }
+                } else {
+                    // reset notch margins for PIP
+                    v.setPadding(0, 0, 0, 0)
+                }
+                insets
+            }
+        }
+    }
 
-		val layoutMargin = resources.getDimensionPixelSize(R.dimen.call_activity_margin)
-		val constraints = ConstraintSet()
-		constraints.clone(views.contentLayout)
-		constraints.clear(R.id.call_info, ConstraintSet.BOTTOM)
-		constraints.clear(R.id.call_info, ConstraintSet.TOP)
-		constraints.connect(R.id.call_info, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, 0)
-		constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
-		constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
-		constraints.connect(R.id.in_call_buttons, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, layoutMargin)
+    private fun toggleInfoAndControls() {
+        when {
+            infoAndControlsShown -> hideInfoAndControls()
+            else -> showInfoAndControls()
+        }
+    }
 
-		applyInfoAndControlsTransformation(true, constraints)
-		infoAndControlsShown = true
-		infoAndControlsShownManually = true
-	}
+    private fun showInfoAndControls() {
+        views.contentLayout.removeCallbacks(autoRemoveInfoAndControlsRunnable)
 
-	private fun hideInfoAndControls() {
-		val constraints = ConstraintSet()
+        val layoutMargin = resources.getDimensionPixelSize(R.dimen.call_activity_margin)
+        val constraints = ConstraintSet()
+        constraints.clone(views.contentLayout)
+        constraints.clear(R.id.call_info, ConstraintSet.BOTTOM)
+        constraints.clear(R.id.call_info, ConstraintSet.TOP)
+        constraints.connect(
+            R.id.call_info,
+            ConstraintSet.TOP,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.TOP,
+            0
+        )
+        constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
+        constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
+        constraints.connect(
+            R.id.in_call_buttons,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM,
+            layoutMargin
+        )
 
-		constraints.clone(views.contentLayout)
-		constraints.clear(R.id.call_info, ConstraintSet.BOTTOM)
-		constraints.clear(R.id.call_info, ConstraintSet.TOP)
-		constraints.connect(R.id.call_info, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-		constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
-		constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
-		constraints.connect(R.id.in_call_buttons, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        applyInfoAndControlsTransformation(true, constraints)
+        infoAndControlsShown = true
+        infoAndControlsShownManually = true
+    }
 
-		applyInfoAndControlsTransformation(false, constraints)
-		infoAndControlsShown = false
-		infoAndControlsShownManually = false
-	}
+    private fun hideInfoAndControls() {
+        val constraints = ConstraintSet()
 
-	private fun applyInfoAndControlsTransformation(visible: Boolean, constraints: ConstraintSet)  {
-		val transition = ChangeBounds()
-		transition.duration = DURATION_ANIMATE_NAVIGATION_MILLIS
-		transition.addListener(onEnd = {
-			changeGradientVisibility(visible)
-		})
-		TransitionManager.beginDelayedTransition(views.contentLayout, transition)
-		constraints.applyTo(views.contentLayout)
-	}
+        constraints.clone(views.contentLayout)
+        constraints.clear(R.id.call_info, ConstraintSet.BOTTOM)
+        constraints.clear(R.id.call_info, ConstraintSet.TOP)
+        constraints.connect(
+            R.id.call_info,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.TOP
+        )
+        constraints.clear(R.id.in_call_buttons, ConstraintSet.BOTTOM)
+        constraints.clear(R.id.in_call_buttons, ConstraintSet.TOP)
+        constraints.connect(
+            R.id.in_call_buttons,
+            ConstraintSet.TOP,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM
+        )
 
-	private fun changeGradientVisibility(visible: Boolean) {
-		val alpha = when {
-			visible -> 1f
-			else -> 0f
-		}
-		views.gradientOverlay
-			.animate()
-			.setDuration(DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS)
-			.alpha(alpha)
-	}
+        applyInfoAndControlsTransformation(false, constraints)
+        infoAndControlsShown = false
+        infoAndControlsShownManually = false
+    }
 
-	private inner class Views {
-		val layout: ConstraintLayout = findViewById(R.id.group_call_layout)
-		val contentLayout: ConstraintLayout = findViewById(R.id.content_layout)
+    private fun applyInfoAndControlsTransformation(visible: Boolean, constraints: ConstraintSet) {
+        val transition = ChangeBounds()
+        transition.duration = DURATION_ANIMATE_NAVIGATION_MILLIS
+        transition.addListener(onEnd = {
+            changeGradientVisibility(visible)
+        })
+        TransitionManager.beginDelayedTransition(views.contentLayout, transition)
+        constraints.applyTo(views.contentLayout)
+    }
 
-		val gradientOverlay: View = findViewById(R.id.gradient_overlay)
+    private fun changeGradientVisibility(visible: Boolean) {
+        val alpha = when {
+            visible -> 1f
+            else -> 0f
+        }
+        views.gradientOverlay
+            .animate()
+            .setDuration(DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS)
+            .alpha(alpha)
+    }
 
-		// Background
-		val background: ImageView = findViewById(R.id.background_image)
+    private inner class Views {
+        val layout: ConstraintLayout = findViewById(R.id.group_call_layout)
+        val contentLayout: ConstraintLayout = findViewById(R.id.content_layout)
 
-		// RecyclerView
-		val participants: RecyclerView = findViewById(R.id.group_call_participants)
+        val gradientOverlay: View = findViewById(R.id.gradient_overlay)
 
-		// call info
-		val title: EmojiTextView = findViewById(R.id.call_title)
-		val subTitle: TextView = findViewById(R.id.call_sub_title)
-		val status: AnimatedEllipsisTextView = findViewById(R.id.call_status)
-		val duration: Chronometer = findViewById(R.id.call_duration)
+        // Background
+        val background: ImageView = findViewById(R.id.background_image)
 
-		// buttons
-		val buttonToggleCamera: ImageButton = findViewById(R.id.button_toggle_camera)
-		val buttonFlipCamera: ImageButton = findViewById(R.id.button_flip_camera)
-		val buttonToggleMic: ImageButton = findViewById(R.id.button_call_toggle_mic)
-		val buttonSelectAudioDevice: CallAudioSelectorButton = findViewById(R.id.button_select_audio_device)
-		val buttonHangup: ImageButton = findViewById(R.id.button_end_call)
-	}
+        // RecyclerView
+        val participants: RecyclerView = findViewById(R.id.group_call_participants)
 
-	override fun isPinLockable(): Boolean {
-		return true
-	}
+        // call info
+        val title: EmojiTextView = findViewById(R.id.call_title)
+        val subTitle: TextView = findViewById(R.id.call_sub_title)
+        val status: AnimatedEllipsisTextView = findViewById(R.id.call_status)
+        val duration: Chronometer = findViewById(R.id.call_duration)
 
-	override fun onSensorChanged(key: String?, value: Boolean) {
-		// called if sensor status changed
-		logger.trace("onSensorChanged: {}={}", key, value)
-	}
+        // buttons
+        val buttonToggleCamera: ImageButton = findViewById(R.id.button_toggle_camera)
+        val buttonFlipCamera: ImageButton = findViewById(R.id.button_flip_camera)
+        val buttonToggleMic: ImageButton = findViewById(R.id.button_call_toggle_mic)
+        val buttonSelectAudioDevice: CallAudioSelectorButton =
+            findViewById(R.id.button_select_audio_device)
+        val buttonHangup: ImageButton = findViewById(R.id.button_end_call)
+    }
 
-	override fun onYes(tag: String?, addData: Any?) {
-		if (DIALOG_TAG_CAMERA_PERMISSION_DENIED == tag) {
-			cameraSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-				data = Uri.fromParts("package", packageName, null)
-			})
-		}
-	}
+    override fun isPinLockable(): Boolean {
+        return true
+    }
 
-	override fun onNo(tag: String?, data: Any?) {
-		if (DIALOG_TAG_MIC_PERMISSION_DENIED == tag) {
-			logger.info("User confirmed denial of microphone permission")
-			setResult(RESULT_CANCELED)
-			finish()
-		}
-	}
+    override fun onSensorChanged(key: String?, value: Boolean) {
+        // called if sensor status changed
+        logger.trace("onSensorChanged: {}={}", key, value)
+    }
+
+    override fun onYes(tag: String?, addData: Any?) {
+        if (DIALOG_TAG_CAMERA_PERMISSION_DENIED == tag) {
+            cameraSettingsLauncher.launch(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.fromParts("package", packageName, null)
+            })
+        }
+    }
+
+    override fun onNo(tag: String?, data: Any?) {
+        if (DIALOG_TAG_MIC_PERMISSION_DENIED == tag) {
+            logger.info("User confirmed denial of microphone permission")
+            setResult(RESULT_CANCELED)
+            finish()
+        }
+    }
 }

@@ -26,8 +26,8 @@ package ch.threema.app.activities;
  * Allow for different task related parameters in Manifest
  */
 public class RecipientListActivity extends RecipientListBaseActivity {
-	@Override
-	public boolean isCalledFromExternalApp() {
-		return true;
-	}
+    @Override
+    public boolean isCalledFromExternalApp() {
+        return true;
+    }
 }

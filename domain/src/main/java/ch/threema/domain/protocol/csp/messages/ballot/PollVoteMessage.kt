@@ -152,13 +152,25 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
 
                 var positionIndex = offset
 
-                ballotCreatorIdentity = String(data, positionIndex, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII)
+                ballotCreatorIdentity = String(
+                    data,
+                    positionIndex,
+                    ProtocolDefines.IDENTITY_LEN,
+                    StandardCharsets.US_ASCII
+                )
                 positionIndex += ProtocolDefines.IDENTITY_LEN
 
                 ballotId = BallotId(data, positionIndex)
                 positionIndex += ProtocolDefines.BALLOT_ID_LEN
 
-                parseVotes(String(data, positionIndex, length + offset - positionIndex, StandardCharsets.UTF_8))
+                parseVotes(
+                    String(
+                        data,
+                        positionIndex,
+                        length + offset - positionIndex,
+                        StandardCharsets.UTF_8
+                    )
+                )
             }
         }
     }

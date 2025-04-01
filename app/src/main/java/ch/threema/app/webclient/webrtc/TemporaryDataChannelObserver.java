@@ -39,60 +39,62 @@ import java.util.List;
  */
 @AnyThread
 public class TemporaryDataChannelObserver extends DataChannelObserver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryDataChannelObserver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryDataChannelObserver");
 
-	@NonNull final private List<Object> events = new ArrayList<>();
-	@Nullable private DataChannelObserver observer;
+    @NonNull
+    final private List<Object> events = new ArrayList<>();
+    @Nullable
+    private DataChannelObserver observer;
 
-	@Override
-	public synchronized void onBufferedAmountChange(final long bufferedAmount) {
-		if (this.observer != null) {
-			this.observer.onBufferedAmountChange(bufferedAmount);
-		} else {
-			this.events.add(bufferedAmount);
-		}
-	}
+    @Override
+    public synchronized void onBufferedAmountChange(final long bufferedAmount) {
+        if (this.observer != null) {
+            this.observer.onBufferedAmountChange(bufferedAmount);
+        } else {
+            this.events.add(bufferedAmount);
+        }
+    }
 
-	@Override
-	public synchronized void onStateChange(@NonNull final DataChannel.State state) {
-		if (this.observer != null) {
-			this.observer.onStateChange(state);
-		} else {
-			this.events.add(state);
-		}
-	}
+    @Override
+    public synchronized void onStateChange(@NonNull final DataChannel.State state) {
+        if (this.observer != null) {
+            this.observer.onStateChange(state);
+        } else {
+            this.events.add(state);
+        }
+    }
 
-	@Override
-	public synchronized void onMessage(@NonNull final DataChannel.Buffer buffer) {
-		if (this.observer != null) {
-			this.observer.onMessage(buffer);
-		} else {
-			// Copy the message since the underlying buffer will be reused immediately
-			final ByteBuffer copy = ByteBuffer.allocate(buffer.data.remaining());
-			copy.put(buffer.data);
-			copy.flip();
-			this.events.add(new DataChannel.Buffer(copy, buffer.binary));
-		}
-	}
+    @Override
+    public synchronized void onMessage(@NonNull final DataChannel.Buffer buffer) {
+        if (this.observer != null) {
+            this.observer.onMessage(buffer);
+        } else {
+            // Copy the message since the underlying buffer will be reused immediately
+            final ByteBuffer copy = ByteBuffer.allocate(buffer.data.remaining());
+            copy.put(buffer.data);
+            copy.flip();
+            this.events.add(new DataChannel.Buffer(copy, buffer.binary));
+        }
+    }
 
-	public synchronized void replace(@NonNull final DataChannel dc, @NonNull final DataChannelObserver observer) {
-		logger.debug("Flushing {} events", this.events.size());
-		this.observer = observer;
-		for (final Object event: this.events) {
-			if (event instanceof Long) {
-				observer.onBufferedAmountChange((Long) event);
-			} else if (event instanceof DataChannel.State) {
-				observer.onStateChange((DataChannel.State) event);
-			} else if (event instanceof DataChannel.Buffer) {
-				observer.onMessage((DataChannel.Buffer) event);
-			} else {
-				logger.error("Invalid buffered data channel event type: {}", event.getClass());
-			}
-		}
+    public synchronized void replace(@NonNull final DataChannel dc, @NonNull final DataChannelObserver observer) {
+        logger.debug("Flushing {} events", this.events.size());
+        this.observer = observer;
+        for (final Object event : this.events) {
+            if (event instanceof Long) {
+                observer.onBufferedAmountChange((Long) event);
+            } else if (event instanceof DataChannel.State) {
+                observer.onStateChange((DataChannel.State) event);
+            } else if (event instanceof DataChannel.Buffer) {
+                observer.onMessage((DataChannel.Buffer) event);
+            } else {
+                logger.error("Invalid buffered data channel event type: {}", event.getClass());
+            }
+        }
 
-		// Note: We'll permanently dispatch via this observer since webrtc.org
-		//       segfaults if we attempt to unregister the current observer.
-		logger.debug("Events flushed, replacing observer");
-		this.events.clear();
-	}
+        // Note: We'll permanently dispatch via this observer since webrtc.org
+        //       segfaults if we attempt to unregister the current observer.
+        logger.debug("Events flushed, replacing observer");
+        this.events.clear();
+    }
 }

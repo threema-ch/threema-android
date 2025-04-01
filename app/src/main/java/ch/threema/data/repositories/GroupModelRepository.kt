@@ -107,7 +107,8 @@ class GroupModelRepository(
         // fetched group data is used to construct the group model. Otherwise the cached group model
         // is returned.
         val dbGroup = databaseBackend.getGroupByLocalGroupDbId(localGroupDbId) ?: return null
-        val groupIdentity = GroupIdentity(dbGroup.creatorIdentity, GroupId(dbGroup.groupId).toLong())
+        val groupIdentity =
+            GroupIdentity(dbGroup.creatorIdentity, GroupId(dbGroup.groupId).toLong())
         return cache.getOrCreate(groupIdentity) {
             GroupModel(
                 groupIdentity,

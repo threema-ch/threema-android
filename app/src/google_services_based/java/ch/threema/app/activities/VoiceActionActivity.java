@@ -27,8 +27,8 @@ import com.google.android.search.verification.client.SearchActionVerificationCli
 import ch.threema.app.services.VoiceActionService;
 
 public class VoiceActionActivity extends SearchActionVerificationClientActivity {
-	@Override
-	public Class<? extends SearchActionVerificationClientService> getServiceClass() {
-		return VoiceActionService.class;
-	}
+    @Override
+    public Class<? extends SearchActionVerificationClientService> getServiceClass() {
+        return VoiceActionService.class;
+    }
 }

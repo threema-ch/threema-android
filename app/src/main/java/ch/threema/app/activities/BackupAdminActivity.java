@@ -52,172 +52,172 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class BackupAdminActivity extends ThreemaToolbarActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("BackupAdminActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupAdminActivity");
 
-	private static final String BUNDLE_IS_UNLOCKED = "biu";
+    private static final String BUNDLE_IS_UNLOCKED = "biu";
 
-	private DeadlineListService hiddenChatsListService;
-	private boolean isUnlocked;
-	private ThreemaSafeMDMConfig safeConfig;
+    private DeadlineListService hiddenChatsListService;
+    private boolean isUnlocked;
+    private ThreemaSafeMDMConfig safeConfig;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		isUnlocked = false;
-		safeConfig = ThreemaSafeMDMConfig.getInstance();
+        isUnlocked = false;
+        safeConfig = ThreemaSafeMDMConfig.getInstance();
 
-		if (!this.requiredInstances() || AppRestrictionUtil.isBackupsDisabled(this)) {
-			this.finish();
-			return;
-		}
+        if (!this.requiredInstances() || AppRestrictionUtil.isBackupsDisabled(this)) {
+            this.finish();
+            return;
+        }
 
-		if (AppRestrictionUtil.isDataBackupsDisabled(this) && threemaSafeUIDisabled()) {
-			this.finish();
-			return;
-		}
+        if (AppRestrictionUtil.isDataBackupsDisabled(this) && threemaSafeUIDisabled()) {
+            this.finish();
+            return;
+        }
 
-		if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-			logger.debug("Not licensed.");
-			this.finish();
-			System.exit(0);
-			return;
-		}
+        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+            logger.debug("Not licensed.");
+            this.finish();
+            System.exit(0);
+            return;
+        }
 
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.my_backups_title);
-		}
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.my_backups_title);
+        }
 
-		TabLayout tabLayout = findViewById(R.id.tabs);
-		ViewPager viewPager = findViewById(R.id.pager);
-		viewPager.setAdapter(new BackupAdminPagerAdapter(getSupportFragmentManager()));
-		tabLayout.setupWithViewPager(viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        ViewPager viewPager = findViewById(R.id.pager);
+        viewPager.setAdapter(new BackupAdminPagerAdapter(getSupportFragmentManager()));
+        tabLayout.setupWithViewPager(viewPager);
 
-		if (preferenceService.getBackupWarningDismissedTime() == 0L) {
-			((TextView) findViewById(R.id.notice_text)).setText(R.string.backup_explain_text);
-			final View noticeLayout = findViewById(R.id.notice_layout);
-			noticeLayout.setVisibility(View.VISIBLE);
-			findViewById(R.id.close_button).setOnClickListener(v -> {
-				preferenceService.setBackupWarningDismissedTime(System.currentTimeMillis());
-				AnimationUtil.collapse(noticeLayout, null, true);
-			});
-		} else {
-			findViewById(R.id.notice_layout).setVisibility(View.GONE);
-		}
+        if (preferenceService.getBackupWarningDismissedTime() == 0L) {
+            ((TextView) findViewById(R.id.notice_text)).setText(R.string.backup_explain_text);
+            final View noticeLayout = findViewById(R.id.notice_layout);
+            noticeLayout.setVisibility(View.VISIBLE);
+            findViewById(R.id.close_button).setOnClickListener(v -> {
+                preferenceService.setBackupWarningDismissedTime(System.currentTimeMillis());
+                AnimationUtil.collapse(noticeLayout, null, true);
+            });
+        } else {
+            findViewById(R.id.notice_layout).setVisibility(View.GONE);
+        }
 
-		// recover lock state after rotation
-		if (savedInstanceState != null) {
-			isUnlocked = savedInstanceState.getBoolean(BUNDLE_IS_UNLOCKED, false);
-		}
-	}
+        // recover lock state after rotation
+        if (savedInstanceState != null) {
+            isUnlocked = savedInstanceState.getBoolean(BUNDLE_IS_UNLOCKED, false);
+        }
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if (!isUnlocked) {
-			if (!preferenceService.getLockMechanism().equals(LockingMech_NONE)) {
-				HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
-			}
-		}
-	}
+        if (!isUnlocked) {
+            if (!preferenceService.getLockMechanism().equals(LockingMech_NONE)) {
+                HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
+            }
+        }
+    }
 
-	public int getLayoutResource() {
-		return R.layout.activity_backup_admin;
-	}
+    public int getLayoutResource() {
+        return R.layout.activity_backup_admin;
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-		switch (requestCode) {
-			case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
-				if (resultCode == RESULT_OK) {
-					isUnlocked = true;
-				} else {
-					finish();
-				}
-				break;
-		}
-	}
+        switch (requestCode) {
+            case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
+                if (resultCode == RESULT_OK) {
+                    isUnlocked = true;
+                } else {
+                    finish();
+                }
+                break;
+        }
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				finish();
-				break;
-		}
-		return true;
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return true;
+    }
 
-	@Override
-	protected boolean checkInstances() {
-		return TestUtil.required(
-				this.serviceManager,
-				this.preferenceService,
-				this.hiddenChatsListService
-		);
-	}
+    @Override
+    protected boolean checkInstances() {
+        return TestUtil.required(
+            this.serviceManager,
+            this.preferenceService,
+            this.hiddenChatsListService
+        );
+    }
 
-	@Override
-	protected void instantiate() {
-		if (this.serviceManager != null) {
-			try {
-				this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
-			} catch (Exception e) {
-				logger.debug("Master Key locked!");
-			}
-		}
-	}
+    @Override
+    protected void instantiate() {
+        if (this.serviceManager != null) {
+            try {
+                this.hiddenChatsListService = this.serviceManager.getHiddenChatsListService();
+            } catch (Exception e) {
+                logger.debug("Master Key locked!");
+            }
+        }
+    }
 
-	private boolean threemaSafeUIDisabled() {
-		return ConfigUtils.isWorkRestricted() && safeConfig.isBackupAdminDisabled();
-	}
+    private boolean threemaSafeUIDisabled() {
+        return ConfigUtils.isWorkRestricted() && safeConfig.isBackupAdminDisabled();
+    }
 
-	private boolean dataBackupUIDisabled() {
-		return AppRestrictionUtil.isDataBackupsDisabled(this);
-	}
+    private boolean dataBackupUIDisabled() {
+        return AppRestrictionUtil.isDataBackupsDisabled(this);
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(BUNDLE_IS_UNLOCKED, isUnlocked);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(BUNDLE_IS_UNLOCKED, isUnlocked);
 
-		super.onSaveInstanceState(outState);
-	}
+        super.onSaveInstanceState(outState);
+    }
 
-	public class BackupAdminPagerAdapter extends FragmentPagerAdapter {
-		BackupAdminPagerAdapter(FragmentManager fm) {
-			super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-		}
+    public class BackupAdminPagerAdapter extends FragmentPagerAdapter {
+        BackupAdminPagerAdapter(FragmentManager fm) {
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        }
 
-		@Override
-		public int getCount() {
-			return (threemaSafeUIDisabled() || dataBackupUIDisabled()) ? 1 : 2;
-		}
+        @Override
+        public int getCount() {
+            return (threemaSafeUIDisabled() || dataBackupUIDisabled()) ? 1 : 2;
+        }
 
-		@Override
-		public CharSequence getPageTitle(int position) {
-			switch (position) {
-				case 0:
-					return threemaSafeUIDisabled() ? getString(R.string.backup_data) : getString(R.string.threema_safe);
-				case 1:
-					return getString(R.string.backup_data);
-			}
-			return super.getPageTitle(position);
-		}
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0:
+                    return threemaSafeUIDisabled() ? getString(R.string.backup_data) : getString(R.string.threema_safe);
+                case 1:
+                    return getString(R.string.backup_data);
+            }
+            return super.getPageTitle(position);
+        }
 
-		@Override
-		public Fragment getItem(int position) {
-			switch (position) {
-				case 0:
-					return threemaSafeUIDisabled() ? new BackupDataFragment() : new BackupThreemaSafeFragment();
-				case 1:
-					return new BackupDataFragment();
-			}
-			return null;
-		}
-	}
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return threemaSafeUIDisabled() ? new BackupDataFragment() : new BackupThreemaSafeFragment();
+                case 1:
+                    return new BackupDataFragment();
+            }
+            return null;
+        }
+    }
 }

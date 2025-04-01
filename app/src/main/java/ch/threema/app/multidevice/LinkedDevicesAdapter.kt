@@ -32,7 +32,8 @@ class LinkedDevicesAdapter : RecyclerView.Adapter<LinkedDevicesAdapter.LinkedDev
     private val devices = mutableListOf<String>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LinkedDevicesViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_linked_devices_list, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_linked_devices_list, parent, false)
         return LinkedDevicesViewHolder(view)
     }
 

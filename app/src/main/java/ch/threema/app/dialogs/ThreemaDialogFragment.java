@@ -29,53 +29,55 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class ThreemaDialogFragment extends DialogFragment {
-	protected Object object;
+    protected Object object;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setRetainInstance(true);
-	}
+        setRetainInstance(true);
+    }
 
-	/**
-	 * Shows a DialogFragment. Can be used from onActivityResult() without provoking "IllegalStateException: Can not perform this action after onSaveInstanceState"
-	 * @param manager FragmentManager
-	 * @param tag Arbitrary tag for this DialogFragment
-	 */
-	@Override
-	public void show(@Nullable FragmentManager manager, String tag) {
-		if (manager != null) {
-			try {
-				super.show(manager, tag);
-			} catch (IllegalStateException e) {
-				FragmentTransaction ft = manager.beginTransaction();
-				ft.add(this, tag);
-				ft.commitAllowingStateLoss();
-			}
-		}
-	}
+    /**
+     * Shows a DialogFragment. Can be used from onActivityResult() without provoking "IllegalStateException: Can not perform this action after onSaveInstanceState"
+     *
+     * @param manager FragmentManager
+     * @param tag     Arbitrary tag for this DialogFragment
+     */
+    @Override
+    public void show(@Nullable FragmentManager manager, String tag) {
+        if (manager != null) {
+            try {
+                super.show(manager, tag);
+            } catch (IllegalStateException e) {
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.add(this, tag);
+                ft.commitAllowingStateLoss();
+            }
+        }
+    }
 
-	/**
-	 * Immediately shows a DialogFragment. Can be used from onActivityResult() without provoking "IllegalStateException: Can not perform this action after onSaveInstanceState"
-	 * @param manager FragmentManager
-	 * @param tag Arbitrary tag for this DialogFragment
-	 */
-	@Override
-	public void showNow(@Nullable FragmentManager manager, String tag) {
-		if (manager != null) {
-			try {
-				super.showNow(manager, tag);
-			} catch (IllegalStateException e) {
-				FragmentTransaction ft = manager.beginTransaction();
-				ft.add(this, tag);
-				ft.commitNowAllowingStateLoss();
-			}
-		}
-	}
+    /**
+     * Immediately shows a DialogFragment. Can be used from onActivityResult() without provoking "IllegalStateException: Can not perform this action after onSaveInstanceState"
+     *
+     * @param manager FragmentManager
+     * @param tag     Arbitrary tag for this DialogFragment
+     */
+    @Override
+    public void showNow(@Nullable FragmentManager manager, String tag) {
+        if (manager != null) {
+            try {
+                super.showNow(manager, tag);
+            } catch (IllegalStateException e) {
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.add(this, tag);
+                ft.commitNowAllowingStateLoss();
+            }
+        }
+    }
 
-	public ThreemaDialogFragment setData(Object o) {
-		object = o;
-		return this;
-	}
+    public ThreemaDialogFragment setData(Object o) {
+        object = o;
+        return this;
+    }
 }

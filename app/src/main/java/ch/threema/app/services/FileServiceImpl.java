@@ -120,69 +120,69 @@ import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class FileServiceImpl implements FileService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("FileServiceImpl");
 
-	private final static String JPEG_EXTENSION = ".jpg";
-	public final static String MPEG_EXTENSION = ".mp4";
-	public final static String VOICEMESSAGE_EXTENSION = ".aac";
-	private final static String THUMBNAIL_EXTENSION = "_T";
-	private final static String WALLPAPER_FILENAME = "/wallpaper" + JPEG_EXTENSION;
+    private final static String JPEG_EXTENSION = ".jpg";
+    public final static String MPEG_EXTENSION = ".mp4";
+    public final static String VOICEMESSAGE_EXTENSION = ".aac";
+    private final static String THUMBNAIL_EXTENSION = "_T";
+    private final static String WALLPAPER_FILENAME = "/wallpaper" + JPEG_EXTENSION;
 
-	private static final String DIALOG_TAG_SAVING_MEDIA = "savingToGallery";
+    private static final String DIALOG_TAG_SAVING_MEDIA = "savingToGallery";
 
-	private final Context context;
-	private final MasterKey masterKey;
-	private final PreferenceService preferenceService;
-	private final File imagePath;
-	private final File videoPath;
-	private final File audioPath;
-	private final File downloadsPath;
-	private final File appDataPath;
-	private final File backupPath;
+    private final Context context;
+    private final MasterKey masterKey;
+    private final PreferenceService preferenceService;
+    private final File imagePath;
+    private final File videoPath;
+    private final File audioPath;
+    private final File downloadsPath;
+    private final File appDataPath;
+    private final File backupPath;
 
     @NonNull
     private final AvatarCacheService avatarCacheService;
 
-	public FileServiceImpl(
+    public FileServiceImpl(
         @NonNull Context c,
         @NonNull MasterKey masterKey,
         @NonNull PreferenceService preferenceService,
         @NonNull AvatarCacheService avatarCacheService
     ) {
-		this.context = c;
-		this.preferenceService = preferenceService;
-		this.masterKey = masterKey;
+        this.context = c;
+        this.preferenceService = preferenceService;
+        this.masterKey = masterKey;
         this.avatarCacheService = avatarCacheService;
 
-		String mediaPathPrefix = Environment.getExternalStorageDirectory() + "/" + BuildConfig.MEDIA_PATH + "/";
+        String mediaPathPrefix = Environment.getExternalStorageDirectory() + "/" + BuildConfig.MEDIA_PATH + "/";
 
-		// secondary storage directory for files that do not need any security enforced such as encrypted media
-		this.appDataPath = new File(context.getExternalFilesDir(null), "data");
-		getAppDataPath();
+        // secondary storage directory for files that do not need any security enforced such as encrypted media
+        this.appDataPath = new File(context.getExternalFilesDir(null), "data");
+        getAppDataPath();
 
-		// temporary file path used for sharing media from / with external applications (i.e. system camera) on older Android versions
-		createNomediaFile(getExtTmpPath());
+        // temporary file path used for sharing media from / with external applications (i.e. system camera) on older Android versions
+        createNomediaFile(getExtTmpPath());
 
-		this.imagePath = new File(mediaPathPrefix, "Threema Pictures");
-		getImagePath();
+        this.imagePath = new File(mediaPathPrefix, "Threema Pictures");
+        getImagePath();
 
-		this.videoPath = new File(mediaPathPrefix + "Threema Videos");
-		getVideoPath();
+        this.videoPath = new File(mediaPathPrefix + "Threema Videos");
+        getVideoPath();
 
-		this.audioPath = new File(mediaPathPrefix, "Threema Audio");
-		getAudioPath();
+        this.audioPath = new File(mediaPathPrefix, "Threema Audio");
+        getAudioPath();
 
-		this.backupPath = new File(mediaPathPrefix, "Backups");
-		getBackupPath();
+        this.backupPath = new File(mediaPathPrefix, "Backups");
+        getBackupPath();
 
-		this.downloadsPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-		getDownloadsPath();
+        this.downloadsPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        getDownloadsPath();
 
-		// initialize ringtone
-		if (needRingtonePreferencesUpdate(context.getContentResolver())) {
-			preferenceService.setVoiceCallSound(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
-		}
-	}
+        // initialize ringtone
+        if (needRingtonePreferencesUpdate(context.getContentResolver())) {
+            preferenceService.setVoiceCallSound(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
+        }
+    }
 
     /*
      * Check if current ringtone prefs point to a valid ringtone or if an update is needed
@@ -194,1440 +194,1440 @@ public class FileServiceImpl implements FileService {
         return !ringtoneChecker.isValidRingtoneUri(uriString);
     }
 
-	@Deprecated
-	public File getBackupPath() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			if (!this.backupPath.exists()) {
-				this.backupPath.mkdirs();
-			}
-		}
-		return this.backupPath;
-	}
-
-	@Override
-	public @Nullable Uri getBackupUri() {
-		// check if backup path is overridden by user
-		Uri backupUri = preferenceService.getDataBackupUri();
-		if (backupUri != null) {
-			return backupUri;
-		}
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			return null;
-		}
-		return Uri.fromFile(getBackupPath());
-	}
-
-	@Override
-	public File getBlobDownloadPath() {
-		File blobDownloadPath = new File(getAppDataPathAbsolute(), ".blob");
-
-		if (blobDownloadPath.exists() && !blobDownloadPath.isDirectory()) {
-			try {
-				FileUtil.deleteFileOrWarn(blobDownloadPath, "Blob File", logger);
-			} catch (SecurityException e) {
-				logger.error("Exception", e);
-			}
-		}
-
-		if (!blobDownloadPath.exists()) {
-			try {
-				blobDownloadPath.mkdirs();
-			} catch (SecurityException e) {
-				logger.error("Exception", e);
-			}
-		}
-		return blobDownloadPath;
-	}
-
-	/**
-	 * Get path where persistent app-specific data may be stored, that does not need any security enforced
-	 * @return path
-	 */
-	@Override
-	public File getAppDataPath() {
-		if (!this.appDataPath.exists()) {
-			this.appDataPath.mkdirs();
-		}
-		return this.appDataPath;
-	}
-
-	// TODO: Is this really necessary. According to documentation, paths returned by getExternalFilesDir() are already absolute
-	private String getAppDataPathAbsolute() {
-		return getAppDataPath().getAbsolutePath();
-	}
-
-	@Deprecated
-	private File getImagePath() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			if (!this.imagePath.exists()) {
-				this.imagePath.mkdirs();
-			}
-		}
-		return this.imagePath;
-	}
-
-	@Deprecated
-	private File getVideoPath() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			if (!this.videoPath.exists()) {
-				this.videoPath.mkdirs();
-			}
-		}
-		return this.videoPath;
-	}
-
-	@Deprecated
-	private File getAudioPath() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			if (!this.audioPath.exists()) {
-				this.audioPath.mkdirs();
-			}
-		}
-		return this.audioPath;
-	}
-
-	@Deprecated
-	private File getDownloadsPath() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-			try {
-				if (!this.downloadsPath.exists()) {
-					this.downloadsPath.mkdirs();
-				} else if (!downloadsPath.isDirectory()) {
-					FileUtil.deleteFileOrWarn(this.downloadsPath, "Download Path", logger);
-					this.downloadsPath.mkdirs();
-				}
-			} catch (SecurityException e) {
-				logger.error("Exception", e);
-			}
-		}
-		return this.downloadsPath;
-	}
-
-	@Override
-	public File getWallpaperDirPath() {
-		File wallpaperPath = new File(getAppDataPathAbsolute(), ".wallpaper");
-
-		if (!wallpaperPath.exists()) {
-			wallpaperPath.mkdirs();
-		}
-		return wallpaperPath;
-	}
-
-	@Override
-	public File getAvatarDirPath() {
-		File avatarPath = new File(getAppDataPathAbsolute(), ".avatar");
-
-		if (!avatarPath.exists()) {
-			avatarPath.mkdirs();
-		}
-		return avatarPath;
-	}
-
-	@Override
-	public File getGroupAvatarDirPath() {
-		File grpAvatarPath = new File(getAppDataPathAbsolute(), ".grp-avatar");
-
-		if (!grpAvatarPath.exists()) {
-			grpAvatarPath.mkdirs();
-		}
-		return grpAvatarPath;
-	}
-
-	@Override
-	public String getGlobalWallpaperFilePath() {
-		return getAppDataPathAbsolute() + WALLPAPER_FILENAME;
-	}
-
-	@Override
-	public File getTempPath() {
-		return context.getCacheDir();
-	}
-
-	@Override
-	public File getIntTmpPath() {
-		File intTmpPath = new File(context.getFilesDir(), "tmp");
-
-		if (!intTmpPath.exists()) {
-			intTmpPath.mkdirs();
-		}
-		return intTmpPath;
-	}
-
-	@Override
-	public File getExtTmpPath() {
-		File extTmpPath = new File(context.getExternalFilesDir(null), "tmp");
-
-		if (!extTmpPath.exists()) {
-			extTmpPath.mkdirs();
-		}
-		return extTmpPath;
-	}
-
-	private void createNomediaFile(File directory) {
-		if (directory.exists()) {
-			File nomedia = new File(directory, MEDIA_IGNORE_FILENAME);
-			if (!nomedia.exists()) {
-				try {
-					FileUtil.createNewFileOrLog(nomedia, logger);
-				} catch (IOException e) {
-					logger.error("Exception", e);
-				}
-			}
-		}
-	}
-
-	@Override
-	public File createTempFile(String prefix, String suffix) throws IOException {
-		return createTempFile(prefix, suffix, false);
-	}
-
-	@Override
-	public File createTempFile(String prefix, String suffix, boolean isPublic) throws IOException {
-		return File.createTempFile(prefix, suffix, isPublic ? getExtTmpPath() : getTempPath());
-	}
-
-	@WorkerThread
-	private void cleanDirectory(File path, final Runnable runAfter) {
-		if (!path.isDirectory()) {
-			if (path.delete()) {
-				path.mkdirs();
-			}
-			return;
-		}
-
-		Date thresholdDate = new Date(System.currentTimeMillis() - (2 * DateUtils.HOUR_IN_MILLIS));
-
-		// this will crash if path is not a directory
-		try {
-			final Iterator<File> filesToDelete =
-				FileUtils.iterateFiles(path, new AgeFileFilter(thresholdDate), TrueFileFilter.INSTANCE);
-
-			if (filesToDelete != null && filesToDelete.hasNext()) {
-				new Thread() {
-					@Override
-					public void run() {
-						while (filesToDelete.hasNext()) {
-							File file = filesToDelete.next();
-							try {
-								SecureDeleteUtil.secureDelete(file);
-							} catch (IOException e) {
-								logger.error("Exception", e);
-								FileUtils.deleteQuietly(file);
-							}
-						}
-						if (runAfter != null) {
-							runAfter.run();
-						}
-					}
-				}.start();
-			}
-		} catch (IllegalArgumentException e) {
-			logger.error("Exception", e);
-		}
-	}
-
-	@Override
-	public void cleanTempDirs() {
-		logger.debug("Cleaning temp files");
-
-		cleanDirectory(getTempPath(), null);
-		cleanDirectory(getIntTmpPath(), null);
-		cleanDirectory(getExtTmpPath(), new Runnable() {
-			@Override
-			public void run() {
-				createNomediaFile(getExtTmpPath());
-			}
-		});
-	}
-
-	@Override
-	public String getWallpaperFilePath(MessageReceiver messageReceiver) {
-		if (messageReceiver != null) {
-			return getWallpaperFilePath(messageReceiver.getUniqueIdString());
-		}
-		return null;
-	}
-
-	@Override
-	public String getWallpaperFilePath(String uniqueIdString) {
-		if (!TextUtils.isEmpty(uniqueIdString)) {
-			return getWallpaperDirPath() + "/.w-" + uniqueIdString + MEDIA_IGNORE_FILENAME;
-		}
-		return null;
-	}
-
-	@Override
-	public File createWallpaperFile(MessageReceiver messageReceiver) throws IOException {
-		File wallpaperFile;
-
-		if (messageReceiver != null) {
-			wallpaperFile = new File(getWallpaperFilePath(messageReceiver));
-		} else {
-			wallpaperFile = new File(getGlobalWallpaperFilePath());
-		}
-
-		if (!wallpaperFile.exists()) {
-			FileUtil.createNewFileOrLog(wallpaperFile, logger);
-		}
-		return wallpaperFile;
-	}
-
-	@Override
-	public boolean hasUserDefinedProfilePicture(@NonNull String identity) {
-		File avatar = getContactAvatarFile(identity);
-
-		return avatar != null && avatar.exists();
-	}
-
-	@Override
-	public boolean hasContactDefinedProfilePicture(@NonNull String identity) {
-		File avatar = getContactPhotoFile(identity);
-
-		return avatar != null && avatar.exists();
-	}
-
-	private File getPictureFile(File path, String prefix, String identity) {
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-			messageDigest.update(("c-" + identity).getBytes());
-			String filename = prefix + Base32.encode(messageDigest.digest()) + MEDIA_IGNORE_FILENAME;
-			return new File(path, filename);
-		} catch (NoSuchAlgorithmException e) {
-			//
-		}
-		return null;
-	}
-
-	private File getContactAvatarFile(@NonNull String identity) {
-		return getPictureFile(getAvatarDirPath(), ".c-", identity);
-	}
-
-	private File getContactPhotoFile(@NonNull String identity) {
-		return getPictureFile(getAvatarDirPath(), ".p-", identity);
-	}
-
-	@Nullable
-	private File getAndroidContactAvatarFile(@NonNull String identity) {
-		return getPictureFile(getAvatarDirPath(), ".a-", identity);
-	}
-
-	@Override
-	public boolean decryptFileToFile(File from, File to) {
-		try (InputStream is = new FileInputStream(from); FileOutputStream fos = new FileOutputStream(to)) {
-			int result = 0;
-
-			try (CipherOutputStream cos = masterKey.getCipherOutputStream(fos)) {
-				if (cos != null) {
-					result = IOUtils.copy(is, cos);
-				}
-			}
-
-			return (result > 0);
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return false;
-	}
-
-	public boolean removeMessageFiles(AbstractMessageModel messageModel, boolean withThumbnails) {
-		boolean success = false;
-
-		File messageFile = this.getMessageFile(messageModel);
-		if(messageFile != null && messageFile.exists()) {
-			if(messageFile.delete()) {
-				success = true;
-			}
-		}
-
-		if (withThumbnails) {
-			File thumbnailFile = this.getMessageThumbnail(messageModel);
-			if (thumbnailFile != null && thumbnailFile.exists() && thumbnailFile.delete()) {
-				logger.debug("Thumbnail deleted");
-			} else {
-				logger.debug("No thumbnail to delete");
-			}
-		}
-		return success;
-	}
-
-	public File getDecryptedMessageFile(AbstractMessageModel messageModel) throws Exception {
-		String ext = getMediaFileExtension(messageModel);
-
-		CipherInputStream is = null;
-		FileOutputStream fos = null;
-		try {
-			is = getDecryptedMessageStream(messageModel);
-			if (is != null) {
-				File decrypted = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
-				fos = new FileOutputStream(decrypted);
-
-				IOUtils.copy(is, fos);
-
-				return decrypted;
-			}
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (IOException e) { /**/ }
-			}
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) { /**/ }
-			}
-		}
-		return null;
-	}
-
-	public File getDecryptedMessageFile(@NonNull AbstractMessageModel messageModel, @Nullable String filename) throws Exception {
-		if (filename == null) {
-			return getDecryptedMessageFile(messageModel);
-		}
-
-		InputStream is = getDecryptedMessageStream(messageModel);
-		if (is != null) {
-			FileOutputStream fos = null;
-			try {
-				File decrypted = new File(this.getTempPath(), messageModel.getApiMessageId() + "-" + filename);
-				fos = new FileOutputStream(decrypted);
-
-				IOUtils.copy(is, fos);
-				return decrypted;
-			} finally {
-				if (fos != null) {
-					try {
-						fos.close();
-					} catch (IOException e) { /**/ }
-				}
-				try {
-					is.close();
-				} catch (IOException e) { /**/ }
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public CipherInputStream getDecryptedMessageStream(AbstractMessageModel messageModel) throws Exception {
-		File file = this.getMessageFile(messageModel);
-		if(file != null && file.exists()) {
-			return masterKey.getCipherInputStream(new FileInputStream(file));
-		}
-		return null;
-	}
-
-	@Override
-	public CipherInputStream getDecryptedMessageThumbnailStream(AbstractMessageModel messageModel) throws Exception {
-		File thumbnailFile = this.getMessageThumbnail(messageModel);
-		if (thumbnailFile != null && thumbnailFile.exists()) {
-			return masterKey.getCipherInputStream(new FileInputStream(thumbnailFile));
-		}
-		return null;
-	}
-
-	/**
-	 * return the filename of a message file saved in the gallery (if exist)
-	 */
-	@Nullable
-	private String constructGalleryMediaFilename(AbstractMessageModel messageModel) {
-		String title = FileUtil.getMediaFilenamePrefix(messageModel);
-
-		switch (messageModel.getType()) {
-			case IMAGE:
-				return title + JPEG_EXTENSION;
-			case VIDEO:
-				return title + MPEG_EXTENSION;
-			case VOICEMESSAGE:
-				return title + VOICEMESSAGE_EXTENSION;
-			case FILE:
-				String filename = messageModel.getFileData().getFileName();
-				if (TestUtil.isEmptyOrNull(filename)) {
-					filename = title + getMediaFileExtension(messageModel);
-				}
-				return filename;
-			default:
-				break;
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the file name "extension" matching the provided message model
-	 * In case of file messages, the provided mime type is used to guess a valid extension.
-	 * If no mime type is found, as a last resort, the extension provided in the file's file name is used.
-	 * @param messageModel
-	 * @return The extension including a leading "." or null if no extension could be guessed
-	 */
-	private String getMediaFileExtension(AbstractMessageModel messageModel) {
-		if (messageModel == null) {
-			return null;
-		}
-
-		switch (messageModel.getType()) {
-			case IMAGE:
-				return JPEG_EXTENSION;
-			case VIDEO:
-				return MPEG_EXTENSION;
-			case VOICEMESSAGE:
-				return VOICEMESSAGE_EXTENSION;
-			case FILE:
-				String extension = null;
-				try {
-					extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(messageModel.getFileData().getMimeType());
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-				if (!TestUtil.isEmptyOrNull(extension) && !"bin".equals(extension)) {
-					return "." + extension;
-				} else {
-					if (messageModel.getFileData().getFileName() != null) {
-						String guessedExtension = MimeTypeMap.getFileExtensionFromUrl(messageModel.getFileData().getFileName());
-						if (!TestUtil.isEmptyOrNull(guessedExtension)) {
-							return "." + guessedExtension;
-						}
-					}
-					if (!TestUtil.isEmptyOrNull(extension)) {
-						return "." + extension;
-					}
-					return null;
-				}
-			default:
-				return null;
-		}
-	}
-
-	private void copyMediaFileIntoPublicDirectory(InputStream inputStream, String filename, String mimeType) throws Exception {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			String relativePath;
-			Uri contentUri;
-			if (MimeUtil.isAudioFile(mimeType)) {
-				relativePath = Environment.DIRECTORY_MUSIC;
-				contentUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-			} else if (MimeUtil.isVideoFile(mimeType)) {
-				relativePath = Environment.DIRECTORY_MOVIES;
-				contentUri = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-			} else if (MimeUtil.isImageFile(mimeType)) {
-				relativePath = Environment.DIRECTORY_PICTURES;
-				contentUri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-			} else if (MimeUtil.isPdfFile(mimeType)) {
-				relativePath = Environment.DIRECTORY_DOCUMENTS;
-				contentUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-			} else {
-				relativePath = Environment.DIRECTORY_DOWNLOADS;
-				contentUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-			}
-
-			final ContentValues contentValues = new ContentValues();
-			contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
-			contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
-			contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath + "/" + BuildConfig.MEDIA_PATH);
-			contentValues.put(MediaStore.MediaColumns.IS_PENDING, true);
-
-			Uri fileUri = context.getContentResolver().insert(contentUri, contentValues);
-
-			if (fileUri != null) {
-				try (OutputStream outputStream = context.getContentResolver().openOutputStream(fileUri)) {
-					IOUtils.copy(inputStream, outputStream);
-				}
-				contentValues.clear();
-				contentValues.put(MediaStore.MediaColumns.IS_PENDING, false);
-				context.getContentResolver().update(fileUri, contentValues, null, null);
-			} else {
-				logger.error("Cannot open file '{}' with mime type '{}' at '{}/{}' for content uri '{}'",
-					filename,
-					mimeType,
-					relativePath,
-					BuildConfig.MEDIA_PATH,
-					contentUri
-				);
-				throw new Exception("Unable to open file");
-			}
-		} else {
-			File destPath;
-			if (MimeUtil.isAudioFile(mimeType)) {
-				destPath = getAudioPath();
-			} else if (MimeUtil.isVideoFile(mimeType)) {
-				destPath = getVideoPath();
-			} else if (MimeUtil.isImageFile(mimeType)) {
-				destPath = getImagePath();
-			} else if (MimeUtil.isPdfFile(mimeType)) {
-				destPath = getDownloadsPath();
-			} else {
-				destPath = getDownloadsPath();
-			}
-
-			File destFile = new File(destPath, filename);
-			destFile = FileUtil.getUniqueFile(destFile.getParent(), destFile.getName());
-			try (FileOutputStream outputStream = new FileOutputStream(destFile)) {
-				IOUtils.copy(inputStream, outputStream);
-				// let the system know, media store has changed
-				context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destFile)));
-			}
-		}
-	}
-
-	/**
-	 * save the data of a message model into the gallery
-	 */
-	private void insertMessageIntoGallery(AbstractMessageModel messageModel) throws Exception {
-		String mediaFilename = this.constructGalleryMediaFilename(messageModel);
-		if (mediaFilename == null) {
-			return;
-		}
-
-		File messageFile = this.getMessageFile(messageModel);
-		if (!FileUtil.isFilePresent(messageFile)) {
-			// fall back to thumbnail
-			messageFile = this.getMessageThumbnail(messageModel);
-		}
-
-		if (FileUtil.isFilePresent(messageFile)) {
-			try (CipherInputStream cis = masterKey.getCipherInputStream(new FileInputStream(messageFile))) {
-				copyMediaFileIntoPublicDirectory(cis, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
-			}
-		} else {
-			throw new ThreemaException("File not found.");
-		}
-	}
-
-	@Override
-	public void copyDecryptedFileIntoGallery(Uri sourceUri, AbstractMessageModel messageModel) throws Exception {
-		String mediaFilename = this.constructGalleryMediaFilename(messageModel);
-		if (mediaFilename == null) {
-			return;
-		}
-
-		ContentResolver cr = context.getContentResolver();
-		try (final InputStream inputStream = cr.openInputStream(sourceUri)) {
-			if (inputStream != null) {
-				copyMediaFileIntoPublicDirectory(inputStream, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
-			}
-		}
-	}
-
-	private String convert(String uid) {
-		if (TestUtil.isEmptyOrNull(uid)) {
-			return uid;
-		}
-		return uid.replaceAll("[^a-zA-Z0-9\\\\s]", "");
-	}
-
-	private String getGroupAvatarFileName(GroupModel groupModel) {
-		return ".grp-avatar-" + groupModel.getId();
-	}
-
-	private File getGroupAvatarFile(GroupModel groupModel) {
-		// new in 3.0 - save group avatars in separate directory
-		File avatarFile = new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel));
-		if (avatarFile.exists() && avatarFile.isFile() && avatarFile.canRead()) {
-			return avatarFile;
-		}
-		return new File(getAppDataPathAbsolute(), getGroupAvatarFileName(groupModel));
-	}
-
-	@Override
-	public File getMessageFile(AbstractMessageModel messageModel) {
-		String uid = this.convert(messageModel.getUid());
-		if (TestUtil.isEmptyOrNull(uid)) {
-			return null;
-		}
-		return new File(getAppDataPathAbsolute(), "." + uid);
-	}
-
-	@Nullable
-	private File getMessageThumbnail(@Nullable AbstractMessageModel messageModel) {
-		// locations do not have a file, do not check for existing!
-		if (messageModel == null) {
-			return null;
-		}
-
-		String uid = this.convert(messageModel.getUid());
-		if (TestUtil.isEmptyOrNull(uid)) {
-			return null;
-		}
-
-		return new File(getAppDataPathAbsolute(), "." + uid + THUMBNAIL_EXTENSION);
-	}
-
-	@Override
-	public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data) {
-		return this.writeConversationMedia(messageModel, data, 0, data.length);
-	}
-
-	@Override
-	public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length) {
-		return this.writeConversationMedia(messageModel, data, pos, length, false);
-	}
-
-	@Override
-	public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) {
-		boolean success = false;
-
-		if (this.masterKey.isLocked()) {
-			return false;
-		}
-
-		File messageFile = this.getMessageFile(messageModel);
-
-		if(messageFile == null) {
-			return false;
-		}
-
-		if (messageFile.exists()) {
-			if(overwrite) {
-				FileUtil.deleteFileOrWarn(messageFile, "writeConversationMedia", logger);
-			}
-			else {
-				return false;
-			}
-		}
-
-		try {
-			if (messageFile.createNewFile()) {
-				success = this.writeFile(data, pos, length, messageFile);
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-
-		if (success) {
-			//try to generate a thumbnail
-			if (MessageUtil.autoGenerateThumbnail(messageModel)) {
-				File f = this.getMessageThumbnail(messageModel);
-				if (f != null && !f.exists()) {
-					//load the data
-					try {
-						this.generateConversationMediaThumbnail(messageModel, data, pos, length);
-					} catch (Exception e) {
-						// unable to create thumbnail - ignore this
-						logger.error("Exception", e);
-					}
-				}
-			}
-		}
-
-		return success;
-	}
-
-	@Override
-	public boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException {
-		boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel)));
+    @Deprecated
+    public File getBackupPath() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!this.backupPath.exists()) {
+                this.backupPath.mkdirs();
+            }
+        }
+        return this.backupPath;
+    }
+
+    @Override
+    public @Nullable Uri getBackupUri() {
+        // check if backup path is overridden by user
+        Uri backupUri = preferenceService.getDataBackupUri();
+        if (backupUri != null) {
+            return backupUri;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return null;
+        }
+        return Uri.fromFile(getBackupPath());
+    }
+
+    @Override
+    public File getBlobDownloadPath() {
+        File blobDownloadPath = new File(getAppDataPathAbsolute(), ".blob");
+
+        if (blobDownloadPath.exists() && !blobDownloadPath.isDirectory()) {
+            try {
+                FileUtil.deleteFileOrWarn(blobDownloadPath, "Blob File", logger);
+            } catch (SecurityException e) {
+                logger.error("Exception", e);
+            }
+        }
+
+        if (!blobDownloadPath.exists()) {
+            try {
+                blobDownloadPath.mkdirs();
+            } catch (SecurityException e) {
+                logger.error("Exception", e);
+            }
+        }
+        return blobDownloadPath;
+    }
+
+    /**
+     * Get path where persistent app-specific data may be stored, that does not need any security enforced
+     *
+     * @return path
+     */
+    @Override
+    public File getAppDataPath() {
+        if (!this.appDataPath.exists()) {
+            this.appDataPath.mkdirs();
+        }
+        return this.appDataPath;
+    }
+
+    // TODO: Is this really necessary. According to documentation, paths returned by getExternalFilesDir() are already absolute
+    private String getAppDataPathAbsolute() {
+        return getAppDataPath().getAbsolutePath();
+    }
+
+    @Deprecated
+    private File getImagePath() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!this.imagePath.exists()) {
+                this.imagePath.mkdirs();
+            }
+        }
+        return this.imagePath;
+    }
+
+    @Deprecated
+    private File getVideoPath() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!this.videoPath.exists()) {
+                this.videoPath.mkdirs();
+            }
+        }
+        return this.videoPath;
+    }
+
+    @Deprecated
+    private File getAudioPath() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!this.audioPath.exists()) {
+                this.audioPath.mkdirs();
+            }
+        }
+        return this.audioPath;
+    }
+
+    @Deprecated
+    private File getDownloadsPath() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            try {
+                if (!this.downloadsPath.exists()) {
+                    this.downloadsPath.mkdirs();
+                } else if (!downloadsPath.isDirectory()) {
+                    FileUtil.deleteFileOrWarn(this.downloadsPath, "Download Path", logger);
+                    this.downloadsPath.mkdirs();
+                }
+            } catch (SecurityException e) {
+                logger.error("Exception", e);
+            }
+        }
+        return this.downloadsPath;
+    }
+
+    @Override
+    public File getWallpaperDirPath() {
+        File wallpaperPath = new File(getAppDataPathAbsolute(), ".wallpaper");
+
+        if (!wallpaperPath.exists()) {
+            wallpaperPath.mkdirs();
+        }
+        return wallpaperPath;
+    }
+
+    @Override
+    public File getAvatarDirPath() {
+        File avatarPath = new File(getAppDataPathAbsolute(), ".avatar");
+
+        if (!avatarPath.exists()) {
+            avatarPath.mkdirs();
+        }
+        return avatarPath;
+    }
+
+    @Override
+    public File getGroupAvatarDirPath() {
+        File grpAvatarPath = new File(getAppDataPathAbsolute(), ".grp-avatar");
+
+        if (!grpAvatarPath.exists()) {
+            grpAvatarPath.mkdirs();
+        }
+        return grpAvatarPath;
+    }
+
+    @Override
+    public String getGlobalWallpaperFilePath() {
+        return getAppDataPathAbsolute() + WALLPAPER_FILENAME;
+    }
+
+    @Override
+    public File getTempPath() {
+        return context.getCacheDir();
+    }
+
+    @Override
+    public File getIntTmpPath() {
+        File intTmpPath = new File(context.getFilesDir(), "tmp");
+
+        if (!intTmpPath.exists()) {
+            intTmpPath.mkdirs();
+        }
+        return intTmpPath;
+    }
+
+    @Override
+    public File getExtTmpPath() {
+        File extTmpPath = new File(context.getExternalFilesDir(null), "tmp");
+
+        if (!extTmpPath.exists()) {
+            extTmpPath.mkdirs();
+        }
+        return extTmpPath;
+    }
+
+    private void createNomediaFile(File directory) {
+        if (directory.exists()) {
+            File nomedia = new File(directory, MEDIA_IGNORE_FILENAME);
+            if (!nomedia.exists()) {
+                try {
+                    FileUtil.createNewFileOrLog(nomedia, logger);
+                } catch (IOException e) {
+                    logger.error("Exception", e);
+                }
+            }
+        }
+    }
+
+    @Override
+    public File createTempFile(String prefix, String suffix) throws IOException {
+        return createTempFile(prefix, suffix, false);
+    }
+
+    @Override
+    public File createTempFile(String prefix, String suffix, boolean isPublic) throws IOException {
+        return File.createTempFile(prefix, suffix, isPublic ? getExtTmpPath() : getTempPath());
+    }
+
+    @WorkerThread
+    private void cleanDirectory(File path, final Runnable runAfter) {
+        if (!path.isDirectory()) {
+            if (path.delete()) {
+                path.mkdirs();
+            }
+            return;
+        }
+
+        Date thresholdDate = new Date(System.currentTimeMillis() - (2 * DateUtils.HOUR_IN_MILLIS));
+
+        // this will crash if path is not a directory
+        try {
+            final Iterator<File> filesToDelete =
+                FileUtils.iterateFiles(path, new AgeFileFilter(thresholdDate), TrueFileFilter.INSTANCE);
+
+            if (filesToDelete != null && filesToDelete.hasNext()) {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (filesToDelete.hasNext()) {
+                            File file = filesToDelete.next();
+                            try {
+                                SecureDeleteUtil.secureDelete(file);
+                            } catch (IOException e) {
+                                logger.error("Exception", e);
+                                FileUtils.deleteQuietly(file);
+                            }
+                        }
+                        if (runAfter != null) {
+                            runAfter.run();
+                        }
+                    }
+                }.start();
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Exception", e);
+        }
+    }
+
+    @Override
+    public void cleanTempDirs() {
+        logger.debug("Cleaning temp files");
+
+        cleanDirectory(getTempPath(), null);
+        cleanDirectory(getIntTmpPath(), null);
+        cleanDirectory(getExtTmpPath(), new Runnable() {
+            @Override
+            public void run() {
+                createNomediaFile(getExtTmpPath());
+            }
+        });
+    }
+
+    @Override
+    public String getWallpaperFilePath(MessageReceiver messageReceiver) {
+        if (messageReceiver != null) {
+            return getWallpaperFilePath(messageReceiver.getUniqueIdString());
+        }
+        return null;
+    }
+
+    @Override
+    public String getWallpaperFilePath(String uniqueIdString) {
+        if (!TextUtils.isEmpty(uniqueIdString)) {
+            return getWallpaperDirPath() + "/.w-" + uniqueIdString + MEDIA_IGNORE_FILENAME;
+        }
+        return null;
+    }
+
+    @Override
+    public File createWallpaperFile(MessageReceiver messageReceiver) throws IOException {
+        File wallpaperFile;
+
+        if (messageReceiver != null) {
+            wallpaperFile = new File(getWallpaperFilePath(messageReceiver));
+        } else {
+            wallpaperFile = new File(getGlobalWallpaperFilePath());
+        }
+
+        if (!wallpaperFile.exists()) {
+            FileUtil.createNewFileOrLog(wallpaperFile, logger);
+        }
+        return wallpaperFile;
+    }
+
+    @Override
+    public boolean hasUserDefinedProfilePicture(@NonNull String identity) {
+        File avatar = getContactAvatarFile(identity);
+
+        return avatar != null && avatar.exists();
+    }
+
+    @Override
+    public boolean hasContactDefinedProfilePicture(@NonNull String identity) {
+        File avatar = getContactPhotoFile(identity);
+
+        return avatar != null && avatar.exists();
+    }
+
+    private File getPictureFile(File path, String prefix, String identity) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            messageDigest.update(("c-" + identity).getBytes());
+            String filename = prefix + Base32.encode(messageDigest.digest()) + MEDIA_IGNORE_FILENAME;
+            return new File(path, filename);
+        } catch (NoSuchAlgorithmException e) {
+            //
+        }
+        return null;
+    }
+
+    private File getContactAvatarFile(@NonNull String identity) {
+        return getPictureFile(getAvatarDirPath(), ".c-", identity);
+    }
+
+    private File getContactPhotoFile(@NonNull String identity) {
+        return getPictureFile(getAvatarDirPath(), ".p-", identity);
+    }
+
+    @Nullable
+    private File getAndroidContactAvatarFile(@NonNull String identity) {
+        return getPictureFile(getAvatarDirPath(), ".a-", identity);
+    }
+
+    @Override
+    public boolean decryptFileToFile(File from, File to) {
+        try (InputStream is = new FileInputStream(from); FileOutputStream fos = new FileOutputStream(to)) {
+            int result = 0;
+
+            try (CipherOutputStream cos = masterKey.getCipherOutputStream(fos)) {
+                if (cos != null) {
+                    result = IOUtils.copy(is, cos);
+                }
+            }
+
+            return (result > 0);
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+        return false;
+    }
+
+    public boolean removeMessageFiles(AbstractMessageModel messageModel, boolean withThumbnails) {
+        boolean success = false;
+
+        File messageFile = this.getMessageFile(messageModel);
+        if (messageFile != null && messageFile.exists()) {
+            if (messageFile.delete()) {
+                success = true;
+            }
+        }
+
+        if (withThumbnails) {
+            File thumbnailFile = this.getMessageThumbnail(messageModel);
+            if (thumbnailFile != null && thumbnailFile.exists() && thumbnailFile.delete()) {
+                logger.debug("Thumbnail deleted");
+            } else {
+                logger.debug("No thumbnail to delete");
+            }
+        }
+        return success;
+    }
+
+    public File getDecryptedMessageFile(AbstractMessageModel messageModel) throws Exception {
+        String ext = getMediaFileExtension(messageModel);
+
+        CipherInputStream is = null;
+        FileOutputStream fos = null;
+        try {
+            is = getDecryptedMessageStream(messageModel);
+            if (is != null) {
+                File decrypted = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext, false);
+                fos = new FileOutputStream(decrypted);
+
+                IOUtils.copy(is, fos);
+
+                return decrypted;
+            }
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) { /**/ }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) { /**/ }
+            }
+        }
+        return null;
+    }
+
+    public File getDecryptedMessageFile(@NonNull AbstractMessageModel messageModel, @Nullable String filename) throws Exception {
+        if (filename == null) {
+            return getDecryptedMessageFile(messageModel);
+        }
+
+        InputStream is = getDecryptedMessageStream(messageModel);
+        if (is != null) {
+            FileOutputStream fos = null;
+            try {
+                File decrypted = new File(this.getTempPath(), messageModel.getApiMessageId() + "-" + filename);
+                fos = new FileOutputStream(decrypted);
+
+                IOUtils.copy(is, fos);
+                return decrypted;
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) { /**/ }
+                }
+                try {
+                    is.close();
+                } catch (IOException e) { /**/ }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public CipherInputStream getDecryptedMessageStream(AbstractMessageModel messageModel) throws Exception {
+        File file = this.getMessageFile(messageModel);
+        if (file != null && file.exists()) {
+            return masterKey.getCipherInputStream(new FileInputStream(file));
+        }
+        return null;
+    }
+
+    @Override
+    public CipherInputStream getDecryptedMessageThumbnailStream(AbstractMessageModel messageModel) throws Exception {
+        File thumbnailFile = this.getMessageThumbnail(messageModel);
+        if (thumbnailFile != null && thumbnailFile.exists()) {
+            return masterKey.getCipherInputStream(new FileInputStream(thumbnailFile));
+        }
+        return null;
+    }
+
+    /**
+     * return the filename of a message file saved in the gallery (if exist)
+     */
+    @Nullable
+    private String constructGalleryMediaFilename(AbstractMessageModel messageModel) {
+        String title = FileUtil.getMediaFilenamePrefix(messageModel);
+
+        switch (messageModel.getType()) {
+            case IMAGE:
+                return title + JPEG_EXTENSION;
+            case VIDEO:
+                return title + MPEG_EXTENSION;
+            case VOICEMESSAGE:
+                return title + VOICEMESSAGE_EXTENSION;
+            case FILE:
+                String filename = messageModel.getFileData().getFileName();
+                if (TestUtil.isEmptyOrNull(filename)) {
+                    filename = title + getMediaFileExtension(messageModel);
+                }
+                return filename;
+            default:
+                break;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the file name "extension" matching the provided message model
+     * In case of file messages, the provided mime type is used to guess a valid extension.
+     * If no mime type is found, as a last resort, the extension provided in the file's file name is used.
+     *
+     * @param messageModel
+     * @return The extension including a leading "." or null if no extension could be guessed
+     */
+    private String getMediaFileExtension(AbstractMessageModel messageModel) {
+        if (messageModel == null) {
+            return null;
+        }
+
+        switch (messageModel.getType()) {
+            case IMAGE:
+                return JPEG_EXTENSION;
+            case VIDEO:
+                return MPEG_EXTENSION;
+            case VOICEMESSAGE:
+                return VOICEMESSAGE_EXTENSION;
+            case FILE:
+                String extension = null;
+                try {
+                    extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(messageModel.getFileData().getMimeType());
+                } catch (Exception e) {
+                    logger.error("Exception", e);
+                }
+                if (!TestUtil.isEmptyOrNull(extension) && !"bin".equals(extension)) {
+                    return "." + extension;
+                } else {
+                    if (messageModel.getFileData().getFileName() != null) {
+                        String guessedExtension = MimeTypeMap.getFileExtensionFromUrl(messageModel.getFileData().getFileName());
+                        if (!TestUtil.isEmptyOrNull(guessedExtension)) {
+                            return "." + guessedExtension;
+                        }
+                    }
+                    if (!TestUtil.isEmptyOrNull(extension)) {
+                        return "." + extension;
+                    }
+                    return null;
+                }
+            default:
+                return null;
+        }
+    }
+
+    private void copyMediaFileIntoPublicDirectory(InputStream inputStream, String filename, String mimeType) throws Exception {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            String relativePath;
+            Uri contentUri;
+            if (MimeUtil.isAudioFile(mimeType)) {
+                relativePath = Environment.DIRECTORY_MUSIC;
+                contentUri = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            } else if (MimeUtil.isVideoFile(mimeType)) {
+                relativePath = Environment.DIRECTORY_MOVIES;
+                contentUri = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            } else if (MimeUtil.isImageFile(mimeType)) {
+                relativePath = Environment.DIRECTORY_PICTURES;
+                contentUri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            } else if (MimeUtil.isPdfFile(mimeType)) {
+                relativePath = Environment.DIRECTORY_DOCUMENTS;
+                contentUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            } else {
+                relativePath = Environment.DIRECTORY_DOWNLOADS;
+                contentUri = MediaStore.Files.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            }
+
+            final ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath + "/" + BuildConfig.MEDIA_PATH);
+            contentValues.put(MediaStore.MediaColumns.IS_PENDING, true);
+
+            Uri fileUri = context.getContentResolver().insert(contentUri, contentValues);
+
+            if (fileUri != null) {
+                try (OutputStream outputStream = context.getContentResolver().openOutputStream(fileUri)) {
+                    IOUtils.copy(inputStream, outputStream);
+                }
+                contentValues.clear();
+                contentValues.put(MediaStore.MediaColumns.IS_PENDING, false);
+                context.getContentResolver().update(fileUri, contentValues, null, null);
+            } else {
+                logger.error("Cannot open file '{}' with mime type '{}' at '{}/{}' for content uri '{}'",
+                    filename,
+                    mimeType,
+                    relativePath,
+                    BuildConfig.MEDIA_PATH,
+                    contentUri
+                );
+                throw new Exception("Unable to open file");
+            }
+        } else {
+            File destPath;
+            if (MimeUtil.isAudioFile(mimeType)) {
+                destPath = getAudioPath();
+            } else if (MimeUtil.isVideoFile(mimeType)) {
+                destPath = getVideoPath();
+            } else if (MimeUtil.isImageFile(mimeType)) {
+                destPath = getImagePath();
+            } else if (MimeUtil.isPdfFile(mimeType)) {
+                destPath = getDownloadsPath();
+            } else {
+                destPath = getDownloadsPath();
+            }
+
+            File destFile = new File(destPath, filename);
+            destFile = FileUtil.getUniqueFile(destFile.getParent(), destFile.getName());
+            try (FileOutputStream outputStream = new FileOutputStream(destFile)) {
+                IOUtils.copy(inputStream, outputStream);
+                // let the system know, media store has changed
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destFile)));
+            }
+        }
+    }
+
+    /**
+     * save the data of a message model into the gallery
+     */
+    private void insertMessageIntoGallery(AbstractMessageModel messageModel) throws Exception {
+        String mediaFilename = this.constructGalleryMediaFilename(messageModel);
+        if (mediaFilename == null) {
+            return;
+        }
+
+        File messageFile = this.getMessageFile(messageModel);
+        if (!FileUtil.isFilePresent(messageFile)) {
+            // fall back to thumbnail
+            messageFile = this.getMessageThumbnail(messageModel);
+        }
+
+        if (FileUtil.isFilePresent(messageFile)) {
+            try (CipherInputStream cis = masterKey.getCipherInputStream(new FileInputStream(messageFile))) {
+                copyMediaFileIntoPublicDirectory(cis, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
+            }
+        } else {
+            throw new ThreemaException("File not found.");
+        }
+    }
+
+    @Override
+    public void copyDecryptedFileIntoGallery(Uri sourceUri, AbstractMessageModel messageModel) throws Exception {
+        String mediaFilename = this.constructGalleryMediaFilename(messageModel);
+        if (mediaFilename == null) {
+            return;
+        }
+
+        ContentResolver cr = context.getContentResolver();
+        try (final InputStream inputStream = cr.openInputStream(sourceUri)) {
+            if (inputStream != null) {
+                copyMediaFileIntoPublicDirectory(inputStream, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
+            }
+        }
+    }
+
+    private String convert(String uid) {
+        if (TestUtil.isEmptyOrNull(uid)) {
+            return uid;
+        }
+        return uid.replaceAll("[^a-zA-Z0-9\\\\s]", "");
+    }
+
+    private String getGroupAvatarFileName(GroupModel groupModel) {
+        return ".grp-avatar-" + groupModel.getId();
+    }
+
+    private File getGroupAvatarFile(GroupModel groupModel) {
+        // new in 3.0 - save group avatars in separate directory
+        File avatarFile = new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel));
+        if (avatarFile.exists() && avatarFile.isFile() && avatarFile.canRead()) {
+            return avatarFile;
+        }
+        return new File(getAppDataPathAbsolute(), getGroupAvatarFileName(groupModel));
+    }
+
+    @Override
+    public File getMessageFile(AbstractMessageModel messageModel) {
+        String uid = this.convert(messageModel.getUid());
+        if (TestUtil.isEmptyOrNull(uid)) {
+            return null;
+        }
+        return new File(getAppDataPathAbsolute(), "." + uid);
+    }
+
+    @Nullable
+    private File getMessageThumbnail(@Nullable AbstractMessageModel messageModel) {
+        // locations do not have a file, do not check for existing!
+        if (messageModel == null) {
+            return null;
+        }
+
+        String uid = this.convert(messageModel.getUid());
+        if (TestUtil.isEmptyOrNull(uid)) {
+            return null;
+        }
+
+        return new File(getAppDataPathAbsolute(), "." + uid + THUMBNAIL_EXTENSION);
+    }
+
+    @Override
+    public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data) {
+        return this.writeConversationMedia(messageModel, data, 0, data.length);
+    }
+
+    @Override
+    public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length) {
+        return this.writeConversationMedia(messageModel, data, pos, length, false);
+    }
+
+    @Override
+    public boolean writeConversationMedia(AbstractMessageModel messageModel, byte[] data, int pos, int length, boolean overwrite) {
+        boolean success = false;
+
+        if (this.masterKey.isLocked()) {
+            return false;
+        }
+
+        File messageFile = this.getMessageFile(messageModel);
+
+        if (messageFile == null) {
+            return false;
+        }
+
+        if (messageFile.exists()) {
+            if (overwrite) {
+                FileUtil.deleteFileOrWarn(messageFile, "writeConversationMedia", logger);
+            } else {
+                return false;
+            }
+        }
+
+        try {
+            if (messageFile.createNewFile()) {
+                success = this.writeFile(data, pos, length, messageFile);
+            }
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+
+        if (success) {
+            //try to generate a thumbnail
+            if (MessageUtil.autoGenerateThumbnail(messageModel)) {
+                File f = this.getMessageThumbnail(messageModel);
+                if (f != null && !f.exists()) {
+                    //load the data
+                    try {
+                        this.generateConversationMediaThumbnail(messageModel, data, pos, length);
+                    } catch (Exception e) {
+                        // unable to create thumbnail - ignore this
+                        logger.error("Exception", e);
+                    }
+                }
+            }
+        }
+
+        return success;
+    }
+
+    @Override
+    public boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(photoData, new File(getGroupAvatarDirPath(), getGroupAvatarFileName(groupModel)));
         if (success) {
             avatarCacheService.reset(groupModel);
         }
         return success;
-	}
+    }
 
-	@Override
-	public InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException {
-		File f = this.getGroupAvatarFile(groupModel);
-		if (f.exists()) {
-			return masterKey.getCipherInputStream(new FileInputStream(f));
-		}
+    @Override
+    public InputStream getGroupAvatarStream(GroupModel groupModel) throws IOException, MasterKeyLockedException {
+        File f = this.getGroupAvatarFile(groupModel);
+        if (f.exists()) {
+            return masterKey.getCipherInputStream(new FileInputStream(f));
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException {
-		if (this.masterKey.isLocked()) {
-			throw new MasterKeyLockedException("no masterkey or locked");
-		}
+    @Override
+    public Bitmap getGroupAvatar(GroupModel groupModel) throws IOException, MasterKeyLockedException {
+        if (this.masterKey.isLocked()) {
+            throw new MasterKeyLockedException("no masterkey or locked");
+        }
 
-		return decryptBitmapFromFile(this.getGroupAvatarFile(groupModel));
-	}
+        return decryptBitmapFromFile(this.getGroupAvatarFile(groupModel));
+    }
 
-	@Override
-	public void removeGroupAvatar(@NonNull GroupModel groupModel) {
-		File f = this.getGroupAvatarFile(groupModel);
-		if (f.exists()) {
-			FileUtil.deleteFileOrWarn(f, "removeGroupAvatar", logger);
+    @Override
+    public void removeGroupAvatar(@NonNull GroupModel groupModel) {
+        File f = this.getGroupAvatarFile(groupModel);
+        if (f.exists()) {
+            FileUtil.deleteFileOrWarn(f, "removeGroupAvatar", logger);
             avatarCacheService.reset(groupModel);
-		}
-	}
+        }
+    }
 
-	@Override
-	public boolean hasGroupAvatarFile(GroupModel groupModel) {
-		File f = this.getGroupAvatarFile(groupModel);
+    @Override
+    public boolean hasGroupAvatarFile(GroupModel groupModel) {
+        File f = this.getGroupAvatarFile(groupModel);
 
-		return f.exists();
-	}
+        return f.exists();
+    }
 
-	@Override
-	public boolean writeUserDefinedProfilePicture(@NonNull String identity, File file) {
-		boolean success = this.decryptFileToFile(file, this.getContactAvatarFile(identity));
+    @Override
+    public boolean writeUserDefinedProfilePicture(@NonNull String identity, File file) {
+        boolean success = this.decryptFileToFile(file, this.getContactAvatarFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
-		boolean success = this.writeFile(avatarFile, this.getContactAvatarFile(identity));
+    @Override
+    public boolean writeUserDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(avatarFile, this.getContactAvatarFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException {
-		boolean success = this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
+    @Override
+    public boolean writeContactDefinedProfilePicture(@NonNull String identity, byte[] encryptedBlob) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(encryptedBlob, this.getContactPhotoFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
-		boolean success = this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
+    @Override
+    public boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
+        boolean success = this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
-		if (this.masterKey.isLocked()) {
-			throw new MasterKeyLockedException("no masterkey or locked");
-		}
+    @Override
+    public Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
+        if (this.masterKey.isLocked()) {
+            throw new MasterKeyLockedException("no masterkey or locked");
+        }
 
-		return decryptBitmapFromFile(this.getContactAvatarFile(identity));
-	}
+        return decryptBitmapFromFile(this.getContactAvatarFile(identity));
+    }
 
-	@Override
-	public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
-		if (this.masterKey.isLocked()) {
-			throw new MasterKeyLockedException("no masterkey or locked");
-		}
+    @Override
+    public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
+        if (this.masterKey.isLocked()) {
+            throw new MasterKeyLockedException("no masterkey or locked");
+        }
 
-		long now = System.currentTimeMillis();
-		long expiration = contactModel.getLocalAvatarExpires() != null ? contactModel.getLocalAvatarExpires().getTime() : 0;
-		if (expiration < now) {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager != null) {
-				try {
-					if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
-						ContactService contactService = serviceManager.getContactService();
-						contactService.save(contactModel);
-					}
-				} catch (SecurityException e) {
-					logger.error("Could not update avatar by android contact", e);
-				}
-			}
-		}
+        long now = System.currentTimeMillis();
+        long expiration = contactModel.getLocalAvatarExpires() != null ? contactModel.getLocalAvatarExpires().getTime() : 0;
+        if (expiration < now) {
+            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager != null) {
+                try {
+                    if (AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel)) {
+                        ContactService contactService = serviceManager.getContactService();
+                        contactService.save(contactModel);
+                    }
+                } catch (SecurityException e) {
+                    logger.error("Could not update avatar by android contact", e);
+                }
+            }
+        }
 
-		return decryptBitmapFromFile(this.getAndroidContactAvatarFile(contactModel.getIdentity()));
-	}
+        return decryptBitmapFromFile(this.getAndroidContactAvatarFile(contactModel.getIdentity()));
+    }
 
-	@Override
-	public InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
-		File f = this.getContactAvatarFile(identity);
-		if (f != null && f.exists() && f.length() > 0) {
-			return masterKey.getCipherInputStream(new FileInputStream(f));
-		}
+    @Override
+    public InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+        File f = this.getContactAvatarFile(identity);
+        if (f != null && f.exists() && f.length() > 0) {
+            return masterKey.getCipherInputStream(new FileInputStream(f));
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
-		File f = this.getContactPhotoFile(identity);
-		if (f != null && f.exists() && f.length() > 0) {
-			return masterKey.getCipherInputStream(new FileInputStream(f));
-		}
-		return null;
-	}
+    @Override
+    public InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
+        File f = this.getContactPhotoFile(identity);
+        if (f != null && f.exists() && f.length() > 0) {
+            return masterKey.getCipherInputStream(new FileInputStream(f));
+        }
+        return null;
+    }
 
-	@Override
-	public Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
-		if (this.masterKey.isLocked()) {
-			throw new MasterKeyLockedException("no masterkey or locked");
-		}
+    @Override
+    public Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
+        if (this.masterKey.isLocked()) {
+            throw new MasterKeyLockedException("no masterkey or locked");
+        }
 
-		return decryptBitmapFromFile(this.getContactPhotoFile(identity));
-	}
+        return decryptBitmapFromFile(this.getContactPhotoFile(identity));
+    }
 
-	private Bitmap decryptBitmapFromFile(@Nullable File file) throws IOException, MasterKeyLockedException {
-		if (file != null && file.exists()) {
-			InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
-			if (inputStream != null) {
-				try (inputStream) {
-					return BitmapFactory.decodeStream(inputStream);
-				} catch (Exception e) {
-					logger.error("Exception", e);
-				}
-			}
-		}
-		return null;
-	}
+    private Bitmap decryptBitmapFromFile(@Nullable File file) throws IOException, MasterKeyLockedException {
+        if (file != null && file.exists()) {
+            InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
+            if (inputStream != null) {
+                try (inputStream) {
+                    return BitmapFactory.decodeStream(inputStream);
+                } catch (Exception e) {
+                    logger.error("Exception", e);
+                }
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public boolean removeUserDefinedProfilePicture(@NonNull String identity) {
-		File f = this.getContactAvatarFile(identity);
-		boolean success = f != null && f.exists() && f.delete();
+    @Override
+    public boolean removeUserDefinedProfilePicture(@NonNull String identity) {
+        File f = this.getContactAvatarFile(identity);
+        boolean success = f != null && f.exists() && f.delete();
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public boolean removeContactDefinedProfilePicture(@NonNull String identity) {
-		File f = this.getContactPhotoFile(identity);
-		boolean success = f != null && f.exists() && f.delete();
+    @Override
+    public boolean removeContactDefinedProfilePicture(@NonNull String identity) {
+        File f = this.getContactPhotoFile(identity);
+        boolean success = f != null && f.exists() && f.delete();
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
+    }
 
-	@Override
-	public boolean removeAndroidDefinedProfilePicture(@NonNull String identity) {
-		File f = this.getAndroidContactAvatarFile(identity);
-		boolean success = f != null && f.exists() && f.delete();
+    @Override
+    public boolean removeAndroidDefinedProfilePicture(@NonNull String identity) {
+        File f = this.getAndroidContactAvatarFile(identity);
+        boolean success = f != null && f.exists() && f.delete();
         if (success) {
             avatarCacheService.reset(identity);
         }
         return success;
-	}
-
-	@Override
-	public void removeAllAvatars() {
-		try {
-			FileUtils.cleanDirectory(getAvatarDirPath());
-		} catch (IOException e) {
-			logger.debug("Unable to empty avatar dir");
-		}
-	}
-
-	private boolean writeFile(@Nullable byte[] data, @Nullable File file) throws IOException, MasterKeyLockedException {
-		if (data != null && data.length > 0 && file != null) {
-			try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
-				cipherOutputStream.write(data);
-				return true;
-			} catch (FileNotFoundException e) {
-				logger.error("Unable to save file to " + file.getAbsolutePath(), e);
-				throw new FileNotFoundException(e.getMessage());
-			}
-		}
-		return false;
-	}
-
-	private boolean writeFile(byte[] data, int pos, int length, File file) throws IOException, MasterKeyLockedException {
-		if (data != null && data.length > 0) {
-			try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
-				cipherOutputStream.write(data, pos, length);
-				return true;
-			} catch (OutOfMemoryError e) {
-				throw new IOException("Out of memory");
-			} catch (FileNotFoundException e) {
-				logger.error("Unable to save file to " + file.getAbsolutePath(), e);
-				throw new FileNotFoundException(e.getMessage());
-			}
-		}
-		return false;
-	}
-
-	private void generateConversationMediaThumbnail(
-		AbstractMessageModel messageModel,
-		@NonNull byte[] originalPicture,
-		int pos,
-		int length
-	) throws Exception {
-		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
-		}
-
-		int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(context, false);
-		int maxWidth = THUMBNAIL_SIZE_PX << 1;
-		byte[] resizedThumbnailBytes = BitmapUtil.resizeBitmapByteArrayToMaxWidth(originalPicture, Math.min(preferredThumbnailWidth, maxWidth), pos, length);
-		if (resizedThumbnailBytes == null) {
-			throw new Exception("Unable to scale thumbnail");
-		}
-
-		saveThumbnail(messageModel, resizedThumbnailBytes);
-	}
-
-	@Override
-	public void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception {
-		File thumbnailFile = this.getMessageThumbnail(messageModel);
-		if (thumbnailFile != null) {
-			FileUtil.createNewFileOrLog(thumbnailFile, logger);
-			logger.info("Writing thumbnail...");
-			this.writeFile(thumbnailBytes, thumbnailFile);
-		}
-	}
-
-	@Override
-	public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] originalPicture) throws Exception {
-		generateConversationMediaThumbnail(messageModel, originalPicture, 0, originalPicture.length);
-	}
-
-	/**
-	 * Return whether a thumbnail file exists for the specified message model.
-	 */
-	@Override
-	public boolean hasMessageThumbnail(AbstractMessageModel messageModel) {
-		return this.getMessageThumbnail(messageModel).exists();
-	}
-
-	@Override
-	public @Nullable Bitmap getMessageThumbnailBitmap(
-		AbstractMessageModel messageModel,
-		@Nullable ThumbnailCache thumbnailCache
-	) throws Exception {
-		if (thumbnailCache != null) {
-			Bitmap cached = thumbnailCache.get(messageModel.getId());
-			if (cached != null && !cached.isRecycled()) {
-				return cached;
-			}
-		}
-
-		if (this.masterKey.isLocked()) {
-			throw new Exception("no masterkey or locked");
-		}
-
-		// Open thumbnail file
-		final File f = this.getMessageThumbnail(messageModel);
-
-		Bitmap thumbnailBitmap = null;
-
-		FileInputStream fis = null;
-		try {
-			try {
-				fis = new FileInputStream(f);
-			} catch (FileNotFoundException e) {
-				return null;
-			}
-
-			// Get cipher input streams
-			BufferedInputStream bis = null;
-			try {
-				CipherInputStream cis = masterKey.getCipherInputStream(fis);
-
-				bis = new BufferedInputStream(cis);
-				BitmapFactory.Options options = new BitmapFactory.Options();
-				options.inJustDecodeBounds = false;
-
-				Bitmap originalBitmap = null;
-				try {
-					originalBitmap = BitmapFactory.decodeStream(bis, null, options);
-				} catch (OutOfMemoryError e) {
-					logger.error("Exception", e);
-				}
-
-				if (originalBitmap != null) {
-					try {
-						thumbnailBitmap = BitmapUtil.resizeBitmapExactlyToMaxWidth(originalBitmap, THUMBNAIL_SIZE_PX);
-					} catch (OutOfMemoryError e) {
-						logger.error("Exception", e);
-					}
-				}
-			} catch (Exception e) {
-				throw e;
-			} finally {
-				if (bis != null) {
-					try {
-						bis.close();
-					} catch (IOException e) { /**/ }
-				}
-			}
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (IOException e) { /**/ }
-			}
-		}
-
-		if (thumbnailCache != null && thumbnailBitmap != null) {
-			thumbnailCache.set(messageModel.getId(), thumbnailBitmap);
-		}
-
-		return thumbnailBitmap;
-	}
-
-	@Override
-	@WorkerThread
-	public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached, @ColorInt int tintColor) {
-		if (thumbnailCache != null) {
-			Bitmap cached = thumbnailCache.get(messageModel.getId());
-			if (cached != null && !cached.isRecycled()) {
-				return cached;
-			}
-		}
-
-		if (returnNullIfNotCached) {
-			return null;
-		}
-
-		// supply fallback thumbnail based on mime type
-		int icon = IconUtil.getMimeIcon(mimeType);
-
-		Bitmap thumbnailBitmap = null;
-		if (icon != 0) {
-			thumbnailBitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(context, icon), tintColor);
-		}
-
-		if (thumbnailBitmap != null && thumbnailCache != null) {
-			thumbnailCache.set(messageModel.getId(), thumbnailBitmap);
-		}
-		return thumbnailBitmap;
-	}
-
-	@Override
-	public void clearDirectory(File directory, boolean recursive) throws IOException, ThreemaException {
-		// use SecureDeleteUtil.secureDelete() for a secure version of this
-		if (directory.isDirectory()) {
-			File[] children = directory.listFiles();
-			if (children != null) {
-				for (int i = 0; i < children.length; i++) {
-					if (children[i].isDirectory()) {
-						if (recursive) {
-							this.clearDirectory(children[i], recursive);
-						}
-					} else {
-						FileUtil.deleteFileOrWarn(children[i], "clearDirectory", logger);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public boolean remove(File directory, boolean removeWithContent) throws IOException, ThreemaException {
-		if (directory.isDirectory()) {
-			if (!removeWithContent && directory.list().length > 0) {
-				throw new ThreemaException("cannot remove directory. directory contains files");
-			}
-
-			for (File file : directory.listFiles()) {
-				this.remove(file, removeWithContent);
-			}
-		}
-
-		return directory.delete();
-	}
-
-	@Override
-	@WorkerThread
-	public File copyUriToTempFile(Uri uri, String prefix, String suffix, boolean isPublic) {
-		try {
-			File outputFile = createTempFile(prefix, suffix, isPublic);
-			if (FileUtil.copyFile(uri, outputFile, context.getContentResolver())) {
-				return outputFile;
-			}
-		} catch (Exception e) {
-			logger.error("Exception", e);
-		}
-		return null;
-	}
-
-	@Override
-	public Uri copyToShareFile(AbstractMessageModel messageModel, File srcFile) {
-		// copy file to public dir
-		if (messageModel != null) {
-			if (srcFile != null && srcFile.exists()) {
-				String destFilePrefix = FileUtil.getMediaFilenamePrefix(messageModel);
-				String destFileExtension = getMediaFileExtension(messageModel);
-				File destFile = copyUriToTempFile(Uri.fromFile(srcFile), destFilePrefix, destFileExtension, false);
-
-				String filename = null;
-				if (messageModel.getType() == MessageType.FILE) {
-					filename = messageModel.getFileData().getFileName();
-				}
-
-				return getShareFileUri(destFile, filename);
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Get an Uri for the destination file that can be shared to other apps. Our own content provider will be used to serve the file.
-	 * @param destFile File to get an Uri for
-	 * @param filename Desired filename for this file. Can be different from the filename of destFile
-	 * @return Uri (Content Uri)
-	 */
-	@Override
-	public Uri getShareFileUri(@Nullable File destFile, @Nullable String filename) {
-		if (destFile != null) {
-			// see https://code.google.com/p/android/issues/detail?id=76683
-			return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
-		}
-		return null;
-	}
-
-	@Override
-	public long getInternalStorageUsage() {
-		return getFolderSize(getAppDataPath());
-	}
-
-	private static long getFolderSize(File folderPath) {
-		long totalSize = 0;
-
-		if (folderPath == null) {
-			return 0;
-		}
-
-		if (!folderPath.isDirectory()) {
-			return 0;
-		}
-
-		File[] files = folderPath.listFiles();
-		if(files != null){
-			for (File file : files) {
-				if (file.isFile()) {
-					totalSize += file.length();
-				} else if (file.isDirectory()) {
-					totalSize += file.length();
-					totalSize += getFolderSize(file);
-				}
-			}
-		}
-		return totalSize;
-	}
-
-	@Override
-	public long getInternalStorageSize() {
-		return getAppDataPath().getTotalSpace();
-	}
-
-	@Override
-	public long getInternalStorageFree() {
-		return getAppDataPath().getUsableSpace();
-	}
-
-	@WorkerThread
-	public void loadDecryptedMessageFiles(final List<AbstractMessageModel> models, final OnDecryptedFilesComplete onDecryptedFilesComplete) {
-		final ArrayList<Uri> shareFileUris = new ArrayList<>();
-
-		int errorCount = 0;
-
-		for (AbstractMessageModel model : models) {
-
-			try {
-				File file;
-				if (model.getType() == MessageType.FILE && model.getFileData() != null) {
-					file = getDecryptedMessageFile(model, model.getFileData().getFileName());
-				} else {
-					file = getDecryptedMessageFile(model);
-				}
-
-				if (file != null) {
-					shareFileUris.add(getShareFileUri(file, null));
-					continue;
-				}
-			} catch (Exception ignore) {
-			}
-			errorCount++;
-			shareFileUris.add(null);
-		}
-
-		if (onDecryptedFilesComplete != null) {
-			if (errorCount >= models.size()) {
-				onDecryptedFilesComplete.error(context.getString(R.string.media_file_not_found));
-			} else {
-				// at least some of the provided media could be decrypted. we consider this a success
-				onDecryptedFilesComplete.complete(shareFileUris);
-			}
-		}
-	}
-
-	/*
-	 * Load encrypted media file, decrypt it and save it to a temporary file
-	 */
-	@MainThread
-	public void loadDecryptedMessageFile(final AbstractMessageModel model, final OnDecryptedFileComplete onDecryptedFileComplete) {
-		if (model.getType() == MessageType.TEXT || model.getType() == MessageType.BALLOT || model.getType() == MessageType.LOCATION) {
-			onDecryptedFileComplete.complete(null);
-			return;
-		}
-
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					//HACK: save to a readable temporary filename
-					final File file;
-					if(model.getType() == MessageType.FILE && model.getFileData() != null) {
-						file = getDecryptedMessageFile(model, model.getFileData().getFileName());
-					}
-					else {
-						file = getDecryptedMessageFile(model);
-					}
-
-					if (file != null) {
-						if (onDecryptedFileComplete != null) {
-							onDecryptedFileComplete.complete(file);
-						}
-					} else {
-						throw new FileNotFoundException(context.getString(R.string.media_file_not_found));
-					}
-				} catch (Exception e) {
-					if (onDecryptedFileComplete != null) {
-						String message = e.getMessage();
-						if (message != null && message.contains("ENOENT")) {
-							message = context.getString(R.string.media_file_not_found);
-						}
-						onDecryptedFileComplete.error(message);
-					}
-				}
-			}
-		}).start();
-	}
-
-	@SuppressLint("StaticFieldLeak")
-	@RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-	@Override
-	public void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, final boolean quiet) {
-		new AsyncTask<Void, Integer, Integer>() {
-			boolean cancelled = false;
-
-			@Override
-			protected void onPreExecute() {
-				int selectedMessagesCount = selectedMessages.size();
-				if (activity != null && selectedMessagesCount > 3) {
-					String title = String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.saving_media, selectedMessagesCount, selectedMessagesCount));
-					String cancel = activity.getString(R.string.cancel);
-					CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(title, cancel, selectedMessagesCount);
-					dialog.setOnCancelListener(new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							cancelled = true;
-						}
-					});
-					dialog.show(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA);
-				}
-			}
-
-			@Override
-			protected Integer doInBackground(Void... params) {
-				int i = 0, saved = 0;
-				Iterator<AbstractMessageModel> checkedItemsIterator = selectedMessages.iterator();
-				while (checkedItemsIterator.hasNext() && !cancelled) {
-					publishProgress(i++);
-					AbstractMessageModel messageModel = checkedItemsIterator.next();
-					try {
-						insertMessageIntoGallery(messageModel);
-						saved++;
-						logger.debug("Saved message " + messageModel.getUid());
-					} catch (Exception e) {
-						if (activity != null) {
-							if (quiet) {
-								RuntimeUtil.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										SingleToast.getInstance().showShortText(activity.getString(R.string.error_saving_file));
-									}
-								});
-							} else {
-								LogUtil.exception(e, activity);
-							}
-						}
-						logger.error("Exception", e);
-					}
-				}
-				return saved;
-			}
-
-			@Override
-			protected void onPostExecute(Integer saved) {
-				if (activity != null) {
-					DialogUtil.dismissDialog(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, true);
-					if (feedbackView != null) {
-						Snackbar.make(feedbackView, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Snackbar.LENGTH_SHORT).show();
-					} else {
-						Toast.makeText(activity, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Toast.LENGTH_SHORT).show();
-					}
-				}
-			}
-
-
-			@Override
-			protected void onProgressUpdate(Integer... index) {
-				if (activity != null) {
-					DialogUtil.updateProgress(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, index[0] + 1);
-				}
-			}
-		}.execute();
-	}
-
-	@Override
-	public void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme) {
-		File existingLogo = this.getAppLogo(theme);
-		if(logo == null || !logo.exists()) {
-			//remove existing icon
-			if(existingLogo != null && existingLogo.exists()) {
-				FileUtil.deleteFileOrWarn(existingLogo, "saveAppLogo", logger);
-			}
-		}
-		else {
-			FileUtil.copyFile(logo, existingLogo);
-		}
-
-		//call listener
-		ListenerManager.appIconListeners.handle(AppIconListener::onChanged);
-	}
-
-	@Override
-	public File getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
-		String key = "light";
-
-		if(ConfigUtils.THEME_DARK.equals(theme)) {
-			key = "dark";
-		}
-		return new File(getAppDataPathAbsolute(),"appicon_" + key + ".png");
-	}
-
-	@Override
-	@NonNull
-	public Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException {
-		File tempQrCodeFile = createTempFile(FileUtil.getMediaFilenamePrefix(), ".png");
-		try (FileOutputStream fos = new FileOutputStream(tempQrCodeFile)) {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
-			byte[] bitmapdata = bos.toByteArray();
-			fos.write(bitmapdata);
-		}
-		return getShareFileUri(tempQrCodeFile, null);
-	}
-
-	@Override
-	@Nullable
-	@WorkerThread
-	public Uri getThumbnailShareFileUri(AbstractMessageModel messageModel, int maxSize) {
-		try {
-			final File inputFile = getMessageThumbnail(messageModel);
-			if (inputFile != null && inputFile.exists()) {
-				String thumbnailMimeType = messageModel.getFileData().getThumbnailMimeType();
-				if (thumbnailMimeType != null) {
-					String prefix = FileUtil.getMediaFilenamePrefix(messageModel);
-					final File outputFile = createTempFile(prefix, MimeUtil.MIME_TYPE_IMAGE_PNG.equals(thumbnailMimeType) ? ".png" : ".jpg", false);
-
-					try (CipherInputStream inputStream = getDecryptedMessageThumbnailStream(messageModel)) {
-						if (inputStream != null) {
-							try (OutputStream outputStream = context.getContentResolver().openOutputStream(Uri.fromFile(outputFile))) {
-								int numBytes = IOUtils.copy(inputStream, outputStream);
-								if (numBytes > 0 && numBytes <= maxSize) {
-									return getShareFileUri(outputFile, messageModel.getFileData().getFileName());
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Exception fetching thumbnail", e);
-		}
-
-		logger.debug("Could not fetch thumbnail");
-		return null;
-	}
+    }
+
+    @Override
+    public void removeAllAvatars() {
+        try {
+            FileUtils.cleanDirectory(getAvatarDirPath());
+        } catch (IOException e) {
+            logger.debug("Unable to empty avatar dir");
+        }
+    }
+
+    private boolean writeFile(@Nullable byte[] data, @Nullable File file) throws IOException, MasterKeyLockedException {
+        if (data != null && data.length > 0 && file != null) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
+                cipherOutputStream.write(data);
+                return true;
+            } catch (FileNotFoundException e) {
+                logger.error("Unable to save file to " + file.getAbsolutePath(), e);
+                throw new FileNotFoundException(e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private boolean writeFile(byte[] data, int pos, int length, File file) throws IOException, MasterKeyLockedException {
+        if (data != null && data.length > 0) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file); CipherOutputStream cipherOutputStream = this.masterKey.getCipherOutputStream(fileOutputStream)) {
+                cipherOutputStream.write(data, pos, length);
+                return true;
+            } catch (OutOfMemoryError e) {
+                throw new IOException("Out of memory");
+            } catch (FileNotFoundException e) {
+                logger.error("Unable to save file to " + file.getAbsolutePath(), e);
+                throw new FileNotFoundException(e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private void generateConversationMediaThumbnail(
+        AbstractMessageModel messageModel,
+        @NonNull byte[] originalPicture,
+        int pos,
+        int length
+    ) throws Exception {
+        if (this.masterKey.isLocked()) {
+            throw new Exception("no masterkey or locked");
+        }
+
+        int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(context, false);
+        int maxWidth = THUMBNAIL_SIZE_PX << 1;
+        byte[] resizedThumbnailBytes = BitmapUtil.resizeBitmapByteArrayToMaxWidth(originalPicture, Math.min(preferredThumbnailWidth, maxWidth), pos, length);
+        if (resizedThumbnailBytes == null) {
+            throw new Exception("Unable to scale thumbnail");
+        }
+
+        saveThumbnail(messageModel, resizedThumbnailBytes);
+    }
+
+    @Override
+    public void saveThumbnail(AbstractMessageModel messageModel, byte[] thumbnailBytes) throws Exception {
+        File thumbnailFile = this.getMessageThumbnail(messageModel);
+        if (thumbnailFile != null) {
+            FileUtil.createNewFileOrLog(thumbnailFile, logger);
+            logger.info("Writing thumbnail...");
+            this.writeFile(thumbnailBytes, thumbnailFile);
+        }
+    }
+
+    @Override
+    public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull byte[] originalPicture) throws Exception {
+        generateConversationMediaThumbnail(messageModel, originalPicture, 0, originalPicture.length);
+    }
+
+    /**
+     * Return whether a thumbnail file exists for the specified message model.
+     */
+    @Override
+    public boolean hasMessageThumbnail(AbstractMessageModel messageModel) {
+        return this.getMessageThumbnail(messageModel).exists();
+    }
+
+    @Override
+    public @Nullable Bitmap getMessageThumbnailBitmap(
+        AbstractMessageModel messageModel,
+        @Nullable ThumbnailCache thumbnailCache
+    ) throws Exception {
+        if (thumbnailCache != null) {
+            Bitmap cached = thumbnailCache.get(messageModel.getId());
+            if (cached != null && !cached.isRecycled()) {
+                return cached;
+            }
+        }
+
+        if (this.masterKey.isLocked()) {
+            throw new Exception("no masterkey or locked");
+        }
+
+        // Open thumbnail file
+        final File f = this.getMessageThumbnail(messageModel);
+
+        Bitmap thumbnailBitmap = null;
+
+        FileInputStream fis = null;
+        try {
+            try {
+                fis = new FileInputStream(f);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+
+            // Get cipher input streams
+            BufferedInputStream bis = null;
+            try {
+                CipherInputStream cis = masterKey.getCipherInputStream(fis);
+
+                bis = new BufferedInputStream(cis);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = false;
+
+                Bitmap originalBitmap = null;
+                try {
+                    originalBitmap = BitmapFactory.decodeStream(bis, null, options);
+                } catch (OutOfMemoryError e) {
+                    logger.error("Exception", e);
+                }
+
+                if (originalBitmap != null) {
+                    try {
+                        thumbnailBitmap = BitmapUtil.resizeBitmapExactlyToMaxWidth(originalBitmap, THUMBNAIL_SIZE_PX);
+                    } catch (OutOfMemoryError e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            } catch (Exception e) {
+                throw e;
+            } finally {
+                if (bis != null) {
+                    try {
+                        bis.close();
+                    } catch (IOException e) { /**/ }
+                }
+            }
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) { /**/ }
+            }
+        }
+
+        if (thumbnailCache != null && thumbnailBitmap != null) {
+            thumbnailCache.set(messageModel.getId(), thumbnailBitmap);
+        }
+
+        return thumbnailBitmap;
+    }
+
+    @Override
+    @WorkerThread
+    public Bitmap getDefaultMessageThumbnailBitmap(Context context, AbstractMessageModel messageModel, ThumbnailCache thumbnailCache, String mimeType, boolean returnNullIfNotCached, @ColorInt int tintColor) {
+        if (thumbnailCache != null) {
+            Bitmap cached = thumbnailCache.get(messageModel.getId());
+            if (cached != null && !cached.isRecycled()) {
+                return cached;
+            }
+        }
+
+        if (returnNullIfNotCached) {
+            return null;
+        }
+
+        // supply fallback thumbnail based on mime type
+        int icon = IconUtil.getMimeIcon(mimeType);
+
+        Bitmap thumbnailBitmap = null;
+        if (icon != 0) {
+            thumbnailBitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(context, icon), tintColor);
+        }
+
+        if (thumbnailBitmap != null && thumbnailCache != null) {
+            thumbnailCache.set(messageModel.getId(), thumbnailBitmap);
+        }
+        return thumbnailBitmap;
+    }
+
+    @Override
+    public void clearDirectory(File directory, boolean recursive) throws IOException, ThreemaException {
+        // use SecureDeleteUtil.secureDelete() for a secure version of this
+        if (directory.isDirectory()) {
+            File[] children = directory.listFiles();
+            if (children != null) {
+                for (int i = 0; i < children.length; i++) {
+                    if (children[i].isDirectory()) {
+                        if (recursive) {
+                            this.clearDirectory(children[i], recursive);
+                        }
+                    } else {
+                        FileUtil.deleteFileOrWarn(children[i], "clearDirectory", logger);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean remove(File directory, boolean removeWithContent) throws IOException, ThreemaException {
+        if (directory.isDirectory()) {
+            if (!removeWithContent && directory.list().length > 0) {
+                throw new ThreemaException("cannot remove directory. directory contains files");
+            }
+
+            for (File file : directory.listFiles()) {
+                this.remove(file, removeWithContent);
+            }
+        }
+
+        return directory.delete();
+    }
+
+    @Override
+    @WorkerThread
+    public File copyUriToTempFile(Uri uri, String prefix, String suffix, boolean isPublic) {
+        try {
+            File outputFile = createTempFile(prefix, suffix, isPublic);
+            if (FileUtil.copyFile(uri, outputFile, context.getContentResolver())) {
+                return outputFile;
+            }
+        } catch (Exception e) {
+            logger.error("Exception", e);
+        }
+        return null;
+    }
+
+    @Override
+    public Uri copyToShareFile(AbstractMessageModel messageModel, File srcFile) {
+        // copy file to public dir
+        if (messageModel != null) {
+            if (srcFile != null && srcFile.exists()) {
+                String destFilePrefix = FileUtil.getMediaFilenamePrefix(messageModel);
+                String destFileExtension = getMediaFileExtension(messageModel);
+                File destFile = copyUriToTempFile(Uri.fromFile(srcFile), destFilePrefix, destFileExtension, false);
+
+                String filename = null;
+                if (messageModel.getType() == MessageType.FILE) {
+                    filename = messageModel.getFileData().getFileName();
+                }
+
+                return getShareFileUri(destFile, filename);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get an Uri for the destination file that can be shared to other apps. Our own content provider will be used to serve the file.
+     *
+     * @param destFile File to get an Uri for
+     * @param filename Desired filename for this file. Can be different from the filename of destFile
+     * @return Uri (Content Uri)
+     */
+    @Override
+    public Uri getShareFileUri(@Nullable File destFile, @Nullable String filename) {
+        if (destFile != null) {
+            // see https://code.google.com/p/android/issues/detail?id=76683
+            return NamedFileProvider.getUriForFile(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getPackageName() + ".fileprovider", destFile, filename);
+        }
+        return null;
+    }
+
+    @Override
+    public long getInternalStorageUsage() {
+        return getFolderSize(getAppDataPath());
+    }
+
+    private static long getFolderSize(File folderPath) {
+        long totalSize = 0;
+
+        if (folderPath == null) {
+            return 0;
+        }
+
+        if (!folderPath.isDirectory()) {
+            return 0;
+        }
+
+        File[] files = folderPath.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    totalSize += file.length();
+                } else if (file.isDirectory()) {
+                    totalSize += file.length();
+                    totalSize += getFolderSize(file);
+                }
+            }
+        }
+        return totalSize;
+    }
+
+    @Override
+    public long getInternalStorageSize() {
+        return getAppDataPath().getTotalSpace();
+    }
+
+    @Override
+    public long getInternalStorageFree() {
+        return getAppDataPath().getUsableSpace();
+    }
+
+    @WorkerThread
+    public void loadDecryptedMessageFiles(final List<AbstractMessageModel> models, final OnDecryptedFilesComplete onDecryptedFilesComplete) {
+        final ArrayList<Uri> shareFileUris = new ArrayList<>();
+
+        int errorCount = 0;
+
+        for (AbstractMessageModel model : models) {
+
+            try {
+                File file;
+                if (model.getType() == MessageType.FILE && model.getFileData() != null) {
+                    file = getDecryptedMessageFile(model, model.getFileData().getFileName());
+                } else {
+                    file = getDecryptedMessageFile(model);
+                }
+
+                if (file != null) {
+                    shareFileUris.add(getShareFileUri(file, null));
+                    continue;
+                }
+            } catch (Exception ignore) {
+            }
+            errorCount++;
+            shareFileUris.add(null);
+        }
+
+        if (onDecryptedFilesComplete != null) {
+            if (errorCount >= models.size()) {
+                onDecryptedFilesComplete.error(context.getString(R.string.media_file_not_found));
+            } else {
+                // at least some of the provided media could be decrypted. we consider this a success
+                onDecryptedFilesComplete.complete(shareFileUris);
+            }
+        }
+    }
+
+    /*
+     * Load encrypted media file, decrypt it and save it to a temporary file
+     */
+    @MainThread
+    public void loadDecryptedMessageFile(final AbstractMessageModel model, final OnDecryptedFileComplete onDecryptedFileComplete) {
+        if (model.getType() == MessageType.TEXT || model.getType() == MessageType.BALLOT || model.getType() == MessageType.LOCATION) {
+            onDecryptedFileComplete.complete(null);
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //HACK: save to a readable temporary filename
+                    final File file;
+                    if (model.getType() == MessageType.FILE && model.getFileData() != null) {
+                        file = getDecryptedMessageFile(model, model.getFileData().getFileName());
+                    } else {
+                        file = getDecryptedMessageFile(model);
+                    }
+
+                    if (file != null) {
+                        if (onDecryptedFileComplete != null) {
+                            onDecryptedFileComplete.complete(file);
+                        }
+                    } else {
+                        throw new FileNotFoundException(context.getString(R.string.media_file_not_found));
+                    }
+                } catch (Exception e) {
+                    if (onDecryptedFileComplete != null) {
+                        String message = e.getMessage();
+                        if (message != null && message.contains("ENOENT")) {
+                            message = context.getString(R.string.media_file_not_found);
+                        }
+                        onDecryptedFileComplete.error(message);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    @Override
+    public void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, final boolean quiet) {
+        new AsyncTask<Void, Integer, Integer>() {
+            boolean cancelled = false;
+
+            @Override
+            protected void onPreExecute() {
+                int selectedMessagesCount = selectedMessages.size();
+                if (activity != null && selectedMessagesCount > 3) {
+                    String title = String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.saving_media, selectedMessagesCount, selectedMessagesCount));
+                    String cancel = activity.getString(R.string.cancel);
+                    CancelableHorizontalProgressDialog dialog = CancelableHorizontalProgressDialog.newInstance(title, cancel, selectedMessagesCount);
+                    dialog.setOnCancelListener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            cancelled = true;
+                        }
+                    });
+                    dialog.show(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA);
+                }
+            }
+
+            @Override
+            protected Integer doInBackground(Void... params) {
+                int i = 0, saved = 0;
+                Iterator<AbstractMessageModel> checkedItemsIterator = selectedMessages.iterator();
+                while (checkedItemsIterator.hasNext() && !cancelled) {
+                    publishProgress(i++);
+                    AbstractMessageModel messageModel = checkedItemsIterator.next();
+                    try {
+                        insertMessageIntoGallery(messageModel);
+                        saved++;
+                        logger.debug("Saved message " + messageModel.getUid());
+                    } catch (Exception e) {
+                        if (activity != null) {
+                            if (quiet) {
+                                RuntimeUtil.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        SingleToast.getInstance().showShortText(activity.getString(R.string.error_saving_file));
+                                    }
+                                });
+                            } else {
+                                LogUtil.exception(e, activity);
+                            }
+                        }
+                        logger.error("Exception", e);
+                    }
+                }
+                return saved;
+            }
+
+            @Override
+            protected void onPostExecute(Integer saved) {
+                if (activity != null) {
+                    DialogUtil.dismissDialog(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, true);
+                    if (feedbackView != null) {
+                        Snackbar.make(feedbackView, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(activity, String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.file_saved, saved, saved)), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+
+            @Override
+            protected void onProgressUpdate(Integer... index) {
+                if (activity != null) {
+                    DialogUtil.updateProgress(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, index[0] + 1);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void saveAppLogo(File logo, @ConfigUtils.AppThemeSetting String theme) {
+        File existingLogo = this.getAppLogo(theme);
+        if (logo == null || !logo.exists()) {
+            //remove existing icon
+            if (existingLogo != null && existingLogo.exists()) {
+                FileUtil.deleteFileOrWarn(existingLogo, "saveAppLogo", logger);
+            }
+        } else {
+            FileUtil.copyFile(logo, existingLogo);
+        }
+
+        //call listener
+        ListenerManager.appIconListeners.handle(AppIconListener::onChanged);
+    }
+
+    @Override
+    public File getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
+        String key = "light";
+
+        if (ConfigUtils.THEME_DARK.equals(theme)) {
+            key = "dark";
+        }
+        return new File(getAppDataPathAbsolute(), "appicon_" + key + ".png");
+    }
+
+    @Override
+    @NonNull
+    public Uri getTempShareFileUri(@NonNull Bitmap bitmap) throws IOException {
+        File tempQrCodeFile = createTempFile(FileUtil.getMediaFilenamePrefix(), ".png");
+        try (FileOutputStream fos = new FileOutputStream(tempQrCodeFile)) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] bitmapdata = bos.toByteArray();
+            fos.write(bitmapdata);
+        }
+        return getShareFileUri(tempQrCodeFile, null);
+    }
+
+    @Override
+    @Nullable
+    @WorkerThread
+    public Uri getThumbnailShareFileUri(AbstractMessageModel messageModel, int maxSize) {
+        try {
+            final File inputFile = getMessageThumbnail(messageModel);
+            if (inputFile != null && inputFile.exists()) {
+                String thumbnailMimeType = messageModel.getFileData().getThumbnailMimeType();
+                if (thumbnailMimeType != null) {
+                    String prefix = FileUtil.getMediaFilenamePrefix(messageModel);
+                    final File outputFile = createTempFile(prefix, MimeUtil.MIME_TYPE_IMAGE_PNG.equals(thumbnailMimeType) ? ".png" : ".jpg", false);
+
+                    try (CipherInputStream inputStream = getDecryptedMessageThumbnailStream(messageModel)) {
+                        if (inputStream != null) {
+                            try (OutputStream outputStream = context.getContentResolver().openOutputStream(Uri.fromFile(outputFile))) {
+                                int numBytes = IOUtils.copy(inputStream, outputStream);
+                                if (numBytes > 0 && numBytes <= maxSize) {
+                                    return getShareFileUri(outputFile, messageModel.getFileData().getFileName());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Exception fetching thumbnail", e);
+        }
+
+        logger.debug("Could not fetch thumbnail");
+        return null;
+    }
 }

@@ -117,7 +117,10 @@ internal class SystemUpdateToVersion106(
         if (tableExists(sqLiteDatabase, legacyReactionTable)) {
             migrateReactionData(targetReactionTable, legacyReactionTable, messageTable)
         } else {
-            logger.info("Skip migrating existing reactions. Legacy reaction table {} does not exist", legacyReactionTable)
+            logger.info(
+                "Skip migrating existing reactions. Legacy reaction table {} does not exist",
+                legacyReactionTable
+            )
         }
 
         // Cleanup potential leftovers from migration to version 105
@@ -125,8 +128,16 @@ internal class SystemUpdateToVersion106(
         sqLiteDatabase.execSQL("DROP INDEX IF EXISTS `$legacyReactionIndexName`")
     }
 
-    private fun migrateReactionData(targetReactionTable: String, legacyReactionTable: String, messageTable: String) {
-        logger.info("Migrate existing reactions from {} to {}", legacyReactionTable, targetReactionTable)
+    private fun migrateReactionData(
+        targetReactionTable: String,
+        legacyReactionTable: String,
+        messageTable: String
+    ) {
+        logger.info(
+            "Migrate existing reactions from {} to {}",
+            legacyReactionTable,
+            targetReactionTable
+        )
         sqLiteDatabase.execSQL(
             "INSERT INTO $targetReactionTable " +
                 "SELECT m.id as messageId, r.senderIdentity, r.emojiSequence, r.reactedAt " +

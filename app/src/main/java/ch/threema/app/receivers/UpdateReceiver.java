@@ -32,19 +32,19 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public class UpdateReceiver extends BroadcastReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateReceiver");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateReceiver");
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
-			logger.info("*** App was updated ***");
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
+            logger.info("*** App was updated ***");
 
-			DownloadUtil.deleteOldAPKs(context);
+            DownloadUtil.deleteOldAPKs(context);
 
-			// force token register
-			PushUtil.clearPushTokenSentDate(context);
-		}
-	}
+            // force token register
+            PushUtil.clearPushTokenSentDate(context);
+        }
+    }
 
 
 }

@@ -201,7 +201,9 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 
 	public interface TextEntryDialogClickListener {
 		void onYes(@NonNull String tag, @NonNull String text);
+
 		void onNo(String tag);
+
 		default void onNeutral(String tag) {
 			// optional interface
 		}
@@ -289,7 +291,8 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 
 		editText.addTextChangedListener(new TextWatcher() {
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -310,10 +313,12 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 			editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
 			editText.addTextChangedListener(new TextWatcher() {
 				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				}
 
 				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {}
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				}
 
 				@Override
 				public void afterTextChanged(Editable s) {
@@ -334,24 +339,24 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 		}
 
 		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int whichButton) {
-								String text = null;
-								Editable editable = editText.getText();
-								if (editable != null) {
-									text = editable.toString();
-								}
-								if (tag != null && text != null) {
-									callback.onYes(tag, text);
-								}
-							}
+					public void onClick(DialogInterface dialog, int whichButton) {
+						String text = null;
+						Editable editable = editText.getText();
+						if (editable != null) {
+							text = editable.toString();
+						}
+						if (tag != null && text != null) {
+							callback.onYes(tag, text);
+						}
+					}
 				}
 		);
 		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-								callback.onNo(tag);
-							}
-						}
-				);
+						callback.onNo(tag);
+					}
+				}
+		);
 		if (neutral != 0) {
 			builder.setNeutralButton(getString(neutral),
 					new DialogInterface.OnClickListener() {

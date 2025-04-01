@@ -33,114 +33,114 @@ import ch.threema.base.utils.JSONUtil;
 
 public class JSONUtilTest {
 
-	@Test
-	public void testGetStringOrNull() throws JSONException {
-		final JSONObject o = new JSONObject();
-		o.put("foo", "bar");
-		o.put("baz", JSONObject.NULL);
-		o.put("bla", 123);
+    @Test
+    public void testGetStringOrNull() throws JSONException {
+        final JSONObject o = new JSONObject();
+        o.put("foo", "bar");
+        o.put("baz", JSONObject.NULL);
+        o.put("bla", 123);
 
-		// Existing key
-		Assert.assertEquals("bar", JSONUtil.getStringOrNull(o, "foo"));
+        // Existing key
+        Assert.assertEquals("bar", JSONUtil.getStringOrNull(o, "foo"));
 
-		// Missing key
-		Assert.assertNull(JSONUtil.getStringOrNull(o, "bar"));
+        // Missing key
+        Assert.assertNull(JSONUtil.getStringOrNull(o, "bar"));
 
-		// Null value
-		Assert.assertNull(JSONUtil.getStringOrNull(o, "baz"));
+        // Null value
+        Assert.assertNull(JSONUtil.getStringOrNull(o, "baz"));
 
-		// Non-String value
-		Assert.assertNull(JSONUtil.getStringOrNull(o, "bla"));
-	}
+        // Non-String value
+        Assert.assertNull(JSONUtil.getStringOrNull(o, "bla"));
+    }
 
-	@Test
-	public void testGetIntegerOrNull() throws JSONException {
-		final JSONObject o = new JSONObject();
-		o.put("foo", 42);
-		o.put("baz", JSONObject.NULL);
-		o.put("bla", "123");
+    @Test
+    public void testGetIntegerOrNull() throws JSONException {
+        final JSONObject o = new JSONObject();
+        o.put("foo", 42);
+        o.put("baz", JSONObject.NULL);
+        o.put("bla", "123");
 
-		// Existing key
-		Assert.assertEquals(Integer.valueOf(42), JSONUtil.getIntegerOrNull(o, "foo"));
+        // Existing key
+        Assert.assertEquals(Integer.valueOf(42), JSONUtil.getIntegerOrNull(o, "foo"));
 
-		// Missing key
-		Assert.assertNull(JSONUtil.getIntegerOrNull(o, "bar"));
+        // Missing key
+        Assert.assertNull(JSONUtil.getIntegerOrNull(o, "bar"));
 
-		// Null value
-		Assert.assertNull(JSONUtil.getIntegerOrNull(o, "baz"));
+        // Null value
+        Assert.assertNull(JSONUtil.getIntegerOrNull(o, "baz"));
 
-		// Non-Integer value
-		Assert.assertNull(JSONUtil.getIntegerOrNull(o, "bla"));
-	}
+        // Non-Integer value
+        Assert.assertNull(JSONUtil.getIntegerOrNull(o, "bla"));
+    }
 
-	@Test
-	public void testGetLongOrThrow() throws JSONException {
-		final JSONObject o = new JSONObject();
-		o.put("foo", 42); // Valid, in range
-		o.put("bar", JSONObject.NULL); // Null
-		o.put("baz", "123"); // Invalid type
-		o.put("bigint", new BigInteger("9999999999999999999999")); // Out of range for a long
+    @Test
+    public void testGetLongOrThrow() throws JSONException {
+        final JSONObject o = new JSONObject();
+        o.put("foo", 42); // Valid, in range
+        o.put("bar", JSONObject.NULL); // Null
+        o.put("baz", "123"); // Invalid type
+        o.put("bigint", new BigInteger("9999999999999999999999")); // Out of range for a long
 
-		// Valid, in range
-		Assert.assertEquals(Long.valueOf(42), JSONUtil.getLongOrThrow(o, "foo"));
+        // Valid, in range
+        Assert.assertEquals(Long.valueOf(42), JSONUtil.getLongOrThrow(o, "foo"));
 
-		// Null value
-		Assert.assertNull(JSONUtil.getLongOrThrow(o, "bar"));
+        // Null value
+        Assert.assertNull(JSONUtil.getLongOrThrow(o, "bar"));
 
-		// Missing value
-		Assert.assertNull(JSONUtil.getLongOrThrow(o, "XYZ"));
+        // Missing value
+        Assert.assertNull(JSONUtil.getLongOrThrow(o, "XYZ"));
 
-		// Out of range
-		try {
-			Assert.assertNull(JSONUtil.getLongOrThrow(o, "bigint"));
-			Assert.fail("Expected RuntimeException, but none thrown");
-		} catch (RuntimeException e) {
-			// OK
-		}
+        // Out of range
+        try {
+            Assert.assertNull(JSONUtil.getLongOrThrow(o, "bigint"));
+            Assert.fail("Expected RuntimeException, but none thrown");
+        } catch (RuntimeException e) {
+            // OK
+        }
 
-		// Invalid type
-		try {
-			JSONUtil.getLongOrThrow(o, "baz");
-			Assert.fail("Expected RuntimeException, but none thrown");
-		} catch (RuntimeException e) {
-			// OK
-		}
-	}
+        // Invalid type
+        try {
+            JSONUtil.getLongOrThrow(o, "baz");
+            Assert.fail("Expected RuntimeException, but none thrown");
+        } catch (RuntimeException e) {
+            // OK
+        }
+    }
 
-	@Test
-	public void testGetStringArraySuccess() throws JSONException {
-		final JSONArray jsonArray = new JSONArray();
-		jsonArray.put("hello");
-		jsonArray.put("world");
-		final String[] stringArray = JSONUtil.getStringArray(jsonArray);
-		Assert.assertArrayEquals(stringArray, new String[] { "hello", "world" });
-	}
+    @Test
+    public void testGetStringArraySuccess() throws JSONException {
+        final JSONArray jsonArray = new JSONArray();
+        jsonArray.put("hello");
+        jsonArray.put("world");
+        final String[] stringArray = JSONUtil.getStringArray(jsonArray);
+        Assert.assertArrayEquals(stringArray, new String[]{"hello", "world"});
+    }
 
-	@Test
-	public void testGetStringArrayWrongType() {
-		final JSONArray jsonArray = new JSONArray();
-		jsonArray.put("hello");
-		jsonArray.put(123);
-		try {
-			JSONUtil.getStringArray(jsonArray);
-			Assert.fail("Expected JSONException, but none thrown");
-		} catch (JSONException e) {
-			Assert.assertEquals("Value at 1 is not a string.", e.getMessage());
-		}
-	}
+    @Test
+    public void testGetStringArrayWrongType() {
+        final JSONArray jsonArray = new JSONArray();
+        jsonArray.put("hello");
+        jsonArray.put(123);
+        try {
+            JSONUtil.getStringArray(jsonArray);
+            Assert.fail("Expected JSONException, but none thrown");
+        } catch (JSONException e) {
+            Assert.assertEquals("Value at 1 is not a string.", e.getMessage());
+        }
+    }
 
-	@Test
-	public void testGetStringArrayNullValue() {
-		final JSONArray jsonArray = new JSONArray();
-		jsonArray.put("hello");
-		jsonArray.put("world");
-		jsonArray.put(null);
-		try {
-			JSONUtil.getStringArray(jsonArray);
-			Assert.fail("Expected JSONException, but none thrown");
-		} catch (JSONException e) {
-			Assert.assertEquals("Value at 2 is null.", e.getMessage());
-		}
-	}
+    @Test
+    public void testGetStringArrayNullValue() {
+        final JSONArray jsonArray = new JSONArray();
+        jsonArray.put("hello");
+        jsonArray.put("world");
+        jsonArray.put(null);
+        try {
+            JSONUtil.getStringArray(jsonArray);
+            Assert.fail("Expected JSONException, but none thrown");
+        } catch (JSONException e) {
+            Assert.assertEquals("Value at 2 is null.", e.getMessage());
+        }
+    }
 
 }

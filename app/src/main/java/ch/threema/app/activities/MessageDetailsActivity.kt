@@ -98,57 +98,63 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
         }
     }
 
-    private val textSelectionCallback: CustomTextSelectionCallback = object : CustomTextSelectionCallback() {
-        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            return true
-        }
+    private val textSelectionCallback: CustomTextSelectionCallback =
+        object : CustomTextSelectionCallback() {
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                return true
+            }
 
-        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            menu.removeGroup(CONTEXT_MENU_GROUP)
-            try {
-                if (textView != null) {
-                    menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_FORWARD, 200, R.string.forward_text)
+            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                menu.removeGroup(CONTEXT_MENU_GROUP)
+                try {
+                    if (textView != null) {
+                        menu.add(
+                            CONTEXT_MENU_GROUP,
+                            CONTEXT_MENU_FORWARD,
+                            200,
+                            R.string.forward_text
+                        )
+                    }
+                } catch (e: Exception) {
+                    // some MIUI devices crash when attempting to add a context menu
+                    logger.error("Error adding context menu (Xiaomi?)", e)
                 }
-            } catch (e: Exception) {
-                // some MIUI devices crash when attempting to add a context menu
-                logger.error("Error adding context menu (Xiaomi?)", e)
+                return true
             }
-            return true
-        }
 
-        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-            when (item.itemId) {
-                CONTEXT_MENU_FORWARD -> forwardText()
-                else -> return false
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                when (item.itemId) {
+                    CONTEXT_MENU_FORWARD -> forwardText()
+                    else -> return false
+                }
+                return true
             }
-            return true
-        }
 
-        override fun onDestroyActionMode(mode: ActionMode) {
-            // we ignore this
-        }
+            override fun onDestroyActionMode(mode: ActionMode) {
+                // we ignore this
+            }
 
-        private fun forwardText() {
-            val textView = textView ?: return
-            val text = textView.text
+            private fun forwardText() {
+                val textView = textView ?: return
+                val text = textView.text
 
-            if (text.isNotEmpty()) {
-                val start = textView.selectionStart
-                val end = textView.selectionEnd
+                if (text.isNotEmpty()) {
+                    val start = textView.selectionStart
+                    val end = textView.selectionEnd
 
-                val body = text.subSequence(start, end).toString()
-                val intent = Intent(
-                    this@MessageDetailsActivity,
-                    RecipientListBaseActivity::class.java
-                )
-                intent.setType("text/plain")
-                intent.setAction(Intent.ACTION_SEND)
-                intent.putExtra(Intent.EXTRA_TEXT, body)
-                intent.putExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, true)
-                startActivity(intent)
+                    val body = text.subSequence(start, end).toString()
+                    val intent = Intent(
+                        this@MessageDetailsActivity,
+                        RecipientListBaseActivity::class.java
+                    )
+                    intent.setType("text/plain")
+                    intent.setAction(Intent.ACTION_SEND)
+                    intent.putExtra(Intent.EXTRA_TEXT, body)
+                    intent.putExtra(ThreemaApplication.INTENT_DATA_IS_FORWARD, true)
+                    startActivity(intent)
+                }
             }
         }
-    }
 
     override fun getLayoutResource(): Int {
         return R.layout.activity_message_details
@@ -199,7 +205,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                             MessageType.IMAGE,
                             MessageType.VIDEO,
                             MessageType.VOICEMESSAGE,
-                            -> Column {
+                                -> Column {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 CompleteMessageBubble(
                                     message = messageModel,
@@ -214,6 +220,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                     )
                                 }
                             }
+
                             else -> Unit
                         }
                     },

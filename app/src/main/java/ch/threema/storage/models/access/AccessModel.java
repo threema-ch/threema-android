@@ -24,6 +24,7 @@ package ch.threema.storage.models.access;
 import ch.threema.storage.models.ValidationMessage;
 
 public interface AccessModel {
-	boolean canDelete();
-	ValidationMessage[] canNotDeleteReasons();
+    boolean canDelete();
+
+    ValidationMessage[] canNotDeleteReasons();
 }

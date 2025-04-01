@@ -69,7 +69,7 @@ public interface Policy {
      * used for any future policy decisions.
      *
      * @param response the result from validating the server response
-     * @param rawData the raw server response data, can be null for RETRY
+     * @param rawData  the raw server response data, can be null for RETRY
      */
     void processServerResponse(int response, ResponseData rawData);
 

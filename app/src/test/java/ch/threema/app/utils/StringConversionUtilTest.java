@@ -27,35 +27,35 @@ import static junit.framework.Assert.assertEquals;
 
 public class StringConversionUtilTest {
 
-	@Test
-	@SuppressWarnings("RedundantArrayCreation")
-	public void testJoin() {
-		assertEquals("1, 2, 3", StringConversionUtil.join(", ", "1", "2", "3"));
-		assertEquals("1, 2, 3", StringConversionUtil.join(", ", new String[] {"1", "2", "3"}));
-		assertEquals("a/b/cde", StringConversionUtil.join("/", "a", "b", "cde"));
-	}
+    @Test
+    @SuppressWarnings("RedundantArrayCreation")
+    public void testJoin() {
+        assertEquals("1, 2, 3", StringConversionUtil.join(", ", "1", "2", "3"));
+        assertEquals("1, 2, 3", StringConversionUtil.join(", ", new String[]{"1", "2", "3"}));
+        assertEquals("a/b/cde", StringConversionUtil.join("/", "a", "b", "cde"));
+    }
 
-	@Test
-	public void testJoinIgnoreEmpty() {
-		assertEquals("1,3", StringConversionUtil.join(",", "1", "", "3", null));
-		assertEquals("", StringConversionUtil.join(",", ""));
-	}
+    @Test
+    public void testJoinIgnoreEmpty() {
+        assertEquals("1,3", StringConversionUtil.join(",", "1", "", "3", null));
+        assertEquals("", StringConversionUtil.join(",", ""));
+    }
 
-	@Test
-	public void testXDigit() {
-		assertEquals("0000000009", StringConversionUtil.xDigit(9, 10));
-		assertEquals("0000000123", StringConversionUtil.xDigit(123, 10));
-		assertEquals("123456789", StringConversionUtil.xDigit(123456789, 3));
-	}
+    @Test
+    public void testXDigit() {
+        assertEquals("0000000009", StringConversionUtil.xDigit(9, 10));
+        assertEquals("0000000123", StringConversionUtil.xDigit(123, 10));
+        assertEquals("123456789", StringConversionUtil.xDigit(123456789, 3));
+    }
 
-	@Test
-	public void testSecondsToString() {
-		assertEquals("00:01", StringConversionUtil.secondsToString(1, false));
-		assertEquals("01:01", StringConversionUtil.secondsToString(61, false));
-		assertEquals("01:01:01", StringConversionUtil.secondsToString(3661, false));
+    @Test
+    public void testSecondsToString() {
+        assertEquals("00:01", StringConversionUtil.secondsToString(1, false));
+        assertEquals("01:01", StringConversionUtil.secondsToString(61, false));
+        assertEquals("01:01:01", StringConversionUtil.secondsToString(3661, false));
 
-		assertEquals("00:00:01", StringConversionUtil.secondsToString(1, true));
-		assertEquals("00:01:01", StringConversionUtil.secondsToString(61, true));
-		assertEquals("01:01:01", StringConversionUtil.secondsToString(3661, true));
-	}
+        assertEquals("00:00:01", StringConversionUtil.secondsToString(1, true));
+        assertEquals("00:01:01", StringConversionUtil.secondsToString(61, true));
+        assertEquals("01:01:01", StringConversionUtil.secondsToString(3661, true));
+    }
 }

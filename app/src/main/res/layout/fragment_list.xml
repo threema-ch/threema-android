@@ -1,40 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<ListView
-		android:id="@android:id/list"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:layout_behavior="ch.threema.app.ui.ListViewBehavior"
-		android:background="?android:attr/colorBackground">
-	</ListView>
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="ch.threema.app.ui.ListViewBehavior"
+        android:background="?android:attr/colorBackground"></ListView>
 
-	<com.google.android.material.progressindicator.CircularProgressIndicator
-		android:id="@+id/progress"
-		android:layout_width="64dp"
-		android:layout_height="64dp"
-		android:indeterminate="true"
-		android:layout_gravity="center"/>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:indeterminate="true"
+        android:layout_gravity="center" />
 
-	<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-		android:id="@+id/floating"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginRight="16dp"
-		android:layout_marginBottom="0dp"
-		android:clickable="true"
-		app:icon="@drawable/ic_send_outline"
-		android:text="@string/send"
-		android:visibility="gone"
-		app:layout_anchor="@android:id/list"
-		app:layout_anchorGravity="bottom|right"
-		app:useCompatPadding="true"
-		app:elevation="@dimen/floating_button_elevation"
-		app:pressedTranslationZ="@dimen/floating_button_translation_z_pressed"
-		app:layout_insetEdge="bottom" />
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="0dp"
+        android:clickable="true"
+        app:icon="@drawable/ic_send_outline"
+        android:text="@string/send"
+        android:visibility="gone"
+        app:layout_anchor="@android:id/list"
+        app:layout_anchorGravity="bottom|right"
+        app:useCompatPadding="true"
+        app:elevation="@dimen/floating_button_elevation"
+        app:pressedTranslationZ="@dimen/floating_button_translation_z_pressed"
+        app:layout_insetEdge="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

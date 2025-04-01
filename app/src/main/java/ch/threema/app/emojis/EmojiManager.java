@@ -87,7 +87,7 @@ public class EmojiManager {
      * @param emojiSequence - sequence of UTF-8 characters representing the emoji
      * @return Drawable for emoji or null if there is no matching emoji
      */
-	@Nullable
+    @Nullable
     public Drawable getEmojiDrawable(String emojiSequence) {
         EmojiParser.ParseResult result = EmojiParser.parseAt(emojiSequence, 0);
 

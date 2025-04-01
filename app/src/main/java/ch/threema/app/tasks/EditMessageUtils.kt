@@ -38,16 +38,26 @@ fun runCommonEditMessageReceiveSteps(
     editMessage: EditMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonEditMessageReceiveSteps(editMessage, editMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonEditMessageReceiveSteps(
+        editMessage,
+        editMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 fun runCommonEditMessageReceiveSteps(
     editMessage: GroupEditMessage,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
-    return runCommonEditMessageReceiveSteps(editMessage, editMessage.data.messageId, receiver, messageService)
+): AbstractMessageModel? {
+    return runCommonEditMessageReceiveSteps(
+        editMessage,
+        editMessage.data.messageId,
+        receiver,
+        messageService
+    )
 }
 
 private fun runCommonEditMessageReceiveSteps(
@@ -55,7 +65,7 @@ private fun runCommonEditMessageReceiveSteps(
     messageId: Long,
     receiver: MessageReceiver<*>,
     messageService: MessageService
-) : AbstractMessageModel? {
+): AbstractMessageModel? {
     val apiMessageId = MessageId(messageId).toString()
     val message = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, receiver)
 

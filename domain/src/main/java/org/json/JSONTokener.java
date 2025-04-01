@@ -61,7 +61,9 @@ package org.json;
  */
 public class JSONTokener {
 
-    /** The input JSON. */
+    /**
+     * The input JSON.
+     */
     private final String in;
 
     /**
@@ -72,8 +74,8 @@ public class JSONTokener {
 
     /**
      * @param in JSON encoded string. Null is not permitted and will yield a
-     *     tokener that throws {@code NullPointerExceptions} when methods are
-     *     called.
+     *           tokener that throws {@code NullPointerExceptions} when methods are
+     *           called.
      */
     public JSONTokener(String in) {
         // consume an optional byte order mark (BOM) if it exists
@@ -87,7 +89,7 @@ public class JSONTokener {
      * Returns the next value from the input.
      *
      * @return a {@link JSONObject}, {@link JSONArray}, String, Boolean,
-     *     Integer, Long, Double or {@link JSONObject#NULL}.
+     * Integer, Long, Double or {@link JSONObject#NULL}.
      * @throws JSONException if the input is malformed.
      */
     public Object nextValue() throws JSONException {
@@ -364,7 +366,7 @@ public class JSONTokener {
                     throw syntaxError("Names cannot be null");
                 } else {
                     throw syntaxError("Names must be strings, but " + name
-                            + " is of type " + name.getClass().getName());
+                        + " is of type " + name.getClass().getName());
                 }
             }
 
@@ -452,7 +454,8 @@ public class JSONTokener {
     /**
      * Returns the current position and the entire input string.
      */
-    @Override public String toString() {
+    @Override
+    public String toString() {
         // consistent with the original implementation
         return " at character " + pos + " of " + in;
     }
@@ -513,7 +516,7 @@ public class JSONTokener {
      * to avoid memory leaks.
      *
      * @throws JSONException if the remaining input is not long enough to
-     *     satisfy this request.
+     *                       satisfy this request.
      */
     public String next(int length) throws JSONException {
         if (pos + length > in.length()) {
@@ -594,7 +597,7 @@ public class JSONTokener {
      * for non-hex input.
      *
      * @param hex a character in the ranges [0-9], [A-F] or [a-f]. Any other
-     *     character will yield a -1 result.
+     *            character will yield a -1 result.
      */
     public static int dehexchar(char hex) {
         if (hex >= '0' && hex <= '9') {

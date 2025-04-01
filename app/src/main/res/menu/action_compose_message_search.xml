@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	  xmlns:app="http://schemas.android.com/apk/res-auto">
-	<item
-			android:id="@+id/menu_action_search"
-			android:icon="@drawable/ic_search_outline"
-			app:iconTint="?attr/colorOnSurface"
-			android:title="@string/search"
-			app:showAsAction="always"
-			android:iconifiedByDefault="false"
-			app:actionViewClass="ch.threema.app.ui.ThreemaSearchView"
-			android:orderInCategory="20"/>
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_action_search"
+        android:icon="@drawable/ic_search_outline"
+        app:iconTint="?attr/colorOnSurface"
+        android:title="@string/search"
+        app:showAsAction="always"
+        android:iconifiedByDefault="false"
+        app:actionViewClass="ch.threema.app.ui.ThreemaSearchView"
+        android:orderInCategory="20" />
 
 </menu>

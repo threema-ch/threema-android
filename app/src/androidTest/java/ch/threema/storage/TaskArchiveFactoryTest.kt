@@ -33,7 +33,8 @@ class TaskArchiveFactoryTest {
 
     @Before
     fun setup() {
-        taskArchiveFactory = ThreemaApplication.requireServiceManager().databaseServiceNew.taskArchiveFactory
+        taskArchiveFactory =
+            ThreemaApplication.requireServiceManager().databaseServiceNew.taskArchiveFactory
         taskArchiveFactory.deleteAll()
     }
 

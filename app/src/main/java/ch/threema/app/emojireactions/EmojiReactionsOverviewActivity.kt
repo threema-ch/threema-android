@@ -82,7 +82,11 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         ContextCompat.getColor(this, R.color.attach_status_bar_color_collapsed)
     }
 
-    data class EmojiReactionItems(val emojiSequence: String, val count: Int, val isMyReaction: Boolean)
+    data class EmojiReactionItems(
+        val emojiSequence: String,
+        val count: Int,
+        val isMyReaction: Boolean
+    )
 
     override fun getLayoutResource(): Int {
         return R.layout.activity_emojireactions_overview
@@ -108,10 +112,14 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         messageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService)
         messageModel?.let { message ->
 
-            val reactionMessageIdentifier: ReactionMessageIdentifier = ReactionMessageIdentifier.fromMessageModel(message) ?: run {
-                logger.error("Closing emoji overview for unsupported message model type of {}", message::class.java.simpleName)
-                return false
-            }
+            val reactionMessageIdentifier: ReactionMessageIdentifier =
+                ReactionMessageIdentifier.fromMessageModel(message) ?: run {
+                    logger.error(
+                        "Closing emoji overview for unsupported message model type of {}",
+                        message::class.java.simpleName
+                    )
+                    return false
+                }
 
             initialItem = intent.getStringExtra(EXTRA_INITIAL_EMOJI)
 
@@ -137,7 +145,13 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     emojiReactionsViewModel.emojiReactionsUiState
-                        .collect { uiState -> onUiStateChanged(uiState, emojiReactionsViewModel, message) }
+                        .collect { uiState ->
+                            onUiStateChanged(
+                                uiState,
+                                emojiReactionsViewModel,
+                                message
+                            )
+                        }
                 }
             }
 
@@ -180,7 +194,7 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         if (!ConfigUtils.canSendEmojiReactions()) {
             infoBox.isVisible = items.any { item ->
                 item.emojiSequence != EmojiUtil.THUMBS_UP_SEQUENCE &&
-                        item.emojiSequence != EmojiUtil.THUMBS_DOWN_SEQUENCE
+                    item.emojiSequence != EmojiUtil.THUMBS_DOWN_SEQUENCE
             }
         }
     }
@@ -218,7 +232,10 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     /**
      * Setup view pager and adapter
      */
-    private fun setupViewPagerAdapter(emojiReactionsViewModel: EmojiReactionsViewModel, messageModel: AbstractMessageModel) {
+    private fun setupViewPagerAdapter(
+        emojiReactionsViewModel: EmojiReactionsViewModel,
+        messageModel: AbstractMessageModel
+    ) {
         emojiReactionsOverviewAdapter = EmojiReactionsOverviewAdapter(
             this,
             emojiReactionsViewModel,
@@ -300,7 +317,11 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
                 }
             }
             tab.contentDescription =
-                getString(R.string.tab_emoji_reactions_overview_content_description, emojiCount, emojiSequence)
+                getString(
+                    R.string.tab_emoji_reactions_overview_content_description,
+                    emojiCount,
+                    emojiSequence
+                )
         }
         tabLayoutMediator?.attach()
     }
@@ -356,7 +377,10 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         return statusBarColorExpanded
     }
 
-    private fun requiresViewPagerRecreation(oldData: List<EmojiReactionItems>, newData: List<EmojiReactionItems>): Boolean {
+    private fun requiresViewPagerRecreation(
+        oldData: List<EmojiReactionItems>,
+        newData: List<EmojiReactionItems>
+    ): Boolean {
         if (oldData.size != newData.size) {
             return true
         }
@@ -369,7 +393,10 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         return false
     }
 
-    private fun recreateViewPager(emojiReactionsViewModel: EmojiReactionsViewModel, messageModel: AbstractMessageModel) {
+    private fun recreateViewPager(
+        emojiReactionsViewModel: EmojiReactionsViewModel,
+        messageModel: AbstractMessageModel
+    ) {
         // Detach existing TabLayoutMediator (if any)
         tabLayoutMediator?.detach()
 
@@ -399,7 +426,8 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         } else {
             val statusBarHeight = ConfigUtils.getStatusBarHeight(this)
             val navigationBarHeight = ConfigUtils.getNavigationBarHeight(this)
-            val screenHeightWithoutTopInsets = resources.displayMetrics.heightPixels - statusBarHeight + navigationBarHeight
+            val screenHeightWithoutTopInsets =
+                resources.displayMetrics.heightPixels - statusBarHeight + navigationBarHeight
             onAvailable(screenHeightWithoutTopInsets.coerceAtLeast(0))
         }
     }

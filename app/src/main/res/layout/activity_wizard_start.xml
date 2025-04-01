@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			 android:id="@+id/parent_layout"
-			 android:layout_width="match_parent"
-			 android:layout_height="match_parent">
+    android:id="@+id/parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<include layout="@layout/background_new_wizard"/>
+    <include layout="@layout/background_new_wizard" />
 
-	<ImageView
-			android:id="@+id/wizard_animation"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:contentDescription="@string/next"
-			android:transitionName="@string/transition_name_dots"
-			android:background="@drawable/animation_wizard1"/>
+    <ImageView
+        android:id="@+id/wizard_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/next"
+        android:transitionName="@string/transition_name_dots"
+        android:background="@drawable/animation_wizard1" />
 
-	<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="top|center_horizontal"
-			android:layout_marginTop="32dp"
-			android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
 
-		<ImageView
-				android:id="@+id/wizard_footer"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:transitionName="@string/transition_name_logo"
-				android:src="@drawable/logo_main_white"/>
+        <ImageView
+            android:id="@+id/wizard_footer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:transitionName="@string/transition_name_logo"
+            android:src="@drawable/logo_main_white" />
 
-	</LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>

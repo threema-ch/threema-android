@@ -43,560 +43,632 @@ import ch.threema.domain.protocol.api.work.WorkOrganization;
 import ch.threema.domain.taskmanager.TriggerSource;
 
 public interface PreferenceService {
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
-	@interface ImageScale {}
-	int ImageScale_DEFAULT = -1;
-	int ImageScale_SMALL = 0;
-	int ImageScale_MEDIUM = 1;
-	int ImageScale_LARGE = 2;
-	int ImageScale_XLARGE = 3;
-	int ImageScale_ORIGINAL = 4;
-	int ImageScale_SEND_AS_FILE = 5;
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
+    @interface ImageScale {
+    }
 
-	@IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL, VideoSize_SEND_AS_FILE})
-	@interface VideoSize {}
-	int VideoSize_DEFAULT = -1;
-	int VideoSize_SMALL = 0;
-	int VideoSize_MEDIUM = 1;
-	int VideoSize_ORIGINAL = 2;
-	int VideoSize_SEND_AS_FILE = 3;
+    int ImageScale_DEFAULT = -1;
+    int ImageScale_SMALL = 0;
+    int ImageScale_MEDIUM = 1;
+    int ImageScale_LARGE = 2;
+    int ImageScale_XLARGE = 3;
+    int ImageScale_ORIGINAL = 4;
+    int ImageScale_SEND_AS_FILE = 5;
 
-	@IntDef({StarredMessagesSortOrder_DATE_DESCENDING, StarredMessagesSortOrder_DATE_ASCENDING})
-	@interface StarredMessagesSortOrder {}
-	int StarredMessagesSortOrder_DATE_DESCENDING = 0;
-	int StarredMessagesSortOrder_DATE_ASCENDING = 1;
+    @IntDef({VideoSize_DEFAULT, VideoSize_SMALL, VideoSize_MEDIUM, VideoSize_ORIGINAL, VideoSize_SEND_AS_FILE})
+    @interface VideoSize {
+    }
 
-	int EmojiStyle_DEFAULT = 0;
-	int EmojiStyle_ANDROID = 1;
+    int VideoSize_DEFAULT = -1;
+    int VideoSize_SMALL = 0;
+    int VideoSize_MEDIUM = 1;
+    int VideoSize_ORIGINAL = 2;
+    int VideoSize_SEND_AS_FILE = 3;
 
-	String LockingMech_NONE = "none";
-	String LockingMech_PIN = "pin";
-	String LockingMech_SYSTEM = "system";
-	String LockingMech_BIOMETRIC = "biometric";
+    @IntDef({StarredMessagesSortOrder_DATE_DESCENDING, StarredMessagesSortOrder_DATE_ASCENDING})
+    @interface StarredMessagesSortOrder {
+    }
 
-	int PROFILEPIC_RELEASE_NOBODY = 0;
-	int PROFILEPIC_RELEASE_EVERYONE = 1;
-	int PROFILEPIC_RELEASE_ALLOW_LIST = 2;
+    int StarredMessagesSortOrder_DATE_DESCENDING = 0;
+    int StarredMessagesSortOrder_DATE_ASCENDING = 1;
 
-	int PRIVACY_POLICY_ACCEPT_NONE = 0;
-	int PRIVACY_POLICY_ACCEPT_EXCPLICIT = 1;
-	int PRIVACY_POLICY_ACCEPT_IMPLICIT = 2;
-	int PRIVACY_POLICY_ACCEPT_UPDATE = 3;
+    int EmojiStyle_DEFAULT = 0;
+    int EmojiStyle_ANDROID = 1;
 
-	String VIDEO_CODEC_HW = "hw";
-	String VIDEO_CODEC_NO_VP8 = "no-vp8";
-	String VIDEO_CODEC_NO_H264HIP = "no-h264hip";
-	String VIDEO_CODEC_SW = "sw";
+    String LockingMech_NONE = "none";
+    String LockingMech_PIN = "pin";
+    String LockingMech_SYSTEM = "system";
+    String LockingMech_BIOMETRIC = "biometric";
 
-	boolean isReadReceipts();
-	void setReadReceipts(boolean value, @NonNull TriggerSource triggerSource);
+    int PROFILEPIC_RELEASE_NOBODY = 0;
+    int PROFILEPIC_RELEASE_EVERYONE = 1;
+    int PROFILEPIC_RELEASE_ALLOW_LIST = 2;
 
-	boolean isSyncContacts();
+    int PRIVACY_POLICY_ACCEPT_NONE = 0;
+    int PRIVACY_POLICY_ACCEPT_EXCPLICIT = 1;
+    int PRIVACY_POLICY_ACCEPT_IMPLICIT = 2;
+    int PRIVACY_POLICY_ACCEPT_UPDATE = 3;
 
-	void setSyncContacts(boolean setting);
+    String VIDEO_CODEC_HW = "hw";
+    String VIDEO_CODEC_NO_VP8 = "no-vp8";
+    String VIDEO_CODEC_NO_H264HIP = "no-h264hip";
+    String VIDEO_CODEC_SW = "sw";
 
-	boolean isBlockUnknown();
+    boolean isReadReceipts();
 
-	void setBlockUnknown(boolean value, @NonNull TriggerSource triggerSource);
+    void setReadReceipts(boolean value, @NonNull TriggerSource triggerSource);
 
-	boolean isTypingIndicator();
-	void setTypingIndicator(boolean value, @NonNull TriggerSource triggerSource);
+    boolean isSyncContacts();
 
-	Uri getVoiceCallSound();
+    void setSyncContacts(boolean setting);
 
-	boolean isVoiceCallVibrate();
+    boolean isBlockUnknown();
 
-	void setNotificationSound(Uri uri);
+    void setBlockUnknown(boolean value, @NonNull TriggerSource triggerSource);
 
-	void setGroupNotificationSound(Uri uri);
+    boolean isTypingIndicator();
 
-	void setVoiceCallSound(Uri uri);
+    void setTypingIndicator(boolean value, @NonNull TriggerSource triggerSource);
 
-	HashMap<String, String> getRingtones();
+    Uri getVoiceCallSound();
 
-	void setRingtones(HashMap<String, String> ringtones);
+    boolean isVoiceCallVibrate();
 
-	boolean isCustomWallpaperEnabled();
+    void setNotificationSound(Uri uri);
 
-	void setCustomWallpaperEnabled(boolean enabled);
+    void setGroupNotificationSound(Uri uri);
 
-	boolean isEnterToSend();
+    void setVoiceCallSound(Uri uri);
 
-	boolean isInAppSounds();
+    HashMap<String, String> getRingtones();
 
-	boolean isInAppVibrate();
+    void setRingtones(HashMap<String, String> ringtones);
 
-	@ImageScale int getImageScale();
+    boolean isCustomWallpaperEnabled();
 
-	int getVideoSize();
+    void setCustomWallpaperEnabled(boolean enabled);
 
-	String getSerialNumber();
+    boolean isEnterToSend();
 
-	void setSerialNumber(String serialNumber);
+    boolean isInAppSounds();
 
-	String getLicenseUsername();
+    boolean isInAppVibrate();
 
-	void setLicenseUsername(String username);
+    @ImageScale
+    int getImageScale();
 
-	String getLicensePassword();
+    int getVideoSize();
 
-	void setLicensePassword(String password);
+    String getSerialNumber();
 
-	String getOnPremServer();
+    void setSerialNumber(String serialNumber);
 
-	void setOnPremServer(String server);
+    String getLicenseUsername();
 
-	LinkedList<Integer> getRecentEmojis();
+    void setLicenseUsername(String username);
 
-	LinkedList<String> getRecentEmojis2();
+    String getLicensePassword();
 
-	void setRecentEmojis(LinkedList<Integer> list);
+    void setLicensePassword(String password);
 
-	void setRecentEmojis2(LinkedList<String> list);
+    String getOnPremServer();
 
-	int getEmojiSearchIndexVersion();
+    void setOnPremServer(String server);
 
-	void setEmojiSearchIndexVersion(int version);
+    LinkedList<Integer> getRecentEmojis();
 
-	/**
-	 * Whether to use Threema Push instead of another push service.
-	 */
-	boolean useThreemaPush();
+    LinkedList<String> getRecentEmojis2();
 
-	/**
-	 * Whether to use Threema Push instead of another push service.
-	 */
-	void setUseThreemaPush(boolean enabled);
+    void setRecentEmojis(LinkedList<Integer> list);
 
-	boolean isSaveMedia();
+    void setRecentEmojis2(LinkedList<String> list);
 
-	boolean isPinSet();
+    int getEmojiSearchIndexVersion();
 
-	boolean setPin(String newCode);
+    void setEmojiSearchIndexVersion(int version);
 
-	boolean isPinCodeCorrect(String pinCode);
+    /**
+     * Whether to use Threema Push instead of another push service.
+     */
+    boolean useThreemaPush();
 
-	long getTransmittedFeatureMask();
+    /**
+     * Whether to use Threema Push instead of another push service.
+     */
+    void setUseThreemaPush(boolean enabled);
 
-	void setTransmittedFeatureMask(long featureMask);
+    boolean isSaveMedia();
 
-	long getLastFeatureMaskTransmission();
+    boolean isPinSet();
 
-	void setLastFeatureMaskTransmission(long timestamp);
+    boolean setPin(String newCode);
 
-	@NonNull String[] getList(String listName);
+    boolean isPinCodeCorrect(String pinCode);
 
-	@NonNull String[] getList(String listName, boolean encrypted);
+    long getTransmittedFeatureMask();
 
-	void setList(String listName, String[] elements);
+    void setTransmittedFeatureMask(long featureMask);
 
-	/* save list to preferences without triggering a listener */
-	void setListQuietly(String listName, String[] elements);
+    long getLastFeatureMaskTransmission();
 
-	HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
+    void setLastFeatureMaskTransmission(long timestamp);
 
-	void setHashMap(String listName, HashMap<Integer, String> hashMap);
+    @NonNull
+    String[] getList(String listName);
 
-	HashMap<String, String> getStringHashMap(String listName, boolean encrypted);
+    @NonNull
+    String[] getList(String listName, boolean encrypted);
 
-	void setStringHashMap(String listName, HashMap<String, String> hashMap);
+    void setList(String listName, String[] elements);
 
-	/**
-	 * value in seconds!
-	 */
-	int getPinLockGraceTime();
+    /* save list to preferences without triggering a listener */
+    void setListQuietly(String listName, String[] elements);
 
-	int getIDBackupCount();
+    HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
 
-	void incrementIDBackupCount();
+    void setHashMap(String listName, HashMap<Integer, String> hashMap);
 
-	void resetIDBackupCount();
+    HashMap<String, String> getStringHashMap(String listName, boolean encrypted);
 
-	Date getLastIDBackupReminderDate();
+    void setStringHashMap(String listName, HashMap<String, String> hashMap);
 
-	void setLastIDBackupReminderDate(Date lastIDBackupReminderDate);
+    /**
+     * value in seconds!
+     */
+    int getPinLockGraceTime();
 
-	String getContactListSorting();
+    int getIDBackupCount();
 
-	boolean isContactListSortingFirstName();
+    void incrementIDBackupCount();
 
-	String getContactFormat();
+    void resetIDBackupCount();
 
-	boolean isContactFormatFirstNameLastName();
+    Date getLastIDBackupReminderDate();
 
-	boolean isDefaultContactPictureColored();
+    void setLastIDBackupReminderDate(Date lastIDBackupReminderDate);
 
-	boolean isDisableScreenshots();
+    String getContactListSorting();
 
-	int getFontStyle();
+    boolean isContactListSortingFirstName();
 
-	void clear();
+    String getContactFormat();
 
-	List<String[]> write();
+    boolean isContactFormatFirstNameLastName();
 
-	boolean read(List<String[]> values);
+    boolean isDefaultContactPictureColored();
 
-	boolean showInactiveContacts();
+    boolean isDisableScreenshots();
 
-	boolean getLastOnlineStatus();
+    int getFontStyle();
 
-	void setLastOnlineStatus(boolean online);
+    void clear();
 
-	boolean isLatestVersion(Context context);
+    List<String[]> write();
 
-	int getLatestVersion();
+    boolean read(List<String[]> values);
 
-	void setLatestVersion(Context context);
+    boolean showInactiveContacts();
 
-	/**
-	 * Check whether the app has been updated since the last check. Note that this returns true for
-	 * every app update. For the what's new dialog, we use {@link #getLatestVersion()}.
-	 * Note: This method can only be used once as it returns true only once per update. Currently,
-	 * it is used in {@link ch.threema.app.activities.HomeActivity} and must not be used anywhere
-	 * else.
-	 */
-	boolean checkForAppUpdate(@NonNull Context context);
+    boolean getLastOnlineStatus();
 
-	boolean getFileSendInfoShown();
+    void setLastOnlineStatus(boolean online);
 
-	void setFileSendInfoShown(boolean shown);
+    boolean isLatestVersion(Context context);
 
-	int getAppThemeValue();
+    int getLatestVersion();
 
-	int getEmojiStyle();
+    void setLatestVersion(Context context);
 
-	void setLockoutDeadline(long deadline);
+    /**
+     * Check whether the app has been updated since the last check. Note that this returns true for
+     * every app update. For the what's new dialog, we use {@link #getLatestVersion()}.
+     * Note: This method can only be used once as it returns true only once per update. Currently,
+     * it is used in {@link ch.threema.app.activities.HomeActivity} and must not be used anywhere
+     * else.
+     */
+    boolean checkForAppUpdate(@NonNull Context context);
 
-	void setLockoutTimeout(long timeout);
+    boolean getFileSendInfoShown();
 
-	long getLockoutDeadline();
+    void setFileSendInfoShown(boolean shown);
 
-	long getLockoutTimeout();
+    int getAppThemeValue();
 
-	void setLockoutAttempts(int numWrongConfirmAttempts);
+    int getEmojiStyle();
 
-	int getLockoutAttempts();
+    void setLockoutDeadline(long deadline);
 
-	boolean isAnimationAutoplay();
+    void setLockoutTimeout(long timeout);
 
-	boolean isUseProximitySensor();
+    long getLockoutDeadline();
 
-	void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme);
+    long getLockoutTimeout();
 
-	Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme);
+    void setLockoutAttempts(int numWrongConfirmAttempts);
 
-	boolean isPrivateChatsHidden();
+    int getLockoutAttempts();
 
-	void setPrivateChatsHidden(boolean hidden);
+    boolean isAnimationAutoplay();
 
-	String getLockMechanism();
+    boolean isUseProximitySensor();
 
-	/**
-	 * Check if app UI lock is enabled
-	 * @return true if UI lock is enabled, false otherwise
-	 */
-	boolean isAppLockEnabled();
+    void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme);
 
-	void setAppLockEnabled(boolean enabled);
+    Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme);
 
-	void setSaveToGallery(Boolean booleanPreset);
+    boolean isPrivateChatsHidden();
 
-	void setDisableScreenshots(Boolean booleanPreset);
+    void setPrivateChatsHidden(boolean hidden);
 
-	void setLockMechanism(String lockingMech);
+    String getLockMechanism();
 
-	boolean isShowImageAttachPreviewsEnabled();
+    /**
+     * Check if app UI lock is enabled
+     *
+     * @return true if UI lock is enabled, false otherwise
+     */
+    boolean isAppLockEnabled();
 
-	void setImageAttachPreviewsEnabled(boolean enable);
+    void setAppLockEnabled(boolean enabled);
 
-	boolean isDirectShare();
+    void setSaveToGallery(Boolean booleanPreset);
 
-	void setMessageDrafts(HashMap<String, String> messageDrafts);
+    void setDisableScreenshots(Boolean booleanPreset);
 
-	HashMap<String,String> getMessageDrafts();
+    void setLockMechanism(String lockingMech);
 
-	void setQuoteDrafts(HashMap<String, String> quoteDrafts);
+    boolean isShowImageAttachPreviewsEnabled();
 
-	HashMap<String,String> getQuoteDrafts();
+    void setImageAttachPreviewsEnabled(boolean enable);
 
-	void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme);
-	void clearAppLogo(@ConfigUtils.AppThemeSetting String theme);
-	void clearAppLogos();
-	@Nullable String getAppLogo(@ConfigUtils.AppThemeSetting String theme);
+    boolean isDirectShare();
 
-	void setCustomSupportUrl(String supportUrl);
-	String getCustomSupportUrl();
+    void setMessageDrafts(HashMap<String, String> messageDrafts);
 
-	HashMap<String, String> getDiverseEmojiPrefs();
+    HashMap<String, String> getMessageDrafts();
 
-	void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);
+    void setQuoteDrafts(HashMap<String, String> quoteDrafts);
 
-	boolean isWebClientEnabled();
-	void setWebClientEnabled(boolean enabled);
+    HashMap<String, String> getQuoteDrafts();
 
-	void setPushToken(String fcmToken);
-	String getPushToken();
+    void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme);
 
-	int getProfilePicRelease();
+    void clearAppLogo(@ConfigUtils.AppThemeSetting String theme);
 
-	void setProfilePicRelease(int value);
+    void clearAppLogos();
 
-	long getProfilePicUploadDate();
+    @Nullable
+    String getAppLogo(@ConfigUtils.AppThemeSetting String theme);
 
-	void setProfilePicUploadDate(Date date);
+    void setCustomSupportUrl(String supportUrl);
 
-	void setProfilePicUploadData(@Nullable ContactService.ProfilePictureUploadData data);
+    String getCustomSupportUrl();
 
-	/**
-	 * Get the stored profile picture upload data. Note that the returned data does not include the
-	 * bitmap array of the profile picture.
-	 *
-	 * @return the stored profile picture upload data or null if there is no stored data or an error
-	 * occurred while reading the data
-	 */
-	@Nullable
-	ContactService.ProfilePictureUploadData getProfilePicUploadData();
+    HashMap<String, String> getDiverseEmojiPrefs();
 
-	boolean getProfilePicReceive();
+    void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);
 
-	@NonNull String getAECMode();
+    boolean isWebClientEnabled();
 
-	@NonNull String getVideoCodec();
+    void setWebClientEnabled(boolean enabled);
 
-	boolean getForceTURN();
-	void setForceTURN(boolean value);
+    void setPushToken(String fcmToken);
 
-	boolean isVoipEnabled();
-	void setVoipEnabled(boolean value);
+    String getPushToken();
 
-	/**
-	 * If true, then mobile POTS calls should be rejected while a Threema call is active.
-	 */
-	boolean isRejectMobileCalls();
+    int getProfilePicRelease();
 
-	/**
-	 * Set whether or not a mobile POTS calls should be rejected while a Threema call is active.
-	 *
-	 * Note that this requires the "manage phone call" permission.
-	 */
-	void setRejectMobileCalls(boolean value);
+    void setProfilePicRelease(int value);
 
-	/**
-	 * This preference corresponds to the troubleshooting setting "IPv6 for messages"
-	 * @return true if ipv6 is enabled for messages, false otherwise
-	 */
-	boolean isIpv6Preferred();
+    long getProfilePicUploadDate();
 
-	boolean allowWebrtcIpv6();
+    void setProfilePicUploadDate(Date date);
 
-	Set<String> getMobileAutoDownload();
+    void setProfilePicUploadData(@Nullable ContactService.ProfilePictureUploadData data);
 
-	Set<String> getWifiAutoDownload();
+    /**
+     * Get the stored profile picture upload data. Note that the returned data does not include the
+     * bitmap array of the profile picture.
+     *
+     * @return the stored profile picture upload data or null if there is no stored data or an error
+     * occurred while reading the data
+     */
+    @Nullable
+    ContactService.ProfilePictureUploadData getProfilePicUploadData();
 
-	void setRandomRatingRef(String ref);
-	String getRandomRatingRef();
+    boolean getProfilePicReceive();
 
-	String getRatingReviewText();
-	void setRatingReviewText(String review);
+    @NonNull
+    String getAECMode();
 
-	void setPrivacyPolicyAccepted(Date date, int source);
-	Date getPrivacyPolicyAccepted();
-	void clearPrivacyPolicyAccepted();
+    @NonNull
+    String getVideoCodec();
 
-	boolean getIsGroupCallsTooltipShown();
-	void setGroupCallsTooltipShown(boolean shown);
+    boolean getForceTURN();
 
-	boolean getIsWorkHintTooltipShown();
-	void setIsWorkHintTooltipShown(boolean shown);
+    void setForceTURN(boolean value);
 
-	boolean getIsFaceBlurTooltipShown();
-	void setFaceBlurTooltipShown(boolean shown);
+    boolean isVoipEnabled();
 
-	void setThreemaSafeEnabled(boolean value);
-	boolean getThreemaSafeEnabled();
+    void setVoipEnabled(boolean value);
 
-	void setThreemaSafeMasterKey(byte[] masterKey);
-	byte[] getThreemaSafeMasterKey();
+    /**
+     * If true, then mobile POTS calls should be rejected while a Threema call is active.
+     */
+    boolean isRejectMobileCalls();
 
-	void setThreemaSafeServerInfo(@Nullable ThreemaSafeServerInfo serverInfo);
-	@NonNull ThreemaSafeServerInfo getThreemaSafeServerInfo();
+    /**
+     * Set whether or not a mobile POTS calls should be rejected while a Threema call is active.
+     * <p>
+     * Note that this requires the "manage phone call" permission.
+     */
+    void setRejectMobileCalls(boolean value);
 
-	void setThreemaSafeUploadDate(Date date);
-	@Nullable
-	Date getThreemaSafeUploadDate();
+    /**
+     * This preference corresponds to the troubleshooting setting "IPv6 for messages"
+     *
+     * @return true if ipv6 is enabled for messages, false otherwise
+     */
+    boolean isIpv6Preferred();
 
-	void setIncognitoKeyboard(boolean enabled);
-	boolean getIncognitoKeyboard();
+    boolean allowWebrtcIpv6();
 
-	boolean getShowUnreadBadge();
+    Set<String> getMobileAutoDownload();
 
-	void setThreemaSafeErrorCode(int code);
-	int getThreemaSafeErrorCode();
+    Set<String> getWifiAutoDownload();
 
-	/**
-	 * Set the earliest date where the threema safe backup failed. Only set this if there are
-	 * changes for the backup available. Don't update the date when there is already a date set as
-	 * this is the first occurrence of a failed backup. Override this date with null, when a safe
-	 * backup has been created successfully.
-	 *
-	 * @param date the date when the safe backup first failed
-	 */
-	void setThreemaSafeErrorDate(@Nullable Date date);
+    void setRandomRatingRef(String ref);
 
-	/**
-	 * Get the first date where the safe backup failed. If this is null, then the last safe backup
-	 * was successful.
-	 * @return the date of the first failed safe backup
-	 */
-	@Nullable
-	Date getThreemaSafeErrorDate();
+    String getRandomRatingRef();
 
-	void setThreemaSafeServerMaxUploadSize(long maxBackupBytes);
-	long getThreemaSafeServerMaxUploadSize();
+    String getRatingReviewText();
 
-	void setThreemaSafeServerRetention(int days);
-	int getThreemaSafeServerRetention();
+    void setRatingReviewText(String review);
 
-	void setThreemaSafeBackupSize(int size);
-	int getThreemaSafeBackupSize();
+    void setPrivacyPolicyAccepted(Date date, int source);
 
-	void setThreemaSafeHashString(String hashString);
-	String getThreemaSafeHashString();
+    Date getPrivacyPolicyAccepted();
 
-	void setThreemaSafeBackupDate(Date date);
-	Date getThreemaSafeBackupDate();
+    void clearPrivacyPolicyAccepted();
 
-	void setWorkSyncCheckInterval(int checkInterval);
-	int getWorkSyncCheckInterval();
+    boolean getIsGroupCallsTooltipShown();
 
-	/**
-	 * Store the interval for the identity state sync in seconds.
-	 * @param syncIntervalS The sync interval in seconds
-	 */
-	void setIdentityStateSyncInterval(int syncIntervalS);
+    void setGroupCallsTooltipShown(boolean shown);
 
-	/**
-	 * @return The identity state sync interval in seconds
-	 */
-	int getIdentityStateSyncIntervalS();
+    boolean getIsWorkHintTooltipShown();
 
-	boolean getIsExportIdTooltipShown();
+    void setIsWorkHintTooltipShown(boolean shown);
 
-	void setThreemaSafeMDMConfig(String mdmConfigHash);
-	String getThreemaSafeMDMConfig();
+    boolean getIsFaceBlurTooltipShown();
 
-	void setWorkDirectoryEnabled(boolean enabled);
-	boolean getWorkDirectoryEnabled();
+    void setFaceBlurTooltipShown(boolean shown);
 
-	void setWorkDirectoryCategories(List<WorkDirectoryCategory> categories);
+    void setThreemaSafeEnabled(boolean value);
 
-	List<WorkDirectoryCategory> getWorkDirectoryCategories();
+    boolean getThreemaSafeEnabled();
 
-	void setWorkOrganization(WorkOrganization organization);
+    void setThreemaSafeMasterKey(byte[] masterKey);
 
-	WorkOrganization getWorkOrganization();
+    byte[] getThreemaSafeMasterKey();
 
-	void setLicensedStatus(boolean licensed);
-	boolean getLicensedStatus();
+    void setThreemaSafeServerInfo(@Nullable ThreemaSafeServerInfo serverInfo);
 
-	void setShowDeveloperMenu(boolean show);
-	boolean showDeveloperMenu();
+    @NonNull
+    ThreemaSafeServerInfo getThreemaSafeServerInfo();
 
-	Uri getDataBackupUri();
-	void setDataBackupUri(Uri newUri);
+    void setThreemaSafeUploadDate(Date date);
 
-	Date getLastDataBackupDate();
-	void setLastDataBackupDate(Date date);
+    @Nullable
+    Date getThreemaSafeUploadDate();
 
-	String getMatchToken();
-	void setMatchToken(String matchToken);
+    void setIncognitoKeyboard(boolean enabled);
 
-	boolean isAfterWorkDNDEnabled();
-	void setAfterWorkDNDEnabled(boolean enabled);
+    boolean getIncognitoKeyboard();
 
-	void setCameraFlashMode(int flashMode);
-	int getCameraFlashMode();
+    boolean getShowUnreadBadge();
 
-	void setPipPosition(int pipPosition);
-	int getPipPosition();
+    void setThreemaSafeErrorCode(int code);
 
-	boolean isCallsEnabled();
-	boolean isVideoCallsEnabled();
+    int getThreemaSafeErrorCode();
 
-	boolean isGroupCallsEnabled();
+    /**
+     * Set the earliest date where the threema safe backup failed. Only set this if there are
+     * changes for the backup available. Don't update the date when there is already a date set as
+     * this is the first occurrence of a failed backup. Override this date with null, when a safe
+     * backup has been created successfully.
+     *
+     * @param date the date when the safe backup first failed
+     */
+    void setThreemaSafeErrorDate(@Nullable Date date);
 
-	@Nullable String getVideoCallsProfile();
+    /**
+     * Get the first date where the safe backup failed. If this is null, then the last safe backup
+     * was successful.
+     *
+     * @return the date of the first failed safe backup
+     */
+    @Nullable
+    Date getThreemaSafeErrorDate();
 
-	void setBallotOverviewHidden(boolean hidden);
-	boolean getBallotOverviewHidden();
+    void setThreemaSafeServerMaxUploadSize(long maxBackupBytes);
 
-	void setGroupRequestsOverviewHidden(boolean hidden);
-	boolean getGroupRequestsOverviewHidden();
+    long getThreemaSafeServerMaxUploadSize();
 
-	int getVideoCallToggleTooltipCount();
-	void incremenetVideoCallToggleTooltipCount();
+    void setThreemaSafeServerRetention(int days);
 
-	boolean getCameraPermissionRequestShown();
-	void setCameraPermissionRequestShown(boolean shown);
+    int getThreemaSafeServerRetention();
 
-	@Nullable String getPoiServerHostOverride();
+    void setThreemaSafeBackupSize(int size);
 
-	void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
-	boolean getVoiceRecorderBluetoothDisabled();
+    int getThreemaSafeBackupSize();
 
-	void setAudioPlaybackSpeed(float newSpeed);
-	float getAudioPlaybackSpeed();
+    void setThreemaSafeHashString(String hashString);
 
-	int getMultipleRecipientsTooltipCount();
-	void incrementMultipleRecipientsTooltipCount();
+    String getThreemaSafeHashString();
 
-	boolean isGroupCallSendInitEnabled();
-	boolean skipGroupCallCreateDelay();
+    void setThreemaSafeBackupDate(Date date);
 
-	long getBackupWarningDismissedTime();
-	void setBackupWarningDismissedTime(long time);
+    Date getThreemaSafeBackupDate();
 
-	@StarredMessagesSortOrder int getStarredMessagesSortOrder();
-	void setStarredMessagesSortOrder(@StarredMessagesSortOrder int order);
+    void setWorkSyncCheckInterval(int checkInterval);
 
-	void setAutoDeleteDays(int i);
-	int getAutoDeleteDays();
+    int getWorkSyncCheckInterval();
 
-	// TODO(ANDR-2816): Remove
-	void removeLastNotificationRationaleShown();
+    /**
+     * Store the interval for the identity state sync in seconds.
+     *
+     * @param syncIntervalS The sync interval in seconds
+     */
+    void setIdentityStateSyncInterval(int syncIntervalS);
 
-	void getMediaGalleryContentTypes(boolean[] contentTypes);
+    /**
+     * @return The identity state sync interval in seconds
+     */
+    int getIdentityStateSyncIntervalS();
 
-	void setMediaGalleryContentTypes(boolean[] contentTypes);
+    boolean getIsExportIdTooltipShown();
 
-	int getEmailSyncHashCode();
+    void setThreemaSafeMDMConfig(String mdmConfigHash);
 
-	int getPhoneNumberSyncHashCode();
+    String getThreemaSafeMDMConfig();
 
-	void setEmailSyncHashCode(int emailsHash);
+    void setWorkDirectoryEnabled(boolean enabled);
 
-	void setPhoneNumberSyncHashCode(int phoneNumbersHash);
+    boolean getWorkDirectoryEnabled();
 
-	void setTimeOfLastContactSync(long timeMs);
+    void setWorkDirectoryCategories(List<WorkDirectoryCategory> categories);
 
-	long getTimeOfLastContactSync();
+    List<WorkDirectoryCategory> getWorkDirectoryCategories();
 
-	boolean isMdUnlocked();
+    void setWorkOrganization(WorkOrganization organization);
 
-	boolean showConversationLastUpdate();
+    WorkOrganization getWorkOrganization();
 
-	Date getLastShortcutUpdateDate();
-	void setLastShortcutUpdateDate(Date date);
+    void setLicensedStatus(boolean licensed);
 
-	/**
-	 * Set the last timestamp when the notification permission has been requested.
-	 */
-	void setLastNotificationPermissionRequestTimestamp(long timestamp);
+    boolean getLicensedStatus();
 
-	/**
-	 * Get the last timestamp when the notification permission has been requested. If the
-	 * notification permission has not yet been requested, 0 is returned.
-	 */
-	long getLastNotificationPermissionRequestTimestamp();
+    void setShowDeveloperMenu(boolean show);
+
+    boolean showDeveloperMenu();
+
+    Uri getDataBackupUri();
+
+    void setDataBackupUri(Uri newUri);
+
+    Date getLastDataBackupDate();
+
+    void setLastDataBackupDate(Date date);
+
+    String getMatchToken();
+
+    void setMatchToken(String matchToken);
+
+    boolean isAfterWorkDNDEnabled();
+
+    void setAfterWorkDNDEnabled(boolean enabled);
+
+    void setCameraFlashMode(int flashMode);
+
+    int getCameraFlashMode();
+
+    void setPipPosition(int pipPosition);
+
+    int getPipPosition();
+
+    boolean isCallsEnabled();
+
+    boolean isVideoCallsEnabled();
+
+    boolean isGroupCallsEnabled();
+
+    @Nullable
+    String getVideoCallsProfile();
+
+    void setBallotOverviewHidden(boolean hidden);
+
+    boolean getBallotOverviewHidden();
+
+    void setGroupRequestsOverviewHidden(boolean hidden);
+
+    boolean getGroupRequestsOverviewHidden();
+
+    int getVideoCallToggleTooltipCount();
+
+    void incremenetVideoCallToggleTooltipCount();
+
+    boolean getCameraPermissionRequestShown();
+
+    void setCameraPermissionRequestShown(boolean shown);
+
+    @Nullable
+    String getPoiServerHostOverride();
+
+    void setVoiceRecorderBluetoothDisabled(boolean isEnabled);
+
+    boolean getVoiceRecorderBluetoothDisabled();
+
+    void setAudioPlaybackSpeed(float newSpeed);
+
+    float getAudioPlaybackSpeed();
+
+    int getMultipleRecipientsTooltipCount();
+
+    void incrementMultipleRecipientsTooltipCount();
+
+    boolean isGroupCallSendInitEnabled();
+
+    boolean skipGroupCallCreateDelay();
+
+    long getBackupWarningDismissedTime();
+
+    void setBackupWarningDismissedTime(long time);
+
+    @StarredMessagesSortOrder
+    int getStarredMessagesSortOrder();
+
+    void setStarredMessagesSortOrder(@StarredMessagesSortOrder int order);
+
+    void setAutoDeleteDays(int i);
+
+    int getAutoDeleteDays();
+
+    // TODO(ANDR-2816): Remove
+    void removeLastNotificationRationaleShown();
+
+    void getMediaGalleryContentTypes(boolean[] contentTypes);
+
+    void setMediaGalleryContentTypes(boolean[] contentTypes);
+
+    int getEmailSyncHashCode();
+
+    int getPhoneNumberSyncHashCode();
+
+    void setEmailSyncHashCode(int emailsHash);
+
+    void setPhoneNumberSyncHashCode(int phoneNumbersHash);
+
+    void setTimeOfLastContactSync(long timeMs);
+
+    long getTimeOfLastContactSync();
+
+    boolean isMdUnlocked();
+
+    boolean showConversationLastUpdate();
+
+    Date getLastShortcutUpdateDate();
+
+    void setLastShortcutUpdateDate(Date date);
+
+    /**
+     * Set the last timestamp when the notification permission has been requested.
+     */
+    void setLastNotificationPermissionRequestTimestamp(long timestamp);
+
+    /**
+     * Get the last timestamp when the notification permission has been requested. If the
+     * notification permission has not yet been requested, 0 is returned.
+     */
+    long getLastNotificationPermissionRequestTimestamp();
 }

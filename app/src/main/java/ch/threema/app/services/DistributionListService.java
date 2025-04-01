@@ -33,43 +33,50 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 public interface DistributionListService extends AvatarService<DistributionListModel> {
-	interface DistributionListFilter {
-		boolean sortingByDate();
-		boolean sortingAscending();
-		boolean showHidden();
-	}
+    interface DistributionListFilter {
+        boolean sortingByDate();
 
-	DistributionListModel getById(long id);
-	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) throws ThreemaException;
-	DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) throws ThreemaException;
+        boolean sortingAscending();
 
-	DistributionListModel updateDistributionList(DistributionListModel distributionListModel, String name, String[] memberIdentities) throws ThreemaException;
+        boolean showHidden();
+    }
 
-	boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity);
+    DistributionListModel getById(long id);
 
-	boolean remove(DistributionListModel distributionListModel);
-	boolean removeAll();
+    DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) throws ThreemaException;
 
-	String[] getDistributionListIdentities(DistributionListModel distributionListModel);
-	List<DistributionListMemberModel> getDistributionListMembers(DistributionListModel distributionListModel);
+    DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities, boolean isHidden) throws ThreemaException;
 
-	List<DistributionListModel> getAll();
-	List<DistributionListModel> getAll(DistributionListFilter filter);
+    DistributionListModel updateDistributionList(DistributionListModel distributionListModel, String name, String[] memberIdentities) throws ThreemaException;
 
-	List<ContactModel> getMembers(DistributionListModel distributionListModel);
+    boolean addMemberToDistributionList(DistributionListModel distributionListModel, String identity);
 
-	String getMembersString(DistributionListModel distributionListModel);
+    boolean remove(DistributionListModel distributionListModel);
 
-	DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel);
+    boolean removeAll();
 
-	String getUniqueIdString(DistributionListModel distributionListModel);
+    String[] getDistributionListIdentities(DistributionListModel distributionListModel);
 
-	void setIsArchived(DistributionListModel distributionListModel, boolean archived);
+    List<DistributionListMemberModel> getDistributionListMembers(DistributionListModel distributionListModel);
 
-	/**
-	 * Set the `lastUpdate` field of the specified distribution list to the current date.
-	 *
-	 * Save the model and notify listeners.
-	 */
-	void bumpLastUpdate(@NonNull DistributionListModel distributionListModel);
+    List<DistributionListModel> getAll();
+
+    List<DistributionListModel> getAll(DistributionListFilter filter);
+
+    List<ContactModel> getMembers(DistributionListModel distributionListModel);
+
+    String getMembersString(DistributionListModel distributionListModel);
+
+    DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel);
+
+    String getUniqueIdString(DistributionListModel distributionListModel);
+
+    void setIsArchived(DistributionListModel distributionListModel, boolean archived);
+
+    /**
+     * Set the `lastUpdate` field of the specified distribution list to the current date.
+     * <p>
+     * Save the model and notify listeners.
+     */
+    void bumpLastUpdate(@NonNull DistributionListModel distributionListModel);
 }

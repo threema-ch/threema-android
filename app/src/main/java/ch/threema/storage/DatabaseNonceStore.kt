@@ -85,11 +85,15 @@ class DatabaseNonceStore(
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db!!.execSQL("CREATE TABLE `$TABLE_NAME_CSP` (" +
-            "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);")
+        db!!.execSQL(
+            "CREATE TABLE `$TABLE_NAME_CSP` (" +
+                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);"
+        )
 
-        db.execSQL("CREATE TABLE `$TABLE_NAME_D2D` (" +
-            "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);")
+        db.execSQL(
+            "CREATE TABLE `$TABLE_NAME_D2D` (" +
+                "`$COLUMN_NONCE` BLOB NOT NULL PRIMARY KEY);"
+        )
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -150,22 +154,30 @@ class DatabaseNonceStore(
         return nonces
     }
 
-    override fun addHashedNoncesChunk(scope: NonceScope, chunkSize: Int, offset: Int, nonces: MutableList<HashedNonce>) {
+    override fun addHashedNoncesChunk(
+        scope: NonceScope,
+        chunkSize: Int,
+        offset: Int,
+        nonces: MutableList<HashedNonce>
+    ) {
         val tableName = scope.getTableName()
         readableDatabase
             .rawQuery(
                 "SELECT `$COLUMN_NONCE` FROM `$tableName` LIMIT ? OFFSET ?",
                 chunkSize,
                 offset
-                )
+            )
             .use {
-                while(it.moveToNext()) {
+                while (it.moveToNext()) {
                     nonces.add(HashedNonce(it.getBlob(0)))
                 }
             }
     }
 
-    private fun createInsertNonce(scope: NonceScope, database: SQLiteDatabase): (nonce: HashedNonce) -> Boolean {
+    private fun createInsertNonce(
+        scope: NonceScope,
+        database: SQLiteDatabase
+    ): (nonce: HashedNonce) -> Boolean {
         val tableName = scope.getTableName()
         val stmt = database.compileStatement("INSERT INTO $tableName VALUES (?)")
         return { nonce ->
@@ -187,7 +199,7 @@ class DatabaseNonceStore(
         return try {
             val insertNonce = createInsertNonce(scope, database)
             nonces
-                .map {  insertNonce(it) }
+                .map { insertNonce(it) }
                 .all { it }
                 .also {
                     database.setTransactionSuccessful()
@@ -198,7 +210,7 @@ class DatabaseNonceStore(
     }
 
     private fun NonceScope.getTableName(): String {
-        return when(this) {
+        return when (this) {
             NonceScope.CSP -> TABLE_NAME_CSP
             NonceScope.D2D -> TABLE_NAME_D2D
         }

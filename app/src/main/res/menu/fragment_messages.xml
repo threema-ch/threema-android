@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	  xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-            android:id="@+id/menu_search_messages"
-            android:icon="@drawable/ic_outline_filter_alt_24"
-            app:iconTint="?attr/colorOnSurface"
-            android:title="@string/filter_list"
-            app:showAsAction="never|collapseActionView"
-            app:actionViewClass="ch.threema.app.ui.ThreemaSearchView"/>
+        android:id="@+id/menu_search_messages"
+        android:icon="@drawable/ic_outline_filter_alt_24"
+        app:iconTint="?attr/colorOnSurface"
+        android:title="@string/filter_list"
+        app:showAsAction="never|collapseActionView"
+        app:actionViewClass="ch.threema.app.ui.ThreemaSearchView" />
 
 </menu>

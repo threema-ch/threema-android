@@ -25,26 +25,26 @@ public class OnPremConfigBlob {
 
     public static final String PLACEHOLDER_BLOB_ID = "{blobId}";
 
-	// Note: these are Strings instead of URLs so that they can include placeholders
-	private final String uploadUrl;
-	private final String downloadUrl;
-	private final String doneUrl;
+    // Note: these are Strings instead of URLs so that they can include placeholders
+    private final String uploadUrl;
+    private final String downloadUrl;
+    private final String doneUrl;
 
-	public OnPremConfigBlob(String uploadUrl, String downloadUrl, String doneUrl) {
-		this.uploadUrl = uploadUrl;
-		this.downloadUrl = downloadUrl;
-		this.doneUrl = doneUrl;
-	}
+    public OnPremConfigBlob(String uploadUrl, String downloadUrl, String doneUrl) {
+        this.uploadUrl = uploadUrl;
+        this.downloadUrl = downloadUrl;
+        this.doneUrl = doneUrl;
+    }
 
-	public String getUploadUrl() {
-		return uploadUrl;
-	}
+    public String getUploadUrl() {
+        return uploadUrl;
+    }
 
-	public String getDownloadUrl() {
-		return downloadUrl;
-	}
+    public String getDownloadUrl() {
+        return downloadUrl;
+    }
 
-	public String getDoneUrl() {
-		return doneUrl;
-	}
+    public String getDoneUrl() {
+        return doneUrl;
+    }
 }

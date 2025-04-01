@@ -67,14 +67,20 @@ class ThreemaLoggerTest {
 
     private val throwableExpectingLogger: ThreemaLogger by lazy {
         val loggerConstructor: Constructor<ThreemaLogger> =
-            ThreemaLogger::class.java.getDeclaredConstructor(String::class.java, LogBackend::class.java)
+            ThreemaLogger::class.java.getDeclaredConstructor(
+                String::class.java,
+                LogBackend::class.java
+            )
         loggerConstructor.isAccessible = true
         loggerConstructor.newInstance("ThreemaLoggerTest", throwableExpectingBackend)
     }
 
     private val noThrowableExpectingLogger: ThreemaLogger by lazy {
         val loggerConstructor: Constructor<ThreemaLogger> =
-            ThreemaLogger::class.java.getDeclaredConstructor(String::class.java, LogBackend::class.java)
+            ThreemaLogger::class.java.getDeclaredConstructor(
+                String::class.java,
+                LogBackend::class.java
+            )
         loggerConstructor.isAccessible = true
         loggerConstructor.newInstance("ThreemaLoggerTest", noThrowableExpectingBackend)
     }

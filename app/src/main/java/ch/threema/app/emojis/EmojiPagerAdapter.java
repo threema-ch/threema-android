@@ -41,129 +41,129 @@ import ch.threema.data.models.EmojiReactionData;
 
 public class EmojiPagerAdapter extends PagerAdapter {
 
-	private final Context context;
-	private final EmojiGridAdapter.KeyClickListener listener;
-	private final EmojiReactionsGridAdapter.KeyClickListener reactionsListener;
-	private final EmojiPicker emojiPicker;
-	private final EmojiService emojiService;
-	private final LayoutInflater layoutInflater;
-	private final List<EmojiReactionData> emojiReactions;
+    private final Context context;
+    private final EmojiGridAdapter.KeyClickListener listener;
+    private final EmojiReactionsGridAdapter.KeyClickListener reactionsListener;
+    private final EmojiPicker emojiPicker;
+    private final EmojiService emojiService;
+    private final LayoutInflater layoutInflater;
+    private final List<EmojiReactionData> emojiReactions;
 
-	EmojiPagerAdapter(
-			Context context,
-			EmojiPicker emojiPicker,
-			EmojiService emojiService,
-			EmojiGridAdapter.KeyClickListener listener,
-			EmojiReactionsGridAdapter.KeyClickListener reactionsListener,
-			List<EmojiReactionData> emojiReactions
-	) {
-		this.context = context;
-		this.listener = listener;
-		this.reactionsListener = reactionsListener;
-		this.emojiPicker = emojiPicker;
-		this.emojiService = emojiService;
-		this.emojiReactions = emojiReactions;
-		this.layoutInflater = LayoutInflater.from(context);
-	}
+    EmojiPagerAdapter(
+        Context context,
+        EmojiPicker emojiPicker,
+        EmojiService emojiService,
+        EmojiGridAdapter.KeyClickListener listener,
+        EmojiReactionsGridAdapter.KeyClickListener reactionsListener,
+        List<EmojiReactionData> emojiReactions
+    ) {
+        this.context = context;
+        this.listener = listener;
+        this.reactionsListener = reactionsListener;
+        this.emojiPicker = emojiPicker;
+        this.emojiService = emojiService;
+        this.emojiReactions = emojiReactions;
+        this.layoutInflater = LayoutInflater.from(context);
+    }
 
-	@Override
-	public int getCount() {
-		return emojiPicker.getNumberOfPages();
-	}
+    @Override
+    public int getCount() {
+        return emojiPicker.getNumberOfPages();
+    }
 
-	@NonNull
-	@SuppressLint("StaticFieldLeak")
-	@Override
-	public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
-		final View layout;
-		final GridView recentsGridView;
+    @NonNull
+    @SuppressLint("StaticFieldLeak")
+    @Override
+    public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
+        final View layout;
+        final GridView recentsGridView;
 
-		if (emojiReactions != null && position == 0) {
-			layout = layoutInflater.inflate(R.layout.emoji_reactions_picker_gridview, null);
-			recentsGridView = layout.findViewById(R.id.emoji_gridview);
-		} else {
-			layout = layoutInflater.inflate(R.layout.emoji_picker_gridview, null);
-			recentsGridView = (GridView) layout;
-		}
+        if (emojiReactions != null && position == 0) {
+            layout = layoutInflater.inflate(R.layout.emoji_reactions_picker_gridview, null);
+            recentsGridView = layout.findViewById(R.id.emoji_gridview);
+        } else {
+            layout = layoutInflater.inflate(R.layout.emoji_picker_gridview, null);
+            recentsGridView = (GridView) layout;
+        }
 
-		new AsyncTask<Void, Void, EmojiGridAdapter>() {
-			@Override
-			protected EmojiGridAdapter doInBackground(Void... params) {
-				return new EmojiGridAdapter(
-						context,
-						position,
-						emojiService,
-						listener);
-			}
+        new AsyncTask<Void, Void, EmojiGridAdapter>() {
+            @Override
+            protected EmojiGridAdapter doInBackground(Void... params) {
+                return new EmojiGridAdapter(
+                    context,
+                    position,
+                    emojiService,
+                    listener);
+            }
 
-			@Override
-			protected void onPostExecute(EmojiGridAdapter adapter) {
-				container.addView(layout);
-				recentsGridView.setAdapter(adapter);
-			}
-		}.execute();
+            @Override
+            protected void onPostExecute(EmojiGridAdapter adapter) {
+                container.addView(layout);
+                recentsGridView.setAdapter(adapter);
+            }
+        }.execute();
 
-		// tag this view for efficient refreshing
-		recentsGridView.setTag(Integer.toString(position));
-		recentsGridView.setOnItemClickListener((adapterView, view, i, l) -> {
-			// this listener is used for hardware keyboards only.
-			EmojiInfo item = (EmojiInfo) adapterView.getAdapter().getItem(i);
-			listener.onEmojiKeyClicked(item.emojiSequence);
-		});
+        // tag this view for efficient refreshing
+        recentsGridView.setTag(Integer.toString(position));
+        recentsGridView.setOnItemClickListener((adapterView, view, i, l) -> {
+            // this listener is used for hardware keyboards only.
+            EmojiInfo item = (EmojiInfo) adapterView.getAdapter().getItem(i);
+            listener.onEmojiKeyClicked(item.emojiSequence);
+        });
 
-		if (position == 0) {
-			setupEmojiReactions(layout, emojiReactions);
-		}
+        if (position == 0) {
+            setupEmojiReactions(layout, emojiReactions);
+        }
 
-		return layout;
-	}
+        return layout;
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void setupEmojiReactions(@NonNull View layout, @Nullable List<EmojiReactionData> emojiReactions) {
-		if (emojiReactions == null) {
-			return;
-		}
+    @SuppressLint("StaticFieldLeak")
+    private void setupEmojiReactions(@NonNull View layout, @Nullable List<EmojiReactionData> emojiReactions) {
+        if (emojiReactions == null) {
+            return;
+        }
 
-		GridView reactionsGridView = layout.findViewById(R.id.reactions_gridview);
-		TextView reactionsTitle = layout.findViewById(R.id.reactions_title);
-		TextView recentsTitle = layout.findViewById(R.id.recents_title);
+        GridView reactionsGridView = layout.findViewById(R.id.reactions_gridview);
+        TextView reactionsTitle = layout.findViewById(R.id.reactions_title);
+        TextView recentsTitle = layout.findViewById(R.id.recents_title);
 
-		if (emojiReactions.isEmpty()) {
-			reactionsTitle.setVisibility(View.GONE);
-			recentsTitle.setVisibility(View.GONE);
-			reactionsGridView.setVisibility(View.GONE);
-		} else {
-			emojiService.syncRecentEmojis();
-			recentsTitle.setVisibility(emojiService.hasNoRecentEmojis() ? View.GONE : View.VISIBLE);
-			new AsyncTask<Void, Void, EmojiReactionsGridAdapter>() {
-				@Override
-				protected EmojiReactionsGridAdapter doInBackground(Void... params) {
-					return new EmojiReactionsGridAdapter(
-						context,
-						emojiReactions,
-						reactionsListener);
-				}
+        if (emojiReactions.isEmpty()) {
+            reactionsTitle.setVisibility(View.GONE);
+            recentsTitle.setVisibility(View.GONE);
+            reactionsGridView.setVisibility(View.GONE);
+        } else {
+            emojiService.syncRecentEmojis();
+            recentsTitle.setVisibility(emojiService.hasNoRecentEmojis() ? View.GONE : View.VISIBLE);
+            new AsyncTask<Void, Void, EmojiReactionsGridAdapter>() {
+                @Override
+                protected EmojiReactionsGridAdapter doInBackground(Void... params) {
+                    return new EmojiReactionsGridAdapter(
+                        context,
+                        emojiReactions,
+                        reactionsListener);
+                }
 
-				@Override
-				protected void onPostExecute(EmojiReactionsGridAdapter adapter) {
-					reactionsGridView.setAdapter(adapter);
-				}
-			}.execute();
-		}
-	}
+                @Override
+                protected void onPostExecute(EmojiReactionsGridAdapter adapter) {
+                    reactionsGridView.setAdapter(adapter);
+                }
+            }.execute();
+        }
+    }
 
-	@Override
-	public void destroyItem(ViewGroup container, int position, @NonNull Object view) {
-		container.removeView((View) view);
-	}
+    @Override
+    public void destroyItem(ViewGroup container, int position, @NonNull Object view) {
+        container.removeView((View) view);
+    }
 
-	@Override
-	public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-		return view == object;
-	}
+    @Override
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+        return view == object;
+    }
 
-	@Override
-	public CharSequence getPageTitle(int position) {
-		return emojiPicker.getGroupTitle(position);
-	}
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return emojiPicker.getGroupTitle(position);
+    }
 }

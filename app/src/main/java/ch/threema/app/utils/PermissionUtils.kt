@@ -193,6 +193,7 @@ enum class Permission {
             } else {
                 Manifest.permission.BLUETOOTH
             }
+
             PERMISSION_CAMERA -> Manifest.permission.CAMERA
             PERMISSION_MICROPHONE -> Manifest.permission.RECORD_AUDIO
             PERMISSION_READ_PHONE_STATE -> Manifest.permission.READ_PHONE_STATE
@@ -209,6 +210,7 @@ enum class Permission {
             } else {
                 context.getString(R.string.permission_bluetooth)
             }
+
             PERMISSION_CAMERA -> context.getString(R.string.permission_camera)
             PERMISSION_MICROPHONE -> context.getString(R.string.permission_microphone)
             PERMISSION_READ_PHONE_STATE -> context.getString(R.string.permission_read_phone_state)

@@ -39,103 +39,103 @@ import ch.threema.storage.models.GroupModel;
  */
 public interface AvatarCacheService {
 
-	/**
-	 * Get the avatar of the provided contact model in high resolution. If an error happens while
-	 * loading the avatar, the default avatar or null is returned. Note: Do not call this method
-	 * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for contacts that do not
-	 * have a custom avatar. This may cause glide to misbehave :)
-	 *
-	 * @param contactModel if the contact model is null, the neutral contact avatar is returned
-	 * @param options      the options for loading the avatar
-	 * @return the contact avatar depending on the given choices
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getContactAvatar(@Nullable ContactModel contactModel, @NonNull AvatarOptions options);
+    /**
+     * Get the avatar of the provided contact model in high resolution. If an error happens while
+     * loading the avatar, the default avatar or null is returned. Note: Do not call this method
+     * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for contacts that do not
+     * have a custom avatar. This may cause glide to misbehave :)
+     *
+     * @param contactModel if the contact model is null, the neutral contact avatar is returned
+     * @param options      the options for loading the avatar
+     * @return the contact avatar depending on the given choices
+     */
+    @AnyThread
+    @Nullable
+    Bitmap getContactAvatar(@Nullable ContactModel contactModel, @NonNull AvatarOptions options);
 
-	/**
-	 * Load the avatar directly into the given image view.
-	 *
-	 * @param contactModel the contact model
-	 * @param imageView    the image view
-	 * @param options      the options for loading the image
-	 */
-	@AnyThread
-	void loadContactAvatarIntoImage(
-		@NonNull ContactModel contactModel,
-		@NonNull ImageView imageView,
-		@NonNull AvatarOptions options,
-		@NonNull RequestManager requestManager
-	);
+    /**
+     * Load the avatar directly into the given image view.
+     *
+     * @param contactModel the contact model
+     * @param imageView    the image view
+     * @param options      the options for loading the image
+     */
+    @AnyThread
+    void loadContactAvatarIntoImage(
+        @NonNull ContactModel contactModel,
+        @NonNull ImageView imageView,
+        @NonNull AvatarOptions options,
+        @NonNull RequestManager requestManager
+    );
 
-	/**
-	 * Get the avatar of the provided group model in high resolution. If an error happens while
-	 * loading the avatar, the default avatar or null is returned. Note: Do not call this method
-	 * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for groups that do not have
-	 * a custom avatar. This may cause glide to misbehave :)
-	 *
-	 * @param groupModel if the group model is null, the neutral group avatar is returned
-	 * @param options    the options for loading the avatar
-	 * @return the contact group depending on the given choices
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getGroupAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options);
+    /**
+     * Get the avatar of the provided group model in high resolution. If an error happens while
+     * loading the avatar, the default avatar or null is returned. Note: Do not call this method
+     * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for groups that do not have
+     * a custom avatar. This may cause glide to misbehave :)
+     *
+     * @param groupModel if the group model is null, the neutral group avatar is returned
+     * @param options    the options for loading the avatar
+     * @return the contact group depending on the given choices
+     */
+    @AnyThread
+    @Nullable
+    Bitmap getGroupAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options);
 
-	/**
-	 * Load the avatar directly into the given image view.
-	 *
-	 * @param groupModel the group model
-	 * @param imageView  the image view
-	 * @param options    the options for loading the image
-	 */
-	@AnyThread
-	void loadGroupAvatarIntoImage(
-		@Nullable GroupModel groupModel,
-		@NonNull ImageView imageView,
-		@NonNull AvatarOptions options,
-		@NonNull RequestManager requestManager
-	);
+    /**
+     * Load the avatar directly into the given image view.
+     *
+     * @param groupModel the group model
+     * @param imageView  the image view
+     * @param options    the options for loading the image
+     */
+    @AnyThread
+    void loadGroupAvatarIntoImage(
+        @Nullable GroupModel groupModel,
+        @NonNull ImageView imageView,
+        @NonNull AvatarOptions options,
+        @NonNull RequestManager requestManager
+    );
 
-	/**
-	 * Get the avatar of the provided model in low resolution. If an error happens while loading the
-	 * avatar, the default avatar or null is returned. Distribution list avatars are never cached,
-	 * as they are computationally cheap to load.
-	 *
-	 * @param distributionListModel if the model is null, the distribution list avatar is returned in default color
-	 * @return the distribution list avatar depending on the given model; null if an error occurred
-	 */
-	@AnyThread
-	@Nullable
-	Bitmap getDistributionListAvatarLow(@Nullable DistributionListModel distributionListModel);
+    /**
+     * Get the avatar of the provided model in low resolution. If an error happens while loading the
+     * avatar, the default avatar or null is returned. Distribution list avatars are never cached,
+     * as they are computationally cheap to load.
+     *
+     * @param distributionListModel if the model is null, the distribution list avatar is returned in default color
+     * @return the distribution list avatar depending on the given model; null if an error occurred
+     */
+    @AnyThread
+    @Nullable
+    Bitmap getDistributionListAvatarLow(@Nullable DistributionListModel distributionListModel);
 
-	/**
-	 * Load the avatar directly into the given image view. Distribution list avatars are never cached,
-	 * as they are computationally cheap to load.
-	 *
-	 * @param distributionListModel the distribution list model
-	 * @param imageView             the image view
-	 * @param options               the options for loading the image
-	 */
-	@AnyThread
-	void loadDistributionListAvatarIntoImage(
-		@NonNull DistributionListModel distributionListModel,
-		@NonNull ImageView imageView,
-		@NonNull AvatarOptions options,
-		@NonNull RequestManager requestManager
-	);
+    /**
+     * Load the avatar directly into the given image view. Distribution list avatars are never cached,
+     * as they are computationally cheap to load.
+     *
+     * @param distributionListModel the distribution list model
+     * @param imageView             the image view
+     * @param options               the options for loading the image
+     */
+    @AnyThread
+    void loadDistributionListAvatarIntoImage(
+        @NonNull DistributionListModel distributionListModel,
+        @NonNull ImageView imageView,
+        @NonNull AvatarOptions options,
+        @NonNull RequestManager requestManager
+    );
 
-	/**
-	 * Clears the cache. This should be called if many (or all) avatars change, e.g., when changing the default avatar color preference.
-	 */
-	@AnyThread
-	void clear();
+    /**
+     * Clears the cache. This should be called if many (or all) avatars change, e.g., when changing the default avatar color preference.
+     */
+    @AnyThread
+    void clear();
 
-	/**
-	 * Clears the cache of the given contact model.
-	 */
-	@AnyThread
-	void reset(@NonNull ContactModel contactModel);
+    /**
+     * Clears the cache of the given contact model.
+     */
+    @AnyThread
+    void reset(@NonNull ContactModel contactModel);
 
     /**
      * Clears the cache of the contact with the given identity.
@@ -144,8 +144,8 @@ public interface AvatarCacheService {
     void reset(@NonNull String identity);
 
     /**
-	 * Clears the cache of the given group model.
-	 */
-	@AnyThread
-	void reset(@NonNull GroupModel groupModel);
+     * Clears the cache of the given group model.
+     */
+    @AnyThread
+    void reset(@NonNull GroupModel groupModel);
 }

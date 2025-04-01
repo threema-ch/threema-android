@@ -31,30 +31,30 @@ import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldEx
  * creates the state column
  */
 public class SystemUpdateToVersion28 implements UpdateSystemService.SystemUpdate {
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion28(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion28(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() {
+    @Override
+    public boolean runDirectly() {
 
-		if(!fieldExists(this.sqLiteDatabase, "contacts", "state")) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN state VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'");
-			return true;
-		}
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "state")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN state VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'");
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 28";
-	}
+    @Override
+    public String getText() {
+        return "version 28";
+    }
 }

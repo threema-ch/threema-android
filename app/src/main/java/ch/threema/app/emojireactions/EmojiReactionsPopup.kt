@@ -67,13 +67,20 @@ class EmojiReactionsPopup(
         2 * context.resources.getDimensionPixelSize(R.dimen.reaction_popup_content_margin) +
             context.resources.getDimensionPixelSize(R.dimen.emoji_popup_cardview_margin_bottom) +
             context.resources.getDimensionPixelSize(R.dimen.reaction_popup_emoji_size)
-    private val popupHorizontalOffset = context.resources.getDimensionPixelSize(R.dimen.reaction_popup_content_margin_horizontal)
+    private val popupHorizontalOffset =
+        context.resources.getDimensionPixelSize(R.dimen.reaction_popup_content_margin_horizontal)
     private var messageModel: AbstractMessageModel? = null
-    private val emojiReactionsRepository: EmojiReactionsRepository = ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
+    private val emojiReactionsRepository: EmojiReactionsRepository =
+        ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
     private val userService: UserService = ThreemaApplication.requireServiceManager().userService
     private val emojiService = ThreemaApplication.requireServiceManager().emojiService
-    private val selectedBackgroundColor = ResourcesCompat.getDrawable(context.resources, R.drawable.shape_emoji_popup_selected_background, null)
-    private val backgroundColor = ResourcesCompat.getColor(context.resources, android.R.color.transparent, null)
+    private val selectedBackgroundColor = ResourcesCompat.getDrawable(
+        context.resources,
+        R.drawable.shape_emoji_popup_selected_background,
+        null
+    )
+    private val backgroundColor =
+        ResourcesCompat.getColor(context.resources, android.R.color.transparent, null)
     private val topReactions = arrayOf(
         ReactionEntry(R.id.top_0, EmojiUtil.THUMBS_UP_SEQUENCE),
         ReactionEntry(R.id.top_1, EmojiUtil.THUMBS_DOWN_SEQUENCE),
@@ -86,8 +93,10 @@ class EmojiReactionsPopup(
     private val contactService: ContactService by lazy { ThreemaApplication.requireServiceManager().contactService }
 
     init {
-        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        contentView = layoutInflater.inflate(R.layout.popup_emojireactions, null, true) as FrameLayout
+        val layoutInflater =
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        contentView =
+            layoutInflater.inflate(R.layout.popup_emojireactions, null, true) as FrameLayout
 
         setupTopReactions()
 
@@ -170,7 +179,8 @@ class EmojiReactionsPopup(
             originLocation[1] - this.popupHeight
         )
 
-        val emojiReactionsModel: EmojiReactionsModel? = emojiReactionsRepository.getReactionsByMessage(messageModel)
+        val emojiReactionsModel: EmojiReactionsModel? =
+            emojiReactionsRepository.getReactionsByMessage(messageModel)
 
         contentView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -199,7 +209,10 @@ class EmojiReactionsPopup(
         })
     }
 
-    private fun hasUserReacted(topReaction: ReactionEntry, emojiReactionsModel: EmojiReactionsModel?): Boolean {
+    private fun hasUserReacted(
+        topReaction: ReactionEntry,
+        emojiReactionsModel: EmojiReactionsModel?
+    ): Boolean {
         val reactionList = emojiReactionsModel?.data?.value
         return reactionList?.any { reaction ->
             reaction.emojiSequence == topReaction.emojiSequence && reaction.senderIdentity == userService.identity
@@ -274,7 +287,12 @@ class EmojiReactionsPopup(
                 context.getString(R.string.emoji_reactions_cannot_remove_group_body)
             } else {
                 messageModel.getDisplayNameOrNickname()
-                    ?.let { name -> context.getString(R.string.emoji_reactions_cannot_remove_body, name) }
+                    ?.let { name ->
+                        context.getString(
+                            R.string.emoji_reactions_cannot_remove_body,
+                            name
+                        )
+                    }
             }
         } else {
             context.getString(R.string.emoji_reactions_cannot_remove_v1_body)
@@ -286,7 +304,10 @@ class EmojiReactionsPopup(
         )?.show(fragmentManager, "imp")
     }
 
-    private fun createAlertDialogIfBodySet(@StringRes titleResId: Int, body: String?): SimpleStringAlertDialog? {
+    private fun createAlertDialogIfBodySet(
+        @StringRes titleResId: Int,
+        body: String?
+    ): SimpleStringAlertDialog? {
         return body?.let {
             SimpleStringAlertDialog.newInstance(titleResId, it)
         }

@@ -26,6 +26,6 @@ import android.os.AsyncTask;
 import ch.threema.app.ui.AvatarView;
 
 public class AvatarListItemHolder extends AbstractListItemHolder {
-	public AvatarView avatarView;
-	public AsyncTask avatarLoadingAsyncTask;
+    public AvatarView avatarView;
+    public AsyncTask avatarLoadingAsyncTask;
 }

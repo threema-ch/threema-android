@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- We use a FrameLayout as we want to place the invisible spinner on top of the other views -->
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!-- We use a FrameLayout as we want to place the invisible spinner on top of the other views -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <!-- This spinner should be invisible in the layout and take up no space, when the Preference

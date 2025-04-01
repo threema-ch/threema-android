@@ -35,24 +35,24 @@ import java.security.SignatureException;
 import ch.threema.base.ThreemaException;
 
 public class OnPremConfigVerifierTest {
-	@Test
-	public void testVerifyGood() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
-		OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[] { OnPremConfigTestData.PUBLIC_KEY });
-		JSONObject obj = verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF);
-		Assert.assertEquals("1.0", obj.getString("version"));
-	}
+    @Test
+    public void testVerifyGood() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
+        OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[]{OnPremConfigTestData.PUBLIC_KEY});
+        JSONObject obj = verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF);
+        Assert.assertEquals("1.0", obj.getString("version"));
+    }
 
-	@Test(expected = ThreemaException.class)
-	public void testVerifyBad() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
-		OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[] { OnPremConfigTestData.PUBLIC_KEY });
-		// Create a damaged signature by flipping a character
-		String badOppf = OnPremConfigTestData.TEST_GOOD_OPPF.replace("initrode", "injtrode");
-		JSONObject obj = verifier.verify(badOppf);
-	}
+    @Test(expected = ThreemaException.class)
+    public void testVerifyBad() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
+        OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[]{OnPremConfigTestData.PUBLIC_KEY});
+        // Create a damaged signature by flipping a character
+        String badOppf = OnPremConfigTestData.TEST_GOOD_OPPF.replace("initrode", "injtrode");
+        JSONObject obj = verifier.verify(badOppf);
+    }
 
-	@Test(expected = ThreemaException.class)
-	public void testVerifyWrongKey() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
-		OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[] { OnPremConfigTestData.WRONG_PUBLIC_KEY });
-		JSONObject obj = verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF);
-	}
+    @Test(expected = ThreemaException.class)
+    public void testVerifyWrongKey() throws IOException, InvalidAlgorithmParameterException, ThreemaException, NoSuchAlgorithmException, JSONException, SignatureException, InvalidKeyException {
+        OnPremConfigVerifier verifier = new OnPremConfigVerifier(new String[]{OnPremConfigTestData.WRONG_PUBLIC_KEY});
+        JSONObject obj = verifier.verify(OnPremConfigTestData.TEST_GOOD_OPPF);
+    }
 }

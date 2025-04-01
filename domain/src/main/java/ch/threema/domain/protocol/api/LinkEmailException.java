@@ -29,11 +29,11 @@ import ch.threema.base.ThreemaException;
  */
 public class LinkEmailException extends ThreemaException {
 
-	public LinkEmailException(String msg) {
-		super(msg);
-	}
+    public LinkEmailException(String msg) {
+        super(msg);
+    }
 
-	public LinkEmailException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+    public LinkEmailException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

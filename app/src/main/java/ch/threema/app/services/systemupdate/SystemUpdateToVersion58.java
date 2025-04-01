@@ -32,34 +32,34 @@ import ch.threema.app.services.UpdateSystemService;
  */
 public class SystemUpdateToVersion58 implements UpdateSystemService.SystemUpdate {
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion58(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion58(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_message_id`");
-		sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_msg_id`");
-		sqLiteDatabase.rawExecSQL(
-			"CREATE TABLE `m_group_message_pending_msg_id`"
-				+ "("
-				+ "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ "`groupMessageId` INTEGER,"
-				+ "`apiMessageId` VARCHAR"
-				+ ")");
+    @Override
+    public boolean runDirectly() throws SQLException {
+        sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_message_id`");
+        sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `m_group_message_pending_msg_id`");
+        sqLiteDatabase.rawExecSQL(
+            "CREATE TABLE `m_group_message_pending_msg_id`"
+                + "("
+                + "`id` INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "`groupMessageId` INTEGER,"
+                + "`apiMessageId` VARCHAR"
+                + ")");
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 58 (change GroupMessagePendingMessageIdModel primary key)";
-	}
+    @Override
+    public String getText() {
+        return "version 58 (change GroupMessagePendingMessageIdModel primary key)";
+    }
 }

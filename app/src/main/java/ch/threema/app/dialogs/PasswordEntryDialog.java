@@ -54,324 +54,327 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
 
 public class PasswordEntryDialog extends ThreemaDialogFragment implements GenericAlertDialog.DialogClickListener {
-	private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
+    private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
 
-	protected PasswordEntryDialogClickListener callback;
-	protected Activity activity;
-	protected AlertDialog alertDialog;
-	protected boolean isLinkify = false;
-	protected boolean isLengthCheck = true;
-	protected int minLength, maxLength;
-	protected MaterialSwitch checkBox;
-	public enum ForgotHintType {
-		NONE,
-		SAFE,
-		PIN_PASSPHRASE
-	}
+    protected PasswordEntryDialogClickListener callback;
+    protected Activity activity;
+    protected AlertDialog alertDialog;
+    protected boolean isLinkify = false;
+    protected boolean isLengthCheck = true;
+    protected int minLength, maxLength;
+    protected MaterialSwitch checkBox;
 
-	public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                              @StringRes int hint,
-	                                              @StringRes int positive, @StringRes int negative,
-	                                              int minLength, int maxLength,
-	                                              int confirmHint, int inputType, int checkboxText,
-	                                              ForgotHintType showForgotPwHint) {
-		PasswordEntryDialog dialog = new PasswordEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("hint", hint);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("minLength", minLength);
-		args.putInt("maxLength", maxLength);
-		args.putInt("confirmHint", confirmHint);
-		args.putInt("inputType", inputType);
-		args.putInt("checkboxText", checkboxText);
-		args.putSerializable("showForgotPwHint", showForgotPwHint);
+    public enum ForgotHintType {
+        NONE,
+        SAFE,
+        PIN_PASSPHRASE
+    }
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+    public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                                  @StringRes int hint,
+                                                  @StringRes int positive, @StringRes int negative,
+                                                  int minLength, int maxLength,
+                                                  int confirmHint, int inputType, int checkboxText,
+                                                  ForgotHintType showForgotPwHint) {
+        PasswordEntryDialog dialog = new PasswordEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("hint", hint);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putInt("minLength", minLength);
+        args.putInt("maxLength", maxLength);
+        args.putInt("confirmHint", confirmHint);
+        args.putInt("inputType", inputType);
+        args.putInt("checkboxText", checkboxText);
+        args.putSerializable("showForgotPwHint", showForgotPwHint);
 
-	public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                              @StringRes int hint,
-	                                              @StringRes int positive, @StringRes int negative,
-	                                              int minLength, int maxLength, int confirmHint,
-	                                              int inputType, int checkboxText, int checkboxConfirmText) {
-		PasswordEntryDialog dialog = new PasswordEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("message", message);
-		args.putInt("hint", hint);
-		args.putInt("positive", positive);
-		args.putInt("negative", negative);
-		args.putInt("minLength", minLength);
-		args.putInt("maxLength", maxLength);
-		args.putInt("confirmHint", confirmHint);
-		args.putInt("inputType", inputType);
-		args.putInt("checkboxText", checkboxText);
-		args.putInt("checkboxConfirmText", checkboxConfirmText);
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+    public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                                  @StringRes int hint,
+                                                  @StringRes int positive, @StringRes int negative,
+                                                  int minLength, int maxLength, int confirmHint,
+                                                  int inputType, int checkboxText, int checkboxConfirmText) {
+        PasswordEntryDialog dialog = new PasswordEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("message", message);
+        args.putInt("hint", hint);
+        args.putInt("positive", positive);
+        args.putInt("negative", negative);
+        args.putInt("minLength", minLength);
+        args.putInt("maxLength", maxLength);
+        args.putInt("confirmHint", confirmHint);
+        args.putInt("inputType", inputType);
+        args.putInt("checkboxText", checkboxText);
+        args.putInt("checkboxConfirmText", checkboxConfirmText);
 
-	@Override
-	public void onYes(String tag, Object data) { }
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		checkBox.setChecked(false);
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+    }
+
+    @Override
+    public void onNo(String tag, Object data) {
+        checkBox.setChecked(false);
+    }
 
 
-	public interface PasswordEntryDialogClickListener {
-		void onYes(String tag, String text, boolean isChecked, Object data);
-		void onNo(String tag);
-	}
+    public interface PasswordEntryDialogClickListener {
+        void onYes(String tag, String text, boolean isChecked, Object data);
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        void onNo(String tag);
+    }
 
-		try {
-			callback = (PasswordEntryDialogClickListener) getTargetFragment();
-		} catch (ClassCastException e) {
-			//
-		}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if (!(activity instanceof PasswordEntryDialogClickListener)) {
-				throw new ClassCastException("Calling fragment must implement TextEntryDialogClickListener interface");
-			}
-			callback = (PasswordEntryDialogClickListener) activity;
-		}
-	}
+        try {
+            callback = (PasswordEntryDialogClickListener) getTargetFragment();
+        } catch (ClassCastException e) {
+            //
+        }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if (!(activity instanceof PasswordEntryDialogClickListener)) {
+                throw new ClassCastException("Calling fragment must implement TextEntryDialogClickListener interface");
+            }
+            callback = (PasswordEntryDialogClickListener) activity;
+        }
+    }
 
-		this.activity = activity;
-	}
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		if (savedInstanceState != null && alertDialog != null) {
-			return alertDialog;
-		}
+        this.activity = activity;
+    }
 
-		final int title = getArguments().getInt("title");
-		int message = getArguments().getInt("message");
-		int hint = getArguments().getInt("hint");
-		int positive = getArguments().getInt("positive");
-		int negative = getArguments().getInt("negative");
-		int inputType = getArguments().getInt("inputType", 0);
-		minLength = getArguments().getInt("minLength", 0);
-		maxLength = getArguments().getInt("maxLength", 0);
-		final int confirmHint = getArguments().getInt("confirmHint", 0);
-		final int checkboxText = getArguments().getInt("checkboxText", 0);
-		final int checkboxConfirmText = getArguments().getInt("checkboxConfirmText", 0);
-		final ForgotHintType showForgotPwHint = (ForgotHintType) getArguments().getSerializable("showForgotPwHint");
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        if (savedInstanceState != null && alertDialog != null) {
+            return alertDialog;
+        }
 
-		final String tag = this.getTag();
+        final int title = getArguments().getInt("title");
+        int message = getArguments().getInt("message");
+        int hint = getArguments().getInt("hint");
+        int positive = getArguments().getInt("positive");
+        int negative = getArguments().getInt("negative");
+        int inputType = getArguments().getInt("inputType", 0);
+        minLength = getArguments().getInt("minLength", 0);
+        maxLength = getArguments().getInt("maxLength", 0);
+        final int confirmHint = getArguments().getInt("confirmHint", 0);
+        final int checkboxText = getArguments().getInt("checkboxText", 0);
+        final int checkboxConfirmText = getArguments().getInt("checkboxConfirmText", 0);
+        final ForgotHintType showForgotPwHint = (ForgotHintType) getArguments().getSerializable("showForgotPwHint");
 
-		// InputType defaults
-		final int inputTypePasswordHidden = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_PASSWORD;
+        final String tag = this.getTag();
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_password_entry, null);
-		final TextView messageTextView = dialogView.findViewById(R.id.message_text);
-		final TextView forgotPwTextView = dialogView.findViewById(R.id.forgot_password);
-		final TextInputEditText editText1 = dialogView.findViewById(R.id.password1);
-		final TextInputEditText editText2 = dialogView.findViewById(R.id.password2);
-		final TextInputLayout editText1Layout = dialogView.findViewById(R.id.password1layout);
-		final TextInputLayout editText2Layout = dialogView.findViewById(R.id.password2layout);
-		checkBox = dialogView.findViewById(R.id.check_box);
+        // InputType defaults
+        final int inputTypePasswordHidden = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_PASSWORD;
 
-		editText1.addTextChangedListener(new PasswordWatcher(editText1, editText2));
-		editText2.addTextChangedListener(new PasswordWatcher(editText1, editText2));
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_password_entry, null);
+        final TextView messageTextView = dialogView.findViewById(R.id.message_text);
+        final TextView forgotPwTextView = dialogView.findViewById(R.id.forgot_password);
+        final TextInputEditText editText1 = dialogView.findViewById(R.id.password1);
+        final TextInputEditText editText2 = dialogView.findViewById(R.id.password2);
+        final TextInputLayout editText1Layout = dialogView.findViewById(R.id.password1layout);
+        final TextInputLayout editText2Layout = dialogView.findViewById(R.id.password2layout);
+        checkBox = dialogView.findViewById(R.id.check_box);
 
-		if (maxLength > 0) {
-			editText1.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-			editText2.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-		}
+        editText1.addTextChangedListener(new PasswordWatcher(editText1, editText2));
+        editText2.addTextChangedListener(new PasswordWatcher(editText1, editText2));
 
-		if (message != 0) {
-			String messageString = getString(message);
+        if (maxLength > 0) {
+            editText1.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+            editText2.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+        }
 
-			if (messageString.contains("https://")) {
-				final SpannableString s = new SpannableString(messageString);
-				LinkifyCompat.addLinks(s, Linkify.WEB_URLS);
+        if (message != 0) {
+            String messageString = getString(message);
 
-				messageTextView.setText(s);
-				isLinkify = true;
-			} else {
-				messageTextView.setText(messageString);
-			}
-		}
+            if (messageString.contains("https://")) {
+                final SpannableString s = new SpannableString(messageString);
+                LinkifyCompat.addLinks(s, Linkify.WEB_URLS);
 
-		if (inputType != 0) {
-			editText1.setInputType(inputType);
-			editText2.setInputType(inputType);
-		}
+                messageTextView.setText(s);
+                isLinkify = true;
+            } else {
+                messageTextView.setText(messageString);
+            }
+        }
 
-		if (hint != 0) {
-			editText1Layout.setHint(getString(hint));
-			editText2Layout.setHint(getString(hint));
-		}
+        if (inputType != 0) {
+            editText1.setInputType(inputType);
+            editText2.setInputType(inputType);
+        }
 
-		if (checkboxText != 0) {
-			checkBox.setVisibility(View.VISIBLE);
-			checkBox.setText(checkboxText);
+        if (hint != 0) {
+            editText1Layout.setHint(getString(hint));
+            editText2Layout.setHint(getString(hint));
+        }
 
-			if (checkboxConfirmText != 0) {
-				checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-					if (isChecked) {
-						DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX, true);
-						GenericAlertDialog genericAlertDialog = GenericAlertDialog.newInstance(title, checkboxConfirmText, R.string.ok, R.string.cancel);
-						genericAlertDialog.setTargetFragment(this, 0);
-						genericAlertDialog.show(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX);
-					}
-				});
-			}
-		}
+        if (checkboxText != 0) {
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setText(checkboxText);
 
-		if (confirmHint == 0) {
-			editText1.setInputType(inputTypePasswordHidden);
-			editText2.setVisibility(View.GONE);
-			editText2Layout.setVisibility(View.GONE);
-			isLengthCheck = false;
-		} else {
-			editText2Layout.setHint(getString(confirmHint));
-			editText1Layout.setHelperTextEnabled(true);
-			editText1Layout.setHelperText(String.format(activity.getString(R.string.password_too_short), minLength));
-		}
+            if (checkboxConfirmText != 0) {
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    if (isChecked) {
+                        DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX, true);
+                        GenericAlertDialog genericAlertDialog = GenericAlertDialog.newInstance(title, checkboxConfirmText, R.string.ok, R.string.cancel);
+                        genericAlertDialog.setTargetFragment(this, 0);
+                        genericAlertDialog.show(getFragmentManager(), DIALOG_TAG_CONFIRM_CHECKBOX);
+                    }
+                });
+            }
+        }
 
-		if (showForgotPwHint != null) {
-			switch (showForgotPwHint) {
-				case SAFE:
-					String safeFaqUrl = String.format(getString(R.string.threema_safe_password_faq), LocaleUtil.getAppLanguage());
-					forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), safeFaqUrl)));
-					forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
-					forgotPwTextView.setVisibility(View.VISIBLE);
-					break;
-				case PIN_PASSPHRASE:
-					String pinFaqUrl = String.format(getString(R.string.threema_passwords_faq), LocaleUtil.getAppLanguage());
-					forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), pinFaqUrl)));
-					forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
-					forgotPwTextView.setVisibility(View.VISIBLE);
-					break;
-				case NONE:
-					break;
-			}
-		}
+        if (confirmHint == 0) {
+            editText1.setInputType(inputTypePasswordHidden);
+            editText2.setVisibility(View.GONE);
+            editText2Layout.setVisibility(View.GONE);
+            isLengthCheck = false;
+        } else {
+            editText2Layout.setHint(getString(confirmHint));
+            editText1Layout.setHelperTextEnabled(true);
+            editText1Layout.setHelperText(String.format(activity.getString(R.string.password_too_short), minLength));
+        }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        if (showForgotPwHint != null) {
+            switch (showForgotPwHint) {
+                case SAFE:
+                    String safeFaqUrl = String.format(getString(R.string.threema_safe_password_faq), LocaleUtil.getAppLanguage());
+                    forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), safeFaqUrl)));
+                    forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                    forgotPwTextView.setVisibility(View.VISIBLE);
+                    break;
+                case PIN_PASSPHRASE:
+                    String pinFaqUrl = String.format(getString(R.string.threema_passwords_faq), LocaleUtil.getAppLanguage());
+                    forgotPwTextView.setText(Html.fromHtml(String.format(getString(R.string.forgot_your_password), pinFaqUrl)));
+                    forgotPwTextView.setMovementMethod(LinkMovementMethod.getInstance());
+                    forgotPwTextView.setVisibility(View.VISIBLE);
+                    break;
+                case NONE:
+                    break;
+            }
+        }
 
-		if (title != 0) {
-			builder.setTitle(title);
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
 
-		builder.setView(dialogView);
+        if (title != 0) {
+            builder.setTitle(title);
+        }
 
-		builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
-			if (checkboxText != 0) {
-				callback.onYes(tag, editText1.getText().toString(), checkBox.isChecked(), object);
-			} else {
-				callback.onYes(tag, editText1.getText().toString(), false, object);
-			}
-		});
-		builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag));
+        builder.setView(dialogView);
 
-		builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
-		builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+        builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
+            if (checkboxText != 0) {
+                callback.onYes(tag, editText1.getText().toString(), checkBox.isChecked(), object);
+            } else {
+                callback.onYes(tag, editText1.getText().toString(), false, object);
+            }
+        });
+        builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag));
 
-		builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
-		builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+        builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+        builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
 
-		alertDialog = builder.create();
-		alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-		return alertDialog;
-	}
+        builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
+        builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
 
-	@Override
-	public void onCancel(@NonNull DialogInterface dialogInterface) {
-		callback.onNo(this.getTag());
-	}
+        alertDialog = builder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        return alertDialog;
+    }
 
-	public class PasswordWatcher implements TextWatcher {
-		private final EditText password1;
-		private final EditText password2;
+    @Override
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
+        callback.onNo(this.getTag());
+    }
 
-		public PasswordWatcher(final EditText password1, final EditText password2) {
-			this.password1 = password1;
-			this.password2 = password2;
-		}
+    public class PasswordWatcher implements TextWatcher {
+        private final EditText password1;
+        private final EditText password2;
 
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+        public PasswordWatcher(final EditText password1, final EditText password2) {
+            this.password1 = password1;
+            this.password2 = password2;
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-		}
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			String password1Text = password1.getText().toString();
-			String password2Text = password2.getText().toString();
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-			if (isLengthCheck) {
-				alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(password1Text, password2Text));
-			} else {
-				alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(password1Text.length() > 0);
-			}
-		}
-	}
+        @Override
+        public void afterTextChanged(Editable s) {
+            String password1Text = password1.getText().toString();
+            String password2Text = password2.getText().toString();
 
-	private boolean getPasswordOK(String password1Text, String password2Text) {
-		boolean lengthOk = password1Text.length() >= minLength;
-		if (maxLength > 0) {
-			lengthOk = lengthOk && password1Text.length() <= maxLength;
-		}
-		boolean passwordsMatch = password1Text.equals(password2Text);
+            if (isLengthCheck) {
+                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(password1Text, password2Text));
+            } else {
+                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(password1Text.length() > 0);
+            }
+        }
+    }
 
-		return (lengthOk && passwordsMatch);
-	}
+    private boolean getPasswordOK(String password1Text, String password2Text) {
+        boolean lengthOk = password1Text.length() >= minLength;
+        if (maxLength > 0) {
+            lengthOk = lengthOk && password1Text.length() <= maxLength;
+        }
+        boolean passwordsMatch = password1Text.equals(password2Text);
 
-	@Override
-	public void onStart() {
-		super.onStart();
+        return (lengthOk && passwordsMatch);
+    }
 
-		if (isLinkify) {
-			View textView = alertDialog.findViewById(R.id.message_text);
+    @Override
+    public void onStart() {
+        super.onStart();
 
-			if (textView instanceof TextView) {
-				((TextView) textView).setMovementMethod(LinkMovementMethod.getInstance());
-			}
-		}
+        if (isLinkify) {
+            View textView = alertDialog.findViewById(R.id.message_text);
 
-		final TextInputEditText editText1 = alertDialog.findViewById(R.id.password1);
+            if (textView instanceof TextView) {
+                ((TextView) textView).setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        }
 
-		if (isLengthCheck) {
-			final TextInputEditText editText2 = alertDialog.findViewById(R.id.password2);
+        final TextInputEditText editText1 = alertDialog.findViewById(R.id.password1);
 
-			if (editText1 != null && editText2 != null) {
-				if (editText1.getText() != null && editText2.getText() != null) {
-					alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(editText1.getText().toString(), editText2.getText().toString()));
-				}
-			}
-		} else {
-			if (editText1 != null && editText1.getText() != null) {
-				alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(editText1.getText().length() > 0);
-			}
-		}
+        if (isLengthCheck) {
+            final TextInputEditText editText2 = alertDialog.findViewById(R.id.password2);
 
-		ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+            if (editText1 != null && editText2 != null) {
+                if (editText1.getText() != null && editText2.getText() != null) {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(editText1.getText().toString(), editText2.getText().toString()));
+                }
+            }
+        } else {
+            if (editText1 != null && editText1.getText() != null) {
+                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(editText1.getText().length() > 0);
+            }
+        }
 
-		alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
-	}
+        ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
+        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
+    }
 }

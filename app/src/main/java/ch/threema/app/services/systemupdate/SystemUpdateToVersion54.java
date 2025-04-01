@@ -34,47 +34,47 @@ import ch.threema.app.services.UpdateSystemService;
  */
 public class SystemUpdateToVersion54 implements UpdateSystemService.SystemUpdate {
 
-	private Context context;
+    private Context context;
 
-	public SystemUpdateToVersion54(Context context) {
-		this.context = context;
-	}
+    public SystemUpdateToVersion54(Context context) {
+        this.context = context;
+    }
 
-	@Override
-	public boolean runDirectly() {
-		// Note: PreferenceService is not available at this time if a passphrase has been set!
-		String lockMechanism = PreferenceService.LockingMech_NONE;
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context);
-		if (sharedPreferences.contains(context.getString(R.string.preferences__lock_mechanism))) {
-			lockMechanism = sharedPreferences.getString(context.getString(R.string.preferences__lock_mechanism), PreferenceService.LockingMech_NONE);
-		}
+    @Override
+    public boolean runDirectly() {
+        // Note: PreferenceService is not available at this time if a passphrase has been set!
+        String lockMechanism = PreferenceService.LockingMech_NONE;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.context);
+        if (sharedPreferences.contains(context.getString(R.string.preferences__lock_mechanism))) {
+            lockMechanism = sharedPreferences.getString(context.getString(R.string.preferences__lock_mechanism), PreferenceService.LockingMech_NONE);
+        }
 
-		if (!PreferenceService.LockingMech_NONE.equals(lockMechanism)) {
-			if (sharedPreferences.getBoolean("pref_key_system_lock_enabled", false) ||
-				sharedPreferences.getBoolean("pref_key_pin_lock_enabled", false)) {
+        if (!PreferenceService.LockingMech_NONE.equals(lockMechanism)) {
+            if (sharedPreferences.getBoolean("pref_key_system_lock_enabled", false) ||
+                sharedPreferences.getBoolean("pref_key_pin_lock_enabled", false)) {
 
-				SharedPreferences.Editor editor = sharedPreferences.edit();
-				editor.putBoolean("pref_app_lock_enabled", true);
-				editor.commit();
-			}
-		}
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("pref_app_lock_enabled", true);
+                editor.commit();
+            }
+        }
 
-		// clean up old prefs
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.remove("pref_key_system_lock_enabled");
-		editor.remove("pref_key_pin_lock_enabled");
-		editor.commit();
+        // clean up old prefs
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("pref_key_system_lock_enabled");
+        editor.remove("pref_key_pin_lock_enabled");
+        editor.commit();
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 54";
-	}
+    @Override
+    public String getText() {
+        return "version 54";
+    }
 }

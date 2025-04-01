@@ -28,61 +28,56 @@
 
 package com.neilalexander.jnacl.crypto;
 
-public class xsalsa20poly1305
-{
-	final int crypto_secretbox_KEYBYTES = 32;
-	final int crypto_secretbox_NONCEBYTES = 24;
-	final int crypto_secretbox_ZEROBYTES = 32;
-	final int crypto_secretbox_BOXZEROBYTES = 16;
+public class xsalsa20poly1305 {
+    final int crypto_secretbox_KEYBYTES = 32;
+    final int crypto_secretbox_NONCEBYTES = 24;
+    final int crypto_secretbox_ZEROBYTES = 32;
+    final int crypto_secretbox_BOXZEROBYTES = 16;
 
-	static public int crypto_secretbox(byte[] c, byte[] m, long mlen, byte[] n, byte[] k)
-	{
-		if (mlen < 32)
-			return -1;
+    static public int crypto_secretbox(byte[] c, byte[] m, long mlen, byte[] n, byte[] k) {
+        if (mlen < 32)
+            return -1;
 
-		xsalsa20.crypto_stream_xor(c, m, mlen, n, k);
-		poly1305.crypto_onetimeauth(c, 16, c, 32, mlen - 32, c);
+        xsalsa20.crypto_stream_xor(c, m, mlen, n, k);
+        poly1305.crypto_onetimeauth(c, 16, c, 32, mlen - 32, c);
 
-		for (int i = 0; i < 16; ++i)
-			c[i] = 0;
-
-		return 0;
-	}
-
-    static public int crypto_secretbox_nopad(byte[] c, int coffset, byte[] m, int moffset, long mlen, byte[] n, byte[] k)
-    {
-        /* variant of crypto_secretbox that doesn't require 32 zero bytes before m and doesn't output
-         * 16 zero bytes before c */
-        byte[] c0 = new byte[32];
-
-        xsalsa20.crypto_stream_xor_skip32(c0, c, coffset+16, m, moffset, mlen, n, k);
-        poly1305.crypto_onetimeauth(c, coffset, c, coffset+16, mlen, c0);
+        for (int i = 0; i < 16; ++i)
+            c[i] = 0;
 
         return 0;
     }
 
-	static public int crypto_secretbox_open(byte[] m, byte[] c, long clen, byte[] n, byte[] k)
-	{
-		if (clen < 32)
-			return -1;
+    static public int crypto_secretbox_nopad(byte[] c, int coffset, byte[] m, int moffset, long mlen, byte[] n, byte[] k) {
+        /* variant of crypto_secretbox that doesn't require 32 zero bytes before m and doesn't output
+         * 16 zero bytes before c */
+        byte[] c0 = new byte[32];
 
-		byte[] subkeyp = new byte[32];
+        xsalsa20.crypto_stream_xor_skip32(c0, c, coffset + 16, m, moffset, mlen, n, k);
+        poly1305.crypto_onetimeauth(c, coffset, c, coffset + 16, mlen, c0);
 
-		xsalsa20.crypto_stream(subkeyp, 32, n, k);
+        return 0;
+    }
 
-		if (poly1305.crypto_onetimeauth_verify(c, 16, c, 32, clen - 32, subkeyp) != 0)
-			return -1;
+    static public int crypto_secretbox_open(byte[] m, byte[] c, long clen, byte[] n, byte[] k) {
+        if (clen < 32)
+            return -1;
 
-		xsalsa20.crypto_stream_xor(m, c, clen, n, k);
+        byte[] subkeyp = new byte[32];
 
-		for (int i = 0; i < 32; ++i)
-			m[i] = 0;
+        xsalsa20.crypto_stream(subkeyp, 32, n, k);
 
-		return 0;
-	}
+        if (poly1305.crypto_onetimeauth_verify(c, 16, c, 32, clen - 32, subkeyp) != 0)
+            return -1;
 
-    static public int crypto_secretbox_open_nopad(byte[] m, int moffset, byte[] c, int coffset, long clen, byte[] n, byte[] k)
-    {
+        xsalsa20.crypto_stream_xor(m, c, clen, n, k);
+
+        for (int i = 0; i < 32; ++i)
+            m[i] = 0;
+
+        return 0;
+    }
+
+    static public int crypto_secretbox_open_nopad(byte[] m, int moffset, byte[] c, int coffset, long clen, byte[] n, byte[] k) {
         /* variant of crypto_secretbox_open that doesn't require 16 zero bytes before c and doesn't output
          * 32 zero bytes before m */
 
@@ -93,10 +88,10 @@ public class xsalsa20poly1305
 
         xsalsa20.crypto_stream(subkeyp, 32, n, k);
 
-        if (poly1305.crypto_onetimeauth_verify(c, coffset, c, coffset+16, clen - 16, subkeyp) != 0)
+        if (poly1305.crypto_onetimeauth_verify(c, coffset, c, coffset + 16, clen - 16, subkeyp) != 0)
             return -1;
 
-        xsalsa20.crypto_stream_xor_skip32(null, m, moffset, c, coffset+16, clen - 16, n, k);
+        xsalsa20.crypto_stream_xor_skip32(null, m, moffset, c, coffset + 16, clen - 16, n, k);
 
         return 0;
     }

@@ -37,72 +37,72 @@ import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.stores.IdentityStoreInterface;
 
 public class DummyUsers {
-	public static final User ALICE = new User("000ALICE", Utils.hexStringToByteArray("6eda2ebb8527ff5bd0e8719602f710c13e162a3be612de0ad2a2ff66f5050630"));
-	public static final User BOB = new User("00000BOB", Utils.hexStringToByteArray("533058227925006d86bb8dd88b0442ed73fbc49216b6e94b0870a7761d979eca"));
-	public static final User CAROL = new User("000CAROL", Utils.hexStringToByteArray("2ac0f894ef1504d63eef743ffd3cdd2a0604689f2bed6d10cc7895b589f4f821"));
-	public static final User DAVE = new User("0000DAVE", Utils.hexStringToByteArray("2b3d181bbf1eb84a01326c5dc79c70be32688cb3a797a2a0acdd6c067b614b44"));
+    public static final User ALICE = new User("000ALICE", Utils.hexStringToByteArray("6eda2ebb8527ff5bd0e8719602f710c13e162a3be612de0ad2a2ff66f5050630"));
+    public static final User BOB = new User("00000BOB", Utils.hexStringToByteArray("533058227925006d86bb8dd88b0442ed73fbc49216b6e94b0870a7761d979eca"));
+    public static final User CAROL = new User("000CAROL", Utils.hexStringToByteArray("2ac0f894ef1504d63eef743ffd3cdd2a0604689f2bed6d10cc7895b589f4f821"));
+    public static final User DAVE = new User("0000DAVE", Utils.hexStringToByteArray("2b3d181bbf1eb84a01326c5dc79c70be32688cb3a797a2a0acdd6c067b614b44"));
 
-	private static final long featureMask = new ThreemaFeature.Builder()
-		.audio(true)
-		.group(true)
-		.ballot(true)
-		.file(true)
-		.voip(true)
-		.videocalls(true)
-		.forwardSecurity(true)
-		.groupCalls(true)
-		.editMessages(true)
-		.deleteMessages(true)
-		.build();
+    private static final long featureMask = new ThreemaFeature.Builder()
+        .audio(true)
+        .group(true)
+        .ballot(true)
+        .file(true)
+        .voip(true)
+        .videocalls(true)
+        .forwardSecurity(true)
+        .groupCalls(true)
+        .editMessages(true)
+        .deleteMessages(true)
+        .build();
 
-	public static IdentityStoreInterface getIdentityStoreForUser(User user) {
-		return new InMemoryIdentityStore(user.identity, null, user.privateKey, user.identity);
-	}
+    public static IdentityStoreInterface getIdentityStoreForUser(User user) {
+        return new InMemoryIdentityStore(user.identity, null, user.privateKey, user.identity);
+    }
 
-	public static Contact getContactForUser(@NonNull User user) {
-		return new DummyContact(user.identity, NaCl.derivePublicKey(user.privateKey));
-	}
+    public static Contact getContactForUser(@NonNull User user) {
+        return new DummyContact(user.identity, NaCl.derivePublicKey(user.privateKey));
+    }
 
-	public static BasicContact getBasicContactForUser(@NonNull User user) {
-		return BasicContact.javaCreate(
-			user.identity,
-			NaCl.derivePublicKey(user.privateKey),
-			featureMask,
-			IdentityState.ACTIVE,
-			IdentityType.NORMAL
-		);
-	}
+    public static BasicContact getBasicContactForUser(@NonNull User user) {
+        return BasicContact.javaCreate(
+            user.identity,
+            NaCl.derivePublicKey(user.privateKey),
+            featureMask,
+            IdentityState.ACTIVE,
+            IdentityType.NORMAL
+        );
+    }
 
-	public static class User {
-		final String identity;
-		final byte[] privateKey;
+    public static class User {
+        final String identity;
+        final byte[] privateKey;
 
-		User(String identity, byte[] privateKey) {
-			this.identity = identity;
-			this.privateKey = privateKey;
-		}
+        User(String identity, byte[] privateKey) {
+            this.identity = identity;
+            this.privateKey = privateKey;
+        }
 
-		public String getIdentity() {
-			return identity;
-		}
+        public String getIdentity() {
+            return identity;
+        }
 
-		public byte[] getPrivateKey() {
-			return privateKey;
-		}
-	}
+        public byte[] getPrivateKey() {
+            return privateKey;
+        }
+    }
 
-	public static class DummyContact extends Contact {
-		public DummyContact(String identity, byte[] publicKey) {
-			super(identity, publicKey, VerificationLevel.UNVERIFIED);
-		}
+    public static class DummyContact extends Contact {
+        public DummyContact(String identity, byte[] publicKey) {
+            super(identity, publicKey, VerificationLevel.UNVERIFIED);
+        }
 
-		// equals needed for Mockito
-		@Override
-		public boolean equals(Object other) {
-			if (this == other) return true;
-			if (other == null || getClass() != other.getClass()) return false;
-			Contact contact = (Contact) other;
-			return Objects.equals(getIdentity(), contact.getIdentity()) && Arrays.equals(getPublicKey(), contact.getPublicKey());
-		}
-	}
+        // equals needed for Mockito
+        @Override
+        public boolean equals(Object other) {
+            if (this == other) return true;
+            if (other == null || getClass() != other.getClass()) return false;
+            Contact contact = (Contact) other;
+            return Objects.equals(getIdentity(), contact.getIdentity()) && Arrays.equals(getPublicKey(), contact.getPublicKey());
+        }
+    }
 }

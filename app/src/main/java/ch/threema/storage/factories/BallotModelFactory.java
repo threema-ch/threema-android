@@ -44,333 +44,330 @@ import ch.threema.storage.models.ballot.GroupBallotModel;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 
 public class BallotModelFactory extends ModelFactory {
-	public BallotModelFactory(DatabaseServiceNew databaseService) {
-		super(databaseService, BallotModel.TABLE);
-	}
+    public BallotModelFactory(DatabaseServiceNew databaseService) {
+        super(databaseService, BallotModel.TABLE);
+    }
 
-	public List<BallotModel> getAll() {
-		return convertList(this.getReadableDatabase().query(this.getTableName(),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null));
-	}
+    public List<BallotModel> getAll() {
+        return convertList(this.getReadableDatabase().query(this.getTableName(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null));
+    }
 
-	@Nullable
-	public BallotModel getById(int id) {
-		return getFirst(
-				BallotModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(id)
-				});
-	}
+    @Nullable
+    public BallotModel getById(int id) {
+        return getFirst(
+            BallotModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(id)
+            });
+    }
 
-	public List<BallotModel> convert(
-	                                              QueryBuilder queryBuilder,
-	                                              String[] args,
-	                                              String orderBy) {
-		queryBuilder.setTables(this.getTableName());
-		return convertList(queryBuilder.query(
-				this.databaseService.getReadableDatabase(),
-				null,
-				null,
-				args,
-				null,
-				null,
-				orderBy));
-	}
+    public List<BallotModel> convert(
+        QueryBuilder queryBuilder,
+        String[] args,
+        String orderBy) {
+        queryBuilder.setTables(this.getTableName());
+        return convertList(queryBuilder.query(
+            this.databaseService.getReadableDatabase(),
+            null,
+            null,
+            args,
+            null,
+            null,
+            orderBy));
+    }
 
-	protected List<BallotModel> convertList(Cursor c) {
+    protected List<BallotModel> convertList(Cursor c) {
 
-		List<BallotModel> result = new ArrayList<>();
-		if(c != null) {
-			try {
-				while (c.moveToNext()) {
-					result.add(convert(c));
-				}
-			}
-			finally {
-				c.close();
-			}
-		}
-		return result;
-	}
+        List<BallotModel> result = new ArrayList<>();
+        if (c != null) {
+            try {
+                while (c.moveToNext()) {
+                    result.add(convert(c));
+                }
+            } finally {
+                c.close();
+            }
+        }
+        return result;
+    }
 
-	protected BallotModel convert(Cursor cursor) {
-		if(cursor != null && cursor.getPosition() >= 0) {
-			final BallotModel c = new BallotModel();
+    protected BallotModel convert(Cursor cursor) {
+        if (cursor != null && cursor.getPosition() >= 0) {
+            final BallotModel c = new BallotModel();
 
-			//convert default
-			new CursorHelper(cursor, this.getColumnIndexCache()).current(new CursorHelper.Callback() {
-				@Override
-				public boolean next(CursorHelper cursorHelper) {
-					c
-							.setId(cursorHelper.getInt(BallotModel.COLUMN_ID))
-							.setApiBallotId(cursorHelper.getString(BallotModel.COLUMN_API_BALLOT_ID))
-							.setCreatorIdentity(cursorHelper.getString(BallotModel.COLUMN_CREATOR_IDENTITY))
-							.setName(cursorHelper.getString(BallotModel.COLUMN_NAME))
-							.setCreatedAt(cursorHelper.getDate(BallotModel.COLUMN_CREATED_AT))
-							.setModifiedAt(cursorHelper.getDate(BallotModel.COLUMN_MODIFIED_AT))
-							.setLastViewedAt(cursorHelper.getDate(BallotModel.COLUMN_LAST_VIEWED_AT));
+            //convert default
+            new CursorHelper(cursor, this.getColumnIndexCache()).current(new CursorHelper.Callback() {
+                @Override
+                public boolean next(CursorHelper cursorHelper) {
+                    c
+                        .setId(cursorHelper.getInt(BallotModel.COLUMN_ID))
+                        .setApiBallotId(cursorHelper.getString(BallotModel.COLUMN_API_BALLOT_ID))
+                        .setCreatorIdentity(cursorHelper.getString(BallotModel.COLUMN_CREATOR_IDENTITY))
+                        .setName(cursorHelper.getString(BallotModel.COLUMN_NAME))
+                        .setCreatedAt(cursorHelper.getDate(BallotModel.COLUMN_CREATED_AT))
+                        .setModifiedAt(cursorHelper.getDate(BallotModel.COLUMN_MODIFIED_AT))
+                        .setLastViewedAt(cursorHelper.getDate(BallotModel.COLUMN_LAST_VIEWED_AT));
 
-					String stateString = cursorHelper.getString(BallotModel.COLUMN_STATE);
-					if (!TestUtil.isEmptyOrNull(stateString)) {
-						c.setState(BallotModel.State.valueOf(stateString));
-					}
-					String assessment = cursorHelper.getString(BallotModel.COLUMN_ASSESSMENT);
-					if (!TestUtil.isEmptyOrNull(assessment)) {
-						c.setAssessment(BallotModel.Assessment.valueOf(assessment));
-					}
+                    String stateString = cursorHelper.getString(BallotModel.COLUMN_STATE);
+                    if (!TestUtil.isEmptyOrNull(stateString)) {
+                        c.setState(BallotModel.State.valueOf(stateString));
+                    }
+                    String assessment = cursorHelper.getString(BallotModel.COLUMN_ASSESSMENT);
+                    if (!TestUtil.isEmptyOrNull(assessment)) {
+                        c.setAssessment(BallotModel.Assessment.valueOf(assessment));
+                    }
 
-					String type = cursorHelper.getString(BallotModel.COLUMN_TYPE);
-					if (!TestUtil.isEmptyOrNull(type)) {
-						c.setType(BallotModel.Type.valueOf(type));
-					}
+                    String type = cursorHelper.getString(BallotModel.COLUMN_TYPE);
+                    if (!TestUtil.isEmptyOrNull(type)) {
+                        c.setType(BallotModel.Type.valueOf(type));
+                    }
 
-					String choiceType = cursorHelper.getString(BallotModel.COLUMN_CHOICE_TYPE);
-					if (!TestUtil.isEmptyOrNull(choiceType)) {
-						c.setChoiceType(BallotModel.ChoiceType.valueOf(choiceType));
-					}
+                    String choiceType = cursorHelper.getString(BallotModel.COLUMN_CHOICE_TYPE);
+                    if (!TestUtil.isEmptyOrNull(choiceType)) {
+                        c.setChoiceType(BallotModel.ChoiceType.valueOf(choiceType));
+                    }
 
-					String displayType = cursorHelper.getString(BallotModel.COLUMN_DISPLAY_TYPE);
-					if (!TestUtil.isEmptyOrNull(displayType)) {
-						c.setDisplayType(BallotModel.DisplayType.valueOf(displayType));
-					}
+                    String displayType = cursorHelper.getString(BallotModel.COLUMN_DISPLAY_TYPE);
+                    if (!TestUtil.isEmptyOrNull(displayType)) {
+                        c.setDisplayType(BallotModel.DisplayType.valueOf(displayType));
+                    }
 
-					return false;
-				}
-			});
+                    return false;
+                }
+            });
 
-			return c;
-		}
+            return c;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public boolean createOrUpdate(BallotModel ballotModel) {
+    public boolean createOrUpdate(BallotModel ballotModel) {
 
-		boolean insert = true;
-		if(ballotModel.getId() > 0) {
-			Cursor cursor = this.getReadableDatabase().query(
-					this.getTableName(),
-					null,
-					BallotModel.COLUMN_ID + "=?",
-					new String[]{
-							String.valueOf(ballotModel.getId())
-					},
-					null,
-					null,
-					null
-			);
+        boolean insert = true;
+        if (ballotModel.getId() > 0) {
+            Cursor cursor = this.getReadableDatabase().query(
+                this.getTableName(),
+                null,
+                BallotModel.COLUMN_ID + "=?",
+                new String[]{
+                    String.valueOf(ballotModel.getId())
+                },
+                null,
+                null,
+                null
+            );
 
-			if (cursor != null) {
-				try {
-					insert = !cursor.moveToNext();
-				} finally {
-					cursor.close();
-				}
-			}
-		}
-
-
-		if(insert) {
-			return create(ballotModel);
-		}
-		else {
-			return update(ballotModel);
-		}
-	}
-
-	protected ContentValues buildContentValues(BallotModel ballotModel) {
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(BallotModel.COLUMN_API_BALLOT_ID, ballotModel.getApiBallotId());
-		contentValues.put(BallotModel.COLUMN_CREATOR_IDENTITY, ballotModel.getCreatorIdentity());
-		contentValues.put(BallotModel.COLUMN_NAME, ballotModel.getName());
-		contentValues.put(BallotModel.COLUMN_STATE, ballotModel.getState() != null ? ballotModel.getState().toString() : null);
-		contentValues.put(BallotModel.COLUMN_ASSESSMENT, ballotModel.getAssessment() != null ? ballotModel.getAssessment().toString() : null);
-		contentValues.put(BallotModel.COLUMN_TYPE, ballotModel.getType() != null ? ballotModel.getType().toString() : null);
-		contentValues.put(BallotModel.COLUMN_CHOICE_TYPE, ballotModel.getChoiceType() != null ? ballotModel.getChoiceType().toString() : null);
-		contentValues.put(BallotModel.COLUMN_DISPLAY_TYPE, ballotModel.getDisplayType() != null ? ballotModel.getDisplayType().toString() : null);
-		contentValues.put(BallotModel.COLUMN_CREATED_AT, ballotModel.getCreatedAt() != null ? ballotModel.getCreatedAt().getTime(): null);
-		contentValues.put(BallotModel.COLUMN_MODIFIED_AT, ballotModel.getModifiedAt() != null ? ballotModel.getModifiedAt().getTime(): null);
-		contentValues.put(BallotModel.COLUMN_LAST_VIEWED_AT, ballotModel.getLastViewedAt() != null ? ballotModel.getLastViewedAt().getTime(): null);
-		return contentValues;
-	}
-
-	public boolean create(BallotModel ballotModel) {
-		ContentValues contentValues = buildContentValues(ballotModel);
-		long newId = this.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
-		if (newId > 0) {
-			ballotModel.setId((int) newId);
-			return true;
-		}
-		return false;
-	}
-
-	public boolean update(BallotModel ballotModel) {
-		ContentValues contentValues = buildContentValues(ballotModel);
-		this.getWritableDatabase().update(this.getTableName(),
-				contentValues,
-				BallotModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(ballotModel.getId())
-				});
-		return true;
-	}
-
-	public int delete(BallotModel ballotModel) {
-		return this.getWritableDatabase().delete(this.getTableName(),
-				BallotModel.COLUMN_ID + "=?",
-				new String[]{
-						String.valueOf(ballotModel.getId())
-				});
-	}
-
-	@Nullable
-	protected BallotModel getFirst(String selection, String[] selectionArgs) {
-		Cursor cursor = this.getReadableDatabase().query (
-				this.getTableName(),
-				null,
-				selection,
-				selectionArgs,
-				null,
-				null,
-				null
-		);
-
-		if(cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					return convert(cursor);
-				}
-			}
-			finally {
-				cursor.close();
-			}
-		}
-
-		return null;
-	}
-
-	public long count(BallotService.BallotFilter filter) {
-		Cursor resultCursor = this.runBallotFilterQuery(filter, "SELECT COUNT(*)");
-
-		if (resultCursor != null) {
-			return DatabaseUtil.count(resultCursor);
-		}
-
-		return 0L;
-	}
+            if (cursor != null) {
+                try {
+                    insert = !cursor.moveToNext();
+                } finally {
+                    cursor.close();
+                }
+            }
+        }
 
 
-	public List<BallotModel> filter(BallotService.BallotFilter filter) {
-		Cursor resultCursor = this.runBallotFilterQuery(filter, "SELECT DISTINCT b.*");
+        if (insert) {
+            return create(ballotModel);
+        } else {
+            return update(ballotModel);
+        }
+    }
 
-		if (resultCursor != null) {
-			return this.convertList(resultCursor);
-		}
+    protected ContentValues buildContentValues(BallotModel ballotModel) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(BallotModel.COLUMN_API_BALLOT_ID, ballotModel.getApiBallotId());
+        contentValues.put(BallotModel.COLUMN_CREATOR_IDENTITY, ballotModel.getCreatorIdentity());
+        contentValues.put(BallotModel.COLUMN_NAME, ballotModel.getName());
+        contentValues.put(BallotModel.COLUMN_STATE, ballotModel.getState() != null ? ballotModel.getState().toString() : null);
+        contentValues.put(BallotModel.COLUMN_ASSESSMENT, ballotModel.getAssessment() != null ? ballotModel.getAssessment().toString() : null);
+        contentValues.put(BallotModel.COLUMN_TYPE, ballotModel.getType() != null ? ballotModel.getType().toString() : null);
+        contentValues.put(BallotModel.COLUMN_CHOICE_TYPE, ballotModel.getChoiceType() != null ? ballotModel.getChoiceType().toString() : null);
+        contentValues.put(BallotModel.COLUMN_DISPLAY_TYPE, ballotModel.getDisplayType() != null ? ballotModel.getDisplayType().toString() : null);
+        contentValues.put(BallotModel.COLUMN_CREATED_AT, ballotModel.getCreatedAt() != null ? ballotModel.getCreatedAt().getTime() : null);
+        contentValues.put(BallotModel.COLUMN_MODIFIED_AT, ballotModel.getModifiedAt() != null ? ballotModel.getModifiedAt().getTime() : null);
+        contentValues.put(BallotModel.COLUMN_LAST_VIEWED_AT, ballotModel.getLastViewedAt() != null ? ballotModel.getLastViewedAt().getTime() : null);
+        return contentValues;
+    }
 
-		return new ArrayList<>();
-	}
+    public boolean create(BallotModel ballotModel) {
+        ContentValues contentValues = buildContentValues(ballotModel);
+        long newId = this.getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
+        if (newId > 0) {
+            ballotModel.setId((int) newId);
+            return true;
+        }
+        return false;
+    }
 
-	public BallotModel getByApiBallotIdAndIdentity(String apiBallotId, String groupCreator) {
-		return getFirst(
-				BallotModel.COLUMN_API_BALLOT_ID + "=? "
-						+ "AND " + BallotModel.COLUMN_CREATOR_IDENTITY + "=?",
-				new String[]{
-						apiBallotId,
-						groupCreator
-				});
-	}
+    public boolean update(BallotModel ballotModel) {
+        ContentValues contentValues = buildContentValues(ballotModel);
+        this.getWritableDatabase().update(this.getTableName(),
+            contentValues,
+            BallotModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(ballotModel.getId())
+            });
+        return true;
+    }
 
-	@Override
-	public String[] getStatements() {
-		return new String[] {
-				"CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `displayType` VARCHAR , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
+    public int delete(BallotModel ballotModel) {
+        return this.getWritableDatabase().delete(this.getTableName(),
+            BallotModel.COLUMN_ID + "=?",
+            new String[]{
+                String.valueOf(ballotModel.getId())
+            });
+    }
 
-				//indices
-				"CREATE UNIQUE INDEX `apiBallotIdAndCreator` ON `ballot` ( `apiBallotId`, `creatorIdentity` )"
-		};
-	}
+    @Nullable
+    protected BallotModel getFirst(String selection, String[] selectionArgs) {
+        Cursor cursor = this.getReadableDatabase().query(
+            this.getTableName(),
+            null,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        );
 
-	protected Cursor runBallotFilterQuery(BallotService.BallotFilter filter, String select) {
-		String query = select + " FROM " + this.getTableName() + " b";
-		List<String> args = new ArrayList<>();
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    return convert(cursor);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
 
-		if(filter != null) {
+        return null;
+    }
 
-			MessageReceiver receiver = filter.getReceiver();
-			if (receiver != null) {
-				String linkTable;
-				String linkField;
-				String linkFieldReceiver;
-				String linkValue;
-				switch (receiver.getType()) {
-					case MessageReceiver.Type_GROUP:
-						linkTable = GroupBallotModel.TABLE;
-						linkField = GroupBallotModel.COLUMN_BALLOT_ID;
-						linkFieldReceiver = GroupBallotModel.COLUMN_GROUP_ID;
-						linkValue = String.valueOf(((GroupMessageReceiver) receiver).getGroup().getId());
+    public long count(BallotService.BallotFilter filter) {
+        Cursor resultCursor = this.runBallotFilterQuery(filter, "SELECT COUNT(*)");
 
-						break;
-					case MessageReceiver.Type_CONTACT:
-						linkTable = IdentityBallotModel.TABLE;
-						linkField = IdentityBallotModel.COLUMN_BALLOT_ID;
-						linkFieldReceiver = IdentityBallotModel.COLUMN_IDENTITY;
-						linkValue = ((ContactMessageReceiver) receiver).getContact().getIdentity();
+        if (resultCursor != null) {
+            return DatabaseUtil.count(resultCursor);
+        }
 
-						break;
-					default:
-						//do not run a ballot query
-						return null;
-				}
+        return 0L;
+    }
 
-				if(linkTable != null) {
-					query += " INNER JOIN " + linkTable + " l"
-						+ " ON l." + linkField + " = b." + BallotModel.COLUMN_ID
-						+ " AND l." + linkFieldReceiver + " = ?";
 
-					args.add(linkValue);
-				}
-			}
+    public List<BallotModel> filter(BallotService.BallotFilter filter) {
+        Cursor resultCursor = this.runBallotFilterQuery(filter, "SELECT DISTINCT b.*");
 
-			// Build where statement
-			List<String> where = new ArrayList<>();
+        if (resultCursor != null) {
+            return this.convertList(resultCursor);
+        }
 
-			if(filter.getStates() != null && filter.getStates().length > 0) {
-				where.add("b." + BallotModel.COLUMN_STATE + " IN (" + DatabaseUtil.makePlaceholders(filter.getStates().length) + ")");
-				for(BallotModel.State f: filter.getStates()) {
-					args.add(f.toString());
-				}
-			}
+        return new ArrayList<>();
+    }
 
-			if (filter.createdOrNotVotedByIdentity() != null) {
+    public BallotModel getByApiBallotIdAndIdentity(String apiBallotId, String groupCreator) {
+        return getFirst(
+            BallotModel.COLUMN_API_BALLOT_ID + "=? "
+                + "AND " + BallotModel.COLUMN_CREATOR_IDENTITY + "=?",
+            new String[]{
+                apiBallotId,
+                groupCreator
+            });
+    }
 
-				// Created by the identity OR no votes from the identity
-				where.add("b." + BallotModel.COLUMN_CREATOR_IDENTITY + " = ? OR NOT EXISTS ("
-					+ "SELECT sv." + BallotVoteModel.COLUMN_BALLOT_ID
-					+ " FROM " + BallotVoteModel.TABLE + " sv"
-					+ " WHERE sv." + BallotVoteModel.COLUMN_VOTING_IDENTITY + " = ? AND sv." + BallotVoteModel.COLUMN_BALLOT_ID  + " = b." + BallotModel.COLUMN_ID
-					+ ")");
-				args.add(filter.createdOrNotVotedByIdentity());
-				args.add(filter.createdOrNotVotedByIdentity());
-			}
+    @Override
+    public String[] getStatements() {
+        return new String[]{
+            "CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `displayType` VARCHAR , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
 
-			if (where.size() > 0) {
-				String whereStatement = "";
-				for (String s: where) {
-					whereStatement += (whereStatement.length() > 0 ? ") AND (" : "");
-					whereStatement += s;
-				}
-				query += " WHERE (" +whereStatement + ")";
-			}
+            //indices
+            "CREATE UNIQUE INDEX `apiBallotIdAndCreator` ON `ballot` ( `apiBallotId`, `creatorIdentity` )"
+        };
+    }
 
-			query += " ORDER BY b." + BallotModel.COLUMN_CREATED_AT + " DESC";
-		}
+    protected Cursor runBallotFilterQuery(BallotService.BallotFilter filter, String select) {
+        String query = select + " FROM " + this.getTableName() + " b";
+        List<String> args = new ArrayList<>();
 
-		return this.getReadableDatabase().rawQuery(query,
-			DatabaseUtil.convertArguments(args));
-	}
+        if (filter != null) {
+
+            MessageReceiver receiver = filter.getReceiver();
+            if (receiver != null) {
+                String linkTable;
+                String linkField;
+                String linkFieldReceiver;
+                String linkValue;
+                switch (receiver.getType()) {
+                    case MessageReceiver.Type_GROUP:
+                        linkTable = GroupBallotModel.TABLE;
+                        linkField = GroupBallotModel.COLUMN_BALLOT_ID;
+                        linkFieldReceiver = GroupBallotModel.COLUMN_GROUP_ID;
+                        linkValue = String.valueOf(((GroupMessageReceiver) receiver).getGroup().getId());
+
+                        break;
+                    case MessageReceiver.Type_CONTACT:
+                        linkTable = IdentityBallotModel.TABLE;
+                        linkField = IdentityBallotModel.COLUMN_BALLOT_ID;
+                        linkFieldReceiver = IdentityBallotModel.COLUMN_IDENTITY;
+                        linkValue = ((ContactMessageReceiver) receiver).getContact().getIdentity();
+
+                        break;
+                    default:
+                        //do not run a ballot query
+                        return null;
+                }
+
+                if (linkTable != null) {
+                    query += " INNER JOIN " + linkTable + " l"
+                        + " ON l." + linkField + " = b." + BallotModel.COLUMN_ID
+                        + " AND l." + linkFieldReceiver + " = ?";
+
+                    args.add(linkValue);
+                }
+            }
+
+            // Build where statement
+            List<String> where = new ArrayList<>();
+
+            if (filter.getStates() != null && filter.getStates().length > 0) {
+                where.add("b." + BallotModel.COLUMN_STATE + " IN (" + DatabaseUtil.makePlaceholders(filter.getStates().length) + ")");
+                for (BallotModel.State f : filter.getStates()) {
+                    args.add(f.toString());
+                }
+            }
+
+            if (filter.createdOrNotVotedByIdentity() != null) {
+
+                // Created by the identity OR no votes from the identity
+                where.add("b." + BallotModel.COLUMN_CREATOR_IDENTITY + " = ? OR NOT EXISTS ("
+                    + "SELECT sv." + BallotVoteModel.COLUMN_BALLOT_ID
+                    + " FROM " + BallotVoteModel.TABLE + " sv"
+                    + " WHERE sv." + BallotVoteModel.COLUMN_VOTING_IDENTITY + " = ? AND sv." + BallotVoteModel.COLUMN_BALLOT_ID + " = b." + BallotModel.COLUMN_ID
+                    + ")");
+                args.add(filter.createdOrNotVotedByIdentity());
+                args.add(filter.createdOrNotVotedByIdentity());
+            }
+
+            if (where.size() > 0) {
+                String whereStatement = "";
+                for (String s : where) {
+                    whereStatement += (whereStatement.length() > 0 ? ") AND (" : "");
+                    whereStatement += s;
+                }
+                query += " WHERE (" + whereStatement + ")";
+            }
+
+            query += " ORDER BY b." + BallotModel.COLUMN_CREATED_AT + " DESC";
+        }
+
+        return this.getReadableDatabase().rawQuery(query,
+            DatabaseUtil.convertArguments(args));
+    }
 }

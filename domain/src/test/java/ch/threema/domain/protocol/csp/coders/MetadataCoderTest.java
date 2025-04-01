@@ -29,7 +29,9 @@ import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.domain.helpers.DummyUsers;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
+
 import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,43 +39,43 @@ import java.util.Date;
 
 public class MetadataCoderTest {
 
-	private static final String TEST_NICKNAME = "John Doe";
+    private static final String TEST_NICKNAME = "John Doe";
 
-	private static final byte[] TEST_NONCE = Utils.hexStringToByteArray("f0a6de071e2fee0ec5e58637f707c73cd5ba1889db2b89b9");
-	private static final byte[] TEST_BOX = Utils.hexStringToByteArray("859031ebffa23b44a55fa7e5e8f05db602eef238ba866a25afbe");
+    private static final byte[] TEST_NONCE = Utils.hexStringToByteArray("f0a6de071e2fee0ec5e58637f707c73cd5ba1889db2b89b9");
+    private static final byte[] TEST_BOX = Utils.hexStringToByteArray("859031ebffa23b44a55fa7e5e8f05db602eef238ba866a25afbe");
 
-	private static final IdentityStoreInterface identityStoreA = DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE);
-	private static final IdentityStoreInterface identityStoreB = DummyUsers.getIdentityStoreForUser(DummyUsers.BOB);
+    private static final IdentityStoreInterface identityStoreA = DummyUsers.getIdentityStoreForUser(DummyUsers.ALICE);
+    private static final IdentityStoreInterface identityStoreB = DummyUsers.getIdentityStoreForUser(DummyUsers.BOB);
 
-	@Test
-	public void testEncodeDecode() throws ThreemaException, InvalidProtocolBufferException {
+    @Test
+    public void testEncodeDecode() throws ThreemaException, InvalidProtocolBufferException {
 
-		byte[] nonce = TestHelpers.getNoopNonceFactory().nextNonce(NonceScope.CSP);
-		MessageId messageId = new MessageId();
+        byte[] nonce = TestHelpers.getNoopNonceFactory().nextNonce(NonceScope.CSP);
+        MessageId messageId = new MessageId();
 
-		Date createdAt = new Date();
-		MessageMetadata metadata = MessageMetadata.newBuilder()
-			.setNickname(TEST_NICKNAME)
-			.setCreatedAt(createdAt.getTime())
-			.setMessageId(messageId.getMessageIdLong())
-			.build();
-		MetadataBox box = new MetadataCoder(identityStoreA).encode(metadata, nonce, identityStoreB.getPublicKey());
+        Date createdAt = new Date();
+        MessageMetadata metadata = MessageMetadata.newBuilder()
+            .setNickname(TEST_NICKNAME)
+            .setCreatedAt(createdAt.getTime())
+            .setMessageId(messageId.getMessageIdLong())
+            .build();
+        MetadataBox box = new MetadataCoder(identityStoreA).encode(metadata, nonce, identityStoreB.getPublicKey());
 
-		MessageMetadata metadataDecoded = new MetadataCoder(identityStoreB).decode(nonce, box, identityStoreA.getPublicKey());
+        MessageMetadata metadataDecoded = new MetadataCoder(identityStoreB).decode(nonce, box, identityStoreA.getPublicKey());
 
-		Assert.assertEquals(TEST_NICKNAME, metadataDecoded.getNickname());
-		Assert.assertEquals(messageId, new MessageId(metadataDecoded.getMessageId()));
-		Assert.assertEquals(createdAt.getTime(), metadataDecoded.getCreatedAt());
-	}
+        Assert.assertEquals(TEST_NICKNAME, metadataDecoded.getNickname());
+        Assert.assertEquals(messageId, new MessageId(metadataDecoded.getMessageId()));
+        Assert.assertEquals(createdAt.getTime(), metadataDecoded.getCreatedAt());
+    }
 
-	@Test
-	public void testEncodedBox() throws ThreemaException {
+    @Test
+    public void testEncodedBox() throws ThreemaException {
 
-		MessageMetadata metadata = MessageMetadata.newBuilder()
-			.setNickname(TEST_NICKNAME)
-			.build();
-		MetadataBox box = new MetadataCoder(identityStoreA).encode(metadata, TEST_NONCE, identityStoreB.getPublicKey());
+        MessageMetadata metadata = MessageMetadata.newBuilder()
+            .setNickname(TEST_NICKNAME)
+            .build();
+        MetadataBox box = new MetadataCoder(identityStoreA).encode(metadata, TEST_NONCE, identityStoreB.getPublicKey());
 
-		Assert.assertArrayEquals(TEST_BOX, box.getBox());
-	}
+        Assert.assertArrayEquals(TEST_BOX, box.getBox());
+    }
 }

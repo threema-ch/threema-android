@@ -43,10 +43,12 @@ class IncomingGroupPollSetupTask(
         return processPollSetupMessage()
     }
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processPollSetupMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processPollSetupMessage()
 
     private fun processPollSetupMessage(): ReceiveStepsResult {
-        val successfullyProcessed = messageService.processIncomingGroupMessage(groupPollSetupMessage)
+        val successfullyProcessed =
+            messageService.processIncomingGroupMessage(groupPollSetupMessage)
         return if (successfullyProcessed) {
             ReceiveStepsResult.SUCCESS
         } else {

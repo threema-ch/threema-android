@@ -29,31 +29,34 @@ import androidx.annotation.StringRes;
  * Only for conversation at this time
  */
 public class TagModel {
-	private final String tag;
-	@ColorInt private final int primaryColor;
-	@ColorInt private final int accentColor;
-	@StringRes final int nameRes;
+    private final String tag;
+    @ColorInt
+    private final int primaryColor;
+    @ColorInt
+    private final int accentColor;
+    @StringRes
+    final int nameRes;
 
-	public TagModel(String tag, @ColorInt int primaryColor, @ColorInt int accentColor, @StringRes int nameRes) {
-		this.tag = tag;
-		this.primaryColor = primaryColor;
-		this.accentColor = accentColor;
-		this.nameRes = nameRes;
-	}
+    public TagModel(String tag, @ColorInt int primaryColor, @ColorInt int accentColor, @StringRes int nameRes) {
+        this.tag = tag;
+        this.primaryColor = primaryColor;
+        this.accentColor = accentColor;
+        this.nameRes = nameRes;
+    }
 
-	public String getTag() {
-		return this.tag;
-	}
+    public String getTag() {
+        return this.tag;
+    }
 
-	public @ColorInt int getPrimaryColor() {
-		return this.primaryColor;
-	}
+    public @ColorInt int getPrimaryColor() {
+        return this.primaryColor;
+    }
 
-	public @ColorInt int getAccentColor() {
-		return this.accentColor;
-	}
+    public @ColorInt int getAccentColor() {
+        return this.accentColor;
+    }
 
-	public @StringRes int getNameRes() {
-		return this.nameRes;
-	}
+    public @StringRes int getNameRes() {
+        return this.nameRes;
+    }
 }

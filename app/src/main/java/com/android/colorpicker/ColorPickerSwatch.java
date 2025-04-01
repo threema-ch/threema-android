@@ -46,7 +46,7 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
     }
 
     public ColorPickerSwatch(Context context, int color, boolean checked,
-            OnColorSelectedListener listener) {
+                             OnColorSelectedListener listener) {
         super(context);
         mColor = color;
         mOnColorSelectedListener = listener;
@@ -61,7 +61,7 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
 
     protected void setColor(int color) {
         Drawable[] colorDrawable = new Drawable[]
-                {getContext().getResources().getDrawable(R.drawable.color_picker_swatch)};
+            {getContext().getResources().getDrawable(R.drawable.color_picker_swatch)};
         mSwatchImage.setImageDrawable(new ColorStateDrawable(colorDrawable, color));
     }
 

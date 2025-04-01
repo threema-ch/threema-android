@@ -31,79 +31,79 @@ import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 
 public class ForwardSecurityDataMessage extends ForwardSecurityData {
-	private final @NonNull
-	Encapsulated.DHType type;
-	private final long counter;
-	private final int offeredVersion;
-	private final int appliedVersion;
-	private final @Nullable Common.GroupIdentity groupIdentity;
-	private final @NonNull byte[] message;
+    private final @NonNull
+    Encapsulated.DHType type;
+    private final long counter;
+    private final int offeredVersion;
+    private final int appliedVersion;
+    private final @Nullable Common.GroupIdentity groupIdentity;
+    private final @NonNull byte[] message;
 
-	public ForwardSecurityDataMessage(
-		@NonNull DHSessionId sessionId,
-		@NonNull Encapsulated.DHType type,
-		long counter,
-		int offeredVersion,
-		int appliedVersion,
-		@Nullable Common.GroupIdentity groupIdentity,
-		@NonNull byte[] message
-	) {
-		super(sessionId);
-		this.type = type;
-		this.counter = counter;
-		this.offeredVersion = offeredVersion;
-		this.appliedVersion = appliedVersion;
-		this.groupIdentity = groupIdentity;
-		this.message = message;
-	}
+    public ForwardSecurityDataMessage(
+        @NonNull DHSessionId sessionId,
+        @NonNull Encapsulated.DHType type,
+        long counter,
+        int offeredVersion,
+        int appliedVersion,
+        @Nullable Common.GroupIdentity groupIdentity,
+        @NonNull byte[] message
+    ) {
+        super(sessionId);
+        this.type = type;
+        this.counter = counter;
+        this.offeredVersion = offeredVersion;
+        this.appliedVersion = appliedVersion;
+        this.groupIdentity = groupIdentity;
+        this.message = message;
+    }
 
-	@NonNull
-	public Encapsulated.DHType getType() {
-		return type;
-	}
+    @NonNull
+    public Encapsulated.DHType getType() {
+        return type;
+    }
 
-	public long getCounter() {
-		return counter;
-	}
+    public long getCounter() {
+        return counter;
+    }
 
-	public int getOfferedVersion() {
-		return offeredVersion;
-	}
+    public int getOfferedVersion() {
+        return offeredVersion;
+    }
 
-	public int getAppliedVersion() {
-		return appliedVersion;
-	}
+    public int getAppliedVersion() {
+        return appliedVersion;
+    }
 
-	@Nullable
-	public Common.GroupIdentity getGroupIdentity() {
-		return this.groupIdentity;
-	}
+    @Nullable
+    public Common.GroupIdentity getGroupIdentity() {
+        return this.groupIdentity;
+    }
 
-	@NonNull
-	public byte[] getMessage() {
-		return message;
-	}
+    @NonNull
+    public byte[] getMessage() {
+        return message;
+    }
 
-	@NonNull
-	@Override
-	public Envelope toProtobufMessage() {
-		// Build the encapsulated message
-		Encapsulated.Builder encapsulatedBuilder = Encapsulated.newBuilder()
-			.setDhType(type)
-			.setCounter(this.counter)
-			.setOfferedVersion(this.offeredVersion)
-			.setAppliedVersion(this.appliedVersion)
-			.setEncryptedInner(ByteString.copyFrom(this.message));
+    @NonNull
+    @Override
+    public Envelope toProtobufMessage() {
+        // Build the encapsulated message
+        Encapsulated.Builder encapsulatedBuilder = Encapsulated.newBuilder()
+            .setDhType(type)
+            .setCounter(this.counter)
+            .setOfferedVersion(this.offeredVersion)
+            .setAppliedVersion(this.appliedVersion)
+            .setEncryptedInner(ByteString.copyFrom(this.message));
 
-		// Only set group identity if available
-		if (groupIdentity != null) {
-			encapsulatedBuilder.setGroupIdentity(groupIdentity);
-		}
+        // Only set group identity if available
+        if (groupIdentity != null) {
+            encapsulatedBuilder.setGroupIdentity(groupIdentity);
+        }
 
-		// Build and return the envelope
-		return Envelope.newBuilder()
-			.setSessionId(ByteString.copyFrom(this.getSessionId().get()))
-			.setEncapsulated(encapsulatedBuilder.build())
-			.build();
-	}
+        // Build and return the envelope
+        return Envelope.newBuilder()
+            .setSessionId(ByteString.copyFrom(this.getSessionId().get()))
+            .setEncapsulated(encapsulatedBuilder.build())
+            .build();
+    }
 }

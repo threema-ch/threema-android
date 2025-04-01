@@ -36,7 +36,8 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallServiceConnection")
 
 class GroupCallServiceConnection : ServiceConnection {
     private var groupCallController: GroupCallController? = null
-    private val deferredServiceBinder: CompletableDeferred<GroupCallServiceBinder> = CompletableDeferred()
+    private val deferredServiceBinder: CompletableDeferred<GroupCallServiceBinder> =
+        CompletableDeferred()
     private var disconnected = false
 
     override fun onServiceConnected(name: ComponentName?, serviceBinder: IBinder?) {

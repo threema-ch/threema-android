@@ -23,7 +23,7 @@ package ch.threema.app.multidevice.linking
 
 import ch.threema.base.ThreemaException
 
-class DeviceLinkingException: ThreemaException {
+class DeviceLinkingException : ThreemaException {
     constructor(msg: String) : super(msg)
     constructor(msg: String, throwable: Throwable) : super(msg, throwable)
 }

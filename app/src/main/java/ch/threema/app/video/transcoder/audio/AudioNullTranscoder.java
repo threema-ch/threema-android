@@ -36,93 +36,93 @@ import ch.threema.base.utils.LoggingUtil;
  * Keep audio input track and return it unchanged to the muxer
  */
 public class AudioNullTranscoder extends AbstractAudioTranscoder {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AudioNullTranscoder");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioNullTranscoder");
 
-	/**
-	 * Time of the previously muxed sample.
-	 */
-	private long previousSampleTime;
+    /**
+     * Time of the previously muxed sample.
+     */
+    private long previousSampleTime;
 
-	private final MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-	private ByteBuffer buffer;
+    private final MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+    private ByteBuffer buffer;
 
 
-	/**
-	 * @param component The audio component that should be transcoded
-	 * @param stats Transcoder Statistics
-	 * @param trimEndTimeMs Trim time from the end in ms (!)
-	 */
-	public AudioNullTranscoder(AudioComponent component, VideoTranscoder.Stats stats, long trimEndTimeMs) {
-		super(component, stats, trimEndTimeMs);
-	}
+    /**
+     * @param component     The audio component that should be transcoded
+     * @param stats         Transcoder Statistics
+     * @param trimEndTimeMs Trim time from the end in ms (!)
+     */
+    public AudioNullTranscoder(AudioComponent component, VideoTranscoder.Stats stats, long trimEndTimeMs) {
+        super(component, stats, trimEndTimeMs);
+    }
 
-	@Override
-	public boolean hasPendingIntermediateFrames() {
-		// We don't have any intermediate frames which could be pending when done.
-		return this.getState() != State.DONE;
-	}
+    @Override
+    public boolean hasPendingIntermediateFrames() {
+        // We don't have any intermediate frames which could be pending when done.
+        return this.getState() != State.DONE;
+    }
 
-	@Override
-	public void setup() {
-		if(this.getState() != State.INITIAL) {
-			throw new IllegalStateException("Setup may only be called on initialization");
-		}
+    @Override
+    public void setup() {
+        if (this.getState() != State.INITIAL) {
+            throw new IllegalStateException("Setup may only be called on initialization");
+        }
 
-		this.outputFormat = this.component.getTrackFormat();
-		this.buffer = ByteBuffer.allocate(this.outputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE));
+        this.outputFormat = this.component.getTrackFormat();
+        this.buffer = ByteBuffer.allocate(this.outputFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE));
 
-		this.setState(State.WAITING_ON_MUXER);
-	}
+        this.setState(State.WAITING_ON_MUXER);
+    }
 
-	@Override
-	public void step() {
-		if (this.getState() == State.INITIAL || this.getState() == State.DONE) {
-			throw new IllegalStateException(String.format("Calling an audio transcoding step is not allowed in state %s", this.getState()));
-		}
+    @Override
+    public void step() {
+        if (this.getState() == State.INITIAL || this.getState() == State.DONE) {
+            throw new IllegalStateException(String.format("Calling an audio transcoding step is not allowed in state %s", this.getState()));
+        }
 
-		if (this.getState() == State.WAITING_ON_MUXER) {
-			logger.debug("Skipping transcoding step, waiting for muxer to be injected.");
-			return;
-		}
+        if (this.getState() == State.WAITING_ON_MUXER) {
+            logger.debug("Skipping transcoding step, waiting for muxer to be injected.");
+            return;
+        }
 
-		MediaExtractor extractor = this.component.getMediaExtractor();
+        MediaExtractor extractor = this.component.getMediaExtractor();
 
-		final int sampleSize = extractor.readSampleData(this.buffer, 0);
-		this.bufferInfo.set(
-		 	0,
-			 sampleSize,
-			 extractor.getSampleTime(),
-			 extractor.getSampleFlags()
-		 );
+        final int sampleSize = extractor.readSampleData(this.buffer, 0);
+        this.bufferInfo.set(
+            0,
+            sampleSize,
+            extractor.getSampleTime(),
+            extractor.getSampleFlags()
+        );
 
-		logger.trace("audio extractor: returned buffer of chunkSize {}", sampleSize);
-		logger.trace("audio extractor: returned buffer for sampleTime {}", this.bufferInfo.presentationTimeUs);
+        logger.trace("audio extractor: returned buffer of chunkSize {}", sampleSize);
+        logger.trace("audio extractor: returned buffer for sampleTime {}", this.bufferInfo.presentationTimeUs);
 
-		if (this.trimEndTimeUs > 0 && this.bufferInfo.presentationTimeUs > this.trimEndTimeUs) {
-			logger.debug("audio extractor: The current sample is over the trim time. Lets stop.");
-			this.setState(State.DONE);
-			return;
-		}
+        if (this.trimEndTimeUs > 0 && this.bufferInfo.presentationTimeUs > this.trimEndTimeUs) {
+            logger.debug("audio extractor: The current sample is over the trim time. Lets stop.");
+            this.setState(State.DONE);
+            return;
+        }
 
-		if (sampleSize >= 0) {
-			this.stats.incrementExtractedFrameCount(this.component);
+        if (sampleSize >= 0) {
+            this.stats.incrementExtractedFrameCount(this.component);
 
-			if (bufferInfo.presentationTimeUs >= trimStartTimeUs) {
-				if (this.bufferInfo.presentationTimeUs >= this.previousSampleTime) {
-					this.previousSampleTime = this.bufferInfo.presentationTimeUs;
-					this.muxer.writeSampleData(this.muxerTrack.get(), this.buffer, this.bufferInfo);
-				} else {
-					// skip old audio, as this only results in quality reduction.
-					logger.debug("audio muxer: presentationTimeUs {} < previousPresentationTime {}",
-						this.bufferInfo.presentationTimeUs, this.previousSampleTime);
-				}
-			} else {
-				logger.trace("audio extractor: sample time {} <= trim start time {}", bufferInfo.presentationTimeUs, trimStartTimeUs);
-			}
-		}
+            if (bufferInfo.presentationTimeUs >= trimStartTimeUs) {
+                if (this.bufferInfo.presentationTimeUs >= this.previousSampleTime) {
+                    this.previousSampleTime = this.bufferInfo.presentationTimeUs;
+                    this.muxer.writeSampleData(this.muxerTrack.get(), this.buffer, this.bufferInfo);
+                } else {
+                    // skip old audio, as this only results in quality reduction.
+                    logger.debug("audio muxer: presentationTimeUs {} < previousPresentationTime {}",
+                        this.bufferInfo.presentationTimeUs, this.previousSampleTime);
+                }
+            } else {
+                logger.trace("audio extractor: sample time {} <= trim start time {}", bufferInfo.presentationTimeUs, trimStartTimeUs);
+            }
+        }
 
-		if (!extractor.advance()) {
-			this.setState(State.DONE);
-		}
-	}
+        if (!extractor.advance()) {
+            this.setState(State.DONE);
+        }
+    }
 }

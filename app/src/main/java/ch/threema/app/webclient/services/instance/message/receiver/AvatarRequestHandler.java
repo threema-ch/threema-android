@@ -40,60 +40,60 @@ import ch.threema.base.utils.LoggingUtil;
 
 @WorkerThread
 public class AvatarRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarRequestHandler");
 
-	private final MessageDispatcher dispatcher;
+    private final MessageDispatcher dispatcher;
 
-	@AnyThread
-	public AvatarRequestHandler(MessageDispatcher dispatcher) {
-		super(Protocol.SUB_TYPE_AVATAR);
-		this.dispatcher = dispatcher;
-	}
+    @AnyThread
+    public AvatarRequestHandler(MessageDispatcher dispatcher) {
+        super(Protocol.SUB_TYPE_AVATAR);
+        this.dispatcher = dispatcher;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received avatar request");
-		Map<String, Value> args = this.getArguments(message, false, new String[] {
-				Protocol.ARGUMENT_RECEIVER_TYPE,
-				Protocol.ARGUMENT_RECEIVER_ID,
-				Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION,
-				Protocol.ARGUMENT_TEMPORARY_ID
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received avatar request");
+        Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_TYPE,
+            Protocol.ARGUMENT_RECEIVER_ID,
+            Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION,
+            Protocol.ARGUMENT_TEMPORARY_ID
+        });
 
-		final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
-		final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
-		final boolean highResolution = args.get(Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION).asBooleanValue().getBoolean();
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
+        final String type = args.get(Protocol.ARGUMENT_RECEIVER_TYPE).asStringValue().asString();
+        final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
+        final boolean highResolution = args.get(Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION).asBooleanValue().getBoolean();
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().toString();
 
-		// read optionally avatar size field
-		Integer maxAvatarSize = null;
-		if (args.containsKey(Protocol.ARGUMENT_MAX_SIZE)) {
-			maxAvatarSize = args.get(Protocol.ARGUMENT_MAX_SIZE).asIntegerValue().toInt();
-		}
-		try {
-			// Send response
-			final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
-					.put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
-					.put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
-					.put(Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION, highResolution)
-					.put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
-			this.respond(this.getModel(args), highResolution, responseArgs, maxAvatarSize);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-		}
-	}
+        // read optionally avatar size field
+        Integer maxAvatarSize = null;
+        if (args.containsKey(Protocol.ARGUMENT_MAX_SIZE)) {
+            maxAvatarSize = args.get(Protocol.ARGUMENT_MAX_SIZE).asIntegerValue().toInt();
+        }
+        try {
+            // Send response
+            final MsgpackObjectBuilder responseArgs = new MsgpackObjectBuilder()
+                .put(Protocol.ARGUMENT_RECEIVER_TYPE, type)
+                .put(Protocol.ARGUMENT_RECEIVER_ID, receiverId)
+                .put(Protocol.ARGUMENT_AVATAR_HIGH_RESOLUTION, highResolution)
+                .put(Protocol.ARGUMENT_TEMPORARY_ID, temporaryId);
+            this.respond(this.getModel(args), highResolution, responseArgs, maxAvatarSize);
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	private void respond(Utils.ModelWrapper model, boolean highResolution, MsgpackObjectBuilder args, Integer maxAvatarSize) {
-		try {
-			logger.debug("Sending avatar response");
-			this.send(this.dispatcher, model.getAvatar(highResolution, maxAvatarSize), args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+    private void respond(Utils.ModelWrapper model, boolean highResolution, MsgpackObjectBuilder args, Integer maxAvatarSize) {
+        try {
+            logger.debug("Sending avatar response");
+            this.send(this.dispatcher, model.getAvatar(highResolution, maxAvatarSize), args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

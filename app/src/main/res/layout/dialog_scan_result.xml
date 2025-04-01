@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<TextView
-		android:id="@+id/info_text"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="16dp"
-		android:text="@string/no_threema_qr_info"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"/>
+    <TextView
+        android:id="@+id/info_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/no_threema_qr_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-	<ch.threema.app.emojis.EmojiConversationTextView
-		android:id="@+id/scan_result"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="16dp"
-		android:autoLink="web"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/info_text" />
+    <ch.threema.app.emojis.EmojiConversationTextView
+        android:id="@+id/scan_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:autoLink="web"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/info_text" />
 
-	<androidx.appcompat.widget.AppCompatImageButton
-		android:id="@+id/copy"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_margin="16dp"
-		android:padding="4dp"
-		android:contentDescription="@string/copy_message_action"
-		android:background="@drawable/ripple_call_button"
-		android:scaleType="fitXY"
-		app:srcCompat="@drawable/ic_content_copy_outline"
-		app:tint="?attr/colorOnSurface"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/scan_result"/>
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/copy"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:padding="4dp"
+        android:contentDescription="@string/copy_message_action"
+        android:background="@drawable/ripple_call_button"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_content_copy_outline"
+        app:tint="?attr/colorOnSurface"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/scan_result" />
 
-	<androidx.appcompat.widget.AppCompatImageButton
-		android:id="@+id/share"
-		android:layout_width="40dp"
-		android:layout_height="40dp"
-		android:layout_margin="16dp"
-		android:padding="4dp"
-		android:contentDescription="@string/share_via"
-		android:background="@drawable/ripple_call_button"
-		android:scaleType="fitXY"
-		app:srcCompat="@drawable/ic_share_outline"
-		app:tint="?attr/colorOnSurface"
-		app:layout_constraintStart_toEndOf="@+id/copy"
-		app:layout_constraintTop_toBottomOf="@+id/scan_result" />
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/share"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:padding="4dp"
+        android:contentDescription="@string/share_via"
+        android:background="@drawable/ripple_call_button"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/ic_share_outline"
+        app:tint="?attr/colorOnSurface"
+        app:layout_constraintStart_toEndOf="@+id/copy"
+        app:layout_constraintTop_toBottomOf="@+id/scan_result" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

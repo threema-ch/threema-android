@@ -164,7 +164,10 @@ class ReflectedContactSyncTaskTest {
             assertEquals(contact.featureMask, data.featureMask.toLong())
             assertEquals(contact.syncState.convert(), data.syncState)
             assertEquals(contact.readReceiptPolicyOverride.convert(), data.readReceiptPolicy)
-            assertEquals(contact.typingIndicatorPolicyOverride.convert(), data.typingIndicatorPolicy)
+            assertEquals(
+                contact.typingIndicatorPolicyOverride.convert(),
+                data.typingIndicatorPolicy
+            )
         }
     }
 

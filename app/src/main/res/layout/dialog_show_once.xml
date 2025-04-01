@@ -1,46 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2018-2024 Threema GmbH
   ~ All rights reserved.
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-	<ScrollView
-				android:id="@+id/scroll_container"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:background="@android:color/transparent">
+    <ScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
 
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:paddingLeft="24dp"
-			android:paddingRight="24dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp">
 
-			<TextView
-				style="@style/MaterialAlertDialog.Material3.Body.Text"
-				android:id="@+id/message"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="8dp"
-				android:text="@string/safe_configure_server_explain" />
+            <TextView
+                style="@style/MaterialAlertDialog.Material3.Body.Text"
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/safe_configure_server_explain" />
 
-			<com.google.android.material.checkbox.MaterialCheckBox
-				android:id="@+id/checkbox"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginLeft="-6dp"
-				android:layout_marginTop="12dp"
-				android:checked="false"
-				android:enabled="true"
-				android:text="@string/dont_show_again"
-				android:textAppearance="@style/Threema.TextAppearance.BodyMedium" />
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="-6dp"
+                android:layout_marginTop="12dp"
+                android:checked="false"
+                android:enabled="true"
+                android:text="@string/dont_show_again"
+                android:textAppearance="@style/Threema.TextAppearance.BodyMedium" />
 
-		</LinearLayout>
-	</ScrollView>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

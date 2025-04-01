@@ -30,30 +30,34 @@ import ch.threema.app.services.UpdateSystemService;
 import static ch.threema.app.services.systemupdate.SystemUpdateHelpersKt.fieldExists;
 
 public class SystemUpdateToVersion71 implements UpdateSystemService.SystemUpdate {
-	public static final int VERSION = 71;
-	public static final String VERSION_STRING = "version " + VERSION;
+    public static final int VERSION = 71;
+    public static final String VERSION_STRING = "version " + VERSION;
 
-	private final SQLiteDatabase sqLiteDatabase;
+    private final SQLiteDatabase sqLiteDatabase;
 
-	public SystemUpdateToVersion71(SQLiteDatabase sqLiteDatabase) {
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
+    public SystemUpdateToVersion71(SQLiteDatabase sqLiteDatabase) {
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
 
-	@Override
-	public boolean runAsync() { return true; }
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public boolean runDirectly() throws SQLException {
-		// add isHidden column if not present already
-		String table = "distribution_list";
-		String column = "isHidden";
+    @Override
+    public boolean runDirectly() throws SQLException {
+        // add isHidden column if not present already
+        String table = "distribution_list";
+        String column = "isHidden";
 
-		if (!fieldExists(this.sqLiteDatabase, table, column)) {
-			sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + column + " TINYINT DEFAULT 0");
-		}
-		return true;
-	}
+        if (!fieldExists(this.sqLiteDatabase, table, column)) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN " + column + " TINYINT DEFAULT 0");
+        }
+        return true;
+    }
 
-	@Override
-	public String getText() { return VERSION_STRING; }
+    @Override
+    public String getText() {
+        return VERSION_STRING;
+    }
 }

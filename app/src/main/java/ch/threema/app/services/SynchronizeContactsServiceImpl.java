@@ -51,26 +51,26 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 import ch.threema.storage.models.ContactModel;
 
 public class SynchronizeContactsServiceImpl implements SynchronizeContactsService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsServiceImpl");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsServiceImpl");
 
-	private final ContentResolver contentResolver;
-	private final APIConnector apiConnector;
-	private final ContactService contactService;
-	private final @NonNull ContactModelRepository contactModelRepository;
-	private final UserService userService;
-	private final LocaleService localeService;
-	private final IdentityStoreInterface identityStore;
+    private final ContentResolver contentResolver;
+    private final APIConnector apiConnector;
+    private final ContactService contactService;
+    private final @NonNull ContactModelRepository contactModelRepository;
+    private final UserService userService;
+    private final LocaleService localeService;
+    private final IdentityStoreInterface identityStore;
 
-	private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<>();
-	private final IdListService excludedIdentityListService;
-	private final PreferenceService preferenceService;
-	private final DeviceService deviceService;
-	private final Context context;
-	private final FileService fileService;
-	private final BlockedIdentitiesService blockedIdentitiesService;
-	private final ApiService apiService;
+    private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<>();
+    private final IdListService excludedIdentityListService;
+    private final PreferenceService preferenceService;
+    private final DeviceService deviceService;
+    private final Context context;
+    private final FileService fileService;
+    private final BlockedIdentitiesService blockedIdentitiesService;
+    private final ApiService apiService;
 
-	private Date latestFullSync;
+    private Date latestFullSync;
 
     public SynchronizeContactsServiceImpl(
         Context context, APIConnector apiConnector,
@@ -86,240 +86,237 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         ApiService apiService
     ) {
-		this.excludedIdentityListService = excludedIdentityListService;
-		this.preferenceService = preferenceService;
-		this.deviceService = deviceService;
-		this.context = context;
-		this.fileService = fileService;
-		this.contentResolver = context.getContentResolver();
-		this.apiConnector = apiConnector;
-		this.contactService = contactService;
-		this.contactModelRepository = contactModelRepository;
-		this.userService = userService;
-		this.localeService = localeService;
-		this.identityStore = identityStore;
-		this.blockedIdentitiesService = blockedIdentitiesService;
-		this.apiService = apiService;
-	}
+        this.excludedIdentityListService = excludedIdentityListService;
+        this.preferenceService = preferenceService;
+        this.deviceService = deviceService;
+        this.context = context;
+        this.fileService = fileService;
+        this.contentResolver = context.getContentResolver();
+        this.apiConnector = apiConnector;
+        this.contactService = contactService;
+        this.contactModelRepository = contactModelRepository;
+        this.userService = userService;
+        this.localeService = localeService;
+        this.identityStore = identityStore;
+        this.blockedIdentitiesService = blockedIdentitiesService;
+        this.apiService = apiService;
+    }
 
-	@Override
-	public boolean instantiateSynchronizationAndRun() {
-		final SynchronizeContactsRoutine sync = this.instantiateSynchronization();
+    @Override
+    public boolean instantiateSynchronizationAndRun() {
+        final SynchronizeContactsRoutine sync = this.instantiateSynchronization();
 
-		if (sync != null) {
-			if(this.deviceService != null && this.deviceService.isOnline()) {
-				sync.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) ->
-					// let user know that contact was added
-					ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts))
-				);
-
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						sync.run();
-
-						//get all business accounts
-						//disable contact changed event handler
-						boolean enableState = ListenerManager.contactListeners.isEnabled();
-						try {
-							if(enableState) {
-								ListenerManager.contactListeners.enabled(false);
-							}
-
-							for (ContactModel contactModel : contactService.getAll()) {
-								if (ContactUtil.isGatewayContact(contactModel)) {
-									ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(contactModel.getIdentity());
-									if (model == null) {
-										logger.error("Could not get contact model with identity {}", contactModel.getIdentity());
-										continue;
-									}
-									UpdateBusinessAvatarRoutine.start(model, fileService, contactService, apiService, true);
-								}
-							}
-							//fore update business account avatars
-						}
-						catch (Exception x) {
-							//log exception and ignore
-							logger.error("Ignoring exception", x);
-						}
-						finally {
-							//enable contact listener again
-							ListenerManager.contactListeners.enabled(enableState);
-						}
-
-
-					}
-				}, "SynchronizeContactsRoutine").start();
-				return true;
-			}
-			else {
-				this.finishedRoutine(sync);
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public SynchronizeContactsRoutine instantiateSynchronization() {
-		Account account = this.userService.getAccount();
-		if(account != null) {
-			return this.instantiateSynchronization(account);
-		}
-		return null;
-	}
-
-
-	@Override
-	public SynchronizeContactsRoutine instantiateSynchronization(Account account) {
-		logger.info("Running contact sync");
-		logger.debug("instantiateSynchronization with account {}", account);
-
-		final SynchronizeContactsRoutine routine =
-				new SynchronizeContactsRoutine(
-						this.context,
-						this.apiConnector,
-						this.contactService,
-						this.contactModelRepository,
-						this.userService,
-						this.localeService,
-						this.contentResolver,
-						this.excludedIdentityListService,
-						this.deviceService,
-						this.preferenceService,
-						this.identityStore,
-						this.blockedIdentitiesService
+        if (sync != null) {
+            if (this.deviceService != null && this.deviceService.isOnline()) {
+                sync.addOnFinished((success, modifiedAccounts, createdContacts, deletedAccounts) ->
+                    // let user know that contact was added
+                    ListenerManager.newSyncedContactListener.handle(listener -> listener.onNew(createdContacts))
                 );
 
-		synchronized (this.pendingRoutines) {
-			this.pendingRoutines.add(routine);
-		}
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        sync.run();
 
-		routine.addOnFinished(new SynchronizeContactsRoutine.OnFinished() {
-			@Override
-			public void finished(boolean success, long modifiedAccounts, List<ch.threema.data.models.ContactModel> createdContacts, long deletedAccounts) {
-				finishedRoutine(routine);
-			}
-		});
+                        //get all business accounts
+                        //disable contact changed event handler
+                        boolean enableState = ListenerManager.contactListeners.isEnabled();
+                        try {
+                            if (enableState) {
+                                ListenerManager.contactListeners.enabled(false);
+                            }
 
-		routine.addOnStarted(new SynchronizeContactsRoutine.OnStarted() {
-			@Override
-			public void started(boolean fullSync) {
-				if(fullSync) {
-					latestFullSync = new Date();
-				}
-			}
-		});
+                            for (ContactModel contactModel : contactService.getAll()) {
+                                if (ContactUtil.isGatewayContact(contactModel)) {
+                                    ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(contactModel.getIdentity());
+                                    if (model == null) {
+                                        logger.error("Could not get contact model with identity {}", contactModel.getIdentity());
+                                        continue;
+                                    }
+                                    UpdateBusinessAvatarRoutine.start(model, fileService, contactService, apiService, true);
+                                }
+                            }
+                            //fore update business account avatars
+                        } catch (Exception x) {
+                            //log exception and ignore
+                            logger.error("Ignoring exception", x);
+                        } finally {
+                            //enable contact listener again
+                            ListenerManager.contactListeners.enabled(enableState);
+                        }
 
-		ListenerManager.synchronizeContactsListeners.handle(new ListenerManager.HandleListener<SynchronizeContactsListener>() {
-			@Override
-			public void handle(SynchronizeContactsListener listener) {
-				listener.onStarted(routine);
-			}
-		});
 
-		return routine;
-	}
+                    }
+                }, "SynchronizeContactsRoutine").start();
+                return true;
+            } else {
+                this.finishedRoutine(sync);
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public boolean isSynchronizationInProgress() {
-		return this.pendingRoutines.size() > 0;
-	}
+    @Override
+    public SynchronizeContactsRoutine instantiateSynchronization() {
+        Account account = this.userService.getAccount();
+        if (account != null) {
+            return this.instantiateSynchronization(account);
+        }
+        return null;
+    }
 
-	@Override
-	public boolean isFullSyncInProgress() {
-		synchronized (this.pendingRoutines) {
-			return Functional.select(this.pendingRoutines, new IPredicateNonNull<SynchronizeContactsRoutine>() {
-				@Override
-				public boolean apply(@NonNull SynchronizeContactsRoutine routine) {
-					return routine != null && routine.running() && routine.fullSync();
-				}
-			}) != null;
-		}
-	}
 
-	@Override
-	public boolean enableSync() {
-		boolean success = false;
+    @Override
+    public SynchronizeContactsRoutine instantiateSynchronization(Account account) {
+        logger.info("Running contact sync");
+        logger.debug("instantiateSynchronization with account {}", account);
 
-		if(this.userService != null) {
-			Account account = this.userService.getAccount(true);
-			success = account != null;
-		}
+        final SynchronizeContactsRoutine routine =
+            new SynchronizeContactsRoutine(
+                this.context,
+                this.apiConnector,
+                this.contactService,
+                this.contactModelRepository,
+                this.userService,
+                this.localeService,
+                this.contentResolver,
+                this.excludedIdentityListService,
+                this.deviceService,
+                this.preferenceService,
+                this.identityStore,
+                this.blockedIdentitiesService
+            );
 
-		if(success && this.preferenceService != null) {
-			this.preferenceService.setSyncContacts(true);
-		}
-		return success;
-	}
+        synchronized (this.pendingRoutines) {
+            this.pendingRoutines.add(routine);
+        }
 
-	@Override
-	public boolean disableSync(final Runnable runAfterRemovedAccount) {
-		if(this.userService != null) {
-			//cancel all syncs!
-			synchronized (this.pendingRoutines) {
-				for(int n = this.pendingRoutines.size()-1; n >= 0 ; n--) {
-					this.pendingRoutines.get(n).abort();
-				}
-			}
+        routine.addOnFinished(new SynchronizeContactsRoutine.OnFinished() {
+            @Override
+            public void finished(boolean success, long modifiedAccounts, List<ch.threema.data.models.ContactModel> createdContacts, long deletedAccounts) {
+                finishedRoutine(routine);
+            }
+        });
 
-			int numDeleted = AndroidContactUtil.getInstance().deleteAllThreemaRawContacts();
-			logger.debug("Deleted {} raw contacts", numDeleted);
+        routine.addOnStarted(new SynchronizeContactsRoutine.OnStarted() {
+            @Override
+            public void started(boolean fullSync) {
+                if (fullSync) {
+                    latestFullSync = new Date();
+                }
+            }
+        });
 
-			if(!this.userService.removeAccount(new AccountManagerCallback<Boolean>() {
-				@Override
-				public void run(AccountManagerFuture<Boolean> future) {
-					disableSyncFinished(runAfterRemovedAccount);
-				}
-			})) {
-				this.disableSyncFinished(runAfterRemovedAccount);
-			}
-		}
-		return true;
-	}
+        ListenerManager.synchronizeContactsListeners.handle(new ListenerManager.HandleListener<SynchronizeContactsListener>() {
+            @Override
+            public void handle(SynchronizeContactsListener listener) {
+                listener.onStarted(routine);
+            }
+        });
 
-	private void disableSyncFinished(Runnable run) {
-		if(this.preferenceService != null) {
-			this.preferenceService.setSyncContacts(false);
-		}
+        return routine;
+    }
 
-		if(contactService != null) {
-			contactService.removeAllSystemContactLinks();
+    @Override
+    public boolean isSynchronizationInProgress() {
+        return this.pendingRoutines.size() > 0;
+    }
 
-			// cleanup / degrade remaining identities that are still server verified
-			List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);
-			if (identities != null && !identities.isEmpty()) {
-				for (String identity : identities) {
-					ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(identity);
-					if (model != null) {
-						try {
-							model.setVerificationLevelFromLocal(VerificationLevel.UNVERIFIED);
-						} catch (ModelDeletedException e) {
-							logger.info("Could not set verification level because contact {} has been deleted", identity, e);
-						}
-					}
-				}
-			}
-		}
+    @Override
+    public boolean isFullSyncInProgress() {
+        synchronized (this.pendingRoutines) {
+            return Functional.select(this.pendingRoutines, new IPredicateNonNull<SynchronizeContactsRoutine>() {
+                @Override
+                public boolean apply(@NonNull SynchronizeContactsRoutine routine) {
+                    return routine != null && routine.running() && routine.fullSync();
+                }
+            }) != null;
+        }
+    }
 
-		if(run != null) {
-			run.run();
-		}
-	}
+    @Override
+    public boolean enableSync() {
+        boolean success = false;
 
-	private void finishedRoutine(final SynchronizeContactsRoutine routine) {
-		//remove from pending
-		synchronized (this.pendingRoutines) {
-			this.pendingRoutines.remove(routine);
-		}
+        if (this.userService != null) {
+            Account account = this.userService.getAccount(true);
+            success = account != null;
+        }
 
-		logger.info("Contact sync finished");
+        if (success && this.preferenceService != null) {
+            this.preferenceService.setSyncContacts(true);
+        }
+        return success;
+    }
 
-		//fire on finished
-		ListenerManager.synchronizeContactsListeners.handle(new ListenerManager.HandleListener<SynchronizeContactsListener>() {
-			@Override
-			public void handle(SynchronizeContactsListener listener) {
-				listener.onFinished(routine);
-			}
-		});
-	}
+    @Override
+    public boolean disableSync(final Runnable runAfterRemovedAccount) {
+        if (this.userService != null) {
+            //cancel all syncs!
+            synchronized (this.pendingRoutines) {
+                for (int n = this.pendingRoutines.size() - 1; n >= 0; n--) {
+                    this.pendingRoutines.get(n).abort();
+                }
+            }
+
+            int numDeleted = AndroidContactUtil.getInstance().deleteAllThreemaRawContacts();
+            logger.debug("Deleted {} raw contacts", numDeleted);
+
+            if (!this.userService.removeAccount(new AccountManagerCallback<Boolean>() {
+                @Override
+                public void run(AccountManagerFuture<Boolean> future) {
+                    disableSyncFinished(runAfterRemovedAccount);
+                }
+            })) {
+                this.disableSyncFinished(runAfterRemovedAccount);
+            }
+        }
+        return true;
+    }
+
+    private void disableSyncFinished(Runnable run) {
+        if (this.preferenceService != null) {
+            this.preferenceService.setSyncContacts(false);
+        }
+
+        if (contactService != null) {
+            contactService.removeAllSystemContactLinks();
+
+            // cleanup / degrade remaining identities that are still server verified
+            List<String> identities = contactService.getIdentitiesByVerificationLevel(VerificationLevel.SERVER_VERIFIED);
+            if (identities != null && !identities.isEmpty()) {
+                for (String identity : identities) {
+                    ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(identity);
+                    if (model != null) {
+                        try {
+                            model.setVerificationLevelFromLocal(VerificationLevel.UNVERIFIED);
+                        } catch (ModelDeletedException e) {
+                            logger.info("Could not set verification level because contact {} has been deleted", identity, e);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (run != null) {
+            run.run();
+        }
+    }
+
+    private void finishedRoutine(final SynchronizeContactsRoutine routine) {
+        //remove from pending
+        synchronized (this.pendingRoutines) {
+            this.pendingRoutines.remove(routine);
+        }
+
+        logger.info("Contact sync finished");
+
+        //fire on finished
+        ListenerManager.synchronizeContactsListeners.handle(new ListenerManager.HandleListener<SynchronizeContactsListener>() {
+            @Override
+            public void handle(SynchronizeContactsListener listener) {
+                listener.onFinished(routine);
+            }
+        });
+    }
 }

@@ -46,7 +46,8 @@ data class JoinResponseBody(
                         SfuHttpResponse.Join.Address.Protocol.UDP -> Address.Protocol.UDP
                         else -> Address.Protocol.UNRECOGNIZED
                     }
-                    Address(address.port, address.ip, protocol) }
+                    Address(address.port, address.ip, protocol)
+                }
                 JoinResponseBody(
                     it.startedAt.toULong(),
                     it.maxParticipants.toUInt(),
@@ -59,7 +60,8 @@ data class JoinResponseBody(
             }
         }
     }
-    data class Address (
+
+    data class Address(
         val port: Int,
         val ip: String,
         val protocol: Protocol

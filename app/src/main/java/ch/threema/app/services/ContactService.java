@@ -44,24 +44,24 @@ import java8.util.function.Consumer;
 
 public interface ContactService extends AvatarService<ContactModel> {
 
-	String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
+    String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
 
     interface ContactProcessor {
-		boolean process(ContactModel contactModel);
-	}
+        boolean process(ContactModel contactModel);
+    }
 
-	class ProfilePictureUploadData {
-		public byte[] bitmapArray;
-		public byte[] blobId;
-		public byte[] encryptionKey;
-		public int size;
-		public long uploadedAt;
-	}
+    class ProfilePictureUploadData {
+        public byte[] bitmapArray;
+        public byte[] blobId;
+        public byte[] encryptionKey;
+        public int size;
+        public long uploadedAt;
+    }
 
-	class ProfilePictureSharePolicy {
+    class ProfilePictureSharePolicy {
 
         // Do NOT change the order of these values, as features rely on the `ordinal` value to stay the same
-		public enum Policy {
+        public enum Policy {
             NOBODY,
             EVERYONE,
             ALLOW_LIST;
@@ -81,269 +81,271 @@ public interface ContactService extends AvatarService<ContactModel> {
             }
         }
 
-		@NonNull
-		private final Policy policy;
+        @NonNull
+        private final Policy policy;
 
-		@NonNull
-		private final List<String> allowedIdentities;
+        @NonNull
+        private final List<String> allowedIdentities;
 
-		ProfilePictureSharePolicy(@NonNull Policy policy, @NonNull List<String> allowedIdentities) {
-			this.policy = policy;
-			this.allowedIdentities = allowedIdentities;
-		}
+        ProfilePictureSharePolicy(@NonNull Policy policy, @NonNull List<String> allowedIdentities) {
+            this.policy = policy;
+            this.allowedIdentities = allowedIdentities;
+        }
 
-		@NonNull
-		public Policy getPolicy() {
-			return policy;
-		}
+        @NonNull
+        public Policy getPolicy() {
+            return policy;
+        }
 
-		@NonNull
-		public List<String> getAllowedIdentities() {
-			return allowedIdentities;
-		}
-	}
+        @NonNull
+        public List<String> getAllowedIdentities() {
+            return allowedIdentities;
+        }
+    }
 
-	class ForwardSecuritySessionState {
-		private enum ForwardSecurityState {
-			NO_SESSION,
-			UNSUPPORTED_BY_REMOTE,
-			L20,
-			R20,
-			R24,
-			RL44,
-		}
+    class ForwardSecuritySessionState {
+        private enum ForwardSecurityState {
+            NO_SESSION,
+            UNSUPPORTED_BY_REMOTE,
+            L20,
+            R20,
+            R24,
+            RL44,
+        }
 
-		private final ForwardSecurityState forwardSecurityState;
-		private final DHSession.DHVersions currentDHVersions;
+        private final ForwardSecurityState forwardSecurityState;
+        private final DHSession.DHVersions currentDHVersions;
 
-		private ForwardSecuritySessionState(@NonNull ForwardSecurityState forwardSecurityState) {
-			this(forwardSecurityState, null);
-		}
+        private ForwardSecuritySessionState(@NonNull ForwardSecurityState forwardSecurityState) {
+            this(forwardSecurityState, null);
+        }
 
-		private ForwardSecuritySessionState(
-			@NonNull ForwardSecurityState forwardSecurityState,
-			@Nullable DHSession.DHVersions currentDHVersions
-		) {
-			this.forwardSecurityState = forwardSecurityState;
-			this.currentDHVersions = currentDHVersions;
-		}
+        private ForwardSecuritySessionState(
+            @NonNull ForwardSecurityState forwardSecurityState,
+            @Nullable DHSession.DHVersions currentDHVersions
+        ) {
+            this.forwardSecurityState = forwardSecurityState;
+            this.currentDHVersions = currentDHVersions;
+        }
 
-		protected static ForwardSecuritySessionState noSession() {
-			return new ForwardSecuritySessionState(ForwardSecurityState.NO_SESSION);
-		}
+        protected static ForwardSecuritySessionState noSession() {
+            return new ForwardSecuritySessionState(ForwardSecurityState.NO_SESSION);
+        }
 
-		protected static ForwardSecuritySessionState unsupportedByRemote() {
-			return new ForwardSecuritySessionState(ForwardSecurityState.UNSUPPORTED_BY_REMOTE);
-		}
+        protected static ForwardSecuritySessionState unsupportedByRemote() {
+            return new ForwardSecuritySessionState(ForwardSecurityState.UNSUPPORTED_BY_REMOTE);
+        }
 
-		protected static ForwardSecuritySessionState fromDHState(
-			@NonNull DHSession.State state,
-			@Nullable DHSession.DHVersions dhVersions
-		) {
-			switch (state) {
-				case L20:
-					return new ForwardSecuritySessionState(ForwardSecurityState.L20, dhVersions);
-				case R20:
-					return new ForwardSecuritySessionState(ForwardSecurityState.R20, dhVersions);
-				case R24:
-					return new ForwardSecuritySessionState(ForwardSecurityState.R24, dhVersions);
-				case RL44:
-					return new ForwardSecuritySessionState(ForwardSecurityState.RL44, dhVersions);
-				default:
-					throw new IllegalStateException("No such dh state: " + state);
-			}
-		}
+        protected static ForwardSecuritySessionState fromDHState(
+            @NonNull DHSession.State state,
+            @Nullable DHSession.DHVersions dhVersions
+        ) {
+            switch (state) {
+                case L20:
+                    return new ForwardSecuritySessionState(ForwardSecurityState.L20, dhVersions);
+                case R20:
+                    return new ForwardSecuritySessionState(ForwardSecurityState.R20, dhVersions);
+                case R24:
+                    return new ForwardSecuritySessionState(ForwardSecurityState.R24, dhVersions);
+                case RL44:
+                    return new ForwardSecuritySessionState(ForwardSecurityState.RL44, dhVersions);
+                default:
+                    throw new IllegalStateException("No such dh state: " + state);
+            }
+        }
 
-		@NonNull
-		@Override
-		public String toString() {
-			switch (forwardSecurityState) {
-				case NO_SESSION:
-					return "No session";
-				case L20:
-					return "L20 " + currentDHVersions;
-				case R20:
-					return "R20 " + currentDHVersions;
-				case R24:
-					return "R24 " + currentDHVersions;
-				case RL44:
-					return "RL44 " + currentDHVersions;
-				case UNSUPPORTED_BY_REMOTE:
-					return "Unsupported by remote";
-				default:
-					return "Unknown state";
-			}
-		}
-	}
+        @NonNull
+        @Override
+        public String toString() {
+            switch (forwardSecurityState) {
+                case NO_SESSION:
+                    return "No session";
+                case L20:
+                    return "L20 " + currentDHVersions;
+                case R20:
+                    return "R20 " + currentDHVersions;
+                case R24:
+                    return "R24 " + currentDHVersions;
+                case RL44:
+                    return "RL44 " + currentDHVersions;
+                case UNSUPPORTED_BY_REMOTE:
+                    return "Unsupported by remote";
+                default:
+                    return "Unknown state";
+            }
+        }
+    }
 
-	interface Filter {
+    interface Filter {
 
-		/**
-		 * States filter
-		 */
-		IdentityState[] states();
+        /**
+         * States filter
+         */
+        IdentityState[] states();
 
-		/**
-		 * @return feature int
-		 */
-		Long requiredFeature();
+        /**
+         * @return feature int
+         */
+        Long requiredFeature();
 
-		/**
-		 * Update feature Level of Contacts.
-		 *
-		 * NOTE: The feature level will only be fetched if `requiredFeature()` is set
-		 * and for contacts that don't have that feature.
-		 */
-		Boolean fetchMissingFeatureLevel();
+        /**
+         * Update feature Level of Contacts.
+         * <p>
+         * NOTE: The feature level will only be fetched if `requiredFeature()` is set
+         * and for contacts that don't have that feature.
+         */
+        Boolean fetchMissingFeatureLevel();
 
-		/**
-		 * Include own identity
-		 */
-		Boolean includeMyself();
+        /**
+         * Include own identity
+         */
+        Boolean includeMyself();
 
-		/**
-		 * include hidden contacts
-		 */
-		Boolean includeHidden();
+        /**
+         * include hidden contacts
+         */
+        Boolean includeHidden();
 
-		/*
-		 * Limit to contacts with individual settings fro read receipts and typing indicators
-		 */
-		Boolean onlyWithReceiptSettings();
-	}
+        /*
+         * Limit to contacts with individual settings fro read receipts and typing indicators
+         */
+        Boolean onlyWithReceiptSettings();
+    }
 
-	@NonNull
-	ContactModel getMe();
+    @NonNull
+    ContactModel getMe();
 
-	/**
-	 * The contact selection to include or exclude invalid contacts.
-	 */
-	enum ContactSelection {
-		/**
-		 * Includes invalid contacts. Note that in the methods {@link #getAllDisplayed(ContactSelection)}
-		 * and {@link #getAllDisplayedWork(ContactSelection)}, this may be overridden by the
-		 * preferences.
-		 */
-		INCLUDE_INVALID,
-		/**
-		 * Don't include invalid contacts.
-		 */
-		EXCLUDE_INVALID,
-	}
+    /**
+     * The contact selection to include or exclude invalid contacts.
+     */
+    enum ContactSelection {
+        /**
+         * Includes invalid contacts. Note that in the methods {@link #getAllDisplayed(ContactSelection)}
+         * and {@link #getAllDisplayedWork(ContactSelection)}, this may be overridden by the
+         * preferences.
+         */
+        INCLUDE_INVALID,
+        /**
+         * Don't include invalid contacts.
+         */
+        EXCLUDE_INVALID,
+    }
 
-	/**
-	 * Get all contacts (including work contacts) depending on the preference to display inactive
-	 * contacts. If inactive contacts are hidden by the preference, then invalid contacts are not
-	 * included in this list neither. If inactive contacts should be shown according to the
-	 * preference, then depending on the argument, inactive and invalid contacts may be included.
-	 *
-	 * Note that the result does not include hidden contacts.
-	 *
-	 * This list also includes work contacts.
-	 *
-	 * If a list of contacts is sought without depending on the inactive contacts preference, the
-	 * method {@link #find(Filter)} can be used.
-	 *
-	 * @param contactSelection the option to include or exclude invalid contacts
-	 * @return a list of the contact models
-	 */
-	@NonNull
-	List<ContactModel> getAllDisplayed(@NonNull ContactSelection contactSelection);
+    /**
+     * Get all contacts (including work contacts) depending on the preference to display inactive
+     * contacts. If inactive contacts are hidden by the preference, then invalid contacts are not
+     * included in this list neither. If inactive contacts should be shown according to the
+     * preference, then depending on the argument, inactive and invalid contacts may be included.
+     * <p>
+     * Note that the result does not include hidden contacts.
+     * <p>
+     * This list also includes work contacts.
+     * <p>
+     * If a list of contacts is sought without depending on the inactive contacts preference, the
+     * method {@link #find(Filter)} can be used.
+     *
+     * @param contactSelection the option to include or exclude invalid contacts
+     * @return a list of the contact models
+     */
+    @NonNull
+    List<ContactModel> getAllDisplayed(@NonNull ContactSelection contactSelection);
 
-	/**
-	 * Get all contacts. This does not depend on any user preferences. Invalid and hidden contacts
-	 * are included as well.
-	 *
-	 * @return a list of all contact models
-	 */
-	@NonNull
-	List<ContactModel> getAll();
+    /**
+     * Get all contacts. This does not depend on any user preferences. Invalid and hidden contacts
+     * are included as well.
+     *
+     * @return a list of all contact models
+     */
+    @NonNull
+    List<ContactModel> getAll();
 
-	/**
-	 * Get a list of contact models based on the given filter.
-	 *
-	 * @param filter the filter that is applied to the result
-	 * @return a list of contact models
-	 * @see #getAllDisplayed
-	 * @see #getAllDisplayedWork
-	 */
-	@NonNull
-	List<ContactModel> find(Filter filter);
+    /**
+     * Get a list of contact models based on the given filter.
+     *
+     * @param filter the filter that is applied to the result
+     * @return a list of contact models
+     * @see #getAllDisplayed
+     * @see #getAllDisplayedWork
+     */
+    @NonNull
+    List<ContactModel> find(Filter filter);
 
-	@Nullable
-	ContactModel getByLookupKey(String lookupKey);
+    @Nullable
+    ContactModel getByLookupKey(String lookupKey);
 
-	@Nullable
-	ContactModel getByIdentity(@Nullable String identity);
+    @Nullable
+    ContactModel getByIdentity(@Nullable String identity);
 
-	List<ContactModel> getByIdentities(String[] identities);
-	List<ContactModel> getByIdentities(List<String> identities);
+    List<ContactModel> getByIdentities(String[] identities);
 
-	/**
-	 * Get all work contacts depending on the preference to display inactive contacts. If inactive
-	 * contacts are hidden by the preference, then invalid contacts are not included in this list
-	 * neither. If inactive contacts should be shown according to the preference, then depending on
-	 * the contact selection argument, invalid contacts may be included.
-	 *
-	 * Note that this does not include hidden contacts.
-	 *
-	 * If a list of contacts is sought without depending on the inactive contacts preference, the
-	 * method {@link #find(Filter)} can be used.
-	 *
-	 * @param contactSelection the states that should be included (if enabled in preferences)
-	 * @return a list of the contact models
-	 */
-	@NonNull
-	List<ContactModel> getAllDisplayedWork(ContactSelection contactSelection);
+    List<ContactModel> getByIdentities(List<String> identities);
 
-	/**
-	 * Get all work contacts. This does not depend on any user preferences. Invalid and hidden
-	 * contacts are also included.
-	 *
-	 * @return a list of the work contact models
-	 */
-	@NonNull
-	List<ContactModel> getAllWork();
+    /**
+     * Get all work contacts depending on the preference to display inactive contacts. If inactive
+     * contacts are hidden by the preference, then invalid contacts are not included in this list
+     * neither. If inactive contacts should be shown according to the preference, then depending on
+     * the contact selection argument, invalid contacts may be included.
+     * <p>
+     * Note that this does not include hidden contacts.
+     * <p>
+     * If a list of contacts is sought without depending on the inactive contacts preference, the
+     * method {@link #find(Filter)} can be used.
+     *
+     * @param contactSelection the states that should be included (if enabled in preferences)
+     * @return a list of the contact models
+     */
+    @NonNull
+    List<ContactModel> getAllDisplayedWork(ContactSelection contactSelection);
 
-	int countIsWork();
+    /**
+     * Get all work contacts. This does not depend on any user preferences. Invalid and hidden
+     * contacts are also included.
+     *
+     * @return a list of the work contact models
+     */
+    @NonNull
+    List<ContactModel> getAllWork();
 
-	List<ContactModel> getCanReceiveProfilePics();
-	List<String> getSynchronizedIdentities();
+    int countIsWork();
 
-	@Nullable
-	List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel);
+    List<ContactModel> getCanReceiveProfilePics();
 
-	@Nullable
-	ContactModel getByPublicKey(byte[] publicKey);
+    List<String> getSynchronizedIdentities();
 
-	/**
-	 * Update the acquaintance level of the given identity if it exists as a contact.
-	 *
-	 * @param identity the identity of the contact
-	 * @param acquaintanceLevel the new acquaintance level
-	 */
-	void setAcquaintanceLevel(
-		@NonNull String identity,
-		@NonNull ContactModel.AcquaintanceLevel acquaintanceLevel
-	);
+    @Nullable
+    List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel);
 
-	void setIsArchived(String identity, boolean archived);
+    @Nullable
+    ContactModel getByPublicKey(byte[] publicKey);
 
-	/**
-	 * Set the `lastUpdate` field of the specified contact to the current date.
-	 *
-	 * This will also save the model and notify listeners.
-	 */
-	void bumpLastUpdate(@NonNull String identity);
+    /**
+     * Update the acquaintance level of the given identity if it exists as a contact.
+     *
+     * @param identity          the identity of the contact
+     * @param acquaintanceLevel the new acquaintance level
+     */
+    void setAcquaintanceLevel(
+        @NonNull String identity,
+        @NonNull ContactModel.AcquaintanceLevel acquaintanceLevel
+    );
 
-	/**
-	 * Clear the `lastUpdate` field of the specified contact.
-	 *
-	 * This will result in the conversation being removed from the conversation list.
-	 *
-	 * Save the model and notify listeners.
-	 */
-	void clearLastUpdate(@NonNull String identity);
+    void setIsArchived(String identity, boolean archived);
+
+    /**
+     * Set the `lastUpdate` field of the specified contact to the current date.
+     * <p>
+     * This will also save the model and notify listeners.
+     */
+    void bumpLastUpdate(@NonNull String identity);
+
+    /**
+     * Clear the `lastUpdate` field of the specified contact.
+     * <p>
+     * This will result in the conversation being removed from the conversation list.
+     * <p>
+     * Save the model and notify listeners.
+     */
+    void clearLastUpdate(@NonNull String identity);
 
     /**
      * Save the given contact model.
@@ -353,41 +355,45 @@ public interface ContactService extends AvatarService<ContactModel> {
      * used.
      */
     @Deprecated
-	void save(@NonNull ContactModel model);
+    void save(@NonNull ContactModel model);
 
-	AccessModel getAccess(@Nullable String identity);
+    AccessModel getAccess(@Nullable String identity);
 
-	void setIsTyping(String identity, boolean isTyping) ;
-	boolean isTyping(String identity);
+    void setIsTyping(String identity, boolean isTyping);
 
-	/**
-	 * Send a typing indicator if the preferences do not prevent that.
-	 *
-	 * @param toIdentity the identity that should receive the typing indicator
-	 * @param isTyping   whether the user is typing or not
-	 */
-	void sendTypingIndicator(String toIdentity, boolean isTyping);
+    boolean isTyping(String identity);
 
-	/**
-	 * Create a new message receiver for the specified contact model.
-	 */
-	@NonNull ContactMessageReceiver createReceiver(ContactModel contact);
+    /**
+     * Send a typing indicator if the preferences do not prevent that.
+     *
+     * @param toIdentity the identity that should receive the typing indicator
+     * @param isTyping   whether the user is typing or not
+     */
+    void sendTypingIndicator(String toIdentity, boolean isTyping);
 
-	/**
-	 * Create a new message receiver for the specified contact model. Note that the return value is
-	 * null, if the old contact model does not exist with the identity of the given model.
-	 */
-	@Nullable ContactMessageReceiver createReceiver(@NonNull ch.threema.data.models.ContactModel contact);
+    /**
+     * Create a new message receiver for the specified contact model.
+     */
+    @NonNull
+    ContactMessageReceiver createReceiver(ContactModel contact);
+
+    /**
+     * Create a new message receiver for the specified contact model. Note that the return value is
+     * null, if the old contact model does not exist with the identity of the given model.
+     */
+    @Nullable
+    ContactMessageReceiver createReceiver(@NonNull ch.threema.data.models.ContactModel contact);
 
     /**
      * Create a new message receiver for the given identity. Note that the return value is null if
      * there is no contact with the provided identity.
      */
-    @Nullable ContactMessageReceiver createReceiver(@NonNull String identity);
+    @Nullable
+    ContactMessageReceiver createReceiver(@NonNull String identity);
 
-	boolean updateAllContactNamesFromAndroidContacts();
+    boolean updateAllContactNamesFromAndroidContacts();
 
-	void removeAllSystemContactLinks();
+    void removeAllSystemContactLinks();
 
     /**
      * Set the user defined profile picture. Depending on the trigger source, the change is also
@@ -418,7 +424,7 @@ public interface ContactService extends AvatarService<ContactModel> {
      * reflected.
      *
      * @return true if storing the profile picture succeeded
-     * @throws IOException when the byte array cannot be written to the file
+     * @throws IOException              when the byte array cannot be written to the file
      * @throws MasterKeyLockedException when the master key is locked
      */
     boolean setUserDefinedProfilePicture(
@@ -438,67 +444,69 @@ public interface ContactService extends AvatarService<ContactModel> {
         @NonNull TriggerSource triggerSource
     );
 
-	@NonNull
-	ProfilePictureSharePolicy getProfilePictureSharePolicy();
+    @NonNull
+    ProfilePictureSharePolicy getProfilePictureSharePolicy();
 
-	/**
-	 * Check whether the app settings allow the profile picture to be sent to the identity. Note that
-	 * this method does <b>not</b> check whether the contact is a gateway ID or ECHOECHO.
-	 *
-	 * @return {@code true} if the profile picture could be sent, {@code false} otherwise
-	 */
-	boolean isContactAllowedToReceiveProfilePicture(@NonNull String identity);
+    /**
+     * Check whether the app settings allow the profile picture to be sent to the identity. Note that
+     * this method does <b>not</b> check whether the contact is a gateway ID or ECHOECHO.
+     *
+     * @return {@code true} if the profile picture could be sent, {@code false} otherwise
+     */
+    boolean isContactAllowedToReceiveProfilePicture(@NonNull String identity);
 
-	boolean showBadge(@Nullable ContactModel contactModel);
-	boolean showBadge(@NonNull ContactModelData contactModelData);
+    boolean showBadge(@Nullable ContactModel contactModel);
 
-	String getAndroidContactLookupUriString(ContactModel contactModel);
+    boolean showBadge(@NonNull ContactModelData contactModelData);
 
-	/**
-	 * Remove the specified contact from the contact cache.
+    String getAndroidContactLookupUriString(ContactModel contactModel);
+
+    /**
+     * Remove the specified contact from the contact cache.
      * This has to be called after every mutation of a ContactModel
-	 */
-	void invalidateCache(@NonNull String identity);
+     */
+    void invalidateCache(@NonNull String identity);
 
-	/**
-	 * Fetch contact if not available locally. There are different steps executed to get the public
-	 * key of the identity. As soon as the public key has been fetched, the steps are aborted and
-	 * the contact is either saved or cached.
-	 * <ul>
-	 *     <li>Check if the contact is a special contact.</li>
-	 *     <li>Check if the contact is cached locally.</li>
-	 *     <li>Check if the contact is stored locally.</li>
-	 *     <li>On work builds, check if the identity is available in the work package. If it is, a
-	 *         work contact is created.</li>
-	 *     <li>Contact synchronization is executed (if enabled) for the given contact. Afterwards
-	 *         local contacts are checked again.</li>
-	 *     <li>The identity is fetched from the server and then cached. Note that this does not
-	 *         store the contact permanently.</li>
-	 * </ul>
-	 * The contact will not be saved locally if it does not exist yet (except for work contacts). It
-	 * will only be cached in the contact store, so that for example the message coder can access
-	 * the public key to decrypt messages.
-	 *
-	 * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when there is a problem with the http connection
-	 * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when there is a problem with the network
-	 * @throws MissingPublicKeyException                                           when there is no public key for this identity
-	 */
-	@WorkerThread
-	void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException;
+    /**
+     * Fetch contact if not available locally. There are different steps executed to get the public
+     * key of the identity. As soon as the public key has been fetched, the steps are aborted and
+     * the contact is either saved or cached.
+     * <ul>
+     *     <li>Check if the contact is a special contact.</li>
+     *     <li>Check if the contact is cached locally.</li>
+     *     <li>Check if the contact is stored locally.</li>
+     *     <li>On work builds, check if the identity is available in the work package. If it is, a
+     *         work contact is created.</li>
+     *     <li>Contact synchronization is executed (if enabled) for the given contact. Afterwards
+     *         local contacts are checked again.</li>
+     *     <li>The identity is fetched from the server and then cached. Note that this does not
+     *         store the contact permanently.</li>
+     * </ul>
+     * The contact will not be saved locally if it does not exist yet (except for work contacts). It
+     * will only be cached in the contact store, so that for example the message coder can access
+     * the public key to decrypt messages.
+     *
+     * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when there is a problem with the http connection
+     * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when there is a problem with the network
+     * @throws MissingPublicKeyException                                           when there is no public key for this identity
+     */
+    @WorkerThread
+    void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException;
 
-	@WorkerThread
-	void resetReceiptsSettings();
-	void reportSpam(@NonNull String identity, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
+    @WorkerThread
+    void resetReceiptsSettings();
 
-	/**
-	 * Get the forward security state of a given contact.
-	 *
-	 * @return the forward security state of a given contact
-	 */
-	@Nullable
-	ForwardSecuritySessionState getForwardSecurityState(
-		@NonNull ContactModel contactModel,
-		@NonNull ActiveTaskCodec handle
-	);
+    void reportSpam(@NonNull String identity, @Nullable Consumer<Void> onSuccess, @Nullable Consumer<String> onFailure);
+
+    /**
+     * Get the forward security state of a given contact.
+     *
+     * @return the forward security state of a given contact
+     */
+    @Nullable
+    ForwardSecuritySessionState getForwardSecurityState(
+        @NonNull ContactModel contactModel,
+        @NonNull ActiveTaskCodec handle
+    );
 
 }

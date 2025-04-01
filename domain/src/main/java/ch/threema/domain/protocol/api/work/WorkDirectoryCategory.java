@@ -24,37 +24,37 @@ package ch.threema.domain.protocol.api.work;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class WorkDirectoryCategory  {
-	public final String id;
-	public final String name;
+public class WorkDirectoryCategory {
+    public final String id;
+    public final String name;
 
-	public WorkDirectoryCategory(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    public WorkDirectoryCategory(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-	public WorkDirectoryCategory(JSONObject jsonObject) {
-		this.id = jsonObject.optString("id");
-		this.name = jsonObject.optString("name");
-	}
+    public WorkDirectoryCategory(JSONObject jsonObject) {
+        this.id = jsonObject.optString("id");
+        this.name = jsonObject.optString("name");
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public String getId() {
-		return this.id;
-	}
+    public String getId() {
+        return this.id;
+    }
 
-	public String toJSON(){
-		JSONObject jsonObject= new JSONObject();
-		try {
-			jsonObject.put("id", getId());
-			jsonObject.put("name", getName());
+    public String toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("id", getId());
+            jsonObject.put("name", getName());
 
-			return jsonObject.toString();
-		} catch (JSONException e) {
-			return "";
-		}
-	}
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            return "";
+        }
+    }
 }

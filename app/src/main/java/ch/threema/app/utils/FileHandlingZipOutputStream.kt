@@ -39,7 +39,11 @@ import java.nio.charset.Charset
 
 private val logger = LoggingUtil.getThreemaLogger("FileHandlingZipOutputStream")
 
-class FileHandlingZipOutputStream(outputStream: OutputStream, password: CharArray?, charset: Charset?) :
+class FileHandlingZipOutputStream(
+    outputStream: OutputStream,
+    password: CharArray?,
+    charset: Charset?
+) :
     ZipOutputStream(outputStream, password, charset) {
 
     constructor(outputStream: OutputStream) : this(outputStream, null, null)
@@ -60,7 +64,10 @@ class FileHandlingZipOutputStream(outputStream: OutputStream, password: CharArra
          */
         @Throws(IOException::class)
         @JvmStatic
-        fun initializeZipOutputStream(outputStream: OutputStream, password: String?): FileHandlingZipOutputStream {
+        fun initializeZipOutputStream(
+            outputStream: OutputStream,
+            password: String?
+        ): FileHandlingZipOutputStream {
             val bufferedOutputStream = BufferedOutputStream(outputStream)
             return if (password != null) {
                 FileHandlingZipOutputStream(bufferedOutputStream, password.toCharArray())
@@ -71,7 +78,10 @@ class FileHandlingZipOutputStream(outputStream: OutputStream, password: CharArra
 
         @Throws(IOException::class)
         @JvmStatic
-        fun initializeZipOutputStream(zipFile: File, password: String?): FileHandlingZipOutputStream {
+        fun initializeZipOutputStream(
+            zipFile: File,
+            password: String?
+        ): FileHandlingZipOutputStream {
             val fileOutputStream = FileOutputStream(zipFile)
             val bufferedOutputStream = BufferedOutputStream(fileOutputStream)
             return initializeZipOutputStream(bufferedOutputStream, password)
@@ -87,7 +97,11 @@ class FileHandlingZipOutputStream(outputStream: OutputStream, password: CharArra
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun addFileFromInputStream(inputStream: InputStream?, filenameInZip: String, compress: Boolean) {
+    fun addFileFromInputStream(
+        inputStream: InputStream?,
+        filenameInZip: String,
+        compress: Boolean
+    ) {
         if (inputStream == null) {
             return
         }
@@ -104,7 +118,11 @@ class FileHandlingZipOutputStream(outputStream: OutputStream, password: CharArra
     }
 
     @Throws(ThreemaException::class)
-    fun addFile(filenameInZip: String, compress: Boolean, consumer:  ThrowingConsumer<OutputStream>) {
+    fun addFile(
+        filenameInZip: String,
+        compress: Boolean,
+        consumer: ThrowingConsumer<OutputStream>
+    ) {
         putNextEntry(createZipParameter(filenameInZip, compress))
         try {
             consumer.accept(object : OutputStream() {

@@ -22,17 +22,17 @@
 package ch.threema.base;
 
 public interface ProgressListener {
-	/**
-	 * Update the progress of an upload/download process.
-	 *
-	 * @param progress in percent (0..100)
-	 */
-	void updateProgress(int progress);
+    /**
+     * Update the progress of an upload/download process.
+     *
+     * @param progress in percent (0..100)
+     */
+    void updateProgress(int progress);
 
-	/**
-	 * Mark upload/download as finished.
-	 *
-	 * @param success if upload/download finished successfully
-	 */
-	void onFinished(boolean success);
+    /**
+     * Mark upload/download as finished.
+     *
+     * @param success if upload/download finished successfully
+     */
+    void onFinished(boolean success);
 }

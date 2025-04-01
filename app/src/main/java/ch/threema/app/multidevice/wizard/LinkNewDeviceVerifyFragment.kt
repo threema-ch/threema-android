@@ -30,7 +30,7 @@ import android.widget.TextView
 import ch.threema.app.R
 import com.google.android.material.button.MaterialButton
 
-class LinkNewDeviceVerifyFragment: LinkNewDeviceFragment() {
+class LinkNewDeviceVerifyFragment : LinkNewDeviceFragment() {
     private val emojiSelectionViews = arrayOfNulls<LinkNewDeviceEmojiSelectionView>(3)
 
     private val onValidSelectionListener = View.OnClickListener {
@@ -56,7 +56,8 @@ class LinkNewDeviceVerifyFragment: LinkNewDeviceFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<TextView>(R.id.info_text).text = getString(R.string.trust_new_device_info, getString(R.string.app_name))
+        view.findViewById<TextView>(R.id.info_text).text =
+            getString(R.string.trust_new_device_info, getString(R.string.app_name))
 
         emojiSelectionViews[0] = view.findViewById(R.id.emoji_selection1)
         emojiSelectionViews[1] = view.findViewById(R.id.emoji_selection2)
@@ -66,7 +67,8 @@ class LinkNewDeviceVerifyFragment: LinkNewDeviceFragment() {
         emojiSelectionViews[1]?.layoutTransition?.enableTransitionType(LayoutTransition.CHANGING)
         emojiSelectionViews[2]?.layoutTransition?.enableTransitionType(LayoutTransition.CHANGING)
 
-        view.findViewById<MaterialButton>(R.id.no_match_button).setOnClickListener(onNoMatchListener)
+        view.findViewById<MaterialButton>(R.id.no_match_button)
+            .setOnClickListener(onNoMatchListener)
 
         setupEmojiSelectionViews()
     }
@@ -77,10 +79,13 @@ class LinkNewDeviceVerifyFragment: LinkNewDeviceFragment() {
         repeat(emojiSelectionViews.size) { i ->
             emojiSelectionViews[i]?.let {
                 if (i == validViewIndex) {
-                    it.setEmojis(intArrayOf(
-                        viewModel.connected.emojiIndices.first,
-                        viewModel.connected.emojiIndices.second,
-                        viewModel.connected.emojiIndices.third))
+                    it.setEmojis(
+                        intArrayOf(
+                            viewModel.connected.emojiIndices.first,
+                            viewModel.connected.emojiIndices.second,
+                            viewModel.connected.emojiIndices.third
+                        )
+                    )
                     it.setOnClickListener(onValidSelectionListener)
                 } else {
                     it.setRandomEmojis()

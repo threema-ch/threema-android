@@ -66,7 +66,11 @@ private val logger = LoggingUtil.getThreemaLogger("GroupCallUtil")
  * @return the time in milliseconds since the group call has been started or processed
  */
 fun getRunningSince(call: GroupCallDescription, context: Context?): Long {
-    val isAutoTime = context != null && Settings.Global.getInt(context.contentResolver, Settings.Global.AUTO_TIME, 0) == 1
+    val isAutoTime = context != null && Settings.Global.getInt(
+        context.contentResolver,
+        Settings.Global.AUTO_TIME,
+        0
+    ) == 1
     return if (isAutoTime) {
         call.getRunningSince() ?: call.getRunningSinceProcessed()
     } else {
@@ -82,8 +86,8 @@ fun getRunningSince(call: GroupCallDescription, context: Context?): Long {
  * @return true if the call could be initiated, false otherwise
  */
 fun initiateCall(
-        activity: AppCompatActivity,
-        groupModel: GroupModel
+    activity: AppCompatActivity,
+    groupModel: GroupModel
 ) {
     val serviceManager = ThreemaApplication.getServiceManager() ?: return
     val contactModelRepository = serviceManager.modelRepositories.contacts
@@ -109,7 +113,10 @@ fun initiateCall(
 
     // Check for internet connection
     if (!serviceManager.deviceService.isOnline) {
-        SimpleStringAlertDialog.newInstance(R.string.internet_connection_required, R.string.connection_error).show(activity.supportFragmentManager, "err")
+        SimpleStringAlertDialog.newInstance(
+            R.string.internet_connection_required,
+            R.string.connection_error
+        ).show(activity.supportFragmentManager, "err")
         return
     }
 
@@ -118,7 +125,8 @@ fun initiateCall(
 
     // Disallow group calls in empty groups
     if (otherMembers.isEmpty()) {
-        SimpleStringAlertDialog.newInstance(R.string.group_calls, R.string.group_no_members).show(activity.supportFragmentManager, "err")
+        SimpleStringAlertDialog.newInstance(R.string.group_calls, R.string.group_no_members)
+            .show(activity.supportFragmentManager, "err")
         return
     }
 
@@ -141,7 +149,11 @@ fun initiateCall(
                 ).run()
             }
 
-            DialogUtil.dismissDialog(activity.supportFragmentManager, dialogTagFetchingFeatureMask, true)
+            DialogUtil.dismissDialog(
+                activity.supportFragmentManager,
+                dialogTagFetchingFeatureMask,
+                true
+            )
 
             launchGroupCallWithSupportedMembers(activity, groupModel, otherMembers)
         }
@@ -150,20 +162,32 @@ fun initiateCall(
     }
 }
 
-private fun launchGroupCallWithSupportedMembers(activity: AppCompatActivity, groupModel: GroupModel, otherMembers: List<ContactModel>) {
-    val otherMembersNotSupportingGroupCallsCount = otherMembers.count { !ThreemaFeature.canGroupCalls(it.featureMask) }
+private fun launchGroupCallWithSupportedMembers(
+    activity: AppCompatActivity,
+    groupModel: GroupModel,
+    otherMembers: List<ContactModel>
+) {
+    val otherMembersNotSupportingGroupCallsCount =
+        otherMembers.count { !ThreemaFeature.canGroupCalls(it.featureMask) }
 
     // Disallow group calls in case no other member supports group calls
     //
     // TODO(ANDR-1896): Discuss whether the UX benefit outweighs the technical impact
     if (otherMembersNotSupportingGroupCallsCount == otherMembers.size) {
-        SimpleStringAlertDialog.newInstance(R.string.group_call, R.string.no_members_support_group_calls).show(activity.supportFragmentManager, "err")
+        SimpleStringAlertDialog.newInstance(
+            R.string.group_call,
+            R.string.no_members_support_group_calls
+        ).show(activity.supportFragmentManager, "err")
     } else {
         launchActivity(activity, groupModel, otherMembersNotSupportingGroupCallsCount)
     }
 }
 
-private fun launchActivity(context: Context, groupModel: GroupModel, otherMembersNotSupportingGroupCallsCount: Int) {
+private fun launchActivity(
+    context: Context,
+    groupModel: GroupModel,
+    otherMembersNotSupportingGroupCallsCount: Int
+) {
     if (otherMembersNotSupportingGroupCallsCount > 0) {
         Toast.makeText(
             context,
@@ -176,7 +200,11 @@ private fun launchActivity(context: Context, groupModel: GroupModel, otherMember
             Toast.LENGTH_LONG
         ).show()
     }
-    ContextCompat.startActivity(context, GroupCallActivity.getStartCallIntent(context, groupModel.id), null)
+    ContextCompat.startActivity(
+        context,
+        GroupCallActivity.getStartCallIntent(context, groupModel.id),
+        null
+    )
     if (context is Activity) {
         context.overridePendingTransition(R.anim.activity_open_enter, R.anim.activity_close_exit)
     }
@@ -184,5 +212,5 @@ private fun launchActivity(context: Context, groupModel: GroupModel, otherMember
 
 fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean =
     ConfigUtils.isGroupCallsEnabled()                    // group calls are enabled
-            && groupService.countMembers(groupModel) > 1 // there is more than one member
-            && groupService.isGroupMember(groupModel)    // the user is a member of the group
+        && groupService.countMembers(groupModel) > 1 // there is more than one member
+        && groupService.isGroupMember(groupModel)    // the user is a member of the group

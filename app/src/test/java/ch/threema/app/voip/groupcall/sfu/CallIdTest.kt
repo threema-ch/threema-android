@@ -37,13 +37,13 @@ internal class CallIdTest {
     BLAKE2b on specific data provided by the `GroupCallStart`:
 
     group-call-id = BLAKE2b(
-        out-length=32,
-        input=
-            group-creator-identity
-            || group-id
-            || u8(GroupCallStart.protocol_version)
-            || GroupCallStart.gck
-            || utf8-encode(GroupCallStart.base_url),
+    out-length=32,
+    input=
+    group-creator-identity
+    || group-id
+    || u8(GroupCallStart.protocol_version)
+    || GroupCallStart.gck
+    || utf8-encode(GroupCallStart.base_url),
     )
      */
     @Test
@@ -122,7 +122,8 @@ console.log(hexStrings.join(', '))
 ```
  */
 
-private const val GROUP_CREATOR_IDENTITY = "ABCD1234" // [ 0x41, 0x42, 0x43, 0x44, 0x31, 0x32, 0x33, 0x34 ]
+private const val GROUP_CREATOR_IDENTITY =
+    "ABCD1234" // [ 0x41, 0x42, 0x43, 0x44, 0x31, 0x32, 0x33, 0x34 ]
 private val GROUP_ID = byteArrayOf(0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08)
 val GCK = byteArrayOf(
     0x00, 0x00, 0x00, 0x00,

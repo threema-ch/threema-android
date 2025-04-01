@@ -48,121 +48,121 @@ import ch.threema.storage.models.ballot.BallotChoiceModel;
  */
 public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
 
-	private final Context context;
-	private final List<BallotChoiceModel> values;
-	private final Map<Integer, Integer> selected;
-	private final boolean readonly;
-	private final boolean multipleChoice;
-	private final  boolean showVoting;
+    private final Context context;
+    private final List<BallotChoiceModel> values;
+    private final Map<Integer, Integer> selected;
+    private final boolean readonly;
+    private final boolean multipleChoice;
+    private final boolean showVoting;
 
-	public BallotVoteListAdapter(Context context,
-								 List<BallotChoiceModel> values,
-								 Map<Integer, Integer> selected,
-								 boolean readonly,
-								 boolean multipleChoice,
-								 boolean showVoting) {
-		super(context, R.layout.item_ballot_choice_vote, values);
+    public BallotVoteListAdapter(Context context,
+                                 List<BallotChoiceModel> values,
+                                 Map<Integer, Integer> selected,
+                                 boolean readonly,
+                                 boolean multipleChoice,
+                                 boolean showVoting) {
+        super(context, R.layout.item_ballot_choice_vote, values);
 
-		this.context = context;
-		this.readonly = readonly;
-		this.multipleChoice = multipleChoice;
-		this.showVoting = showVoting;
-		this.values = values;
-		this.selected = selected;
-	}
+        this.context = context;
+        this.readonly = readonly;
+        this.multipleChoice = multipleChoice;
+        this.showVoting = showVoting;
+        this.values = values;
+        this.selected = selected;
+    }
 
-	private static class BallotAdminChoiceItemHolder {
-		public TextView name;
-		public MaterialButton voteCount;
-		public RadioButton radioButton;
-		public CheckBox checkBox;
-		int originalPosition;
-	}
+    private static class BallotAdminChoiceItemHolder {
+        public TextView name;
+        public MaterialButton voteCount;
+        public RadioButton radioButton;
+        public CheckBox checkBox;
+        int originalPosition;
+    }
 
-	@NonNull
-	@Override
-	public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-		CheckableRelativeLayout itemView = (CheckableRelativeLayout) convertView;
-		BallotAdminChoiceItemHolder holder;
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        CheckableRelativeLayout itemView = (CheckableRelativeLayout) convertView;
+        BallotAdminChoiceItemHolder holder;
 
-		if (convertView == null) {
-			holder = new BallotAdminChoiceItemHolder();
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			itemView = (CheckableRelativeLayout) inflater.inflate(R.layout.item_ballot_choice_vote, parent, false);
+        if (convertView == null) {
+            holder = new BallotAdminChoiceItemHolder();
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = (CheckableRelativeLayout) inflater.inflate(R.layout.item_ballot_choice_vote, parent, false);
 
-			holder.name = itemView.findViewById(R.id.choice_name);
-			holder.voteCount = itemView.findViewById(R.id.vote_count);
-			holder.radioButton = itemView.findViewById(R.id.choice_radio);
-			holder.checkBox = itemView.findViewById(R.id.choice_checkbox);
+            holder.name = itemView.findViewById(R.id.choice_name);
+            holder.voteCount = itemView.findViewById(R.id.vote_count);
+            holder.radioButton = itemView.findViewById(R.id.choice_radio);
+            holder.checkBox = itemView.findViewById(R.id.choice_checkbox);
 
-			itemView.setTag(holder);
-		}
-		else {
-			holder = (BallotAdminChoiceItemHolder) itemView.getTag();
-		}
+            itemView.setTag(holder);
+        } else {
+            holder = (BallotAdminChoiceItemHolder) itemView.getTag();
+        }
 
-		itemView.setOnCheckedChangeListener(null);
+        itemView.setOnCheckedChangeListener(null);
 
-		final BallotChoiceModel choiceModel = values.get(position);
-		holder.originalPosition = position;
+        final BallotChoiceModel choiceModel = values.get(position);
+        holder.originalPosition = position;
 
-		if(choiceModel != null) {
-			if(holder.name != null) {
-				holder.name.setText(choiceModel.getName());
-			}
-			if(holder.voteCount != null) {
-				holder.voteCount.setVisibility(this.showVoting ? View.VISIBLE : View.GONE);
-				if(this.showVoting) {
-					long c = 0;
-					try {
-						c = ThreemaApplication.getServiceManager().getBallotService().getVotingCount(choiceModel);
-					} catch (Exception ignored) {}
-					holder.voteCount.setText(String.valueOf(c));
-					holder.voteCount.setVisibility(View.VISIBLE);
-				}
-			}
-			itemView.setChecked(this.isSelected(choiceModel));
-		}
+        if (choiceModel != null) {
+            if (holder.name != null) {
+                holder.name.setText(choiceModel.getName());
+            }
+            if (holder.voteCount != null) {
+                holder.voteCount.setVisibility(this.showVoting ? View.VISIBLE : View.GONE);
+                if (this.showVoting) {
+                    long c = 0;
+                    try {
+                        c = ThreemaApplication.getServiceManager().getBallotService().getVotingCount(choiceModel);
+                    } catch (Exception ignored) {
+                    }
+                    holder.voteCount.setText(String.valueOf(c));
+                    holder.voteCount.setVisibility(View.VISIBLE);
+                }
+            }
+            itemView.setChecked(this.isSelected(choiceModel));
+        }
 
-		if(TestUtil.required(holder.checkBox, holder.radioButton)) {
-			holder.radioButton.setVisibility(!this.multipleChoice ? View.VISIBLE : View.GONE);
-			holder.radioButton.setEnabled(!this.readonly);
+        if (TestUtil.required(holder.checkBox, holder.radioButton)) {
+            holder.radioButton.setVisibility(!this.multipleChoice ? View.VISIBLE : View.GONE);
+            holder.radioButton.setEnabled(!this.readonly);
 
-			holder.checkBox.setVisibility(this.multipleChoice ? View.VISIBLE : View.GONE);
-			holder.checkBox.setEnabled(!this.readonly);
-		}
+            holder.checkBox.setVisibility(this.multipleChoice ? View.VISIBLE : View.GONE);
+            holder.checkBox.setEnabled(!this.readonly);
+        }
 
-		if (!this.readonly) {
-			itemView.setOnCheckedChangeListener((checkableView, isChecked) -> {
-				select(values.get(((BallotAdminChoiceItemHolder) checkableView.getTag()).originalPosition), isChecked);
-			});
-		}
+        if (!this.readonly) {
+            itemView.setOnCheckedChangeListener((checkableView, isChecked) -> {
+                select(values.get(((BallotAdminChoiceItemHolder) checkableView.getTag()).originalPosition), isChecked);
+            });
+        }
 
-		return itemView;
-	}
+        return itemView;
+    }
 
-	public Map<Integer, Integer> getSelectedChoices() {
-		return this.selected;
-	}
+    public Map<Integer, Integer> getSelectedChoices() {
+        return this.selected;
+    }
 
-	public boolean isSelected(final BallotChoiceModel model) {
-		synchronized (this.selected) {
-			int k = model.getId();
-			return selected.containsKey(k) && selected.get(k) == 1;
-		}
-	}
+    public boolean isSelected(final BallotChoiceModel model) {
+        synchronized (this.selected) {
+            int k = model.getId();
+            return selected.containsKey(k) && selected.get(k) == 1;
+        }
+    }
 
-	public void select(final BallotChoiceModel model, boolean select) {
-		synchronized (this.selected) {
-			int id = model.getId();
+    public void select(final BallotChoiceModel model, boolean select) {
+        synchronized (this.selected) {
+            int id = model.getId();
 
-			if (!this.multipleChoice) {
-				this.selected.clear();
-				this.selected.put(id, 1);
-				notifyDataSetChanged();
-			} else {
-				this.selected.put(id, (select ? 1 : 0));
-			}
-		}
-	}
+            if (!this.multipleChoice) {
+                this.selected.clear();
+                this.selected.put(id, 1);
+                notifyDataSetChanged();
+            } else {
+                this.selected.put(id, (select ? 1 : 0));
+            }
+        }
+    }
 }

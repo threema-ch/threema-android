@@ -31,7 +31,9 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @AnyThread
 public interface WebClientSessionListener {
-	void onModified(@NonNull WebClientSessionModel model);
-	void onRemoved(@NonNull WebClientSessionModel model);
-	void onCreated(@NonNull WebClientSessionModel model);
+    void onModified(@NonNull WebClientSessionModel model);
+
+    void onRemoved(@NonNull WebClientSessionModel model);
+
+    void onCreated(@NonNull WebClientSessionModel model);
 }

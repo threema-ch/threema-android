@@ -37,7 +37,11 @@ class IncomingGroupLocationMessageTask(
     private val groupLocationMessage: GroupLocationMessage,
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
-) : IncomingCspMessageSubTask<GroupLocationMessage>(groupLocationMessage, triggerSource, serviceManager) {
+) : IncomingCspMessageSubTask<GroupLocationMessage>(
+    groupLocationMessage,
+    triggerSource,
+    serviceManager
+) {
 
     private val messageService by lazy { serviceManager.messageService }
 
@@ -49,10 +53,12 @@ class IncomingGroupLocationMessageTask(
         return processGroupLocationMessage()
     }
 
-    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult = processGroupLocationMessage()
+    override suspend fun executeMessageStepsFromSync(): ReceiveStepsResult =
+        processGroupLocationMessage()
 
     private fun processGroupLocationMessage(): ReceiveStepsResult {
-        val processedMessageSuccessfully = messageService.processIncomingGroupMessage(groupLocationMessage)
+        val processedMessageSuccessfully =
+            messageService.processIncomingGroupMessage(groupLocationMessage)
         return if (processedMessageSuccessfully) ReceiveStepsResult.SUCCESS else ReceiveStepsResult.DISCARD
     }
 }

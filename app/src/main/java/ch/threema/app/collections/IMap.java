@@ -25,5 +25,5 @@ package ch.threema.app.collections;
  * Map a value of type T to a value of type U.
  */
 public interface IMap<T, U> {
-	U apply(T value);
+    U apply(T value);
 }

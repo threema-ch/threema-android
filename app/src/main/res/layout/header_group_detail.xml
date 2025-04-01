@@ -191,7 +191,7 @@
                 android:text="@string/group_orphaned_notice"
                 android:textColor="?attr/colorOnBackground"
                 android:ellipsize="end"
-                android:maxLines="6"/>
+                android:maxLines="6" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/clone_button"

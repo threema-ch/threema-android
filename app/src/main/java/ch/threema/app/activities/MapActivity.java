@@ -50,6 +50,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.button.MaterialButton;
+
 import org.maplibre.android.annotations.IconFactory;
 import org.maplibre.android.annotations.MarkerOptions;
 import org.maplibre.android.camera.CameraUpdate;
@@ -92,388 +93,388 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_NAME;
 import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
 
 public class MapActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
 
-	private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
+    private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
 
-	private static final int REQUEST_CODE_LOCATION_SETTINGS = 22229;
-	private static final int PERMISSION_REQUEST_LOCATION = 49;
+    private static final int REQUEST_CODE_LOCATION_SETTINGS = 22229;
+    private static final int PERMISSION_REQUEST_LOCATION = 49;
 
-	private static final int MAX_POI_COUNT = 50;
+    private static final int MAX_POI_COUNT = 50;
 
-	// URLs for Threema Map server
-	public static final String MAP_STYLE_URL = "https://map.threema.ch/styles/streets/style.json";
+    // URLs for Threema Map server
+    public static final String MAP_STYLE_URL = "https://map.threema.ch/styles/streets/style.json";
 
-	private MapView mapView;
-	private MapLibreMap maplibreMap;
-	private FrameLayout parentView;
-	private Style mapStyle;
+    private MapView mapView;
+    private MapLibreMap maplibreMap;
+    private FrameLayout parentView;
+    private Style mapStyle;
 
-	private LocationManager locationManager;
-	private LocationComponent locationComponent;
+    private LocationManager locationManager;
+    private LocationComponent locationComponent;
 
-	private LatLng markerPosition;
-	private String markerName, markerProvider;
+    private LatLng markerPosition;
+    private String markerName, markerProvider;
 
-	private PreferenceService preferenceService;
+    private PreferenceService preferenceService;
 
-	private int insetTop = 0;
+    private int insetTop = 0;
 
-	private boolean isShowingExternalLocation = false;
+    private boolean isShowingExternalLocation = false;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		ConfigUtils.configureSystemBars(this);
+        ConfigUtils.configureSystemBars(this);
 
-		ConfigUtils.getMapLibreInstance();
+        ConfigUtils.getMapLibreInstance();
 
-		setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_map);
 
-		ConfigUtils.configureTransparentStatusBar(this);
+        ConfigUtils.configureTransparentStatusBar(this);
 
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-		getWindow().setStatusBarColor(Color.TRANSPARENT);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			// we want dark icons, i.e. a light status bar
-			getWindow().getDecorView().setSystemUiVisibility(
-					getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-		}
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // we want dark icons, i.e. a light status bar
+            getWindow().getDecorView().setSystemUiVisibility(
+                getWindow().getDecorView().getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
 
-		try {
-			preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			finish();
-			return;
-		}
-		if (preferenceService == null) {
-			finish();
-			return;
-		}
-		if (BuildConfig.DEBUG && preferenceService.getPoiServerHostOverride() != null) {
-			Toast.makeText(this, "Using POI host override", Toast.LENGTH_SHORT).show();
-		}
+        try {
+            preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+        } catch (Exception e) {
+            logger.error("Exception", e);
+            finish();
+            return;
+        }
+        if (preferenceService == null) {
+            finish();
+            return;
+        }
+        if (BuildConfig.DEBUG && preferenceService.getPoiServerHostOverride() != null) {
+            Toast.makeText(this, "Using POI host override", Toast.LENGTH_SHORT).show();
+        }
 
-		parentView = findViewById(R.id.coordinator);
-		mapView = findViewById(R.id.map);
+        parentView = findViewById(R.id.coordinator);
+        mapView = findViewById(R.id.map);
 
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager == null) {
-			finish();
-			return;
-		}
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            finish();
+            return;
+        }
 
-		mapView.onCreate(savedInstanceState);
+        mapView.onCreate(savedInstanceState);
 
-		ViewCompat.setOnApplyWindowInsetsListener(parentView, new OnApplyWindowInsetsListener() {
-			@Override
-			public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-				insetTop = insets.getSystemWindowInsetTop();
-				return insets;
-			}
-		});
+        ViewCompat.setOnApplyWindowInsetsListener(parentView, new OnApplyWindowInsetsListener() {
+            @Override
+            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                insetTop = insets.getSystemWindowInsetTop();
+                return insets;
+            }
+        });
 
-		Intent intent = getIntent();
+        Intent intent = getIntent();
 
-		if (intent.hasExtra(INTENT_DATA_LOCATION_LAT) || intent.hasExtra(INTENT_DATA_LOCATION_LNG)) {
-			markerPosition = new LatLng(
-				intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0),
-				intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
-			markerName = intent.getStringExtra(INTENT_DATA_LOCATION_NAME);
-			markerProvider = intent.getStringExtra(INTENT_DATA_LOCATION_PROVIDER);
-			isShowingExternalLocation = false;
-		} else if (intent.getData() != null) {
-			LocationDataModel locationData = GeoLocationUtil.getLocationDataFromGeoUri(intent.getData());
-			if (locationData != null) {
-				markerPosition = new LatLng(locationData.latitude, locationData.longitude);
-				isShowingExternalLocation = true;
-			} else {
-				Toast.makeText(this, R.string.cannot_display_location, Toast.LENGTH_LONG).show();
-				finish();
-				return;
-			}
-		}
+        if (intent.hasExtra(INTENT_DATA_LOCATION_LAT) || intent.hasExtra(INTENT_DATA_LOCATION_LNG)) {
+            markerPosition = new LatLng(
+                intent.getDoubleExtra(INTENT_DATA_LOCATION_LAT, 0),
+                intent.getDoubleExtra(INTENT_DATA_LOCATION_LNG, 0));
+            markerName = intent.getStringExtra(INTENT_DATA_LOCATION_NAME);
+            markerProvider = intent.getStringExtra(INTENT_DATA_LOCATION_PROVIDER);
+            isShowingExternalLocation = false;
+        } else if (intent.getData() != null) {
+            LocationDataModel locationData = GeoLocationUtil.getLocationDataFromGeoUri(intent.getData());
+            if (locationData != null) {
+                markerPosition = new LatLng(locationData.latitude, locationData.longitude);
+                isShowingExternalLocation = true;
+            } else {
+                Toast.makeText(this, R.string.cannot_display_location, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+        }
 
-		initUi();
-		initMap();
-	}
+        initUi();
+        initMap();
+    }
 
-	private void initUi() {
-		findViewById(R.id.coordinator).setVisibility(View.VISIBLE);
-		findViewById(R.id.center_map).setOnClickListener((it -> zoomToCenter()));
-		MaterialButton openButton = findViewById(R.id.open_button);
-		MaterialButton shareButton = findViewById(R.id.share_location_button);
-		if (isShowingExternalLocation) {
-			shareButton.setOnClickListener((it -> shareLocation()));
-			openButton.setVisibility(View.GONE);
-		} else {
-			openButton.setOnClickListener((it -> openExternal()));
-			shareButton.setVisibility(View.GONE);
-		}
-		TextView locationName = findViewById(R.id.location_name);
-		TextView locationCoordinates = findViewById(R.id.location_coordinates);
+    private void initUi() {
+        findViewById(R.id.coordinator).setVisibility(View.VISIBLE);
+        findViewById(R.id.center_map).setOnClickListener((it -> zoomToCenter()));
+        MaterialButton openButton = findViewById(R.id.open_button);
+        MaterialButton shareButton = findViewById(R.id.share_location_button);
+        if (isShowingExternalLocation) {
+            shareButton.setOnClickListener((it -> shareLocation()));
+            openButton.setVisibility(View.GONE);
+        } else {
+            openButton.setOnClickListener((it -> openExternal()));
+            shareButton.setVisibility(View.GONE);
+        }
+        TextView locationName = findViewById(R.id.location_name);
+        TextView locationCoordinates = findViewById(R.id.location_coordinates);
 
-		locationName.setText(markerName);
-		locationCoordinates.setText(String.format(Locale.US, "%f, %f", markerPosition.getLatitude(), markerPosition.getLongitude()));
-	}
+        locationName.setText(markerName);
+        locationCoordinates.setText(String.format(Locale.US, "%f, %f", markerPosition.getLatitude(), markerPosition.getLongitude()));
+    }
 
-	private void openExternal() {
-		Intent intent = Intent.createChooser(new Intent(
-			Intent.ACTION_VIEW,
-			GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), markerName, markerProvider)
-		), getString(R.string.open_in_maps_app));
+    private void openExternal() {
+        Intent intent = Intent.createChooser(new Intent(
+            Intent.ACTION_VIEW,
+            GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), markerName, markerProvider)
+        ), getString(R.string.open_in_maps_app));
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			// Don't allow opening location recursively
-			intent.putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, new ComponentName[]{getComponentName()});
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Don't allow opening location recursively
+            intent.putExtra(Intent.EXTRA_EXCLUDE_COMPONENTS, new ComponentName[]{getComponentName()});
+        }
 
-		try {
-			startActivity(intent);
-		} catch (ActivityNotFoundException e) {
-			SingleToast.getInstance().showShortText(getString(R.string.no_app_for_location));
-		}
-	}
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            SingleToast.getInstance().showShortText(getString(R.string.no_app_for_location));
+        }
+    }
 
-	/**
-	 * Share the currently displayed location within threema.
-	 */
-	private void shareLocation() {
-		Intent intent = new Intent(this, RecipientListBaseActivity.class);
+    /**
+     * Share the currently displayed location within threema.
+     */
+    private void shareLocation() {
+        Intent intent = new Intent(this, RecipientListBaseActivity.class);
 
-		intent.setAction(Intent.ACTION_SEND);
-		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_STREAM, GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), "", ""));
-		startActivity(intent);
-	}
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_STREAM, GeoLocationUtil.getLocationUri(markerPosition.getLatitude(), markerPosition.getLongitude(), "", ""));
+        startActivity(intent);
+    }
 
-	private void initMap() {
-		mapView.getMapAsync(new OnMapReadyCallback() {
-			@Override
-			public void onMapReady(@NonNull MapLibreMap mapLibreMap1) {
-				maplibreMap = mapLibreMap1;
-				maplibreMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
-					@Override
-					public void onStyleLoaded(@NonNull Style style) {
-						// Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
-						mapStyle = style;
+    private void initMap() {
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull MapLibreMap mapLibreMap1) {
+                maplibreMap = mapLibreMap1;
+                maplibreMap.setStyle(new Style.Builder().fromUrl(MAP_STYLE_URL), new Style.OnStyleLoaded() {
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style) {
+                        // Map is set up and the style has loaded. Now you can add data or make other mapView adjustments
+                        mapStyle = style;
 
-						if (checkLocationEnabled(locationManager)) {
-							setupLocationComponent(style);
-						}
-						maplibreMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
+                        if (checkLocationEnabled(locationManager)) {
+                            setupLocationComponent(style);
+                        }
+                        maplibreMap.addMarker(getMarker(markerPosition, markerName, markerProvider));
 
-						int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
-						int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
+                        int marginTop = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_top) + insetTop;
+                        int marginRight = getResources().getDimensionPixelSize(R.dimen.map_compass_margin_right);
 
-						maplibreMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
+                        maplibreMap.getUiSettings().setCompassMargins(0, marginTop, marginRight, 0);
 
-						moveCamera(markerPosition, false, -1);
-						mapView.postDelayed(new Runnable() {
-							@Override
-							public void run() {
-								moveCamera(markerPosition, true, 15);
-							}
-						}, 1200);
+                        moveCamera(markerPosition, false, -1);
+                        mapView.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                moveCamera(markerPosition, true, 15);
+                            }
+                        }, 1200);
 
-						showNearbyPOIs(markerPosition);
-					}
-				});
-			}
-		});
-	}
+                        showNearbyPOIs(markerPosition);
+                    }
+                });
+            }
+        });
+    }
 
-	@SuppressLint("StaticFieldLeak")
-	private void showNearbyPOIs(LatLng markerPosition) {
-		new AsyncTask<LatLng, Void, List<MarkerOptions>>() {
-			@Override
-			protected List<MarkerOptions> doInBackground(LatLng... latLngs) {
-				LatLng latLng = latLngs[0];
-				List<Poi> pois = new ArrayList<>();
-				NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, preferenceService);
+    @SuppressLint("StaticFieldLeak")
+    private void showNearbyPOIs(LatLng markerPosition) {
+        new AsyncTask<LatLng, Void, List<MarkerOptions>>() {
+            @Override
+            protected List<MarkerOptions> doInBackground(LatLng... latLngs) {
+                LatLng latLng = latLngs[0];
+                List<Poi> pois = new ArrayList<>();
+                NearbyPoiUtil.getPOIs(latLng, pois, MAX_POI_COUNT, preferenceService);
 
-				List<MarkerOptions> markerOptions = new ArrayList<>();
-				for (Poi poi: pois) {
-					markerOptions.add(new MarkerOptions()
-							.position(poi.getLatLng())
-							.title(poi.getName())
-							.setIcon(LocationUtil.getMarkerIcon(MapActivity.this, poi))
-							.setSnippet(poi.getDescription()));
-				}
+                List<MarkerOptions> markerOptions = new ArrayList<>();
+                for (Poi poi : pois) {
+                    markerOptions.add(new MarkerOptions()
+                        .position(poi.getLatLng())
+                        .title(poi.getName())
+                        .setIcon(LocationUtil.getMarkerIcon(MapActivity.this, poi))
+                        .setSnippet(poi.getDescription()));
+                }
 
-				return markerOptions;
-			}
+                return markerOptions;
+            }
 
-			@Override
-			protected void onPostExecute(List<MarkerOptions> markerOptions) {
-				if (markerOptions.size() > 0) {
-					maplibreMap.addMarkers(markerOptions);
-				}
-			}
-		}.execute(markerPosition);
-	}
+            @Override
+            protected void onPostExecute(List<MarkerOptions> markerOptions) {
+                if (markerOptions.size() > 0) {
+                    maplibreMap.addMarkers(markerOptions);
+                }
+            }
+        }.execute(markerPosition);
+    }
 
-	@SuppressLint("MissingPermission")
-	private void setupLocationComponent(Style style) {
-		logger.debug("setupLocationComponent");
+    @SuppressLint("MissingPermission")
+    private void setupLocationComponent(Style style) {
+        logger.debug("setupLocationComponent");
 
-		locationComponent = maplibreMap.getLocationComponent();
-		locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
-		locationComponent.setCameraMode(CameraMode.NONE);
-		locationComponent.setRenderMode(RenderMode.COMPASS);
-		locationComponent.setLocationComponentEnabled(true);
-	}
+        locationComponent = maplibreMap.getLocationComponent();
+        locationComponent.activateLocationComponent(LocationComponentActivationOptions.builder(this, style).build());
+        locationComponent.setCameraMode(CameraMode.NONE);
+        locationComponent.setRenderMode(RenderMode.COMPASS);
+        locationComponent.setLocationComponentEnabled(true);
+    }
 
-	@Override
-	protected void onStart() {
-		logger.debug("onStart");
-		super.onStart();
-		if (mapView != null) {
-			mapView.onStart();
-		}
-	}
+    @Override
+    protected void onStart() {
+        logger.debug("onStart");
+        super.onStart();
+        if (mapView != null) {
+            mapView.onStart();
+        }
+    }
 
-	@Override
-	public void onResume() {
-		logger.debug("onResume");
-		super.onResume();
-		mapView.onResume();
-	}
+    @Override
+    public void onResume() {
+        logger.debug("onResume");
+        super.onResume();
+        mapView.onResume();
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mapView.onPause();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		mapView.onStop();
-	}
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		mapView.onSaveInstanceState(outState);
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
 
-	@Override
-	public void onLowMemory() {
-		super.onLowMemory();
-		mapView.onLowMemory();
-	}
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mapView.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
 
-	private boolean checkLocationEnabled(LocationManager locationManager) {
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-				ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-			return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-		}
-		return false;
-	}
+    private boolean checkLocationEnabled(LocationManager locationManager) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        }
+        return false;
+    }
 
-	private boolean requestLocationEnabled(LocationManager locationManager) {
-		if (ConfigUtils.requestLocationPermissions(this, null, PERMISSION_REQUEST_LOCATION)) {
-			if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-				setupLocationComponent(mapStyle);
-				return true;
-			}
-			GenericAlertDialog.newInstance(R.string.your_location, R.string.location_services_disabled, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
-			return false;
-		}
-		return false;
-	}
+    private boolean requestLocationEnabled(LocationManager locationManager) {
+        if (ConfigUtils.requestLocationPermissions(this, null, PERMISSION_REQUEST_LOCATION)) {
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                setupLocationComponent(mapStyle);
+                return true;
+            }
+            GenericAlertDialog.newInstance(R.string.your_location, R.string.location_services_disabled, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
+            return false;
+        }
+        return false;
+    }
 
-	@SuppressLint("MissingPermission")
-	private void zoomToCenter() {
-		if (requestLocationEnabled(locationManager)) {
-			locationComponent.setLocationComponentEnabled(true);
-			Location location = locationComponent.getLastKnownLocation();
-			// TODO: Wait for a fix if there's no last known location
-			if (location != null) {
-				moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), true, -1);
-			}
-		}
-	}
+    @SuppressLint("MissingPermission")
+    private void zoomToCenter() {
+        if (requestLocationEnabled(locationManager)) {
+            locationComponent.setLocationComponentEnabled(true);
+            Location location = locationComponent.getLastKnownLocation();
+            // TODO: Wait for a fix if there's no last known location
+            if (location != null) {
+                moveCamera(new LatLng(location.getLatitude(), location.getLongitude()), true, -1);
+            }
+        }
+    }
 
-	private void moveCamera(LatLng latLng, boolean animate, int zoomLevel) {
-		long time = System.currentTimeMillis();
-		logger.debug("moveCamera to " + latLng.toString());
+    private void moveCamera(LatLng latLng, boolean animate, int zoomLevel) {
+        long time = System.currentTimeMillis();
+        logger.debug("moveCamera to " + latLng.toString());
 
-		maplibreMap.cancelTransitions();
-		maplibreMap.addOnCameraIdleListener(new MapLibreMap.OnCameraIdleListener() {
-			@Override
-			public void onCameraIdle() {
-				maplibreMap.removeOnCameraIdleListener(this);
-				RuntimeUtil.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						logger.debug("camera has been moved. Time in ms = " + (System.currentTimeMillis() - time));
-					}
-				});
-			}
-		});
+        maplibreMap.cancelTransitions();
+        maplibreMap.addOnCameraIdleListener(new MapLibreMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                maplibreMap.removeOnCameraIdleListener(this);
+                RuntimeUtil.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        logger.debug("camera has been moved. Time in ms = " + (System.currentTimeMillis() - time));
+                    }
+                });
+            }
+        });
 
-		CameraUpdate cameraUpdate = zoomLevel != -1 ?
-				CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel) :
-				CameraUpdateFactory.newLatLng(latLng);
+        CameraUpdate cameraUpdate = zoomLevel != -1 ?
+            CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel) :
+            CameraUpdateFactory.newLatLng(latLng);
 
-		if (animate) {
-			maplibreMap.animateCamera(cameraUpdate);
-		} else {
-			maplibreMap.moveCamera(cameraUpdate);
-		}
-	}
+        if (animate) {
+            maplibreMap.animateCamera(cameraUpdate);
+        } else {
+            maplibreMap.moveCamera(cameraUpdate);
+        }
+    }
 
-	private MarkerOptions getMarker(LatLng latLng, String name, String provider) {
-		Bitmap bitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_map_center_marker), null);
+    private MarkerOptions getMarker(LatLng latLng, String name, String provider) {
+        Bitmap bitmap = BitmapUtil.getBitmapFromVectorDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_map_center_marker), null);
 
-		return new MarkerOptions()
-				.position(latLng)
-				.title(name)
-				.setIcon(IconFactory.getInstance(this).fromBitmap(LocationUtil.moveMarker(bitmap)))
-				.setSnippet(provider);
-	}
+        return new MarkerOptions()
+            .position(latLng)
+            .title(name)
+            .setIcon(IconFactory.getInstance(this).fromBitmap(LocationUtil.moveMarker(bitmap)))
+            .setSnippet(provider);
+    }
 
-	@Override
-	public void onYes(String tag, Object data) {
-		if (DIALOG_TAG_ENABLE_LOCATION_SERVICES.equals(tag)) {
-			startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
-		}
-	}
+    @Override
+    public void onYes(String tag, Object data) {
+        if (DIALOG_TAG_ENABLE_LOCATION_SERVICES.equals(tag)) {
+            startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
+        }
+    }
 
-	@Override
-	public void onNo(String tag, Object data) {
-		// do nothing
-	}
+    @Override
+    public void onNo(String tag, Object data) {
+        // do nothing
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
-			zoomToCenter();
-		} else {
-			super.onActivityResult(requestCode, resultCode, data);
-		}
-	}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_LOCATION_SETTINGS) {
+            zoomToCenter();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode,
-	                                       @NonNull String permissions[], @NonNull int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-			if (requestCode == PERMISSION_REQUEST_LOCATION) {
-				requestLocationEnabled(locationManager);
-			}
-		}
-	}
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == PERMISSION_REQUEST_LOCATION) {
+                requestLocationEnabled(locationManager);
+            }
+        }
+    }
 }

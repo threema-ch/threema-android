@@ -55,7 +55,7 @@ class BigMediaFragment : Fragment() {
     private lateinit var bigProgressBar: CircularProgressIndicator
     private var bottomElemHeight: Int = 0
     private var isVideo = false
-    private val timelineDragListener : VideoEditView.OnTimelineDragListener = object :
+    private val timelineDragListener: VideoEditView.OnTimelineDragListener = object :
         VideoEditView.OnTimelineDragListener {
         override fun onTimelineDragStart() {
             viewPager?.isUserInputEnabled = false
@@ -107,7 +107,8 @@ class BigMediaFragment : Fragment() {
 
     fun setMediaItem(mediaItem: MediaItem) {
         this.mediaItem = mediaItem
-        isVideo = mediaItem.type == MediaItem.TYPE_VIDEO || mediaItem.type == MediaItem.TYPE_VIDEO_CAM
+        isVideo =
+            mediaItem.type == MediaItem.TYPE_VIDEO || mediaItem.type == MediaItem.TYPE_VIDEO_CAM
     }
 
     // Change to drag listener here
@@ -132,9 +133,11 @@ class BigMediaFragment : Fragment() {
             MediaItem.TYPE_IMAGE, MediaItem.TYPE_IMAGE_CAM, MediaItem.TYPE_IMAGE_ANIMATED -> {
                 showBigImage(item)
             }
+
             MediaItem.TYPE_VIDEO, MediaItem.TYPE_VIDEO_CAM -> {
                 // nothing to do as the video gets initialized in onResume
             }
+
             else -> {
                 if (!this::bigFileView.isInitialized) {
                     return
@@ -187,7 +190,10 @@ class BigMediaFragment : Fragment() {
         videoEditView?.visibility = View.GONE
         val flipHorizontal =
             (item.rotation in setOf(90, 270) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)
-                || (item.rotation in setOf(0, 180) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
+                || (item.rotation in setOf(
+                0,
+                180
+            ) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
         val flipVertical =
             (item.rotation in setOf(90, 270) && item.flip and FLIP_HORIZONTAL == FLIP_HORIZONTAL)
                 || (item.rotation in setOf(0, 180) && item.flip and FLIP_VERTICAL == FLIP_VERTICAL)

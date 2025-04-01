@@ -36,45 +36,45 @@ import static ch.threema.app.emojis.EmojiSpritemap.emojiCategories;
 public class EmojiUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiUtil");
 
-	public static final String REPLACEMENT_CHARACTER = "\uFFFD";
-	public static final String THUMBS_UP_SEQUENCE = "\uD83D\uDC4D"; // 👍
-	public static final String THUMBS_DOWN_SEQUENCE = "\uD83D\uDC4E"; // 👎
-	public static final String HEART_SEQUENCE = "\u2764\uFE0F"; // ❤️
-	public static final String TEARS_OF_JOY_SEQUENCE = "\uD83D\uDE02"; // 😂
-	public static final String CRYING_SEQUENCE = "\uD83D\uDE22"; // 😢
-	public static final String FOLDED_HANDS_SEQUENCE = "\uD83D\uDE4F"; // 🙏
+    public static final String REPLACEMENT_CHARACTER = "\uFFFD";
+    public static final String THUMBS_UP_SEQUENCE = "\uD83D\uDC4D"; // 👍
+    public static final String THUMBS_DOWN_SEQUENCE = "\uD83D\uDC4E"; // 👎
+    public static final String HEART_SEQUENCE = "\u2764\uFE0F"; // ❤️
+    public static final String TEARS_OF_JOY_SEQUENCE = "\uD83D\uDE02"; // 😂
+    public static final String CRYING_SEQUENCE = "\uD83D\uDE22"; // 😢
+    public static final String FOLDED_HANDS_SEQUENCE = "\uD83D\uDE4F"; // 🙏
 
-	private static final Set<String> THUMBS_UP_VARIANTS = Set.of(
-		"\ud83d\udc4d", // 👍
-		"\ud83d\udc4d\ud83c\udffb", // 👍🏻
-		"\ud83d\udc4d\ud83c\udffc", // 👍🏼
-		"\ud83d\udc4d\ud83c\udffd", // 👍🏽
-		"\ud83d\udc4d\ud83c\udffe", // 👍🏾
-		"\ud83d\udc4d\ud83c\udfff" // 👍🏿
-	);
+    private static final Set<String> THUMBS_UP_VARIANTS = Set.of(
+        "\ud83d\udc4d", // 👍
+        "\ud83d\udc4d\ud83c\udffb", // 👍🏻
+        "\ud83d\udc4d\ud83c\udffc", // 👍🏼
+        "\ud83d\udc4d\ud83c\udffd", // 👍🏽
+        "\ud83d\udc4d\ud83c\udffe", // 👍🏾
+        "\ud83d\udc4d\ud83c\udfff" // 👍🏿
+    );
 
-	private static final Set<String> THUMBS_DOWN_VARIANTS = Set.of(
-		"\ud83d\udc4e", // 👎
-		"\ud83d\udc4e\ud83c\udffb", // 👎🏻
-		"\ud83d\udc4e\ud83c\udffc", // 👎🏼
-		"\ud83d\udc4e\ud83c\udffd", // 👎🏽
-		"\ud83d\udc4e\ud83c\udffe", // 👎🏾
-		"\ud83d\udc4e\ud83c\udfff" // 👎🏿
-	);
+    private static final Set<String> THUMBS_DOWN_VARIANTS = Set.of(
+        "\ud83d\udc4e", // 👎
+        "\ud83d\udc4e\ud83c\udffb", // 👎🏻
+        "\ud83d\udc4e\ud83c\udffc", // 👎🏼
+        "\ud83d\udc4e\ud83c\udffd", // 👎🏽
+        "\ud83d\udc4e\ud83c\udffe", // 👎🏾
+        "\ud83d\udc4e\ud83c\udfff" // 👎🏿
+    );
 
     private static WeakReference<Set<String>> FULLY_QUALIFIED_EMOJI = new WeakReference<>(null);
 
-	@Nullable
-	public static EmojiInfo getEmojiInfo(String emojiSequence) {
-		for (EmojiCategory emojiCategory : emojiCategories) {
-			for (EmojiInfo emojiInfo : emojiCategory.emojiInfos) {
-				if (emojiInfo.emojiSequence.equals(emojiSequence)) {
-					return emojiInfo;
-				}
-			}
-		}
-		return null;
-	}
+    @Nullable
+    public static EmojiInfo getEmojiInfo(String emojiSequence) {
+        for (EmojiCategory emojiCategory : emojiCategories) {
+            for (EmojiInfo emojiInfo : emojiCategory.emojiInfos) {
+                if (emojiInfo.emojiSequence.equals(emojiSequence)) {
+                    return emojiInfo;
+                }
+            }
+        }
+        return null;
+    }
 
     public static boolean isFullyQualifiedEmoji(@Nullable CharSequence emojiSequence) {
         if (emojiSequence == null) {
@@ -97,23 +97,25 @@ public class EmojiUtil {
         return fullyQualifiedEmoji;
     }
 
-	/**
-	 * Checks if the given emoji sequence is a thumbs up emoji regardless of color
-	 * @param emojiSequence The unicode sequence to check
-	 * @return true if the emoji sequence is a thumbs up emoji, false otherwise
-	 */
-	public static boolean isThumbsUpEmoji(String emojiSequence) {
-		return EmojiUtil.THUMBS_UP_VARIANTS.contains(emojiSequence);
-	}
+    /**
+     * Checks if the given emoji sequence is a thumbs up emoji regardless of color
+     *
+     * @param emojiSequence The unicode sequence to check
+     * @return true if the emoji sequence is a thumbs up emoji, false otherwise
+     */
+    public static boolean isThumbsUpEmoji(String emojiSequence) {
+        return EmojiUtil.THUMBS_UP_VARIANTS.contains(emojiSequence);
+    }
 
-	/**
-	 * Checks if the given emoji sequence is a thumbs down emoji regardless of color
-	 * @param emojiSequence The unicode sequence to check
-	 * @return true if the emoji sequence is a thumbs down emoji, false otherwise
-	 */
-	public static boolean isThumbsDownEmoji(String emojiSequence) {
-		return EmojiUtil.THUMBS_DOWN_VARIANTS.contains(emojiSequence);
-	}
+    /**
+     * Checks if the given emoji sequence is a thumbs down emoji regardless of color
+     *
+     * @param emojiSequence The unicode sequence to check
+     * @return true if the emoji sequence is a thumbs down emoji, false otherwise
+     */
+    public static boolean isThumbsDownEmoji(String emojiSequence) {
+        return EmojiUtil.THUMBS_DOWN_VARIANTS.contains(emojiSequence);
+    }
 
     public static boolean isThumbsUpOrDownEmoji(@NonNull String emojiSequence) {
         return isThumbsUpEmoji(emojiSequence) || isThumbsDownEmoji(emojiSequence);

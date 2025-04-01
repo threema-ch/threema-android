@@ -36,98 +36,98 @@ import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.base.utils.Base32;
 
 public class NotificationChannelSettings {
-	private String prefix;
-	private long seqNum;
-	private int importance;
-	private boolean showBadge;
-	private long[] vibrationPattern;
-	private Integer lightColor;
-	private Uri sound;
-	private final String channelGroupId;
-	private final String groupName;
-	private final String description;
-	private final int visibility;
+    private String prefix;
+    private long seqNum;
+    private int importance;
+    private boolean showBadge;
+    private long[] vibrationPattern;
+    private Integer lightColor;
+    private Uri sound;
+    private final String channelGroupId;
+    private final String groupName;
+    private final String description;
+    private final int visibility;
 
-	public NotificationChannelSettings(String channelGroupId, @NonNull String prefix, SharedPreferences sharedPreferences, int importance, boolean showBadge, int visibility, String groupName, String description, String seqPrefKey) {
-		this.prefix = prefix;
-		this.importance = importance;
-		this.showBadge = showBadge;
-		this.visibility = visibility;
+    public NotificationChannelSettings(String channelGroupId, @NonNull String prefix, SharedPreferences sharedPreferences, int importance, boolean showBadge, int visibility, String groupName, String description, String seqPrefKey) {
+        this.prefix = prefix;
+        this.importance = importance;
+        this.showBadge = showBadge;
+        this.visibility = visibility;
 
-		this.channelGroupId = channelGroupId;
-		this.groupName = groupName;
-		this.description = description;
-	}
+        this.channelGroupId = channelGroupId;
+        this.groupName = groupName;
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getGroupName() {
-		return groupName;
-	}
+    public String getGroupName() {
+        return groupName;
+    }
 
-	public String getChannelGroupId() {
-		return channelGroupId;
-	}
+    public String getChannelGroupId() {
+        return channelGroupId;
+    }
 
-	public long getSeqNum() {
-		return seqNum;
-	}
+    public long getSeqNum() {
+        return seqNum;
+    }
 
-	public void setSeqNum(long seqNum) {
-		this.seqNum = seqNum;
-	}
+    public void setSeqNum(long seqNum) {
+        this.seqNum = seqNum;
+    }
 
-	public String getPrefix() {
-		return prefix;
-	}
+    public String getPrefix() {
+        return prefix;
+    }
 
-	public void setPrefix(@NonNull String prefix) {
-		this.prefix = prefix;
-	}
+    public void setPrefix(@NonNull String prefix) {
+        this.prefix = prefix;
+    }
 
-	public int getImportance() {
-		return importance;
-	}
+    public int getImportance() {
+        return importance;
+    }
 
-	public void setImportance(int importance) {
-		this.importance = importance;
-	}
+    public void setImportance(int importance) {
+        this.importance = importance;
+    }
 
-	public boolean isShowBadge() {
-		return showBadge;
-	}
+    public boolean isShowBadge() {
+        return showBadge;
+    }
 
-	public void setShowBadge(boolean showBadge) {
-		this.showBadge = showBadge;
-	}
+    public void setShowBadge(boolean showBadge) {
+        this.showBadge = showBadge;
+    }
 
-	public long[] getVibrationPattern() {
-		return vibrationPattern;
-	}
+    public long[] getVibrationPattern() {
+        return vibrationPattern;
+    }
 
-	public void setVibrationPattern(long[] vibratePattern) {
-		this.vibrationPattern = vibratePattern;
-	}
+    public void setVibrationPattern(long[] vibratePattern) {
+        this.vibrationPattern = vibratePattern;
+    }
 
-	public Integer getLightColor() {
-		return lightColor;
-	}
+    public Integer getLightColor() {
+        return lightColor;
+    }
 
-	public void setLightColor(Integer lightColor) {
-		this.lightColor = lightColor;
-	}
+    public void setLightColor(Integer lightColor) {
+        this.lightColor = lightColor;
+    }
 
-	public Uri getSound() {
-		return sound;
-	}
+    public Uri getSound() {
+        return sound;
+    }
 
-	public void setSound(Uri ringtoneUri) {
-		this.sound = ringtoneUri;
-	}
+    public void setSound(Uri ringtoneUri) {
+        this.sound = ringtoneUri;
+    }
 
-	public int getVisibility() {
-		return visibility;
-	}
+    public int getVisibility() {
+        return visibility;
+    }
 }

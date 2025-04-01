@@ -138,7 +138,8 @@ private fun EditHistoryItemBubble(
             MessageBubble(
                 modifier = bubbleModifier
                     .padding(bottom = 16.dp),
-                text = editHistoryEntry.text ?: stringResource(R.string.edit_history_file_no_caption),
+                text = editHistoryEntry.text
+                    ?: stringResource(R.string.edit_history_file_no_caption),
                 isOutbox = isOutbox,
                 shouldMarkupText = shouldMarkupText,
                 onClick = onClick,
@@ -184,7 +185,11 @@ private fun EditedAtLabel(editedAt: Date) {
         ThemedText(
             modifier = Modifier
                 .padding(start = 4.dp)
-                .then(stringResource(R.string.cd_edited_at).let { Modifier.semantics { contentDescription = it.format(formattedEditedAtDate) } }),
+                .then(stringResource(R.string.cd_edited_at).let {
+                    Modifier.semantics {
+                        contentDescription = it.format(formattedEditedAtDate)
+                    }
+                }),
             text = formattedEditedAtDate,
             style = AppTypography.labelLarge
         )

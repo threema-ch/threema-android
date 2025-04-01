@@ -48,95 +48,96 @@ import ch.threema.storage.models.ConversationModel;
  */
 @WorkerThread
 public class ConversationRequestHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationRequestHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationRequestHandler");
 
-	private static final int INITIAL_AVATAR_COUNT = 15;
-	private final MessageDispatcher dispatcher;
-	private final ConversationService conversationService;
-	private final Listener listener;
-	private int avatarAppended;
+    private static final int INITIAL_AVATAR_COUNT = 15;
+    private final MessageDispatcher dispatcher;
+    private final ConversationService conversationService;
+    private final Listener listener;
+    private int avatarAppended;
 
-	@WorkerThread
-	public interface Listener {
-		void onRespond();
-		void onAnswered();
-	}
+    @WorkerThread
+    public interface Listener {
+        void onRespond();
 
-	@AnyThread
-	public ConversationRequestHandler(MessageDispatcher dispatcher,
-	                                  ConversationService conversationService,
-	                                  Listener listener) {
-		super(Protocol.SUB_TYPE_CONVERSATIONS);
-		this.dispatcher = dispatcher;
-		this.conversationService = conversationService;
-		this.listener = listener;
-	}
+        void onAnswered();
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received conversation request");
+    @AnyThread
+    public ConversationRequestHandler(MessageDispatcher dispatcher,
+                                      ConversationService conversationService,
+                                      Listener listener) {
+        super(Protocol.SUB_TYPE_CONVERSATIONS);
+        this.dispatcher = dispatcher;
+        this.conversationService = conversationService;
+        this.listener = listener;
+    }
 
-		final Map<String, Value> args = this.getArguments(message, true, new String[] {
-				Protocol.ARGUMENT_MAX_SIZE
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received conversation request");
 
-		Integer avatarMaxSize = null;
-		if (args.containsKey(Protocol.ARGUMENT_MAX_SIZE)) {
-			avatarMaxSize = args.get(Protocol.ARGUMENT_MAX_SIZE).asIntegerValue().toInt();
-		}
+        final Map<String, Value> args = this.getArguments(message, true, new String[]{
+            Protocol.ARGUMENT_MAX_SIZE
+        });
 
-		this.respond(avatarMaxSize);
-	}
+        Integer avatarMaxSize = null;
+        if (args.containsKey(Protocol.ARGUMENT_MAX_SIZE)) {
+            avatarMaxSize = args.get(Protocol.ARGUMENT_MAX_SIZE).asIntegerValue().toInt();
+        }
 
-	private boolean appendNextAvatar() {
-		return this.avatarAppended++ < INITIAL_AVATAR_COUNT;
-	}
+        this.respond(avatarMaxSize);
+    }
 
-	private void respond(final Integer avatarMaxSize) {
-		try {
-			this.avatarAppended = 0;
+    private boolean appendNextAvatar() {
+        return this.avatarAppended++ < INITIAL_AVATAR_COUNT;
+    }
 
-			// Shallow copy to prevent a ConcurrentModificationException
-			final List<ConversationModel> conversations =
-				new ArrayList<>(this.conversationService.getAll(false));
-			final List<MsgpackBuilder> data = Conversation.convert(
-					conversations,
-					(builder, conversation, modelWrapper) -> {
-						if (!appendNextAvatar()) {
-							return;
-						}
-						try {
-							final byte[] avatar = modelWrapper.getAvatar(false, avatarMaxSize);
-							if (avatar != null) {
-								builder.put("avatar", avatar);
-							}
-						} catch (ConversionException e) {
-							logger.warn("Failed to append avatar: {}", e.getMessage());
-							//ignore exception
-						}
+    private void respond(final Integer avatarMaxSize) {
+        try {
+            this.avatarAppended = 0;
 
-					}
-			);
+            // Shallow copy to prevent a ConcurrentModificationException
+            final List<ConversationModel> conversations =
+                new ArrayList<>(this.conversationService.getAll(false));
+            final List<MsgpackBuilder> data = Conversation.convert(
+                conversations,
+                (builder, conversation, modelWrapper) -> {
+                    if (!appendNextAvatar()) {
+                        return;
+                    }
+                    try {
+                        final byte[] avatar = modelWrapper.getAvatar(false, avatarMaxSize);
+                        if (avatar != null) {
+                            builder.put("avatar", avatar);
+                        }
+                    } catch (ConversionException e) {
+                        logger.warn("Failed to append avatar: {}", e.getMessage());
+                        //ignore exception
+                    }
 
-			if (this.listener != null) {
-				this.listener.onRespond();
-			}
+                }
+            );
 
-			// Send response
-			logger.debug("Sending conversation response");
-			final MsgpackObjectBuilder args = new MsgpackObjectBuilder();
-			this.send(this.dispatcher, data, args);
+            if (this.listener != null) {
+                this.listener.onRespond();
+            }
 
-			if (this.listener != null) {
-				this.listener.onAnswered();
-			}
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Send response
+            logger.debug("Sending conversation response");
+            final MsgpackObjectBuilder args = new MsgpackObjectBuilder();
+            this.send(this.dispatcher, data, args);
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+            if (this.listener != null) {
+                this.listener.onAnswered();
+            }
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
+
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

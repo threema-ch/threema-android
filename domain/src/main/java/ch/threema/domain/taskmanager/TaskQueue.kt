@@ -133,7 +133,7 @@ internal class TaskQueue(
     private fun IncomingMessageTaskQueue?.get(runIfNull: () -> Unit = { }): IncomingMessageTaskQueue {
         if (this == null) {
             runIfNull()
-            throw  IllegalStateException("Cannot access incoming message queue as it is null")
+            throw IllegalStateException("Cannot access incoming message queue as it is null")
         }
         return this
     }

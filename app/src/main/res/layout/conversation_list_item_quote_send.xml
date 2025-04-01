@@ -1,36 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
  avatar on right
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/msg_list_item_send"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:minHeight="@dimen/chat_bubble_minheight"
-	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
-	android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
-	android:descendantFocusability="blocksDescendants">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/msg_list_item_send"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/chat_bubble_minheight"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+    android:paddingRight="@dimen/chat_bubble_container_padding_left_right"
+    android:descendantFocusability="blocksDescendants">
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.Bubble.Send"
-		android:id="@+id/message_block">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.Bubble.Send"
+        android:id="@+id/message_block">
 
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-		<include layout="@layout/conversation_bubble_header"/>
+            <include layout="@layout/conversation_bubble_header" />
 
-		<include layout="@layout/conversation_list_item_quote"/>
+            <include layout="@layout/conversation_list_item_quote" />
 
-		<include layout="@layout/conversation_bubble_footer_send"/>
+            <include layout="@layout/conversation_bubble_footer_send" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-    <include layout="@layout/conversation_list_item_emoji_reactions_send"/>
+    <include layout="@layout/conversation_list_item_emoji_reactions_send" />
 
 </RelativeLayout>

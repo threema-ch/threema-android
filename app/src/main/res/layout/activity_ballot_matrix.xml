@@ -1,170 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-												 xmlns:app="http://schemas.android.com/apk/res-auto"
-												 android:id="@+id/main_content"
-												 android:layout_width="match_parent"
-												 android:layout_height="match_parent"
-												 android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<include layout="@layout/toolbar_view"/>
+    <include layout="@layout/toolbar_view" />
 
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/avatar_container"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		android:layout_marginTop="8dp"
-		android:layout_marginBottom="8dp"
-		android:clickable="false"
-		android:focusable="false"
-		app:cardBackgroundColor="?attr/colorSurface"
-		app:strokeWidth="0dp"
-		app:cardElevation="4dp"
-		android:outlineProvider="none"
-		app:contentPaddingBottom="16dp"
-		app:contentPaddingLeft="15dp"
-		app:contentPaddingRight="15dp"
-		app:contentPaddingTop="12dp">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/avatar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="false"
+        android:focusable="false"
+        app:cardBackgroundColor="?attr/colorSurface"
+        app:strokeWidth="0dp"
+        app:cardElevation="4dp"
+        android:outlineProvider="none"
+        app:contentPaddingBottom="16dp"
+        app:contentPaddingLeft="15dp"
+        app:contentPaddingRight="15dp"
+        app:contentPaddingTop="12dp">
 
-	<TextView
-		android:id="@+id/text_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center"
-		android:gravity="center"
-		android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-		android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-		android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-		android:text="Title"/>
+        <TextView
+            android:id="@+id/text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+            android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+            android:text="Title" />
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
-	<TextView
-		android:id="@+id/no_votes_yet"
-		android:layout_gravity="center"
-		android:gravity="center"
-		android:textAlignment="center"
-		android:textAppearance="@style/Threema.TextAppearance.Emptyview"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:text="@string/no_votes_yet"
-		android:visibility="gone"/>
+    <TextView
+        android:id="@+id/no_votes_yet"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="@string/no_votes_yet"
+        android:visibility="gone" />
 
-	<androidx.core.widget.NestedScrollView
-			android:id="@+id/scroll_parent"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
-			android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
-			android:visibility="gone">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/tablet_additional_padding_left_right"
+        android:layout_marginRight="@dimen/tablet_additional_padding_left_right"
+        android:visibility="gone">
 
-		<androidx.constraintlayout.widget.ConstraintLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-		<HorizontalScrollView
-				android:id="@+id/horizontalScrollView1"
-				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:layout_gravity="center_horizontal"
-				android:scrollbarStyle="insideOverlay"
-				android:scrollbarSize="@dimen/scrollbar_size"
-				android:layout_marginTop="4dp"
-				android:layout_marginBottom="4dp"
-				app:layout_constraintLeft_toLeftOf="parent"
-				app:layout_constraintBottom_toTopOf="@+id/not_voted_container"
-				app:layout_constraintRight_toRightOf="parent"
-				app:layout_constraintTop_toTopOf="parent">
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbarSize="@dimen/scrollbar_size"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/not_voted_container"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-			<TableLayout
-					android:id="@+id/matrix_data"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:paddingLeft="8dp"
-					android:paddingRight="8dp"
-					android:paddingTop="4dp"
-					android:paddingBottom="4dp"
-					android:baselineAligned="true">
+                <TableLayout
+                    android:id="@+id/matrix_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:baselineAligned="true">
 
-				<TableRow
-						android:id="@+id/header_row_name"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content">
+                    <TableRow
+                        android:id="@+id/header_row_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-					<View
-							android:layout_width="match_parent"
-							android:layout_height="match_parent">
-					</View>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"></View>
 
-					<View
-							android:layout_width="match_parent"
-							android:layout_height="match_parent">
-					</View>
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"></View>
 
-					<include layout="@layout/row_cell_ballot_matrix_name"/>
-					<include layout="@layout/row_cell_ballot_matrix_name"/>
+                        <include layout="@layout/row_cell_ballot_matrix_name" />
 
-				</TableRow>
+                        <include layout="@layout/row_cell_ballot_matrix_name" />
 
-				<TableRow
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content">
+                    </TableRow>
 
-					<include layout="@layout/row_cell_ballot_matrix_choice_label"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice_sum"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice"/>
-				</TableRow>
-				<TableRow
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content">
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-					<include layout="@layout/row_cell_ballot_matrix_choice_label"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice_sum"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice"/>
-					<include layout="@layout/row_cell_ballot_matrix_choice"/>
-				</TableRow>
+                        <include layout="@layout/row_cell_ballot_matrix_choice_label" />
 
-			</TableLayout>
+                        <include layout="@layout/row_cell_ballot_matrix_choice_sum" />
 
-		</HorizontalScrollView>
+                        <include layout="@layout/row_cell_ballot_matrix_choice" />
 
-		<com.google.android.material.card.MaterialCardView
-			android:id="@+id/not_voted_container"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="8dp"
-			android:layout_marginRight="8dp"
-			android:layout_marginTop="8dp"
-			android:layout_marginBottom="16dp"
-			android:clickable="false"
-			android:focusable="false"
-			app:strokeWidth="0dp"
-			android:outlineProvider="none"
-			app:cardBackgroundColor="?attr/colorSurface"
-			app:cardElevation="4dp"
-			app:cardCornerRadius="@dimen/cardview_border_radius"
-			app:contentPaddingBottom="16dp"
-			app:contentPaddingLeft="15dp"
-			app:contentPaddingRight="15dp"
-			app:contentPaddingTop="12dp"
-			app:layout_constraintLeft_toLeftOf="parent"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintRight_toRightOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/horizontalScrollView1">
+                        <include layout="@layout/row_cell_ballot_matrix_choice" />
+                    </TableRow>
 
-			<TextView
-				style="@style/Threema.TextAppearance.BodyMedium"
-				android:id="@+id/not_voted"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="left" />
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-		</com.google.android.material.card.MaterialCardView>
+                        <include layout="@layout/row_cell_ballot_matrix_choice_label" />
 
-		</androidx.constraintlayout.widget.ConstraintLayout>
+                        <include layout="@layout/row_cell_ballot_matrix_choice_sum" />
 
-	</androidx.core.widget.NestedScrollView>
+                        <include layout="@layout/row_cell_ballot_matrix_choice" />
+
+                        <include layout="@layout/row_cell_ballot_matrix_choice" />
+                    </TableRow>
+
+                </TableLayout>
+
+            </HorizontalScrollView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/not_voted_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="false"
+                android:focusable="false"
+                app:strokeWidth="0dp"
+                android:outlineProvider="none"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="@dimen/cardview_border_radius"
+                app:contentPaddingBottom="16dp"
+                app:contentPaddingLeft="15dp"
+                app:contentPaddingRight="15dp"
+                app:contentPaddingTop="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/horizontalScrollView1">
+
+                <TextView
+                    style="@style/Threema.TextAppearance.BodyMedium"
+                    android:id="@+id/not_voted"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="left" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

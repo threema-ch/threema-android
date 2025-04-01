@@ -35,113 +35,111 @@ import ch.threema.base.utils.Utils;
 
 @Deprecated
 public class ImageDataModel implements MediaMessageDataInterface {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ImageDataModel");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ImageDataModel");
 
-	private byte[] imageBlobId;
-	private byte[] encryptionKey;
-	private byte[] nonce;
-	private boolean isDownloaded;
+    private byte[] imageBlobId;
+    private byte[] encryptionKey;
+    private byte[] nonce;
+    private boolean isDownloaded;
 
-	private ImageDataModel() {
-	}
+    private ImageDataModel() {
+    }
 
-	public ImageDataModel(byte[] imageBlobId, byte[] encryptionKey, byte[] nonce) {
-		this.imageBlobId = imageBlobId;
-		this.encryptionKey = encryptionKey;
-		this.nonce = nonce;
-		this.isDownloaded = false;
-	}
+    public ImageDataModel(byte[] imageBlobId, byte[] encryptionKey, byte[] nonce) {
+        this.imageBlobId = imageBlobId;
+        this.encryptionKey = encryptionKey;
+        this.nonce = nonce;
+        this.isDownloaded = false;
+    }
 
-	public ImageDataModel(boolean isDownloaded) {
-		this.isDownloaded = isDownloaded;
-		this.imageBlobId = new byte[0];
-		this.encryptionKey = new byte[0];
-	}
+    public ImageDataModel(boolean isDownloaded) {
+        this.isDownloaded = isDownloaded;
+        this.imageBlobId = new byte[0];
+        this.encryptionKey = new byte[0];
+    }
 
 
-	@Override
-	public byte[] getBlobId() {
-		return this.imageBlobId;
-	}
+    @Override
+    public byte[] getBlobId() {
+        return this.imageBlobId;
+    }
 
-	@Override
-	public byte[] getEncryptionKey() {
-		return this.encryptionKey;
-	}
+    @Override
+    public byte[] getEncryptionKey() {
+        return this.encryptionKey;
+    }
 
-	public byte[] getNonce() {
-		return this.nonce;
-	}
+    public byte[] getNonce() {
+        return this.nonce;
+    }
 
-	@Override
-	public boolean isDownloaded() {
-		return this.isDownloaded;
-	}
+    @Override
+    public boolean isDownloaded() {
+        return this.isDownloaded;
+    }
 
-	@Override
-	public void isDownloaded(boolean isDownloaded) {
-		this.isDownloaded = isDownloaded;
+    @Override
+    public void isDownloaded(boolean isDownloaded) {
+        this.isDownloaded = isDownloaded;
 
-		if (this.isDownloaded) {
-			// Clear stuff
-			this.nonce = new byte[0];
-			this.encryptionKey = new byte[0];
-			this.imageBlobId = new byte[0];
-		}
-	}
+        if (this.isDownloaded) {
+            // Clear stuff
+            this.nonce = new byte[0];
+            this.encryptionKey = new byte[0];
+            this.imageBlobId = new byte[0];
+        }
+    }
 
-	public void fromString(String s) {
-		if (TestUtil.isEmptyOrNull(s)) {
-			// "old" image model, set defaults
-			this.isDownloaded = true;
-			this.encryptionKey = new byte[0];
-			this.imageBlobId = new byte[0];
-			this.nonce= new byte[0];
-			return;
-		}
+    public void fromString(String s) {
+        if (TestUtil.isEmptyOrNull(s)) {
+            // "old" image model, set defaults
+            this.isDownloaded = true;
+            this.encryptionKey = new byte[0];
+            this.imageBlobId = new byte[0];
+            this.nonce = new byte[0];
+            return;
+        }
 
-		JsonReader r = new JsonReader(new StringReader(s));
+        JsonReader r = new JsonReader(new StringReader(s));
 
-		try {
-			r.beginArray();
-			this.isDownloaded = r.nextBoolean();
-			this.encryptionKey = Utils.hexStringToByteArray(r.nextString());
-			this.imageBlobId = Utils.hexStringToByteArray(r.nextString());
-			this.nonce = Utils.hexStringToByteArray(r.nextString());
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			//DO NOTHING!!
-		}
+        try {
+            r.beginArray();
+            this.isDownloaded = r.nextBoolean();
+            this.encryptionKey = Utils.hexStringToByteArray(r.nextString());
+            this.imageBlobId = Utils.hexStringToByteArray(r.nextString());
+            this.nonce = Utils.hexStringToByteArray(r.nextString());
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            //DO NOTHING!!
+        }
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		StringWriter sw = new StringWriter();
-		JsonWriter j = new JsonWriter(sw);
+    @Override
+    public String toString() {
+        StringWriter sw = new StringWriter();
+        JsonWriter j = new JsonWriter(sw);
 
-		try {
-			j.beginArray();
-			j
-				.value(this.isDownloaded())
-				.value(Utils.byteArrayToHexString(this.getEncryptionKey()))
-				.value(Utils.byteArrayToHexString(this.getBlobId()))
-				.value(Utils.byteArrayToHexString(this.getNonce()));
-			j.endArray();
-		}
-		catch (Exception x) {
-			logger.error("Exception", x);
-			return null;
-		}
+        try {
+            j.beginArray();
+            j
+                .value(this.isDownloaded())
+                .value(Utils.byteArrayToHexString(this.getEncryptionKey()))
+                .value(Utils.byteArrayToHexString(this.getBlobId()))
+                .value(Utils.byteArrayToHexString(this.getNonce()));
+            j.endArray();
+        } catch (Exception x) {
+            logger.error("Exception", x);
+            return null;
+        }
 
-		return sw.toString();
+        return sw.toString();
 
-	}
+    }
 
-	public static ImageDataModel create(String s) {
-		ImageDataModel m = new ImageDataModel();
-		m.fromString(s);
-		return m;
-	}
+    public static ImageDataModel create(String s) {
+        ImageDataModel m = new ImageDataModel();
+        m.fromString(s);
+        return m;
+    }
 }

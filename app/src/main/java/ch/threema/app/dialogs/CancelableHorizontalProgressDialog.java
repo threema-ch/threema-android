@@ -44,179 +44,183 @@ import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
 
 public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
-	private ProgressDialogClickListener callback;
-	private Activity activity;
-	private DialogInterface.OnClickListener listener;
-	private NumberFormat mProgressPercentFormat;
-	private TextView progressPercent;
-	private LinearProgressIndicator progressBar;
-	private int max;
+    private ProgressDialogClickListener callback;
+    private Activity activity;
+    private DialogInterface.OnClickListener listener;
+    private NumberFormat mProgressPercentFormat;
+    private TextView progressPercent;
+    private LinearProgressIndicator progressBar;
+    private int max;
 
-	/**
-	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
-	 * @param title title of dialog
-	 * @param button label of cancel button
-	 * @param total maximum allowed progress value.
-	 * @return the dialog
-	 */
-	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, @StringRes int button, int total) {
-		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("button", button);
-		args.putInt("total", total);
+    /**
+     * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
+     *
+     * @param title  title of dialog
+     * @param button label of cancel button
+     * @param total  maximum allowed progress value.
+     * @return the dialog
+     */
+    public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, @StringRes int button, int total) {
+        CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("button", button);
+        args.putInt("total", total);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	/**
-	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below.
-	 * Mimics deprecated system ProgressDialog behavior.
-	 * Note that when using this constructor, no cancel button is shown.
-	 *
-	 * @param title title of dialog
-	 * @param total maximum allowed progress value.
-	 * @return the dialog
-	 */
-	public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, int total) {
-		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
-		Bundle args = new Bundle();
-		args.putInt("title", title);
-		args.putInt("total", total);
+    /**
+     * Creates a DialogFragment with a horizontal progress bar and a percentage display below.
+     * Mimics deprecated system ProgressDialog behavior.
+     * Note that when using this constructor, no cancel button is shown.
+     *
+     * @param title title of dialog
+     * @param total maximum allowed progress value.
+     * @return the dialog
+     */
+    public static CancelableHorizontalProgressDialog newInstance(@StringRes int title, int total) {
+        CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
+        Bundle args = new Bundle();
+        args.putInt("title", title);
+        args.putInt("total", total);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	/**
-	 * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
-	 * @param title title of dialog
-	 * @param button label of cancel button
-	 * @param total maximum allowed progress value.
-	 * @return the dialog
-	 */
-	public static CancelableHorizontalProgressDialog newInstance(@NonNull String title, @NonNull String button, int total) {
-		CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		args.putString("button", button);
-		args.putInt("total", total);
+    /**
+     * Creates a DialogFragment with a horizontal progress bar and a percentage display below. Mimics deprecated system ProgressDialog behavior
+     *
+     * @param title  title of dialog
+     * @param button label of cancel button
+     * @param total  maximum allowed progress value.
+     * @return the dialog
+     */
+    public static CancelableHorizontalProgressDialog newInstance(@NonNull String title, @NonNull String button, int total) {
+        CancelableHorizontalProgressDialog dialog = new CancelableHorizontalProgressDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("button", button);
+        args.putInt("total", total);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		this.mProgressPercentFormat = NumberFormat.getPercentInstance();
-		this.mProgressPercentFormat.setMaximumFractionDigits(0);
+        this.mProgressPercentFormat = NumberFormat.getPercentInstance();
+        this.mProgressPercentFormat.setMaximumFractionDigits(0);
 
-		if (callback == null) {
-			try {
-				callback = (ProgressDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
-		}
+        if (callback == null) {
+            try {
+                callback = (ProgressDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
+        }
 
-		// called from an activity rather than a fragment
-		if (callback == null) {
-			if ((activity instanceof ProgressDialogClickListener)) {
-				callback = (ProgressDialogClickListener) activity;
-			}
-		}
-	}
+        // called from an activity rather than a fragment
+        if (callback == null) {
+            if ((activity instanceof ProgressDialogClickListener)) {
+                callback = (ProgressDialogClickListener) activity;
+            }
+        }
+    }
 
-	/**
-	 * Set a listener to be attached to the cancel button. Do not use, implement {@link ProgressDialogClickListener} listener on the calling activity/fragment instead!
-	 * @param onClickListener
-	 */
-	@Deprecated
-	public void setOnCancelListener(DialogInterface.OnClickListener onClickListener) {
-		this.listener = onClickListener;
-	}
+    /**
+     * Set a listener to be attached to the cancel button. Do not use, implement {@link ProgressDialogClickListener} listener on the calling activity/fragment instead!
+     *
+     * @param onClickListener
+     */
+    @Deprecated
+    public void setOnCancelListener(DialogInterface.OnClickListener onClickListener) {
+        this.listener = onClickListener;
+    }
 
-	public interface ProgressDialogClickListener {
-		void onCancel(String tag, Object object);
-	}
+    public interface ProgressDialogClickListener {
+        void onCancel(String tag, Object object);
+    }
 
-	@Override
-	public void onAttach(@NonNull Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(@NonNull Activity activity) {
+        super.onAttach(activity);
 
-		this.activity = activity;
-	}
+        this.activity = activity;
+    }
 
-	@NonNull
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		int titleRes = getArguments().getInt("title");
-		int button = getArguments().getInt("button");
-		int total = getArguments().getInt("total", 0);
-		String titleString = getArguments().getString("title");
-		String buttonString = getArguments().getString("button");
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        int titleRes = getArguments().getInt("title");
+        int button = getArguments().getInt("button");
+        int total = getArguments().getInt("total", 0);
+        String titleString = getArguments().getString("title");
+        String buttonString = getArguments().getString("button");
 
-		final String tag = this.getTag();
+        final String tag = this.getTag();
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_progress_horizontal, null);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_progress_horizontal, null);
 
-		progressBar = dialogView.findViewById(R.id.progress);
-		progressPercent = dialogView.findViewById(R.id.progress_percent);
+        progressBar = dialogView.findViewById(R.id.progress);
+        progressPercent = dialogView.findViewById(R.id.progress_percent);
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme()).setCancelable(false);
-		builder.setView(dialogView);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme()).setCancelable(false);
+        builder.setView(dialogView);
 
-		if (titleRes != 0) {
-			builder.setTitle(titleRes);
-		} else if (titleString != null) {
-			builder.setTitle(titleString);
-		}
+        if (titleRes != 0) {
+            builder.setTitle(titleRes);
+        } else if (titleString != null) {
+            builder.setTitle(titleString);
+        }
 
-		max = total;
-		if (max == 0) {
-			max = 100;
-		}
-		progressBar.setMax(max);
-		setProgress(0);
+        max = total;
+        if (max == 0) {
+            max = 100;
+        }
+        progressBar.setMax(max);
+        setProgress(0);
 
-		DialogInterface.OnClickListener onClickListener = (dialog, which) -> {
-			if (listener != null) {
-				listener.onClick(dialog, which);
-			}
-			if (callback != null) {
-				callback.onCancel(tag, object);
-			}
-		};
+        DialogInterface.OnClickListener onClickListener = (dialog, which) -> {
+            if (listener != null) {
+                listener.onClick(dialog, which);
+            }
+            if (callback != null) {
+                callback.onCancel(tag, object);
+            }
+        };
 
-		if (button != 0) {
-			builder.setPositiveButton(getString(button), onClickListener);
-		} else if (buttonString != null) {
-			builder.setPositiveButton(buttonString, onClickListener);
-		}
+        if (button != 0) {
+            builder.setPositiveButton(getString(button), onClickListener);
+        } else if (buttonString != null) {
+            builder.setPositiveButton(buttonString, onClickListener);
+        }
 
-		AlertDialog progressDialog = builder.create();
+        AlertDialog progressDialog = builder.create();
 
-		setCancelable(false);
+        setCancelable(false);
 
-		return progressDialog;
-	}
+        return progressDialog;
+    }
 
-	/**
-	 * Updates progress bar. Do not call this directly, use {@link ch.threema.app.utils.DialogUtil#updateProgress(FragmentManager, String, int)} instead!
-	 * @param progress
-	 */
-	@UiThread
-	public void setProgress(int progress) {
-		if (progressBar != null && progressPercent != null) {
-			double percent = (double) progress / (double) max;
-			SpannableString tmp = new SpannableString(mProgressPercentFormat.format(percent));
-			tmp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
-					0, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			progressPercent.setText(tmp);
-			progressBar.setProgress(progress);
-		}
-	}
+    /**
+     * Updates progress bar. Do not call this directly, use {@link ch.threema.app.utils.DialogUtil#updateProgress(FragmentManager, String, int)} instead!
+     *
+     * @param progress
+     */
+    @UiThread
+    public void setProgress(int progress) {
+        if (progressBar != null && progressPercent != null) {
+            double percent = (double) progress / (double) max;
+            SpannableString tmp = new SpannableString(mProgressPercentFormat.format(percent));
+            tmp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD),
+                0, tmp.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            progressPercent.setText(tmp);
+            progressBar.setProgress(progress);
+        }
+    }
 }

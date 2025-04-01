@@ -34,10 +34,13 @@ class LinkifyUtilTest {
      * Get the spannable and a list of the URL spans as a pair. If there is no spannable, a pair
      * containing of null and an empty list is returned.
      */
-    private fun getSpanPair(text: String, includePhoneNumbers: Boolean = true): Pair<Spanned?, List<URLSpan>> {
+    private fun getSpanPair(
+        text: String,
+        includePhoneNumbers: Boolean = true
+    ): Pair<Spanned?, List<URLSpan>> {
         val textView = TextView(InstrumentationRegistry.getInstrumentation().context)
         textView.text = text
-        InstrumentationRegistry.getInstrumentation().runOnMainSync{
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
             LinkifyUtil.getInstance().linkifyText(textView, includePhoneNumbers)
         }
         val spannableText = textView.text
@@ -51,10 +54,15 @@ class LinkifyUtilTest {
     /**
      * Expects that there are the spans as defined by the given set of span starts and ends.
      */
-    private fun assertSpans(text: String, spanPoints: Set<Pair<Int, Int>>, includePhoneNumbers: Boolean = true) {
+    private fun assertSpans(
+        text: String,
+        spanPoints: Set<Pair<Int, Int>>,
+        includePhoneNumbers: Boolean = true
+    ) {
         val (spannable, spans) = getSpanPair(text, includePhoneNumbers)
         assert(spannable != null || spans.isEmpty())
-        val actualSpanPoints = spans.map { spannable!!.getSpanStart(it) to spannable.getSpanEnd(it) }.toSet()
+        val actualSpanPoints =
+            spans.map { spannable!!.getSpanStart(it) to spannable.getSpanEnd(it) }.toSet()
         assertEquals(spanPoints, actualSpanPoints)
     }
 

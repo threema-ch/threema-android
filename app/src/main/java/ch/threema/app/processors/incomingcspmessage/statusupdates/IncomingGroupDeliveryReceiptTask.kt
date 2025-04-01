@@ -86,7 +86,10 @@ class IncomingGroupDeliveryReceiptTask(
                 message.apiGroupId
             )
             if (groupMessageModel == null) {
-                logger.warn("Group message model ({}) for incoming group delivery receipt is null", receiptMessageId)
+                logger.warn(
+                    "Group message model ({}) for incoming group delivery receipt is null",
+                    receiptMessageId
+                )
                 continue
             }
             messageService.addMessageReaction(

@@ -56,7 +56,8 @@ fun ThreemaTheme(
 ) {
 
     val shouldUseDynamicColors: Boolean = remember {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+        val sharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
         sharedPreferences.getBoolean("pref_dynamic_color", false)
     }
 
@@ -65,6 +66,7 @@ fun ThreemaTheme(
             val context = LocalContext.current
             if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         else -> if (isDarkTheme) ColorsDark.toColorScheme() else ColorsLight.toColorScheme()
     }
     val view = LocalView.current

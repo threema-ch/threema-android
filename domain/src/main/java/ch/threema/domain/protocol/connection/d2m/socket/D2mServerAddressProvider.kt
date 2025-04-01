@@ -27,11 +27,11 @@ import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.protobuf.d2m.MdD2M
 import com.google.protobuf.ByteString
 
-class D2mServerAddressProvider (
+class D2mServerAddressProvider(
     private val serverAddressProvider: ServerAddressProvider,
     private val dgid: ByteArray,
     private val serverGroup: String
-    ) {
+) {
 
     fun get(): String {
         val prefix8 = Utils.byteToHex(dgid[0], false, false)

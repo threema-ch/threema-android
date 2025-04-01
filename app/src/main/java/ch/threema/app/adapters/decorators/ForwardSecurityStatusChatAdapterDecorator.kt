@@ -29,23 +29,48 @@ import ch.threema.app.utils.TestUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType
 
-class ForwardSecurityStatusChatAdapterDecorator(context: Context, messageModel: AbstractMessageModel?, helper: Helper?) : ChatAdapterDecorator(context, messageModel, helper) {
+class ForwardSecurityStatusChatAdapterDecorator(
+    context: Context,
+    messageModel: AbstractMessageModel?,
+    helper: Helper?
+) : ChatAdapterDecorator(context, messageModel, helper) {
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         val statusDataModel = messageModel.forwardSecurityStatusData ?: return
         var body: String? = null
         when (statusDataModel.status) {
             ForwardSecurityStatusType.STATIC_TEXT -> body = statusDataModel.staticText
-            ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY -> body = context.getString(R.string.message_without_forward_security)
-            ForwardSecurityStatusType.FORWARD_SECURITY_RESET -> body = context.getString(R.string.forward_security_reset)
-            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED -> body = context.getString(R.string.forward_security_established)
-            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX -> body = context.getString(R.string.forward_security_established_rx)
-            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER -> body = context.getString(R.string.forward_security_message_out_of_order)
-            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED -> body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, statusDataModel.quantity, statusDataModel.quantity)
-            ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE -> body = context.getString(R.string.forward_security_downgraded_status_message)
-            ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE -> body = context.getString(R.string.forward_security_illegal_session_status_message)
+            ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY -> body =
+                context.getString(R.string.message_without_forward_security)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_RESET -> body =
+                context.getString(R.string.forward_security_reset)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED -> body =
+                context.getString(R.string.forward_security_established)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX -> body =
+                context.getString(R.string.forward_security_established_rx)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER -> body =
+                context.getString(R.string.forward_security_message_out_of_order)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED -> body =
+                ConfigUtils.getSafeQuantityString(
+                    context,
+                    R.plurals.forward_security_messages_skipped,
+                    statusDataModel.quantity,
+                    statusDataModel.quantity
+                )
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE -> body =
+                context.getString(R.string.forward_security_downgraded_status_message)
+
+            ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE -> body =
+                context.getString(R.string.forward_security_illegal_session_status_message)
 
             // TODO(ANDR-2519): Can this be removed when md supports fs? Maybe not, because theses statuses won't be rendered correctly if they have already been created
-            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED -> body = context.getString(R.string.forward_security_disabled)
+            ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED -> body =
+                context.getString(R.string.forward_security_disabled)
         }
         if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(body))) {
             holder.bodyTextView.text = body

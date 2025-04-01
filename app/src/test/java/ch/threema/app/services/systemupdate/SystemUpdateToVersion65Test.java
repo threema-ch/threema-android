@@ -43,52 +43,52 @@ import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory;
 @PrepareForTest({SQLiteDatabase.class, DatabaseServiceNew.class})
 public class SystemUpdateToVersion65Test {
 
-	private DatabaseServiceNew databaseServiceMock;
-	private SQLiteDatabase sqLiteDatabaseMock;
+    private DatabaseServiceNew databaseServiceMock;
+    private SQLiteDatabase sqLiteDatabaseMock;
 
-	@Before
-	public void createMocks() {
-		this.databaseServiceMock = PowerMockito.mock(DatabaseServiceNew.class);
-		this.sqLiteDatabaseMock = PowerMockito.mock(SQLiteDatabase.class);
-	}
+    @Before
+    public void createMocks() {
+        this.databaseServiceMock = PowerMockito.mock(DatabaseServiceNew.class);
+        this.sqLiteDatabaseMock = PowerMockito.mock(SQLiteDatabase.class);
+    }
 
-	@Test
-	public void runAsyncTest() {
-		SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
+    @Test
+    public void runAsyncTest() {
+        SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
 
-		Assert.assertTrue(update.runAsync());
-	}
+        Assert.assertTrue(update.runAsync());
+    }
 
-	@Test
-	public void getTextTest() {
-		SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
+    @Test
+    public void getTextTest() {
+        SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
 
-		Assert.assertEquals("version 65", update.getText());
-	}
+        Assert.assertEquals("version 65", update.getText());
+    }
 
 
-	@Test
-	public void runDirectly() {
-		SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
+    @Test
+    public void runDirectly() {
+        SystemUpdateToVersion65 update = new SystemUpdateToVersion65(this.databaseServiceMock, this.sqLiteDatabaseMock);
 
-		PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory())
-			.thenReturn(PowerMockito.mock(GroupInviteModelFactory.class));
-		PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory())
-			.thenReturn(PowerMockito.mock(OutgoingGroupJoinRequestModelFactory.class));
-		PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory())
-			.thenReturn(PowerMockito.mock(IncomingGroupJoinRequestModelFactory.class));
+        PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory())
+            .thenReturn(PowerMockito.mock(GroupInviteModelFactory.class));
+        PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory())
+            .thenReturn(PowerMockito.mock(OutgoingGroupJoinRequestModelFactory.class));
+        PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory())
+            .thenReturn(PowerMockito.mock(IncomingGroupJoinRequestModelFactory.class));
 
-		PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory().getStatements())
-			.thenReturn(new String[]{"invite1", "invite2"});
-		PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory().getStatements())
-			.thenReturn(new String[]{"request1"});
-		PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory().getStatements())
-			.thenReturn(new String[]{"incomming1"});
+        PowerMockito.when(this.databaseServiceMock.getGroupInviteModelFactory().getStatements())
+            .thenReturn(new String[]{"invite1", "invite2"});
+        PowerMockito.when(this.databaseServiceMock.getOutgoingGroupJoinRequestModelFactory().getStatements())
+            .thenReturn(new String[]{"request1"});
+        PowerMockito.when(this.databaseServiceMock.getIncomingGroupJoinRequestModelFactory().getStatements())
+            .thenReturn(new String[]{"incomming1"});
 
-		update.runDirectly();
+        update.runDirectly();
 
-		for (String statement : Arrays.asList("invite1", "invite2", "request1", "incomming1")) {
-			Mockito.verify(this.sqLiteDatabaseMock).execSQL(statement);
-		}
-	}
+        for (String statement : Arrays.asList("invite1", "invite2", "request1", "incomming1")) {
+            Mockito.verify(this.sqLiteDatabaseMock).execSQL(statement);
+        }
+    }
 }

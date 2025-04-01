@@ -27,28 +27,30 @@ import ch.threema.domain.protocol.api.work.WorkDirectory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 
 public class DirectoryDataSourceFactory extends DataSource.Factory<WorkDirectory, WorkDirectoryContact> {
-	private boolean init = false;
+    private boolean init = false;
 
-	// Used to hold a reference to the data source
-	public MutableLiveData<DirectoryDataSource> postLiveData;
+    // Used to hold a reference to the data source
+    public MutableLiveData<DirectoryDataSource> postLiveData;
 
-	public DirectoryDataSourceFactory() {
-		this.init = true;
-	};
+    public DirectoryDataSourceFactory() {
+        this.init = true;
+    }
 
-	@Override
-	public DataSource<WorkDirectory, WorkDirectoryContact> create() {
-		DirectoryDataSource dataSource = new DirectoryDataSource();
+    ;
 
-		if (this.init) {
-			dataSource.setQueryText(null);
-			this.init = false;
-		}
+    @Override
+    public DataSource<WorkDirectory, WorkDirectoryContact> create() {
+        DirectoryDataSource dataSource = new DirectoryDataSource();
 
-		// Keep reference to the data source with a MutableLiveData reference
-		postLiveData = new MutableLiveData<>();
-		postLiveData.postValue(dataSource);
+        if (this.init) {
+            dataSource.setQueryText(null);
+            this.init = false;
+        }
 
-		return dataSource;
-	}
+        // Keep reference to the data source with a MutableLiveData reference
+        postLiveData = new MutableLiveData<>();
+        postLiveData.postValue(dataSource);
+
+        return dataSource;
+    }
 }

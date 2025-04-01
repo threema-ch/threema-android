@@ -23,13 +23,13 @@ package ch.threema.app.services.ballot;
 
 
 public class BallotVoteResult {
-	private final boolean success;
+    private final boolean success;
 
-	public BallotVoteResult(boolean success) {
-		this.success = success;
-	}
+    public BallotVoteResult(boolean success) {
+        this.success = success;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public boolean isSuccess() {
+        return success;
+    }
 }

@@ -29,16 +29,16 @@ import androidx.annotation.AnyThread;
 @AnyThread
 public class HandshakeException extends Exception {
 
-	public HandshakeException(String detailMessage) {
-		super(detailMessage);
-	}
+    public HandshakeException(String detailMessage) {
+        super(detailMessage);
+    }
 
-	public HandshakeException(String detailMessage, Throwable throwable) {
-		super(detailMessage, throwable);
-	}
+    public HandshakeException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
 
-	public HandshakeException(Throwable throwable) {
-		super(throwable);
-	}
+    public HandshakeException(Throwable throwable) {
+        super(throwable);
+    }
 
 }

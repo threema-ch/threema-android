@@ -64,276 +64,276 @@ import ch.threema.storage.models.MessageType;
 
 public class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveViewHolder> {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveAdapter");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ArchiveAdapter");
 
-	private final Context context;
-	private ArchiveAdapter.OnClickItemListener onClickItemListener;
-	private ContactService contactService;
-	private GroupService groupService;
-	private DistributionListService distributionListService;
-	private DeadlineListService hiddenChatsListService;
-	private SparseBooleanArray checkedItems = new SparseBooleanArray();
-	private final @NonNull RequestManager requestManager;
+    private final Context context;
+    private ArchiveAdapter.OnClickItemListener onClickItemListener;
+    private ContactService contactService;
+    private GroupService groupService;
+    private DistributionListService distributionListService;
+    private DeadlineListService hiddenChatsListService;
+    private SparseBooleanArray checkedItems = new SparseBooleanArray();
+    private final @NonNull RequestManager requestManager;
 
-	class ArchiveViewHolder extends RecyclerView.ViewHolder {
+    class ArchiveViewHolder extends RecyclerView.ViewHolder {
 
-		TextView fromView;
-		TextView dateView;
-		TextView subjectView;
-		ImageView deliveryView, attachmentView;
-		View latestMessageContainer;
-		TextView groupMemberName;
-		AvatarView avatarView;
-		AvatarListItemHolder avatarListItemHolder;
+        TextView fromView;
+        TextView dateView;
+        TextView subjectView;
+        ImageView deliveryView, attachmentView;
+        View latestMessageContainer;
+        TextView groupMemberName;
+        AvatarView avatarView;
+        AvatarListItemHolder avatarListItemHolder;
 
-		private ArchiveViewHolder(final View itemView) {
-			super(itemView);
+        private ArchiveViewHolder(final View itemView) {
+            super(itemView);
 
-			fromView = itemView.findViewById(R.id.from);
-			dateView = itemView.findViewById(R.id.date);
-			subjectView = itemView.findViewById(R.id.subject);
-			avatarView = itemView.findViewById(R.id.avatar_view);
-			attachmentView = itemView.findViewById(R.id.attachment);
-			deliveryView = itemView.findViewById(R.id.delivery);
-			latestMessageContainer = itemView.findViewById(R.id.latest_message_container);
-			groupMemberName = itemView.findViewById(R.id.group_member_name);
-			avatarListItemHolder = new AvatarListItemHolder();
-			avatarListItemHolder.avatarView = avatarView;
-			avatarListItemHolder.avatarLoadingAsyncTask = null;
-		}
-	}
+            fromView = itemView.findViewById(R.id.from);
+            dateView = itemView.findViewById(R.id.date);
+            subjectView = itemView.findViewById(R.id.subject);
+            avatarView = itemView.findViewById(R.id.avatar_view);
+            attachmentView = itemView.findViewById(R.id.attachment);
+            deliveryView = itemView.findViewById(R.id.delivery);
+            latestMessageContainer = itemView.findViewById(R.id.latest_message_container);
+            groupMemberName = itemView.findViewById(R.id.group_member_name);
+            avatarListItemHolder = new AvatarListItemHolder();
+            avatarListItemHolder.avatarView = avatarView;
+            avatarListItemHolder.avatarLoadingAsyncTask = null;
+        }
+    }
 
-	private final LayoutInflater inflater;
-	private List<ConversationModel> conversationModels; // Cached copy of conversationModels
+    private final LayoutInflater inflater;
+    private List<ConversationModel> conversationModels; // Cached copy of conversationModels
 
-	ArchiveAdapter(Context context, @NonNull RequestManager requestManager) {
-		this.context = context;
-		this.inflater = LayoutInflater.from(context);
-		this.requestManager = requestManager;
+    ArchiveAdapter(Context context, @NonNull RequestManager requestManager) {
+        this.context = context;
+        this.inflater = LayoutInflater.from(context);
+        this.requestManager = requestManager;
 
-		try {
-			ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-			if (serviceManager == null) {
-				throw new ThreemaException("Missing servicemanager");
-			}
-			this.distributionListService = serviceManager.getDistributionListService();
-			this.groupService = serviceManager.getGroupService();
-			this.contactService = serviceManager.getContactService();
-			this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
-		} catch (Exception e) {
-			logger.debug("Exception", e);
-		}
-	}
+        try {
+            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+            if (serviceManager == null) {
+                throw new ThreemaException("Missing servicemanager");
+            }
+            this.distributionListService = serviceManager.getDistributionListService();
+            this.groupService = serviceManager.getGroupService();
+            this.contactService = serviceManager.getContactService();
+            this.hiddenChatsListService = serviceManager.getHiddenChatsListService();
+        } catch (Exception e) {
+            logger.debug("Exception", e);
+        }
+    }
 
-	@NonNull
-	@Override
-	public ArchiveViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		View itemView = inflater.inflate(R.layout.item_archive, parent, false);
-		return new ArchiveViewHolder(itemView);
-	}
+    @NonNull
+    @Override
+    public ArchiveViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = inflater.inflate(R.layout.item_archive, parent, false);
+        return new ArchiveViewHolder(itemView);
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull ArchiveViewHolder holder, int position) {
-		if (conversationModels != null) {
-			final ConversationModel conversationModel = conversationModels.get(position);
-			final AbstractMessageModel messageModel = conversationModel.getLatestMessage();
+    @Override
+    public void onBindViewHolder(@NonNull ArchiveViewHolder holder, int position) {
+        if (conversationModels != null) {
+            final ConversationModel conversationModel = conversationModels.get(position);
+            final AbstractMessageModel messageModel = conversationModel.getLatestMessage();
 
-			if (holder.groupMemberName != null) {
-				holder.groupMemberName.setVisibility(View.GONE);
-			}
+            if (holder.groupMemberName != null) {
+                holder.groupMemberName.setVisibility(View.GONE);
+            }
 
-			holder.deliveryView.setVisibility(View.GONE);
-			holder.fromView.setText(conversationModel.getReceiver().getDisplayName());
-			holder.fromView.setTextAppearance(context, R.style.Threema_TextAppearance_List_FirstLine);
-			holder.subjectView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
+            holder.deliveryView.setVisibility(View.GONE);
+            holder.fromView.setText(conversationModel.getReceiver().getDisplayName());
+            holder.fromView.setTextAppearance(context, R.style.Threema_TextAppearance_List_FirstLine);
+            holder.subjectView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
 
-			if (holder.groupMemberName != null && holder.dateView != null) {
-				holder.groupMemberName.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
-				holder.dateView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
-			}
+            if (holder.groupMemberName != null && holder.dateView != null) {
+                holder.groupMemberName.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
+                holder.dateView.setTextAppearance(context, R.style.Threema_TextAppearance_List_SecondLine);
+            }
 
-			if (messageModel != null) {
-				if (hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString())) {
-					// give user some privacy even in visible mode
-					holder.subjectView.setText(R.string.private_chat_subject);
-					holder.subjectView.setVisibility(View.VISIBLE);
-					holder.attachmentView.setVisibility(View.GONE);
-					holder.dateView.setVisibility(View.INVISIBLE);
-					holder.deliveryView.setVisibility(View.GONE);
-				} else if (messageModel.isDeleted()) {
-					holder.subjectView.setText(R.string.message_was_deleted);
-					holder.subjectView.setVisibility(View.VISIBLE);
+            if (messageModel != null) {
+                if (hiddenChatsListService.has(conversationModel.getReceiver().getUniqueIdString())) {
+                    // give user some privacy even in visible mode
+                    holder.subjectView.setText(R.string.private_chat_subject);
+                    holder.subjectView.setVisibility(View.VISIBLE);
+                    holder.attachmentView.setVisibility(View.GONE);
+                    holder.dateView.setVisibility(View.INVISIBLE);
+                    holder.deliveryView.setVisibility(View.GONE);
+                } else if (messageModel.isDeleted()) {
+                    holder.subjectView.setText(R.string.message_was_deleted);
+                    holder.subjectView.setVisibility(View.VISIBLE);
 
-					holder.subjectView.setTextColor(context.getResources().getColor(R.color.text_color_deleted));
-					holder.subjectView.setTypeface(holder.subjectView.getTypeface(), Typeface.ITALIC);
+                    holder.subjectView.setTextColor(context.getResources().getColor(R.color.text_color_deleted));
+                    holder.subjectView.setTypeface(holder.subjectView.getTypeface(), Typeface.ITALIC);
 
-					holder.attachmentView.setVisibility(View.GONE);
-					holder.dateView.setVisibility(View.INVISIBLE);
-					holder.deliveryView.setVisibility(View.GONE);
-				} else {
-					holder.dateView.setText(MessageUtil.getDisplayDate(this.context, messageModel, false));
-					holder.dateView.setVisibility(View.VISIBLE);
+                    holder.attachmentView.setVisibility(View.GONE);
+                    holder.dateView.setVisibility(View.INVISIBLE);
+                    holder.deliveryView.setVisibility(View.GONE);
+                } else {
+                    holder.dateView.setText(MessageUtil.getDisplayDate(this.context, messageModel, false));
+                    holder.dateView.setVisibility(View.VISIBLE);
 
-					if (conversationModel.isGroupConversation()) {
-						if (holder.groupMemberName != null) {
-							holder.groupMemberName.setText(NameUtil.getShortName(this.context, messageModel, this.contactService) + ": ");
-							holder.groupMemberName.setVisibility(View.VISIBLE);
-						}
-					}
-					// Configure subject
-					MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.context, messageModel);
-					String subject = viewElement.text;
+                    if (conversationModel.isGroupConversation()) {
+                        if (holder.groupMemberName != null) {
+                            holder.groupMemberName.setText(NameUtil.getShortName(this.context, messageModel, this.contactService) + ": ");
+                            holder.groupMemberName.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    // Configure subject
+                    MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.context, messageModel);
+                    String subject = viewElement.text;
 
-					if (messageModel.getType() == MessageType.TEXT) {
-						// we need to add an arbitrary character - otherwise span-only strings are formatted incorrectly in the item layout
-						subject += " ";
-					}
+                    if (messageModel.getType() == MessageType.TEXT) {
+                        // we need to add an arbitrary character - otherwise span-only strings are formatted incorrectly in the item layout
+                        subject += " ";
+                    }
 
-					if (viewElement.icon != null) {
-						holder.attachmentView.setVisibility(View.VISIBLE);
-						holder.attachmentView.setImageResource(viewElement.icon);
-						if (viewElement.placeholder != null) {
-							holder.attachmentView.setContentDescription(viewElement.placeholder);
-						} else {
-							holder.attachmentView.setContentDescription("");
-						}
+                    if (viewElement.icon != null) {
+                        holder.attachmentView.setVisibility(View.VISIBLE);
+                        holder.attachmentView.setImageResource(viewElement.icon);
+                        if (viewElement.placeholder != null) {
+                            holder.attachmentView.setContentDescription(viewElement.placeholder);
+                        } else {
+                            holder.attachmentView.setContentDescription("");
+                        }
 
-						// Configure attachment
-						// Configure color of the attachment view
-						if (viewElement.color != null) {
-							holder.attachmentView.setColorFilter(
-									this.context.getResources().getColor(viewElement.color),
-									PorterDuff.Mode.SRC_IN);
-						}
-					} else {
-						holder.attachmentView.setVisibility(View.GONE);
-					}
+                        // Configure attachment
+                        // Configure color of the attachment view
+                        if (viewElement.color != null) {
+                            holder.attachmentView.setColorFilter(
+                                this.context.getResources().getColor(viewElement.color),
+                                PorterDuff.Mode.SRC_IN);
+                        }
+                    } else {
+                        holder.attachmentView.setVisibility(View.GONE);
+                    }
 
-					boolean showSubject = subject != null;
-					holder.subjectView.setVisibility(showSubject ? View.VISIBLE : View.INVISIBLE);
-					if (showSubject) {
-						// Append space if attachmentView is visible
-						if (holder.attachmentView.getVisibility() == View.VISIBLE) {
-							subject = " " + subject;
-						}
-						holder.subjectView.setText(EmojiMarkupUtil.getInstance().formatBodyTextString(context, subject, 100));
-					}
-				}
-			} else {
-				// empty chat
-				holder.attachmentView.setVisibility(View.GONE);
-				holder.deliveryView.setVisibility(View.GONE);
-				holder.dateView.setVisibility(View.GONE);
-				holder.subjectView.setVisibility(View.VISIBLE);
-				holder.subjectView.setText("");
-			}
+                    boolean showSubject = subject != null;
+                    holder.subjectView.setVisibility(showSubject ? View.VISIBLE : View.INVISIBLE);
+                    if (showSubject) {
+                        // Append space if attachmentView is visible
+                        if (holder.attachmentView.getVisibility() == View.VISIBLE) {
+                            subject = " " + subject;
+                        }
+                        holder.subjectView.setText(EmojiMarkupUtil.getInstance().formatBodyTextString(context, subject, 100));
+                    }
+                }
+            } else {
+                // empty chat
+                holder.attachmentView.setVisibility(View.GONE);
+                holder.deliveryView.setVisibility(View.GONE);
+                holder.dateView.setVisibility(View.GONE);
+                holder.subjectView.setVisibility(View.VISIBLE);
+                holder.subjectView.setText("");
+            }
 
-			AdapterUtil.styleConversation(holder.fromView, groupService, conversationModel);
+            AdapterUtil.styleConversation(holder.fromView, groupService, conversationModel);
 
-			// load avatars asynchronously
-			AvatarListItemUtil.loadAvatar(
-				conversationModel,
-				this.contactService,
-				this.groupService,
-				this.distributionListService,
-				holder.avatarListItemHolder,
-				requestManager
-			);
+            // load avatars asynchronously
+            AvatarListItemUtil.loadAvatar(
+                conversationModel,
+                this.contactService,
+                this.groupService,
+                this.distributionListService,
+                holder.avatarListItemHolder,
+                requestManager
+            );
 
-			((CheckableRelativeLayout) holder.itemView).setChecked(checkedItems.get(position));
+            ((CheckableRelativeLayout) holder.itemView).setChecked(checkedItems.get(position));
 
-			if (this.onClickItemListener != null) {
-				holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(conversationModel, holder.itemView, position));
-				holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-					@Override
-					public boolean onLongClick(View v) {
-						return onClickItemListener.onLongClick(conversationModel, holder.itemView, position);
-					}
-				});
-			}
-		} else {
-			// Covers the case of data not being ready yet.
-			holder.fromView.setText("No data");
-			holder.dateView.setText("");
-			holder.subjectView.setText("");
-		}
-	}
+            if (this.onClickItemListener != null) {
+                holder.itemView.setOnClickListener(v -> onClickItemListener.onClick(conversationModel, holder.itemView, position));
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        return onClickItemListener.onLongClick(conversationModel, holder.itemView, position);
+                    }
+                });
+            }
+        } else {
+            // Covers the case of data not being ready yet.
+            holder.fromView.setText("No data");
+            holder.dateView.setText("");
+            holder.subjectView.setText("");
+        }
+    }
 
-	// getItemCount() is called many times, and when it is first called,
-	// conversationModels has not been updated (means initially, it's null, and we can't return null).
-	@Override
-	public int getItemCount() {
-		if (conversationModels != null)
-			return conversationModels.size();
-		else return 0;
-	}
+    // getItemCount() is called many times, and when it is first called,
+    // conversationModels has not been updated (means initially, it's null, and we can't return null).
+    @Override
+    public int getItemCount() {
+        if (conversationModels != null)
+            return conversationModels.size();
+        else return 0;
+    }
 
-	void setConversationModels(List<ConversationModel> newConversationModels) {
-		if (conversationModels != null) {
-			SparseBooleanArray newCheckedItems = new SparseBooleanArray(newConversationModels.size());
-			for (int i = 0; i < newConversationModels.size(); i++) {
-				String newUid = newConversationModels.get(i).getUid();
-				if (newUid != null) {
-					for (int j = 0; j < conversationModels.size(); j++) {
-						if (newUid.equals(conversationModels.get(j).getUid())) {
-							if (checkedItems.get(j)) {
-								newCheckedItems.put(i, true);
-							}
-							break;
-						}
-					}
-				}
-			}
-			this.checkedItems = newCheckedItems;
-		}
-		this.conversationModels = newConversationModels;
-		notifyDataSetChanged();
-	}
+    void setConversationModels(List<ConversationModel> newConversationModels) {
+        if (conversationModels != null) {
+            SparseBooleanArray newCheckedItems = new SparseBooleanArray(newConversationModels.size());
+            for (int i = 0; i < newConversationModels.size(); i++) {
+                String newUid = newConversationModels.get(i).getUid();
+                if (newUid != null) {
+                    for (int j = 0; j < conversationModels.size(); j++) {
+                        if (newUid.equals(conversationModels.get(j).getUid())) {
+                            if (checkedItems.get(j)) {
+                                newCheckedItems.put(i, true);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            this.checkedItems = newCheckedItems;
+        }
+        this.conversationModels = newConversationModels;
+        notifyDataSetChanged();
+    }
 
-	void setOnClickItemListener(OnClickItemListener onClickItemListener) {
-		this.onClickItemListener = onClickItemListener;
-	}
+    void setOnClickItemListener(OnClickItemListener onClickItemListener) {
+        this.onClickItemListener = onClickItemListener;
+    }
 
-	void toggleChecked(int pos) {
-		if (checkedItems.get(pos, false)) {
-			checkedItems.delete(pos);
-		}
-		else {
-			checkedItems.put(pos, true);
-		}
-		notifyItemChanged(pos);
-	}
+    void toggleChecked(int pos) {
+        if (checkedItems.get(pos, false)) {
+            checkedItems.delete(pos);
+        } else {
+            checkedItems.put(pos, true);
+        }
+        notifyItemChanged(pos);
+    }
 
-	void clearCheckedItems() {
-		checkedItems.clear();
-		notifyDataSetChanged();
-	}
+    void clearCheckedItems() {
+        checkedItems.clear();
+        notifyDataSetChanged();
+    }
 
-	void selectAll() {
-		if (checkedItems.size() == conversationModels.size()) {
-			clearCheckedItems();
-		} else {
-			for (int i = 0; i < conversationModels.size(); i++) {
-				checkedItems.put(i, true);
-			}
-			notifyDataSetChanged();
-		}
-	}
+    void selectAll() {
+        if (checkedItems.size() == conversationModels.size()) {
+            clearCheckedItems();
+        } else {
+            for (int i = 0; i < conversationModels.size(); i++) {
+                checkedItems.put(i, true);
+            }
+            notifyDataSetChanged();
+        }
+    }
 
-	int getCheckedItemsCount() {
-		return checkedItems.size();
-	}
+    int getCheckedItemsCount() {
+        return checkedItems.size();
+    }
 
-	public List<ConversationModel> getCheckedItems() {
-		List<ConversationModel> items = new ArrayList<>(checkedItems.size());
-		for (int i = 0; i < checkedItems.size(); i++) {
-			items.add(conversationModels.get(checkedItems.keyAt(i)));
-		}
-		return items;
-	}
+    public List<ConversationModel> getCheckedItems() {
+        List<ConversationModel> items = new ArrayList<>(checkedItems.size());
+        for (int i = 0; i < checkedItems.size(); i++) {
+            items.add(conversationModels.get(checkedItems.keyAt(i)));
+        }
+        return items;
+    }
 
-	public interface OnClickItemListener {
-		void onClick(ConversationModel conversationModel, View view, int position);
-		boolean onLongClick(ConversationModel conversationModel, View itemView, int position);
-	}
+    public interface OnClickItemListener {
+        void onClick(ConversationModel conversationModel, View view, int position);
+
+        boolean onLongClick(ConversationModel conversationModel, View itemView, int position);
+    }
 }

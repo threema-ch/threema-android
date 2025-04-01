@@ -84,7 +84,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
         // Finish activity when chat activity (in "background") is clicked
         ((findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup)
-                .parent as ViewGroup).setOnClickListener { cancelAndFinish() }
+            .parent as ViewGroup).setOnClickListener { cancelAndFinish() }
 
         // Finish activity when bottom sheet gets hidden and adapt status bar color on expand/drag
         bottomSheet = findViewById<View>(R.id.bottom_sheet)
@@ -98,6 +98,7 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
                             onBottomSheetExpand()
                             viewModel.bottomSheetExpanded = true
                         }
+
                         BottomSheetBehavior.STATE_SETTLING -> {}
                         BottomSheetBehavior.STATE_HALF_EXPANDED -> {}
                         else -> {
@@ -118,19 +119,24 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
 
         // Set correct top margin depending on the toolbar height
         val rootCoordinator = findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator)
-        rootCoordinator.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        rootCoordinator.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 rootCoordinator.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                val topMargin = toolbar.height - resources.getDimensionPixelSize(R.dimen.drag_handle_height)
+                val topMargin =
+                    toolbar.height - resources.getDimensionPixelSize(R.dimen.drag_handle_height)
 
-                val bottomSheetContainer = findViewById<CoordinatorLayout>(R.id.bottom_sheet_coordinator)
-                val bottomSheetContainerLayoutParams = bottomSheetContainer.layoutParams as CoordinatorLayout.LayoutParams
+                val bottomSheetContainer =
+                    findViewById<CoordinatorLayout>(R.id.bottom_sheet_coordinator)
+                val bottomSheetContainerLayoutParams =
+                    bottomSheetContainer.layoutParams as CoordinatorLayout.LayoutParams
                 bottomSheetContainerLayoutParams.setMargins(0, topMargin, 0, 0)
                 bottomSheetContainer.layoutParams = bottomSheetContainerLayoutParams
 
                 if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
-                    bottomSheetBehavior.peekHeight = ((bottomSheetContainer.height / 16f) * 9f).toInt()
+                    bottomSheetBehavior.peekHeight =
+                        ((bottomSheetContainer.height / 16f) * 9f).toInt()
                 } else if (resources.configuration.orientation == ORIENTATION_PORTRAIT) {
                     bottomSheetBehavior.peekHeight = -1
                 }
@@ -160,22 +166,26 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             return
         }
 
-        viewModel.initializeContact(contactUri, contentResolver, VCardExtractor(DateFormat.getDateFormat(applicationContext), resources))
+        viewModel.initializeContact(
+            contactUri,
+            contentResolver,
+            VCardExtractor(DateFormat.getDateFormat(applicationContext), resources)
+        )
 
         // Show edit-texts for the name properties that are set in the contact
         val editTexts = listOf(
-                NamePrefixWrapper(R.id.name_prefix_edit_text),
-                FirstNameWrapper(R.id.first_name_edit_text),
-                MiddleNameWrapper(R.id.middle_name_edit_text),
-                LastNameWrapper(R.id.last_name_edit_text),
-                NameSuffixWrapper(R.id.name_suffix_edit_text),
-                FullNameWrapper(R.id.name_full_edit_text)
+            NamePrefixWrapper(R.id.name_prefix_edit_text),
+            FirstNameWrapper(R.id.first_name_edit_text),
+            MiddleNameWrapper(R.id.middle_name_edit_text),
+            LastNameWrapper(R.id.last_name_edit_text),
+            NameSuffixWrapper(R.id.name_suffix_edit_text),
+            FullNameWrapper(R.id.name_full_edit_text)
         )
 
         // Expand bottom sheet when the focused edit text is hidden behind the soft keyboard
         bottomSheet.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             Handler(Looper.getMainLooper())
-                    .postDelayed({ editTexts.forEach { it.checkVisibility() } }, 20)
+                .postDelayed({ editTexts.forEach { it.checkVisibility() } }, 20)
         }
 
         viewModel.getProperties().observe(this) { properties ->
@@ -194,7 +204,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
             }
 
             // Hide progress bar
-            findViewById<CircularProgressIndicator>(R.id.progress_bar_parsing).visibility = View.GONE
+            findViewById<CircularProgressIndicator>(R.id.progress_bar_parsing).visibility =
+                View.GONE
 
             // Send the possibly modified VCard as file
             findViewById<FloatingActionButton>(R.id.send_contact).apply {
@@ -226,11 +237,12 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         appBarLayout.animation?.cancel()
         appBarLayout.alpha = 0f
         appBarLayout.visibility = View.VISIBLE
-        appBarLayout.animate().alpha(1f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                appBarLayout.visibility = View.VISIBLE
-            }
-        })
+        appBarLayout.animate().alpha(1f).setDuration(100)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    appBarLayout.visibility = View.VISIBLE
+                }
+            })
         appBarLayout.postDelayed({
             val background: Drawable = bottomSheet.getBackground()
             if (background is MaterialShapeDrawable) {
@@ -247,19 +259,20 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
     private fun onBottomSheetCollapse() {
         appBarLayout.animation?.cancel()
         appBarLayout.alpha = 1f
-        appBarLayout.animate().alpha(0f).setDuration(100).setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {}
-            override fun onAnimationEnd(animation: Animator) {
-                appBarLayout.visibility = View.INVISIBLE
-                window.statusBarColor = Color.TRANSPARENT
-            }
+        appBarLayout.animate().alpha(0f).setDuration(100)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator) {}
+                override fun onAnimationEnd(animation: Animator) {
+                    appBarLayout.visibility = View.INVISIBLE
+                    window.statusBarColor = Color.TRANSPARENT
+                }
 
-            override fun onAnimationCancel(animation: Animator) {
-                window.statusBarColor = Color.TRANSPARENT
-            }
+                override fun onAnimationCancel(animation: Animator) {
+                    window.statusBarColor = Color.TRANSPARENT
+                }
 
-            override fun onAnimationRepeat(animation: Animator) {}
-        })
+                override fun onAnimationRepeat(animation: Animator) {}
+            })
     }
 
     /**
@@ -277,8 +290,10 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      */
     abstract inner class EditTextWrapper(@IdRes private val id: Int) {
         private val editText: EditText
-        private val bottomSheetBehavior: BottomSheetBehavior<*> = BottomSheetBehavior.from(this@EditSendContactActivity.findViewById(R.id.bottom_sheet))
-        private val scrollView = this@EditSendContactActivity.findViewById<NestedScrollView>(R.id.nested_scroll_view)
+        private val bottomSheetBehavior: BottomSheetBehavior<*> =
+            BottomSheetBehavior.from(this@EditSendContactActivity.findViewById(R.id.bottom_sheet))
+        private val scrollView =
+            this@EditSendContactActivity.findViewById<NestedScrollView>(R.id.nested_scroll_view)
 
         init {
             editText = this@EditSendContactActivity.findViewById<EditText>(id).apply {
@@ -321,7 +336,10 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         }
     }
 
-    abstract inner class StructuredNameWrapper(@IdRes id: Int, extractFromStructuredName: (StructuredName) -> String?) : EditTextWrapper(id) {
+    abstract inner class StructuredNameWrapper(
+        @IdRes id: Int,
+        extractFromStructuredName: (StructuredName) -> String?
+    ) : EditTextWrapper(id) {
         init {
             viewModel.getStructuredName().observe(this@EditSendContactActivity) { name ->
                 val text = extractFromStructuredName(name)
@@ -337,8 +355,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * is empty in the given vcard.
      */
     inner class NamePrefixWrapper(@IdRes id: Int) : StructuredNameWrapper(
-            id,
-            { n -> n.prefixes?.joinToString(" ")?.trim()?.let { if (it == "") null else it } }
+        id,
+        { n -> n.prefixes?.joinToString(" ")?.trim()?.let { if (it == "") null else it } }
     ) {
 
         override fun onTextChanged(text: String) {
@@ -351,8 +369,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Manages the edit text of the first name.
      */
     inner class FirstNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
-            id,
-            { n -> n.given ?: "" }
+        id,
+        { n -> n.given ?: "" }
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.given = text
@@ -363,8 +381,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Manages the edit text of the middle names.
      */
     inner class MiddleNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
-            id,
-            { n -> n.additionalNames?.joinToString("")?.trim()?.let { if (it == "") null else it } }
+        id,
+        { n -> n.additionalNames?.joinToString("")?.trim()?.let { if (it == "") null else it } }
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.additionalNames?.clear()
@@ -376,8 +394,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Manages the edit text of the last name.
      */
     inner class LastNameWrapper(@IdRes id: Int) : StructuredNameWrapper(
-            id,
-            { n -> n.family ?: "" }
+        id,
+        { n -> n.family ?: "" }
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.family = text
@@ -388,12 +406,12 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
      * Manages the edit text of the name suffixes.
      */
     inner class NameSuffixWrapper(@IdRes id: Int) : StructuredNameWrapper(
-            id,
-            { n ->
-                n.suffixes?.joinToString("")?.trim()?.let {
-                    if (it == "") null else it
-                }
+        id,
+        { n ->
+            n.suffixes?.joinToString("")?.trim()?.let {
+                if (it == "") null else it
             }
+        }
     ) {
         override fun onTextChanged(text: String) {
             viewModel.getStructuredName().value?.suffixes?.clear()

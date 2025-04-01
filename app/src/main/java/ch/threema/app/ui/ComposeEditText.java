@@ -55,313 +55,314 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.GroupModel;
 
 public class ComposeEditText extends EmojiEditText implements MentionSelectorPopup.MentionSelectorListener {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
 
-	private static final int CONTEXT_MENU_BOLD = 700;
-	private static final int CONTEXT_MENU_ITALIC = 701;
-	private static final int CONTEXT_MENU_STRIKETHRU = 702;
-	private static final int CONTEXT_MENU_GROUP = 22100;
+    private static final int CONTEXT_MENU_BOLD = 700;
+    private static final int CONTEXT_MENU_ITALIC = 701;
+    private static final int CONTEXT_MENU_STRIKETHRU = 702;
+    private static final int CONTEXT_MENU_GROUP = 22100;
 
-	private Context context;
-	private boolean isLocked = false;
-	private MentionTextWatcher mentionTextWatcher = null;
-	private MentionPopupData mentionPopupData;
-	private TextInputLayout mentionPopupBoundary;
-	private MentionSelectorPopup mentionPopup;
+    private Context context;
+    private boolean isLocked = false;
+    private MentionTextWatcher mentionTextWatcher = null;
+    private MentionPopupData mentionPopupData;
+    private TextInputLayout mentionPopupBoundary;
+    private MentionSelectorPopup mentionPopup;
 
-	private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
-		private final Pattern pattern = Pattern.compile("\\B");
+    private final android.view.ActionMode.Callback textSelectionCallback = new android.view.ActionMode.Callback() {
+        private final Pattern pattern = Pattern.compile("\\B");
 
-		@Override
-		public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
-			return true;
-		}
+        @Override
+        public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
+            return true;
+        }
 
-		@Override
-		public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
-			menu.removeGroup(CONTEXT_MENU_GROUP);
+        @Override
+        public boolean onPrepareActionMode(android.view.ActionMode mode, Menu menu) {
+            menu.removeGroup(CONTEXT_MENU_GROUP);
 
-			if (getText() != null) {
-				String text = getText().toString();
-				if (text.length() > 1) {
-					int start = getSelectionStart();
-					int end = getSelectionEnd();
+            if (getText() != null) {
+                String text = getText().toString();
+                if (text.length() > 1) {
+                    int start = getSelectionStart();
+                    int end = getSelectionEnd();
 
-					try {
-						if ((start <= 0 || pattern.matcher(text.substring(start - 1, start)).find()) &&
-							(end >= text.length() || pattern.matcher(text.substring(end, end + 1)).find()) &&
-							!text.substring(start, end).contains("\n")) {
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_BOLD, 200, R.string.bold);
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_ITALIC, 201, R.string.italic);
-							menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_STRIKETHRU, 203, R.string.strikethrough);
-						}
-					} catch (Exception e) {
-						// do not add menus if an error occurs
-					}
-				}
-			}
-			return true;
-		}
+                    try {
+                        if ((start <= 0 || pattern.matcher(text.substring(start - 1, start)).find()) &&
+                            (end >= text.length() || pattern.matcher(text.substring(end, end + 1)).find()) &&
+                            !text.substring(start, end).contains("\n")) {
+                            menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_BOLD, 200, R.string.bold);
+                            menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_ITALIC, 201, R.string.italic);
+                            menu.add(CONTEXT_MENU_GROUP, CONTEXT_MENU_STRIKETHRU, 203, R.string.strikethrough);
+                        }
+                    } catch (Exception e) {
+                        // do not add menus if an error occurs
+                    }
+                }
+            }
+            return true;
+        }
 
-		@Override
-		public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-				case CONTEXT_MENU_BOLD:
-					addMarkup("*");
-					break;
-				case CONTEXT_MENU_ITALIC:
-					addMarkup("_");
-					break;
-				case CONTEXT_MENU_STRIKETHRU:
-					addMarkup("~");
-					break;
-				default:
-					return false;
-			}
-			return true;
-		}
+        @Override
+        public boolean onActionItemClicked(android.view.ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case CONTEXT_MENU_BOLD:
+                    addMarkup("*");
+                    break;
+                case CONTEXT_MENU_ITALIC:
+                    addMarkup("_");
+                    break;
+                case CONTEXT_MENU_STRIKETHRU:
+                    addMarkup("~");
+                    break;
+                default:
+                    return false;
+            }
+            return true;
+        }
 
-		@Override
-		public void onDestroyActionMode(android.view.ActionMode mode) {
-			// nothing to do here
-		}
+        @Override
+        public void onDestroyActionMode(android.view.ActionMode mode) {
+            // nothing to do here
+        }
 
-		private void addMarkup(String string) {
-			Editable editable = getText();
+        private void addMarkup(String string) {
+            Editable editable = getText();
 
-			if (editable != null && editable.length() > 0) {
-				int start = getSelectionStart();
-				int end = getSelectionEnd();
+            if (editable != null && editable.length() > 0) {
+                int start = getSelectionStart();
+                int end = getSelectionEnd();
 
-				editable.insert(end, string);
-				editable.insert(start, string);
-			}
-			invalidate();
-		}
-	};
+                editable.insert(end, string);
+                editable.insert(start, string);
+            }
+            invalidate();
+        }
+    };
 
-	public ComposeEditText(Context context) {
-		super(context);
+    public ComposeEditText(Context context) {
+        super(context);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ComposeEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    public ComposeEditText(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	public ComposeEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public ComposeEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init(context);
-	}
+        init(context);
+    }
 
-	private void init(Context context) {
-		this.context = context;
+    private void init(Context context) {
+        this.context = context;
 
-		PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
+        PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
 
-		this.setImeOptions(getImeOptions() | (EditorInfo.IME_ACTION_SEND & ~EditorInfo.IME_FLAG_NO_FULLSCREEN));
-		this.setRawInputType(preferenceService.isEnterToSend() ?
-				InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT |
-						(preferenceService.getEmojiStyle() == PreferenceService.EmojiStyle_ANDROID ? EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE : 0) :
-				InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+        this.setImeOptions(getImeOptions() | (EditorInfo.IME_ACTION_SEND & ~EditorInfo.IME_FLAG_NO_FULLSCREEN));
+        this.setRawInputType(preferenceService.isEnterToSend() ?
+            InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT |
+                (preferenceService.getEmojiStyle() == PreferenceService.EmojiStyle_ANDROID ? EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE : 0) :
+            InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
 
-		setFilters(appendMentionFilter(this.getFilters()));
+        setFilters(appendMentionFilter(this.getFilters()));
 
-		this.mentionTextWatcher = new MentionTextWatcher(this);
-		new MarkupTextWatcher(context, this);
+        this.mentionTextWatcher = new MentionTextWatcher(this);
+        new MarkupTextWatcher(context, this);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			// do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
-			setCustomSelectionActionModeCallback(textSelectionCallback);
-		}
-	}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
+            setCustomSelectionActionModeCallback(textSelectionCallback);
+        }
+    }
 
-	/**
-	 * Add our MentionFilter as the first item to the array of existing InputFilters
-	 * @param originalFilters
-	 * @return Array of filters
-	 */
-	private InputFilter[] appendMentionFilter(@Nullable InputFilter[] originalFilters) {
-		InputFilter[] result;
+    /**
+     * Add our MentionFilter as the first item to the array of existing InputFilters
+     *
+     * @param originalFilters
+     * @return Array of filters
+     */
+    private InputFilter[] appendMentionFilter(@Nullable InputFilter[] originalFilters) {
+        InputFilter[] result;
 
-		if (originalFilters != null) {
-			result = new InputFilter[originalFilters.length + 1];
-			System.arraycopy(originalFilters, 0, result, 1, originalFilters.length);
-		} else {
-			result = new InputFilter[1];
-		}
-		result[0] = new MentionFilter(this.context);
+        if (originalFilters != null) {
+            result = new InputFilter[originalFilters.length + 1];
+            System.arraycopy(originalFilters, 0, result, 1, originalFilters.length);
+        } else {
+            result = new InputFilter[1];
+        }
+        result[0] = new MentionFilter(this.context);
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Add mention at the current cursor position
-	 * @param identity
-	 */
-	public void addMention(String identity) {
-		final int start = getSelectionStart();
-		final int end = getSelectionEnd();
+    /**
+     * Add mention at the current cursor position
+     *
+     * @param identity
+     */
+    public void addMention(String identity) {
+        final int start = getSelectionStart();
+        final int end = getSelectionEnd();
 
-		// fix reverse selections
-		getText().replace(Math.min(start, end), Math.max(start, end), "@[" + identity + "]");
-	}
+        // fix reverse selections
+        getText().replace(Math.min(start, end), Math.max(start, end), "@[" + identity + "]");
+    }
 
-	/**
-	 * Enable the mention popup for this edit text.
-	 */
-	public void enableMentionPopup(
-		@NonNull Activity activity,
-		@NonNull GroupService groupService,
-		@NonNull ContactService contactService,
-		@NonNull UserService userService,
-		@NonNull PreferenceService preferenceService,
-		@NonNull GroupModel groupModel,
-		@Nullable TextInputLayout mentionPopupBoundary
-	) {
-		mentionPopupData = new MentionPopupData(
-			activity,
-			groupService,
-			contactService,
-			userService,
-			preferenceService,
-			groupModel
-		);
+    /**
+     * Enable the mention popup for this edit text.
+     */
+    public void enableMentionPopup(
+        @NonNull Activity activity,
+        @NonNull GroupService groupService,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull GroupModel groupModel,
+        @Nullable TextInputLayout mentionPopupBoundary
+    ) {
+        mentionPopupData = new MentionPopupData(
+            activity,
+            groupService,
+            contactService,
+            userService,
+            preferenceService,
+            groupModel
+        );
 
-		this.mentionPopupBoundary = mentionPopupBoundary;
-	}
+        this.mentionPopupBoundary = mentionPopupBoundary;
+    }
 
-	/**
-	 * Enable the mention popup for this edit text.
-	 */
-	public void enableMentionPopup(@NonNull MentionPopupData data, @Nullable TextInputLayout boundary) {
-		this.mentionPopupData = data;
-		this.mentionPopupBoundary = boundary;
-	}
+    /**
+     * Enable the mention popup for this edit text.
+     */
+    public void enableMentionPopup(@NonNull MentionPopupData data, @Nullable TextInputLayout boundary) {
+        this.mentionPopupData = data;
+        this.mentionPopupBoundary = boundary;
+    }
 
-	/**
-	 * Return true if the mention popup is currently showing
-	 */
-	public boolean isMentionPopupShowing() {
-		return mentionPopup != null && mentionPopup.isShowing();
-	}
+    /**
+     * Return true if the mention popup is currently showing
+     */
+    public boolean isMentionPopupShowing() {
+        return mentionPopup != null && mentionPopup.isShowing();
+    }
 
-	/**
-	 * Dismiss the mention popup (if currently shown)
-	 */
-	public void dismissMentionPopup() {
-		if (mentionPopup != null) {
-			try {
-				mentionPopup.dismiss();
-			} catch(IllegalArgumentException ignored){
-				// whatever
-			} finally{
-				mentionPopup = null;
-			}
-		}
-	}
+    /**
+     * Dismiss the mention popup (if currently shown)
+     */
+    public void dismissMentionPopup() {
+        if (mentionPopup != null) {
+            try {
+                mentionPopup.dismiss();
+            } catch (IllegalArgumentException ignored) {
+                // whatever
+            } finally {
+                mentionPopup = null;
+            }
+        }
+    }
 
-	public void setLocked(boolean isLocked) {
-		this.isLocked = isLocked;
-		setLongClickable(!isLocked);
-	}
+    public void setLocked(boolean isLocked) {
+        this.isLocked = isLocked;
+        setLongClickable(!isLocked);
+    }
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		try {
-			return !isLocked && super.onTouchEvent(event);
-		} catch (IndexOutOfBoundsException e) {
-			logger.error("Exception", e);
-			return false;
-		}
-	}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        try {
+            return !isLocked && super.onTouchEvent(event);
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("Exception", e);
+            return false;
+        }
+    }
 
-	@Override
-	protected void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
-		int maxLines = getResources().getInteger(R.integer.message_edittext_max_lines);
+        int maxLines = getResources().getInteger(R.integer.message_edittext_max_lines);
 
-		if (this.mentionTextWatcher != null) {
-			if (TestUtil.isBlankOrNull(getText())) {
-				// workaround to keep hint ellipsized on the first line
-				setMaxLines(1);
-				setHint(this.hint);
-			} else {
-				setMaxLines(maxLines);
-				this.mentionTextWatcher.setMaxLines(maxLines);
-			}
-		} else {
-			setMaxLines(maxLines);
-		}
-	}
+        if (this.mentionTextWatcher != null) {
+            if (TestUtil.isBlankOrNull(getText())) {
+                // workaround to keep hint ellipsized on the first line
+                setMaxLines(1);
+                setHint(this.hint);
+            } else {
+                setMaxLines(maxLines);
+                this.mentionTextWatcher.setMaxLines(maxLines);
+            }
+        } else {
+            setMaxLines(maxLines);
+        }
+    }
 
-	@Override
-	protected void onTextChanged(CharSequence s, int start, int lengthBefore, int lengthAfter) {
-		super.onTextChanged(s, start, lengthBefore, lengthAfter);
+    @Override
+    protected void onTextChanged(CharSequence s, int start, int lengthBefore, int lengthAfter) {
+        super.onTextChanged(s, start, lengthBefore, lengthAfter);
 
-		if (mentionPopupData == null) {
-			return;
-		}
+        if (mentionPopupData == null) {
+            return;
+        }
 
-		if (lengthAfter == 1 && s.charAt(start) == '@' && start < s.length() // if current char is @ and only if adding a new char
-			&& (start == 0 || s.charAt(start - 1) == ' ' || s.charAt(start - 1) == '\n') // and only show if at start or if there is empty space before to not interrupt typing mail addresses
-			&& (s.length() <= start + 1 || s.charAt(start + 1) == ' ' || s.charAt(start + 1) == '\n') // and only show if @ is at the very end or also has empty space in the back.
-		)
-		{
-			mentionPopup = new MentionSelectorPopup(
-				mentionPopupData.activity,
-				this,
-				mentionPopupData.groupService,
-				mentionPopupData.contactService,
-				mentionPopupData.userService,
-				mentionPopupData.preferenceService,
-				mentionPopupData.groupModel
-			);
-			mentionPopup.show(mentionPopupData.activity, this, mentionPopupBoundary);
-		}
-	}
+        if (lengthAfter == 1 && s.charAt(start) == '@' && start < s.length() // if current char is @ and only if adding a new char
+            && (start == 0 || s.charAt(start - 1) == ' ' || s.charAt(start - 1) == '\n') // and only show if at start or if there is empty space before to not interrupt typing mail addresses
+            && (s.length() <= start + 1 || s.charAt(start + 1) == ' ' || s.charAt(start + 1) == '\n') // and only show if @ is at the very end or also has empty space in the back.
+        ) {
+            mentionPopup = new MentionSelectorPopup(
+                mentionPopupData.activity,
+                this,
+                mentionPopupData.groupService,
+                mentionPopupData.contactService,
+                mentionPopupData.userService,
+                mentionPopupData.preferenceService,
+                mentionPopupData.groupModel
+            );
+            mentionPopup.show(mentionPopupData.activity, this, mentionPopupBoundary);
+        }
+    }
 
-	@Override
-	public void onContactSelected(String identity, int length, int insertPosition) {
-		Editable editable = getText();
-		if (editable == null) {
-			return;
-		}
+    @Override
+    public void onContactSelected(String identity, int length, int insertPosition) {
+        Editable editable = getText();
+        if (editable == null) {
+            return;
+        }
 
-		if (insertPosition >= 0 && insertPosition <= editable.length()) {
-			editable.delete(insertPosition, insertPosition + length);
-			addMention(identity);
-		}
-	}
+        if (insertPosition >= 0 && insertPosition <= editable.length()) {
+            editable.delete(insertPosition, insertPosition + length);
+            addMention(identity);
+        }
+    }
 
-	public static class MentionPopupData {
-		final @NonNull Activity activity;
-		final @NonNull GroupService groupService;
-		final @NonNull ContactService contactService;
-		final @NonNull UserService userService;
-		final @NonNull PreferenceService preferenceService;
-		final @NonNull GroupModel groupModel;
+    public static class MentionPopupData {
+        final @NonNull Activity activity;
+        final @NonNull GroupService groupService;
+        final @NonNull ContactService contactService;
+        final @NonNull UserService userService;
+        final @NonNull PreferenceService preferenceService;
+        final @NonNull GroupModel groupModel;
 
-		public MentionPopupData(
-			@NonNull Activity activity,
-			@NonNull GroupService groupService,
-			@NonNull ContactService contactService,
-			@NonNull UserService userService,
-			@NonNull PreferenceService preferenceService,
-			@NonNull GroupModel groupModel
-		) {
-			this.activity = activity;
-			this.groupService = groupService;
-			this.contactService = contactService;
-			this.userService = userService;
-			this.preferenceService = preferenceService;
-			this.groupModel = groupModel;
-		}
-	}
+        public MentionPopupData(
+            @NonNull Activity activity,
+            @NonNull GroupService groupService,
+            @NonNull ContactService contactService,
+            @NonNull UserService userService,
+            @NonNull PreferenceService preferenceService,
+            @NonNull GroupModel groupModel
+        ) {
+            this.activity = activity;
+            this.groupService = groupService;
+            this.contactService = contactService;
+            this.userService = userService;
+            this.preferenceService = preferenceService;
+            this.groupModel = groupModel;
+        }
+    }
 }
 

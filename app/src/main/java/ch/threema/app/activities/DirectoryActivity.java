@@ -93,18 +93,20 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({EMPTY_STATE_IDLE, EMPTY_STATE_SEARCHING, EMPTY_STATE_RESULTS})
-    public @interface EmptyState {}
+    public @interface EmptyState {
+    }
+
     private static final int EMPTY_STATE_IDLE = 0;
     private static final int EMPTY_STATE_SEARCHING = 1;
     private static final int EMPTY_STATE_RESULTS = 2;
 
-	private ContactService contactService;
-	private UserService userService;
-	private ContactModelRepository contactModelRepository;
-	@NonNull
-	private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private ContactService contactService;
+    private UserService userService;
+    private ContactModelRepository contactModelRepository;
+    @NonNull
+    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
-	private boolean sortByFirstName;
+    private boolean sortByFirstName;
 
     private DirectoryAdapter directoryAdapter;
     private DirectoryDataSourceFactory directoryDataSourceFactory;
@@ -122,8 +124,10 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     private String queryText;
 
-    @ColorInt int categorySpanColor;
-    @ColorInt int categorySpanTextColor;
+    @ColorInt
+    int categorySpanColor;
+    @ColorInt
+    int categorySpanTextColor;
 
     private final Handler queryHandler = new Handler();
     private final Runnable queryTask = new Runnable() {
@@ -184,14 +188,14 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             updateToolbarTitle(getString(R.string.directory_title));
         }
 
-		try {
-			this.contactService = serviceManager.getContactService();
-		} catch (Exception e) {
-			logger.error("Could not get contact service", e);
-			return false;
-		}
-		this.userService = serviceManager.getUserService();
-		this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
+        try {
+            this.contactService = serviceManager.getContactService();
+        } catch (Exception e) {
+            logger.error("Could not get contact service", e);
+            return false;
+        }
+        this.userService = serviceManager.getUserService();
+        this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
 
         if (preferenceService == null) {
             return false;
@@ -212,7 +216,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         sortByFirstName = preferenceService.isContactListSortingFirstName();
 
         chipGroup = findViewById(R.id.chip_group);
-        chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING|LayoutTransition.CHANGE_APPEARING);
+        chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING | LayoutTransition.CHANGE_APPEARING);
 
         emptyTextView = findViewById(R.id.empty_text);
         progressIndicator = findViewById(R.id.progress_bar);
@@ -239,11 +243,11 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
                 launchContact(workDirectoryContact, position);
             }
 
-			@Override
-			public void onAdd(WorkDirectoryContact workDirectoryContact, final int position) {
-				addContact(workDirectoryContact, () -> directoryAdapter.notifyItemChanged(position));
-			}
-		});
+            @Override
+            public void onAdd(WorkDirectoryContact workDirectoryContact, final int position) {
+                addContact(workDirectoryContact, () -> directoryAdapter.notifyItemChanged(position));
+            }
+        });
 
         // initial page size
         PagedList.Config config = new PagedList.Config.Builder().setPageSize(API_DIRECTORY_PAGE_SIZE).build();
@@ -358,38 +362,38 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         startActivity(intent);
     }
 
-	private void launchContact(final WorkDirectoryContact workDirectoryContact, final int position) {
-		if (workDirectoryContact.threemaId != null) {
-			if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
-				addContact(workDirectoryContact, () -> {
-					openContact(workDirectoryContact.threemaId);
-					directoryAdapter.notifyItemChanged(position);
-				});
-			} else if (workDirectoryContact.threemaId.equalsIgnoreCase(contactService.getMe().getIdentity())) {
-				Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
-			} else {
-				openContact(workDirectoryContact.threemaId);
-			}
-		} else {
-			Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
-		}
-	}
+    private void launchContact(final WorkDirectoryContact workDirectoryContact, final int position) {
+        if (workDirectoryContact.threemaId != null) {
+            if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
+                addContact(workDirectoryContact, () -> {
+                    openContact(workDirectoryContact.threemaId);
+                    directoryAdapter.notifyItemChanged(position);
+                });
+            } else if (workDirectoryContact.threemaId.equalsIgnoreCase(contactService.getMe().getIdentity())) {
+                Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
+            } else {
+                openContact(workDirectoryContact.threemaId);
+            }
+        } else {
+            Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
+        }
+    }
 
-	private void addContact(final WorkDirectoryContact workDirectoryContact, Runnable runAfter) {
+    private void addContact(final WorkDirectoryContact workDirectoryContact, Runnable runAfter) {
         logger.info("Add new work contact");
-		backgroundExecutor.get().execute(
-			new AddOrUpdateWorkContactBackgroundTask(
-				workDirectoryContact,
-				userService.getIdentity(),
-				contactModelRepository
-			) {
-				@Override
-				public void runAfter(ContactModel contactModel) {
-					runAfter.run();
-				}
-			}
-		);
-	}
+        backgroundExecutor.get().execute(
+            new AddOrUpdateWorkContactBackgroundTask(
+                workDirectoryContact,
+                userService.getIdentity(),
+                contactModelRepository
+            ) {
+                @Override
+                public void runAfter(ContactModel contactModel) {
+                    runAfter.run();
+                }
+            }
+        );
+    }
 
     private DirectoryHeaderItemDecoration.HeaderCallback getSectionCallback() {
         return new DirectoryHeaderItemDecoration.HeaderCallback() {
@@ -527,7 +531,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         checkedCategories.clear();
 
         int numCheckedCategories = 0;
-        for(int i = 0; i < checkedItems.length; i++) {
+        for (int i = 0; i < checkedItems.length; i++) {
             if (checkedItems[i]) {
                 checkedCategories.add(categoryList.get(i));
                 numCheckedCategories++;

@@ -84,18 +84,23 @@ class ContactUpdateWorker(
         @JvmStatic
         fun schedulePeriodicSync(context: Context, preferenceService: PreferenceService) {
             // We use the sync interval from the previously named IdentityStatesWorker
-            val schedulePeriodMs = WorkManagerUtil.normalizeSchedulePeriod(preferenceService.identityStateSyncIntervalS)
+            val schedulePeriodMs =
+                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.identityStateSyncIntervalS)
 
-            logger.info("Initializing contact update sync. Requested schedule period: {} ms", schedulePeriodMs)
+            logger.info(
+                "Initializing contact update sync. Requested schedule period: {} ms",
+                schedulePeriodMs
+            )
 
             try {
                 val workManager = WorkManager.getInstance(context)
 
                 if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(
-                    workManager,
-                    WORKER_CONTACT_UPDATE_PERIODIC_NAME,
-                    schedulePeriodMs
-                )) {
+                        workManager,
+                        WORKER_CONTACT_UPDATE_PERIODIC_NAME,
+                        schedulePeriodMs
+                    )
+                ) {
                     logger.debug("Scheduling new job")
 
                     // Cancel the work with the old name as the IdentityStatesWorker class does not
@@ -107,13 +112,21 @@ class ContactUpdateWorker(
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()
 
-                    val workRequest = PeriodicWorkRequest.Builder(ContactUpdateWorker::class.java, schedulePeriodMs, TimeUnit.MILLISECONDS)
+                    val workRequest = PeriodicWorkRequest.Builder(
+                        ContactUpdateWorker::class.java,
+                        schedulePeriodMs,
+                        TimeUnit.MILLISECONDS
+                    )
                         .setConstraints(constraints)
                         .addTag(schedulePeriodMs.toString())
                         .setInitialDelay(1000, TimeUnit.MILLISECONDS)
                         .build()
 
-                    workManager.enqueueUniquePeriodicWork(WORKER_CONTACT_UPDATE_PERIODIC_NAME, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
+                    workManager.enqueueUniquePeriodicWork(
+                        WORKER_CONTACT_UPDATE_PERIODIC_NAME,
+                        ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                        workRequest
+                    )
                 }
             } catch (e: IllegalStateException) {
                 logger.error("Unable to schedule ContactUpdateWorker", e)
@@ -238,7 +251,11 @@ class ContactUpdateWorker(
                         0 -> IdentityType.NORMAL
                         1 -> IdentityType.WORK
                         else -> {
-                            logger.warn("Received invalid type {} for identity {}", result.types[i], identity)
+                            logger.warn(
+                                "Received invalid type {} for identity {}",
+                                result.types[i],
+                                identity
+                            )
                             IdentityType.NORMAL
                         }
                     }
@@ -276,7 +293,11 @@ class ContactUpdateWorker(
 
                 // Only update the state if it is a valid state change. Note that changing to null is
                 // not allowed and will not result in any change.
-                if (newState != null && ContactUtil.allowedChangeToState(data.activityState, newState)) {
+                if (newState != null && ContactUtil.allowedChangeToState(
+                        data.activityState,
+                        newState
+                    )
+                ) {
                     contactModel.setActivityStateFromLocal(newState)
                 }
 
@@ -289,7 +310,11 @@ class ContactUpdateWorker(
                 }
 
             } catch (e: ModelDeletedException) {
-                logger.warn("Could not update contact {} because the model has been deleted", contactModel.identity, e)
+                logger.warn(
+                    "Could not update contact {} because the model has been deleted",
+                    contactModel.identity,
+                    e
+                )
             }
         }
     }

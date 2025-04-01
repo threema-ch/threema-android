@@ -43,128 +43,128 @@ import ch.threema.app.utils.DialogUtil;
 
 public class FormatTextEntryDialog extends ThreemaDialogFragment {
 
-	public static final String ARG_TITLE = "title";
-	public static final String ARG_MESSAGE = "message";
-	public static final String ARG_POSITIVE = "positive";
-	public static final String ARG_NEGATIVE = "negative";
-	public static final String ARG_TEXT = "text";
-	public static final String ARG_MAX_LINES = "maxLines";
+    public static final String ARG_TITLE = "title";
+    public static final String ARG_MESSAGE = "message";
+    public static final String ARG_POSITIVE = "positive";
+    public static final String ARG_NEGATIVE = "negative";
+    public static final String ARG_TEXT = "text";
+    public static final String ARG_MAX_LINES = "maxLines";
 
-	private final FormatTextEntryDialogClickListener callback;
-	private AlertDialog alertDialog;
+    private final FormatTextEntryDialogClickListener callback;
+    private AlertDialog alertDialog;
 
-	public static FormatTextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                                @StringRes int positive, @StringRes int negative,
-	                                                String text, int maxLines, FormatTextEntryDialogClickListener callback) {
-		FormatTextEntryDialog dialog = new FormatTextEntryDialog(callback);
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_MAX_LINES, maxLines);
+    public static FormatTextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                                    @StringRes int positive, @StringRes int negative,
+                                                    String text, int maxLines, FormatTextEntryDialogClickListener callback) {
+        FormatTextEntryDialog dialog = new FormatTextEntryDialog(callback);
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_MAX_LINES, maxLines);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	FormatTextEntryDialog(FormatTextEntryDialogClickListener callback) {
-		this.callback = callback;
-	}
+    FormatTextEntryDialog(FormatTextEntryDialogClickListener callback) {
+        this.callback = callback;
+    }
 
-	public interface FormatTextEntryDialogClickListener {
-		void onYes(String text);
+    public interface FormatTextEntryDialogClickListener {
+        void onYes(String text);
 
-		void onNo();
-	}
+        void onNo();
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		Bundle args = getArguments();
-		if (args == null) {
-			throw new IllegalArgumentException("Arguments must not be null");
-		}
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (args == null) {
+            throw new IllegalArgumentException("Arguments must not be null");
+        }
 
-		int title = args.getInt(ARG_TITLE);
-		int message = args.getInt(ARG_MESSAGE);
-		int positive = args.getInt(ARG_POSITIVE);
-		int negative = args.getInt(ARG_NEGATIVE);
-		String text = args.getString(ARG_TEXT, "");
-		int maxLines = args.getInt(ARG_MAX_LINES, 0);
+        int title = args.getInt(ARG_TITLE);
+        int message = args.getInt(ARG_MESSAGE);
+        int positive = args.getInt(ARG_POSITIVE);
+        int negative = args.getInt(ARG_NEGATIVE);
+        String text = args.getString(ARG_TEXT, "");
+        int maxLines = args.getInt(ARG_MAX_LINES, 0);
 
-		final View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_format_text_entry, null);
+        final View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_format_text_entry, null);
 
-		final TextInputLayout editTextLayout = dialogView.findViewById(R.id.format_text_input_layout);
-		final EmojiEditText editText = dialogView.findViewById(R.id.format_edit_text);
+        final TextInputLayout editTextLayout = dialogView.findViewById(R.id.format_text_input_layout);
+        final EmojiEditText editText = dialogView.findViewById(R.id.format_edit_text);
 
-		editText.setText(text);
+        editText.setText(text);
 
-		if (text != null && text.length() > 0) {
-			editText.setSelection(text.length());
-		}
+        if (text != null && text.length() > 0) {
+            editText.setSelection(text.length());
+        }
 
-		if (maxLines > 1) {
-			editText.setSingleLine(false);
-			editText.setMaxLines(maxLines);
-		}
+        if (maxLines > 1) {
+            editText.setSingleLine(false);
+            editText.setMaxLines(maxLines);
+        }
 
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				ThreemaApplication.activityUserInteract(requireActivity());
-			}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ThreemaApplication.activityUserInteract(requireActivity());
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-			}
-		});
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
-		if (message != 0) {
-			editTextLayout.setHint(getString(message));
-		}
+        if (message != 0) {
+            editTextLayout.setHint(getString(message));
+        }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
-		builder.setView(dialogView);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
+        builder.setView(dialogView);
 
-		if (title != 0) {
-			builder.setTitle(title);
-		}
+        if (title != 0) {
+            builder.setTitle(title);
+        }
 
-		builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
-				Editable editable = editText.getText();
-				if (editable == null) {
-					callback.onYes("");
-				} else {
-					callback.onYes(editable.toString());
-				}
-			}
-		);
-		builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo()
-		);
+        builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
+                Editable editable = editText.getText();
+                if (editable == null) {
+                    callback.onYes("");
+                } else {
+                    callback.onYes(editable.toString());
+                }
+            }
+        );
+        builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo()
+        );
 
-		alertDialog = builder.create();
+        alertDialog = builder.create();
 
-		return alertDialog;
-	}
+        return alertDialog;
+    }
 
-	@Override
-	public void onStart() {
-		super.onStart();
+    @Override
+    public void onStart() {
+        super.onStart();
 
-		ColorStateList colorStateList = DialogUtil.getButtonColorStateList(requireActivity());
+        ColorStateList colorStateList = DialogUtil.getButtonColorStateList(requireActivity());
 
-		alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
+        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
 
-		Button neutral = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-		if (neutral != null) {
-			neutral.setTextColor(colorStateList);
-		}
-	}
+        Button neutral = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+        if (neutral != null) {
+            neutral.setTextColor(colorStateList);
+        }
+    }
 }

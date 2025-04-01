@@ -49,7 +49,7 @@ private const val SFU_PEEK_PATH_SEGMENT = "peek"
 private const val SFU_JOIN_PATH_SEGMENT = "join"
 
 @WorkerThread
-internal class SfuConnectionImpl (
+internal class SfuConnectionImpl(
     private val apiConnector: APIConnector,
     private val identityStore: IdentityStoreInterface,
     private val version: Version
@@ -59,7 +59,11 @@ internal class SfuConnectionImpl (
     @AnyThread
     override suspend fun obtainSfuToken(forceRefresh: Boolean): SfuToken {
         return withContext(Dispatchers.IO) {
-            logger.debug("Obtain sfu token forceRefresh={}, cached={}", forceRefresh, cachedSfuToken)
+            logger.debug(
+                "Obtain sfu token forceRefresh={}, cached={}",
+                forceRefresh,
+                cachedSfuToken
+            )
             cachedSfuToken.let { cachedToken ->
                 if (forceRefresh || cachedToken == null || isTokenExpired(cachedToken)) {
                     fetchAndCacheToken()
@@ -110,22 +114,30 @@ internal class SfuConnectionImpl (
         val request = SfuHttpRequest.Peek.newBuilder()
             .setCallId(ByteString.copyFrom(callId.bytes))
             .build()
-        val byteResponse = post(token, url, request.toByteArray(), ProtocolDefines.GC_PEEK_TIMEOUT_MILLIS)
+        val byteResponse =
+            post(token, url, request.toByteArray(), ProtocolDefines.GC_PEEK_TIMEOUT_MILLIS)
         val body = byteResponse.body?.let { PeekResponseBody.fromSfuResponseBytes(it) }
         logger.info("Peek status for {}: {}", callId, byteResponse.statusCode)
         return PeekResponse(byteResponse.statusCode, body)
     }
 
     @WorkerThread
-    private fun postJoin(token: SfuToken, sfuBaseUrl: String, callDescription: GroupCallDescription, dtlsFingerprint: ByteArray): JoinResponse {
-        val url = createURL(sfuBaseUrl, SFU_VERSION, SFU_JOIN_PATH_SEGMENT, callDescription.callId.hex)
+    private fun postJoin(
+        token: SfuToken,
+        sfuBaseUrl: String,
+        callDescription: GroupCallDescription,
+        dtlsFingerprint: ByteArray
+    ): JoinResponse {
+        val url =
+            createURL(sfuBaseUrl, SFU_VERSION, SFU_JOIN_PATH_SEGMENT, callDescription.callId.hex)
         logger.info("Joining call {} via URL {}", callDescription.callId, url)
         val request = SfuHttpRequest.Join.newBuilder()
             .setProtocolVersion(callDescription.protocolVersion.toInt())
             .setCallId(ByteString.copyFrom(callDescription.callId.bytes))
             .setDtlsFingerprint(ByteString.copyFrom(dtlsFingerprint))
             .build()
-        val byteResponse = post(token, url, request.toByteArray(), ProtocolDefines.GC_JOIN_TIMEOUT_MILLIS)
+        val byteResponse =
+            post(token, url, request.toByteArray(), ProtocolDefines.GC_JOIN_TIMEOUT_MILLIS)
         val body = byteResponse.body?.let { JoinResponseBody.fromSfuResponseBytes(it) }
         logger.info("JoinResponse with HTTP-status={}: {}", byteResponse.statusCode, body)
         return JoinResponse(byteResponse.statusCode, body)

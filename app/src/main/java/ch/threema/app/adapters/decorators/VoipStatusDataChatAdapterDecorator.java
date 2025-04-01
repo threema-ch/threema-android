@@ -41,65 +41,65 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
 
-	public VoipStatusDataChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-		super(context, messageModel, helper);
-	}
+    public VoipStatusDataChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
+        super(context, messageModel, helper);
+    }
 
-	@Override
-	protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-		if (holder.controller != null) {
-			holder.controller.setClickable(false);
-			holder.controller.setIconResource(R.drawable.ic_phone_locked_outline);
-		}
+    @Override
+    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+        if (holder.controller != null) {
+            holder.controller.setClickable(false);
+            holder.controller.setIconResource(R.drawable.ic_phone_locked_outline);
+        }
 
-		if(holder.bodyTextView != null) {
-			MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.getContext(), this.getMessageModel());
+        if (holder.bodyTextView != null) {
+            MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(this.getContext(), this.getMessageModel());
 
-			if (viewElement != null) {
-				if (viewElement.placeholder != null) {
-					holder.bodyTextView.setText(viewElement.placeholder);
-				}
+            if (viewElement != null) {
+                if (viewElement.placeholder != null) {
+                    holder.bodyTextView.setText(viewElement.placeholder);
+                }
 
-				VoipStatusDataModel status = this.getMessageModel().getVoipStatusData();
-				if (status != null && status.getStatus() == VoipStatusDataModel.FINISHED) {
-					// Show duration
-					if (holder.dateView != null) {
-						this.setDatePrefix(StringConversionUtil.secondsToString(
-							status.getDuration(),
-							false
-						));
-						this.setDuration(status.getDuration());
-					}
-				}
+                VoipStatusDataModel status = this.getMessageModel().getVoipStatusData();
+                if (status != null && status.getStatus() == VoipStatusDataModel.FINISHED) {
+                    // Show duration
+                    if (holder.dateView != null) {
+                        this.setDatePrefix(StringConversionUtil.secondsToString(
+                            status.getDuration(),
+                            false
+                        ));
+                        this.setDuration(status.getDuration());
+                    }
+                }
 
-				// Set and tint the phone image
-				if(ViewUtil.showAndSet(holder.attachmentImage, viewElement.icon)) {
-					if (viewElement.color != null) {
-						holder.attachmentImage.setColorFilter(
-								getContext().getResources().getColor(viewElement.color),
-								PorterDuff.Mode.SRC_IN);
-					}
-				}
-			}
-		}
+                // Set and tint the phone image
+                if (ViewUtil.showAndSet(holder.attachmentImage, viewElement.icon)) {
+                    if (viewElement.color != null) {
+                        holder.attachmentImage.setColorFilter(
+                            getContext().getResources().getColor(viewElement.color),
+                            PorterDuff.Mode.SRC_IN);
+                    }
+                }
+            }
+        }
 
-		this.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				// load the the contact
-				if (ConfigUtils.isCallsEnabled()) {
-					ContactModel contactModel = helper.getContactService().getByIdentity(getMessageModel().getIdentity());
-					if (contactModel != null) {
-						String name = NameUtil.getDisplayNameOrNickname(contactModel, false);
+        this.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // load the the contact
+                if (ConfigUtils.isCallsEnabled()) {
+                    ContactModel contactModel = helper.getContactService().getByIdentity(getMessageModel().getIdentity());
+                    if (contactModel != null) {
+                        String name = NameUtil.getDisplayNameOrNickname(contactModel, false);
 
-						GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.threema_call, String.format(getContext().getString(R.string.voip_call_confirm), name), R.string.ok, R.string.cancel);
-						dialog.setTargetFragment(helper.getFragment(), 0);
-						dialog.show(helper.getFragment().getFragmentManager(), ComposeMessageFragment.DIALOG_TAG_CONFIRM_CALL);
-					}
-				} else {
-					SingleToast.getInstance().showLongText(getContext().getString(R.string.voip_disabled));
-				}
-			}
-		}, holder.messageBlockView);
-	}
+                        GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.threema_call, String.format(getContext().getString(R.string.voip_call_confirm), name), R.string.ok, R.string.cancel);
+                        dialog.setTargetFragment(helper.getFragment(), 0);
+                        dialog.show(helper.getFragment().getFragmentManager(), ComposeMessageFragment.DIALOG_TAG_CONFIRM_CALL);
+                    }
+                } else {
+                    SingleToast.getInstance().showLongText(getContext().getString(R.string.voip_disabled));
+                }
+            }
+        }, holder.messageBlockView);
+    }
 }

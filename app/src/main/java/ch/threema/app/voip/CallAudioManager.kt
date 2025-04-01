@@ -75,12 +75,13 @@ class CallAudioManager(private val context: Context) {
     private var bluetoothHeadSetJob: Job? = null
 
     private val audioFocusRequest: AudioFocusRequestCompat =
-            AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
-                    .setAudioAttributes(AudioAttributesCompat.Builder()
-                            .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
-                            .build()
-                    ).setOnAudioFocusChangeListener { logger.info("Audio focus changed: {}", it) }
+        AudioFocusRequestCompat.Builder(AudioManagerCompat.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
+            .setAudioAttributes(
+                AudioAttributesCompat.Builder()
+                    .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
                     .build()
+            ).setOnAudioFocusChangeListener { logger.info("Audio focus changed: {}", it) }
+            .build()
 
     /**
      *  Start and initialize the audio manager.
@@ -114,6 +115,7 @@ class CallAudioManager(private val context: Context) {
                     logger.warn("CallAudioManager has not been started")
                     updateState(State.STOPPED)
                 }
+
                 State.RUNNING -> updateState(State.STOPPED, this::shutdown)
             }
         }
@@ -222,7 +224,8 @@ class CallAudioManager(private val context: Context) {
                 if (selectedAudioDevice == AudioDevice.BLUETOOTH && headsetManager.isBluetoothHeadsetConnected()) {
                     // Not connected (anymore) with bluetooth audio. Switch to alternative
                     // audio device but leave bluetooth in list (because it is still connected)
-                    userSelectedAudioDevice = getDefaultAudioDevice(queryAudioDevices().minus(AudioDevice.BLUETOOTH))
+                    userSelectedAudioDevice =
+                        getDefaultAudioDevice(queryAudioDevices().minus(AudioDevice.BLUETOOTH))
                 }
                 adoptAudioDeviceSelection()
             }
@@ -234,6 +237,7 @@ class CallAudioManager(private val context: Context) {
                     adoptAudioDeviceSelection()
                 }
             }
+
             else -> {
                 // The other state changes can be ignored here
             }

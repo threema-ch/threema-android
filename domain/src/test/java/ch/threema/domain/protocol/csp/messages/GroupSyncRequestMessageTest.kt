@@ -159,7 +159,8 @@ class GroupSyncRequestMessageTest {
 
         // arrange
         val offset = 5
-        val bytesMessageDataContainingOffsetAndJunk = nextBytes(offset) + validMessageBytes + nextBytes(10)
+        val bytesMessageDataContainingOffsetAndJunk =
+            nextBytes(offset) + validMessageBytes + nextBytes(10)
 
         // act
         val groupSyncRequestMessage = GroupSyncRequestMessage.fromByteArray(
@@ -189,7 +190,8 @@ class GroupSyncRequestMessageTest {
         }
 
         // act
-        val groupSyncRequestMessage = GroupSyncRequestMessage.fromReflected(incomingD2DMessage, creatorIdentity)
+        val groupSyncRequestMessage =
+            GroupSyncRequestMessage.fromReflected(incomingD2DMessage, creatorIdentity)
 
         // assert
         assertEquals(incomingMessageId, groupSyncRequestMessage.messageId)

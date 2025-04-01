@@ -56,259 +56,260 @@ import ch.threema.storage.models.GroupModel;
  */
 @WorkerThread
 public class ReceiverUpdateHandler extends MessageUpdater {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiverUpdateHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiverUpdateHandler");
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-			Protocol.ARGUMENT_MODE_NEW,
-			Protocol.ARGUMENT_MODE_MODIFIED,
-			Protocol.ARGUMENT_MODE_REMOVED,
-	})
-	private @interface UpdateMode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ARGUMENT_MODE_NEW,
+        Protocol.ARGUMENT_MODE_MODIFIED,
+        Protocol.ARGUMENT_MODE_REMOVED,
+    })
+    private @interface UpdateMode {
+    }
 
-	// Handler
-	private final @NonNull HandlerExecutor handler;
+    // Handler
+    private final @NonNull HandlerExecutor handler;
 
-	// Listeners
-	private final ContactListener contactListener;
-	private final GroupListener groupListener;
-	private final DistributionListListener distributionListListener;
+    // Listeners
+    private final ContactListener contactListener;
+    private final GroupListener groupListener;
+    private final DistributionListListener distributionListListener;
 
-	// Dispatchers
-	private final @NonNull MessageDispatcher dispatcher;
+    // Dispatchers
+    private final @NonNull MessageDispatcher dispatcher;
 
-	// Services
-	private final @NonNull DatabaseServiceNew databaseServiceNew;
-	private final @NonNull SynchronizeContactsService synchronizeContactsService;
+    // Services
+    private final @NonNull DatabaseServiceNew databaseServiceNew;
+    private final @NonNull SynchronizeContactsService synchronizeContactsService;
 
-	@AnyThread
-	public ReceiverUpdateHandler(
-		@NonNull HandlerExecutor handler,
-		@NonNull MessageDispatcher dispatcher,
-		@NonNull DatabaseServiceNew databaseServiceNew,
-		@NonNull SynchronizeContactsService synchronizeContactsService
-	) {
-		super(Protocol.SUB_TYPE_RECEIVER);
-		this.handler = handler;
-		this.dispatcher = dispatcher;
-		this.databaseServiceNew = databaseServiceNew;
-		this.synchronizeContactsService = synchronizeContactsService;
-		this.contactListener = new ContactListener();
-		this.groupListener = new GroupListener();
-		this.distributionListListener = new DistributionListListener();
-	}
+    @AnyThread
+    public ReceiverUpdateHandler(
+        @NonNull HandlerExecutor handler,
+        @NonNull MessageDispatcher dispatcher,
+        @NonNull DatabaseServiceNew databaseServiceNew,
+        @NonNull SynchronizeContactsService synchronizeContactsService
+    ) {
+        super(Protocol.SUB_TYPE_RECEIVER);
+        this.handler = handler;
+        this.dispatcher = dispatcher;
+        this.databaseServiceNew = databaseServiceNew;
+        this.synchronizeContactsService = synchronizeContactsService;
+        this.contactListener = new ContactListener();
+        this.groupListener = new GroupListener();
+        this.distributionListListener = new DistributionListListener();
+    }
 
-	@Override
-	public void register() {
-		logger.debug("register()");
-		ListenerManager.contactListeners.add(this.contactListener);
-		ListenerManager.groupListeners.add(this.groupListener);
-		ListenerManager.distributionListListeners.add(this.distributionListListener);
-	}
+    @Override
+    public void register() {
+        logger.debug("register()");
+        ListenerManager.contactListeners.add(this.contactListener);
+        ListenerManager.groupListeners.add(this.groupListener);
+        ListenerManager.distributionListListeners.add(this.distributionListListener);
+    }
 
-	/**
-	 * This method can be safely called multiple times without any negative side effects
-	 */
-	@Override
-	public void unregister() {
-		logger.debug("unregister()");
-		ListenerManager.contactListeners.remove(this.contactListener);
-		ListenerManager.groupListeners.remove(this.groupListener);
-		ListenerManager.distributionListListeners.remove(this.distributionListListener);
-	}
+    /**
+     * This method can be safely called multiple times without any negative side effects
+     */
+    @Override
+    public void unregister() {
+        logger.debug("unregister()");
+        ListenerManager.contactListeners.remove(this.contactListener);
+        ListenerManager.groupListeners.remove(this.groupListener);
+        ListenerManager.distributionListListeners.remove(this.distributionListListener);
+    }
 
-	@AnyThread
-	private void updateContact(final ContactModel contact, @UpdateMode String mode) {
-		handler.post(new Runnable() {
-			@Override
-			@WorkerThread
-			public void run() {
-				try {
-					// Convert contact and dispatch
-					MsgpackObjectBuilder data = Contact.convert(contact);
-					ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(contact), data, mode);
-				} catch (ConversionException e) {
-					logger.error("Exception", e);
-				}
-			}
-		});
-	}
+    @AnyThread
+    private void updateContact(final ContactModel contact, @UpdateMode String mode) {
+        handler.post(new Runnable() {
+            @Override
+            @WorkerThread
+            public void run() {
+                try {
+                    // Convert contact and dispatch
+                    MsgpackObjectBuilder data = Contact.convert(contact);
+                    ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(contact), data, mode);
+                } catch (ConversionException e) {
+                    logger.error("Exception", e);
+                }
+            }
+        });
+    }
 
-	@AnyThread
-	private void updateGroup(GroupModel group, @UpdateMode String mode) {
-		handler.post(new Runnable() {
-			@Override
-			@WorkerThread
-			public void run() {
-				try {
-					// Convert contact and dispatch
-					MsgpackObjectBuilder data = Group.convert(group);
-					ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(group), data, mode);
-				} catch (ConversionException e) {
-					logger.error("Exception", e);
-				}
-			}
-		});
-	}
+    @AnyThread
+    private void updateGroup(GroupModel group, @UpdateMode String mode) {
+        handler.post(new Runnable() {
+            @Override
+            @WorkerThread
+            public void run() {
+                try {
+                    // Convert contact and dispatch
+                    MsgpackObjectBuilder data = Group.convert(group);
+                    ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(group), data, mode);
+                } catch (ConversionException e) {
+                    logger.error("Exception", e);
+                }
+            }
+        });
+    }
 
-	@AnyThread
-	private void updateDistributionList(DistributionListModel distributionList, @UpdateMode String mode) {
-		handler.post(new Runnable() {
-			@Override
-			@WorkerThread
-			public void run() {
-				try {
-					// Convert contact and dispatch
-					MsgpackObjectBuilder data = DistributionList.convert(distributionList);
-					ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(distributionList), data, mode);
-				} catch (ConversionException e) {
-					logger.error("Exception", e);
-				}
-			}
-		});
-	}
+    @AnyThread
+    private void updateDistributionList(DistributionListModel distributionList, @UpdateMode String mode) {
+        handler.post(new Runnable() {
+            @Override
+            @WorkerThread
+            public void run() {
+                try {
+                    // Convert contact and dispatch
+                    MsgpackObjectBuilder data = DistributionList.convert(distributionList);
+                    ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(distributionList), data, mode);
+                } catch (ConversionException e) {
+                    logger.error("Exception", e);
+                }
+            }
+        });
+    }
 
-	private void update(final Utils.ModelWrapper model, final MsgpackObjectBuilder data, final @UpdateMode String mode) {
-		try {
-			// Convert message and prepare arguments
-			MsgpackObjectBuilder args = Receiver.getArguments(model);
-			args.put(Protocol.ARGUMENT_MODE, mode);
+    private void update(final Utils.ModelWrapper model, final MsgpackObjectBuilder data, final @UpdateMode String mode) {
+        try {
+            // Convert message and prepare arguments
+            MsgpackObjectBuilder args = Receiver.getArguments(model);
+            args.put(Protocol.ARGUMENT_MODE, mode);
 
-			// Send message
-			logger.debug("Sending receiver update");
-			send(dispatcher, data, args);
-		} catch (ConversionException | MessagePackException e) {
-			logger.error("Exception", e);
-		}
-	}
+            // Send message
+            logger.debug("Sending receiver update");
+            send(dispatcher, data, args);
+        } catch (ConversionException | MessagePackException e) {
+            logger.error("Exception", e);
+        }
+    }
 
-	/**
-	 * Listen for contact changes.
-	 */
-	@AnyThread
-	private class ContactListener implements ch.threema.app.listeners.ContactListener {
-		@Override
-		public void onModified(final @NonNull String identity) {
-			if (synchronizeContactsService.isFullSyncInProgress()) {
-				// A sync is currently in progress. This causes a *lot* of onModified
-				// listeners to be called.
-				// To avoid flooding the webclient with updates, we simply ignore the
-				// updates and send the entire receivers list as soon as the sync is done.
-				logger.debug("Ignoring onModified (contact sync in progress)");
-				return;
-			}
+    /**
+     * Listen for contact changes.
+     */
+    @AnyThread
+    private class ContactListener implements ch.threema.app.listeners.ContactListener {
+        @Override
+        public void onModified(final @NonNull String identity) {
+            if (synchronizeContactsService.isFullSyncInProgress()) {
+                // A sync is currently in progress. This causes a *lot* of onModified
+                // listeners to be called.
+                // To avoid flooding the webclient with updates, we simply ignore the
+                // updates and send the entire receivers list as soon as the sync is done.
+                logger.debug("Ignoring onModified (contact sync in progress)");
+                return;
+            }
 
-			final ContactModel modifiedContactModel = getContactModelByIdentity(identity);
-			if (modifiedContactModel != null) {
-				updateContact(modifiedContactModel, Protocol.ARGUMENT_MODE_MODIFIED);
-			}
-		}
+            final ContactModel modifiedContactModel = getContactModelByIdentity(identity);
+            if (modifiedContactModel != null) {
+                updateContact(modifiedContactModel, Protocol.ARGUMENT_MODE_MODIFIED);
+            }
+        }
 
-		@Override
-		public void onNew(final @NonNull String identity) {
-			final ContactModel newContactModel = getContactModelByIdentity(identity);
-			if (newContactModel != null) {
-				updateContact(newContactModel, Protocol.ARGUMENT_MODE_NEW);
-			}
-		}
+        @Override
+        public void onNew(final @NonNull String identity) {
+            final ContactModel newContactModel = getContactModelByIdentity(identity);
+            if (newContactModel != null) {
+                updateContact(newContactModel, Protocol.ARGUMENT_MODE_NEW);
+            }
+        }
 
-		@Override
-		public void onRemoved(@NonNull String identity) {
-			handler.post(new Runnable() {
-				@Override
-				@WorkerThread
-				public void run() {
-					try {
-						MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
-						builder.put(Receiver.ID, identity);
-						ReceiverUpdateHandler.this.update(
-							new Utils.ModelWrapper(Receiver.Type.CONTACT, identity),
-							builder,
-							Protocol.ARGUMENT_MODE_REMOVED
-						);
-					} catch (ConversionException e) {
-						logger.error("Exception", e);
-					}
-				}
-			});
-		}
+        @Override
+        public void onRemoved(@NonNull String identity) {
+            handler.post(new Runnable() {
+                @Override
+                @WorkerThread
+                public void run() {
+                    try {
+                        MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
+                        builder.put(Receiver.ID, identity);
+                        ReceiverUpdateHandler.this.update(
+                            new Utils.ModelWrapper(Receiver.Type.CONTACT, identity),
+                            builder,
+                            Protocol.ARGUMENT_MODE_REMOVED
+                        );
+                    } catch (ConversionException e) {
+                        logger.error("Exception", e);
+                    }
+                }
+            });
+        }
 
-		@Nullable
-		private ContactModel getContactModelByIdentity(@NonNull String identity) {
-			return databaseServiceNew.getContactModelFactory().getByIdentity(identity);
-		}
-	}
+        @Nullable
+        private ContactModel getContactModelByIdentity(@NonNull String identity) {
+            return databaseServiceNew.getContactModelFactory().getByIdentity(identity);
+        }
+    }
 
-	@AnyThread
-	private class GroupListener implements ch.threema.app.listeners.GroupListener {
-		@Override
-		public void onCreate(GroupModel newGroupModel) {
-			logger.debug("Group Listener: onCreate");
-			updateGroup(newGroupModel, Protocol.ARGUMENT_MODE_NEW);
-		}
+    @AnyThread
+    private class GroupListener implements ch.threema.app.listeners.GroupListener {
+        @Override
+        public void onCreate(GroupModel newGroupModel) {
+            logger.debug("Group Listener: onCreate");
+            updateGroup(newGroupModel, Protocol.ARGUMENT_MODE_NEW);
+        }
 
-		@Override
-		public void onRename(GroupModel groupModel) {
-			logger.debug("Group Listener: onRename");
-			updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onRename(GroupModel groupModel) {
+            logger.debug("Group Listener: onRename");
+            updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onRemove(GroupModel removedGroupModel) {
-			// TODO: We should probably send an empty response
-			logger.debug("Group Listener: onRemove");
-			updateGroup(removedGroupModel, Protocol.ARGUMENT_MODE_REMOVED);
-		}
+        @Override
+        public void onRemove(GroupModel removedGroupModel) {
+            // TODO: We should probably send an empty response
+            logger.debug("Group Listener: onRemove");
+            updateGroup(removedGroupModel, Protocol.ARGUMENT_MODE_REMOVED);
+        }
 
-		@Override
-		public void onNewMember(GroupModel group, String newIdentity) {
-			logger.debug("Group Listener: onNewMember");
-			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onNewMember(GroupModel group, String newIdentity) {
+            logger.debug("Group Listener: onNewMember");
+            updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onMemberLeave(GroupModel group, String identity) {
-			logger.debug("Group Listener: onMemberLeave");
-			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onMemberLeave(GroupModel group, String identity) {
+            logger.debug("Group Listener: onMemberLeave");
+            updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onMemberKicked(GroupModel group, String identity) {
-			logger.debug("Group Listener: onMemberKicked");
-			updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onMemberKicked(GroupModel group, String identity) {
+            logger.debug("Group Listener: onMemberKicked");
+            updateGroup(group, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onUpdate(GroupModel groupModel) {
-			logger.debug("Group Listener: onUpdate");
-			updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onUpdate(GroupModel groupModel) {
+            logger.debug("Group Listener: onUpdate");
+            updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onLeave(GroupModel groupModel) {
-			logger.debug("Group Listener: onLeave");
-			updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
-	}
+        @Override
+        public void onLeave(GroupModel groupModel) {
+            logger.debug("Group Listener: onLeave");
+            updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
+    }
 
-	@AnyThread
-	private class DistributionListListener implements ch.threema.app.listeners.DistributionListListener {
-		@Override
-		public void onCreate(DistributionListModel distributionListModel) {
-			logger.debug("Distribution List Listener: onCreate");
-			updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_NEW);
-		}
+    @AnyThread
+    private class DistributionListListener implements ch.threema.app.listeners.DistributionListListener {
+        @Override
+        public void onCreate(DistributionListModel distributionListModel) {
+            logger.debug("Distribution List Listener: onCreate");
+            updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_NEW);
+        }
 
-		@Override
-		public void onModify(DistributionListModel distributionListModel) {
-			logger.debug("Distribution List Listener: onModify");
-			updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_MODIFIED);
-		}
+        @Override
+        public void onModify(DistributionListModel distributionListModel) {
+            logger.debug("Distribution List Listener: onModify");
+            updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_MODIFIED);
+        }
 
-		@Override
-		public void onRemove(DistributionListModel distributionListModel) {
-			logger.debug("Distribution List Listener: onRemove");
-			updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_REMOVED);
-		}
-	}
+        @Override
+        public void onRemove(DistributionListModel distributionListModel) {
+            logger.debug("Distribution List Listener: onRemove");
+            updateDistributionList(distributionListModel, Protocol.ARGUMENT_MODE_REMOVED);
+        }
+    }
 }

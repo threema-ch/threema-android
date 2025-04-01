@@ -329,14 +329,19 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         processMessage(message, contactA.identityStore)
 
-        return messageModelFactory.getByApiMessageIdAndIdentity(message.messageId, message.fromIdentity)!!
+        return messageModelFactory.getByApiMessageIdAndIdentity(
+            message.messageId,
+            message.fromIdentity
+        )!!
     }
 
     private suspend fun MessageModel.receiveEdit() {
-        val editMessage = EditMessage(EditMessageData(
-            MessageId.fromString(apiMessageId).messageIdLong,
-            "$body Edited"
-        )).apply {
+        val editMessage = EditMessage(
+            EditMessageData(
+                MessageId.fromString(apiMessageId).messageIdLong,
+                "$body Edited"
+            )
+        ).apply {
             fromIdentity = identity
             toIdentity = myContact.identity
         }
@@ -365,14 +370,19 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         processMessage(message, contactA.identityStore)
 
-        return groupMessageModelFactory.getByApiMessageIdAndIdentity(message.messageId, message.fromIdentity)!!
+        return groupMessageModelFactory.getByApiMessageIdAndIdentity(
+            message.messageId,
+            message.fromIdentity
+        )!!
     }
 
     private suspend fun GroupMessageModel.receiveEdit() {
-        val editMessage = GroupEditMessage(EditMessageData(
-            MessageId.fromString(apiMessageId).messageIdLong,
-            "$body Edited"
-        )).apply {
+        val editMessage = GroupEditMessage(
+            EditMessageData(
+                MessageId.fromString(apiMessageId).messageIdLong,
+                "$body Edited"
+            )
+        ).apply {
             apiGroupId = groupA.apiGroupId
             groupCreator = groupA.groupCreator.identity
             fromIdentity = identity

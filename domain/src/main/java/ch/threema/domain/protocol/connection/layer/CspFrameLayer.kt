@@ -30,6 +30,7 @@ import ch.threema.domain.protocol.connection.data.OutboundL2Message
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspFrameLayer")
+
 internal class CspFrameLayer : Layer1Codec {
     override val encoder: PipeProcessor<OutboundL2Message, ByteArray> = MappingPipe {
         logger.trace("Handle outbound message of type `{}`", it.type)

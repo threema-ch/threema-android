@@ -45,9 +45,11 @@ class GroupDeleteMessageTest {
     private val bytesCreatorIdentity: ByteArray = "12345678".toByteArray()
     private val bytesApiGroupId: ByteArray = GroupId().groupId
     private val messageId: MessageId = MessageId()
-    private val protobufMessageId: ByteArray = DeleteMessageData(messageId.messageIdLong).toProtobufBytes()
+    private val protobufMessageId: ByteArray =
+        DeleteMessageData(messageId.messageIdLong).toProtobufBytes()
 
-    private val bytesMessageData: ByteArray = bytesCreatorIdentity + bytesApiGroupId + protobufMessageId
+    private val bytesMessageData: ByteArray =
+        bytesCreatorIdentity + bytesApiGroupId + protobufMessageId
 
     @Test
     fun shouldThrowBadMessageWhenLengthIsTooLow() {
@@ -180,7 +182,8 @@ class GroupDeleteMessageTest {
 
         // arrange
         val offset = 5
-        val bytesMessageDataContainingOffsetAndJunk = nextBytes(offset) + bytesMessageData + nextBytes(10)
+        val bytesMessageDataContainingOffsetAndJunk =
+            nextBytes(offset) + bytesMessageData + nextBytes(10)
 
         // act
         val groupDeleteMessage = GroupDeleteMessage.fromByteArray(

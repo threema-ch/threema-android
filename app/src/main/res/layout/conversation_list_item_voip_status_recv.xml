@@ -1,47 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
          avatar on left
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/msg_list_item_recv"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:descendantFocusability="blocksDescendants"
-	android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
-	android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
-	android:paddingRight="@dimen/chat_bubble_container_padding_left_right">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/msg_list_item_recv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:paddingBottom="@dimen/chat_bubble_container_padding_bottom"
+    android:paddingLeft="@dimen/chat_bubble_container_padding_left_right"
+    android:paddingRight="@dimen/chat_bubble_container_padding_left_right">
 
-	<include layout="@layout/conversation_bubble_start_recv"/>
+    <include layout="@layout/conversation_bubble_start_recv" />
 
-	<com.google.android.material.card.MaterialCardView
-		style="@style/Threema.CardView.Bubble.Receive"
-		android:id="@+id/message_block">
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Threema.CardView.Bubble.Receive"
+        android:id="@+id/message_block">
 
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-		<include layout="@layout/conversation_bubble_header"/>
+            <include layout="@layout/conversation_bubble_header" />
 
-		<LinearLayout
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:minHeight="@dimen/chat_bubble_minheight"
-			android:minWidth="150dp"
-			android:orientation="vertical"
-			android:paddingLeft="@dimen/chat_bubble_margin_start"
-			android:paddingRight="@dimen/chat_bubble_margin_end">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/chat_bubble_minheight"
+                android:minWidth="150dp"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/chat_bubble_margin_start"
+                android:paddingRight="@dimen/chat_bubble_margin_end">
 
-			<include layout="@layout/conversation_list_item_voip_status"/>
+                <include layout="@layout/conversation_list_item_voip_status" />
 
-		</LinearLayout>
+            </LinearLayout>
 
-		<include layout="@layout/conversation_bubble_footer_recv"/>
+            <include layout="@layout/conversation_bubble_footer_recv" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-	</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>

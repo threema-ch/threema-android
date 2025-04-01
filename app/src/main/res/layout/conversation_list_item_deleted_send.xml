@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -59,12 +58,12 @@
                 android:contentDescription="@string/starred_message"
                 tools:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/date_view"/>
+                app:layout_constraintRight_toLeftOf="@id/date_view" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
 
-    <include layout="@layout/conversation_list_item_emoji_reactions_send"/>
+    <include layout="@layout/conversation_list_item_emoji_reactions_send" />
 
 </RelativeLayout>

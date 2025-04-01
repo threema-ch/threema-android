@@ -53,179 +53,179 @@ import ch.threema.storage.models.ContactModel;
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 
 public class VoiceActionService extends SearchActionVerificationClientService {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceActionService");
-	private static final String TAG = "VoiceActionService";
+    private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceActionService");
+    private static final String TAG = "VoiceActionService";
 
-	private MessageService messageService;
-	private LifetimeService lifetimeService;
-	private NotificationService notificationService;
-	private ContactService contactService;
-	private LockAppService lockAppService;
+    private MessageService messageService;
+    private LifetimeService lifetimeService;
+    private NotificationService notificationService;
+    private ContactService contactService;
+    private LockAppService lockAppService;
 
-	private static final String CHANNEL_ID_GOOGLE_ASSISTANT = "Voice_Actions";
-	private static final int NOTIFICATION_ID = 10000;
+    private static final String CHANNEL_ID_GOOGLE_ASSISTANT = "Voice_Actions";
+    private static final int NOTIFICATION_ID = 10000;
 
-	private static final int FG_SERVICE_TYPE =
-		Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-			? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
-			: 0;
+    private static final int FG_SERVICE_TYPE =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            ? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+            : 0;
 
-	@Override
-	public void performAction(Intent intent, boolean isVerified, Bundle options) {
-		logger.debug("performAction: intent - {}, isVerified - {}", intent, isVerified);
+    @Override
+    public void performAction(Intent intent, boolean isVerified, Bundle options) {
+        logger.debug("performAction: intent - {}, isVerified - {}", intent, isVerified);
 
-		this.instantiate();
+        this.instantiate();
 
-		if (!lockAppService.isLocked()) {
-			doPerformAction(intent, isVerified);
-		} else {
-			RuntimeUtil.runOnUiThread(() -> Toast.makeText(VoiceActionService.this, R.string.pin_locked_cannot_send, Toast.LENGTH_LONG).show());
-		}
-	}
+        if (!lockAppService.isLocked()) {
+            doPerformAction(intent, isVerified);
+        } else {
+            RuntimeUtil.runOnUiThread(() -> Toast.makeText(VoiceActionService.this, R.string.pin_locked_cannot_send, Toast.LENGTH_LONG).show());
+        }
+    }
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	@Override
-	protected void postForegroundNotification() {
-		this.createChannel();
-		NotificationCompat.Builder notificationBuilder =
-				new NotificationCompat.Builder(this.getApplicationContext(), CHANNEL_ID_GOOGLE_ASSISTANT)
-						.setGroup(CHANNEL_ID_GOOGLE_ASSISTANT)
-						.setContentTitle(this.getApplicationContext().getResources().getString(R.string.voice_action_title))
-						.setContentText(this.getApplicationContext().getResources().getString(R.string.voice_action_body))
-						.setSmallIcon(R.drawable.ic_notification_small)
-						.setPriority(NotificationCompat.PRIORITY_MIN)
-						.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-						.setLocalOnly(true);
-		ServiceCompat.startForeground(
-			this,
-			NOTIFICATION_ID,
-			notificationBuilder.build(),
-			FG_SERVICE_TYPE);
-	}
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    protected void postForegroundNotification() {
+        this.createChannel();
+        NotificationCompat.Builder notificationBuilder =
+            new NotificationCompat.Builder(this.getApplicationContext(), CHANNEL_ID_GOOGLE_ASSISTANT)
+                .setGroup(CHANNEL_ID_GOOGLE_ASSISTANT)
+                .setContentTitle(this.getApplicationContext().getResources().getString(R.string.voice_action_title))
+                .setContentText(this.getApplicationContext().getResources().getString(R.string.voice_action_body))
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setLocalOnly(true);
+        ServiceCompat.startForeground(
+            this,
+            NOTIFICATION_ID,
+            notificationBuilder.build(),
+            FG_SERVICE_TYPE);
+    }
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	private void createChannel() {
-		NotificationChannel channel = new NotificationChannel(CHANNEL_ID_GOOGLE_ASSISTANT, this.getApplicationContext().getResources().getString(R.string.voice_action_title), NotificationManager.IMPORTANCE_LOW);
-		channel.enableVibration(false);
-		channel.enableLights(false);
-		channel.setShowBadge(false);
+    @RequiresApi(Build.VERSION_CODES.O)
+    private void createChannel() {
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID_GOOGLE_ASSISTANT, this.getApplicationContext().getResources().getString(R.string.voice_action_title), NotificationManager.IMPORTANCE_LOW);
+        channel.enableVibration(false);
+        channel.enableLights(false);
+        channel.setShowBadge(false);
 
-		NotificationManager notificationManager = this.getApplicationContext().getSystemService(NotificationManager.class);
-		if (notificationManager != null) {
-			notificationManager.createNotificationChannel(channel);
-		}
-	}
+        NotificationManager notificationManager = this.getApplicationContext().getSystemService(NotificationManager.class);
+        if (notificationManager != null) {
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
-	private boolean sendAudioMessage(final MessageReceiver messageReceiver, Intent intent, String caption) {
-		ClipData clipData;
-		clipData = intent.getClipData();
-		if (clipData == null) {
-			return false;
-		}
+    private boolean sendAudioMessage(final MessageReceiver messageReceiver, Intent intent, String caption) {
+        ClipData clipData;
+        clipData = intent.getClipData();
+        if (clipData == null) {
+            return false;
+        }
 
-		ClipData.Item item = clipData.getItemAt(0);
-		if (item == null) {
-			return false;
-		}
+        ClipData.Item item = clipData.getItemAt(0);
+        if (item == null) {
+            return false;
+        }
 
-		Uri uri = item.getUri();
-		if (uri == null) {
-			return false;
-		}
+        Uri uri = item.getUri();
+        if (uri == null) {
+            return false;
+        }
 
-		logger.debug("Audio uri: " + uri);
+        logger.debug("Audio uri: " + uri);
 
-		MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_VOICEMESSAGE);
-		mediaItem.setCaption(caption);
+        MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_VOICEMESSAGE);
+        mediaItem.setCaption(caption);
 
-		messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver), new MessageServiceImpl.SendResultListener() {
-			@Override
-			public void onError(String errorMessage) {
-				logger.debug("Error sending audio message: " + errorMessage);
-				lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
-			}
+        messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver), new MessageServiceImpl.SendResultListener() {
+            @Override
+            public void onError(String errorMessage) {
+                logger.debug("Error sending audio message: " + errorMessage);
+                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+            }
 
-			@Override
-			public void onCompleted() {
-				logger.debug("Audio message sent");
-				messageService.markConversationAsRead(messageReceiver, notificationService);
-				lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
-			}
-		});
-		return true;
-	}
+            @Override
+            public void onCompleted() {
+                logger.debug("Audio message sent");
+                messageService.markConversationAsRead(messageReceiver, notificationService);
+                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+            }
+        });
+        return true;
+    }
 
-	public void doPerformAction(Intent intent, boolean isVerified) {
+    public void doPerformAction(Intent intent, boolean isVerified) {
 
-		if (isVerified) {
-			Bundle bundle = intent.getExtras();
+        if (isVerified) {
+            Bundle bundle = intent.getExtras();
 
-			if (bundle != null) {
-				String identity = bundle.getString("com.google.android.voicesearch.extra.RECIPIENT_CONTACT_CHAT_ID");
-				String message = bundle.getString("android.intent.extra.TEXT");
+            if (bundle != null) {
+                String identity = bundle.getString("com.google.android.voicesearch.extra.RECIPIENT_CONTACT_CHAT_ID");
+                String message = bundle.getString("android.intent.extra.TEXT");
 
-				if (!TestUtil.isEmptyOrNull(identity, message)) {
-					ContactModel contactModel = contactService.getByIdentity(identity);
+                if (!TestUtil.isEmptyOrNull(identity, message)) {
+                    ContactModel contactModel = contactService.getByIdentity(identity);
 
-					if (contactModel != null) {
-						final MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+                    if (contactModel != null) {
+                        final MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
 
-						if (messageReceiver != null) {
-							lifetimeService.acquireConnection(TAG);
+                        if (messageReceiver != null) {
+                            lifetimeService.acquireConnection(TAG);
 
-							if (!sendAudioMessage(messageReceiver, intent, message)) {
-								try {
-									messageService.sendText(message, messageReceiver);
-									messageService.markConversationAsRead(messageReceiver, notificationService);
+                            if (!sendAudioMessage(messageReceiver, intent, message)) {
+                                try {
+                                    messageService.sendText(message, messageReceiver);
+                                    messageService.markConversationAsRead(messageReceiver, notificationService);
 
-									logger.debug("Message sent to: " + identity);
-								} catch (Exception e) {
-									logger.error("Exception", e);
-								}
+                                    logger.debug("Message sent to: " + identity);
+                                } catch (Exception e) {
+                                    logger.error("Exception", e);
+                                }
 
-								lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+                                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-/*	@Override
-	public boolean isTestingMode() {
-		return true;
-	}
-*/
-	final protected boolean requiredInstances() {
-		if (!this.checkInstances()) {
-			this.instantiate();
-		}
-		return this.checkInstances();
-	}
+    /*	@Override
+        public boolean isTestingMode() {
+            return true;
+        }
+    */
+    final protected boolean requiredInstances() {
+        if (!this.checkInstances()) {
+            this.instantiate();
+        }
+        return this.checkInstances();
+    }
 
-	protected boolean checkInstances() {
-		return TestUtil.required(
-				this.messageService,
-				this.lifetimeService,
-				this.notificationService,
-				this.contactService,
-				this.lockAppService
-		);
-	}
+    protected boolean checkInstances() {
+        return TestUtil.required(
+            this.messageService,
+            this.lifetimeService,
+            this.notificationService,
+            this.contactService,
+            this.lockAppService
+        );
+    }
 
-	protected void instantiate() {
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			try {
-				this.messageService = serviceManager.getMessageService();
-				this.lifetimeService = serviceManager.getLifetimeService();
-				this.notificationService = serviceManager.getNotificationService();
-				this.contactService = serviceManager.getContactService();
-				this.lockAppService = serviceManager.getLockAppService();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+    protected void instantiate() {
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            try {
+                this.messageService = serviceManager.getMessageService();
+                this.lifetimeService = serviceManager.getLifetimeService();
+                this.notificationService = serviceManager.getNotificationService();
+                this.contactService = serviceManager.getContactService();
+                this.lockAppService = serviceManager.getLockAppService();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 }

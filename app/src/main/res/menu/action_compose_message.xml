@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-	<item
-		android:id="@+id/menu_message_quote"
-		android:icon="@drawable/ic_quote_outline"
-		android:orderInCategory="10"
-		android:title="@string/quote"
-		android:visible="false"
-		app:iconTint="?attr/colorPrimary"
-		app:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_message_quote"
+        android:icon="@drawable/ic_quote_outline"
+        android:orderInCategory="10"
+        android:title="@string/quote"
+        android:visible="false"
+        app:iconTint="?attr/colorPrimary"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_message_image_reply"
@@ -18,7 +18,7 @@
         android:orderInCategory="15"
         android:title="@string/draw_reply"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_forward"
@@ -26,7 +26,7 @@
         android:orderInCategory="20"
         android:title="@string/forward_message"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_edit"
@@ -34,7 +34,7 @@
         android:orderInCategory="25"
         android:title="@string/edit_message"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_message_copy"
@@ -42,7 +42,7 @@
         android:orderInCategory="30"
         android:title="@string/copy_message_action"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_qrcode"
@@ -51,7 +51,7 @@
         android:title="@string/show_as_qrcode"
         android:visible="false"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_save"
@@ -60,7 +60,7 @@
         android:title="@string/save_message_action"
         android:visible="false"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_discard"
@@ -68,7 +68,7 @@
         android:orderInCategory="45"
         android:title="@string/delete"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_star"
@@ -76,7 +76,7 @@
         android:orderInCategory="50"
         android:title="@string/star_message"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_message_unstar"
@@ -84,7 +84,7 @@
         android:orderInCategory="55"
         android:title="@string/remove_star"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_info"
@@ -93,7 +93,7 @@
         android:icon="@drawable/ic_info_outline"
         app:iconTint="?attr/colorPrimary"
         android:visible="false"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_share"
@@ -101,6 +101,6 @@
         android:orderInCategory="65"
         android:title="@string/share_via"
         app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
 </menu>

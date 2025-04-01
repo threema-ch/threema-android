@@ -47,10 +47,11 @@ import java.nio.ByteOrder
 import java.util.Date
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("MonitoringLayer")
+
 internal class MonitoringLayer(
     private val connection: ServerConnection,
     private val controller: Layer4Controller
-    ) : Layer4Codec {
+) : Layer4Codec {
     private companion object {
         // Preserve echo sequence number across new instance creations
         private var lastSentEchoSeq: Int = 0
@@ -62,17 +63,18 @@ internal class MonitoringLayer(
     }
 
     private val mdController: MdLayer4Controller by lazy {
-            if (controller is MdLayer4Controller) {
-                controller
-            } else {
-                throw ServerConnectionException("Requested md controller in non-md configuration")
-            }
+        if (controller is MdLayer4Controller) {
+            controller
+        } else {
+            throw ServerConnectionException("Requested md controller in non-md configuration")
         }
+    }
 
     private var echoRequestJob: Job? = null
 
     private val inbound = ProcessingPipe<InboundL3Message, InboundL4Message>(this::handleInbound)
-    private val outbound = ProcessingPipe<OutboundL5Message, OutboundL4Message>(this::handleOutbound)
+    private val outbound =
+        ProcessingPipe<OutboundL5Message, OutboundL4Message>(this::handleOutbound)
 
     override val encoder: PipeProcessor<OutboundL5Message, OutboundL4Message> = outbound
     override val decoder: PipeProcessor<InboundL3Message, InboundL4Message> = inbound
@@ -95,6 +97,7 @@ internal class MonitoringLayer(
             anotherConnectionCount = 0
         }
     }
+
     private fun handleInbound(message: InboundL3Message) {
         controller.dispatcher.assertDispatcherContext()
 
@@ -109,10 +112,11 @@ internal class MonitoringLayer(
         logger.trace("Handle outbound message of type `{}`", message.type)
         outbound.send(mapOutbound(message))
     }
+
     private fun mapOutbound(message: OutboundL5Message): OutboundL4Message {
         controller.dispatcher.assertDispatcherContext()
 
-        return when(message) {
+        return when (message) {
             is CspContainer -> message
             is OutboundD2mMessage -> message
         }
@@ -135,7 +139,12 @@ internal class MonitoringLayer(
             logger.debug("Send UnblockIncomingMessage to chat server")
             // We can send unblock incoming messages directly as we will process the messages
             // sequentially, i.e., the reflected messages will be processed before new messages
-            outbound.send(CspContainer(ProtocolDefines.PLTYPE_UNBLOCK_INCOMING_MESSAGES.toUByte(), ByteArray(0)))
+            outbound.send(
+                CspContainer(
+                    ProtocolDefines.PLTYPE_UNBLOCK_INCOMING_MESSAGES.toUByte(),
+                    ByteArray(0)
+                )
+            )
         }
     }
 
@@ -207,11 +216,24 @@ internal class MonitoringLayer(
 
         val (echoRequestInterval, echoResponseTimeout, connectionIdleTimeout) = if (controller is MdLayer4Controller) {
             // Multi device is active
-            Triple(ProtocolDefines.ECHO_REQUEST_INTERVAL_MD, ProtocolDefines.ECHO_RESPONSE_TIMEOUT, ProtocolDefines.CONNECTION_IDLE_TIMEOUT_MD)
+            Triple(
+                ProtocolDefines.ECHO_REQUEST_INTERVAL_MD,
+                ProtocolDefines.ECHO_RESPONSE_TIMEOUT,
+                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_MD
+            )
         } else {
-            Triple(ProtocolDefines.ECHO_REQUEST_INTERVAL_CSP, ProtocolDefines.ECHO_RESPONSE_TIMEOUT, ProtocolDefines.CONNECTION_IDLE_TIMEOUT_CSP)
+            Triple(
+                ProtocolDefines.ECHO_REQUEST_INTERVAL_CSP,
+                ProtocolDefines.ECHO_RESPONSE_TIMEOUT,
+                ProtocolDefines.CONNECTION_IDLE_TIMEOUT_CSP
+            )
         }
-        logger.debug("echoRequestInterval={}, echoResponseTimeout={}, connectionIdleTimeout={}", echoRequestInterval, echoResponseTimeout, connectionIdleTimeout)
+        logger.debug(
+            "echoRequestInterval={}, echoResponseTimeout={}, connectionIdleTimeout={}",
+            echoRequestInterval,
+            echoResponseTimeout,
+            connectionIdleTimeout
+        )
 
         if (stopped) {
             logger.warn("Ignore attempt to start monitoring after monitoring has already been stopped")
@@ -220,7 +242,7 @@ internal class MonitoringLayer(
             outbound.send(prepareSetConnectionIdleTimeout(connectionIdleTimeout))
             logger.debug("Start periodic echo requests")
             echoRequestJob = CoroutineScope(controller.dispatcher.coroutineContext).launch {
-                while(true) {
+                while (true) {
                     delay(echoRequestInterval * 1000L)
                     val sequence = sendEchoRequest()
                     launch {
@@ -256,7 +278,10 @@ internal class MonitoringLayer(
     private suspend fun expectEchoResponse(expectedSequence: Int, responseTimeoutS: Short) {
         delay(responseTimeoutS * 1000L)
         if (lastRcvdEchoSeq < expectedSequence) {
-            logger.info("No reply to echo request (seq: {}); terminate connection", expectedSequence)
+            logger.info(
+                "No reply to echo request (seq: {}); terminate connection",
+                expectedSequence
+            )
             controller.ioProcessingStoppedSignal.completeExceptionally(ServerConnectionException("No reply to echo request"))
         }
     }
@@ -279,6 +304,9 @@ internal class MonitoringLayer(
             .order(ByteOrder.LITTLE_ENDIAN)
             .putShort(idleTimeout)
             .array()
-        return CspContainer(ProtocolDefines.PLTYPE_SET_CONNECTION_IDLE_TIMEOUT.toUByte(), timeoutBytes)
+        return CspContainer(
+            ProtocolDefines.PLTYPE_SET_CONNECTION_IDLE_TIMEOUT.toUByte(),
+            timeoutBytes
+        )
     }
 }

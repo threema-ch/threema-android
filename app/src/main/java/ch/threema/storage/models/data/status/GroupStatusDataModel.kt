@@ -38,30 +38,43 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
     ) {
         /** Group has been created */
         CREATED(0),
+
         /** Group has been renamed */
         RENAMED(1, requiresNewGroupName = true),
+
         /** Group picture has been updated */
         PROFILE_PICTURE_UPDATED(2),
+
         /** A member has been added */
         MEMBER_ADDED(3, requiresIdentity = true),
+
         /** A member has left the group */
         MEMBER_LEFT(4, requiresIdentity = true),
+
         /** A member has been kicked */
         MEMBER_KICKED(5, requiresIdentity = true),
+
         /** A group is now a notes group */
         IS_NOTES_GROUP(6),
+
         /** A group is not a notes group anymore */
         IS_PEOPLE_GROUP(7),
+
         /** A member has cast a vote */
         FIRST_VOTE(8, requiresBallotName = true, requiresIdentity = true),
+
         /** A member has changed a vote */
         MODIFIED_VOTE(9, requiresBallotName = true, requiresIdentity = true),
+
         /** A member has cast a vote anonymously */
         RECEIVED_VOTE(10, requiresBallotName = true),
+
         /** Votes are complete */
         VOTES_COMPLETE(11, requiresBallotName = true),
+
         /** Group description changed */
         GROUP_DESCRIPTION_CHANGED(12),
+
         /** The creator just left the group */
         ORPHANED(13);
 
@@ -79,7 +92,8 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
     var newGroupName: String? = null
         private set
 
-    @StatusType override fun getType(): Int = TYPE
+    @StatusType
+    override fun getType(): Int = TYPE
 
     override fun readData(key: String, value: String) {
         when (key) {

@@ -44,28 +44,28 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class TextUtilTest {
 
-	@Test
-	public void testCheckBadPasswordNumericOnly() {
-		final Context context = ThreemaApplication.getAppContext();
-		assertTrue(TextUtil.checkBadPassword(context, "1234"));
-		assertTrue(TextUtil.checkBadPassword(context, "1234567890"));
-		assertTrue(TextUtil.checkBadPassword(context, "123456789012345"));
-		assertFalse(TextUtil.checkBadPassword(context, "1234567890123456"));
-		assertFalse(TextUtil.checkBadPassword(context, "12345678901234567890"));
-	}
+    @Test
+    public void testCheckBadPasswordNumericOnly() {
+        final Context context = ThreemaApplication.getAppContext();
+        assertTrue(TextUtil.checkBadPassword(context, "1234"));
+        assertTrue(TextUtil.checkBadPassword(context, "1234567890"));
+        assertTrue(TextUtil.checkBadPassword(context, "123456789012345"));
+        assertFalse(TextUtil.checkBadPassword(context, "1234567890123456"));
+        assertFalse(TextUtil.checkBadPassword(context, "12345678901234567890"));
+    }
 
-	@Test
-	public void testCheckBadPasswordSameCharacter() {
-		final Context context = ThreemaApplication.getAppContext();
-		assertTrue(TextUtil.checkBadPassword(context, "aaaaaaaaaaaa"));
-		assertFalse(TextUtil.checkBadPassword(context, "aaaaaaaaaaab"));
-	}
+    @Test
+    public void testCheckBadPasswordSameCharacter() {
+        final Context context = ThreemaApplication.getAppContext();
+        assertTrue(TextUtil.checkBadPassword(context, "aaaaaaaaaaaa"));
+        assertFalse(TextUtil.checkBadPassword(context, "aaaaaaaaaaab"));
+    }
 
-	@Test
-	public void testCheckBadPasswordWarnList() {
-		final Context context = ThreemaApplication.getAppContext();
-		assertTrue(TextUtil.checkBadPassword(context, "1Rainbow"));
-		assertTrue(TextUtil.checkBadPassword(context, "apples123"));
-		assertFalse(TextUtil.checkBadPassword(context, "kajsdlfkjalskdjflkajsdfl"));
-	}
+    @Test
+    public void testCheckBadPasswordWarnList() {
+        final Context context = ThreemaApplication.getAppContext();
+        assertTrue(TextUtil.checkBadPassword(context, "1Rainbow"));
+        assertTrue(TextUtil.checkBadPassword(context, "apples123"));
+        assertFalse(TextUtil.checkBadPassword(context, "kajsdlfkjalskdjflkajsdfl"));
+    }
 }

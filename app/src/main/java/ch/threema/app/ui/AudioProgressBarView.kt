@@ -53,7 +53,8 @@ import kotlin.math.roundToInt
 
 private val logger = LoggingUtil.getThreemaLogger("AudioProgressBarView")
 
-class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWaveformGeneratorTask.AudioWaveformGeneratorListener {
+class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar,
+    AudioWaveformGeneratorTask.AudioWaveformGeneratorListener {
 
     private var barHeight = 20
     private var barWidth = 5
@@ -88,22 +89,31 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         init(attrs)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(attrs)
     }
 
     fun init(attrs: AttributeSet?) {
-        barColor = ContextCompat.getColorStateList(context, R.color.bubble_send_text_colorstatelist)!!
-        val typedArray = context.theme.obtainStyledAttributes(attrs, R.styleable.AudioProgressBarView, 0, 0)
+        barColor =
+            ContextCompat.getColorStateList(context, R.color.bubble_send_text_colorstatelist)!!
+        val typedArray =
+            context.theme.obtainStyledAttributes(attrs, R.styleable.AudioProgressBarView, 0, 0)
 
         with(typedArray) {
             barHeight = getDimensionPixelSize(R.styleable.AudioProgressBarView_barHeight, barHeight)
             barWidth = getDimensionPixelSize(R.styleable.AudioProgressBarView_barWidth, barWidth)
-            spaceWidth = getDimensionPixelSize(R.styleable.AudioProgressBarView_spaceWidth, spaceWidth)
-            barMinHeight = getDimensionPixelSize(R.styleable.AudioProgressBarView_barMinHeight, barMinHeight)
+            spaceWidth =
+                getDimensionPixelSize(R.styleable.AudioProgressBarView_spaceWidth, spaceWidth)
+            barMinHeight =
+                getDimensionPixelSize(R.styleable.AudioProgressBarView_barMinHeight, barMinHeight)
             halfBarMinHeight = barMinHeight / 2F
             barColor = getColorStateList(R.styleable.AudioProgressBarView_barColor)!!
-            barColorActivated = getColor(R.styleable.AudioProgressBarView_barColorActivated, barColorActivated)
+            barColorActivated =
+                getColor(R.styleable.AudioProgressBarView_barColorActivated, barColorActivated)
             recycle()
         }
 
@@ -121,7 +131,10 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         barPaintChecked = Paint().apply {
             isAntiAlias = true
             val checkedColor: Int = if (Build.VERSION.SDK_INT >= 23) {
-                barColor.getColorForState(intArrayOf(android.R.attr.state_activated), barColor.defaultColor)
+                barColor.getColorForState(
+                    intArrayOf(android.R.attr.state_activated),
+                    barColor.defaultColor
+                )
             } else {
                 ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary)
             }
@@ -231,7 +244,11 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
     private fun createWaveformBitmap(samplesData: List<Float>): Bitmap {
         val tmpBitmap = Bitmap.createBitmap(viewWidth, barHeight, Bitmap.Config.ARGB_8888)
         if (samplesData.size < numSamples) {
-            logger.warn("Insufficient amount of calculated samples: {} < {}", samplesData.size, numSamples)
+            logger.warn(
+                "Insufficient amount of calculated samples: {} < {}",
+                samplesData.size,
+                numSamples
+            )
             return tmpBitmap
         }
         val factor: Float = samplesData.size.toFloat() / numSamples.toFloat()
@@ -240,7 +257,8 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
 
         for (i: Int in 0 until numSamples) {
             val sample = samplesData[(i * factor).roundToInt()]
-            val unusedHeight: Float = min(halfBarHeight * (1F - sample), halfBarHeight - halfBarMinHeight)
+            val unusedHeight: Float =
+                min(halfBarHeight * (1F - sample), halfBarHeight - halfBarMinHeight)
 
             tmpBitmap.applyCanvas {
                 drawRoundRect(
@@ -304,7 +322,10 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         return drawableState
     }
 
-    fun setMessageModel(newMessageModel: AbstractMessageModel?, thumbnailCache: ThumbnailCache<Any>?) {
+    fun setMessageModel(
+        newMessageModel: AbstractMessageModel?,
+        thumbnailCache: ThumbnailCache<Any>?
+    ) {
         if (newMessageModel == null) {
             return
         }
@@ -348,7 +369,12 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
                 this@AudioProgressBarView
             )
 
-            ThreemaApplication.voiceMessageThumbnailExecutorService.execute(Thread(waveFormTask, "WaveformGenerator"))
+            ThreemaApplication.voiceMessageThumbnailExecutorService.execute(
+                Thread(
+                    waveFormTask,
+                    "WaveformGenerator"
+                )
+            )
         }
     }
 
@@ -360,7 +386,12 @@ class AudioProgressBarView : androidx.appcompat.widget.AppCompatSeekBar, AudioWa
         RuntimeUtil.runOnUiThread {
             if (viewWidth > 0) {
                 if (messageModel != null) {
-                    clipBounds = Rect(0, ((viewHeight / 2F) - halfBarMinHeight).toInt(), viewWidth, ((viewHeight / 2F) + halfBarMinHeight).toInt())
+                    clipBounds = Rect(
+                        0,
+                        ((viewHeight / 2F) - halfBarMinHeight).toInt(),
+                        viewWidth,
+                        ((viewHeight / 2F) + halfBarMinHeight).toInt()
+                    )
                     TransitionManager.beginDelayedTransition(parent as ViewGroup, changeBounds)
                 }
                 clipBounds = Rect(0, 0, viewWidth, viewHeight)

@@ -36,118 +36,124 @@ import androidx.annotation.Nullable;
 import java.lang.reflect.Method;
 
 public class ViewUtil {
-	/**
-	 * show the view and return true if exist
-	 * @param view
-	 * @return
-	 */
-	public static boolean show(View view) {
-		return show(view, true);
-	}
+    /**
+     * show the view and return true if exist
+     *
+     * @param view
+     * @return
+     */
+    public static boolean show(View view) {
+        return show(view, true);
+    }
 
-	/**
-	 * show or hide the view and return true if exist
-	 * @param view
-	 * @return
-	 */
-	public static boolean show(View view, boolean show) {
-		if(view == null) {
-			return false;
-		}
+    /**
+     * show or hide the view and return true if exist
+     *
+     * @param view
+     * @return
+     */
+    public static boolean show(View view, boolean show) {
+        if (view == null) {
+            return false;
+        }
 
-		view.setVisibility(show ? View.VISIBLE : View.GONE);
-		return true;
-	}
+        view.setVisibility(show ? View.VISIBLE : View.GONE);
+        return true;
+    }
 
-	public static boolean show(MenuItem menuItem, boolean show) {
-		if(menuItem == null) {
-			return false;
-		}
+    public static boolean show(MenuItem menuItem, boolean show) {
+        if (menuItem == null) {
+            return false;
+        }
 
-		menuItem.setVisible(show);
-		return true;
-	}
+        menuItem.setVisible(show);
+        return true;
+    }
 
-	/**
-	 * show the first view and hide the second, return true if the views exist
-	 * @param viewToHide
-	 * @param viewToShow
-	 * @return
-	 */
-	public static boolean showAndHide(View viewToShow, View viewToHide) {
-		if(viewToShow == null || viewToHide == null) {
-			return false;
-		}
+    /**
+     * show the first view and hide the second, return true if the views exist
+     *
+     * @param viewToHide
+     * @param viewToShow
+     * @return
+     */
+    public static boolean showAndHide(View viewToShow, View viewToHide) {
+        if (viewToShow == null || viewToHide == null) {
+            return false;
+        }
 
-		return show(viewToShow, true)
-				&& show(viewToHide, false);
-	}
+        return show(viewToShow, true)
+            && show(viewToHide, false);
+    }
 
-	public static boolean showAndSet(ImageView view, int imageResourceId) {
-		if(!show(view)){
-			return false;
-		}
-		view.setImageResource(imageResourceId);
-		return true;
-	}
+    public static boolean showAndSet(ImageView view, int imageResourceId) {
+        if (!show(view)) {
+            return false;
+        }
+        view.setImageResource(imageResourceId);
+        return true;
+    }
 
 
-	/**
-	 * show a text view and set the text, return true if the view exist
-	 * @param view
-	 * @param text
-	 * @return
-	 */
-	public static boolean showAndSet(TextView view, String text) {
-		if(!show(view)) {
-			return false;
-		}
+    /**
+     * show a text view and set the text, return true if the view exist
+     *
+     * @param view
+     * @param text
+     * @return
+     */
+    public static boolean showAndSet(TextView view, String text) {
+        if (!show(view)) {
+            return false;
+        }
 
-		view.setText(text);
-		return true;
-	}
+        view.setText(text);
+        return true;
+    }
 
-	public static boolean showAndSet(TextView view, Spannable text) {
-		if(!show(view)) {
-			return false;
-		}
+    public static boolean showAndSet(TextView view, Spannable text) {
+        if (!show(view)) {
+            return false;
+        }
 
-		view.setText(text);
-		return true;
-	}
+        view.setText(text);
+        return true;
+    }
 
-	/**
-	 * show a checkbox view and set the check state, return true if the view exist
-	 * @param view
-	 * @param checked
-	 * @return
-	 */
-	public static boolean showAndSet(CheckBox view, boolean checked) {
-		if(!show(view)) {
-			return false;
-		}
+    /**
+     * show a checkbox view and set the check state, return true if the view exist
+     *
+     * @param view
+     * @param checked
+     * @return
+     */
+    public static boolean showAndSet(CheckBox view, boolean checked) {
+        if (!show(view)) {
+            return false;
+        }
 
-		view.setChecked(checked);
-		return true;
-	}
+        view.setChecked(checked);
+        return true;
+    }
 
-	/**
-	 * Set touchModal flag of PopupWindow which is hidden on API<29
-	 * @param popupWindow PopupWindow
-	 * @param touchModal whether to enable or disable the flag
-	 */
-	public static void setTouchModal(@NonNull PopupWindow popupWindow, boolean touchModal) {
-		if (Build.VERSION.SDK_INT >= 29) {
-			popupWindow.setTouchModal(touchModal);
-		} else {
-			Method method;
-			try {
-				method = PopupWindow.class.getDeclaredMethod("setTouchModal", boolean.class);
-				method.setAccessible(true);
-				method.invoke(popupWindow, touchModal);
-			} catch (Exception e) {
-				// ignore
-			}
-		}
-	}
+    /**
+     * Set touchModal flag of PopupWindow which is hidden on API<29
+     *
+     * @param popupWindow PopupWindow
+     * @param touchModal  whether to enable or disable the flag
+     */
+    public static void setTouchModal(@NonNull PopupWindow popupWindow, boolean touchModal) {
+        if (Build.VERSION.SDK_INT >= 29) {
+            popupWindow.setTouchModal(touchModal);
+        } else {
+            Method method;
+            try {
+                method = PopupWindow.class.getDeclaredMethod("setTouchModal", boolean.class);
+                method.setAccessible(true);
+                method.invoke(popupWindow, touchModal);
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+    }
 }

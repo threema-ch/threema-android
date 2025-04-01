@@ -1,43 +1,42 @@
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/content_block"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:layout_marginTop="2dp"
-	android:contentDescription="@string/threema_call"
-	android:orientation="horizontal">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/content_block"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:contentDescription="@string/threema_call"
+    android:orientation="horizontal">
 
-	<ch.threema.app.ui.ControllerView
-		android:id="@+id/controller"
-		android:layout_width="@dimen/avatar_size_small"
-		android:layout_height="@dimen/avatar_size_small"
-		android:layout_gravity="center"/>
+    <ch.threema.app.ui.ControllerView
+        android:id="@+id/controller"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="center" />
 
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingTop="4dp"
-		android:paddingLeft="@dimen/chat_bubble_margin_end">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingLeft="@dimen/chat_bubble_margin_end">
 
-		<ImageView
-			android:id="@+id/attachment_image_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_marginRight="@dimen/chat_bubble_margin_end"
-			app:srcCompat="@drawable/ic_call_missed_black_24dp"/>
+        <ImageView
+            android:id="@+id/attachment_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/chat_bubble_margin_end"
+            app:srcCompat="@drawable/ic_call_missed_black_24dp" />
 
-		<ch.threema.app.emojis.EmojiTextView
-			style="@style/Threema.Bubble.Text.Body"
-			android:id="@+id/text_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
-			android:layout_toRightOf="@id/attachment_image_view"
-			android:linksClickable="true"
-			android:text="Call Text" />
+        <ch.threema.app.emojis.EmojiTextView
+            style="@style/Threema.Bubble.Text.Body"
+            android:id="@+id/text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/attachment_image_view"
+            android:linksClickable="true"
+            android:text="Call Text" />
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </LinearLayout>

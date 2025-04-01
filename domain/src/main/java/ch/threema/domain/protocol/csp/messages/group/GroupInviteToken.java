@@ -32,48 +32,48 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
  * Value class for a Group Invite Token
  */
 public class GroupInviteToken {
-	private final @NonNull byte[] value;
+    private final @NonNull byte[] value;
 
-	public GroupInviteToken(@NonNull byte[] value) throws InvalidGroupInviteTokenException {
-		if (value.length != ProtocolDefines.GROUP_INVITE_TOKEN_LEN) {
-			throw new InvalidGroupInviteTokenException("Invalid token size " + value.length);
-		}
-		this.value = value;
-	}
+    public GroupInviteToken(@NonNull byte[] value) throws InvalidGroupInviteTokenException {
+        if (value.length != ProtocolDefines.GROUP_INVITE_TOKEN_LEN) {
+            throw new InvalidGroupInviteTokenException("Invalid token size " + value.length);
+        }
+        this.value = value;
+    }
 
-	public static @NonNull GroupInviteToken fromHexString(@NonNull String value) throws InvalidGroupInviteTokenException {
-		return new GroupInviteToken(Utils.hexStringToByteArray(value));
-	}
+    public static @NonNull GroupInviteToken fromHexString(@NonNull String value) throws InvalidGroupInviteTokenException {
+        return new GroupInviteToken(Utils.hexStringToByteArray(value));
+    }
 
-	@NonNull
-	public byte[] get() {
-		return this.value;
-	}
+    @NonNull
+    public byte[] get() {
+        return this.value;
+    }
 
-	/**
-	 * Returns a hexadecimal string representation of the token.
-	 */
-	@Override
-	public @NonNull String toString() {
-		return Utils.byteArrayToHexString(this.value);
-	}
+    /**
+     * Returns a hexadecimal string representation of the token.
+     */
+    @Override
+    public @NonNull String toString() {
+        return Utils.byteArrayToHexString(this.value);
+    }
 
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) return true;
-		if (o == null || this.getClass() != o.getClass()) return false;
-		final GroupInviteToken that = (GroupInviteToken) o;
-		return Arrays.equals(this.value, that.value);
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        final GroupInviteToken that = (GroupInviteToken) o;
+        return Arrays.equals(this.value, that.value);
+    }
 
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(this.value);
-	}
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.value);
+    }
 
-	public static class InvalidGroupInviteTokenException extends ThreemaException {
-		public InvalidGroupInviteTokenException(final String msg) {
-			super(msg);
-		}
-	}
+    public static class InvalidGroupInviteTokenException extends ThreemaException {
+        public InvalidGroupInviteTokenException(final String msg) {
+            super(msg);
+        }
+    }
 }

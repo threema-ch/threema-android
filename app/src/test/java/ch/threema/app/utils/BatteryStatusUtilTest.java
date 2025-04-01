@@ -39,74 +39,74 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 public class BatteryStatusUtilTest {
 
-	@Mock
-	private Intent intent;
+    @Mock
+    private Intent intent;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
 
-		try {
-			PowerMockito.whenNew(Intent.class)
-					.withArguments(String.class).thenReturn(intent);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            PowerMockito.whenNew(Intent.class)
+                .withArguments(String.class).thenReturn(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Test
-	public void isChargingBadIntent() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
-				.thenReturn(-1);
-		Assert.assertNull(BatteryStatusUtil.isCharging(intent));
-	}
+    @Test
+    public void isChargingBadIntent() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
+            .thenReturn(-1);
+        Assert.assertNull(BatteryStatusUtil.isCharging(intent));
+    }
 
-	@Test
-	public void isChargingYesCharging() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
-				.thenReturn(BatteryManager.BATTERY_STATUS_CHARGING);
-		Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.TRUE);
-	}
+    @Test
+    public void isChargingYesCharging() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
+            .thenReturn(BatteryManager.BATTERY_STATUS_CHARGING);
+        Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.TRUE);
+    }
 
-	@Test
-	public void isChargingYesFull() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
-				.thenReturn(BatteryManager.BATTERY_STATUS_FULL);
-		Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.TRUE);
-	}
+    @Test
+    public void isChargingYesFull() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
+            .thenReturn(BatteryManager.BATTERY_STATUS_FULL);
+        Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.TRUE);
+    }
 
-	@Test
-	public void isChargingNo() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
-				.thenReturn(BatteryManager.BATTERY_STATUS_DISCHARGING);
-		Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.FALSE);
-	}
+    @Test
+    public void isChargingNo() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1))
+            .thenReturn(BatteryManager.BATTERY_STATUS_DISCHARGING);
+        Assert.assertEquals(BatteryStatusUtil.isCharging(intent), Boolean.FALSE);
+    }
 
-	@Test
-	public void getPercentNull() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
-				.thenReturn(60);
-		when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
-				.thenReturn(-1);
-		Assert.assertNull(BatteryStatusUtil.getPercent(intent));
-	}
+    @Test
+    public void getPercentNull() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
+            .thenReturn(60);
+        when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
+            .thenReturn(-1);
+        Assert.assertNull(BatteryStatusUtil.getPercent(intent));
+    }
 
-	@Test
-	public void getPercentZero() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
-				.thenReturn(0);
-		when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
-				.thenReturn(200);
-		Assert.assertEquals(BatteryStatusUtil.getPercent(intent), Integer.valueOf(0));
-	}
+    @Test
+    public void getPercentZero() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
+            .thenReturn(0);
+        when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
+            .thenReturn(200);
+        Assert.assertEquals(BatteryStatusUtil.getPercent(intent), Integer.valueOf(0));
+    }
 
-	@Test
-	public void getPercentFifty() {
-		when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
-				.thenReturn(100);
-		when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
-				.thenReturn(200);
-		Assert.assertEquals(BatteryStatusUtil.getPercent(intent), Integer.valueOf(50));
-	}
+    @Test
+    public void getPercentFifty() {
+        when(intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1))
+            .thenReturn(100);
+        when(intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1))
+            .thenReturn(200);
+        Assert.assertEquals(BatteryStatusUtil.getPercent(intent), Integer.valueOf(50));
+    }
 
 }

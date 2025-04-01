@@ -26,15 +26,15 @@ package ch.threema.app.services.license;
  * Save the license key
  */
 public class SerialCredentials implements LicenseService.Credentials {
-	public final String licenseKey;
+    public final String licenseKey;
 
-	public SerialCredentials(String licenseKey) {
-		this.licenseKey = licenseKey;
-	}
+    public SerialCredentials(String licenseKey) {
+        this.licenseKey = licenseKey;
+    }
 
 
-	@Override
-	public String toString() {
-		return this.licenseKey;
-	}
+    @Override
+    public String toString() {
+        return this.licenseKey;
+    }
 }

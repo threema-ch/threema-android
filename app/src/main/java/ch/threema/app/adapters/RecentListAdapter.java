@@ -53,231 +53,225 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
 public class RecentListAdapter extends FilterableListAdapter {
-	private final Context context;
-	private List<ConversationModel> values;
-	private final List<ConversationModel> ovalues;
-	private RecentListFilter recentListFilter;
-	private final FilterResultsListener filterResultsListener;
-	private final ContactService contactService;
-	private final GroupService groupService;
-	private final DistributionListService distributionListService;
+    private final Context context;
+    private List<ConversationModel> values;
+    private final List<ConversationModel> ovalues;
+    private RecentListFilter recentListFilter;
+    private final FilterResultsListener filterResultsListener;
+    private final ContactService contactService;
+    private final GroupService groupService;
+    private final DistributionListService distributionListService;
 
-	public RecentListAdapter(Context context,
-	                         final List<ConversationModel> values,
-	                         final List<Integer> checkedItems,
-	                         ContactService contactService,
-	                         GroupService groupService,
-	                         DistributionListService distributionListService,
-							 FilterResultsListener filterResultsListener) {
-		super(context, R.layout.item_user_list, (List<Object>) (Object) values);
+    public RecentListAdapter(Context context,
+                             final List<ConversationModel> values,
+                             final List<Integer> checkedItems,
+                             ContactService contactService,
+                             GroupService groupService,
+                             DistributionListService distributionListService,
+                             FilterResultsListener filterResultsListener) {
+        super(context, R.layout.item_user_list, (List<Object>) (Object) values);
 
-		this.context = context;
-		this.values = values;
-		this.ovalues = values;
-		this.contactService = contactService;
-		this.groupService = groupService;
-		this.distributionListService = distributionListService;
-		this.filterResultsListener = filterResultsListener;
+        this.context = context;
+        this.values = values;
+        this.ovalues = values;
+        this.contactService = contactService;
+        this.groupService = groupService;
+        this.distributionListService = distributionListService;
+        this.filterResultsListener = filterResultsListener;
 
-		if (checkedItems != null && checkedItems.size() > 0) {
-			// restore checked items
-			this.checkedItems.addAll(checkedItems);
-		}
-	}
+        if (checkedItems != null && checkedItems.size() > 0) {
+            // restore checked items
+            this.checkedItems.addAll(checkedItems);
+        }
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        CheckableConstraintLayout itemView = (CheckableConstraintLayout) convertView;
 
-		RecentListHolder holder = new RecentListHolder();
+        RecentListHolder holder = new RecentListHolder();
 
-		if (convertView == null) {
-			// This a new view we inflate the new layout
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_recent_list, parent, false);
+        if (convertView == null) {
+            // This a new view we inflate the new layout
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            itemView = (CheckableConstraintLayout) inflater.inflate(R.layout.item_recent_list, parent, false);
 
-			TextView nameView = itemView.findViewById(R.id.name);
-			TextView subjectView = itemView.findViewById(R.id.subject);
-			ImageView groupView = itemView.findViewById(R.id.group);
-			AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
+            TextView nameView = itemView.findViewById(R.id.name);
+            TextView subjectView = itemView.findViewById(R.id.subject);
+            ImageView groupView = itemView.findViewById(R.id.group);
+            AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
 
-			holder.nameView = nameView;
-			holder.subjectView = subjectView;
-			holder.groupView = groupView;
-			holder.avatarView = avatarView;
+            holder.nameView = nameView;
+            holder.subjectView = subjectView;
+            holder.groupView = groupView;
+            holder.avatarView = avatarView;
 
-			itemView.setTag(holder);
-			itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
-					if (isChecked) {
-						checkedItems.add(((RecentListHolder) checkableView.getTag()).originalPosition);
-					} else {
-						checkedItems.remove(((RecentListHolder) checkableView.getTag()).originalPosition);
-					}
-				}
-			});
-		} else {
-			holder = (RecentListHolder) itemView.getTag();
-		}
+            itemView.setTag(holder);
+            itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
+                    if (isChecked) {
+                        checkedItems.add(((RecentListHolder) checkableView.getTag()).originalPosition);
+                    } else {
+                        checkedItems.remove(((RecentListHolder) checkableView.getTag()).originalPosition);
+                    }
+                }
+            });
+        } else {
+            holder = (RecentListHolder) itemView.getTag();
+        }
 
-		final ConversationModel conversationModel = values.get(position);
-		holder.originalPosition = ovalues.indexOf(conversationModel);
+        final ConversationModel conversationModel = values.get(position);
+        holder.originalPosition = ovalues.indexOf(conversationModel);
 
-		final ContactModel contactModel = conversationModel.getContact();
-		final GroupModel groupModel = conversationModel.getGroup();
-		final DistributionListModel distributionListModel = conversationModel.getDistributionList();
+        final ContactModel contactModel = conversationModel.getContact();
+        final GroupModel groupModel = conversationModel.getGroup();
+        final DistributionListModel distributionListModel = conversationModel.getDistributionList();
 
-		String fromtext, subjecttext;
+        String fromtext, subjecttext;
 
-		if(conversationModel.isGroupConversation()) {
-			fromtext = NameUtil.getDisplayName(groupModel, this.groupService);
-			subjecttext = groupService.getMembersString(groupModel);
-			holder.groupView.setImageResource(groupService.isGroupCreator(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
-		}
-		else if(conversationModel.isDistributionListConversation()) {
-			fromtext = NameUtil.getDisplayName(distributionListModel, this.distributionListService);
-			subjecttext = context.getString(R.string.distribution_list);
-			holder.groupView.setImageResource(R.drawable.ic_bullhorn_outline);
-		}
-		else {
-			fromtext = NameUtil.getDisplayNameOrNickname(contactModel, true);
-			subjecttext = contactModel.getIdentity();
-			holder.groupView.setImageResource(R.drawable.ic_person_outline);
-		}
+        if (conversationModel.isGroupConversation()) {
+            fromtext = NameUtil.getDisplayName(groupModel, this.groupService);
+            subjecttext = groupService.getMembersString(groupModel);
+            holder.groupView.setImageResource(groupService.isGroupCreator(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
+        } else if (conversationModel.isDistributionListConversation()) {
+            fromtext = NameUtil.getDisplayName(distributionListModel, this.distributionListService);
+            subjecttext = context.getString(R.string.distribution_list);
+            holder.groupView.setImageResource(R.drawable.ic_bullhorn_outline);
+        } else {
+            fromtext = NameUtil.getDisplayNameOrNickname(contactModel, true);
+            subjecttext = contactModel.getIdentity();
+            holder.groupView.setImageResource(R.drawable.ic_person_outline);
+        }
 
-		String filterString = null;
-		if (recentListFilter != null) {
-			filterString = recentListFilter.getFilterString();
-		}
+        String filterString = null;
+        if (recentListFilter != null) {
+            filterString = recentListFilter.getFilterString();
+        }
 
-		holder.nameView.setText(highlightMatches(fromtext, filterString));
-		if (conversationModel.isGroupConversation()) {
-			AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
-		} else if (conversationModel.isContactConversation()) {
-			AdapterUtil.styleContact(holder.nameView, contactModel);
-		}
+        holder.nameView.setText(highlightMatches(fromtext, filterString));
+        if (conversationModel.isGroupConversation()) {
+            AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
+        } else if (conversationModel.isContactConversation()) {
+            AdapterUtil.styleContact(holder.nameView, contactModel);
+        }
 
-		holder.subjectView.setText(highlightMatches(subjecttext, filterString));
+        holder.subjectView.setText(highlightMatches(subjecttext, filterString));
 
-		// load avatars asynchronously
-		AvatarListItemUtil.loadAvatar(
-			conversationModel,
-			this.contactService,
-			this.groupService,
-			this.distributionListService,
-			holder,
-			Glide.with(holder.avatarView.getContext())
-		);
+        // load avatars asynchronously
+        AvatarListItemUtil.loadAvatar(
+            conversationModel,
+            this.contactService,
+            this.groupService,
+            this.distributionListService,
+            holder,
+            Glide.with(holder.avatarView.getContext())
+        );
 
-		((ListView)parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
+        ((ListView) parent).setItemChecked(position, checkedItems.contains(holder.originalPosition));
 
-		return itemView;
-	}
+        return itemView;
+    }
 
-	private static class RecentListHolder extends AvatarListItemHolder {
-		TextView nameView;
-		TextView subjectView;
-		ImageView groupView;
-		int originalPosition;
-	}
+    private static class RecentListHolder extends AvatarListItemHolder {
+        TextView nameView;
+        TextView subjectView;
+        ImageView groupView;
+        int originalPosition;
+    }
 
-	public class RecentListFilter extends Filter {
-		String filterString = null;
+    public class RecentListFilter extends Filter {
+        String filterString = null;
 
-		@Override
-		protected FilterResults performFiltering(CharSequence constraint) {
-			FilterResults results = new FilterResults();
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
 
-			if (constraint == null || constraint.length() == 0) {
-				// no filtering
-				filterString = null;
-				results.values = ovalues;
-				results.count = ovalues.size();
-			} else {
-				// perform filtering
-				List<ConversationModel> conversationList = new ArrayList<ConversationModel>();
-				filterString = constraint.toString();
+            if (constraint == null || constraint.length() == 0) {
+                // no filtering
+                filterString = null;
+                results.values = ovalues;
+                results.count = ovalues.size();
+            } else {
+                // perform filtering
+                List<ConversationModel> conversationList = new ArrayList<ConversationModel>();
+                filterString = constraint.toString();
 
-				for (ConversationModel conversationModel : ovalues) {
+                for (ConversationModel conversationModel : ovalues) {
 
-					if(conversationModel.isGroupConversation()) {
-						String text = NameUtil.getDisplayName(conversationModel.getGroup(), groupService);
-						if (text.toUpperCase().contains(filterString.toUpperCase())) {
-							conversationList.add(conversationModel);
-						}
-					}
-					else if(conversationModel.isDistributionListConversation()) {
-						String text = NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService);
-						if (text.toUpperCase().contains(filterString.toUpperCase())) {
-							conversationList.add(conversationModel);
-						}
-					}
-					else {
-						String text = NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), false) + conversationModel.getContact().getIdentity();
-						if (text.toUpperCase().contains(filterString.toUpperCase())) {
-							conversationList.add(conversationModel);
-						}
-					}
-				}
+                    if (conversationModel.isGroupConversation()) {
+                        String text = NameUtil.getDisplayName(conversationModel.getGroup(), groupService);
+                        if (text.toUpperCase().contains(filterString.toUpperCase())) {
+                            conversationList.add(conversationModel);
+                        }
+                    } else if (conversationModel.isDistributionListConversation()) {
+                        String text = NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService);
+                        if (text.toUpperCase().contains(filterString.toUpperCase())) {
+                            conversationList.add(conversationModel);
+                        }
+                    } else {
+                        String text = NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), false) + conversationModel.getContact().getIdentity();
+                        if (text.toUpperCase().contains(filterString.toUpperCase())) {
+                            conversationList.add(conversationModel);
+                        }
+                    }
+                }
 
-				results.values = conversationList;
-				results.count = conversationList.size();
-			}
-			return results;
-		}
+                results.values = conversationList;
+                results.count = conversationList.size();
+            }
+            return results;
+        }
 
-		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results) {
-			values = (List<ConversationModel>) results.values;
-			if (filterResultsListener != null) {
-				filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
-			}
-			notifyDataSetChanged();
-		}
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            values = (List<ConversationModel>) results.values;
+            if (filterResultsListener != null) {
+                filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
+            }
+            notifyDataSetChanged();
+        }
 
-		public String getFilterString() {
-			return filterString;
-		}
-	}
+        public String getFilterString() {
+            return filterString;
+        }
+    }
 
-	@Override
-	public Filter getFilter() {
-		if (recentListFilter == null)
-			recentListFilter = new RecentListFilter();
+    @Override
+    public Filter getFilter() {
+        if (recentListFilter == null)
+            recentListFilter = new RecentListFilter();
 
-		return recentListFilter;
-	}
+        return recentListFilter;
+    }
 
-	@Override
-	public int getCount() {
-		return values != null ? values.size() : 0;
-	}
+    @Override
+    public int getCount() {
+        return values != null ? values.size() : 0;
+    }
 
-	@Override
-	public HashSet<?> getCheckedItems() {
-		HashSet<Object> conversations = new HashSet<>();
+    @Override
+    public HashSet<?> getCheckedItems() {
+        HashSet<Object> conversations = new HashSet<>();
 
-		for (int position: checkedItems) {
-			conversations.add(getModel(ovalues.get(position)));
-		}
-		return conversations;
-	}
+        for (int position : checkedItems) {
+            conversations.add(getModel(ovalues.get(position)));
+        }
+        return conversations;
+    }
 
-	@Override
-	public Object getClickedItem(View v) {
-		return getModel(ovalues.get(((RecentListHolder) v.getTag()).originalPosition));
-	}
+    @Override
+    public Object getClickedItem(View v) {
+        return getModel(ovalues.get(((RecentListHolder) v.getTag()).originalPosition));
+    }
 
-	private Object getModel(ConversationModel conversationModel) {
-		if (conversationModel.isGroupConversation()) {
-			return conversationModel.getGroup();
-		}
-		else if(conversationModel.isDistributionListConversation()) {
-			return conversationModel.getDistributionList();
-		}
-		else {
-			return conversationModel.getContact();
-		}
-	}
+    private Object getModel(ConversationModel conversationModel) {
+        if (conversationModel.isGroupConversation()) {
+            return conversationModel.getGroup();
+        } else if (conversationModel.isDistributionListConversation()) {
+            return conversationModel.getDistributionList();
+        } else {
+            return conversationModel.getContact();
+        }
+    }
 }

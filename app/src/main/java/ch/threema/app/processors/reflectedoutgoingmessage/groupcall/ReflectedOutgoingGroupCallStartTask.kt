@@ -30,7 +30,11 @@ import ch.threema.protobuf.d2d.MdD2D
 internal class ReflectedOutgoingGroupCallStartTask(
     message: MdD2D.OutgoingMessage,
     serviceManager: ServiceManager,
-) : ReflectedOutgoingGroupMessageTask(message, Common.CspE2eMessageType.GROUP_CALL_START, serviceManager) {
+) : ReflectedOutgoingGroupMessageTask(
+    message,
+    Common.CspE2eMessageType.GROUP_CALL_START,
+    serviceManager
+) {
 
     private val groupCallManager = serviceManager.groupCallManager
 

@@ -139,7 +139,12 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
         ProgressType.RESTORE -> !RestoreService.isRunning()
     }
 
-    private fun onProgressUpdate(progress: Int, maxSteps: Int, progressMessage: String?, errorMessage: String?) {
+    private fun onProgressUpdate(
+        progress: Int,
+        maxSteps: Int,
+        progressMessage: String?,
+        errorMessage: String?
+    ) {
         if (progress >= 0 && maxSteps > 0 && progress <= maxSteps) {
             backupRestoreProgress.isIndeterminate = false
             backupRestoreProgress.progress = progress

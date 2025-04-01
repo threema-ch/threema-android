@@ -47,140 +47,144 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class QRCodeServiceImpl implements QRCodeService {
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeService");
 
-	@Retention(RetentionPolicy.SOURCE)
-	@IntDef({QR_TYPE_ANY, QR_TYPE_ID, QR_TYPE_ID_EXPORT, QR_TYPE_WEB, QR_TYPE_GROUP_LINK})
-	public @interface QRCodeColor {}
-	public static final int QR_TYPE_ANY = 0x00000000;
-	public static final int QR_TYPE_ID = 0xff4caf50; // green
-	public static final int QR_TYPE_ID_EXPORT = 0xffffeb3b; // yellow
-	public static final int QR_TYPE_WEB = 0xff2196f3; // blue
-	public static final int QR_TYPE_GROUP_LINK = 0xfff44336; // red
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({QR_TYPE_ANY, QR_TYPE_ID, QR_TYPE_ID_EXPORT, QR_TYPE_WEB, QR_TYPE_GROUP_LINK})
+    public @interface QRCodeColor {
+    }
 
-	private final static int QR_CODE_QUIET_ZONE_SIZE = 4; // https://www.qrcode.com/en/howto/code.html
+    public static final int QR_TYPE_ANY = 0x00000000;
+    public static final int QR_TYPE_ID = 0xff4caf50; // green
+    public static final int QR_TYPE_ID_EXPORT = 0xffffeb3b; // yellow
+    public static final int QR_TYPE_WEB = 0xff2196f3; // blue
+    public static final int QR_TYPE_GROUP_LINK = 0xfff44336; // red
 
-	private final UserService userService;
-	public final static String CONTENT_PREFIX = "3mid:";
-	public final static String ID_SCHEME = "3mid";
+    private final static int QR_CODE_QUIET_ZONE_SIZE = 4; // https://www.qrcode.com/en/howto/code.html
 
-	public QRCodeServiceImpl(UserService userService) {
-		this.userService = userService;
-	}
+    private final UserService userService;
+    public final static String CONTENT_PREFIX = "3mid:";
+    public final static String ID_SCHEME = "3mid";
 
-	private String getUserQRCodeString() {
-		return CONTENT_PREFIX + this.userService.getIdentity() + "," +
-				Utils.byteArrayToHexString(this.userService.getPublicKey());
-	}
+    public QRCodeServiceImpl(UserService userService) {
+        this.userService = userService;
+    }
 
-	@Override
-	public QRCodeContentResult getResult(String content) {
-		if (!TestUtil.isEmptyOrNull(content)) {
-			final String[] pieces = content.substring(CONTENT_PREFIX.length()).split(",");
-			if (pieces.length >= 2 && pieces[0].length() == ProtocolDefines.IDENTITY_LEN && pieces[1].length() == NaCl.PUBLICKEYBYTES * 2) {
-				return new QRCodeContentResult() {
-					@Override
-					public String getIdentity() {
-						return pieces[0];
-					}
+    private String getUserQRCodeString() {
+        return CONTENT_PREFIX + this.userService.getIdentity() + "," +
+            Utils.byteArrayToHexString(this.userService.getPublicKey());
+    }
 
-					@Override
-					public byte[] getPublicKey() {
-						return Utils.hexStringToByteArray(pieces[1]);
-					}
+    @Override
+    public QRCodeContentResult getResult(String content) {
+        if (!TestUtil.isEmptyOrNull(content)) {
+            final String[] pieces = content.substring(CONTENT_PREFIX.length()).split(",");
+            if (pieces.length >= 2 && pieces[0].length() == ProtocolDefines.IDENTITY_LEN && pieces[1].length() == NaCl.PUBLICKEYBYTES * 2) {
+                return new QRCodeContentResult() {
+                    @Override
+                    public String getIdentity() {
+                        return pieces[0];
+                    }
 
-					@Override
-					public Date getExpirationDate() {
-						if (pieces.length >= 3)
-							return new Date(Long.parseLong(pieces[2]) * 1000);
+                    @Override
+                    public byte[] getPublicKey() {
+                        return Utils.hexStringToByteArray(pieces[1]);
+                    }
 
-						return null;
-					}
-				};
-			}
-		}
-		return null;
-	}
+                    @Override
+                    public Date getExpirationDate() {
+                        if (pieces.length >= 3)
+                            return new Date(Long.parseLong(pieces[2]) * 1000);
 
-	/**
-	 * Render QR code for provided string
-	 * @param contents String to render
-	 * @param unicode Whether the string contains unicode characters
-	 * @param addQuietZone If a quiet zone margin should be added around the resulting QR code
-	 * @return a BitMatrix of the QR code
-	 */
-	private BitMatrix renderQR(String contents, boolean unicode, boolean addQuietZone) {
-		BarcodeFormat barcodeFormat = BarcodeFormat.QR_CODE;
+                        return null;
+                    }
+                };
+            }
+        }
+        return null;
+    }
 
-		QRCodeWriter barcodeWriter = new QRCodeWriter();
-		HashMap<EncodeHintType, Object> hints = new HashMap<>(2);
-		hints.put(EncodeHintType.MARGIN, addQuietZone ? QRCodeServiceImpl.QR_CODE_QUIET_ZONE_SIZE : 0);
-		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
+    /**
+     * Render QR code for provided string
+     *
+     * @param contents     String to render
+     * @param unicode      Whether the string contains unicode characters
+     * @param addQuietZone If a quiet zone margin should be added around the resulting QR code
+     * @return a BitMatrix of the QR code
+     */
+    private BitMatrix renderQR(String contents, boolean unicode, boolean addQuietZone) {
+        BarcodeFormat barcodeFormat = BarcodeFormat.QR_CODE;
 
-		if (unicode) {
-			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-		}
+        QRCodeWriter barcodeWriter = new QRCodeWriter();
+        HashMap<EncodeHintType, Object> hints = new HashMap<>(2);
+        hints.put(EncodeHintType.MARGIN, addQuietZone ? QRCodeServiceImpl.QR_CODE_QUIET_ZONE_SIZE : 0);
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
 
-		try {
-			return barcodeWriter.encode(contents, barcodeFormat, 0, 0, hints);
-		} catch (WriterException e) {
-			logger.error("BarcodeWriter exception", e);
-		}
-		return null;
-	}
+        if (unicode) {
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        }
 
-	/**
-	 * Get a qr code bitmap for the string provided
-	 * @param raw String to render as a QR code
-	 * @param unicode Whether the string contains unicode characters
-	 * @param borderColor Color of a border indicating the QR code purpose / type
-	 * @return
-	 */
-	@Override
-	public Bitmap getRawQR(String raw, boolean unicode, @QRCodeColor int borderColor) {
-		if (this.userService.hasIdentity()) {
-			BitMatrix matrix;
+        try {
+            return barcodeWriter.encode(contents, barcodeFormat, 0, 0, hints);
+        } catch (WriterException e) {
+            logger.error("BarcodeWriter exception", e);
+        }
+        return null;
+    }
 
-			if (raw != null && raw.length()>0) {
-				matrix = this.renderQR(raw, unicode, true);
-			} else {
-				matrix = this.renderQR(getUserQRCodeString(), unicode, true);
-			}
+    /**
+     * Get a qr code bitmap for the string provided
+     *
+     * @param raw         String to render as a QR code
+     * @param unicode     Whether the string contains unicode characters
+     * @param borderColor Color of a border indicating the QR code purpose / type
+     * @return
+     */
+    @Override
+    public Bitmap getRawQR(String raw, boolean unicode, @QRCodeColor int borderColor) {
+        if (this.userService.hasIdentity()) {
+            BitMatrix matrix;
 
-			if (matrix != null) {
-				final int WHITE = 0xFFFFFFFF;
-				int BLACK = 0xFF000000;
+            if (raw != null && raw.length() > 0) {
+                matrix = this.renderQR(raw, unicode, true);
+            } else {
+                matrix = this.renderQR(getUserQRCodeString(), unicode, true);
+            }
 
-				int width = matrix.getWidth();
-				int height = matrix.getHeight();
-				int qrCodeTypeBorderSize = 1;
-				int[] pixels = new int[width * height];
+            if (matrix != null) {
+                final int WHITE = 0xFFFFFFFF;
+                int BLACK = 0xFF000000;
 
-				for (int y = 0; y < height; y++) {
-					int offset = y * width;
-					for (int x = 0; x < width; x++) {
-						pixels[offset + x] = matrix.get(x, y) ? BLACK : WHITE;
-					}
-				}
+                int width = matrix.getWidth();
+                int height = matrix.getHeight();
+                int qrCodeTypeBorderSize = 1;
+                int[] pixels = new int[width * height];
 
-				Bitmap bitmap;
-				if (ConfigUtils.showQRCodeTypeBorders()) {
-					bitmap = Bitmap.createBitmap(matrix.getWidth() + (qrCodeTypeBorderSize * 2), matrix.getHeight() + (qrCodeTypeBorderSize * 2), Bitmap.Config.RGB_565);
-					bitmap.eraseColor(borderColor);
-					bitmap.setPixels(pixels, 0, width, qrCodeTypeBorderSize, qrCodeTypeBorderSize, width, height);
-				} else {
-					bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
-					bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-				}
-				return bitmap;
-			}
+                for (int y = 0; y < height; y++) {
+                    int offset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        pixels[offset + x] = matrix.get(x, y) ? BLACK : WHITE;
+                    }
+                }
 
-		}
-		return null;
-	}
+                Bitmap bitmap;
+                if (ConfigUtils.showQRCodeTypeBorders()) {
+                    bitmap = Bitmap.createBitmap(matrix.getWidth() + (qrCodeTypeBorderSize * 2), matrix.getHeight() + (qrCodeTypeBorderSize * 2), Bitmap.Config.RGB_565);
+                    bitmap.eraseColor(borderColor);
+                    bitmap.setPixels(pixels, 0, width, qrCodeTypeBorderSize, qrCodeTypeBorderSize, width, height);
+                } else {
+                    bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
+                    bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+                }
+                return bitmap;
+            }
 
-	@Override
-	public Bitmap getUserQRCode() {
-		return this.getRawQR(null, false, QR_TYPE_ID);
-	}
+        }
+        return null;
+    }
+
+    @Override
+    public Bitmap getUserQRCode() {
+        return this.getRawQR(null, false, QR_TYPE_ID);
+    }
 }

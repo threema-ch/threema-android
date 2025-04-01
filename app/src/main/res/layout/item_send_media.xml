@@ -1,105 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="@dimen/send_media_item_width"
-	android:layout_height="@dimen/send_media_item_width"
-	android:padding="1dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/send_media_item_width"
+    android:layout_height="@dimen/send_media_item_width"
+    android:padding="1dp">
 
-	<ch.threema.app.ui.CheckableFrameLayout
-		android:id="@+id/content_frame"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@drawable/shape_square_background"
-		android:foreground="@drawable/media_gallery_item_selector">
+    <ch.threema.app.ui.CheckableFrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_square_background"
+        android:foreground="@drawable/media_gallery_item_selector">
 
-		<com.google.android.material.imageview.ShapeableImageView
-			android:id="@+id/thumbnail_view"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_gravity="center_vertical"
-			android:layout_margin="1dp"
-			android:adjustViewBounds="false"
-			android:contentDescription="@string/attach_picture"
-			android:scaleType="centerCrop"
-			app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.SendMedia" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/thumbnail_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="1dp"
+            android:adjustViewBounds="false"
+            android:contentDescription="@string/attach_picture"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/Threema.ShapeAppearance.SendMedia" />
 
-		<ImageView
-			android:id="@+id/broken_view"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:contentDescription="@string/cannot_open_file"
-			app:srcCompat="@drawable/ic_baseline_broken_image_24"
-			app:tint="@android:color/white" />
+        <ImageView
+            android:id="@+id/broken_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/cannot_open_file"
+            app:srcCompat="@drawable/ic_baseline_broken_image_24"
+            app:tint="@android:color/white" />
 
-	</ch.threema.app.ui.CheckableFrameLayout>
+    </ch.threema.app.ui.CheckableFrameLayout>
 
-	<ImageView
-		android:id="@+id/file_indicator_view"
-		android:layout_width="20dp"
-		android:layout_height="20dp"
-		android:layout_gravity="left|top"
-		android:layout_marginLeft="@dimen/send_items_grid_icon_margin"
-		android:layout_marginTop="@dimen/send_items_grid_icon_margin"
-		android:contentDescription="@string/send_as_files"
-		android:scaleType="centerInside"
-		android:visibility="invisible"
-		app:srcCompat="@drawable/ic_file_filled"
-		app:tint="@android:color/white" />
+    <ImageView
+        android:id="@+id/file_indicator_view"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="@dimen/send_items_grid_icon_margin"
+        android:layout_marginTop="@dimen/send_items_grid_icon_margin"
+        android:contentDescription="@string/send_as_files"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_file_filled"
+        app:tint="@android:color/white" />
 
-	<ImageView
-		android:id="@+id/video_send_no_audio"
-		android:layout_width="20dp"
-		android:layout_height="20dp"
-		android:layout_gravity="left|top"
-		android:layout_marginLeft="@dimen/send_items_grid_icon_margin"
-		android:layout_marginTop="@dimen/send_items_grid_icon_margin"
-		android:contentDescription="@string/send_video_muted"
-		android:scaleType="centerInside"
-		android:visibility="invisible"
-		app:srcCompat="@drawable/ic_no_audio"
-		app:tint="@android:color/white" />
+    <ImageView
+        android:id="@+id/video_send_no_audio"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="left|top"
+        android:layout_marginLeft="@dimen/send_items_grid_icon_margin"
+        android:layout_marginTop="@dimen/send_items_grid_icon_margin"
+        android:contentDescription="@string/send_video_muted"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_no_audio"
+        app:tint="@android:color/white" />
 
-	<LinearLayout
-		android:id="@+id/qualifier_view"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="left|bottom"
-		android:gravity="center"
-		android:importantForAccessibility="no"
-		android:orientation="horizontal"
-		android:paddingLeft="4dp"
-		android:paddingRight="4dp"
-		android:visibility="gone">
+    <LinearLayout
+        android:id="@+id/qualifier_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:gravity="center"
+        android:importantForAccessibility="no"
+        android:orientation="horizontal"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:visibility="gone">
 
-		<ImageView
-			android:id="@+id/video_icon"
-			android:layout_width="20dp"
-			android:layout_height="20dp"
-			android:importantForAccessibility="no"
-			android:paddingLeft="1dp"
-			app:srcCompat="@drawable/ic_videocam_black_24dp"
-			app:tint="@android:color/white" />
+        <ImageView
+            android:id="@+id/video_icon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:importantForAccessibility="no"
+            android:paddingLeft="1dp"
+            app:srcCompat="@drawable/ic_videocam_black_24dp"
+            app:tint="@android:color/white" />
 
-		<TextView
-			android:id="@+id/video_duration_text"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="2dp"
-			android:importantForAccessibility="no"
-			android:textColor="@android:color/white"
-			android:textSize="11sp" />
+        <TextView
+            android:id="@+id/video_duration_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:importantForAccessibility="no"
+            android:textColor="@android:color/white"
+            android:textSize="11sp" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<ImageView
-		android:id="@+id/delete_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_gravity="center"
-		android:padding="20dp"
-		android:contentDescription="@string/delete"
-		app:srcCompat="@drawable/ic_delete_outline"
-		app:tint="@android:color/white" />
+    <ImageView
+        android:id="@+id/delete_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:padding="20dp"
+        android:contentDescription="@string/delete"
+        app:srcCompat="@drawable/ic_delete_outline"
+        app:tint="@android:color/white" />
 
 </FrameLayout>

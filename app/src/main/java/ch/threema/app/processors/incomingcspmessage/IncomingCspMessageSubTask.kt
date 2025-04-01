@@ -160,28 +160,66 @@ fun getSubTaskFromMessage(
     // Check if message is a status update
     is TypingIndicatorMessage -> IncomingTypingIndicatorTask(message, triggerSource, serviceManager)
     is DeliveryReceiptMessage -> IncomingDeliveryReceiptTask(message, triggerSource, serviceManager)
-    is GroupDeliveryReceiptMessage -> IncomingGroupDeliveryReceiptTask(message, triggerSource, serviceManager)
+    is GroupDeliveryReceiptMessage -> IncomingGroupDeliveryReceiptTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a location message
     is LocationMessage -> IncomingContactLocationMessageTask(message, triggerSource, serviceManager)
-    is GroupLocationMessage -> IncomingGroupLocationMessageTask(message, triggerSource, serviceManager)
+    is GroupLocationMessage -> IncomingGroupLocationMessageTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a group control message
     is GroupSetupMessage -> IncomingGroupSetupTask(message, triggerSource, serviceManager)
     is GroupNameMessage -> IncomingGroupNameTask(message, triggerSource, serviceManager)
-    is GroupSetProfilePictureMessage -> IncomingGroupSetProfilePictureTask(message, triggerSource, serviceManager)
+    is GroupSetProfilePictureMessage -> IncomingGroupSetProfilePictureTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
-    is GroupDeleteProfilePictureMessage -> IncomingGroupDeleteProfilePictureTask(message, triggerSource, serviceManager)
+    is GroupDeleteProfilePictureMessage -> IncomingGroupDeleteProfilePictureTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     is GroupLeaveMessage -> IncomingGroupLeaveTask(message, triggerSource, serviceManager)
-    is GroupSyncRequestMessage -> IncomingGroupSyncRequestTask(message, triggerSource, serviceManager)
-    is GroupCallControlMessage -> IncomingGroupCallControlTask(message, triggerSource, serviceManager)
+    is GroupSyncRequestMessage -> IncomingGroupSyncRequestTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
+
+    is GroupCallControlMessage -> IncomingGroupCallControlTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a contact control message
-    is SetProfilePictureMessage -> IncomingSetProfilePictureTask(message, triggerSource, serviceManager)
-    is DeleteProfilePictureMessage -> IncomingDeleteProfilePictureTask(message, triggerSource, serviceManager)
+    is SetProfilePictureMessage -> IncomingSetProfilePictureTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
-    is ContactRequestProfilePictureMessage -> IncomingContactRequestProfilePictureTask(message, triggerSource, serviceManager)
+    is DeleteProfilePictureMessage -> IncomingDeleteProfilePictureTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
+
+    is ContactRequestProfilePictureMessage -> IncomingContactRequestProfilePictureTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a ballot message
     is PollSetupMessage -> IncomingContactPollSetupTask(message, triggerSource, serviceManager)
@@ -190,13 +228,27 @@ fun getSubTaskFromMessage(
     is GroupPollVoteMessage -> IncomingGroupPollVoteTask(message, triggerSource, serviceManager)
 
     // Check if message is a group join message
-    is GroupJoinRequestMessage -> IncomingGroupJoinRequestTask(message, triggerSource, serviceManager)
-    is GroupJoinResponseMessage -> IncomingGroupJoinResponseMessage(message, triggerSource, serviceManager)
+    is GroupJoinRequestMessage -> IncomingGroupJoinRequestTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
+
+    is GroupJoinResponseMessage -> IncomingGroupJoinResponseMessage(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a call message
     is VoipCallOfferMessage -> IncomingCallOfferTask(message, triggerSource, serviceManager)
     is VoipCallAnswerMessage -> IncomingCallAnswerTask(message, triggerSource, serviceManager)
-    is VoipICECandidatesMessage -> IncomingCallIceCandidateTask(message, triggerSource, serviceManager)
+    is VoipICECandidatesMessage -> IncomingCallIceCandidateTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
+
     is VoipCallRingingMessage -> IncomingCallRingingTask(message, triggerSource, serviceManager)
     is VoipCallHangupMessage -> IncomingCallHangupTask(message, triggerSource, serviceManager)
 
@@ -210,14 +262,22 @@ fun getSubTaskFromMessage(
 
     // Check if message is a group reaction message
     is ReactionMessage -> IncomingContactReactionMessageTask(message, triggerSource, serviceManager)
-    is GroupReactionMessage -> IncomingGroupReactionMessageTask(message, triggerSource, serviceManager)
+    is GroupReactionMessage -> IncomingGroupReactionMessageTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Check if message is a file message
     is FileMessage -> IncomingContactFileMessageTask(message, triggerSource, serviceManager)
     is GroupFileMessage -> IncomingGroupFileMessageTask(message, triggerSource, serviceManager)
 
     // If it is a group message, process it as a group conversation message
-    is AbstractGroupMessage -> IncomingGroupConversationMessageTask(message, triggerSource, serviceManager)
+    is AbstractGroupMessage -> IncomingGroupConversationMessageTask(
+        message,
+        triggerSource,
+        serviceManager
+    )
 
     // Process the empty message in its corresponding task
     is EmptyMessage -> IncomingEmptyTask(message, triggerSource, serviceManager)

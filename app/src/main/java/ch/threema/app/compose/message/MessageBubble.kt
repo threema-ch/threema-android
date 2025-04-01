@@ -131,7 +131,8 @@ fun CompleteMessageBubble(
                 contentDescription = cdMessage
                 isTraversalGroup = true
             },
-            text = message.text.takeIf(String::isNotBlank) ?: stringResource(R.string.edit_history_file_no_caption),
+            text = message.text.takeIf(String::isNotBlank)
+                ?: stringResource(R.string.edit_history_file_no_caption),
             isOutbox = message.isOutbox,
             shouldMarkupText = shouldMarkupText,
             textSelectionCallback = textSelectionCallback,
@@ -194,7 +195,11 @@ fun MessageBubbleFooter(
     ) {
         if (shouldShowEditedLabel) {
             ThemedText(
-                modifier = stringResource(R.string.cd_edited).let { Modifier.semantics { contentDescription = it } },
+                modifier = stringResource(R.string.cd_edited).let {
+                    Modifier.semantics {
+                        contentDescription = it
+                    }
+                },
                 text = stringResource(R.string.edited),
                 style = AppTypography.bodySmall,
                 color = contentColor
@@ -203,9 +208,14 @@ fun MessageBubbleFooter(
         Spacer(modifier = Modifier.weight(1f))
         date?.let {
             Spacer(modifier = Modifier.size(4.dp))
-            val formattedDate = LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
+            val formattedDate =
+                LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
             ThemedText(
-                modifier = stringResource(R.string.cd_created_at).let { Modifier.semantics { contentDescription = it.format(formattedDate) } },
+                modifier = stringResource(R.string.cd_created_at).let {
+                    Modifier.semantics {
+                        contentDescription = it.format(formattedDate)
+                    }
+                },
                 text = formattedDate,
                 style = AppTypography.bodySmall,
                 color = contentColor

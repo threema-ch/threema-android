@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item
-		android:id="@+id/messages"
-		android:icon="@drawable/selector_chat"
-		android:title="@string/title_section1"/>
+    <item
+        android:id="@+id/messages"
+        android:icon="@drawable/selector_chat"
+        android:title="@string/title_section1" />
 
-	<item
-		android:id="@+id/contacts"
-		android:icon="@drawable/selector_contact"
-		android:title="@string/title_section2"/>
+    <item
+        android:id="@+id/contacts"
+        android:icon="@drawable/selector_contact"
+        android:title="@string/title_section2" />
 
-	<item
-		android:id="@+id/my_profile"
-		android:icon="@drawable/selector_profile"
-		android:title="@string/my_profile"/>
+    <item
+        android:id="@+id/my_profile"
+        android:icon="@drawable/selector_profile"
+        android:title="@string/my_profile" />
 
 </menu>

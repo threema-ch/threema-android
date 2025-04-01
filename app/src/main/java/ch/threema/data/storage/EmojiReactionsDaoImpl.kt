@@ -42,10 +42,15 @@ class EmojiReactionsDaoImpl(
 ) : EmojiReactionsDao {
 
     override fun create(entry: DbEmojiReaction, messageModel: AbstractMessageModel) {
-        val table = getReactionTableForMessage(messageModel) ?: throw EmojiReactionEntryCreateException(
-            IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}")
+        val table =
+            getReactionTableForMessage(messageModel) ?: throw EmojiReactionEntryCreateException(
+                IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}")
+            )
+        sqlite.writableDatabase.insert(
+            table,
+            SQLiteDatabase.CONFLICT_ROLLBACK,
+            entry.getContentValues()
         )
-        sqlite.writableDatabase.insert(table, SQLiteDatabase.CONFLICT_ROLLBACK, entry.getContentValues())
     }
 
     override fun remove(entry: DbEmojiReaction, messageModel: AbstractMessageModel) {
@@ -67,7 +72,12 @@ class EmojiReactionsDaoImpl(
             whereClause = "${DbEmojiReaction.COLUMN_MESSAGE_ID} = ?",
             whereArgs = arrayOf(messageModel.id)
         )
-        logger.debug("{} reaction entries deleted for message {} ({})", deletedEntries, messageModel.id, table)
+        logger.debug(
+            "{} reaction entries deleted for message {} ({})",
+            deletedEntries,
+            messageModel.id,
+            table
+        )
     }
 
     override fun findAllByMessage(messageModel: AbstractMessageModel): List<DbEmojiReaction> {
@@ -138,7 +148,8 @@ class EmojiReactionsDaoImpl(
         """.trimIndent()
 
         sqlite.readableDatabase.query(query).use { cursor ->
-            val columnIndexContactIdentity = cursor.getColumnIndexOrThrow(resultColumnContactIdentity)
+            val columnIndexContactIdentity =
+                cursor.getColumnIndexOrThrow(resultColumnContactIdentity)
             val columnIndexApiMessageId = cursor.getColumnIndexOrThrow(resultColumnApiMessageId)
             val columnIndexSenderIdentity = cursor.getColumnIndexOrThrow(resultColumnSenderIdentity)
             val columnIndexEmojiSequence = cursor.getColumnIndexOrThrow(resultColumnEmojiSequence)
@@ -191,7 +202,8 @@ class EmojiReactionsDaoImpl(
 
         sqlite.readableDatabase.query(query).use { cursor ->
             val columnIndexGroupId = cursor.getColumnIndexOrThrow(resultColumnGroupId)
-            val columnIndexGroupCreatorIdentity = cursor.getColumnIndexOrThrow(resultColumnGroupCreatorIdentity)
+            val columnIndexGroupCreatorIdentity =
+                cursor.getColumnIndexOrThrow(resultColumnGroupCreatorIdentity)
             val columnIndexApiMessageId = cursor.getColumnIndexOrThrow(resultColumnApiMessageId)
             val columnIndexSenderIdentity = cursor.getColumnIndexOrThrow(resultColumnSenderIdentity)
             val columnIndexEmojiSequence = cursor.getColumnIndexOrThrow(resultColumnEmojiSequence)
@@ -230,7 +242,7 @@ class EmojiReactionsDaoImpl(
         }
     }
 
-    private fun getResult(cursor: Cursor) : MutableList<DbEmojiReaction> {
+    private fun getResult(cursor: Cursor): MutableList<DbEmojiReaction> {
         val result = mutableListOf<DbEmojiReaction>()
         while (cursor.moveToNext()) {
             val messageId = cursor.getInt(
@@ -285,7 +297,10 @@ class EmojiReactionsDaoImpl(
         )
     }
 
-    private fun insertReactionsInTransaction(table: String, block: EmojiReactionsDao.TransactionalReactionInsertScope) {
+    private fun insertReactionsInTransaction(
+        table: String,
+        block: EmojiReactionsDao.TransactionalReactionInsertScope
+    ) {
         val database = sqlite.writableDatabase
         database.beginTransaction()
         try {

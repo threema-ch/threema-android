@@ -80,7 +80,8 @@ import java.util.concurrent.TimeUnit
 
 private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
 
-class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class WorkSyncWorker(private val context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     private val serviceManager: ServiceManager? = ThreemaApplication.getServiceManager()
     private val contactService: ContactService? = serviceManager?.contactService
     private val preferenceService: PreferenceService? = serviceManager?.preferenceService
@@ -90,7 +91,8 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     private val notificationService: NotificationService? = serviceManager?.notificationService
     private val userService: UserService? = serviceManager?.userService
     private val identityStore: IdentityStore? = serviceManager?.identityStore
-    private val contactModelRepository: ContactModelRepository? = serviceManager?.modelRepositories?.contacts
+    private val contactModelRepository: ContactModelRepository? =
+        serviceManager?.modelRepositories?.contacts
 
     companion object {
         private const val EXTRA_REFRESH_RESTRICTIONS_ONLY = "RESTRICTIONS_ONLY"
@@ -102,7 +104,8 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 return
             }
 
-            val schedulePeriodMs = WorkManagerUtil.normalizeSchedulePeriod(preferenceService.workSyncCheckInterval)
+            val schedulePeriodMs =
+                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.workSyncCheckInterval)
             logger.info("Scheduling periodic work sync. Schedule period: {} ms", schedulePeriodMs)
 
             try {
@@ -117,19 +120,34 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 } else {
                     ExistingPeriodicWorkPolicy.KEEP
                 }
-                logger.info("{}: {} existing periodic work", ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, policy)
+                logger.info(
+                    "{}: {} existing periodic work",
+                    ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                    policy
+                )
                 val workRequest = buildPeriodicWorkRequest(schedulePeriodMs)
-                workManager.enqueueUniquePeriodicWork(ThreemaApplication.WORKER_PERIODIC_WORK_SYNC, policy, workRequest)
+                workManager.enqueueUniquePeriodicWork(
+                    ThreemaApplication.WORKER_PERIODIC_WORK_SYNC,
+                    policy,
+                    workRequest
+                )
             } catch (e: IllegalStateException) {
                 logger.error("Unable to schedule periodic work sync work", e)
             }
         }
 
         suspend fun cancelPeriodicWorkSyncAwait(context: Context) {
-            WorkManagerUtil.cancelUniqueWorkAwait(context, ThreemaApplication.WORKER_PERIODIC_WORK_SYNC)
+            WorkManagerUtil.cancelUniqueWorkAwait(
+                context,
+                ThreemaApplication.WORKER_PERIODIC_WORK_SYNC
+            )
         }
 
-        private fun buildOneTimeWorkRequest(refreshRestrictionsOnly: Boolean, forceUpdate: Boolean, tag: String?): OneTimeWorkRequest {
+        private fun buildOneTimeWorkRequest(
+            refreshRestrictionsOnly: Boolean,
+            forceUpdate: Boolean,
+            tag: String?
+        ): OneTimeWorkRequest {
             val data = Data.Builder()
                 .putBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, refreshRestrictionsOnly)
                 .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
@@ -155,7 +173,10 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-            return PeriodicWorkRequestBuilder<WorkSyncWorker>(schedulePeriodMs, TimeUnit.MILLISECONDS)
+            return PeriodicWorkRequestBuilder<WorkSyncWorker>(
+                schedulePeriodMs,
+                TimeUnit.MILLISECONDS
+            )
                 .setConstraints(constraints)
                 .addTag(schedulePeriodMs.toString())
                 .apply { setInputData(data) }
@@ -175,7 +196,11 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             tag: String?
         ) {
             val workRequest = buildOneTimeWorkRequest(refreshRestrictionsOnly, forceUpdate, tag)
-            WorkManager.getInstance(context).enqueueUniqueWork(ThreemaApplication.WORKER_WORK_SYNC, ExistingWorkPolicy.REPLACE, workRequest)
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                ThreemaApplication.WORKER_WORK_SYNC,
+                ExistingWorkPolicy.REPLACE,
+                workRequest
+            )
         }
 
         /**
@@ -217,11 +242,16 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     }
 
     override fun doWork(): Result {
-        val updateRestrictionsOnly: Boolean = inputData.getBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
+        val updateRestrictionsOnly: Boolean =
+            inputData.getBoolean(EXTRA_REFRESH_RESTRICTIONS_ONLY, false)
         val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
         val newWorkContacts: MutableList<ContactModel> = mutableListOf()
 
-        logger.info("Refreshing work data. Restrictions only = {}, force = {}", updateRestrictionsOnly, forceUpdate)
+        logger.info(
+            "Refreshing work data. Restrictions only = {}, force = {}",
+            updateRestrictionsOnly,
+            forceUpdate
+        )
 
         if (licenseService == null
             || notificationService == null
@@ -240,7 +270,8 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             return Result.failure()
         }
 
-        val credentials = licenseService.loadCredentials() as? UserCredentials ?: return Result.failure()
+        val credentials =
+            licenseService.loadCredentials() as? UserCredentials ?: return Result.failure()
 
         if (!updateRestrictionsOnly) {
             val workData: WorkData?
@@ -263,7 +294,10 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
             }
 
             if (workData.responseCode > 0) {
-                logger.error("Failed to fetch2 work data. Server response code = {}", workData.responseCode)
+                logger.error(
+                    "Failed to fetch2 work data. Server response code = {}",
+                    workData.responseCode
+                )
                 if (workData.responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     RuntimeUtil.runOnUiThread {
                         Toast.makeText(context, R.string.fetch2_failure, Toast.LENGTH_LONG).show()
@@ -367,10 +401,22 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
         logger.debug("Reset Restrictions")
         (PreferenceManager.getDefaultSharedPreferences(context) ?: return)
             .edit {
-                applyBooleanRestriction(R.string.restriction__block_unknown, R.string.preferences__block_unknown) { it }
-                applyBooleanRestriction(R.string.restriction__disable_screenshots, R.string.preferences__hide_screenshots) { it }
-                applyBooleanRestriction(R.string.restriction__disable_save_to_gallery, R.string.preferences__save_media) { !it }
-                applyBooleanRestriction(R.string.restriction__disable_message_preview, R.string.preferences__notification_preview) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__block_unknown,
+                    R.string.preferences__block_unknown
+                ) { it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_screenshots,
+                    R.string.preferences__hide_screenshots
+                ) { it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_save_to_gallery,
+                    R.string.preferences__save_media
+                ) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_message_preview,
+                    R.string.preferences__notification_preview
+                ) { !it }
                 applyBooleanRestrictionMapToInt(
                     R.string.restriction__disable_send_profile_picture,
                     R.string.preferences__profile_pic_release,
@@ -381,28 +427,46 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
                         PreferenceService.PROFILEPIC_RELEASE_EVERYONE
                     }
                 }
-                applyBooleanRestriction(R.string.restriction__disable_calls, R.string.preferences__voip_enable) { !it }
-                applyBooleanRestriction(R.string.restriction__disable_video_calls, R.string.preferences__voip_video_enable) { !it }
-                applyBooleanRestriction(R.string.restriction__disable_group_calls, R.string.preferences__group_calls_enable) { !it }
-                applyBooleanRestriction(R.string.restriction__hide_inactive_ids, R.string.preferences__show_inactive_contacts) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_calls,
+                    R.string.preferences__voip_enable
+                ) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_video_calls,
+                    R.string.preferences__voip_video_enable
+                ) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__disable_group_calls,
+                    R.string.preferences__group_calls_enable
+                ) { !it }
+                applyBooleanRestriction(
+                    R.string.restriction__hide_inactive_ids,
+                    R.string.preferences__show_inactive_contacts
+                ) { !it }
             }
         applyNicknameRestriction()
     }
 
     override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> {
-        val notification = NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
-            .setSound(null)
-            .setSmallIcon(R.drawable.ic_sync_notification)
-            .setContentTitle(context.getString(R.string.wizard1_sync_work))
-            .setProgress(0, 0, true)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setAutoCancel(true)
-            .setLocalOnly(true)
-            .setOnlyAlertOnce(true)
-            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-            .build()
+        val notification =
+            NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_WORK_SYNC)
+                .setSound(null)
+                .setSmallIcon(R.drawable.ic_sync_notification)
+                .setContentTitle(context.getString(R.string.wizard1_sync_work))
+                .setProgress(0, 0, true)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setAutoCancel(true)
+                .setLocalOnly(true)
+                .setOnlyAlertOnce(true)
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                .build()
 
-        return Futures.immediateFuture(ForegroundInfo(ThreemaApplication.WORK_SYNC_NOTIFICATION_ID, notification))
+        return Futures.immediateFuture(
+            ForegroundInfo(
+                ThreemaApplication.WORK_SYNC_NOTIFICATION_ID,
+                notification
+            )
+        )
     }
 
     private fun Editor.applyBooleanRestriction(
@@ -427,10 +491,15 @@ class WorkSyncWorker(private val context: Context, workerParameters: WorkerParam
     }
 
     private fun applyNicknameRestriction() {
-        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))?.let { nickname ->
-            if (userService != null && !TestUtil.compare(userService.publicNickname, nickname)) {
-                userService.setPublicNickname(nickname, TriggerSource.LOCAL)
+        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))
+            ?.let { nickname ->
+                if (userService != null && !TestUtil.compare(
+                        userService.publicNickname,
+                        nickname
+                    )
+                ) {
+                    userService.setPublicNickname(nickname, TriggerSource.LOCAL)
+                }
             }
-        }
     }
 }

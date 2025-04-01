@@ -49,20 +49,25 @@ class NonceFactoryTest {
     @Test
     fun testNext2Times() {
         val nonceProvider = TestNonceProvider()
-        val existingNonce = byteArrayOf(0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+        val existingNonce = byteArrayOf(
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x01)
-        val newNonce = byteArrayOf(0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x02)
+            0x01, 0x01, 0x01, 0x01
+        )
+        val newNonce = byteArrayOf(
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+            0x01, 0x01, 0x01, 0x02
+        )
 
         nonceProvider.addNextNonces(listOf(existingNonce, newNonce))
 
         val nonceStoreMock = Mockito.mock(NonceStore::class.java)
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce())).thenAnswer { invocation: InvocationOnMock ->
-            val nonce = invocation.getArgument(1, ByteArray::class.java)
-            nonce.contentEquals(existingNonce)
-        }
+        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
+            .thenAnswer { invocation: InvocationOnMock ->
+                val nonce = invocation.getArgument(1, ByteArray::class.java)
+                nonce.contentEquals(existingNonce)
+            }
 
         val factory = NonceFactory(nonceStoreMock, nonceProvider)
         val result: Nonce = factory.next(NonceScope.CSP)
@@ -86,24 +91,30 @@ class NonceFactoryTest {
 
     @Test
     fun testExistsReturnsValueReturnedByNonceStore() {
-        val existingNonce = Nonce(byteArrayOf(0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-            0x01, 0x01, 0x01, 0x01))
+        val existingNonce = Nonce(
+            byteArrayOf(
+                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                0x01, 0x01, 0x01, 0x01
+            )
+        )
 
         val nonceStoreMock = Mockito.mock(NonceStore::class.java)
 
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce())).thenAnswer { invocation: InvocationOnMock ->
-            val nonce = invocation.getArgument(1, ByteArray::class.java)
-            nonce.contentEquals(existingNonce.bytes)
-        }
+        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
+            .thenAnswer { invocation: InvocationOnMock ->
+                val nonce = invocation.getArgument(1, ByteArray::class.java)
+                nonce.contentEquals(existingNonce.bytes)
+            }
 
         val factory = NonceFactory(nonceStoreMock)
         Assert.assertTrue(factory.exists(NonceScope.CSP, existingNonce))
 
-        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce())).thenAnswer { invocation: InvocationOnMock ->
-            val nonce = invocation.getArgument(1, ByteArray::class.java)
-            !nonce.contentEquals(existingNonce.bytes)
-        }
+        Mockito.`when`(nonceStoreMock.exists(anyScope(), anyNonce()))
+            .thenAnswer { invocation: InvocationOnMock ->
+                val nonce = invocation.getArgument(1, ByteArray::class.java)
+                !nonce.contentEquals(existingNonce.bytes)
+            }
 
         Assert.assertFalse(factory.exists(NonceScope.CSP, existingNonce))
     }

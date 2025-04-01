@@ -378,7 +378,12 @@ class ContactModel(
         this.updateFields(
             methodName = "setNameFromLocal",
             detectChanges = { originalData -> originalData.firstName != firstName || originalData.lastName != lastName },
-            updateData = { originalData -> originalData.copy(firstName = firstName, lastName = lastName) },
+            updateData = { originalData ->
+                originalData.copy(
+                    firstName = firstName,
+                    lastName = lastName
+                )
+            },
             updateDatabase = ::updateDatabase,
             onUpdated = ::defaultOnUpdated,
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectNameUpdate(
@@ -929,7 +934,11 @@ class ContactModel(
     fun setProfilePictureBlobId(blobId: ByteArray?) {
         this.updateFields(
             methodName = "setProfilePictureBlobId",
-            detectChanges = { originalData -> !originalData.profilePictureBlobId.contentEquals(blobId) },
+            detectChanges = { originalData ->
+                !originalData.profilePictureBlobId.contentEquals(
+                    blobId
+                )
+            },
             updateData = { originalData -> originalData.copy(profilePictureBlobId = blobId) },
             updateDatabase = ::updateDatabase,
             onUpdated = ::defaultOnUpdated

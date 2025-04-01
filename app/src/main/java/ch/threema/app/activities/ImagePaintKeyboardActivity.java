@@ -50,151 +50,155 @@ import ch.threema.app.utils.EditTextUtil;
 
 public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
 
-	public final static String INTENT_EXTRA_TEXT = "text";
-	public final static String INTENT_EXTRA_COLOR = "color"; // resolved color
+    public final static String INTENT_EXTRA_TEXT = "text";
+    public final static String INTENT_EXTRA_COLOR = "color"; // resolved color
 
-	private int currentKeyboardHeight;
-	private AppCompatEditText textEntry;
+    private int currentKeyboardHeight;
+    private AppCompatEditText textEntry;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		this.currentKeyboardHeight = 0;
+        this.currentKeyboardHeight = 0;
 
-		setSupportActionBar(getToolbar());
-		final ActionBar actionBar = getSupportActionBar();
-		if (actionBar == null) {
-			finish();
-			return;
-		}
+        setSupportActionBar(getToolbar());
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar == null) {
+            finish();
+            return;
+        }
 
-		Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
-		Objects.requireNonNull(checkDrawable).setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground), PorterDuff.Mode.SRC_IN);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeAsUpIndicator(checkDrawable);
-		actionBar.setTitle("");
+        Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
+        Objects.requireNonNull(checkDrawable).setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground), PorterDuff.Mode.SRC_IN);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(checkDrawable);
+        actionBar.setTitle("");
 
-		final View rootView = findViewById(R.id.root_view);
-		rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				// detect if keyboard was closed
-				int navigationBarHeight = ConfigUtils.getNavigationBarHeight(ImagePaintKeyboardActivity.this);
-				int statusBarHeight = ConfigUtils.getStatusBarHeight(ImagePaintKeyboardActivity.this);
+        final View rootView = findViewById(R.id.root_view);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // detect if keyboard was closed
+                int navigationBarHeight = ConfigUtils.getNavigationBarHeight(ImagePaintKeyboardActivity.this);
+                int statusBarHeight = ConfigUtils.getStatusBarHeight(ImagePaintKeyboardActivity.this);
 
-				Rect rect = new Rect();
-				getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+                Rect rect = new Rect();
+                getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
 
-				int keyboardHeight = rootView.getRootView().getHeight() - (statusBarHeight + navigationBarHeight + rect.height());
+                int keyboardHeight = rootView.getRootView().getHeight() - (statusBarHeight + navigationBarHeight + rect.height());
 
-				if ((currentKeyboardHeight - keyboardHeight) > getResources().getDimensionPixelSize(R.dimen.min_keyboard_height)) {
-					returnResult(textEntry.getText());
-				}
-				currentKeyboardHeight = keyboardHeight;
-			}
-		});
-		rootView.setOnClickListener(v -> cancel());
+                if ((currentKeyboardHeight - keyboardHeight) > getResources().getDimensionPixelSize(R.dimen.min_keyboard_height)) {
+                    returnResult(textEntry.getText());
+                }
+                currentKeyboardHeight = keyboardHeight;
+            }
+        });
+        rootView.setOnClickListener(v -> cancel());
 
-		Intent intent = getIntent();
-		@ColorInt int color = intent.getIntExtra(INTENT_EXTRA_COLOR, getResources().getColor(android.R.color.white));
-		@ColorInt int hintColor;
-		if (color > 0x1000000) {
-			hintColor = color - 0xFF000000 + 0xA0000000;
-		} else {
-			hintColor = color + 0xA0000000;
-		}
+        Intent intent = getIntent();
+        @ColorInt int color = intent.getIntExtra(INTENT_EXTRA_COLOR, getResources().getColor(android.R.color.white));
+        @ColorInt int hintColor;
+        if (color > 0x1000000) {
+            hintColor = color - 0xFF000000 + 0xA0000000;
+        } else {
+            hintColor = color + 0xA0000000;
+        }
 
-		textEntry = findViewById(R.id.edittext);
-		textEntry.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-				if (i == EditorInfo.IME_ACTION_DONE) {
-					returnResult(textView.getText());
-				}
-				return false;
-			}
-		});
-		textEntry.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        textEntry = findViewById(R.id.edittext);
+        textEntry.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    returnResult(textView.getText());
+                }
+                return false;
+            }
+        });
+        textEntry.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {onUserInteraction();}
-		});
-		textEntry.setHorizontallyScrolling(false);
-		textEntry.setMaxLines(3);
-		textEntry.setTextColor(color);
-		textEntry.setHintTextColor(hintColor);
-		// offset values don't seem to have the same range as in a textpaint (we have to approx. quadruple them)
-		textEntry.setShadowLayer(TextEntity.TEXT_SHADOW_RADIUS * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, Color.BLACK);
-		textEntry.postDelayed(() -> {
-			textEntry.setVisibility(View.VISIBLE);
-			textEntry.requestFocus();
-			EditTextUtil.showSoftKeyboard(textEntry);
-		}, 500);
-	}
+            @Override
+            public void afterTextChanged(Editable s) {
+                onUserInteraction();
+            }
+        });
+        textEntry.setHorizontallyScrolling(false);
+        textEntry.setMaxLines(3);
+        textEntry.setTextColor(color);
+        textEntry.setHintTextColor(hintColor);
+        // offset values don't seem to have the same range as in a textpaint (we have to approx. quadruple them)
+        textEntry.setShadowLayer(TextEntity.TEXT_SHADOW_RADIUS * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, TextEntity.TEXT_SHADOW_OFFSET * 4, Color.BLACK);
+        textEntry.postDelayed(() -> {
+            textEntry.setVisibility(View.VISIBLE);
+            textEntry.requestFocus();
+            EditTextUtil.showSoftKeyboard(textEntry);
+        }, 500);
+    }
 
-	@Override
-	public int getLayoutResource() {
-		return R.layout.activity_image_paint_keyboard;
-	}
+    @Override
+    public int getLayoutResource() {
+        return R.layout.activity_image_paint_keyboard;
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		super.onOptionsItemSelected(item);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
 
-		//noinspection SwitchStatementWithTooFewBranches
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				returnResult(textEntry.getText());
-				return true;
-			default:
-				break;
-		}
-		return false;
-	}
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                returnResult(textEntry.getText());
+                return true;
+            default:
+                break;
+        }
+        return false;
+    }
 
-	private void returnResult(CharSequence text) {
-		if (text != null && text.length() > 0) {
-			if (textEntry != null) {
-				EditTextUtil.hideSoftKeyboard(textEntry);
-			}
+    private void returnResult(CharSequence text) {
+        if (text != null && text.length() > 0) {
+            if (textEntry != null) {
+                EditTextUtil.hideSoftKeyboard(textEntry);
+            }
 
-			Intent resultIntent = new Intent();
-			resultIntent.putExtra(INTENT_EXTRA_TEXT, text.toString());
-			setResult(RESULT_OK, resultIntent);
-			finish();
-		} else {
-			cancel();
-		}
-	}
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(INTENT_EXTRA_TEXT, text.toString());
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        } else {
+            cancel();
+        }
+    }
 
-	private void cancel() {
-		if (textEntry != null) {
-			EditTextUtil.hideSoftKeyboard(textEntry);
-		}
+    private void cancel() {
+        if (textEntry != null) {
+            EditTextUtil.hideSoftKeyboard(textEntry);
+        }
 
-		setResult(RESULT_CANCELED);
-		finish();
-	}
+        setResult(RESULT_CANCELED);
+        finish();
+    }
 
-	@Override
-	protected void onDestroy() {
-		cancel();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        cancel();
+        super.onDestroy();
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		cancel();
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        cancel();
+    }
 }

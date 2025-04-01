@@ -134,7 +134,7 @@ public abstract class Tags {
     public static final String TAG_BALLOT_CHOICE_API_ID = "aid";
     public static final String TAG_BALLOT_CHOICE_TYPE = "type";
     public static final String TAG_BALLOT_CHOICE_NAME = "name";
-    public static final String TAG_BALLOT_CHOICE_VOTE_COUNT= "vote_count";
+    public static final String TAG_BALLOT_CHOICE_VOTE_COUNT = "vote_count";
     public static final String TAG_BALLOT_CHOICE_ORDER = "order";
     public static final String TAG_BALLOT_CHOICE_CREATED_AT = "created_at";
     public static final String TAG_BALLOT_CHOICE_MODIFIED_AT = "modified_at";

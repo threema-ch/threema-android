@@ -69,7 +69,8 @@ class ReflectUserProfileShareWithPolicySyncTask(
         }
     }
 
-    override fun serialize(): SerializableTaskData = ReflectUserProfileShareWithPolicySyncTaskData(newPolicy)
+    override fun serialize(): SerializableTaskData =
+        ReflectUserProfileShareWithPolicySyncTaskData(newPolicy)
 
     @Serializable
     data class ReflectUserProfileShareWithPolicySyncTaskData(

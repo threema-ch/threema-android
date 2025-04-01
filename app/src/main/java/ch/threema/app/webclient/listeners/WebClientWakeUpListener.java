@@ -25,5 +25,5 @@ import androidx.annotation.AnyThread;
 
 @AnyThread
 public interface WebClientWakeUpListener {
-	void onProtocolError();
+    void onProtocolError();
 }

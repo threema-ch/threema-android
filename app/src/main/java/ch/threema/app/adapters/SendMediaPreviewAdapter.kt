@@ -48,9 +48,9 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 
 class SendMediaPreviewAdapter(
-        private val context: Context,
-        private val mm: MediaAdapterManager
-        ) : RecyclerView.Adapter<SendMediaHolder>(), MediaAdapter {
+    private val context: Context,
+    private val mm: MediaAdapterManager
+) : RecyclerView.Adapter<SendMediaHolder>(), MediaAdapter {
 
     init {
         mm.setMediaPreviewAdapter(this)
@@ -64,7 +64,7 @@ class SendMediaPreviewAdapter(
         val imageView: ImageView = itemView.findViewById(R.id.thumbnail_view)
     }
 
-    class SendMediaItemHolder(itemView: View): SendMediaHolder(itemView) {
+    class SendMediaItemHolder(itemView: View) : SendMediaHolder(itemView) {
         val contentFrameLayout: CheckableFrameLayout = itemView.findViewById(R.id.content_frame)
         val fileIndicatorView: ImageView = itemView.findViewById(R.id.file_indicator_view)
         val mutedIndicatorView: ImageView = itemView.findViewById(R.id.video_send_no_audio)
@@ -74,7 +74,8 @@ class SendMediaPreviewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, @ViewType viewType: Int): SendMediaHolder {
-        val layout = if (viewType == VIEW_TYPE_ADD) R.layout.item_send_media_add else R.layout.item_send_media
+        val layout =
+            if (viewType == VIEW_TYPE_ADD) R.layout.item_send_media_add else R.layout.item_send_media
         val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
 
         return if (viewType == VIEW_TYPE_ADD) SendMediaHolder(view) else SendMediaItemHolder(view)
@@ -178,7 +179,8 @@ class SendMediaPreviewAdapter(
      * Show the file indicator for files or images/videos that should be sent as files
      */
     private fun updateSendAsFileLayout(holder: SendMediaItemHolder, item: MediaItem) {
-        val sendAsFile = item.type == TYPE_FILE || item.imageScale == ImageScale_SEND_AS_FILE || item.videoSize == VideoSize_SEND_AS_FILE
+        val sendAsFile =
+            item.type == TYPE_FILE || item.imageScale == ImageScale_SEND_AS_FILE || item.videoSize == VideoSize_SEND_AS_FILE
         holder.fileIndicatorView.visibility = if (sendAsFile) View.VISIBLE else View.GONE
     }
 
@@ -188,7 +190,12 @@ class SendMediaPreviewAdapter(
     private fun updateItemContentLayout(holder: SendMediaItemHolder, item: MediaItem) {
         if (showAsFile(item)) {
             // Show file
-            holder.imageView.setImageDrawable(AppCompatResources.getDrawable(context, IconUtil.getMimeIcon(item.mimeType)))
+            holder.imageView.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    context,
+                    IconUtil.getMimeIcon(item.mimeType)
+                )
+            )
             holder.brokenView.visibility = View.INVISIBLE
         } else {
             // Show image/video/gif
@@ -209,7 +216,7 @@ class SendMediaPreviewAdapter(
      * Return true if the given media item should be displayed as file
      */
     private fun showAsFile(mediaItem: MediaItem): Boolean {
-        return when(mediaItem.type) {
+        return when (mediaItem.type) {
             TYPE_FILE -> true
             TYPE_VOICEMESSAGE -> true
             TYPE_TEXT -> true

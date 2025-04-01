@@ -40,74 +40,74 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 
 public abstract class WizardBackgroundActivity extends ThreemaAppCompatActivity {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackgroundActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackgroundActivity");
 
-	protected ServiceManager serviceManager;
-	protected PreferenceService preferenceService;
+    protected ServiceManager serviceManager;
+    protected PreferenceService preferenceService;
     protected NotificationPreferenceService notificationPreferenceService;
-	protected UserService userService;
-	protected FileService fileService;
+    protected UserService userService;
+    protected FileService fileService;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		if (!requiredInstances()) {
-			finish();
-		}
-		super.onCreate(savedInstanceState);
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        if (!requiredInstances()) {
+            finish();
+        }
+        super.onCreate(savedInstanceState);
+    }
 
-	@Override
-	protected void onStart() {
-		super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-		HorizontalScrollView hsv = findViewById(R.id.background_image);
-		// disable scrolling
-		if (hsv != null) {
-			hsv.setOnTouchListener(new View.OnTouchListener() {
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					return true;
-				}
-			});
-		}
-	}
+        HorizontalScrollView hsv = findViewById(R.id.background_image);
+        // disable scrolling
+        if (hsv != null) {
+            hsv.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
+        }
+    }
 
-	@Override
-	protected boolean enableOnBackPressedCallback() {
-		return true;
-	}
+    @Override
+    protected boolean enableOnBackPressedCallback() {
+        return true;
+    }
 
-	@Override
-	protected void handleOnBackPressed() {
-		// catch back key
-	}
+    @Override
+    protected void handleOnBackPressed() {
+        // catch back key
+    }
 
-	private boolean requiredInstances() {
-		if(!this.checkInstances()) {
-			this.instantiate();
-		}
-		return this.checkInstances();
-	}
+    private boolean requiredInstances() {
+        if (!this.checkInstances()) {
+            this.instantiate();
+        }
+        return this.checkInstances();
+    }
 
-	private boolean checkInstances() {
-		return TestUtil.required(
-			this.preferenceService,
-			this.userService,
-			this.fileService
-		);
-	}
+    private boolean checkInstances() {
+        return TestUtil.required(
+            this.preferenceService,
+            this.userService,
+            this.fileService
+        );
+    }
 
-	private void instantiate() {
-		serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			this.preferenceService = serviceManager.getPreferenceService();
+    private void instantiate() {
+        serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            this.preferenceService = serviceManager.getPreferenceService();
             this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-			try {
-				this.userService = serviceManager.getUserService();
-				this.fileService = serviceManager.getFileService();
-			} catch (Exception e) {
-				logger.error("Exception", e);
-			}
-		}
-	}
+            try {
+                this.userService = serviceManager.getUserService();
+                this.fileService = serviceManager.getFileService();
+            } catch (Exception e) {
+                logger.error("Exception", e);
+            }
+        }
+    }
 }

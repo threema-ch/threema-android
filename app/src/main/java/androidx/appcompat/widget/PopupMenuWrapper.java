@@ -28,9 +28,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 public class PopupMenuWrapper extends PopupMenu {
-	@SuppressLint("RestrictedApi")
-	public PopupMenuWrapper(@NonNull Context context, @NonNull View anchor) {
-		super(context, anchor);
-		mPopup.setForceShowIcon(true);
-	}
+    @SuppressLint("RestrictedApi")
+    public PopupMenuWrapper(@NonNull Context context, @NonNull View anchor) {
+        super(context, anchor);
+        mPopup.setForceShowIcon(true);
+    }
 }

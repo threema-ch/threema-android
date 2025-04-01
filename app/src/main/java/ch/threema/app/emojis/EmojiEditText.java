@@ -37,119 +37,125 @@ import ch.threema.base.utils.Utils;
 
 public class EmojiEditText extends ThreemaEditText {
 
-	protected Context appContext;
-	protected CharSequence hint;
-	private String currentText;
-	private int maxByteSize;
+    protected Context appContext;
+    protected CharSequence hint;
+    private String currentText;
+    private int maxByteSize;
 
-	public EmojiEditText(Context context) {
-		super(context);
+    public EmojiEditText(Context context) {
+        super(context);
 
-		init2(context);
-	}
+        init2(context);
+    }
 
-	public EmojiEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
+    public EmojiEditText(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
 
-		init2(context);
-	}
+        init2(context);
+    }
 
-	public EmojiEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
+    public EmojiEditText(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
-		init2(context);
-	}
+        init2(context);
+    }
 
-	private void init2(Context context) {
-		this.appContext = context.getApplicationContext();
-		this.hint = getHint();
-		this.currentText = "";
-		this.maxByteSize = 0;
+    private void init2(Context context) {
+        this.appContext = context.getApplicationContext();
+        this.hint = getHint();
+        this.currentText = "";
+        this.maxByteSize = 0;
 
-		if (ConfigUtils.isDefaultEmojiStyle()) {
-			setFilters(appendEmojiFilter(this.getFilters()));
-		}
-	}
+        if (ConfigUtils.isDefaultEmojiStyle()) {
+            setFilters(appendEmojiFilter(this.getFilters()));
+        }
+    }
 
-	/**
-	 * Add our EmojiFilter as the first item to the array of existing InputFilters
-	 * @param originalFilters
-	 * @return Array of filters
-	 */
-	private InputFilter[] appendEmojiFilter(@Nullable InputFilter[] originalFilters) {
-		InputFilter[] result;
+    /**
+     * Add our EmojiFilter as the first item to the array of existing InputFilters
+     *
+     * @param originalFilters
+     * @return Array of filters
+     */
+    private InputFilter[] appendEmojiFilter(@Nullable InputFilter[] originalFilters) {
+        InputFilter[] result;
 
-		if (originalFilters != null) {
-			result = new InputFilter[originalFilters.length + 1];
-			System.arraycopy(originalFilters, 0, result, 1, originalFilters.length);
-		} else {
-			result = new InputFilter[1];
-		}
-		result[0] = new EmojiFilter(this);
+        if (originalFilters != null) {
+            result = new InputFilter[originalFilters.length + 1];
+            System.arraycopy(originalFilters, 0, result, 1, originalFilters.length);
+        } else {
+            result = new InputFilter[1];
+        }
+        result[0] = new EmojiFilter(this);
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Add single emoji at the current cursor position
-	 * @param emojiCodeString
-	 */
-	public void addEmoji(String emojiCodeString) {
-		final int start = getSelectionStart();
-		final int end = getSelectionEnd();
+    /**
+     * Add single emoji at the current cursor position
+     *
+     * @param emojiCodeString
+     */
+    public void addEmoji(String emojiCodeString) {
+        final int start = getSelectionStart();
+        final int end = getSelectionEnd();
 
-		// fix reverse selections
-		getText().replace(Math.min(start, end), Math.max(start, end), emojiCodeString);
-		setSelection(start + emojiCodeString.length());
-	}
+        // fix reverse selections
+        getText().replace(Math.min(start, end), Math.max(start, end), emojiCodeString);
+        setSelection(start + emojiCodeString.length());
+    }
 
-	/**
-	 * Callback called by invalidateSelf of EmojiDrawable
-	 * @param drawable
-	 */
-	@Override
-	public void invalidateDrawable(@NonNull Drawable drawable) {
-		if (drawable instanceof EmojiDrawable) {
-			/* setHint() invalidates the view while invalidate() does not */
-			setHint(this.hint);
-		} else {
-			super.invalidateDrawable(drawable);
-		}
-	}
+    /**
+     * Callback called by invalidateSelf of EmojiDrawable
+     *
+     * @param drawable
+     */
+    @Override
+    public void invalidateDrawable(@NonNull Drawable drawable) {
+        if (drawable instanceof EmojiDrawable) {
+            /* setHint() invalidates the view while invalidate() does not */
+            setHint(this.hint);
+        } else {
+            super.invalidateDrawable(drawable);
+        }
+    }
 
-	/**
-	 * Limit input size to maxByteSize by not allowing any input that exceeds the value thus keeping multi-byte characters intact
-	 * @param maxByteSize Maximum input size in byte
-	 */
-	public void setMaxByteSize(int maxByteSize) {
-		removeTextChangedListener(textLengthWatcher);
-		if (maxByteSize > 0) {
-			addTextChangedListener(textLengthWatcher);
-		}
-		this.maxByteSize = maxByteSize;
-	}
+    /**
+     * Limit input size to maxByteSize by not allowing any input that exceeds the value thus keeping multi-byte characters intact
+     *
+     * @param maxByteSize Maximum input size in byte
+     */
+    public void setMaxByteSize(int maxByteSize) {
+        removeTextChangedListener(textLengthWatcher);
+        if (maxByteSize > 0) {
+            addTextChangedListener(textLengthWatcher);
+        }
+        this.maxByteSize = maxByteSize;
+    }
 
 
-	private final TextWatcher textLengthWatcher = new TextWatcher() {
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+    private final TextWatcher textLengthWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) { }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			if (s != null) {
-				String text = s.toString();
-				String cropped = Utils.truncateUTF8String(text, maxByteSize);
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (s != null) {
+                String text = s.toString();
+                String cropped = Utils.truncateUTF8String(text, maxByteSize);
 
-				if (!TestUtil.compare(text, cropped == null ? "" : cropped)) {
-					setText(currentText);
-					setSelection(currentText.length());
-				} else {
-					currentText = text;
-				}
-			}
-		}
-	};
+                if (!TestUtil.compare(text, cropped == null ? "" : cropped)) {
+                    setText(currentText);
+                    setSelection(currentText.length());
+                } else {
+                    currentText = text;
+                }
+            }
+        }
+    };
 }

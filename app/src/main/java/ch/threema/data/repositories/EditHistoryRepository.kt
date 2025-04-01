@@ -87,7 +87,7 @@ class EditHistoryRepository(
 
                 val historyEntryWithUid = historyEntry.copy(uid = uid.toInt())
                 cache.get(message.uid)?.addEntry(historyEntryWithUid.toDataType())
-            } catch(exception: SQLiteException) {
+            } catch (exception: SQLiteException) {
                 throw EditHistoryEntryCreateException(exception)
             }
         }
@@ -101,4 +101,5 @@ class EditHistoryRepository(
     }
 }
 
-class EditHistoryEntryCreateException(e: Exception) : ThreemaException("Failed to create the edit history entry in the db", e)
+class EditHistoryEntryCreateException(e: Exception) :
+    ThreemaException("Failed to create the edit history entry in the db", e)

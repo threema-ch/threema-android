@@ -58,7 +58,8 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : Worker(context, workerParameters) {
+class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
     private lateinit var preferenceService: PreferenceService
     private lateinit var conversationService: ConversationService
     private lateinit var groupService: GroupService
@@ -87,7 +88,8 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                             ExistingPeriodicWorkPolicy.UPDATE,
                             buildPeriodicWorkRequest(graceDays)
                         )
-                        logger.info("Schedule result = {}",
+                        logger.info(
+                            "Schedule result = {}",
                             withContext(Dispatchers.IO) {
                                 operation.result.get()
                             })
@@ -108,15 +110,19 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                 .putInt(EXTRA_GRACE_DAYS, graceDays)
                 .build()
 
-            return PeriodicWorkRequestBuilder<AutoDeleteWorker>(schedulePeriodMs, TimeUnit.MILLISECONDS)
-                    .setInitialDelay(5, TimeUnit.MINUTES)
-                    .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
-                    .apply { setInputData(data) }
-                    .build()
+            return PeriodicWorkRequestBuilder<AutoDeleteWorker>(
+                schedulePeriodMs,
+                TimeUnit.MILLISECONDS
+            )
+                .setInitialDelay(5, TimeUnit.MINUTES)
+                .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
+                .apply { setInputData(data) }
+                .build()
         }
 
-        private fun getGraceDays(context: Context) : Int? {
-            var newGraceDays = if (ConfigUtils.isWorkRestricted()) AppRestrictionUtil.getKeepMessagesDays(context) else null
+        private fun getGraceDays(context: Context): Int? {
+            var newGraceDays =
+                if (ConfigUtils.isWorkRestricted()) AppRestrictionUtil.getKeepMessagesDays(context) else null
 
             if (newGraceDays == null) {
                 val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
@@ -160,7 +166,10 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
             return Result.retry()
         }
 
-        val graceDays: Int = inputData.getInt(EXTRA_GRACE_DAYS, ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE)
+        val graceDays: Int = inputData.getInt(
+            EXTRA_GRACE_DAYS,
+            ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE
+        )
         if (graceDays <= ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE) {
             logger.info("Stopping auto delete with graceDays = {}", graceDays)
             return Result.success()
@@ -182,7 +191,10 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
         return Result.success()
     }
 
-    private fun deleteMessagesThatExceededGraceTime(conversationModel: ConversationModel, graceDays: Int): Int {
+    private fun deleteMessagesThatExceededGraceTime(
+        conversationModel: ConversationModel,
+        graceDays: Int
+    ): Int {
         var numDeletedMessages = 0
         val today = Date()
 
@@ -215,11 +227,18 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
             if (createdDate == null) {
                 createdDate = messageModel.postedAt
             }
-            if (createdDate != null && AutoDeleteUtil.getDifferenceDays(createdDate, today) >= graceDays) {
+            if (createdDate != null && AutoDeleteUtil.getDifferenceDays(
+                    createdDate,
+                    today
+                ) >= graceDays
+            ) {
                 if (messageModel.type == MessageType.BALLOT) {
                     val ballotModel = ballotService.get(messageModel.ballotData.ballotId)
                     if (messageModel.ballotData.type == BallotDataModel.Type.BALLOT_CLOSED) {
-                        logger.info("Removing ballot message {}", messageModel.apiMessageId ?: messageModel.id)
+                        logger.info(
+                            "Removing ballot message {}",
+                            messageModel.apiMessageId ?: messageModel.id
+                        )
                         if (ballotModel != null) {
                             ballotService.remove(ballotModel)
                         } else {
@@ -228,7 +247,11 @@ class AutoDeleteWorker(context: Context, workerParameters: WorkerParameters) : W
                         }
                         numDeletedMessages++
                     } else {
-                        logger.info("Skipping ballot message {} of type {}.", messageModel.apiMessageId ?: messageModel.id, messageModel.ballotData.type)
+                        logger.info(
+                            "Skipping ballot message {} of type {}.",
+                            messageModel.apiMessageId ?: messageModel.id,
+                            messageModel.ballotData.type
+                        )
                     }
                 } else {
                     logger.info("Removing message {}", messageModel.apiMessageId ?: messageModel.id)

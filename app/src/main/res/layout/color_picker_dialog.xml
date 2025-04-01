@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:padding="28dp" >
+        android:padding="28dp">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<bool name="tablet_layout">false</bool>
-	<bool name="is_landscape">false</bool>
+    <bool name="tablet_layout">false</bool>
+    <bool name="is_landscape">false</bool>
 </resources>

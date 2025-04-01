@@ -25,76 +25,76 @@ import androidx.annotation.Nullable;
 
 public class OnPremConfig {
 
-	private final long validUntil;
-	private final OnPremLicense license;
-	private final OnPremConfigChat chatConfig;
-	private final OnPremConfigDirectory directoryConfig;
-	private final OnPremConfigBlob blobConfig;
-	private final OnPremConfigWork workConfig;
-	private final OnPremConfigAvatar avatarConfig;
-	private final OnPremConfigSafe safeConfig;
-	private final OnPremConfigWeb webConfig;
-	private final OnPremConfigMediator mediatorConfig;
+    private final long validUntil;
+    private final OnPremLicense license;
+    private final OnPremConfigChat chatConfig;
+    private final OnPremConfigDirectory directoryConfig;
+    private final OnPremConfigBlob blobConfig;
+    private final OnPremConfigWork workConfig;
+    private final OnPremConfigAvatar avatarConfig;
+    private final OnPremConfigSafe safeConfig;
+    private final OnPremConfigWeb webConfig;
+    private final OnPremConfigMediator mediatorConfig;
 
-	public OnPremConfig(long validUntil,
-	                    OnPremLicense license,
-	                    OnPremConfigChat chatConfig,
-	                    OnPremConfigDirectory directoryConfig,
-	                    OnPremConfigBlob blobConfig,
-	                    OnPremConfigWork workConfig,
-	                    OnPremConfigAvatar avatarConfig,
-	                    OnPremConfigSafe safeConfig,
-	                    @Nullable OnPremConfigWeb webConfig,
-	                    @Nullable OnPremConfigMediator mediatorConfig) {
-		this.validUntil = validUntil;
-		this.chatConfig = chatConfig;
-		this.license = license;
-		this.directoryConfig = directoryConfig;
-		this.blobConfig = blobConfig;
-		this.workConfig = workConfig;
-		this.avatarConfig = avatarConfig;
-		this.safeConfig = safeConfig;
-		this.webConfig = webConfig;
-		this.mediatorConfig = mediatorConfig;
-	}
+    public OnPremConfig(long validUntil,
+                        OnPremLicense license,
+                        OnPremConfigChat chatConfig,
+                        OnPremConfigDirectory directoryConfig,
+                        OnPremConfigBlob blobConfig,
+                        OnPremConfigWork workConfig,
+                        OnPremConfigAvatar avatarConfig,
+                        OnPremConfigSafe safeConfig,
+                        @Nullable OnPremConfigWeb webConfig,
+                        @Nullable OnPremConfigMediator mediatorConfig) {
+        this.validUntil = validUntil;
+        this.chatConfig = chatConfig;
+        this.license = license;
+        this.directoryConfig = directoryConfig;
+        this.blobConfig = blobConfig;
+        this.workConfig = workConfig;
+        this.avatarConfig = avatarConfig;
+        this.safeConfig = safeConfig;
+        this.webConfig = webConfig;
+        this.mediatorConfig = mediatorConfig;
+    }
 
-	public long getValidUntil() {
-		return validUntil;
-	}
+    public long getValidUntil() {
+        return validUntil;
+    }
 
-	public OnPremLicense getLicense() {
-		return license;
-	}
+    public OnPremLicense getLicense() {
+        return license;
+    }
 
-	public OnPremConfigChat getChatConfig() {
-		return chatConfig;
-	}
+    public OnPremConfigChat getChatConfig() {
+        return chatConfig;
+    }
 
-	public OnPremConfigDirectory getDirectoryConfig() {
-		return directoryConfig;
-	}
+    public OnPremConfigDirectory getDirectoryConfig() {
+        return directoryConfig;
+    }
 
-	public OnPremConfigBlob getBlobConfig() {
-		return blobConfig;
-	}
+    public OnPremConfigBlob getBlobConfig() {
+        return blobConfig;
+    }
 
-	public OnPremConfigWork getWorkConfig() {
-		return workConfig;
-	}
+    public OnPremConfigWork getWorkConfig() {
+        return workConfig;
+    }
 
-	public OnPremConfigAvatar getAvatarConfig() {
-		return avatarConfig;
-	}
+    public OnPremConfigAvatar getAvatarConfig() {
+        return avatarConfig;
+    }
 
-	public OnPremConfigSafe getSafeConfig() {
-		return safeConfig;
-	}
+    public OnPremConfigSafe getSafeConfig() {
+        return safeConfig;
+    }
 
-	public @Nullable OnPremConfigWeb getWebConfig() {
-		return webConfig;
-	}
+    public @Nullable OnPremConfigWeb getWebConfig() {
+        return webConfig;
+    }
 
-	public @Nullable OnPremConfigMediator getMediatorConfig() {
-		return mediatorConfig;
-	}
+    public @Nullable OnPremConfigMediator getMediatorConfig() {
+        return mediatorConfig;
+    }
 }

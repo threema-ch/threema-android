@@ -39,59 +39,59 @@ import ch.threema.storage.models.GroupModel;
 
 /**
  * Delete a group.
- *
+ * <p>
  * This will show a dialog while the process is ongoing.
  */
 public class DeleteGroupAsyncTask extends AsyncTask<Void, Void, Void> {
-	private static final String DIALOG_TAG = "lg";
+    private static final String DIALOG_TAG = "lg";
 
-	private final @NonNull GroupModel groupModel;
-	private final @NonNull GroupService groupService;
-	private final AppCompatActivity activity;
-	private final Fragment fragment;
-	private final @Nullable Runnable runOnCompletion;
+    private final @NonNull GroupModel groupModel;
+    private final @NonNull GroupService groupService;
+    private final AppCompatActivity activity;
+    private final Fragment fragment;
+    private final @Nullable Runnable runOnCompletion;
 
-	public DeleteGroupAsyncTask(
-		@NonNull GroupModel groupModel,
-	    @NonNull GroupService groupService,
-	    AppCompatActivity activity,
-	    Fragment fragment,
-	    @Nullable Runnable runOnCompletion
-	) {
+    public DeleteGroupAsyncTask(
+        @NonNull GroupModel groupModel,
+        @NonNull GroupService groupService,
+        AppCompatActivity activity,
+        Fragment fragment,
+        @Nullable Runnable runOnCompletion
+    ) {
 
-		this.groupModel = groupModel;
-		this.groupService = groupService;
-		this.activity = activity;
-		this.fragment = fragment;
-		this.runOnCompletion = runOnCompletion;
-	}
+        this.groupModel = groupModel;
+        this.groupService = groupService;
+        this.activity = activity;
+        this.fragment = fragment;
+        this.runOnCompletion = runOnCompletion;
+    }
 
-	@Override
-	protected void onPreExecute() {
-		final FragmentManager fragmentManager = activity != null
-			? activity.getSupportFragmentManager()
-			: fragment.getFragmentManager();
-		GenericProgressDialog.newInstance(
-			R.string.action_delete_group,
-			R.string.please_wait
-		).show(fragmentManager, DIALOG_TAG);
-	}
+    @Override
+    protected void onPreExecute() {
+        final FragmentManager fragmentManager = activity != null
+            ? activity.getSupportFragmentManager()
+            : fragment.getFragmentManager();
+        GenericProgressDialog.newInstance(
+            R.string.action_delete_group,
+            R.string.please_wait
+        ).show(fragmentManager, DIALOG_TAG);
+    }
 
-	@Override
-	protected Void doInBackground(Void... params) {
-		groupService.leaveGroupFromLocal(groupModel);
-		groupService.remove(groupModel);
-		return null;
-	}
+    @Override
+    protected Void doInBackground(Void... params) {
+        groupService.leaveGroupFromLocal(groupModel);
+        groupService.remove(groupModel);
+        return null;
+    }
 
-	@Override
-	protected void onPostExecute(Void aVoid) {
-		DialogUtil.dismissDialog(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG, true);
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        DialogUtil.dismissDialog(activity != null ? activity.getSupportFragmentManager() : fragment.getFragmentManager(), DIALOG_TAG, true);
 
-		ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
+        ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
 
-		if (runOnCompletion != null) {
-			runOnCompletion.run();
-		}
-	}
+        if (runOnCompletion != null) {
+            runOnCompletion.run();
+        }
+    }
 }

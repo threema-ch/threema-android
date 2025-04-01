@@ -53,7 +53,7 @@
         android:layout_marginLeft="10dp"
         android:clickable="false"
         android:text="@string/add_group_owner"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </RelativeLayout>
 

@@ -38,26 +38,28 @@ import java8.util.Optional;
 
 public interface GroupInviteService {
 
-	@NonNull GroupInviteModel createGroupInvite(@NonNull GroupModel groupModel,boolean isDefault) throws
-		PolicyViolationException,
-		GroupInviteToken.InvalidGroupInviteTokenException,
-		IOException, GroupInviteModel.MissingRequiredArgumentsException;
+    @NonNull
+    GroupInviteModel createGroupInvite(@NonNull GroupModel groupModel, boolean isDefault) throws
+        PolicyViolationException,
+        GroupInviteToken.InvalidGroupInviteTokenException,
+        IOException, GroupInviteModel.MissingRequiredArgumentsException;
 
-	@NonNull
-	Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel);
+    @NonNull
+    Optional<GroupInviteModel> getDefaultGroupInvite(@NonNull GroupModel groupModel);
 
-	int getCustomLinksCount(GroupId groupApiId);
+    int getCustomLinksCount(GroupId groupApiId);
 
-	void deleteDefaultLink(GroupModel groupModel);
+    void deleteDefaultLink(GroupModel groupModel);
 
-	GroupInviteModel resetDefaultGroupInvite(@NonNull GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException;
+    GroupInviteModel resetDefaultGroupInvite(@NonNull GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException;
 
-	GroupInviteModel createOrEnableDefaultLink(GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException;
+    GroupInviteModel createOrEnableDefaultLink(GroupModel groupModel) throws IOException, GroupInviteToken.InvalidGroupInviteTokenException, GroupInviteModel.MissingRequiredArgumentsException;
 
-	@NonNull Uri encodeGroupInviteLink(@NonNull GroupInviteModel groupInviteModel);
+    @NonNull
+    Uri encodeGroupInviteLink(@NonNull GroupInviteModel groupInviteModel);
 
-	@NonNull
-	GroupInviteData decodeGroupInviteLink(@NonNull String encodedString) throws IOException, IllegalStateException, GroupInviteToken.InvalidGroupInviteTokenException;
+    @NonNull
+    GroupInviteData decodeGroupInviteLink(@NonNull String encodedString) throws IOException, IllegalStateException, GroupInviteToken.InvalidGroupInviteTokenException;
 
-	void shareGroupLink(@NonNull Context context, @NonNull GroupInviteModel groupInviteModel);
+    void shareGroupLink(@NonNull Context context, @NonNull GroupInviteModel groupInviteModel);
 }

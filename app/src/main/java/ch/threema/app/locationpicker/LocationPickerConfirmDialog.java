@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.maplibre.android.geometry.LatLng;
 import org.maplibre.android.geometry.LatLngBounds;
 
@@ -49,127 +50,129 @@ import ch.threema.base.utils.LoggingUtil;
 
 
 public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
-	private LocationConfirmDialogClickListener callback;
+    private LocationConfirmDialogClickListener callback;
 
-	private static final String ARG_TITLE = "title";
-	private static final String ARG_NAME = "name";
-	private static final String ARG_LAT_LNG = "latLng";
-	private static final String ARG_LAT_LNG_BOUNDS = "latLngBounds";
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_NAME = "name";
+    private static final String ARG_LAT_LNG = "latLng";
+    private static final String ARG_LAT_LNG_BOUNDS = "latLngBounds";
 
-	private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerConfirmDialog");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerConfirmDialog");
 
-	public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds, LocationConfirmDialogClickListener callback) {
-		LocationPickerConfirmDialog dialog = new LocationPickerConfirmDialog();
-		dialog.callback = callback;
+    public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds, LocationConfirmDialogClickListener callback) {
+        LocationPickerConfirmDialog dialog = new LocationPickerConfirmDialog();
+        dialog.callback = callback;
 
-		Bundle args = new Bundle();
-		args.putString(ARG_TITLE, title);
-		args.putString(ARG_NAME, name);
-		args.putParcelable(ARG_LAT_LNG, latLng);
-		args.putParcelable(ARG_LAT_LNG_BOUNDS, latLngBounds);
+        Bundle args = new Bundle();
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_NAME, name);
+        args.putParcelable(ARG_LAT_LNG, latLng);
+        args.putParcelable(ARG_LAT_LNG_BOUNDS, latLngBounds);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface LocationConfirmDialogClickListener {
-		void onOK(String tag, Object object);
-		default void onCancel(String tag) {}
-	}
+    public interface LocationConfirmDialogClickListener {
+        void onOK(String tag, Object object);
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		String title = "";
-		String name = "";
-		LatLng latLng = null;
+        default void onCancel(String tag) {
+        }
+    }
 
-		Bundle arguments = getArguments();
-		if (arguments != null) {
-			title = arguments.getString(ARG_TITLE);
-			name = arguments.getString(ARG_NAME);
-			latLng = arguments.getParcelable(ARG_LAT_LNG);
-		}
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        String title = "";
+        String name = "";
+        LatLng latLng = null;
 
-		final String tag = this.getTag();
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            title = arguments.getString(ARG_TITLE);
+            name = arguments.getString(ARG_NAME);
+            latLng = arguments.getParcelable(ARG_LAT_LNG);
+        }
 
-		final View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_location_picker_confirm, null);
+        final String tag = this.getTag();
 
-		TextView addressText = dialogView.findViewById(R.id.place_address);
-		TextView nameText = dialogView.findViewById(R.id.place_name);
-		TextView coordinatesText = dialogView.findViewById(R.id.place_coordinates);
+        final View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_location_picker_confirm, null);
 
-		addressText.setVisibility(View.GONE);
+        TextView addressText = dialogView.findViewById(R.id.place_address);
+        TextView nameText = dialogView.findViewById(R.id.place_name);
+        TextView coordinatesText = dialogView.findViewById(R.id.place_coordinates);
 
-		if (latLng != null) {
-			new LocationNameAsyncTask(getContext(), addressText, latLng.getLatitude(), latLng.getLongitude()).execute();
-		}
+        addressText.setVisibility(View.GONE);
 
-		if (!TestUtil.isEmptyOrNull(name)) {
-			nameText.setText(name);
-		} else {
-			nameText.setVisibility(View.GONE);
-		}
+        if (latLng != null) {
+            new LocationNameAsyncTask(getContext(), addressText, latLng.getLatitude(), latLng.getLongitude()).execute();
+        }
 
-		if (latLng != null) {
-			coordinatesText.setText(String.format(Locale.US, "%f, %f",latLng.getLatitude(), latLng.getLongitude()));
-		} else {
-			coordinatesText.setVisibility(View.GONE);
-		}
+        if (!TestUtil.isEmptyOrNull(name)) {
+            nameText.setText(name);
+        } else {
+            nameText.setVisibility(View.GONE);
+        }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), getTheme());
-		builder.setView(dialogView);
+        if (latLng != null) {
+            coordinatesText.setText(String.format(Locale.US, "%f, %f", latLng.getLatitude(), latLng.getLongitude()));
+        } else {
+            coordinatesText.setVisibility(View.GONE);
+        }
 
-		if (!TestUtil.isEmptyOrNull(title)) {
-			builder.setTitle(title);
-		}
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext(), getTheme());
+        builder.setView(dialogView);
 
-		builder.setPositiveButton(R.string.ok, (dialog, which) -> callback.onOK(tag, object));
-		builder.setNegativeButton(R.string.cancel, (dialog, which) -> callback.onCancel(tag)
-		);
+        if (!TestUtil.isEmptyOrNull(title)) {
+            builder.setTitle(title);
+        }
 
-		AlertDialog alertDialog = builder.create();
+        builder.setPositiveButton(R.string.ok, (dialog, which) -> callback.onOK(tag, object));
+        builder.setNegativeButton(R.string.cancel, (dialog, which) -> callback.onCancel(tag)
+        );
 
-		setCancelable(false);
+        AlertDialog alertDialog = builder.create();
 
-		return alertDialog;
-	}
+        setCancelable(false);
 
-	/**
-	 *  AsyncTask that loads the address retrieved from the Geocoder to the supplied TextView
-	 */
-	private static class LocationNameAsyncTask extends AsyncTask<Void, Void, String> {
-		WeakReference<Context> contextWeakReference;
-		WeakReference<TextView> textViewWeakReference;
-		double latitude, longitude;
+        return alertDialog;
+    }
 
-		public LocationNameAsyncTask(@Nullable Context context, @NonNull TextView textView, double latitude, double longitude) {
-			this.contextWeakReference = new WeakReference<>(context);
-			this.textViewWeakReference = new WeakReference<>(textView);
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
+    /**
+     * AsyncTask that loads the address retrieved from the Geocoder to the supplied TextView
+     */
+    private static class LocationNameAsyncTask extends AsyncTask<Void, Void, String> {
+        WeakReference<Context> contextWeakReference;
+        WeakReference<TextView> textViewWeakReference;
+        double latitude, longitude;
 
-		@Override
-		protected String doInBackground(Void... voids) {
-			if (contextWeakReference != null && contextWeakReference.get() != null) {
-				try {
-					return GeoLocationUtil.getAddressFromLocation(contextWeakReference.get(), latitude, longitude);
-				} catch (IOException e) {
-					logger.error("Exception", e);
-				}
-			}
-			return null;
-		}
+        public LocationNameAsyncTask(@Nullable Context context, @NonNull TextView textView, double latitude, double longitude) {
+            this.contextWeakReference = new WeakReference<>(context);
+            this.textViewWeakReference = new WeakReference<>(textView);
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
 
-		@Override
-		protected void onPostExecute(String s) {
-			if (!TestUtil.isEmptyOrNull(s)) {
-				if (textViewWeakReference != null && textViewWeakReference.get() != null) {
-					textViewWeakReference.get().setText(s);
-					textViewWeakReference.get().setVisibility(View.VISIBLE);
-				}
-			}
-		}
-	}
+        @Override
+        protected String doInBackground(Void... voids) {
+            if (contextWeakReference != null && contextWeakReference.get() != null) {
+                try {
+                    return GeoLocationUtil.getAddressFromLocation(contextWeakReference.get(), latitude, longitude);
+                } catch (IOException e) {
+                    logger.error("Exception", e);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (!TestUtil.isEmptyOrNull(s)) {
+                if (textViewWeakReference != null && textViewWeakReference.get() != null) {
+                    textViewWeakReference.get().setText(s);
+                    textViewWeakReference.get().setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
 }

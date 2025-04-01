@@ -31,16 +31,17 @@ import ch.threema.storage.factories.ModelFactory;
 
 public class SystemUpdateToVersion25 implements UpdateSystemService.SystemUpdate {
 
-	private final DatabaseServiceNew databaseService;
-	private final SQLiteDatabase sqLiteDatabase;
+    private final DatabaseServiceNew databaseService;
+    private final SQLiteDatabase sqLiteDatabase;
 
 
-	public SystemUpdateToVersion25(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
+    public SystemUpdateToVersion25(DatabaseServiceNew databaseService, SQLiteDatabase sqLiteDatabase) {
 
-		this.databaseService = databaseService;
-		this.sqLiteDatabase = sqLiteDatabase;
-	}
-//
+        this.databaseService = databaseService;
+        this.sqLiteDatabase = sqLiteDatabase;
+    }
+
+    //
 //	private void drop(String t) {
 //		try {
 //			if(
@@ -52,8 +53,8 @@ public class SystemUpdateToVersion25 implements UpdateSystemService.SystemUpdate
 //			e.printStackTrace();
 //		}
 //	}
-	@Override
-	public boolean runDirectly() throws SQLException {
+    @Override
+    public boolean runDirectly() throws SQLException {
 
 //		this.drop(BallotModel.TABLE);
 //		this.drop(BallotChoiceModel.TABLE);
@@ -61,28 +62,28 @@ public class SystemUpdateToVersion25 implements UpdateSystemService.SystemUpdate
 //		this.drop(IdentityBallotModel.TABLE);
 //		this.drop(GroupBallotModel.TABLE);
 
-		for(ModelFactory f: new ModelFactory[]{
-				this.databaseService.getBallotModelFactory(),
-				this.databaseService.getBallotChoiceModelFactory(),
-				this.databaseService.getBallotVoteModelFactory(),
-				this.databaseService.getIdentityBallotModelFactory(),
-				this.databaseService.getGroupBallotModelFactory()
-		}){
-			for(String s: f.getStatements()) {
-				this.sqLiteDatabase.execSQL(s);
-			}
-		}
+        for (ModelFactory f : new ModelFactory[]{
+            this.databaseService.getBallotModelFactory(),
+            this.databaseService.getBallotChoiceModelFactory(),
+            this.databaseService.getBallotVoteModelFactory(),
+            this.databaseService.getIdentityBallotModelFactory(),
+            this.databaseService.getGroupBallotModelFactory()
+        }) {
+            for (String s : f.getStatements()) {
+                this.sqLiteDatabase.execSQL(s);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean runAsync() {
-		return true;
-	}
+    @Override
+    public boolean runAsync() {
+        return true;
+    }
 
-	@Override
-	public String getText() {
-		return "version 25";
-	}
+    @Override
+    public String getText() {
+        return "version 25";
+    }
 }

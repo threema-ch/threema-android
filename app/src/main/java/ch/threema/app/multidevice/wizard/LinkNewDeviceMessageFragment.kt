@@ -27,7 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import ch.threema.app.R
 
-abstract class LinkNewDeviceMessageFragment: LinkNewDeviceFragment() {
+abstract class LinkNewDeviceMessageFragment : LinkNewDeviceFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

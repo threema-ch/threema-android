@@ -49,174 +49,182 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @WorkerThread
 public class SessionStateManager {
-	/**
-	 * Called in-sync when the session state is moving into the stopped state
-	 * and there are no pending wakeups for this session.
-	 */
-	public interface StopHandler {
-		void onStopped(@NonNull DisconnectContext reason);
-	}
+    /**
+     * Called in-sync when the session state is moving into the stopped state
+     * and there are no pending wakeups for this session.
+     */
+    public interface StopHandler {
+        void onStopped(@NonNull DisconnectContext reason);
+    }
 
-	private final Logger logger = LoggingUtil.getThreemaLogger("SessionStateManager");
+    private final Logger logger = LoggingUtil.getThreemaLogger("SessionStateManager");
 
-	// Stop event handler
-	@NonNull private final StopHandler stopHandler;
+    // Stop event handler
+    @NonNull
+    private final StopHandler stopHandler;
 
-	// Session context that is passed from one state to another
-	@NonNull private final SessionContext ctx;
+    // Session context that is passed from one state to another
+    @NonNull
+    private final SessionContext ctx;
 
-	// Current state
-	@NonNull private SessionState state;
+    // Current state
+    @NonNull
+    private SessionState state;
 
-	@AnyThread
-	public SessionStateManager(
-		final int sessionId,
-		@NonNull final WebClientSessionModel model,
-		@NonNull final HandlerExecutor handler,
-		@NonNull final ServicesContainer services,
-		@NonNull final StopHandler stopHandler
-	) {
-		// Set logger prefix
-		// Note: <session-id>.<affiliation-id>, where the affiliation id is initially not provided
-		if (logger instanceof ThreemaLogger) {
-			((ThreemaLogger) logger).setPrefix(sessionId + ".null");
-		}
+    @AnyThread
+    public SessionStateManager(
+        final int sessionId,
+        @NonNull final WebClientSessionModel model,
+        @NonNull final HandlerExecutor handler,
+        @NonNull final ServicesContainer services,
+        @NonNull final StopHandler stopHandler
+    ) {
+        // Set logger prefix
+        // Note: <session-id>.<affiliation-id>, where the affiliation id is initially not provided
+        if (logger instanceof ThreemaLogger) {
+            ((ThreemaLogger) logger).setPrefix(sessionId + ".null");
+        }
 
-		// Store stop event handler
-		this.stopHandler = stopHandler;
+        // Store stop event handler
+        this.stopHandler = stopHandler;
 
-		// Create initial session context
-		this.ctx = new SessionContext(this, sessionId, model, handler, services);
+        // Create initial session context
+        this.ctx = new SessionContext(this, sessionId, model, handler, services);
 
-		// Create initial state
-		this.state = new SessionStateDisconnected(this.ctx);
-	}
+        // Create initial state
+        this.state = new SessionStateDisconnected(this.ctx);
+    }
 
-	/**
-	 * Get the current session state instance.
-	 *
-	 * Note: Don't expose the SessionState instance to the outside!
-	 */
-	@NonNull SessionState getInternalState() {
-		return this.state;
-	}
+    /**
+     * Get the current session state instance.
+     * <p>
+     * Note: Don't expose the SessionState instance to the outside!
+     */
+    @NonNull
+    SessionState getInternalState() {
+        return this.state;
+    }
 
-	/**
-	 * Get the current session state as an enum (not the instance).
-	 */
-	@NonNull public WebClientSessionState getState() {
-		return this.state.state;
-	}
+    /**
+     * Get the current session state as an enum (not the instance).
+     */
+    @NonNull
+    public WebClientSessionState getState() {
+        return this.state.state;
+    }
 
-	// State transitions
-	public void setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId) {
-		this.updateState(WebClientSessionState.CONNECTING, builder, affiliationId, null, null);
-	}
-	public void setConnected() {
-		this.updateState(WebClientSessionState.CONNECTED, null, null, null, null);
-	}
-	public void setDisconnected(@NonNull final DisconnectContext reason) {
-		this.updateState(WebClientSessionState.DISCONNECTED, null, null, reason, null);
-	}
-	public void setError(@NonNull final String reason) {
-		this.updateState(WebClientSessionState.ERROR, null, null, null, reason);
-	}
+    // State transitions
+    public void setConnecting(@NonNull final SaltyRTCBuilder builder, @Nullable final String affiliationId) {
+        this.updateState(WebClientSessionState.CONNECTING, builder, affiliationId, null, null);
+    }
 
-	/**
-	 * Update the current session state and fire state events.
-	 *
-	 * Warning: This is a critical code section! Be careful when you touch this!
-	 */
-	private void updateState(
-		@NonNull final WebClientSessionState desiredState,
-		@Nullable final SaltyRTCBuilder connectionBuilder,
-		@Nullable final String connectionAffiliationId,
-		@Nullable DisconnectContext disconnectReason,
-		@Nullable final String errorReason
-	) {
-		// Attempt to replace the state
-		final SessionState currentState = this.state;
-		SessionState newState;
-		logger.info("Changing state from {} to {}", currentState.state, desiredState);
-		try {
-			switch (desiredState) {
-				case CONNECTING:
-					newState = currentState.setConnecting(Objects.requireNonNull(connectionBuilder), connectionAffiliationId);
-					break;
-				case CONNECTED:
-					newState = currentState.setConnected();
-					break;
-				case DISCONNECTED:
-					newState = currentState.setDisconnected(Objects.requireNonNull(disconnectReason));
-					break;
-				case ERROR:
-					newState = currentState.setError(Objects.requireNonNull(errorReason));
-					break;
-				default:
-					logger.error("Unknown state: {}", desiredState);
-					return;
-			}
-		} catch (SessionState.IgnoredStateTransition error) {
-			// Transition has been ignored - just log it
-			logger.info(error.getMessage());
-			return;
-		} catch (SessionState.InvalidStateTransition error) {
-			// Transition was not possible, move into error state
-			if (logger.isErrorEnabled()) {
-				logger.error("Could not perform state transition from {} to {}: {}", currentState.state, desiredState, error.getMessage());
-			}
-			newState = currentState.setError("Could not perform state transition from " + currentState.state + " to " + desiredState);
-		}
-		this.state = newState;
+    public void setConnected() {
+        this.updateState(WebClientSessionState.CONNECTED, null, null, null, null);
+    }
 
-		// Notify listeners about the state change
-		//
-		// WARNING: If you start a state transition in a state event handler, it will break your neck!
-		SessionState finalNewState = newState;
-		WebClientListenerManager.serviceListener.handle(new ListenerManager.HandleListener<WebClientServiceListener>() {
-			@Override
-			@WorkerThread
-			public void handle(WebClientServiceListener listener) {
-				listener.onStateChanged(SessionStateManager.this.ctx.model, currentState.state, finalNewState.state);
-			}
-		});
+    public void setDisconnected(@NonNull final DisconnectContext reason) {
+        this.updateState(WebClientSessionState.DISCONNECTED, null, null, reason, null);
+    }
 
-		// Process pending wakeups when in the disconnected/error state
-		//
-		// Note: This MUST be done before notifying the listeners since the SessionAndroidService
-		//       would otherwise stop the foreground service!
-		if (newState.state == WebClientSessionState.DISCONNECTED || newState.state == WebClientSessionState.ERROR) {
-			logger.info("Processing pending wakeups");
-			this.ctx.services.sessionWakeUp.processPendingWakeups();
+    public void setError(@NonNull final String reason) {
+        this.updateState(WebClientSessionState.ERROR, null, null, null, reason);
+    }
 
-			// Notify listeners, if stopped
-			// Note: The state may have changed now, so we only dispatch the stop event if the state
-			//       instance (!) remained the same.
-			if (this.ctx.manager.state == newState) {
-				logger.info("No pending wakeups, stopping");
-				final DisconnectContext reason = disconnectReason != null ? disconnectReason : DisconnectContext.unknown();
+    /**
+     * Update the current session state and fire state events.
+     * <p>
+     * Warning: This is a critical code section! Be careful when you touch this!
+     */
+    private void updateState(
+        @NonNull final WebClientSessionState desiredState,
+        @Nullable final SaltyRTCBuilder connectionBuilder,
+        @Nullable final String connectionAffiliationId,
+        @Nullable DisconnectContext disconnectReason,
+        @Nullable final String errorReason
+    ) {
+        // Attempt to replace the state
+        final SessionState currentState = this.state;
+        SessionState newState;
+        logger.info("Changing state from {} to {}", currentState.state, desiredState);
+        try {
+            switch (desiredState) {
+                case CONNECTING:
+                    newState = currentState.setConnecting(Objects.requireNonNull(connectionBuilder), connectionAffiliationId);
+                    break;
+                case CONNECTED:
+                    newState = currentState.setConnected();
+                    break;
+                case DISCONNECTED:
+                    newState = currentState.setDisconnected(Objects.requireNonNull(disconnectReason));
+                    break;
+                case ERROR:
+                    newState = currentState.setError(Objects.requireNonNull(errorReason));
+                    break;
+                default:
+                    logger.error("Unknown state: {}", desiredState);
+                    return;
+            }
+        } catch (SessionState.IgnoredStateTransition error) {
+            // Transition has been ignored - just log it
+            logger.info(error.getMessage());
+            return;
+        } catch (SessionState.InvalidStateTransition error) {
+            // Transition was not possible, move into error state
+            if (logger.isErrorEnabled()) {
+                logger.error("Could not perform state transition from {} to {}: {}", currentState.state, desiredState, error.getMessage());
+            }
+            newState = currentState.setError("Could not perform state transition from " + currentState.state + " to " + desiredState);
+        }
+        this.state = newState;
 
-				// Raise to session instance first, so it can unregister events
-				this.stopHandler.onStopped(reason);
+        // Notify listeners about the state change
+        //
+        // WARNING: If you start a state transition in a state event handler, it will break your neck!
+        SessionState finalNewState = newState;
+        WebClientListenerManager.serviceListener.handle(new ListenerManager.HandleListener<WebClientServiceListener>() {
+            @Override
+            @WorkerThread
+            public void handle(WebClientServiceListener listener) {
+                listener.onStateChanged(SessionStateManager.this.ctx.model, currentState.state, finalNewState.state);
+            }
+        });
 
-				// Raise to all listeners
-				WebClientListenerManager.serviceListener.handle(new ListenerManager.HandleListener<WebClientServiceListener>() {
-					@Override
-					@WorkerThread
-					public void handle(WebClientServiceListener listener) {
-						listener.onStopped(SessionStateManager.this.ctx.model, reason);
-					}
-				});
-			} else {
-				logger.debug("Pending wakeups processed, continuing");
-			}
-		}
-	}
+        // Process pending wakeups when in the disconnected/error state
+        //
+        // Note: This MUST be done before notifying the listeners since the SessionAndroidService
+        //       would otherwise stop the foreground service!
+        if (newState.state == WebClientSessionState.DISCONNECTED || newState.state == WebClientSessionState.ERROR) {
+            logger.info("Processing pending wakeups");
+            this.ctx.services.sessionWakeUp.processPendingWakeups();
 
-	/**
-	 * Send a msgpack encoded message to the peer through the secure data channel.
-	 */
-	public void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
-		this.state.send(message, mode);
-	}
+            // Notify listeners, if stopped
+            // Note: The state may have changed now, so we only dispatch the stop event if the state
+            //       instance (!) remained the same.
+            if (this.ctx.manager.state == newState) {
+                logger.info("No pending wakeups, stopping");
+                final DisconnectContext reason = disconnectReason != null ? disconnectReason : DisconnectContext.unknown();
+
+                // Raise to session instance first, so it can unregister events
+                this.stopHandler.onStopped(reason);
+
+                // Raise to all listeners
+                WebClientListenerManager.serviceListener.handle(new ListenerManager.HandleListener<WebClientServiceListener>() {
+                    @Override
+                    @WorkerThread
+                    public void handle(WebClientServiceListener listener) {
+                        listener.onStopped(SessionStateManager.this.ctx.model, reason);
+                    }
+                });
+            } else {
+                logger.debug("Pending wakeups processed, continuing");
+            }
+        }
+    }
+
+    /**
+     * Send a msgpack encoded message to the peer through the secure data channel.
+     */
+    public void send(@NonNull final ByteBuffer message, @NonNull final SendMode mode) {
+        this.state.send(message, mode);
+    }
 }

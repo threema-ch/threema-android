@@ -43,95 +43,95 @@ import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class DeleteMessageHandler extends MessageReceiver {
-	private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteMessageHandler");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteMessageHandler");
 
-	private final MessageService messageService;
-	private final MessageDispatcher responseDispatcher;
+    private final MessageService messageService;
+    private final MessageDispatcher responseDispatcher;
 
-	@Retention(RetentionPolicy.SOURCE)
-	@StringDef({
-		Protocol.ERROR_INVALID_MESSAGE,
-		Protocol.ERROR_BAD_REQUEST,
-	})
-	private @interface ErrorCode {}
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({
+        Protocol.ERROR_INVALID_MESSAGE,
+        Protocol.ERROR_BAD_REQUEST,
+    })
+    private @interface ErrorCode {
+    }
 
-	@AnyThread
-	public DeleteMessageHandler(MessageDispatcher responseDispatcher,
-	                            MessageService messageService) {
-		super(Protocol.SUB_TYPE_MESSAGE);
-		this.messageService = messageService;
-		this.responseDispatcher = responseDispatcher;
-	}
+    @AnyThread
+    public DeleteMessageHandler(MessageDispatcher responseDispatcher,
+                                MessageService messageService) {
+        super(Protocol.SUB_TYPE_MESSAGE);
+        this.messageService = messageService;
+        this.responseDispatcher = responseDispatcher;
+    }
 
-	@Override
-	protected void receive(Map<String, Value> message) throws MessagePackException {
-		logger.debug("Received delete request");
-		Map<String, Value> args = this.getArguments(message, false, new String[]{
-				Protocol.ARGUMENT_RECEIVER_ID,
-				Protocol.ARGUMENT_MESSAGE_ID,
-				Protocol.ARGUMENT_TEMPORARY_ID,
-		});
+    @Override
+    protected void receive(Map<String, Value> message) throws MessagePackException {
+        logger.debug("Received delete request");
+        Map<String, Value> args = this.getArguments(message, false, new String[]{
+            Protocol.ARGUMENT_RECEIVER_ID,
+            Protocol.ARGUMENT_MESSAGE_ID,
+            Protocol.ARGUMENT_TEMPORARY_ID,
+        });
 
-		final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().asString();
-		final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
-		final int messageId = Integer.valueOf(messageIdStr);
+        final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().asString();
+        final String messageIdStr = args.get(Protocol.ARGUMENT_MESSAGE_ID).asStringValue().asString();
+        final int messageId = Integer.valueOf(messageIdStr);
 
-		final ch.threema.app.messagereceiver.MessageReceiver receiver;
-		try {
-			receiver = this.getReceiver(args);
-		} catch (ConversionException e) {
-			logger.error("Exception", e);
-			return;
-		}
+        final ch.threema.app.messagereceiver.MessageReceiver receiver;
+        try {
+            receiver = this.getReceiver(args);
+        } catch (ConversionException e) {
+            logger.error("Exception", e);
+            return;
+        }
 
-		if(receiver == null) {
-			logger.error("invalid receiver");
-			return;
-		}
+        if (receiver == null) {
+            logger.error("invalid receiver");
+            return;
+        }
 
-		//load message
-		AbstractMessageModel messageModel = null;
-		switch (receiver.getType())
-		{
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
-				messageModel = this.messageService.getContactMessageModel(messageId);
-				break;
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
-				messageModel = this.messageService.getGroupMessageModel(messageId);
-				break;
-			case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
-				messageModel = this.messageService.getDistributionListMessageModel(messageId);
-				break;
-		}
+        //load message
+        AbstractMessageModel messageModel = null;
+        switch (receiver.getType()) {
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT:
+                messageModel = this.messageService.getContactMessageModel(messageId);
+                break;
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP:
+                messageModel = this.messageService.getGroupMessageModel(messageId);
+                break;
+            case ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_LIST:
+                messageModel = this.messageService.getDistributionListMessageModel(messageId);
+                break;
+        }
 
-		if(messageModel == null) {
-			logger.error("no valid message model to delete found");
-			this.failed(temporaryId, Protocol.ERROR_INVALID_MESSAGE);
-			return;
-		}
+        if (messageModel == null) {
+            logger.error("no valid message model to delete found");
+            this.failed(temporaryId, Protocol.ERROR_INVALID_MESSAGE);
+            return;
+        }
 
-		this.messageService.remove(messageModel);
-		this.success(temporaryId);
-	}
+        this.messageService.remove(messageModel);
+        this.success(temporaryId);
+    }
 
-	/**
-	 * Respond with success true.
-	 */
-	private void success(String temporaryId) {
-		logger.debug("Respond with delete message success");
-		this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
-	}
+    /**
+     * Respond with success true.
+     */
+    private void success(String temporaryId) {
+        logger.debug("Respond with delete message success");
+        this.sendConfirmActionSuccess(this.responseDispatcher, temporaryId);
+    }
 
-	/**
-	 * Respond with an error code.
-	 */
-	private void failed(String temporaryId, @ErrorCode String errorCode) {
-		logger.warn("Respond with delete message failed ({})", errorCode);
-		this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
-	}
+    /**
+     * Respond with an error code.
+     */
+    private void failed(String temporaryId, @ErrorCode String errorCode) {
+        logger.warn("Respond with delete message failed ({})", errorCode);
+        this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, errorCode);
+    }
 
-	@Override
-	protected boolean maybeNeedsConnection() {
-		return false;
-	}
+    @Override
+    protected boolean maybeNeedsConnection() {
+        return false;
+    }
 }

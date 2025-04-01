@@ -59,7 +59,13 @@ class ForwardSecurityMessageProcessorWrapper(
         nonceFactory: NonceFactory,
         handle: ActiveTaskCodec,
     ): ForwardSecurityEncryptionResult {
-        return fsmp.runFsEncapsulationSteps(contact, innerMessage, Nonce(nonce), nonceFactory, handle)
+        return fsmp.runFsEncapsulationSteps(
+            contact,
+            innerMessage,
+            Nonce(nonce),
+            nonceFactory,
+            handle
+        )
     }
 
     @Throws(
@@ -89,21 +95,33 @@ class ForwardSecurityMessageProcessorWrapper(
     }
 
     @Throws(ThreemaException::class, BadMessageException::class)
-    fun processAccept(contact: Contact, accept: ForwardSecurityDataAccept, handle: ActiveTaskCodec) {
+    fun processAccept(
+        contact: Contact,
+        accept: ForwardSecurityDataAccept,
+        handle: ActiveTaskCodec
+    ) {
         runBlocking {
             fsmp.processAccept(contact, accept, handle)
         }
     }
 
     @Throws(DHSessionStoreException::class)
-    fun processReject(contact: Contact, reject: ForwardSecurityDataReject, handle: ActiveTaskCodec) {
+    fun processReject(
+        contact: Contact,
+        reject: ForwardSecurityDataReject,
+        handle: ActiveTaskCodec
+    ) {
         runBlocking {
             fsmp.processReject(contact, reject, handle)
         }
     }
 
     @Throws(ThreemaException::class, BadMessageException::class)
-    fun processMessage(contact: Contact, envelopeMessage: ForwardSecurityEnvelopeMessage, handle: ActiveTaskCodec): ForwardSecurityDecryptionResult {
+    fun processMessage(
+        contact: Contact,
+        envelopeMessage: ForwardSecurityEnvelopeMessage,
+        handle: ActiveTaskCodec
+    ): ForwardSecurityDecryptionResult {
         return runBlocking {
             fsmp.processMessage(contact, envelopeMessage, handle)
         }

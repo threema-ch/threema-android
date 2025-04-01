@@ -24,8 +24,9 @@ package ch.threema.app.services;
 import android.app.Activity;
 
 public interface SystemScreenLockService {
-	boolean systemUnlock(Activity currentActivity);
-	void setAuthenticated(boolean authenticated);
+    boolean systemUnlock(Activity currentActivity);
 
-	boolean tryEncrypt(Activity activity, int id);
+    void setAuthenticated(boolean authenticated);
+
+    boolean tryEncrypt(Activity activity, int id);
 }
