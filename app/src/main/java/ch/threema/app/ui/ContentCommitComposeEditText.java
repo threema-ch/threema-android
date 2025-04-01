@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2016-2024 Threema GmbH
+ * Copyright (c) 2016-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -95,59 +95,59 @@ public class ContentCommitComposeEditText extends ComposeEditText {
         EditorInfoCompat.setContentMimeTypes(editorInfo, mimeTypes);
 
         final InputConnectionCompat.OnCommitContentListener callback =
-            (inputContentInfo, flags, opts) -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
-                    InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
-                    try {
-                        inputContentInfo.requestPermission();
-                    } catch (Exception e) {
-                        return false; // return false if failed
-                    }
-                }
-
-                if (messageReceiver != null) {
-                    final Uri uri = inputContentInfo.getContentUri();
-                    final ClipDescription description = inputContentInfo.getDescription();
-                    final String mimeType = description.getMimeType(0);
-
-                    if (!isSticker(uri, mimeType)) {
-                        // go through SendMediaActivity if this item does not qualify as a sticker
-                        ArrayList<MediaItem> mediaItems = new ArrayList<>();
-                        mediaItems.add(new MediaItem(uri, mimeType, null));
-
-                        MessageReceiver[] messageReceivers = new MessageReceiver[1];
-                        messageReceivers[0] = messageReceiver;
-
-                        Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(getContext(), SendMediaActivity.class), messageReceivers);
-                        intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-                        intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
-                        getContext().startActivity(intent);
-
-                    } else {
-                        String caption = null;
-
-                        if (messageService != null) {
-                            MediaItem mediaItem = new MediaItem(
-                                uri,
-                                MimeUtil.isGifFile(mimeType) ?
-                                    MediaItem.TYPE_IMAGE_ANIMATED :
-                                    MediaItem.TYPE_IMAGE);
-                            mediaItem.setCaption(caption);
-                            mediaItem.setMimeType(mimeType);
-                            mediaItem.setRenderingType(
-                                MimeUtil.MIME_TYPE_IMAGE_JPEG.equalsIgnoreCase(mimeType) ?
-                                    FileData.RENDERING_MEDIA :
-                                    FileData.RENDERING_STICKER);
-                            messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+                (inputContentInfo, flags, opts) -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && (flags &
+                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0) {
+                        try {
+                            inputContentInfo.requestPermission();
+                        } catch (Exception e) {
+                            return false; // return false if failed
                         }
                     }
-                    return true;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    inputContentInfo.releasePermission();
-                }
-                return false;
-            };
+
+                    if (messageReceiver != null) {
+                        final Uri uri = inputContentInfo.getContentUri();
+                        final ClipDescription description = inputContentInfo.getDescription();
+                        final String mimeType = description.getMimeType(0);
+
+                        if (!isSticker(uri, mimeType)) {
+                            // go through SendMediaActivity if this item does not qualify as a sticker
+                            ArrayList<MediaItem> mediaItems = new ArrayList<>();
+                            mediaItems.add(new MediaItem(uri, mimeType, null));
+
+                            MessageReceiver[] messageReceivers = new MessageReceiver[1];
+                            messageReceivers[0] = messageReceiver;
+
+                            Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(getContext(), SendMediaActivity.class), messageReceivers);
+                            intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
+                            intent.putExtra(ThreemaApplication.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+                            getContext().startActivity(intent);
+
+                        } else {
+                            String caption = null;
+
+                            if (messageService != null) {
+                                MediaItem mediaItem = new MediaItem(
+                                        uri,
+                                        MimeUtil.isGifFile(mimeType) ?
+                                                MediaItem.TYPE_IMAGE_ANIMATED :
+                                                MediaItem.TYPE_IMAGE);
+                                mediaItem.setCaption(caption);
+                                mediaItem.setMimeType(mimeType);
+                                mediaItem.setRenderingType(
+                                        MimeUtil.MIME_TYPE_IMAGE_JPEG.equalsIgnoreCase(mimeType) ?
+                                                FileData.RENDERING_MEDIA :
+                                                FileData.RENDERING_STICKER);
+                                messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+                            }
+                        }
+                        return true;
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                        inputContentInfo.releasePermission();
+                    }
+                    return false;
+                };
 
         return InputConnectionCompat.createWrapper(ic, editorInfo, callback);
     }

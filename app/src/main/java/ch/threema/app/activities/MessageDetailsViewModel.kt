@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2024 Threema GmbH
+ * Copyright (c) 2024-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -132,13 +132,13 @@ data class MessageTimestampsUiModel(
 ) {
     fun hasProperties(): Boolean {
         return createdAt != null
-            || sentAt != null
-            || receivedAt != null
-            || deliveredAt != null
-            || readAt != null
-            || modifiedAt != null
-            || editedAt != null
-            || deletedAt != null
+                || sentAt != null
+                || receivedAt != null
+                || deliveredAt != null
+                || readAt != null
+                || modifiedAt != null
+                || editedAt != null
+                || deletedAt != null
     }
 }
 
@@ -150,9 +150,9 @@ data class MessageDetailsUiModel(
 ) {
     fun hasProperties(): Boolean {
         return messageId != null
-            || mimeType != null
-            || fileSizeInBytes != null
-            || pfsState != null
+                || mimeType != null
+                || fileSizeInBytes != null
+                || pfsState != null
     }
 }
 
@@ -190,11 +190,11 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
 
         val shouldShowPostedAt =
             (this.state != MessageState.SENDING && this.state != MessageState.SENDFAILED && this.state != MessageState.FS_KEY_MISMATCH && this.state != MessageState.PENDING)
-                || this.type == MessageType.BALLOT
+                    || this.type == MessageType.BALLOT
 
         val shouldShowModifiedAt =
             !(this.state == MessageState.READ && this.modifiedAt == this.readAt)
-                && !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt)
+                    && !(this.state == MessageState.DELIVERED && this.modifiedAt == this.deliveredAt)
 
         MessageTimestampsUiModel(
             createdAt = this.createdAt,

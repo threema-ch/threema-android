@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2024 Threema GmbH
+ * Copyright (c) 2014-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -23,9 +23,9 @@ package ch.threema.app.services.ballot;
 
 
 public class BallotPublishResult extends BallotResult {
-	@Override
-	protected BallotPublishResult error(int messageResourceId) {
-		super.error(messageResourceId);
-		return this;
-	}
+    @Override
+    protected BallotPublishResult error(int messageResourceId) {
+        super.error(messageResourceId);
+        return this;
+    }
 }

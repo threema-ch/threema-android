@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2018-2024 Threema GmbH
+ * Copyright (c) 2018-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -433,8 +433,8 @@ public class SdpTest {
             }
             // TODO(SE-63): Ehh, dirty hack... it should create a transceiver instead
             matches.add("^a=recvonly");
-//          expectedMatchesPart1.add("^a=sendrecv");
-//          expectedMatchesPart1.add("^a=msid:3MACALL 3MACALLv0");
+//			expectedMatchesPart1.add("^a=sendrecv");
+//			expectedMatchesPart1.add("^a=msid:3MACALL 3MACALLv0");
             matches.add("^a=rtcp-mux$");
             matches.add("^a=rtcp-rsize$");
 

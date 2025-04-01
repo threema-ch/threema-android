@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2014-2024 Threema GmbH
+ * Copyright (c) 2014-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -50,344 +50,344 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextEntryDialog extends ThreemaDialogFragment {
 
-	public static final String ARG_TITLE = "title";
-	public static final String ARG_MESSAGE = "message";
-	public static final String ARG_POSITIVE = "positive";
-	public static final String ARG_NEUTRAL = "neutral";
-	public static final String ARG_NEGATIVE = "negative";
-	public static final String ARG_TEXT = "text";
-	public static final String ARG_INPUT_TYPE = "inputType";
-	public static final String ARG_INPUT_FILTER_TYPE = "inputFilterType";
-	public static final String ARG_MAX_LINES = "maxLines";
-	public static final String ARG_MAX_LENGTH = "maxLength";
-	public static final String ARG_MIN_LENGTH = "minLength";
-	public static final String ARG_ENABLE_FORMATTING = "enableFormatting";
+    public static final String ARG_TITLE = "title";
+    public static final String ARG_MESSAGE = "message";
+    public static final String ARG_POSITIVE = "positive";
+    public static final String ARG_NEUTRAL = "neutral";
+    public static final String ARG_NEGATIVE = "negative";
+    public static final String ARG_TEXT = "text";
+    public static final String ARG_INPUT_TYPE = "inputType";
+    public static final String ARG_INPUT_FILTER_TYPE = "inputFilterType";
+    public static final String ARG_MAX_LINES = "maxLines";
+    public static final String ARG_MAX_LENGTH = "maxLength";
+    public static final String ARG_MIN_LENGTH = "minLength";
+    public static final String ARG_ENABLE_FORMATTING = "enableFormatting";
 
-	private TextEntryDialogClickListener callback;
-	private Activity activity;
-	private AlertDialog alertDialog;
-	private LocaleService localeService;
-	private int inputFilterType, minLength = 0;
+    private TextEntryDialogClickListener callback;
+    private Activity activity;
+    private AlertDialog alertDialog;
+    private LocaleService localeService;
+    private int inputFilterType, minLength = 0;
 
-	public static int INPUT_FILTER_TYPE_NONE = 0;
-	public static int INPUT_FILTER_TYPE_IDENTITY = 1;
-	public static int INPUT_FILTER_TYPE_PHONE = 2;
+    public static int INPUT_FILTER_TYPE_NONE = 0;
+    public static int INPUT_FILTER_TYPE_IDENTITY = 1;
+    public static int INPUT_FILTER_TYPE_PHONE = 2;
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int neutral, @StringRes int negative,
-	                                          String text, int inputType, int inputFilterType) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEUTRAL, neutral);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_INPUT_TYPE, inputType);
-		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int neutral, @StringRes int negative,
+                                              String text, int inputType, int inputFilterType) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEUTRAL, neutral);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_INPUT_TYPE, inputType);
+        args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int negative,
-	                                          String text, int inputType, int inputFilterType,
-	                                          int maxLines) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_INPUT_TYPE, inputType);
-		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
-		args.putInt(ARG_MAX_LINES, maxLines);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int negative,
+                                              String text, int inputType, int inputFilterType,
+                                              int maxLines) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_INPUT_TYPE, inputType);
+        args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+        args.putInt(ARG_MAX_LINES, maxLines);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int neutral, @StringRes int negative,
-	                                          String text, int inputType, int inputFilterType, int maxLength) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEUTRAL, neutral);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_INPUT_TYPE, inputType);
-		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
-		args.putInt(ARG_MAX_LENGTH, maxLength);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int neutral, @StringRes int negative,
+                                              String text, int inputType, int inputFilterType, int maxLength) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEUTRAL, neutral);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_INPUT_TYPE, inputType);
+        args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+        args.putInt(ARG_MAX_LENGTH, maxLength);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int negative,
-	                                          String text, int inputType, int inputFilterType) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_INPUT_TYPE, inputType);
-		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int negative,
+                                              String text, int inputType, int inputFilterType) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_INPUT_TYPE, inputType);
+        args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int negative,
-	                                          int maxLines, int maxLength) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putInt(ARG_MAX_LINES, maxLines);
-		args.putInt(ARG_MAX_LENGTH, maxLength);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int negative,
+                                              int maxLines, int maxLength) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putInt(ARG_MAX_LINES, maxLines);
+        args.putInt(ARG_MAX_LENGTH, maxLength);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int negative,
-	                                          int maxLines, int maxLength, int minLength) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putInt(ARG_MAX_LINES, maxLines);
-		args.putInt(ARG_MAX_LENGTH, maxLength);
-		args.putInt(ARG_MIN_LENGTH, minLength);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int negative,
+                                              int maxLines, int maxLength, int minLength) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putInt(ARG_MAX_LINES, maxLines);
+        args.putInt(ARG_MAX_LENGTH, maxLength);
+        args.putInt(ARG_MIN_LENGTH, minLength);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
-	                                          @StringRes int positive, @StringRes int negative,
-	                                          String text, int inputType, int inputFilterType,
-	                                          int maxLines, boolean enableFormatting) {
-		TextEntryDialog dialog = new TextEntryDialog();
-		Bundle args = new Bundle();
-		args.putInt(ARG_TITLE, title);
-		args.putInt(ARG_MESSAGE, message);
-		args.putInt(ARG_POSITIVE, positive);
-		args.putInt(ARG_NEGATIVE, negative);
-		args.putString(ARG_TEXT, text);
-		args.putInt(ARG_INPUT_TYPE, inputType);
-		args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
-		args.putInt(ARG_MAX_LINES, maxLines);
-		args.putBoolean(ARG_ENABLE_FORMATTING, enableFormatting);
+    public static TextEntryDialog newInstance(@StringRes int title, @StringRes int message,
+                                              @StringRes int positive, @StringRes int negative,
+                                              String text, int inputType, int inputFilterType,
+                                              int maxLines, boolean enableFormatting) {
+        TextEntryDialog dialog = new TextEntryDialog();
+        Bundle args = new Bundle();
+        args.putInt(ARG_TITLE, title);
+        args.putInt(ARG_MESSAGE, message);
+        args.putInt(ARG_POSITIVE, positive);
+        args.putInt(ARG_NEGATIVE, negative);
+        args.putString(ARG_TEXT, text);
+        args.putInt(ARG_INPUT_TYPE, inputType);
+        args.putInt(ARG_INPUT_FILTER_TYPE, inputFilterType);
+        args.putInt(ARG_MAX_LINES, maxLines);
+        args.putBoolean(ARG_ENABLE_FORMATTING, enableFormatting);
 
-		dialog.setArguments(args);
-		return dialog;
-	}
+        dialog.setArguments(args);
+        return dialog;
+    }
 
-	public interface TextEntryDialogClickListener {
-		void onYes(@NonNull String tag, @NonNull String text);
+    public interface TextEntryDialogClickListener {
+        void onYes(@NonNull String tag, @NonNull String text);
 
-		void onNo(String tag);
+        void onNo(String tag);
 
-		default void onNeutral(String tag) {
-			// optional interface
-		}
-	}
+        default void onNeutral(String tag) {
+            // optional interface
+        }
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		if (callback == null) {
-			try {
-				callback = (TextEntryDialogClickListener) getTargetFragment();
-			} catch (ClassCastException e) {
-				//
-			}
+        if (callback == null) {
+            try {
+                callback = (TextEntryDialogClickListener) getTargetFragment();
+            } catch (ClassCastException e) {
+                //
+            }
 
-			// called from an activity rather than a fragment
-			if (callback == null) {
-				if (activity instanceof TextEntryDialogClickListener) {
-					callback = (TextEntryDialogClickListener) activity;
-				}
-			}
-		}
-		ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-		if (serviceManager != null) {
-			localeService = ThreemaApplication.getServiceManager().getLocaleService();
-		}
-	}
+            // called from an activity rather than a fragment
+            if (callback == null) {
+                if (activity instanceof TextEntryDialogClickListener) {
+                    callback = (TextEntryDialogClickListener) activity;
+                }
+            }
+        }
+        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+        if (serviceManager != null) {
+            localeService = ThreemaApplication.getServiceManager().getLocaleService();
+        }
+    }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-		this.activity = activity;
-	}
+        this.activity = activity;
+    }
 
-	@NonNull
-	@Override
-	public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-		int title = getArguments().getInt(ARG_TITLE);
-		int message = getArguments().getInt(ARG_MESSAGE);
-		int positive = getArguments().getInt(ARG_POSITIVE);
-		int neutral = getArguments().getInt(ARG_NEUTRAL);
-		int negative = getArguments().getInt(ARG_NEGATIVE);
-		String text = getArguments().getString(ARG_TEXT, "");
-		int inputType = getArguments().getInt(ARG_INPUT_TYPE);
-		inputFilterType = getArguments().getInt(ARG_INPUT_FILTER_TYPE, 0);
-		int maxLength = getArguments().getInt(ARG_MAX_LENGTH, 0);
-		int maxLines = getArguments().getInt(ARG_MAX_LINES, 0);
-		minLength = getArguments().getInt(ARG_MIN_LENGTH, 0);
+    @NonNull
+    @Override
+    public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
+        int title = getArguments().getInt(ARG_TITLE);
+        int message = getArguments().getInt(ARG_MESSAGE);
+        int positive = getArguments().getInt(ARG_POSITIVE);
+        int neutral = getArguments().getInt(ARG_NEUTRAL);
+        int negative = getArguments().getInt(ARG_NEGATIVE);
+        String text = getArguments().getString(ARG_TEXT, "");
+        int inputType = getArguments().getInt(ARG_INPUT_TYPE);
+        inputFilterType = getArguments().getInt(ARG_INPUT_FILTER_TYPE, 0);
+        int maxLength = getArguments().getInt(ARG_MAX_LENGTH, 0);
+        int maxLines = getArguments().getInt(ARG_MAX_LINES, 0);
+        minLength = getArguments().getInt(ARG_MIN_LENGTH, 0);
 
-		final String tag = this.getTag();
+        final String tag = this.getTag();
 
-		final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry, null);
+        final View dialogView = activity.getLayoutInflater().inflate(R.layout.dialog_text_entry, null);
 
-		final TextInputLayout editTextLayout;
-		final EmojiEditText editText;
+        final TextInputLayout editTextLayout;
+        final EmojiEditText editText;
 
-		if (getArguments().getBoolean(ARG_ENABLE_FORMATTING, false)) {
-			editTextLayout = dialogView.findViewById(R.id.format_text_input_layout);
-			editText = dialogView.findViewById(R.id.format_edit_text);
-		} else {
-			editTextLayout = dialogView.findViewById(R.id.text_input_layout);
-			editText = dialogView.findViewById(R.id.edit_text);
-		}
-		editTextLayout.setVisibility(View.VISIBLE);
+        if (getArguments().getBoolean(ARG_ENABLE_FORMATTING, false)) {
+            editTextLayout = dialogView.findViewById(R.id.format_text_input_layout);
+            editText = dialogView.findViewById(R.id.format_edit_text);
+        } else {
+            editTextLayout = dialogView.findViewById(R.id.text_input_layout);
+            editText = dialogView.findViewById(R.id.edit_text);
+        }
+        editTextLayout.setVisibility(View.VISIBLE);
 
-		editText.setText(text);
-		if (text != null && text.length() > 0) {
-			editText.setSelection(text.length());
-		}
+        editText.setText(text);
+        if (text != null && text.length() > 0) {
+            editText.setSelection(text.length());
+        }
 
-		if (inputType != 0) {
-			editText.setInputType(inputType);
-		}
+        if (inputType != 0) {
+            editText.setInputType(inputType);
+        }
 
-		if (maxLength > 0) {
-			editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-		}
+        if (maxLength > 0) {
+            editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
+        }
 
-		if (maxLines > 1) {
-			editText.setSingleLine(false);
-			editText.setMaxLines(maxLines);
-		}
+        if (maxLines > 1) {
+            editText.setSingleLine(false);
+            editText.setMaxLines(maxLines);
+        }
 
-		editText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-			}
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				ThreemaApplication.activityUserInteract(activity);
-			}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ThreemaApplication.activityUserInteract(activity);
+            }
 
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (minLength > 0) {
-					alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(s != null && s.length() >= minLength);
-				}
-			}
-		});
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (minLength > 0) {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(s != null && s.length() >= minLength);
+                }
+            }
+        });
 
-		if (inputFilterType == INPUT_FILTER_TYPE_IDENTITY) {
-			editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
-		} else if (inputFilterType == INPUT_FILTER_TYPE_PHONE && localeService != null) {
-			editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
-			editText.addTextChangedListener(new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				}
+        if (inputFilterType == INPUT_FILTER_TYPE_IDENTITY) {
+            editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
+        } else if (inputFilterType == INPUT_FILTER_TYPE_PHONE && localeService != null) {
+            editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
-				}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-				@Override
-				public void afterTextChanged(Editable s) {
-					alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(s.toString()));
-				}
-			});
-		}
+                @Override
+                public void afterTextChanged(Editable s) {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(s.toString()));
+                }
+            });
+        }
 
-		if (message != 0) {
-			editTextLayout.setHint(getString(message));
-		}
+        if (message != 0) {
+            editTextLayout.setHint(getString(message));
+        }
 
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
-		builder.setView(dialogView);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
+        builder.setView(dialogView);
 
-		if (title != 0) {
-			builder.setTitle(title);
-		}
+        if (title != 0) {
+            builder.setTitle(title);
+        }
 
-		builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						String text = null;
-						Editable editable = editText.getText();
-						if (editable != null) {
-							text = editable.toString();
-						}
-						if (tag != null && text != null) {
-							callback.onYes(tag, text);
-						}
-					}
-				}
-		);
-		builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						callback.onNo(tag);
-					}
-				}
-		);
-		if (neutral != 0) {
-			builder.setNeutralButton(getString(neutral),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							callback.onNeutral(tag);
-						}
-					}
-			);
-		}
+        builder.setPositiveButton(getString(positive), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String text = null;
+                    Editable editable = editText.getText();
+                    if (editable != null) {
+                        text = editable.toString();
+                    }
+                    if (tag != null && text != null) {
+                        callback.onYes(tag, text);
+                    }
+                }
+            }
+        );
+        builder.setNegativeButton(getString(negative), new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    callback.onNo(tag);
+                }
+            }
+        );
+        if (neutral != 0) {
+            builder.setNeutralButton(getString(neutral),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        callback.onNeutral(tag);
+                    }
+                }
+            );
+        }
 
-		alertDialog = builder.create();
+        alertDialog = builder.create();
 
-		return alertDialog;
-	}
+        return alertDialog;
+    }
 
-	@Override
-	public void onStart() {
-		super.onStart();
+    @Override
+    public void onStart() {
+        super.onStart();
 
-		ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
+        ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
 
-		alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
-		alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
+        alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
 
-		if (inputFilterType == INPUT_FILTER_TYPE_PHONE || minLength > 0) {
-			alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
-		}
+        if (inputFilterType == INPUT_FILTER_TYPE_PHONE || minLength > 0) {
+            alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
+        }
 
-		Button neutral = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-		if (neutral != null) {
-			neutral.setTextColor(colorStateList);
-		}
-	}
+        Button neutral = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+        if (neutral != null) {
+            neutral.setTextColor(colorStateList);
+        }
+    }
 }

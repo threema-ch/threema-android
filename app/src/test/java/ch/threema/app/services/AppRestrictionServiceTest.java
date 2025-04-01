@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2017-2024 Threema GmbH
+ * Copyright (c) 2017-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -95,10 +95,10 @@ public class AppRestrictionServiceTest {
         when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
 
         when(mockContext.getSystemService(Context.RESTRICTIONS_SERVICE))
-            .thenReturn(restrictionManagerMock);
+                .thenReturn(restrictionManagerMock);
 
         when(restrictionManagerMock.getApplicationRestrictions())
-            .thenReturn(bundle);
+                .thenReturn(bundle);
 
         WorkMDMSettings workMDMSettings = new WorkMDMSettings();
         when(service.getWorkMDMSettings()).thenReturn(workMDMSettings);
@@ -141,10 +141,10 @@ public class AppRestrictionServiceTest {
         when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
 
         when(mockContext.getSystemService(Context.RESTRICTIONS_SERVICE))
-            .thenReturn(restrictionManagerMock);
+                .thenReturn(restrictionManagerMock);
 
         when(restrictionManagerMock.getApplicationRestrictions())
-            .thenReturn(bundle);
+                .thenReturn(bundle);
 
         when(bundle.containsKey(eq("param1"))).thenReturn(true);
         when(bundle.containsKey(eq("param2"))).thenReturn(false);
@@ -199,10 +199,10 @@ public class AppRestrictionServiceTest {
         when(ThreemaApplication.getAppContext()).thenReturn(mockContext);
 
         when(mockContext.getSystemService(Context.RESTRICTIONS_SERVICE))
-            .thenReturn(restrictionManagerMock);
+                .thenReturn(restrictionManagerMock);
 
         when(restrictionManagerMock.getApplicationRestrictions())
-            .thenReturn(bundle);
+                .thenReturn(bundle);
 
         when(bundle.containsKey(eq("param1"))).thenReturn(true);
         when(bundle.containsKey(eq("param2"))).thenReturn(false);
@@ -364,7 +364,7 @@ public class AppRestrictionServiceTest {
 
         WorkData workData = new WorkData();
         when(apiConnectorMock.fetchWorkData(eq("hans"), eq("dampf"), any(String[].class)))
-            .thenReturn(workData);
+                .thenReturn(workData);
         service.fetchAndStoreWorkMDMSettings(apiConnectorMock, credentials);
 
         verify(apiConnectorMock, times(1)).fetchWorkData(eq("hans"), eq("dampf"), any(String[].class));
@@ -386,11 +386,11 @@ public class AppRestrictionServiceTest {
         Context mockContext = PowerMockito.mock(Context.class);
         when(mockContext.getSystemService(Context.RESTRICTIONS_SERVICE)).thenReturn(restrictionManagerMock);
         when(mockContext.getString(anyInt())).thenReturn(
-            "th_id_backup",
-            "th_id_backup_password",
-            "th_safe_password",
-            "th_license_username",
-            "th_license_password"
+                "th_id_backup",
+                "th_id_backup_password",
+                "th_safe_password",
+                "th_license_username",
+                "th_license_password"
         );
 
         JSONObject parameters = new JSONObject();
